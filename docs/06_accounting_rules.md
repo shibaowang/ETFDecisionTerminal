@@ -80,3 +80,10 @@ principal_base =
 - 导出
 - 诊断
 - 修复向导
+
+## 数据库初始化边界
+
+- TASK-004 的数据库初始化不等于账务初始化。
+- 初始化数据库只负责连接、PRAGMA、WAL、migration 和健康检查。
+- 本任务不实现账务重演，不写 trade_log，不写 position_snapshot / cash_snapshot / portfolio_summary。
+- trade_log 仍然是唯一事实源，后续账务功能必须通过 ETFDataService 受控事务写入。

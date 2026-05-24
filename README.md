@@ -34,6 +34,18 @@ TASK-003 在 `libs/Protocol` 中补充了本地服务通信协议基础类型：
 - 最小 JSON 字符串转义和 payload 片段校验。
 - Protocol 单元测试 `protocol_messages`。
 
+## TASK-004 范围
+
+TASK-004 在 `libs/DataAccess` 和 `apps/ETFDataService` 中补充了最小数据库基础设施：
+
+- SQLite C API 连接管理：`SQLiteConnection`。
+- 数据库配置、状态、错误类型：`DatabaseConfig`、`DatabaseStatus`、`DatabaseError`。
+- 初始迁移检查与执行：`MigrationRunner`。
+- WAL、foreign_keys、busy_timeout 初始化。
+- 只读健康检查。
+- `ETFDataService` 命令行数据库初始化和健康检查入口。
+- DataAccess / DataService CLI 自动化测试。
+
 ## 构建
 
 环境要求：
@@ -41,11 +53,34 @@ TASK-003 在 `libs/Protocol` 中补充了本地服务通信协议基础类型：
 - CMake 3.20 或更高版本。
 - 支持 C++17 的编译器。
 - Python 3，用于当前临时数据库迁移测试。
+- SQLite3 开发文件，用于 DataAccess SQLite C API。
+
+SQLite3 安装说明：
+
+- Windows / vcpkg：`vcpkg install sqlite3:x64-windows`，并用 vcpkg toolchain 配置 CMake。
+- 也可以配置 `-DETFDT_SQLITE3_AMALGAMATION_DIR=<dir>`，目录内需要有 `sqlite3.c` 和 `sqlite3.h`。
+- 如果 CMake 找不到 SQLite3 或可用 amalgamation，会在配置阶段给出明确错误。
 
 ```powershell
 cmake -S . -B build
 cmake --build build
 ```
+
+## 初始化数据库
+
+```powershell
+build\apps\ETFDataService\ETFDataService.exe --init-db --db data\ETFDecision.db --migration migrations\001_initial_schema.sql
+```
+
+该命令会打开数据库、初始化 PRAGMA、启用 WAL、执行初始迁移，并输出健康检查摘要。已执行初始迁移时会跳过，不重复报错。
+
+## 检查数据库
+
+```powershell
+build\apps\ETFDataService\ETFDataService.exe --check-db --db data\ETFDecision.db
+```
+
+该命令只做健康检查，不执行账务重演，不自动修账。
 
 ## 运行测试
 
@@ -64,6 +99,10 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `protocol_messages` 会验证服务名、错误码、请求/响应信封校验和 JSON 字符串生成。
 
+当前测试 `dataaccess_database_init` 会验证 SQLite 打开、初始迁移、WAL、foreign_keys、schema_version 和核心表。
+
+当前测试 `dataservice_cli_init` / `dataservice_cli_check` 会验证 `ETFDataService` 命令行入口。
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。
@@ -72,9 +111,10 @@ ctest --test-dir build --output-on-failure
 - 未实现云同步、多用户权限、资讯、研报、完整回测。
 - 未实现服务间 Qt Local Socket 传输层，协议库当前仅包含基础信封、错误码和 JSON 字符串生成。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
+- 未实现业务 Repository、TradeLog 写入、账务重演或策略计算。
 
 ## 后续任务建议
 
-1. TASK-004：实现 DataService 只读迁移检查、数据库连接生命周期和 WAL 初始化。
-2. TASK-005：为 `trade_log`、审计和派生快照设计最小 Repository 接口。
-3. TASK-006：在 Protocol 基础上接入 Qt Local Socket 传输层。
+1. TASK-005：为 `trade_log`、审计和派生快照设计最小 Repository 接口。
+2. TASK-006：在 Protocol 基础上接入 Qt Local Socket 传输层。
+3. TASK-007：实现 DataService 受控写入事务边界。

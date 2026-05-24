@@ -1,5 +1,9 @@
 #pragma once
 
+#include "DataAccess/DatabaseTypes.h"
+#include "DataAccess/MigrationRunner.h"
+#include "DataAccess/SQLiteConnection.h"
+
 #include <string_view>
 
 namespace etfdt::data_access {

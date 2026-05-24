@@ -136,3 +136,6 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - TASK-016 新增服务清单状态报告和 dry-run 启动检查。
 - dry-run 只检查配置、路径、enabled 状态、socketName 和健康检查条件，不启动服务、不连接 socket、不访问数据库。
 - manifest status 会汇总 total / enabled / disabled / error / warning，并标出每个服务是否 canStart。
+- TASK-017 新增 JSON 状态报告导出和批量 dry-run。
+- JSON 报告用于 Shell 或诊断工具读取，必须保持可解析和字段稳定。
+- `dry-run-all` 只检查配置和启动条件，不启动服务、不连接 socket、不访问数据库。

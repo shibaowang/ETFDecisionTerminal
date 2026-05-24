@@ -187,6 +187,18 @@ TASK-016 增加服务清单状态汇总和 dry-run 启动检查：
 - dry-run 不启动服务，不连接 socket，不访问数据库。
 - `autoRestart` 仍只报告为被忽略，不启用自动重启。
 
+## TASK-017 范围
+
+TASK-017 增加 Watchdog 状态报告 JSON 导出和批量 dry-run 检查：
+
+- `ETFWatchdog --manifest-status-json` 输出可解析的 JSON 状态报告。
+- `--manifest-status-json --output <path>` 将 JSON 状态报告写入文件。
+- `ETFWatchdog --dry-run-all` 对清单内全部服务执行 dry-run 检查。
+- JSON 报告包含 `configPath`、`version`、服务计数、error / warning 计数和 `services[]`。
+- `services[]` 包含 `serviceName`、`enabled`、`supported`、`executablePath`、`executableExists`、`workingDirectory`、`workingDirectoryExists`、`socketName`、`socketNamePresent`、`autoRestart`、`autoRestartEnabledButIgnored`、`healthCheckSupported`、`canStart` 和 `issues[]`。
+
+`--dry-run-all` 不启动服务，不连接 socket，不访问数据库。`autoRestart` 仍只报告为被忽略，不启用自动重启。
+
 ## 构建
 
 环境要求：
@@ -326,6 +338,21 @@ build\apps\ETFWatchdog\ETFWatchdog.exe --dry-run-start --config config\services.
 
 `--dry-run-start` 只检查配置和启动条件，不启动真实进程，不连接 Local Socket，不访问数据库。存在 ERROR 时返回非 0；只有 INFO / WARNING 时仍可返回 0。
 
+导出 JSON 状态报告：
+
+```powershell
+build\apps\ETFWatchdog\ETFWatchdog.exe --manifest-status-json --config config\services.local.example.json
+build\apps\ETFWatchdog\ETFWatchdog.exe --manifest-status-json --config config\services.local.example.json --output build\watchdog-status.json
+```
+
+批量 dry-run：
+
+```powershell
+build\apps\ETFWatchdog\ETFWatchdog.exe --dry-run-all --config config\services.local.example.json
+```
+
+`--dry-run-all` 只检查配置和启动条件，不启动真实进程，不连接 Local Socket，不访问数据库。任一 enabled 服务存在 ERROR 或 `canStart=false` 时返回非 0；disabled 服务不会导致失败，但会输出 disabled / skipped 信息。
+
 ## 运行测试
 
 ```powershell
@@ -375,6 +402,8 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `watchdog_service_manifest` 还会验证 `--manifest-status` 和 `--dry-run-start`：有效配置、缺失 executablePath、缺失 workingDirectory、`autoRestart=true` warning、disabled 服务、缺失 socketName、非 `ETFDataService` 服务和 dry-run 不启动进程。
 
+当前测试 `watchdog_service_manifest` 还会验证 JSON 状态报告、stdout JSON、`--output` 文件写入、无效输出路径、含 ERROR 配置返回非 0、`--dry-run-all` 有效 / 无效 / disabled / autoRestart warning 路径，以及 dry-run-all 不启动进程。
+
 Transport 稳定性重复验证命令：
 
 ```powershell
@@ -391,9 +420,9 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 - 未实现任何业务 DataService 写入 action；当前唯一 socket 写入 action 是开发期 `data.audit.append`，且只写 `audit_log`。
 - 未实现任何新增服务端 action；TASK-012 只增加客户端调用封装。
 - 未实现 Windows Service 安装或后台常驻注册表写入；TASK-013 只提供 Watchdog 进程管理骨架。
-- 未实现 Watchdog 自动重启；TASK-014 / TASK-015 / TASK-016 只读取 `autoRestart` 字段，不执行自动重启。
+- 未实现 Watchdog 自动重启；TASK-014 / TASK-015 / TASK-016 / TASK-017 只读取 `autoRestart` 字段，不执行自动重启。
 - 未实现 Windows Service；TASK-015 只提供配置驱动启动指定服务并在命令结束前停止。
-- TASK-016 的 dry-run 不启动服务、不连接 socket、不访问数据库。
+- TASK-016 / TASK-017 的 dry-run 不启动服务、不连接 socket、不访问数据库。
 - 未实现 `--append-audit-demo`；TASK-010 仅提供 DataAccess 层事务和 audit_log 写入基础。
 - 未实现任何 socket 写 action。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
@@ -402,5 +431,5 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 
 ## 后续任务建议
 
-1. TASK-017：为 Watchdog 增加批量只读状态检查或报告导出，但仍不做自动重启和 Windows Service。
-2. TASK-018：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。
+1. TASK-018：为 Watchdog 增加状态报告消费方或更细的诊断输出，但仍不做自动重启和 Windows Service。
+2. TASK-019：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。

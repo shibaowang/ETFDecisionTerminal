@@ -4,6 +4,7 @@ add_library(ETFWatchdogLib STATIC
     src/ServiceManifest.cpp
     src/ServiceManifestLoader.cpp
     src/ServiceManifestStatus.cpp
+    src/ServiceManifestStatusJson.cpp
     src/ServiceProcessConfig.cpp
     src/ServiceProcessManager.cpp
     src/ServiceProcessStatus.cpp

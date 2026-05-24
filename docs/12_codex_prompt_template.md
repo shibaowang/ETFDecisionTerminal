@@ -77,6 +77,8 @@ v0.1 草案。
 51. Watchdog 启动服务测试必须确认命令结束后无遗留子进程。
 52. 涉及 Watchdog dry-run 的任务必须明确 dry-run 是否允许启动服务；默认 dry-run 不启动服务。
 53. dry-run 不得连接 socket，不得访问数据库，不得写入任何状态。
+54. 涉及 JSON 报告的任务必须保证输出可被标准 JSON parser 解析，不得输出伪 JSON。
+55. JSON 报告字段必须稳定；布尔和数字字段不得以字符串代替。
 
 ## TASK 模板
 

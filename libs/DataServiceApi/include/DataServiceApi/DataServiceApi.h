@@ -3,6 +3,7 @@
 #include "DataServiceApi/DataServiceActionRegistrar.h"
 #include "DataServiceApi/DataServiceActions.h"
 #include "DataServiceApi/JsonBuilders.h"
+#include "DataServiceApi/WriteActionPolicy.h"
 
 #include <string_view>
 

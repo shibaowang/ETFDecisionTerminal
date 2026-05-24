@@ -214,6 +214,54 @@ TASK-009 定义 `data.*` 只读 action 命名规则：`data.<resource>.<operatio
 
 `strategyCode` 缺失或 trim 后为空时返回 `success=false`，`errorCode=E1002_MISSING_REQUIRED_FIELD`。`strategyCode` 不存在或没有 OTC 通道时返回 `success=true` 且 `channels=[]`。
 
+## DataService 审计写入 action
+
+TASK-011 定义当前唯一允许的写入 action：`data.audit.append`。默认所有其他 `data.*` action 仍然禁止写入，未注册或未授权写入 action 必须返回 `E1004_INVALID_ACTION`。
+
+### data.audit.append
+
+请求 payload：
+
+```json
+{
+  "entityType": "SYSTEM",
+  "entityId": "1",
+  "action": "DEMO_AUDIT",
+  "reason": "manual audit test",
+  "operatorName": "local-user",
+  "oldValue": {},
+  "newValue": {}
+}
+```
+
+字段规则：
+
+- `entityType` 必填，trim 后不能为空。
+- `action` 必填，trim 后不能为空。
+- `reason` 必填，trim 后不能为空。
+- `entityId` 可选；当前审计表字段为整数，非整数值不会作为 `audit_log.entity_id` 写入。
+- `operatorName` 可选，缺省为 `local-user`。
+- `oldValue` 和 `newValue` 可选，缺省为 `{}`，提供时必须是 JSON object 或 array。
+
+成功响应 payload：
+
+```json
+{
+  "inserted": true,
+  "auditLogId": 123,
+  "entityType": "SYSTEM",
+  "action": "DEMO_AUDIT"
+}
+```
+
+错误规则：
+
+- payload 不是 JSON object 或 `oldValue` / `newValue` 不是 JSON object / array 时返回 `E1001_INVALID_JSON`。
+- 缺少 `entityType`、`action` 或 `reason` 时返回 `E1002_MISSING_REQUIRED_FIELD`。
+- 数据库事务或写入失败时返回数据库类错误码。
+- `data.audit.append` 只在开发期审计写入服务中注册；只读服务必须返回 `E1004_INVALID_ACTION`。
+- 不允许任何通过 payload 传入 SQL 的 action。
+
 ## 标准请求消息
 
 ```json

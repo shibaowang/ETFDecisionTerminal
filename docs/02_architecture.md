@@ -97,3 +97,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - DataServiceApi 可以依赖 DataAccess，但 Transport 和 ServiceHost 仍不得依赖 DataAccess。
 - 当前所有 `data.*` action 都是只读查询，不允许 INSERT / UPDATE / DELETE，不写 `trade_log`，不写派生快照表。
 - 写入 action 后续必须单独设计事务、审计、TradeLog 事实账本规则和验收测试，不能复用只读 handler 绕过边界。
+
+## DataServiceApi 写入白名单
+
+- TASK-011 增加 DataServiceApi 写入 action 白名单，默认所有 `data.*` action 仍视为只读。
+- 当前唯一允许写入 action 是 `data.audit.append`，并且只能写 `audit_log`。
+- `--serve-readonly` 不注册任何写入 action；`--serve-dev-audit` 才会注册 `data.audit.append`。
+- 写入 action 必须显式注册，不允许通配符放开 `data.*` 写入，也不允许根据 action 名动态拼接 SQL。
+- ServiceHost 和 Transport 仍不得依赖 DataAccess；只有 ETFDataService 进程内的 DataServiceApi handler 可以通过受控 Repository 写入。
+- 本阶段不提供 TradeLog、TradeDraft、成交组、资金池、grid_cycle 或派生快照表的写入 action。

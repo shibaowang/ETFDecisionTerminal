@@ -36,11 +36,12 @@ void printHelp()
         << "  ETFDataService --list-strategies --db <path>\n"
         << "  ETFDataService --list-otc --db <path> --strategy-code <code>\n"
         << "  ETFDataService --serve-readonly --db <path> --socket-name <name>\n"
+        << "  ETFDataService --serve-dev-audit --db <path> --socket-name <name>\n"
         << "  ETFDataService --help\n"
         << "\n"
         << "This entry point initializes, checks, reads SQLite, or starts the "
-        << "development preview read-only Local Socket service. It does not write "
-        << "business facts.\n";
+        << "development preview Local Socket services. The dev audit service only "
+        << "writes audit_log and does not write business facts.\n";
 }
 
 std::string optionValue(const std::vector<std::string>& args, const std::string& option)
@@ -435,6 +436,46 @@ int serveReadOnly(
     return exitCode;
 }
 
+int serveDevAudit(
+    int argc,
+    char* argv[],
+    const std::filesystem::path& dbPath,
+    const std::string& socketName)
+{
+    if (socketName.empty()) {
+        std::cerr << "--socket-name <name> is required for --serve-dev-audit\n";
+        return 1;
+    }
+
+    etfdt::data_access::SQLiteConnection connection;
+    auto openResult = openHealthyReadOnlyDatabase(dbPath, connection);
+    if (!openResult) {
+        return printDatabaseError(openResult.error());
+    }
+
+    QCoreApplication app(argc, argv);
+    etfdt::service_runtime::ActionDispatcher dispatcher(
+        etfdt::protocol::ServiceName::ETFDataService);
+    etfdt::service_runtime::registerBuiltinActions(dispatcher);
+    etfdt::data_service_api::registerDataServiceReadOnlyActions(dispatcher, connection);
+    etfdt::data_service_api::registerDataServiceWriteActions(dispatcher, connection);
+
+    etfdt::service_host::ActionServiceHost host(dispatcher);
+    auto listenResult = host.listen(socketName);
+    if (!listenResult) {
+        std::cerr << "Failed to start dev audit service host: "
+                  << listenResult.error().message << '\n';
+        return 1;
+    }
+
+    std::cout << "ETFDataService dev audit service listening on " << socketName << '\n';
+    std::cout << "Development preview: data.audit.append is the only enabled write action; "
+              << "it only writes audit_log.\n";
+    const int exitCode = app.exec();
+    host.close();
+    return exitCode;
+}
+
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -494,6 +535,10 @@ int main(int argc, char* argv[])
 
     if (hasOption(args, "--serve-readonly")) {
         return serveReadOnly(argc, argv, dbPath, optionValue(args, "--socket-name"));
+    }
+
+    if (hasOption(args, "--serve-dev-audit")) {
+        return serveDevAudit(argc, argv, dbPath, optionValue(args, "--socket-name"));
     }
 
     printHelp();

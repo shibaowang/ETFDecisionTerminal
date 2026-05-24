@@ -3,6 +3,8 @@
 #include "DataServiceApi/JsonBuilders.h"
 #include "Protocol/Json.h"
 
+#include <cctype>
+#include <optional>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -140,6 +142,177 @@ std::string extractStrategyCode(const std::string& payloadJson)
         return {};
     }
     return trimCopy(decodeJsonString(match[1].str()));
+}
+
+std::optional<std::string> extractJsonStringField(
+    const std::string& payloadJson,
+    const std::string& fieldName)
+{
+    const std::regex pattern(
+        "\"" + fieldName + "\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\"",
+        std::regex::ECMAScript);
+
+    std::smatch match;
+    if (!std::regex_search(payloadJson, match, pattern) || match.size() < 2U) {
+        return std::nullopt;
+    }
+    return decodeJsonString(match[1].str());
+}
+
+std::optional<std::string> extractJsonFragmentField(
+    const std::string& payloadJson,
+    const std::string& fieldName)
+{
+    const std::regex keyPattern("\"" + fieldName + R"("\s*:)", std::regex::ECMAScript);
+    std::smatch match;
+    if (!std::regex_search(payloadJson, match, keyPattern)) {
+        return std::nullopt;
+    }
+
+    std::size_t position = static_cast<std::size_t>(match.position() + match.length());
+    while (position < payloadJson.size()
+           && std::isspace(static_cast<unsigned char>(payloadJson[position])) != 0) {
+        ++position;
+    }
+    if (position >= payloadJson.size()
+        || (payloadJson[position] != '{' && payloadJson[position] != '[')) {
+        return std::string {};
+    }
+
+    const char opening = payloadJson[position];
+    const char closing = opening == '{' ? '}' : ']';
+    int depth = 0;
+    bool inString = false;
+    bool escaping = false;
+
+    for (std::size_t i = position; i < payloadJson.size(); ++i) {
+        const char ch = payloadJson[i];
+        if (inString) {
+            if (escaping) {
+                escaping = false;
+            }
+            else if (ch == '\\') {
+                escaping = true;
+            }
+            else if (ch == '"') {
+                inString = false;
+            }
+            continue;
+        }
+
+        if (ch == '"') {
+            inString = true;
+            continue;
+        }
+        if (ch == opening) {
+            ++depth;
+        }
+        else if (ch == closing) {
+            --depth;
+            if (depth == 0) {
+                return payloadJson.substr(position, i - position + 1U);
+            }
+        }
+    }
+
+    return std::string {};
+}
+
+std::optional<std::int64_t> parseOptionalInt64(const std::string& value)
+{
+    const std::string trimmed = trimCopy(value);
+    if (trimmed.empty()) {
+        return std::nullopt;
+    }
+
+    try {
+        std::size_t parsed = 0;
+        const auto integer = std::stoll(trimmed, &parsed, 10);
+        if (parsed != trimmed.size()) {
+            return std::nullopt;
+        }
+        return integer;
+    }
+    catch (...) {
+        return std::nullopt;
+    }
+}
+
+struct AuditPayloadParseResult final {
+    bool ok = false;
+    etfdt::protocol::ErrorCode errorCode = etfdt::protocol::ErrorCode::E1001_INVALID_JSON;
+    std::string errorMessage;
+    etfdt::data_access::AuditLogEntry entry;
+};
+
+AuditPayloadParseResult parseAuditAppendPayload(const std::string& payloadJson)
+{
+    AuditPayloadParseResult result;
+    const std::string trimmedPayload = trimCopy(payloadJson);
+    if (!etfdt::protocol::isLikelyJsonObjectOrArray(payloadJson) || trimmedPayload.empty()
+        || trimmedPayload.front() != '{') {
+        result.errorCode = etfdt::protocol::ErrorCode::E1001_INVALID_JSON;
+        result.errorMessage = "data.audit.append payload must be a JSON object";
+        return result;
+    }
+
+    const auto entityType = extractJsonStringField(payloadJson, "entityType");
+    if (!entityType.has_value() || trimCopy(*entityType).empty()) {
+        result.errorCode = etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
+        result.errorMessage = "data.audit.append requires payload.entityType";
+        return result;
+    }
+
+    const auto action = extractJsonStringField(payloadJson, "action");
+    if (!action.has_value() || trimCopy(*action).empty()) {
+        result.errorCode = etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
+        result.errorMessage = "data.audit.append requires payload.action";
+        return result;
+    }
+
+    const auto reason = extractJsonStringField(payloadJson, "reason");
+    if (!reason.has_value() || trimCopy(*reason).empty()) {
+        result.errorCode = etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
+        result.errorMessage = "data.audit.append requires payload.reason";
+        return result;
+    }
+
+    std::string oldValueJson = "{}";
+    if (const auto oldValue = extractJsonFragmentField(payloadJson, "oldValue"); oldValue.has_value()) {
+        if (oldValue->empty() || !etfdt::protocol::isLikelyJsonObjectOrArray(*oldValue)) {
+            result.errorCode = etfdt::protocol::ErrorCode::E1001_INVALID_JSON;
+            result.errorMessage = "data.audit.append oldValue must be a JSON object or array";
+            return result;
+        }
+        oldValueJson = *oldValue;
+    }
+
+    std::string newValueJson = "{}";
+    if (const auto newValue = extractJsonFragmentField(payloadJson, "newValue"); newValue.has_value()) {
+        if (newValue->empty() || !etfdt::protocol::isLikelyJsonObjectOrArray(*newValue)) {
+            result.errorCode = etfdt::protocol::ErrorCode::E1001_INVALID_JSON;
+            result.errorMessage = "data.audit.append newValue must be a JSON object or array";
+            return result;
+        }
+        newValueJson = *newValue;
+    }
+
+    result.entry.entityType = trimCopy(*entityType);
+    result.entry.action = trimCopy(*action);
+    result.entry.reason = trimCopy(*reason);
+    result.entry.oldValueJson = std::move(oldValueJson);
+    result.entry.newValueJson = std::move(newValueJson);
+
+    if (const auto entityId = extractJsonStringField(payloadJson, "entityId"); entityId.has_value()) {
+        result.entry.entityId = parseOptionalInt64(*entityId);
+    }
+    if (const auto operatorName = extractJsonStringField(payloadJson, "operatorName");
+        operatorName.has_value() && !trimCopy(*operatorName).empty()) {
+        result.entry.operatorName = trimCopy(*operatorName);
+    }
+
+    result.ok = true;
+    return result;
 }
 
 }  // namespace
@@ -298,6 +471,43 @@ etfdt::protocol::ProtocolResponse handleDataOtcList(
         context,
         "{\"strategyCode\":" + jsonStringValue(strategyCode)
             + ",\"channels\":" + otcChannelsToJsonArray(records.value()) + "}");
+}
+
+etfdt::protocol::ProtocolResponse handleDataAuditAppend(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    auto parsed = parseAuditAppendPayload(context.request.payloadJson);
+    if (!parsed.ok) {
+        return protocolErrorResponse(context, parsed.errorCode, std::move(parsed.errorMessage));
+    }
+
+    etfdt::data_access::AuditLogRepository auditLogs(connection);
+    etfdt::data_access::TransactionRunner runner(connection);
+    std::int64_t auditLogId = 0;
+
+    auto transactionResult = runner.runInTransaction([&]() {
+        auto inserted = auditLogs.insertAuditLog(parsed.entry);
+        if (!inserted) {
+            return etfdt::data_access::DatabaseResult<bool>::failure(
+                inserted.error().errorCode,
+                inserted.error().message);
+        }
+        auditLogId = inserted.value();
+        return etfdt::data_access::DatabaseResult<bool>::success(true);
+    });
+    if (!transactionResult) {
+        return errorResponse(context, transactionResult);
+    }
+
+    std::ostringstream payload;
+    payload << "{"
+            << "\"inserted\": true,"
+            << "\"auditLogId\": " << auditLogId << ','
+            << "\"entityType\": " << jsonStringValue(parsed.entry.entityType) << ','
+            << "\"action\": " << jsonStringValue(parsed.entry.action)
+            << '}';
+    return successResponse(context, payload.str());
 }
 
 }  // namespace etfdt::data_service_api

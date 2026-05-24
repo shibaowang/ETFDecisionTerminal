@@ -2,6 +2,7 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 add_subdirectory(CoreDomain)
 add_subdirectory(DataAccess)
+add_subdirectory(DataService)
 add_subdirectory(Protocol)
 add_subdirectory(ServiceRuntime)
 add_subdirectory(ServiceHost)

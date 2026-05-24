@@ -2,6 +2,12 @@ add_executable(DataAccessTests
     test_data_access.cpp
 )
 
+if(ETFDT_QT6_ROOT)
+    set(_etfdt_qt6_runtime_dir "${ETFDT_QT6_ROOT}/bin")
+else()
+    set(_etfdt_qt6_runtime_dir "D:/Qt/6.6.3/msvc2019_64/bin")
+endif()
+
 add_executable(ReadOnlyRepositoryTests
     test_readonly_repositories.cpp
 )
@@ -113,6 +119,20 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/dataservice_cli.sqlite
         --strategy-code
         159509
+)
+
+set_tests_properties(
+    dataservice_cli_init
+    dataservice_cli_check
+    dataservice_cli_summary
+    dataservice_cli_list_accounts
+    dataservice_cli_list_portfolios
+    dataservice_cli_list_instruments
+    dataservice_cli_list_strategies
+    dataservice_cli_list_otc_missing
+    PROPERTIES
+        ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:${_etfdt_qt6_runtime_dir}"
 )
 
 set_tests_properties(

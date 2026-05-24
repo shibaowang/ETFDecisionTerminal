@@ -89,3 +89,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - DemoServiceHost 不访问 SQLite，不依赖 DataAccess，不暴露 Repository，也不启动真实 DataService 业务 API。
 - DemoServiceHost 不做策略计算、账务重演、TradeDraft 生命周期处理、行情接入或自动交易。
 - 未注册 action 必须返回 `E1004_INVALID_ACTION`；无效 JSON 或无效 envelope 必须返回协议错误且不能导致服务崩溃。
+
+## DataServiceApi 层边界
+
+- DataServiceApi 位于 ETFDataService 进程内部，负责把 DataAccess 只读 Repository 封装成白名单 `data.*` action handler。
+- TASK-009 只注册 `data.health`、`data.summary`、`data.accounts.list`、`data.portfolios.list`、`data.instruments.list`、`data.strategies.list` 和 `data.otc.list`。
+- DataServiceApi 可以依赖 DataAccess，但 Transport 和 ServiceHost 仍不得依赖 DataAccess。
+- 当前所有 `data.*` action 都是只读查询，不允许 INSERT / UPDATE / DELETE，不写 `trade_log`，不写派生快照表。
+- 写入 action 后续必须单独设计事务、审计、TradeLog 事实账本规则和验收测试，不能复用只读 handler 绕过边界。

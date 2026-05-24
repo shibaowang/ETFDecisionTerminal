@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ServiceHost/ActionServiceHost.h"
 #include "ServiceHost/DemoServiceHost.h"
 
 namespace etfdt::service_host {

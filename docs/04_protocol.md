@@ -12,7 +12,25 @@ v0.1 草案。
 
 Qt Local Socket + JSON。
 
-当前 TASK-003 只定义纯 C++17 协议基础类型和 JSON 字符串生成，不实现 Qt Local Socket、服务通信或数据库连接。
+TASK-003 定义纯 C++17 协议基础类型和 JSON 字符串生成。TASK-006 新增 Qt Local Socket 传输层骨架，但仍不实现业务 action 分发或数据库连接。
+
+## Local Socket 协议帧
+
+QLocalSocket 是流式传输，必须显式定义消息边界。当前 Transport 帧格式：
+
+```text
+uint32_be length
+UTF-8 JSON payload
+```
+
+- `length` 为 4 字节无符号整数，大端序，只表示后续 JSON payload 字节数。
+- 默认最大 payload 为 1 MB。
+- payload 禁止为空。
+- payload 当前必须看起来像 JSON object 或 array，即以 `{}` 或 `[]` 边界包裹。
+- payload 内容通常是 `MessageEnvelope` 或 `ProtocolResponse` JSON。
+- Transport 层只按字符串传输 payload，不解释 `action`，不做业务路由。
+- 半包时等待更多数据；粘包时连续解析多个完整帧。
+- 超过最大帧长度或明显非 JSON-looking payload 时返回传输错误。
 
 ## 标准请求消息
 

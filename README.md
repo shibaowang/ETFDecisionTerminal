@@ -57,6 +57,17 @@ TASK-005 在 `libs/DataAccess` 和 `apps/ETFDataService` 中补充了 DataServic
 
 这些 Repository 只允许在 ETFDataService 进程内部使用。其他服务未来只能通过 Protocol 请求 DataService，不能直接读 SQLite，也不能直接链接 Repository 绕过服务边界。
 
+## TASK-006 范围
+
+TASK-006 新增 `libs/Transport`，建立 Qt Local Socket 传输层骨架：
+
+- `FrameCodec`：4 字节大端长度前缀 + UTF-8 JSON payload 的协议帧编码 / 解码。
+- `LocalSocketServer`：基于 `QLocalServer` 的本地 socket 服务端封装。
+- `LocalSocketClient`：基于 `QLocalSocket` 的本地 socket 客户端封装。
+- Transport 测试：协议帧半包、粘包、超限、非 JSON-looking payload，以及 Local Socket echo。
+
+Transport 只负责本地进程通信和消息收发，不解释业务 action，不访问 SQLite，不暴露 DataService Repository，不实现策略、行情、TradeDraft 或账务逻辑。
+
 ## 构建
 
 环境要求：
@@ -65,12 +76,21 @@ TASK-005 在 `libs/DataAccess` 和 `apps/ETFDataService` 中补充了 DataServic
 - 支持 C++17 的编译器。
 - Python 3，用于当前临时数据库迁移测试。
 - SQLite3 开发文件，用于 DataAccess SQLite C API。
+- Qt 6 Core + Network，用于 Transport Qt Local Socket。
 
 SQLite3 安装说明：
 
 - Windows / vcpkg：`vcpkg install sqlite3:x64-windows`，并用 vcpkg toolchain 配置 CMake。
 - 也可以配置 `-DETFDT_SQLITE3_AMALGAMATION_DIR=<dir>`，目录内需要有 `sqlite3.c` 和 `sqlite3.h`。
 - 如果 CMake 找不到 SQLite3 或可用 amalgamation，会在配置阶段给出明确错误。
+
+Qt6 安装说明：
+
+- Windows / aqtinstall 示例：
+  `python -m pip install --user aqtinstall`
+  `python -m aqt install-qt windows desktop 6.6.3 win64_msvc2019_64 -O D:\Qt --archives qtbase`
+- 配置方式可以使用 `-DETFDT_QT6_ROOT=D:\Qt\6.6.3\msvc2019_64`，或把 Qt prefix 加入 `CMAKE_PREFIX_PATH`。
+- 如果 CMake 找不到 Qt6 Core / Network，会在 `libs/Transport` 配置阶段给出明确错误。
 
 ```powershell
 cmake -S . -B build
@@ -131,19 +151,23 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `dataservice_cli_summary`、`dataservice_cli_list_accounts`、`dataservice_cli_list_portfolios`、`dataservice_cli_list_instruments`、`dataservice_cli_list_strategies`、`dataservice_cli_list_otc_missing` 会验证只读 CLI 查询路径。
 
+当前测试 `transport_frame_codec` 会验证长度前缀协议帧的编码、半包、粘包、超限和 payload 基础校验。
+
+当前测试 `transport_local_socket_echo` 会验证 `LocalSocketServer` / `LocalSocketClient` 能发送和回显 Protocol JSON 字符串。
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。
 - 未实现 Excel 导入、行情接口、PushPlus、自动交易或券商接口。
 - 未实现 QML 主界面。
 - 未实现云同步、多用户权限、资讯、研报、完整回测。
-- 未实现服务间 Qt Local Socket 传输层，协议库当前仅包含基础信封、错误码和 JSON 字符串生成。
+- 未实现服务间业务 action 分发；Transport 当前只提供 Qt Local Socket 传输层骨架和协议帧测试。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
 - 未实现业务 Repository、TradeLog 写入、账务重演或策略计算。
 - 未实现任何业务写入 Repository；TASK-005 的 Repository 只有只读查询能力。
 
 ## 后续任务建议
 
-1. TASK-006：在 Protocol 基础上接入 Qt Local Socket 传输层。
-2. TASK-007：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
-3. TASK-008：在只读 Repository 基础上增加受控服务命令处理，不把 SQL 泄漏到其他服务。
+1. TASK-007：在 Transport 基础上设计服务端 action 分发骨架，但不接业务写入。
+2. TASK-008：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
+3. TASK-009：在只读 Repository 基础上增加受控服务命令处理，不把 SQL 泄漏到其他服务。

@@ -29,10 +29,19 @@ ETFDecisionTerminal/
 - CoreDomain
 - Protocol
 - DataAccess
+- Transport
 - StrategyEngine
 - MarketEngine
 - Quantization
 - Security
+
+## Qt 依赖边界
+
+- Qt 依赖只允许进入 apps、Shell、Transport 等明确允许的模块。
+- `libs/Transport` 可以使用 Qt Core 和 Qt Network。
+- `libs/CoreDomain`、`libs/Protocol`、`libs/DataAccess` 不得引入 Qt include、Qt 类型或 Qt 链接依赖。
+- Protocol 负责消息格式，Transport 负责本地 socket 传输；Transport 不得实现业务 action 分发。
+- DataAccess 负责 SQLite 基础设施和 DataService 内部查询边界；Transport 不得依赖 DataAccess。
 
 ## 代码规则
 

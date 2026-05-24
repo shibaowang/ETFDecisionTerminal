@@ -44,6 +44,8 @@ v0.1 草案。
 18. 任何 Repository 任务必须声明读写边界。
 19. 除非任务明确允许，不得新增 INSERT / UPDATE / DELETE / 写入类 Repository 方法。
 20. 只读 Repository 只能在 ETFDataService 进程内部使用，其他服务必须通过 Protocol 请求 DataService。
+21. 涉及 Transport 的任务必须声明是否允许引入 Qt。
+22. Transport 不得访问 SQLite，不得依赖 DataAccess，不得实现业务 action 分发。
 
 ## TASK 模板
 

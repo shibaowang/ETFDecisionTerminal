@@ -11,6 +11,12 @@
   diagnostics views.
 - Future QML should consume structured Diagnostics DTOs exposed by C++ instead
   of parsing raw Watchdog JSON in QML.
+- TASK-020 introduces `ShellDiagnosticViewModel`,
+  `ShellDiagnosticServiceRow`, and `ShellDiagnosticIssueRow` as the intended UI
+  binding shape.
+- A future QML page should bind to ShellCore-provided ViewModel fields and must
+  not access SQLite or parse complex diagnostic JSON directly.
+- TASK-020 does not implement QML.
 
 ## 当前状态
 

@@ -18,6 +18,21 @@ or implement trading/strategy/UI logic. `ETFDiag` now only parses CLI arguments,
 calls `WatchdogReportParser`, prints `DiagnosticSummary.text`, and returns
 `DiagnosticSummary.exitCode`.
 
+## TASK-020 Shell diagnostics facade
+
+`ETFShellCore` adds a C++ Shell diagnostics boundary for future QML use. The
+`ShellDiagnosticFacade` loads Watchdog report files or JSON strings through
+`ETFDiagnostics`, then converts `DiagnosticReport` / `DiagnosticSummary` into
+stable UI-facing DTOs:
+
+- `ShellDiagnosticViewModel`
+- `ShellDiagnosticServiceRow`
+- `ShellDiagnosticIssueRow`
+
+The facade does not expose raw JSON to UI code, does not access SQLite, does
+not start services, and does not connect Local Socket. TASK-020 does not add
+QML or UI files.
+
 Generate a Watchdog report:
 
 ```powershell

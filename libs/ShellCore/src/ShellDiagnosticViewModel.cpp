@@ -1,0 +1,1 @@
+#include "ShellCore/ShellDiagnosticViewModel.h"

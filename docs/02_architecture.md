@@ -24,6 +24,16 @@
   depend on DataAccess/DataServiceApi/Transport/ServiceHost, or implement
   business logic.
 
+## Shell diagnostics facade boundary
+
+- TASK-020 adds `ETFShellCore` as the C++ boundary between future Shell UI and
+  `ETFDiagnostics`.
+- `ShellDiagnosticFacade` loads reports through Diagnostics APIs and converts
+  them into `ShellDiagnosticViewModel` rows suitable for UI binding.
+- Shell UI must not directly access SQLite and must not parse raw Watchdog JSON.
+- TASK-020 does not add QML, start services, connect sockets, or implement
+  strategy/trading/business logic.
+
 ## 当前状态
 
 v0.1 草案。

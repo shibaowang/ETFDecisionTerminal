@@ -46,6 +46,9 @@ v0.1 草案。
 20. 只读 Repository 只能在 ETFDataService 进程内部使用，其他服务必须通过 Protocol 请求 DataService。
 21. 涉及 Transport 的任务必须声明是否允许引入 Qt。
 22. Transport 不得访问 SQLite，不得依赖 DataAccess，不得实现业务 action 分发。
+23. 涉及 ServiceRuntime 的任务必须声明 action 路由边界。
+24. ServiceRuntime 不得访问 SQLite，不得依赖 DataAccess，不得把 Repository 暴露成 socket API。
+25. 除非任务明确允许，ServiceRuntime 只能实现协议级 Ping/Health 或路由骨架，不得新增业务 action。
 
 ## TASK 模板
 

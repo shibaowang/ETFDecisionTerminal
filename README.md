@@ -68,6 +68,17 @@ TASK-006 新增 `libs/Transport`，建立 Qt Local Socket 传输层骨架：
 
 Transport 只负责本地进程通信和消息收发，不解释业务 action，不访问 SQLite，不暴露 DataService Repository，不实现策略、行情、TradeDraft 或账务逻辑。
 
+## TASK-007 范围
+
+TASK-007 新增 `libs/ServiceRuntime`，建立服务端 action 分发骨架：
+
+- `ActionContext`：封装结构化 `MessageEnvelope`、服务名、接收时间、traceId 和可选元数据。
+- `ActionDispatcher`：支持注册、注销、查询和分发 action。
+- `BuiltinActions`：提供 `system.ping` 和 `system.health` 内置响应。
+- ServiceRuntime 测试：注册/注销、未知 action、envelope 校验失败、handler 异常、非法 handler 响应、Ping/Health。
+
+ServiceRuntime 只负责路由和协议错误响应，不访问 SQLite，不依赖 DataAccess，不实现 DataService Repository socket API，也不实现任何业务 action。
+
 ## 构建
 
 环境要求：
@@ -155,19 +166,21 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `transport_local_socket_echo` 会验证 `LocalSocketServer` / `LocalSocketClient` 能发送和回显 Protocol JSON 字符串。
 
+当前测试 `service_runtime_dispatcher` 会验证 action 分发骨架、协议错误响应和 `system.ping` / `system.health` 内置 action。
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。
 - 未实现 Excel 导入、行情接口、PushPlus、自动交易或券商接口。
 - 未实现 QML 主界面。
 - 未实现云同步、多用户权限、资讯、研报、完整回测。
-- 未实现服务间业务 action 分发；Transport 当前只提供 Qt Local Socket 传输层骨架和协议帧测试。
+- 未实现真实业务 action 分发；ServiceRuntime 当前只提供路由骨架、协议错误响应和 Ping/Health。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
 - 未实现业务 Repository、TradeLog 写入、账务重演或策略计算。
 - 未实现任何业务写入 Repository；TASK-005 的 Repository 只有只读查询能力。
 
 ## 后续任务建议
 
-1. TASK-007：在 Transport 基础上设计服务端 action 分发骨架，但不接业务写入。
-2. TASK-008：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
-3. TASK-009：在只读 Repository 基础上增加受控服务命令处理，不把 SQL 泄漏到其他服务。
+1. TASK-008：把 ServiceRuntime 与 Transport 串接成 demo 服务宿主，但仍不接数据库业务 action。
+2. TASK-009：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
+3. TASK-010：在只读 Repository 基础上增加受控服务命令处理，不把 SQL 泄漏到其他服务。

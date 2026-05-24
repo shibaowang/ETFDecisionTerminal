@@ -32,6 +32,26 @@ UTF-8 JSON payload
 - 半包时等待更多数据；粘包时连续解析多个完整帧。
 - 超过最大帧长度或明显非 JSON-looking payload 时返回传输错误。
 
+## Action 分发骨架
+
+TASK-007 新增 ServiceRuntime action 分发骨架。当前 dispatcher 以结构化 `MessageEnvelope` 对象为输入；Protocol 尚未实现完整 `fromJson(MessageEnvelope)`，因此本任务不新增大型 JSON 解析器。
+
+分发规则：
+
+- `ActionDispatcher` 先调用 `validateMessageEnvelope`。
+- envelope 校验失败时返回 `ProtocolResponse{success=false}`，错误码沿用协议校验结果。
+- 未注册 action 返回 `E1004_INVALID_ACTION`。
+- handler 抛异常返回 `E9000_SERVICE_ERROR`。
+- response 保持 request 的 `msgId` 和 `traceId`。
+- handler 返回的 success response 必须携带 JSON object 或 array payload。
+
+当前内置 action：
+
+- `system.ping`：返回 `{ "pong": true, "service": "<ServiceName>" }`。
+- `system.health`：返回 `{ "healthy": true, "service": "<ServiceName>", "status": "ok", "receivedAtUtc": "<UTC>" }`。
+
+这些 action 只用于服务连通性和运行时骨架测试，不访问数据库，不代表 DataService 业务 API。
+
 ## 标准请求消息
 
 ```json

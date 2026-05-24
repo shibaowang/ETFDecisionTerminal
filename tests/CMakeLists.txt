@@ -7,6 +7,7 @@ add_subdirectory(Protocol)
 add_subdirectory(ServiceRuntime)
 add_subdirectory(ServiceHost)
 add_subdirectory(Transport)
+add_subdirectory(DataServiceClient)
 
 add_test(
     NAME database_initial_schema

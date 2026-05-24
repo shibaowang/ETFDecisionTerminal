@@ -63,6 +63,9 @@ v0.1 草案。
 37. 默认禁止任何 `data.*` 写入 action，除非任务明确授权并加入写入白名单。
 38. 未授权写入 action 必须返回协议错误，不能静默忽略或降级为查询。
 39. 当前 `data.audit.append` 只允许写 `audit_log`，不得扩展为业务入账、TradeDraft 状态变更或通用 SQL 通道。
+40. 客户端封装任务不得新增服务端 action，不得访问数据库，不得引入业务写入逻辑。
+41. Client 只能通过 Transport + Protocol 请求 DataService，不得依赖 DataAccess 或绕过 DataService。
+42. Client 不得接受或传递任意 SQL payload。
 
 ## TASK 模板
 

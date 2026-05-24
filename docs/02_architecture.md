@@ -106,3 +106,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - 写入 action 必须显式注册，不允许通配符放开 `data.*` 写入，也不允许根据 action 名动态拼接 SQL。
 - ServiceHost 和 Transport 仍不得依赖 DataAccess；只有 ETFDataService 进程内的 DataServiceApi handler 可以通过受控 Repository 写入。
 - 本阶段不提供 TradeLog、TradeDraft、成交组、资金池、grid_cycle 或派生快照表的写入 action。
+
+## DataServiceClient 层边界
+
+- TASK-012 新增 DataServiceClient，位于客户端 / 服务调用方侧。
+- DataServiceClient 只通过 Transport + Protocol 调用 ETFDataService，不直接访问 SQLite。
+- DataServiceClient 不依赖 DataAccess，也不依赖 DataServiceApi；测试可以同时链接服务端组件来搭建端到端环境。
+- DataServiceClient 不实现业务判断，不新增服务端 action，不扩大写入白名单。
+- `appendAuditDemo` 仅封装现有 `data.audit.append` 请求，不代表业务入账能力。
+- 未知 action 必须由服务端返回 `E1004_INVALID_ACTION`；客户端不能把未知 action 自动当成有效请求。

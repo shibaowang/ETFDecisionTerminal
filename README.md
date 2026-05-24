@@ -50,6 +50,25 @@ The implementation still only consumes Diagnostics output. It does not parse
 raw Watchdog JSON outside Diagnostics, access SQLite, start services, connect
 Local Socket, or implement QML.
 
+## TASK-022 Shell diagnostics presenter
+
+`ShellDiagnosticPresenter` is a C++ presenter boundary for future Shell
+diagnostics UI. It owns current filter, sort, ViewModel, aggregate, refresh
+state, source path, and error state, while delegating report parsing and
+ViewModel generation to `ShellDiagnosticFacade`.
+
+Mock data entry points are available through `ShellDiagnosticMockReportBuilder`
+and presenter helpers:
+
+- `loadMockHealthy()`
+- `loadMockWithWarnings()`
+- `loadMockWithErrors()`
+- `loadMockMixed()`
+
+Mock reports are only for tests and future UI prototypes. They are not real
+service state. TASK-022 does not add QML, access SQLite, start services, connect
+Local Socket, or add business logic.
+
 Generate a Watchdog report:
 
 ```powershell

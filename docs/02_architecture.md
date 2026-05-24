@@ -37,6 +37,13 @@
   refresh detection in the C++ ShellCore layer.
 - Future QML should bind the processed `ShellDiagnosticViewModel`; it should not
   duplicate sorting/filtering logic by parsing Watchdog JSON directly.
+- TASK-022 adds `ShellDiagnosticPresenter` between future UI and
+  `ShellDiagnosticFacade`.
+- The presenter owns current filter, sort, ViewModel, aggregate, refresh state,
+  and error state; it still does not access SQLite, start services, or connect
+  sockets.
+- Mock report builders are only for UI prototypes and tests, not real service
+  state.
 
 ## 当前状态
 

@@ -429,6 +429,104 @@ void testRefresh(const std::filesystem::path& tempDir)
     expectTrue(invalidRefresh.reloaded, "refreshIfChanged invalid changed file attempts reload");
 }
 
+void testPresenterMocks()
+{
+    etfdt::shell::ShellDiagnosticPresenter presenter;
+    expectTrue(presenter.loadMockHealthy(), "Presenter loadMockHealthy succeeds");
+    expectTrue(presenter.currentState().loaded, "Presenter healthy state loaded");
+    expectTrue(presenter.currentViewModel().ok, "Presenter healthy ViewModel ok=true");
+    expectEqual(presenter.currentAggregate().total, 1, "Presenter healthy aggregate total");
+
+    expectTrue(presenter.loadMockWithWarnings(), "Presenter loadMockWithWarnings succeeds");
+    expectTrue(presenter.currentViewModel().ok, "Presenter warning mock ok=true");
+    expectTrue(presenter.currentViewModel().warningCount > 0, "Presenter warning mock warningCount");
+
+    expectTrue(presenter.loadMockWithErrors(), "Presenter loadMockWithErrors succeeds");
+    expectTrue(!presenter.currentViewModel().ok, "Presenter error mock ok=false");
+    expectTrue(presenter.currentAggregate().blocked > 0, "Presenter error mock blocked aggregate");
+
+    const auto refresh = presenter.refreshIfChanged();
+    expectTrue(!refresh.ok, "Presenter refreshIfChanged on mock returns clear failure");
+    expectTrue(!presenter.lastError().empty(), "Presenter mock refresh lastError populated");
+}
+
+void testPresenterLoadAndState(const std::filesystem::path& tempDir)
+{
+    etfdt::shell::ShellDiagnosticPresenter presenter;
+
+    expectTrue(presenter.loadFromJson(validReportJson()), "Presenter loadFromJson valid succeeds");
+    expectTrue(presenter.currentState().loaded, "Presenter JSON state loaded");
+    expectEqual(presenter.currentViewModel().totalServices, 1, "Presenter JSON totalServices");
+
+    expectTrue(!presenter.loadFromJson("{ invalid json"), "Presenter invalid JSON fails");
+    expectTrue(presenter.currentState().hasError, "Presenter invalid JSON hasError");
+    expectTrue(!presenter.lastError().empty(), "Presenter invalid JSON lastError");
+
+    const auto reportPath = writeFile(tempDir, "presenter_file.json", validReportJson());
+    expectTrue(presenter.loadFromFile(reportPath.string()), "Presenter loadFromFile valid succeeds");
+    expectEqual(presenter.currentState().sourcePath, reportPath.string(), "Presenter sourcePath tracked");
+
+    expectTrue(!presenter.loadFromFile((tempDir / "missing_presenter.json").string()), "Presenter missing file fails");
+    expectTrue(presenter.currentState().hasError, "Presenter missing file hasError");
+}
+
+void testPresenterFilterSortAggregate()
+{
+    etfdt::shell::ShellDiagnosticPresenter presenter;
+    expectTrue(presenter.loadMockMixed(), "Presenter loadMockMixed succeeds");
+    expectEqual(presenter.currentAggregate().total, 4, "Presenter mixed aggregate total");
+
+    etfdt::shell::ShellDiagnosticFilter blocked;
+    blocked.onlyBlocked = true;
+    presenter.setFilter(blocked);
+    expectEqual(static_cast<int>(presenter.currentViewModel().serviceRows.size()), 1, "Presenter onlyBlocked filter");
+    expectEqual(presenter.currentViewModel().serviceRows.front().serviceName, "ETFStrategyService", "Presenter blocked service");
+
+    etfdt::shell::ShellDiagnosticFilter search;
+    search.searchText = "delayed market";
+    presenter.setFilter(search);
+    expectEqual(static_cast<int>(presenter.currentViewModel().serviceRows.size()), 1, "Presenter search filter");
+    expectEqual(presenter.currentViewModel().serviceRows.front().serviceName, "ETFMarketService", "Presenter search issue result");
+
+    presenter.clearFilter();
+    expectEqual(static_cast<int>(presenter.currentViewModel().serviceRows.size()), 4, "Presenter clearFilter restores rows");
+
+    etfdt::shell::ShellDiagnosticSort byName;
+    byName.sortKey = etfdt::shell::ShellDiagnosticSortKey::ServiceName;
+    presenter.setSort(byName);
+    expectEqual(presenter.currentViewModel().serviceRows.front().serviceName, "ETFAlertService", "Presenter sort by service name");
+
+    etfdt::shell::ShellDiagnosticSort bySeverity;
+    bySeverity.sortKey = etfdt::shell::ShellDiagnosticSortKey::Severity;
+    bySeverity.ascending = false;
+    presenter.setSort(bySeverity);
+    expectEqual(presenter.currentViewModel().serviceRows.front().statusSeverity, "ERROR", "Presenter sort by severity");
+    expectEqual(presenter.currentAggregate().blocked, 1, "Presenter aggregate after sort");
+}
+
+void testPresenterRefresh(const std::filesystem::path& tempDir)
+{
+    etfdt::shell::ShellDiagnosticPresenter presenter;
+    const auto reportPath = writeFile(tempDir, "presenter_refresh.json", validReportJson());
+    expectTrue(presenter.loadFromFile(reportPath.string()), "Presenter refresh setup load");
+
+    const auto unchanged = presenter.refreshIfChanged();
+    expectTrue(unchanged.ok, "Presenter refresh unchanged ok");
+    expectTrue(!unchanged.reloaded, "Presenter refresh unchanged does not reload");
+
+    {
+        std::ofstream out(reportPath);
+        out << warningOnlyJson();
+    }
+    const auto writeTime = std::filesystem::last_write_time(reportPath);
+    std::filesystem::last_write_time(reportPath, writeTime + std::chrono::seconds(2));
+
+    const auto changed = presenter.refreshIfChanged();
+    expectTrue(changed.ok, "Presenter refresh changed ok");
+    expectTrue(changed.reloaded, "Presenter refresh changed reloads");
+    expectEqual(presenter.currentViewModel().warningCount, 1, "Presenter refresh changed warning loaded");
+}
+
 void testStates()
 {
     etfdt::shell::ShellDiagnosticFacade facade;
@@ -492,6 +590,10 @@ int main()
         testValidInputs(tempDir);
         testFilterSortAggregate();
         testRefresh(tempDir);
+        testPresenterMocks();
+        testPresenterLoadAndState(tempDir);
+        testPresenterFilterSortAggregate();
+        testPresenterRefresh(tempDir);
         testStates();
         testFailures();
     } catch (const std::exception& ex) {

@@ -1,5 +1,17 @@
 # 系统架构设计
 
+## ETFDiag diagnostic tool boundary
+
+- TASK-018 adds `ETFDiag` as a local diagnostic command line tool.
+- `ETFDiag` consumes the Watchdog manifest status JSON report and prints a
+  human-readable summary.
+- `ETFDiag` does not start services, connect Local Socket, access SQLite, or
+  depend on DataAccess.
+- `ETFDiag` validates required JSON fields and field types before producing a
+  success exit code.
+- The tool is a prototype data consumer for a future Shell diagnostics page;
+  TASK-018 does not implement QML or UI.
+
 ## 当前状态
 
 v0.1 草案。

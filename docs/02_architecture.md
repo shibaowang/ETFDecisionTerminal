@@ -129,3 +129,7 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - 服务清单错误必须显式返回错误，不得静默忽略，也不得在配置不合法时尝试启动服务。
 - 当前启用状态只支持 `ETFDataService`；其他未来服务可以作为 `enabled=false` 占位项读取并产生 warning。
 - `autoRestart` 当前只是配置字段，不执行自动重启。
+- TASK-015 支持 Watchdog 从服务清单启动指定的 `ETFDataService`。
+- 配置驱动启动后，Watchdog 仍只通过 `DataServiceClient` 执行 `system.ping` 和 `data.health`。
+- 配置驱动命令结束前必须停止子进程；失败路径也必须清理已启动进程。
+- 第一版仍不做 Windows Service，也不做自动重启。

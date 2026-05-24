@@ -17,6 +17,8 @@ target_link_libraries(WatchdogTests
 target_link_libraries(WatchdogManifestTests
     PRIVATE
         ETFDecisionTerminal::Watchdog
+        ETFDecisionTerminal::DataAccess
+        ETFDecisionTerminal::DataServiceClient
 )
 
 target_compile_features(WatchdogTests PRIVATE cxx_std_17)
@@ -43,6 +45,10 @@ add_test(
         WatchdogManifestTests
         --watchdog-exe
         $<TARGET_FILE:ETFWatchdog>
+        --dataservice-exe
+        $<TARGET_FILE:ETFDataService>
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
 )
 
 set_tests_properties(watchdog_service_manifest PROPERTIES

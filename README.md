@@ -165,6 +165,18 @@ TASK-014 在 `libs/Watchdog` 中新增服务清单配置加载和校验能力：
 
 服务清单当前只支持启用状态的 `ETFDataService`。其他服务可以作为 `enabled=false` 的未来占位项读取，并产生 warning。`autoRestart` 目前只是配置字段，不启用自动重启。Watchdog 仍不访问 SQLite，不依赖 DataAccess，不实现 Windows Service、不写数据库、不实现任何业务交易逻辑。
 
+## TASK-015 范围
+
+TASK-015 在 TASK-014 服务清单基础上增加配置驱动启动能力：
+
+- `ETFWatchdog --show-config-status` 展示清单中每个服务的配置状态，不启动服务。
+- `ETFWatchdog --start-service-from-config` 从清单查找指定服务并启动。
+- 第一版仅支持启动 `ETFDataService`。
+- 启动后通过 `DataServiceClient` 执行 `system.ping` 和 `data.health`。
+- 命令结束前会停止服务并清理子进程。
+
+本任务仍不启用 `autoRestart`，不实现 Windows Service，不访问 SQLite，不依赖 DataAccess，不实现任何业务交易逻辑。
+
 ## 构建
 
 环境要求：
@@ -276,6 +288,20 @@ build\apps\ETFWatchdog\ETFWatchdog.exe --list-services --config config\services.
 
 配置错误会返回非 0，不会尝试启动服务。`enabled=false` 的服务可被读取，但不会被启动。
 
+展示配置状态：
+
+```powershell
+build\apps\ETFWatchdog\ETFWatchdog.exe --show-config-status --config config\services.local.example.json
+```
+
+按配置启动指定服务并做健康检查：
+
+```powershell
+build\apps\ETFWatchdog\ETFWatchdog.exe --start-service-from-config --config config\services.local.example.json --service ETFDataService
+```
+
+`--demo-start-dataservice` 是手工传参 demo；`--start-service-from-config` 是配置驱动 demo。两者都会在命令结束前停止子进程。当前仅支持 `ETFDataService`，不会启动 `enabled=false` 服务，不启用 `autoRestart`。
+
 ## 运行测试
 
 ```powershell
@@ -321,6 +347,8 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `watchdog_service_manifest` 会验证服务清单 JSON / 文件加载、缺字段、重复服务名、负 timeout、`enabled=false` 占位服务、arguments 转换，以及 `ETFWatchdog --check-config` / `--list-services` CLI。
 
+当前测试 `watchdog_service_manifest` 还会初始化临时数据库，通过 `ETFWatchdog --start-service-from-config` 启动 `ETFDataService --serve-readonly`，验证 ping / data.health 成功、服务结束后 socket 关闭且无包含测试 socketName 的 `ETFDataService` 残留进程，并覆盖 missing service、disabled service、unsupported service、missing executable 和 invalid config。
+
 Transport 稳定性重复验证命令：
 
 ```powershell
@@ -337,7 +365,8 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 - 未实现任何业务 DataService 写入 action；当前唯一 socket 写入 action 是开发期 `data.audit.append`，且只写 `audit_log`。
 - 未实现任何新增服务端 action；TASK-012 只增加客户端调用封装。
 - 未实现 Windows Service 安装或后台常驻注册表写入；TASK-013 只提供 Watchdog 进程管理骨架。
-- 未实现 Watchdog 自动重启；TASK-014 只读取 `autoRestart` 字段，不执行自动重启。
+- 未实现 Watchdog 自动重启；TASK-014 / TASK-015 只读取 `autoRestart` 字段，不执行自动重启。
+- 未实现 Windows Service；TASK-015 只提供配置驱动启动指定服务并在命令结束前停止。
 - 未实现 `--append-audit-demo`；TASK-010 仅提供 DataAccess 层事务和 audit_log 写入基础。
 - 未实现任何 socket 写 action。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
@@ -346,5 +375,5 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 
 ## 后续任务建议
 
-1. TASK-015：为 Watchdog 增加按配置启动指定服务或批量状态展示，但仍不做自动重启和 Windows Service。
-2. TASK-016：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。
+1. TASK-016：为 Watchdog 增加更细的状态汇总输出或批量只读状态检查，但仍不做自动重启和 Windows Service。
+2. TASK-017：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。

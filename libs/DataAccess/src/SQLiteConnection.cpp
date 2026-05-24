@@ -36,6 +36,23 @@ std::string joinMissingTables(const std::vector<std::string>& missingTables)
     return stream.str();
 }
 
+bool hasNonWhitespaceTail(const char* tail)
+{
+    if (tail == nullptr) {
+        return false;
+    }
+
+    while (*tail != '\0') {
+        const auto ch = static_cast<unsigned char>(*tail);
+        if (!std::isspace(ch) && *tail != ';') {
+            return true;
+        }
+        ++tail;
+    }
+
+    return false;
+}
+
 }  // namespace
 
 SQLiteConnection::~SQLiteConnection()
@@ -196,6 +213,99 @@ DatabaseResult<int> SQLiteConnection::querySingleInt(const std::string& sql)
     return DatabaseResult<int>::failure(
         etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
         message);
+}
+
+DatabaseResult<std::vector<SqlQueryRow>> SQLiteConnection::queryRows(
+    const std::string& sql,
+    const std::vector<std::string>& parameters)
+{
+    auto openResult = requireOpen();
+    if (!openResult) {
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            openResult.error().errorCode,
+            openResult.error().message);
+    }
+
+    sqlite3_stmt* statement = nullptr;
+    const char* tail = nullptr;
+    const int prepareRc = sqlite3_prepare_v2(db_, sql.c_str(), -1, &statement, &tail);
+    if (prepareRc != SQLITE_OK) {
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "SQLite prepare failed: " + sqliteErrorMessage());
+    }
+
+    if (statement == nullptr) {
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "SQLite prepare produced no statement");
+    }
+
+    if (hasNonWhitespaceTail(tail)) {
+        sqlite3_finalize(statement);
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "Read-only query helper accepts exactly one SQL statement");
+    }
+
+    if (sqlite3_stmt_readonly(statement) == 0) {
+        sqlite3_finalize(statement);
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "Read-only query helper rejected a mutating SQL statement");
+    }
+
+    const int expectedParameterCount = sqlite3_bind_parameter_count(statement);
+    if (expectedParameterCount != static_cast<int>(parameters.size())) {
+        sqlite3_finalize(statement);
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "SQLite parameter count mismatch");
+    }
+
+    for (int i = 0; i < expectedParameterCount; ++i) {
+        const auto& parameter = parameters[static_cast<std::size_t>(i)];
+        const int bindRc =
+            sqlite3_bind_text(statement, i + 1, parameter.c_str(), -1, SQLITE_TRANSIENT);
+        if (bindRc != SQLITE_OK) {
+            const std::string message = "SQLite bind failed: " + sqliteErrorMessage();
+            sqlite3_finalize(statement);
+            return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+                etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+                message);
+        }
+    }
+
+    std::vector<SqlQueryRow> rows;
+    while (true) {
+        const int stepRc = sqlite3_step(statement);
+        if (stepRc == SQLITE_ROW) {
+            SqlQueryRow row;
+            const int columnCount = sqlite3_column_count(statement);
+            row.reserve(static_cast<std::size_t>(columnCount));
+            for (int column = 0; column < columnCount; ++column) {
+                SqlValue value;
+                value.isNull = sqlite3_column_type(statement, column) == SQLITE_NULL;
+                value.int64Value = sqlite3_column_int64(statement, column);
+                const unsigned char* text = sqlite3_column_text(statement, column);
+                value.text = text == nullptr ? "" : reinterpret_cast<const char*>(text);
+                row.push_back(std::move(value));
+            }
+            rows.push_back(std::move(row));
+            continue;
+        }
+
+        if (stepRc == SQLITE_DONE) {
+            sqlite3_finalize(statement);
+            return DatabaseResult<std::vector<SqlQueryRow>>::success(std::move(rows));
+        }
+
+        const std::string message = "SQLite query failed: " + sqliteErrorMessage();
+        sqlite3_finalize(statement);
+        return DatabaseResult<std::vector<SqlQueryRow>>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            message);
+    }
 }
 
 DatabaseResult<bool> SQLiteConnection::queryTableExists(const std::string& tableName)

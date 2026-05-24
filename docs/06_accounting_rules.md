@@ -87,3 +87,10 @@ principal_base =
 - 初始化数据库只负责连接、PRAGMA、WAL、migration 和健康检查。
 - 本任务不实现账务重演，不写 trade_log，不写 position_snapshot / cash_snapshot / portfolio_summary。
 - trade_log 仍然是唯一事实源，后续账务功能必须通过 ETFDataService 受控事务写入。
+
+## 只读 Repository 边界
+
+- TASK-005 的只读 Repository 不改变任何账务事实。
+- 只读查询不能写 trade_log、trade_execution_group、position_snapshot、cash_snapshot、portfolio_summary 或 audit_log。
+- 只读查询不能触发账务重演、修账、TradeDraft 状态流转或策略计算。
+- trade_log 仍然是唯一事实源；Repository 返回的账户、组合、标的、策略和 OTC 通道记录只是当前数据库状态视图。

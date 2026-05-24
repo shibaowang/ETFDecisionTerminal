@@ -3,6 +3,7 @@
 #include "Protocol/ErrorCode.h"
 
 #include <filesystem>
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,6 +35,14 @@ struct DatabaseError final {
     etfdt::protocol::ErrorCode errorCode = etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR;
     std::string message;
 };
+
+struct SqlValue final {
+    bool isNull = true;
+    std::string text;
+    std::int64_t int64Value = 0;
+};
+
+using SqlQueryRow = std::vector<SqlValue>;
 
 template <typename T>
 class DatabaseResult final {

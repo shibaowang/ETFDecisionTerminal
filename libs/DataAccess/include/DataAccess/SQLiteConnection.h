@@ -28,6 +28,9 @@ public:
     [[nodiscard]] DatabaseResult<bool> executeSql(const std::string& sql);
     [[nodiscard]] DatabaseResult<std::string> querySingleString(const std::string& sql);
     [[nodiscard]] DatabaseResult<int> querySingleInt(const std::string& sql);
+    [[nodiscard]] DatabaseResult<std::vector<SqlQueryRow>> queryRows(
+        const std::string& sql,
+        const std::vector<std::string>& parameters = {});
     [[nodiscard]] DatabaseResult<bool> queryTableExists(const std::string& tableName);
 
     [[nodiscard]] DatabaseResult<bool> initializePragmas();

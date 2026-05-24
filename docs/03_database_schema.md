@@ -146,3 +146,12 @@ CoreDomain 对应基础类型：
 - 打开数据库后设置 busy timeout。
 - 启用 WAL 时执行 `PRAGMA journal_mode = WAL;`。
 - 健康检查必须确认 `foreign_keys` 为 ON，且 `journal_mode` 为 wal。
+
+## 只读 Repository 边界
+
+- TASK-005 的 Repository 只在 ETFDataService 进程内部使用。
+- 其他服务不得直接访问 SQLite，不得直接链接 DataAccess Repository。
+- 当前 Repository 只提供 SELECT 类只读查询，不提供业务写入方法。
+- 只读 Repository 可查询 account、portfolio、instrument、strategy、otc_channel 和 schema_version 的基础记录。
+- 查询结果中的数据库枚举值必须通过 CoreDomain enum `fromString` 校验，不能把未知枚举静默当作默认值。
+- Repository 不负责自动修复数据，不自动插入默认账户、组合、策略或 OTC 通道。

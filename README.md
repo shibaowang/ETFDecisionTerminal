@@ -140,6 +140,19 @@ TASK-012 新增 `libs/DataServiceClient`，为 Shell、Watchdog、StrategyServic
 
 DataServiceClient 不访问 SQLite，不依赖 DataAccess，不依赖 DataServiceApi，不做业务判断，不传入任意 SQL。
 
+## TASK-013 范围
+
+TASK-013 新增 `libs/Watchdog`，建立 Watchdog 服务进程管理骨架：
+
+- `ServiceProcessConfig` 定义本地服务进程配置。
+- `ServiceProcessStatus` 记录 running、pid、启动/停止时间、退出码、健康状态和诊断消息。
+- `ServiceProcessManager` 使用 `QProcess` 启动、停止、查询本地服务进程。
+- Watchdog 通过 `DataServiceClient` 调用 `system.ping` 和 `data.health` 检查 DataService 健康。
+- `ETFWatchdog` 增加开发期 CLI：`--demo-start-dataservice`。
+- 新增 `watchdog_service_manager` 测试，覆盖服务配置、启动、健康检查、停止、stopAll、不存在 exe 和错误 socket 健康检查。
+
+Watchdog 当前只是开发期进程管理骨架，不做 Windows Service，不访问 SQLite，不依赖 DataAccess，不实现策略、交易或任何业务写入。
+
 ## 构建
 
 环境要求：
@@ -214,6 +227,14 @@ build\apps\ETFDataService\ETFDataService.exe --serve-dev-audit --db data\ETFDeci
 
 该命令会打开已有数据库、初始化 PRAGMA、启用 WAL、执行健康检查，然后启动开发期审计写入服务。它会注册只读 `data.*` action，并额外注册唯一写入 action `data.audit.append`。该 action 只写 `audit_log`，不是业务交易入账，不写 `trade_log`、TradeDraft、成交组或派生快照表。
 
+## Watchdog 开发期 DataService Demo
+
+```powershell
+build\apps\ETFWatchdog\ETFWatchdog.exe --demo-start-dataservice --dataservice-exe build\apps\ETFDataService\Debug\ETFDataService.exe --db data\ETFDecision.db --socket-name ETFDataServiceWatchdogDemo
+```
+
+该命令使用 `QProcess` 启动 `ETFDataService --serve-readonly`，通过 `DataServiceClient` 执行 `system.ping` 和 `data.health`，输出状态后停止子进程。它不是 Windows Service，不写注册表，不访问 SQLite，也不实现业务交易逻辑。
+
 ## 运行测试
 
 ```powershell
@@ -255,6 +276,8 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `dataservice_client_end_to_end` 会启动开发期审计写入 action host，通过 `DataServiceClient` 验证 ping、health、summary、账户/组合/标的/策略/OTC 查询、`appendAuditDemo`、缺字段错误、未知 action、连接不存在 socket 和断开后发送错误，并确认 `trade_log`、`trade_execution_group`、`trade_draft`、`position_snapshot`、`cash_snapshot` 和 `portfolio_summary` 仍为空。
 
+当前测试 `watchdog_service_manager` 会初始化临时数据库，使用 Watchdog 启动 `ETFDataService --serve-readonly`，通过 `DataServiceClient` 检查 ping / data.health，验证 `stopService` / `stopAll` 不遗留进程，并覆盖不存在 exe 和错误 socket 的受控失败。
+
 Transport 稳定性重复验证命令：
 
 ```powershell
@@ -270,6 +293,7 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 - 未实现真实业务 action 分发；ServiceRuntime 当前只提供路由骨架、协议错误响应和 Ping/Health。
 - 未实现任何业务 DataService 写入 action；当前唯一 socket 写入 action 是开发期 `data.audit.append`，且只写 `audit_log`。
 - 未实现任何新增服务端 action；TASK-012 只增加客户端调用封装。
+- 未实现 Windows Service 安装或后台常驻注册表写入；TASK-013 只提供 Watchdog 进程管理骨架。
 - 未实现 `--append-audit-demo`；TASK-010 仅提供 DataAccess 层事务和 audit_log 写入基础。
 - 未实现任何 socket 写 action。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
@@ -278,5 +302,5 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 
 ## 后续任务建议
 
-1. TASK-013：将真实服务宿主接入 Watchdog 启动管理，但仍保持业务 handler 白名单。
-2. TASK-014：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。
+1. TASK-014：为 Watchdog 增加更明确的服务配置文件读取和状态展示，但仍不做 Windows Service。
+2. TASK-015：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。

@@ -115,3 +115,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - DataServiceClient 不实现业务判断，不新增服务端 action，不扩大写入白名单。
 - `appendAuditDemo` 仅封装现有 `data.audit.append` 请求，不代表业务入账能力。
 - 未知 action 必须由服务端返回 `E1004_INVALID_ACTION`；客户端不能把未知 action 自动当成有效请求。
+
+## Watchdog 层边界
+
+- TASK-013 新增 Watchdog 服务进程管理骨架。
+- Watchdog 使用 `QProcess` 启动、停止和查询本地服务进程状态。
+- Watchdog 通过 DataServiceClient 调用 DataService 的 `system.ping` 和 `data.health` 做健康检查。
+- Watchdog 不直接访问 SQLite，不依赖 DataAccess，不读写 Repository。
+- Watchdog 不新增服务端 action，不实现策略、行情、交易、账务重演或 TradeDraft 生命周期。
+- 第一版不做 Windows Service 安装，不写注册表，不实现后台常驻管理。

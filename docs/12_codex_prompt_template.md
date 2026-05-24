@@ -66,6 +66,9 @@ v0.1 草案。
 40. 客户端封装任务不得新增服务端 action，不得访问数据库，不得引入业务写入逻辑。
 41. Client 只能通过 Transport + Protocol 请求 DataService，不得依赖 DataAccess 或绕过 DataService。
 42. Client 不得接受或传递任意 SQL payload。
+43. 涉及 Watchdog 的任务不得直接访问 SQLite，不得依赖 DataAccess。
+44. Watchdog 只能管理进程和服务状态，不得实现业务策略、交易、账务重演或 TradeDraft 逻辑。
+45. Watchdog 健康检查必须通过 DataServiceClient 或协议请求完成，不得绕过 DataService。
 
 ## TASK 模板
 

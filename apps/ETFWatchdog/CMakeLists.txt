@@ -4,7 +4,7 @@ add_executable(ETFWatchdog
 
 target_link_libraries(ETFWatchdog
     PRIVATE
-        ETFDecisionTerminal::Protocol
+        ETFDecisionTerminal::Watchdog
 )
 
 target_compile_features(ETFWatchdog PRIVATE cxx_std_17)

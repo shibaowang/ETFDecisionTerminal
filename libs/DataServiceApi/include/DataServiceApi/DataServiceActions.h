@@ -1,0 +1,44 @@
+#pragma once
+
+#include "DataAccess/DataAccess.h"
+#include "ServiceRuntime/ServiceRuntime.h"
+
+namespace etfdt::data_service_api {
+
+constexpr const char* kActionDataHealth = "data.health";
+constexpr const char* kActionDataSummary = "data.summary";
+constexpr const char* kActionDataAccountsList = "data.accounts.list";
+constexpr const char* kActionDataPortfoliosList = "data.portfolios.list";
+constexpr const char* kActionDataInstrumentsList = "data.instruments.list";
+constexpr const char* kActionDataStrategiesList = "data.strategies.list";
+constexpr const char* kActionDataOtcList = "data.otc.list";
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataHealth(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataAccountsList(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataPortfoliosList(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataInstrumentsList(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataStrategiesList(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleDataOtcList(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+}  // namespace etfdt::data_service_api

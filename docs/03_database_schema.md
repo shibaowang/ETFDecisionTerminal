@@ -1,5 +1,13 @@
 # 数据库结构设计
 
+## DataService 只读 action 数据边界
+
+- TASK-009 不修改数据库 schema，不修改 `migrations/001_initial_schema.sql`。
+- DataService 只读 action 只通过 DataAccess Repository 或 `SQLiteConnection::healthCheck` 查询数据库。
+- 当前 `data.*` action 不执行 INSERT / UPDATE / DELETE。
+- 当前 `data.*` action 不写 `trade_log`、`trade_execution_group`、`position_snapshot`、`cash_snapshot` 或 `portfolio_summary`。
+- SQLite 仍只能由 ETFDataService 进程访问；其他服务必须通过 Protocol 请求 DataService，不能直接访问 SQLite。
+
 ## 当前状态
 
 v0.1 草案。初始迁移脚本见 `migrations/001_initial_schema.sql`。

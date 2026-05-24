@@ -1,5 +1,10 @@
 #include "DataAccess/DataAccess.h"
+#include "DataServiceApi/DataServiceApi.h"
 #include "Protocol/ErrorCode.h"
+#include "ServiceHost/ServiceHost.h"
+#include "ServiceRuntime/ServiceRuntime.h"
+
+#include <QCoreApplication>
 
 #include <filesystem>
 #include <iostream>
@@ -30,10 +35,12 @@ void printHelp()
         << "  ETFDataService --list-instruments --db <path>\n"
         << "  ETFDataService --list-strategies --db <path>\n"
         << "  ETFDataService --list-otc --db <path> --strategy-code <code>\n"
+        << "  ETFDataService --serve-readonly --db <path> --socket-name <name>\n"
         << "  ETFDataService --help\n"
         << "\n"
-        << "This TASK-005 entry point initializes, checks, and reads SQLite only. "
-        << "It does not start Local Socket services or write business facts.\n";
+        << "This entry point initializes, checks, reads SQLite, or starts the "
+        << "development preview read-only Local Socket service. It does not write "
+        << "business facts.\n";
 }
 
 std::string optionValue(const std::vector<std::string>& args, const std::string& option)
@@ -390,6 +397,44 @@ int listOtcChannels(const std::filesystem::path& dbPath, const std::string& stra
     return 0;
 }
 
+int serveReadOnly(
+    int argc,
+    char* argv[],
+    const std::filesystem::path& dbPath,
+    const std::string& socketName)
+{
+    if (socketName.empty()) {
+        std::cerr << "--socket-name <name> is required for --serve-readonly\n";
+        return 1;
+    }
+
+    etfdt::data_access::SQLiteConnection connection;
+    auto openResult = openHealthyReadOnlyDatabase(dbPath, connection);
+    if (!openResult) {
+        return printDatabaseError(openResult.error());
+    }
+
+    QCoreApplication app(argc, argv);
+    etfdt::service_runtime::ActionDispatcher dispatcher(
+        etfdt::protocol::ServiceName::ETFDataService);
+    etfdt::service_runtime::registerBuiltinActions(dispatcher);
+    etfdt::data_service_api::registerDataServiceReadOnlyActions(dispatcher, connection);
+
+    etfdt::service_host::ActionServiceHost host(dispatcher);
+    auto listenResult = host.listen(socketName);
+    if (!listenResult) {
+        std::cerr << "Failed to start read-only service host: "
+                  << listenResult.error().message << '\n';
+        return 1;
+    }
+
+    std::cout << "ETFDataService read-only service listening on " << socketName << '\n';
+    std::cout << "Development preview: only system.* and data.* read-only actions are enabled.\n";
+    const int exitCode = app.exec();
+    host.close();
+    return exitCode;
+}
+
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -445,6 +490,10 @@ int main(int argc, char* argv[])
 
     if (hasOption(args, "--list-otc")) {
         return listOtcChannels(dbPath, optionValue(args, "--strategy-code"));
+    }
+
+    if (hasOption(args, "--serve-readonly")) {
+        return serveReadOnly(argc, argv, dbPath, optionValue(args, "--socket-name"));
     }
 
     printHelp();

@@ -1,4 +1,5 @@
 add_library(ETFServiceHost STATIC
+    src/ActionServiceHost.cpp
     src/DemoServiceHost.cpp
     src/ServiceHost.cpp
 )

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "ServiceHost/ActionServiceHost.h"
+
 #include "Protocol/Protocol.h"
 #include "ServiceRuntime/ServiceRuntime.h"
-#include "Transport/Transport.h"
 
 #include <cstddef>
 #include <string>
@@ -28,21 +29,8 @@ public:
     [[nodiscard]] std::size_t clientCount() const noexcept;
 
 private:
-    struct EnvelopeParseResult;
-
-    void handleTransportMessage(
-        etfdt::transport::LocalSocketServer::ClientId clientId,
-        const std::string& json);
-
-    [[nodiscard]] EnvelopeParseResult parseEnvelope(const std::string& json) const;
-    [[nodiscard]] etfdt::protocol::ProtocolResponse makeParseErrorResponse(
-        const EnvelopeParseResult& result) const;
-    void sendResponse(
-        etfdt::transport::LocalSocketServer::ClientId clientId,
-        const etfdt::protocol::ProtocolResponse& response);
-
-    etfdt::transport::LocalSocketServer server_;
     etfdt::service_runtime::ActionDispatcher dispatcher_;
+    ActionServiceHost host_;
 };
 
 }  // namespace etfdt::service_host

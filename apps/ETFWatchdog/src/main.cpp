@@ -22,15 +22,18 @@ void printHelp()
         << "  ETFWatchdog --check-config --config <path>\n"
         << "  ETFWatchdog --list-services --config <path>\n"
         << "  ETFWatchdog --show-config-status --config <path>\n"
+        << "  ETFWatchdog --manifest-status --config <path>\n"
+        << "  ETFWatchdog --dry-run-start --config <path> --service <serviceName>\n"
         << "  ETFWatchdog --start-service-from-config --config <path> --service <serviceName>\n"
         << "  ETFWatchdog --demo-start-dataservice --dataservice-exe <path> --db <path> "
            "--socket-name <name>\n"
         << "  ETFWatchdog --help\n"
         << "\n"
         << "This is a development process-management skeleton. Config commands only "
-        << "load, validate and display the service manifest. The start commands start "
-        << "a local DataService process, check system.ping and data.health through "
-        << "DataServiceClient, then stop the child process.\n";
+        << "load, validate and display the service manifest. Dry-run commands do not "
+        << "start services or connect sockets. Start commands start a local DataService "
+        << "process, check system.ping and data.health through DataServiceClient, then "
+        << "stop the child process.\n";
 }
 
 std::string optionValue(const std::vector<std::string>& args, const std::string& option)
@@ -169,6 +172,114 @@ const etfdt::watchdog::ServiceProcessConfig* findServiceConfig(
         }
     }
     return nullptr;
+}
+
+const etfdt::watchdog::ServiceConfigStatus* findServiceStatus(
+    const etfdt::watchdog::ManifestStatusReport& report,
+    const std::string& serviceName)
+{
+    for (const auto& status : report.serviceStatuses) {
+        if (status.serviceName == serviceName) {
+            return &status;
+        }
+    }
+    return nullptr;
+}
+
+etfdt::watchdog::ManifestStatusReport buildReport(
+    const etfdt::watchdog::ServiceManifest& manifest,
+    const std::string& configPath)
+{
+    etfdt::watchdog::ManifestStatusOptions options;
+    options.configPath = configPath;
+    options.baseDirectory = std::filesystem::current_path();
+    return etfdt::watchdog::buildManifestStatusReport(manifest, options);
+}
+
+void printIssue(const etfdt::watchdog::ServiceConfigIssue& issue)
+{
+    std::cout << "    issue: " << etfdt::watchdog::toString(issue.level) << ' ' << issue.code
+              << " - " << issue.message << '\n';
+}
+
+void printServiceStatus(const etfdt::watchdog::ServiceConfigStatus& status)
+{
+    std::cout << "serviceName: " << status.serviceName << '\n';
+    std::cout << "  enabled: " << (status.enabled ? "true" : "false") << '\n';
+    std::cout << "  supported: " << (status.supported ? "true" : "false") << '\n';
+    std::cout << "  executablePath: " << status.executablePath << '\n';
+    std::cout << "  executableExists: " << (status.executableExists ? "true" : "false") << '\n';
+    std::cout << "  workingDirectory: " << status.workingDirectory << '\n';
+    std::cout << "  workingDirectoryExists: "
+              << (status.workingDirectoryExists ? "true" : "false") << '\n';
+    std::cout << "  socketName: " << status.socketName << '\n';
+    std::cout << "  socketNamePresent: " << (status.socketNamePresent ? "true" : "false") << '\n';
+    std::cout << "  autoRestart: " << (status.autoRestart ? "true" : "false") << '\n';
+    std::cout << "  autoRestartEnabledButIgnored: "
+              << (status.autoRestartEnabledButIgnored ? "true" : "false") << '\n';
+    std::cout << "  healthCheckSupported: "
+              << (status.healthCheckSupported ? "true" : "false") << '\n';
+    std::cout << "  canStart: " << (status.canStart ? "true" : "false") << '\n';
+    for (const auto& issue : status.issues) {
+        printIssue(issue);
+    }
+}
+
+void printManifestStatusReport(const etfdt::watchdog::ManifestStatusReport& report)
+{
+    std::cout << "configPath: " << report.configPath << '\n';
+    std::cout << "version: " << report.version << '\n';
+    std::cout << "totalServices: " << report.totalServices << '\n';
+    std::cout << "enabledServices: " << report.enabledServices << '\n';
+    std::cout << "disabledServices: " << report.disabledServices << '\n';
+    std::cout << "errorCount: " << report.errorCount << '\n';
+    std::cout << "warningCount: " << report.warningCount << '\n';
+    for (const auto& status : report.serviceStatuses) {
+        printServiceStatus(status);
+    }
+}
+
+int manifestStatus(const std::string& configPath)
+{
+    if (configPath.empty()) {
+        std::cerr << "--config is required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    const auto report = buildReport(manifest.value(), configPath);
+    printManifestStatusReport(report);
+    return report.errorCount == 0 ? 0 : 1;
+}
+
+int dryRunStart(const std::string& configPath, const std::string& serviceName)
+{
+    if (configPath.empty() || serviceName.empty()) {
+        std::cerr << "--config and --service are required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    const auto report = buildReport(manifest.value(), configPath);
+    const auto* status = findServiceStatus(report, serviceName);
+    if (status == nullptr) {
+        std::cerr << "Unknown service in config: " << serviceName << '\n';
+        return 1;
+    }
+
+    printServiceStatus(*status);
+    std::cout << "dryRunStart: " << (status->canStart ? "canStart" : "cannotStart") << '\n';
+    return status->canStart ? 0 : 1;
 }
 
 int startServiceFromConfig(const std::string& configPath, const std::string& serviceName)
@@ -323,6 +434,14 @@ int main(int argc, char* argv[])
 
     if (hasOption(args, "--show-config-status")) {
         return showConfigStatus(optionValue(args, "--config"));
+    }
+
+    if (hasOption(args, "--manifest-status")) {
+        return manifestStatus(optionValue(args, "--config"));
+    }
+
+    if (hasOption(args, "--dry-run-start")) {
+        return dryRunStart(optionValue(args, "--config"), optionValue(args, "--service"));
     }
 
     if (hasOption(args, "--start-service-from-config")) {

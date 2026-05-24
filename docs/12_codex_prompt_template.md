@@ -39,6 +39,8 @@ v0.1 草案。
 13. 资金分配计划必须可解释、可复盘。
 14. 任何手工入账必须标记 manual_entry 并写 audit_log。
 15. 不允许用刷新覆盖历史建议，必须使用状态生命周期。
+16. 所有涉及数据库写入的任务必须声明 ETFDataService 边界。
+17. 非 ETFDataService 进程不得直接写 SQLite。
 
 ## TASK 模板
 

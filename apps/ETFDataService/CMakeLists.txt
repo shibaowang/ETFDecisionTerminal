@@ -5,6 +5,7 @@ add_executable(ETFDataService
 target_link_libraries(ETFDataService
     PRIVATE
         ETFDecisionTerminal::DataAccess
+        ETFDecisionTerminal::CoreDomain
         ETFDecisionTerminal::Protocol
 )
 

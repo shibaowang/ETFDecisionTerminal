@@ -125,3 +125,24 @@ CoreDomain 对应基础类型：
 11. 不允许物理删除 trade_log。
 12. 纠错必须通过 correction / reversal / voided。
 13. 账务异常进入 SAFE_READONLY。
+
+## DataService 初始化边界
+
+- ETFDataService 是唯一数据库写入口。
+- 初始迁移由 ETFDataService 负责执行，其他服务不得直接执行迁移或写数据库。
+- TASK-004 只实现数据库打开、PRAGMA 初始化、WAL 初始化、初始迁移和健康检查。
+- 初始迁移文件固定为 `migrations/001_initial_schema.sql`，不得由 DataAccess 重写或改写。
+
+## schema_version 检查规则
+
+- 数据库初始化后必须存在 `schema_version` 表。
+- `schema_version.migration_name` 必须包含 `001_initial_schema` 记录。
+- 如果 `schema_version` 缺失或初始迁移记录缺失，健康检查必须返回错误。
+- 初始迁移已执行时，MigrationRunner 应跳过并返回成功。
+
+## SQLite PRAGMA 初始化规则
+
+- 打开数据库后执行 `PRAGMA foreign_keys = ON;`。
+- 打开数据库后设置 busy timeout。
+- 启用 WAL 时执行 `PRAGMA journal_mode = WAL;`。
+- 健康检查必须确认 `foreign_keys` 为 ON，且 `journal_mode` 为 wal。

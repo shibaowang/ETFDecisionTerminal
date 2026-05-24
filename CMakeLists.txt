@@ -4,7 +4,7 @@ project(
     ETFDecisionTerminal
     VERSION 0.1.0
     DESCRIPTION "Cross-border ETF intelligent investment decision terminal"
-    LANGUAGES CXX
+    LANGUAGES C CXX
 )
 
 set(CMAKE_CXX_STANDARD 17)

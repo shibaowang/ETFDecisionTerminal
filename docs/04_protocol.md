@@ -262,6 +262,27 @@ TASK-011 定义当前唯一允许的写入 action：`data.audit.append`。默认
 - `data.audit.append` 只在开发期审计写入服务中注册；只读服务必须返回 `E1004_INVALID_ACTION`。
 - 不允许任何通过 payload 传入 SQL 的 action。
 
+## DataServiceClient 请求和响应规则
+
+TASK-012 的 DataServiceClient 只负责客户端侧协议封装，不新增服务端 action。
+
+请求构造规则：
+
+- `protocolVersion` 固定为 `1.0`。
+- `msgId` 和 `traceId` 由客户端生成简单唯一字符串。
+- `from` 默认 `ETFDecisionShell`，`to` 默认 `ETFDataService`。
+- `action` 必须由调用方法明确指定，客户端不根据未知 action 动态生成业务语义。
+- `payload` 必须是 JSON object 或 array；客户端不允许传入 SQL payload。
+- `traceId` 用于请求追踪和响应匹配。
+
+响应解析规则：
+
+- 客户端只解析受控 `ProtocolResponse` 字段：`protocolVersion`、`msgId`、`traceId`、`success`、`errorCode`、`errorMessage`、`payload`。
+- `success=true` 时，`payload` 作为原始 JSON object / array 字符串返回给调用方。
+- `success=false` 时，客户端保留服务端返回的 `errorCode` 和 `errorMessage`。
+- 响应 JSON 无效、缺字段、payload 类型错误或 `traceId` 不匹配时，客户端返回明确协议错误或服务错误。
+- 客户端不实现大型通用 JSON 解析器，也不解释业务账务规则。
+
 ## 标准请求消息
 
 ```json

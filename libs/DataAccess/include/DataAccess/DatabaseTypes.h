@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -40,6 +41,35 @@ struct SqlValue final {
     bool isNull = true;
     std::string text;
     std::int64_t int64Value = 0;
+};
+
+struct SqlStatementParameter final {
+    bool isNull = true;
+    std::string text;
+    std::int64_t int64Value = 0;
+    bool bindAsInteger = false;
+
+    [[nodiscard]] static SqlStatementParameter nullValue()
+    {
+        return {};
+    }
+
+    [[nodiscard]] static SqlStatementParameter textValue(std::string value)
+    {
+        SqlStatementParameter parameter;
+        parameter.isNull = false;
+        parameter.text = std::move(value);
+        return parameter;
+    }
+
+    [[nodiscard]] static SqlStatementParameter int64ValueOf(std::int64_t value)
+    {
+        SqlStatementParameter parameter;
+        parameter.isNull = false;
+        parameter.int64Value = value;
+        parameter.bindAsInteger = true;
+        return parameter;
+    }
 };
 
 using SqlQueryRow = std::vector<SqlValue>;

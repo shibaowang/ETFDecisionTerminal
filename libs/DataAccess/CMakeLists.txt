@@ -47,11 +47,14 @@ if(NOT SQLite3_FOUND)
 endif()
 
 add_library(ETFDataAccess STATIC
+    src/AuditLogRepository.cpp
     src/DataAccess.cpp
     src/MigrationRunner.cpp
     src/ReadOnlyRepositoryBase.cpp
     src/Repositories.cpp
     src/SQLiteConnection.cpp
+    src/Transaction.cpp
+    src/TransactionRunner.cpp
 )
 
 add_library(ETFDecisionTerminal::DataAccess ALIAS ETFDataAccess)

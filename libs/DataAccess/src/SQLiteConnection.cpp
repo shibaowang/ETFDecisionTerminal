@@ -152,6 +152,85 @@ DatabaseResult<bool> SQLiteConnection::executeSql(const std::string& sql)
     return DatabaseResult<bool>::success(true);
 }
 
+DatabaseResult<bool> SQLiteConnection::executeStatement(
+    const std::string& sql,
+    const std::vector<SqlStatementParameter>& parameters)
+{
+    auto openResult = requireOpen();
+    if (!openResult) {
+        return openResult;
+    }
+
+    sqlite3_stmt* statement = nullptr;
+    const char* tail = nullptr;
+    const int prepareRc = sqlite3_prepare_v2(db_, sql.c_str(), -1, &statement, &tail);
+    if (prepareRc != SQLITE_OK) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "SQLite prepare failed: " + sqliteErrorMessage());
+    }
+
+    if (statement == nullptr) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "SQLite prepare produced no statement");
+    }
+
+    if (hasNonWhitespaceTail(tail)) {
+        sqlite3_finalize(statement);
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "Write statement helper accepts exactly one SQL statement");
+    }
+
+    const int expectedParameterCount = sqlite3_bind_parameter_count(statement);
+    if (expectedParameterCount != static_cast<int>(parameters.size())) {
+        sqlite3_finalize(statement);
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            "SQLite parameter count mismatch");
+    }
+
+    for (int i = 0; i < expectedParameterCount; ++i) {
+        const auto& parameter = parameters[static_cast<std::size_t>(i)];
+        int bindRc = SQLITE_OK;
+        if (parameter.isNull) {
+            bindRc = sqlite3_bind_null(statement, i + 1);
+        }
+        else if (parameter.bindAsInteger) {
+            bindRc = sqlite3_bind_int64(statement, i + 1, parameter.int64Value);
+        }
+        else {
+            bindRc = sqlite3_bind_text(
+                statement,
+                i + 1,
+                parameter.text.c_str(),
+                -1,
+                SQLITE_TRANSIENT);
+        }
+
+        if (bindRc != SQLITE_OK) {
+            const std::string message = "SQLite bind failed: " + sqliteErrorMessage();
+            sqlite3_finalize(statement);
+            return DatabaseResult<bool>::failure(
+                etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+                message);
+        }
+    }
+
+    const int stepRc = sqlite3_step(statement);
+    if (stepRc != SQLITE_DONE) {
+        const std::string message = "SQLite statement failed: " + sqliteErrorMessage();
+        sqlite3_finalize(statement);
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+            message);
+    }
+
+    sqlite3_finalize(statement);
+    return DatabaseResult<bool>::success(true);
+}
+
 DatabaseResult<std::string> SQLiteConnection::querySingleString(const std::string& sql)
 {
     sqlite3_stmt* statement = nullptr;
@@ -555,6 +634,76 @@ DatabaseResult<DatabaseStatus> SQLiteConnection::healthCheck()
 
     status.message = "Database health check passed";
     return DatabaseResult<DatabaseStatus>::success(std::move(status));
+}
+
+DatabaseResult<bool> SQLiteConnection::beginTransaction()
+{
+    auto openResult = requireOpen();
+    if (!openResult) {
+        return openResult;
+    }
+    if (isInTransaction()) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            "Nested SQLite transactions are not supported");
+    }
+    auto result = executeSql("BEGIN IMMEDIATE TRANSACTION;");
+    if (!result) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            result.error().message);
+    }
+    return DatabaseResult<bool>::success(true);
+}
+
+DatabaseResult<bool> SQLiteConnection::commitTransaction()
+{
+    auto openResult = requireOpen();
+    if (!openResult) {
+        return openResult;
+    }
+    if (!isInTransaction()) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            "No active SQLite transaction to commit");
+    }
+    auto result = executeSql("COMMIT;");
+    if (!result) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            result.error().message);
+    }
+    return DatabaseResult<bool>::success(true);
+}
+
+DatabaseResult<bool> SQLiteConnection::rollbackTransaction()
+{
+    auto openResult = requireOpen();
+    if (!openResult) {
+        return openResult;
+    }
+    if (!isInTransaction()) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            "No active SQLite transaction to rollback");
+    }
+    auto result = executeSql("ROLLBACK;");
+    if (!result) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            result.error().message);
+    }
+    return DatabaseResult<bool>::success(true);
+}
+
+bool SQLiteConnection::isInTransaction() const noexcept
+{
+    return db_ != nullptr && sqlite3_get_autocommit(db_) == 0;
+}
+
+std::int64_t SQLiteConnection::lastInsertRowId() const noexcept
+{
+    return db_ == nullptr ? 0 : static_cast<std::int64_t>(sqlite3_last_insert_rowid(db_));
 }
 
 std::string SQLiteConnection::sqliteErrorMessage() const

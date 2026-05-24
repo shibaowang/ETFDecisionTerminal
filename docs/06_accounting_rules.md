@@ -94,3 +94,12 @@ principal_base =
 - 只读查询不能写 trade_log、trade_execution_group、position_snapshot、cash_snapshot、portfolio_summary 或 audit_log。
 - 只读查询不能触发账务重演、修账、TradeDraft 状态流转或策略计算。
 - trade_log 仍然是唯一事实源；Repository 返回的账户、组合、标的、策略和 OTC 通道记录只是当前数据库状态视图。
+
+## 事务和审计边界
+
+- TASK-010 不实现账务重演，不写 `trade_log`，不写成交组，不写 TradeDraft。
+- `audit_log` 只记录审计事实，不改变现金、持仓、本金、成本或收益。
+- `audit_log` 不是账务事实源，不能替代 `trade_log`。
+- 任何未来账务写入必须走 ETFDataService 受控事务边界。
+- 任何未来高风险写入必须在同一事务中写业务事实和 `audit_log`，失败时整体 rollback。
+- 本任务只验证事务提交、回滚和审计记录基础，不实现成交确认、手工入账或策略计算。

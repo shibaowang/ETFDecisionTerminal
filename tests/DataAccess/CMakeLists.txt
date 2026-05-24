@@ -12,6 +12,10 @@ add_executable(ReadOnlyRepositoryTests
     test_readonly_repositories.cpp
 )
 
+add_executable(TransactionAuditTests
+    test_transaction_audit.cpp
+)
+
 target_link_libraries(DataAccessTests
     PRIVATE
         ETFDecisionTerminal::DataAccess
@@ -22,8 +26,14 @@ target_link_libraries(ReadOnlyRepositoryTests
         ETFDecisionTerminal::DataAccess
 )
 
+target_link_libraries(TransactionAuditTests
+    PRIVATE
+        ETFDecisionTerminal::DataAccess
+)
+
 target_compile_features(DataAccessTests PRIVATE cxx_std_17)
 target_compile_features(ReadOnlyRepositoryTests PRIVATE cxx_std_17)
+target_compile_features(TransactionAuditTests PRIVATE cxx_std_17)
 
 add_test(
     NAME dataaccess_database_init
@@ -37,6 +47,14 @@ add_test(
     NAME dataaccess_readonly_repositories
     COMMAND
         ReadOnlyRepositoryTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
+add_test(
+    NAME dataaccess_transaction_audit
+    COMMAND
+        TransactionAuditTests
         --migration
         ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
 )

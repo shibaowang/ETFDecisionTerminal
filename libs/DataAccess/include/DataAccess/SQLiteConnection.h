@@ -26,6 +26,9 @@ public:
     [[nodiscard]] const DatabaseConfig& config() const noexcept;
 
     [[nodiscard]] DatabaseResult<bool> executeSql(const std::string& sql);
+    [[nodiscard]] DatabaseResult<bool> executeStatement(
+        const std::string& sql,
+        const std::vector<SqlStatementParameter>& parameters = {});
     [[nodiscard]] DatabaseResult<std::string> querySingleString(const std::string& sql);
     [[nodiscard]] DatabaseResult<int> querySingleInt(const std::string& sql);
     [[nodiscard]] DatabaseResult<std::vector<SqlQueryRow>> queryRows(
@@ -38,6 +41,11 @@ public:
     [[nodiscard]] DatabaseResult<bool> applyMigrationFile(const std::filesystem::path& migrationPath);
     [[nodiscard]] DatabaseResult<std::vector<std::string>> getSchemaVersions();
     [[nodiscard]] DatabaseResult<DatabaseStatus> healthCheck();
+    [[nodiscard]] DatabaseResult<bool> beginTransaction();
+    [[nodiscard]] DatabaseResult<bool> commitTransaction();
+    [[nodiscard]] DatabaseResult<bool> rollbackTransaction();
+    [[nodiscard]] bool isInTransaction() const noexcept;
+    [[nodiscard]] std::int64_t lastInsertRowId() const noexcept;
 
 private:
     [[nodiscard]] std::string sqliteErrorMessage() const;

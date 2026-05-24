@@ -4,6 +4,7 @@ add_subdirectory(CoreDomain)
 add_subdirectory(DataAccess)
 add_subdirectory(Protocol)
 add_subdirectory(ServiceRuntime)
+add_subdirectory(ServiceHost)
 add_subdirectory(Transport)
 
 add_test(

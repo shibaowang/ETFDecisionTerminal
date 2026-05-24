@@ -55,6 +55,7 @@ private:
     std::vector<std::unique_ptr<ClientState>> clients_;
     MessageCallback onMessage_;
     ClientId nextClientId_ = 1;
+    bool closing_ = false;
 };
 
 }  // namespace etfdt::transport

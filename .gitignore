@@ -1,0 +1,9 @@
+build/
+.vs/
+.vscode/
+*.user
+*.db
+*.sqlite
+*.log
+dist/
+out/

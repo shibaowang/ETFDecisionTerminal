@@ -1,0 +1,73 @@
+# 账务规则总纲
+
+## 当前状态
+
+v0.1 草案。
+
+## 后续补充方向
+
+补充成交确认入账、纠错、审计、派生快照重建和定点整数规范。
+
+## 唯一事实源
+
+trade_log 是唯一事实账本。position_snapshot、cash_snapshot、portfolio_summary 都只是派生缓存。
+
+## 账务维度
+
+所有账务按 account_id + portfolio_id 联合重演。
+
+## 本金基准
+
+采用已结算权益基准法：
+
+```text
+principal_base =
+入金净额
+- 出金净额
+- 买入手续费
++ 已实现卖出盈亏
++ 分红净额
+```
+
+未实现浮盈、未实现浮亏、盘中市值波动不改变本金基准。
+
+## 成交入账
+
+用户确认成交后，同一事务写入：
+
+- trade_execution_group
+- trade_log
+- trade_tier_allocation，若是狙击买入
+- base_position_allocation，若是底仓 / 修复
+- audit_log
+- TradeDraft 状态更新
+
+失败则全部回滚。
+
+## TradeLog 纠错
+
+- 原始 trade_log 原则上不可改。
+- 纠错通过 correction / reversal / voided 处理。
+- 不物理删除 trade_log。
+- 作废必须写 audit_log。
+
+## 现金校准
+
+现金余额不能直接改。必须通过入金、出金、现金校准事件重演。
+
+## 安全模式
+
+发现账务不一致时进入 SAFE_READONLY。
+
+禁止：
+
+- 确认成交
+- 手工入账
+- 生成新 TradeDraft
+
+允许：
+
+- 查看
+- 导出
+- 诊断
+- 修复向导

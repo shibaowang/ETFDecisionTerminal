@@ -52,6 +52,63 @@ TASK-007 新增 ServiceRuntime action 分发骨架。当前 dispatcher 以结构
 
 这些 action 只用于服务连通性和运行时骨架测试，不访问数据库，不代表 DataService 业务 API。
 
+## ServiceHost MessageEnvelope JSON 解析规则
+
+TASK-008 的 DemoServiceHost 实现最小受控 MessageEnvelope JSON 解析，只解析本协议固定字段，不提供通用 JSON 解析器。
+
+必填字段：
+
+- `protocolVersion`
+- `msgId`
+- `traceId`
+- `from`
+- `to`
+- `action`
+- `timestamp`
+- `payload`
+
+解析规则：
+
+- 根节点必须是 JSON object。
+- `from` 和 `to` 必须能转换为已定义的 ServiceName。
+- `payload` 必须是 JSON object 或 JSON array，并作为原始 JSON 片段传递给 ServiceRuntime。
+- 缺少必填字段返回 `E1002_MISSING_REQUIRED_FIELD`。
+- JSON 语法错误、根节点类型错误或 payload 类型错误返回 `E1001_INVALID_JSON`。
+- 服务名无效返回 `E1005_INVALID_SERVICE_NAME`。
+- action 为空、格式无效或未注册时返回协议错误；未注册 action 必须返回 `E1004_INVALID_ACTION`。
+
+端到端示例：
+
+```json
+{
+  "protocolVersion": "1.0",
+  "msgId": "msg-1",
+  "traceId": "trace-1",
+  "from": "ETFDecisionShell",
+  "to": "ETFDataService",
+  "action": "system.ping",
+  "timestamp": "2026-05-24T10:30:00Z",
+  "payload": {}
+}
+```
+
+成功响应示例：
+
+```json
+{
+  "protocolVersion": "1.0",
+  "msgId": "msg-1",
+  "traceId": "trace-1",
+  "success": true,
+  "errorCode": "",
+  "errorMessage": "",
+  "payload": {
+    "pong": true,
+    "service": "ETFDataService"
+  }
+}
+```
+
 ## 标准请求消息
 
 ```json

@@ -40,8 +40,10 @@ TransportResult<bool> LocalSocketServer::listen(const std::string& serverName)
 
 void LocalSocketServer::close()
 {
+    closing_ = true;
     for (auto& client : clients_) {
         if (client->socket) {
+            QObject::disconnect(client->socket.get(), nullptr, nullptr, nullptr);
             client->socket->disconnectFromServer();
             client->socket->close();
         }
@@ -54,6 +56,7 @@ void LocalSocketServer::close()
     if (!serverName_.empty()) {
         QLocalServer::removeServer(QString::fromStdString(serverName_));
     }
+    closing_ = false;
 }
 
 bool LocalSocketServer::isListening() const noexcept
@@ -159,6 +162,10 @@ void LocalSocketServer::readFromClient(QLocalSocket* socket)
 
 void LocalSocketServer::removeClient(QLocalSocket* socket)
 {
+    if (closing_) {
+        return;
+    }
+
     const auto it = std::find_if(clients_.begin(), clients_.end(), [socket](const auto& client) {
         return client->socket.get() == socket;
     });
@@ -169,6 +176,7 @@ void LocalSocketServer::removeClient(QLocalSocket* socket)
     auto detachedSocket = std::move((*it)->socket);
     clients_.erase(it);
     if (detachedSocket) {
+        QObject::disconnect(detachedSocket.get(), nullptr, nullptr, nullptr);
         detachedSocket.release()->deleteLater();
     }
 }

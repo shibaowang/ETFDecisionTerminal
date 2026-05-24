@@ -80,3 +80,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - handler 异常必须转换为 `E9000_SERVICE_ERROR`，不能向外层泄漏异常。
 - TASK-007 只提供 `system.ping` 和 `system.health` 内置 action，不实现 DataService Repository socket API。
 - ServiceRuntime 不访问 SQLite，不依赖 DataAccess，不做策略计算、账务重演或 TradeDraft 生命周期处理。
+
+## ServiceHost 层边界
+
+- ServiceHost 位于 Transport 与 ServiceRuntime 之间。
+- ServiceHost 负责接收本地 socket 消息、解析受控 MessageEnvelope JSON、调用 ActionDispatcher，并把 ProtocolResponse JSON 写回传输层。
+- TASK-008 只提供 DemoServiceHost，用于端到端验证 `system.ping` 和 `system.health`。
+- DemoServiceHost 不访问 SQLite，不依赖 DataAccess，不暴露 Repository，也不启动真实 DataService 业务 API。
+- DemoServiceHost 不做策略计算、账务重演、TradeDraft 生命周期处理、行情接入或自动交易。
+- 未注册 action 必须返回 `E1004_INVALID_ACTION`；无效 JSON 或无效 envelope 必须返回协议错误且不能导致服务崩溃。

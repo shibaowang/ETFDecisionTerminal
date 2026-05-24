@@ -79,6 +79,18 @@ TASK-007 新增 `libs/ServiceRuntime`，建立服务端 action 分发骨架：
 
 ServiceRuntime 只负责路由和协议错误响应，不访问 SQLite，不依赖 DataAccess，不实现 DataService Repository socket API，也不实现任何业务 action。
 
+## TASK-008 范围
+
+TASK-008 新增 `libs/ServiceHost`，把 Transport 和 ServiceRuntime 串接成最小 demo 服务宿主：
+
+- `DemoServiceHost`：基于 `LocalSocketServer` 接收本地 socket JSON 消息。
+- 在 ServiceHost 内部做受控 MessageEnvelope JSON 解析，保留 payload 原始 JSON 片段。
+- 将解析后的 MessageEnvelope 交给 `ActionDispatcher`。
+- 返回 ProtocolResponse JSON。
+- 端到端支持 `system.ping`、`system.health`、未知 action 和 invalid JSON 错误响应。
+
+DemoServiceHost 不访问 SQLite，不依赖 DataAccess，不暴露 DataService Repository，不实现真实 DataService 业务 API。
+
 ## 构建
 
 环境要求：
@@ -168,6 +180,14 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `service_runtime_dispatcher` 会验证 action 分发骨架、协议错误响应和 `system.ping` / `system.health` 内置 action。
 
+当前测试 `service_host_demo_end_to_end` 会启动 DemoServiceHost，通过 LocalSocketClient 发送 `system.ping`、`system.health`、未知 action 和 invalid JSON，并验证 ProtocolResponse。
+
+Transport 稳定性重复验证命令：
+
+```powershell
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。
@@ -175,12 +195,13 @@ ctest --test-dir build --output-on-failure
 - 未实现 QML 主界面。
 - 未实现云同步、多用户权限、资讯、研报、完整回测。
 - 未实现真实业务 action 分发；ServiceRuntime 当前只提供路由骨架、协议错误响应和 Ping/Health。
+- 未实现真实 DataService ServiceHost；DemoServiceHost 当前只串接 Transport 与 ServiceRuntime 的 Ping/Health。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
 - 未实现业务 Repository、TradeLog 写入、账务重演或策略计算。
 - 未实现任何业务写入 Repository；TASK-005 的 Repository 只有只读查询能力。
 
 ## 后续任务建议
 
-1. TASK-008：把 ServiceRuntime 与 Transport 串接成 demo 服务宿主，但仍不接数据库业务 action。
-2. TASK-009：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
-3. TASK-010：在只读 Repository 基础上增加受控服务命令处理，不把 SQL 泄漏到其他服务。
+1. TASK-009：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
+2. TASK-010：在只读 Repository 基础上增加受控服务命令处理，不把 SQL 泄漏到其他服务。
+3. TASK-011：将真实服务宿主接入 Watchdog 启动管理，但仍保持业务 handler 白名单。

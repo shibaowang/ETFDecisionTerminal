@@ -1,5 +1,8 @@
 add_library(ETFCoreDomain STATIC
     src/CoreDomain.cpp
+    src/Enums.cpp
+    src/FixedPoint.cpp
+    src/Identifiers.cpp
 )
 
 add_library(ETFDecisionTerminal::CoreDomain ALIAS ETFCoreDomain)

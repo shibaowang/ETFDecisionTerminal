@@ -1,5 +1,7 @@
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
+add_subdirectory(CoreDomain)
+
 add_test(
     NAME database_initial_schema
     COMMAND

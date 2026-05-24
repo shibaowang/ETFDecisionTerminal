@@ -16,6 +16,15 @@ trade_log 是唯一事实账本。position_snapshot、cash_snapshot、portfolio_
 
 所有账务按 account_id + portfolio_id 联合重演。
 
+## 金额精度规则
+
+- 金额事实字段使用 MoneyCents，数据库单位为分。
+- 价格使用 Price1e6，数据库单位为价格 × 1,000,000。
+- 数量 / 份额使用 Quantity1e6，数据库单位为数量 × 1,000,000。
+- 比例使用 RatioPpm，数据库单位为比例 × 1,000,000。
+- 核心账务事实不得使用裸 double 表示。
+- 字符串解析失败必须显式返回错误，不能静默写入 0。
+
 ## 本金基准
 
 采用已结算权益基准法：

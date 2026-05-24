@@ -1,21 +1,13 @@
 #pragma once
 
-#include <cstdint>
+#include "CoreDomain/Enums.h"
+#include "CoreDomain/FixedPoint.h"
+#include "CoreDomain/Identifiers.h"
+#include "CoreDomain/Result.h"
+
 #include <string_view>
 
 namespace etfdt::core {
-
-struct MoneyCents final {
-    std::int64_t value = 0;
-};
-
-struct Price1e6 final {
-    std::int64_t value = 0;
-};
-
-struct Quantity1e6 final {
-    std::int64_t value = 0;
-};
 
 constexpr std::string_view kTradeLogTable = "trade_log";
 

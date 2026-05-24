@@ -30,6 +30,15 @@ v0.1 草案。初始迁移脚本见 `migrations/001_initial_schema.sql`。
 
 核心账务金额禁止用裸 double / REAL 作为事实字段。
 
+CoreDomain 对应基础类型：
+
+- MoneyCents：封装 amount_cents / fee_cents 等金额事实字段。
+- Price1e6：封装 price_1e6 等价格字段。
+- Quantity1e6：封装 quantity_1e6 等数量 / 份额字段。
+- RatioPpm：封装 ratio_ppm 等比例字段。
+
+这些类型只负责定点解析、格式化、基础校验和强类型约束，不承担策略计算。
+
 ## 核心表分类
 
 ### 系统与配置

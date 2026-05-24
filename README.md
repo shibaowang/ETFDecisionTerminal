@@ -105,6 +105,17 @@ TASK-009 新增 `libs/DataServiceApi`，在 ETFDataService 内部接入只读 `d
 
 这些 action 全部通过白名单注册，只调用 DataAccess 只读 Repository 或 `SQLiteConnection::healthCheck`。当前不提供任何写入 action，不写 `trade_log`，不写派生快照表，不实现成交确认、账务重演、策略计算或 TradeDraft 生命周期。
 
+## TASK-010 范围
+
+TASK-010 在 `libs/DataAccess` 中建立写入事务基础设施和审计写入基础：
+
+- `Transaction`：RAII 事务边界，未 commit 时析构自动 rollback。
+- `TransactionRunner`：回调成功时 commit，失败或异常时 rollback。
+- `AuditLogRepository`：只允许写 `audit_log`，并支持最近审计记录查询。
+- `SQLiteConnection`：新增受控参数化 statement helper、事务 begin / commit / rollback。
+
+本任务只写 `audit_log`。不写 `trade_log`，不写 `trade_execution_group`，不写 TradeDraft、grid_cycle、资金池或派生快照表，也不开放 socket 写 action。
+
 ## 构建
 
 环境要求：
@@ -206,6 +217,8 @@ ctest --test-dir build --output-on-failure
 
 当前测试 `dataservice_readonly_socket_actions` 会初始化临时数据库，启动只读 DataService action host，通过 LocalSocketClient 验证 `data.health`、`data.summary`、列表查询、`data.otc.list` 缺字段错误、未知 action 和 invalid JSON。
 
+当前测试 `dataaccess_transaction_audit` 会验证 Transaction commit / rollback、TransactionRunner 成功 / 失败路径、AuditLogRepository 输入校验、最近审计查询，并确认 `trade_log` 和派生快照表未被写入。
+
 Transport 稳定性重复验证命令：
 
 ```powershell
@@ -220,12 +233,14 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
 - 未实现云同步、多用户权限、资讯、研报、完整回测。
 - 未实现真实业务 action 分发；ServiceRuntime 当前只提供路由骨架、协议错误响应和 Ping/Health。
 - 未实现任何 DataService 写入 action；TASK-009 当前只提供只读 `data.*` 查询 action。
+- 未实现 `--append-audit-demo`；TASK-010 仅提供 DataAccess 层事务和 audit_log 写入基础。
+- 未实现任何 socket 写 action。
 - 未实现任何绕过 `ETFDataService` 的数据库写入代码。
 - 未实现业务 Repository、TradeLog 写入、账务重演或策略计算。
 - 未实现任何业务写入 Repository；TASK-005 的 Repository 只有只读查询能力。
 
 ## 后续任务建议
 
-1. TASK-010：设计 DataService 受控写入事务边界，但仍不得绕过 TradeLog 事实账本规则。
-2. TASK-011：将真实服务宿主接入 Watchdog 启动管理，但仍保持业务 handler 白名单。
-3. TASK-012：为只读 action 增加客户端侧调用封装和协议兼容测试。
+1. TASK-011：设计第一组受控写入 action，但必须声明允许写入表、事务边界和审计规则。
+2. TASK-012：将真实服务宿主接入 Watchdog 启动管理，但仍保持业务 handler 白名单。
+3. TASK-013：为只读和未来写入 action 增加客户端侧调用封装和协议兼容测试。

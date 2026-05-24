@@ -8,6 +8,15 @@
 - 当前 `data.*` action 不写 `trade_log`、`trade_execution_group`、`position_snapshot`、`cash_snapshot` 或 `portfolio_summary`。
 - SQLite 仍只能由 ETFDataService 进程访问；其他服务必须通过 Protocol 请求 DataService，不能直接访问 SQLite。
 
+## DataService 写入事务和审计边界
+
+- TASK-010 不修改数据库 schema，不修改 `migrations/001_initial_schema.sql`。
+- `audit_log` 是基础审计表，用于记录受控写入动作的原因、操作者、实体和变更 JSON。
+- 本任务仅允许写 `audit_log`，不写任何业务账务表。
+- 写入业务表之前必须先建立事务边界；后续高风险写入必须在同一事务内写业务事实和 `audit_log`。
+- `audit_log` 写入必须通过 `AuditLogRepository`，不得从 payload 传入任意 SQL。
+- `trade_log` 仍是唯一事实账本；`audit_log` 不是账务事实源。
+
 ## 当前状态
 
 v0.1 草案。初始迁移脚本见 `migrations/001_initial_schema.sql`。

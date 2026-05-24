@@ -1,11 +1,14 @@
 #pragma once
 
+#include "DataAccess/AuditLogRepository.h"
 #include "DataAccess/DatabaseTypes.h"
 #include "DataAccess/MigrationRunner.h"
 #include "DataAccess/ReadOnlyRepositoryBase.h"
 #include "DataAccess/Repositories.h"
 #include "DataAccess/RepositoryTypes.h"
 #include "DataAccess/SQLiteConnection.h"
+#include "DataAccess/Transaction.h"
+#include "DataAccess/TransactionRunner.h"
 
 #include <string_view>
 

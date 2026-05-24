@@ -1,6 +1,7 @@
 #include "DataServiceApi/DataServiceActionRegistrar.h"
 
 #include "DataServiceApi/DataServiceActions.h"
+#include "DataServiceApi/WriteActionPolicy.h"
 
 namespace etfdt::data_service_api {
 
@@ -28,6 +29,19 @@ void registerDataServiceReadOnlyActions(
     });
     (void)dispatcher.registerAction(kActionDataOtcList, [&connection](const auto& context) {
         return handleDataOtcList(context, connection);
+    });
+}
+
+void registerDataServiceWriteActions(
+    etfdt::service_runtime::ActionDispatcher& dispatcher,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    if (!isWriteActionAllowed(kActionDataAuditAppend)) {
+        return;
+    }
+
+    (void)dispatcher.registerAction(kActionDataAuditAppend, [&connection](const auto& context) {
+        return handleDataAuditAppend(context, connection);
     });
 }
 

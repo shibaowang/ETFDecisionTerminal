@@ -3,6 +3,7 @@ add_library(ETFDataServiceApi STATIC
     src/DataServiceActions.cpp
     src/DataServiceApi.cpp
     src/JsonBuilders.cpp
+    src/WriteActionPolicy.cpp
 )
 
 add_library(ETFDecisionTerminal::DataServiceApi ALIAS ETFDataServiceApi)

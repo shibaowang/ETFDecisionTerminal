@@ -17,6 +17,15 @@
 - `audit_log` 写入必须通过 `AuditLogRepository`，不得从 payload 传入任意 SQL。
 - `trade_log` 仍是唯一事实账本；`audit_log` 不是账务事实源。
 
+## TASK-011 审计写入 action 边界
+
+- TASK-011 不修改数据库 schema，不修改 `migrations/001_initial_schema.sql`。
+- 当前唯一允许的 socket 写入 action 是 `data.audit.append`。
+- `data.audit.append` 只能通过 `TransactionRunner` 和 `AuditLogRepository` 写入 `audit_log`。
+- `data.audit.append` 不得写 `trade_log`、`trade_execution_group`、`trade_draft`、`position_snapshot`、`cash_snapshot`、`portfolio_summary` 或任何业务账务表。
+- 缺少必填 payload 字段时必须返回协议错误，且不得插入 `audit_log`。
+- 未在写入白名单中的 action，例如 `data.trade_log.append`，必须返回 `E1004_INVALID_ACTION`。
+
 ## 当前状态
 
 v0.1 草案。初始迁移脚本见 `migrations/001_initial_schema.sql`。

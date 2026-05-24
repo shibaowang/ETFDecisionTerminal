@@ -103,3 +103,11 @@ principal_base =
 - 任何未来账务写入必须走 ETFDataService 受控事务边界。
 - 任何未来高风险写入必须在同一事务中写业务事实和 `audit_log`，失败时整体 rollback。
 - 本任务只验证事务提交、回滚和审计记录基础，不实现成交确认、手工入账或策略计算。
+
+## 审计写入 action 边界
+
+- TASK-011 的 `data.audit.append` 不是账务事件，不改变现金、持仓、本金、成本或收益。
+- `data.audit.append` 只写 `audit_log`，用于验证写入白名单、事务边界和协议错误响应。
+- `data.audit.append` 不写 `trade_log`，不创建 `trade_execution_group`，不改变 TradeDraft 状态。
+- `data.audit.append` 不写 `position_snapshot`、`cash_snapshot` 或 `portfolio_summary`。
+- trade_log 仍是唯一事实账本；任何真实业务入账必须由后续专门任务授权并定义完整事务、审计和回滚规则。

@@ -6,6 +6,7 @@ add_executable(ETFDiag
 
 target_link_libraries(ETFDiag
     PRIVATE
+        ETFDecisionTerminal::Diagnostics
         Qt6::Core
 )
 

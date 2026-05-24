@@ -6,6 +6,18 @@
 produced by Watchdog. It does not start services, connect Local Socket, access
 SQLite, or implement UI/business logic.
 
+## TASK-019 Diagnostics report model library
+
+`ETFDiagnostics` is a Qt Core based shared diagnostics model library. It owns
+the Watchdog report DTOs, JSON parsing, validation, and summary generation used
+by `ETFDiag` and intended for a future Shell diagnostics page.
+
+The library is deliberately passive: it does not start services, connect Local
+Socket, access SQLite, depend on DataAccess/DataServiceApi/Transport/ServiceHost,
+or implement trading/strategy/UI logic. `ETFDiag` now only parses CLI arguments,
+calls `WatchdogReportParser`, prints `DiagnosticSummary.text`, and returns
+`DiagnosticSummary.exitCode`.
+
 Generate a Watchdog report:
 
 ```powershell

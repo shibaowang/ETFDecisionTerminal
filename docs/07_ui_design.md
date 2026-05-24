@@ -7,6 +7,10 @@
   fields, and issue arrays.
 - TASK-018 only adds `ETFDiag` as a command line consumer of that report.
 - TASK-018 does not implement QML, a Shell page, or any UI workflow.
+- TASK-019 adds Diagnostics DTOs and parser logic for reuse by future Shell
+  diagnostics views.
+- Future QML should consume structured Diagnostics DTOs exposed by C++ instead
+  of parsing raw Watchdog JSON in QML.
 
 ## 当前状态
 

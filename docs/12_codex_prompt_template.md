@@ -69,6 +69,10 @@ v0.1 草案。
 43. 涉及 Watchdog 的任务不得直接访问 SQLite，不得依赖 DataAccess。
 44. Watchdog 只能管理进程和服务状态，不得实现业务策略、交易、账务重演或 TradeDraft 逻辑。
 45. Watchdog 健康检查必须通过 DataServiceClient 或协议请求完成，不得绕过 DataService。
+46. 涉及配置文件的任务必须定义配置格式、必填字段、默认值、校验规则和错误行为。
+47. 配置错误不得静默忽略；配置无效时不得尝试启动服务。
+48. `enabled=false` 的服务不得被 Watchdog 启动。
+49. `autoRestart` 等预留字段不得在未授权任务中启用真实自动重启行为。
 
 ## TASK 模板
 

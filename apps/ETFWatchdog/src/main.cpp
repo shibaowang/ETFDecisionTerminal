@@ -19,11 +19,14 @@ void printHelp()
         << "ETFWatchdog service process manager utility\n"
         << "\n"
         << "Usage:\n"
+        << "  ETFWatchdog --check-config --config <path>\n"
+        << "  ETFWatchdog --list-services --config <path>\n"
         << "  ETFWatchdog --demo-start-dataservice --dataservice-exe <path> --db <path> "
            "--socket-name <name>\n"
         << "  ETFWatchdog --help\n"
         << "\n"
-        << "This is a development process-management skeleton. It starts a local "
+        << "This is a development process-management skeleton. Config commands only "
+        << "load and validate the service manifest. The demo command starts a local "
         << "DataService process, checks system.ping and data.health through "
         << "DataServiceClient, then stops the child process.\n";
 }
@@ -61,6 +64,65 @@ bool processEventsUntil(const std::function<bool()>& predicate, int timeoutMs)
     }
     QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
     return predicate();
+}
+
+int checkConfig(const std::string& configPath)
+{
+    if (configPath.empty()) {
+        std::cerr << "--config is required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    const auto validation = etfdt::watchdog::ServiceManifestLoader::validate(manifest.value());
+    std::size_t enabledCount = 0;
+    for (const auto& service : manifest.value().services) {
+        if (service.enabled) {
+            ++enabledCount;
+        }
+    }
+
+    std::cout << "version: " << manifest.value().version << '\n';
+    std::cout << "services: " << manifest.value().services.size() << '\n';
+    std::cout << "enabled: " << enabledCount << '\n';
+    for (const auto& warning : validation.warnings) {
+        std::cout << "warning: " << warning << '\n';
+    }
+    if (!validation.valid) {
+        for (const auto& error : validation.errors) {
+            std::cerr << "error: " << error.message << '\n';
+        }
+        return 1;
+    }
+    std::cout << "config: valid\n";
+    return 0;
+}
+
+int listServices(const std::string& configPath)
+{
+    if (configPath.empty()) {
+        std::cerr << "--config is required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    for (const auto& service : manifest.value().services) {
+        std::cout << "serviceName: " << service.serviceName << '\n';
+        std::cout << "  enabled: " << (service.enabled ? "true" : "false") << '\n';
+        std::cout << "  socketName: " << service.socketName << '\n';
+        std::cout << "  executablePath: " << service.executablePath << '\n';
+    }
+    return 0;
 }
 
 int demoStartDataService(
@@ -135,6 +197,14 @@ int main(int argc, char* argv[])
     if (args.empty() || hasOption(args, "--help")) {
         printHelp();
         return 0;
+    }
+
+    if (hasOption(args, "--check-config")) {
+        return checkConfig(optionValue(args, "--config"));
+    }
+
+    if (hasOption(args, "--list-services")) {
+        return listServices(optionValue(args, "--config"));
     }
 
     if (hasOption(args, "--demo-start-dataservice")) {

@@ -124,3 +124,8 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - Watchdog 不直接访问 SQLite，不依赖 DataAccess，不读写 Repository。
 - Watchdog 不新增服务端 action，不实现策略、行情、交易、账务重演或 TradeDraft 生命周期。
 - 第一版不做 Windows Service 安装，不写注册表，不实现后台常驻管理。
+- TASK-014 新增 Watchdog 服务清单配置加载和校验。
+- Watchdog 通过 `config/services.local.example.json` 这类服务清单描述本地服务进程、启动参数、socket 名和超时。
+- 服务清单错误必须显式返回错误，不得静默忽略，也不得在配置不合法时尝试启动服务。
+- 当前启用状态只支持 `ETFDataService`；其他未来服务可以作为 `enabled=false` 占位项读取并产生 warning。
+- `autoRestart` 当前只是配置字段，不执行自动重启。

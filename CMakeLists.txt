@@ -15,6 +15,7 @@ option(ETFDT_BUILD_TESTS "Build ETFDecisionTerminal tests" ON)
 
 add_subdirectory(libs/CoreDomain)
 add_subdirectory(libs/Protocol)
+add_subdirectory(libs/Transport)
 add_subdirectory(libs/DataAccess)
 add_subdirectory(libs/StrategyEngine)
 add_subdirectory(libs/MarketEngine)

@@ -61,3 +61,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - TradeLog 是唯一事实账本。
 - position_snapshot、cash_snapshot、portfolio_summary 都是派生缓存。
 - 服务异常恢复后，从 SQLite 重建业务状态。
+
+## Transport 层边界
+
+- Transport 位于各本地服务进程之间，当前实现为 Qt Local Socket + JSON。
+- Transport 只负责连接管理、协议帧边界、消息发送和接收。
+- Transport 不解释业务 action，不做策略计算，不做账务重演。
+- Transport 不访问 SQLite，不依赖 DataAccess，不暴露 Repository。
+- ETFDecisionShell、ETFMarketService、ETFStrategyService、ETFAlertService 等后续只能通过协议请求 ETFDataService，不能直接读写 SQLite。
+- TASK-006 只提供传输层骨架和 echo 测试，不启动真实服务通信拓扑。

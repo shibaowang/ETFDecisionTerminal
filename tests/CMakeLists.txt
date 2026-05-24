@@ -3,6 +3,7 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_subdirectory(CoreDomain)
 add_subdirectory(DataAccess)
 add_subdirectory(Protocol)
+add_subdirectory(Transport)
 
 add_test(
     NAME database_initial_schema

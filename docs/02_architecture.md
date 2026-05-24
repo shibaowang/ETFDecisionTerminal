@@ -133,3 +133,6 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - 配置驱动启动后，Watchdog 仍只通过 `DataServiceClient` 执行 `system.ping` 和 `data.health`。
 - 配置驱动命令结束前必须停止子进程；失败路径也必须清理已启动进程。
 - 第一版仍不做 Windows Service，也不做自动重启。
+- TASK-016 新增服务清单状态报告和 dry-run 启动检查。
+- dry-run 只检查配置、路径、enabled 状态、socketName 和健康检查条件，不启动服务、不连接 socket、不访问数据库。
+- manifest status 会汇总 total / enabled / disabled / error / warning，并标出每个服务是否 canStart。

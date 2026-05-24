@@ -311,12 +311,8 @@ ServiceManifestValidationResult ServiceManifestLoader::validate(const ServiceMan
             addValidationError(result, "duplicate serviceName: " + service.serviceName);
         }
         if (!isSupportedServiceName(service.serviceName)) {
-            if (service.enabled) {
-                addValidationError(result, "unsupported enabled serviceName: " + service.serviceName);
-            } else {
-                result.warnings.push_back(
-                    "unsupported disabled serviceName kept as future placeholder: " + service.serviceName);
-            }
+            result.warnings.push_back(
+                "unsupported serviceName kept as future placeholder: " + service.serviceName);
         }
         if (service.executablePath.empty()) {
             addValidationError(result, "executablePath is required for " + service.serviceName);

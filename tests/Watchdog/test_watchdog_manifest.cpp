@@ -117,7 +117,9 @@ std::string manifestJsonForDataService(
     const std::filesystem::path& dataServiceExe,
     const std::filesystem::path& dbPath,
     const std::string& socketName,
-    bool enabled = true)
+    bool enabled = true,
+    bool autoRestart = false,
+    const std::filesystem::path& workingDirectory = ".")
 {
     return std::string(R"json({
   "version": "1.0",
@@ -128,7 +130,8 @@ std::string manifestJsonForDataService(
         + (enabled ? "true" : "false") + R"json(,
       "executablePath": ")json"
         + escapeJsonString(dataServiceExe.generic_string()) + R"json(",
-      "workingDirectory": ".",
+      "workingDirectory": ")json"
+        + escapeJsonString(workingDirectory.generic_string()) + R"json(",
       "arguments": ["--serve-readonly", "--db", ")json"
         + escapeJsonString(dbPath.generic_string()) + R"json(", "--socket-name", ")json"
         + escapeJsonString(socketName) + R"json("],
@@ -137,7 +140,8 @@ std::string manifestJsonForDataService(
       "startupTimeoutMs": 5000,
       "shutdownTimeoutMs": 3000,
       "healthTimeoutMs": 1000,
-      "autoRestart": false
+      "autoRestart": )json"
+        + (autoRestart ? "true" : "false") + R"json(
     }
   ]
 })json";
@@ -321,6 +325,170 @@ void testWatchdogCli(const std::filesystem::path& watchdogExe, const std::filesy
         "--show-config-status prints startupTimeoutMs");
 }
 
+void testManifestStatusReport(
+    const std::filesystem::path& watchdogExe,
+    const std::filesystem::path& dataServiceExe,
+    const std::filesystem::path& tempDir)
+{
+    const auto dbPath = tempDir / "dry_run.db";
+    const std::string socketName = "ETFDecisionTerminalManifestDryRun_"
+        + std::to_string(QCoreApplication::applicationPid());
+    const auto validConfigPath = writeFile(
+        tempDir,
+        "status_valid_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName));
+
+    QString manifestOutput;
+    const int manifestCode = runWatchdogCli(
+        watchdogExe,
+        {"--manifest-status", "--config", QString::fromStdWString(validConfigPath.wstring())},
+        &manifestOutput);
+    expectTrue(manifestCode == 0, "--manifest-status valid config returns 0");
+    expectTrue(manifestOutput.contains("enabledServices: 1"), "manifest-status prints enabled count");
+    expectTrue(manifestOutput.contains("disabledServices: 0"), "manifest-status prints disabled count");
+    expectTrue(manifestOutput.contains("warningCount: 0"), "manifest-status prints warning count");
+    expectTrue(manifestOutput.contains("canStart: true"), "manifest-status reports canStart=true");
+
+    QString dryRunOutput;
+    const int dryRunCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--dry-run-start",
+            "--config",
+            QString::fromStdWString(validConfigPath.wstring()),
+            "--service",
+            "ETFDataService",
+        },
+        &dryRunOutput);
+    expectTrue(dryRunCode == 0, "--dry-run-start ETFDataService valid config returns 0");
+    expectTrue(dryRunOutput.contains("dryRunStart: canStart"), "dry-run-start reports canStart");
+    expectTrue(socketIsClosed(socketName), "dry-run-start does not open socket");
+    expectTrue(!hasProcessWithSocketName(socketName), "dry-run-start does not start process");
+
+    const int missingServiceDryRun = runWatchdogCli(
+        watchdogExe,
+        {
+            "--dry-run-start",
+            "--config",
+            QString::fromStdWString(validConfigPath.wstring()),
+            "--service",
+            "MissingService",
+        });
+    expectTrue(missingServiceDryRun != 0, "dry-run-start missing service returns non-zero");
+
+    const auto disabledConfigPath = writeFile(
+        tempDir,
+        "status_disabled_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName + "_disabled", false));
+    QString disabledOutput;
+    const int disabledDryRun = runWatchdogCli(
+        watchdogExe,
+        {
+            "--dry-run-start",
+            "--config",
+            QString::fromStdWString(disabledConfigPath.wstring()),
+            "--service",
+            "ETFDataService",
+        },
+        &disabledOutput);
+    expectTrue(disabledDryRun != 0, "dry-run-start disabled service returns non-zero");
+    expectTrue(disabledOutput.contains("canStart: false"), "disabled service canStart=false");
+    expectTrue(disabledOutput.contains("SERVICE_DISABLED"), "disabled service reports info issue");
+
+    const auto missingExePath = writeFile(
+        tempDir,
+        "status_missing_exe_manifest.json",
+        manifestJsonForDataService(tempDir / "missing.exe", dbPath, socketName + "_missing_exe"));
+    const int missingExeStatus = runWatchdogCli(
+        watchdogExe,
+        {"--manifest-status", "--config", QString::fromStdWString(missingExePath.wstring())});
+    expectTrue(missingExeStatus != 0, "manifest-status missing executable returns non-zero");
+
+    const auto missingWorkingDirPath = writeFile(
+        tempDir,
+        "status_missing_workdir_manifest.json",
+        manifestJsonForDataService(
+            dataServiceExe,
+            dbPath,
+            socketName + "_missing_workdir",
+            true,
+            false,
+            tempDir / "missing_workdir"));
+    const int missingWorkingDirStatus = runWatchdogCli(
+        watchdogExe,
+        {"--manifest-status", "--config", QString::fromStdWString(missingWorkingDirPath.wstring())});
+    expectTrue(missingWorkingDirStatus != 0, "manifest-status missing workingDirectory returns non-zero");
+
+    const auto autoRestartConfigPath = writeFile(
+        tempDir,
+        "status_autorestart_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName + "_autorestart", true, true));
+    QString autoRestartOutput;
+    const int autoRestartStatus = runWatchdogCli(
+        watchdogExe,
+        {"--manifest-status", "--config", QString::fromStdWString(autoRestartConfigPath.wstring())},
+        &autoRestartOutput);
+    expectTrue(autoRestartStatus == 0, "manifest-status autoRestart warning returns 0");
+    expectTrue(autoRestartOutput.contains("AUTO_RESTART_IGNORED"), "autoRestart warning is reported");
+    expectTrue(
+        autoRestartOutput.contains("autoRestartEnabledButIgnored: true"),
+        "autoRestart is marked ignored");
+
+    etfdt::watchdog::ServiceManifest missingSocketManifest;
+    missingSocketManifest.version = "1.0";
+    etfdt::watchdog::ServiceProcessConfig missingSocketService;
+    missingSocketService.serviceName = "ETFDataService";
+    missingSocketService.enabled = true;
+    missingSocketService.executablePath = dataServiceExe.string();
+    missingSocketService.workingDirectory = ".";
+    missingSocketManifest.services.push_back(missingSocketService);
+    etfdt::watchdog::ManifestStatusOptions options;
+    options.baseDirectory = std::filesystem::current_path();
+    const auto missingSocketReport =
+        etfdt::watchdog::buildManifestStatusReport(missingSocketManifest, options);
+    expectTrue(missingSocketReport.errorCount > 0, "ETFDataService missing socketName is error");
+    expectTrue(
+        !missingSocketReport.serviceStatuses.empty()
+            && !missingSocketReport.serviceStatuses.front().canStart,
+        "ETFDataService missing socketName cannot start");
+
+    etfdt::watchdog::ServiceManifest unsupportedManifest;
+    unsupportedManifest.version = "1.0";
+    etfdt::watchdog::ServiceProcessConfig unsupportedService;
+    unsupportedService.serviceName = "ETFMarketService";
+    unsupportedService.enabled = true;
+    unsupportedService.executablePath = dataServiceExe.string();
+    unsupportedService.workingDirectory = ".";
+    unsupportedManifest.services.push_back(unsupportedService);
+    const auto unsupportedReport =
+        etfdt::watchdog::buildManifestStatusReport(unsupportedManifest, options);
+    expectTrue(unsupportedReport.warningCount > 0, "enabled non-ETFDataService produces warning");
+    expectTrue(
+        !unsupportedReport.serviceStatuses.empty()
+            && !unsupportedReport.serviceStatuses.front().canStart,
+        "enabled non-ETFDataService cannot start");
+
+    const auto unsupportedConfigPath = writeFile(
+        tempDir,
+        "status_unsupported_manifest.json",
+        std::string(R"json({"version":"1.0","services":[{"serviceName":"ETFMarketService","enabled":true,"executablePath":")json")
+            + escapeJsonString(dataServiceExe.generic_string())
+            + R"json(","workingDirectory":"."}]})json");
+    QString unsupportedOutput;
+    const int unsupportedDryRun = runWatchdogCli(
+        watchdogExe,
+        {
+            "--dry-run-start",
+            "--config",
+            QString::fromStdWString(unsupportedConfigPath.wstring()),
+            "--service",
+            "ETFMarketService",
+        },
+        &unsupportedOutput);
+    expectTrue(unsupportedDryRun != 0, "dry-run-start unsupported service returns non-zero");
+    expectTrue(unsupportedOutput.contains("SERVICE_UNSUPPORTED"), "unsupported dry-run reports warning");
+}
+
 void testStartServiceFromManifest(
     const std::filesystem::path& watchdogExe,
     const std::filesystem::path& dataServiceExe,
@@ -447,6 +615,7 @@ int main(int argc, char* argv[])
     const auto tempDir = createTempDirectory();
     testManifestLoader(tempDir);
     testWatchdogCli(watchdogExe, tempDir);
+    testManifestStatusReport(watchdogExe, dataServiceExe, tempDir);
     testStartServiceFromManifest(watchdogExe, dataServiceExe, migrationPath, tempDir);
     std::filesystem::remove_all(tempDir);
 

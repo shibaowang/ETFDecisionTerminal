@@ -3,6 +3,7 @@ find_package(Qt6 COMPONENTS Core REQUIRED)
 add_library(ETFWatchdogLib STATIC
     src/ServiceManifest.cpp
     src/ServiceManifestLoader.cpp
+    src/ServiceManifestStatus.cpp
     src/ServiceProcessConfig.cpp
     src/ServiceProcessManager.cpp
     src/ServiceProcessStatus.cpp

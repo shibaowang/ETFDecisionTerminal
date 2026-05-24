@@ -21,6 +21,11 @@
   severity sorting, service / issue search, aggregate counters, and report file
   refresh detection.
 - Current task still does not implement QML or any visual page.
+- TASK-022 introduces `ShellDiagnosticPresenter` as the intended C++ object a
+  future diagnostics page should bind to.
+- Mock diagnostics reports may be used for UI prototypes, but the UI must label
+  them as mock / non-real data.
+- QML still must not parse raw Watchdog JSON or access SQLite.
 
 ## 当前状态
 

@@ -1,6 +1,8 @@
 add_library(ETFShellCore STATIC
     src/ShellCore.cpp
     src/ShellDiagnosticFacade.cpp
+    src/ShellDiagnosticMockReportBuilder.cpp
+    src/ShellDiagnosticPresenter.cpp
     src/ShellDiagnosticRows.cpp
     src/ShellDiagnosticViewModel.cpp
 )

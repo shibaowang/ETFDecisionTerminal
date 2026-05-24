@@ -18,6 +18,10 @@
 - Shell / UI filtering, sorting, aggregation, and refresh detection should be
   implemented in the C++ ViewModel layer unless a task explicitly authorizes a
   narrower UI-only presentation change.
+- Shell Presenter tasks must not access databases, start services, connect
+  sockets, or implement trading / strategy behavior.
+- Mock data must be clearly scoped to tests or UI prototypes and must not be
+  presented as real service state.
 
 ## 当前状态
 

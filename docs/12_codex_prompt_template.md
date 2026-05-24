@@ -7,6 +7,10 @@
   and no SQLite access.
 - JSON consumer tasks must validate missing fields and field types explicitly;
   invalid JSON or malformed schema must return a controlled non-zero result.
+- Diagnostic model tasks must remain passive: no database access, no service
+  start, no socket connection, and no business decisions.
+- UI tasks must not reimplement diagnostic JSON parsing in QML; they should
+  reuse the Diagnostics library through a C++ boundary.
 
 ## 当前状态
 

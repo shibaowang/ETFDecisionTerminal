@@ -8,6 +8,7 @@ add_subdirectory(ServiceRuntime)
 add_subdirectory(ServiceHost)
 add_subdirectory(Transport)
 add_subdirectory(DataServiceClient)
+add_subdirectory(Diagnostics)
 add_subdirectory(Watchdog)
 add_subdirectory(ETFDiag)
 

@@ -12,6 +12,18 @@
 - The tool is a prototype data consumer for a future Shell diagnostics page;
   TASK-018 does not implement QML or UI.
 
+## Diagnostics library boundary
+
+- TASK-019 adds `ETFDiagnostics` as a shared model and parser library for
+  Watchdog manifest status reports.
+- `ETFDiagnostics` owns the report DTOs, issue DTOs, Watchdog JSON parser, and
+  diagnostic summary generation.
+- `ETFDiag` and a future Shell diagnostics page should reuse this library
+  instead of duplicating JSON parsing.
+- `ETFDiagnostics` does not start services, connect Local Socket, access SQLite,
+  depend on DataAccess/DataServiceApi/Transport/ServiceHost, or implement
+  business logic.
+
 ## 当前状态
 
 v0.1 草案。

@@ -1,3 +1,5 @@
+#include "DataAccess/DataAccess.h"
+#include "DataServiceClient/DataServiceClientApi.h"
 #include "Watchdog/Watchdog.h"
 
 #include <QCoreApplication>
@@ -82,6 +84,65 @@ std::filesystem::path writeFile(
     return path;
 }
 
+std::string escapeJsonString(std::string value)
+{
+    std::string escaped;
+    escaped.reserve(value.size());
+    for (const char c : value) {
+        switch (c) {
+        case '\\':
+            escaped += "\\\\";
+            break;
+        case '"':
+            escaped += "\\\"";
+            break;
+        case '\n':
+            escaped += "\\n";
+            break;
+        case '\r':
+            escaped += "\\r";
+            break;
+        case '\t':
+            escaped += "\\t";
+            break;
+        default:
+            escaped.push_back(c);
+            break;
+        }
+    }
+    return escaped;
+}
+
+std::string manifestJsonForDataService(
+    const std::filesystem::path& dataServiceExe,
+    const std::filesystem::path& dbPath,
+    const std::string& socketName,
+    bool enabled = true)
+{
+    return std::string(R"json({
+  "version": "1.0",
+  "services": [
+    {
+      "serviceName": "ETFDataService",
+      "enabled": )json")
+        + (enabled ? "true" : "false") + R"json(,
+      "executablePath": ")json"
+        + escapeJsonString(dataServiceExe.generic_string()) + R"json(",
+      "workingDirectory": ".",
+      "arguments": ["--serve-readonly", "--db", ")json"
+        + escapeJsonString(dbPath.generic_string()) + R"json(", "--socket-name", ")json"
+        + escapeJsonString(socketName) + R"json("],
+      "socketName": ")json"
+        + escapeJsonString(socketName) + R"json(",
+      "startupTimeoutMs": 5000,
+      "shutdownTimeoutMs": 3000,
+      "healthTimeoutMs": 1000,
+      "autoRestart": false
+    }
+  ]
+})json";
+}
+
 int runWatchdogCli(
     const std::filesystem::path& watchdogExe,
     const QStringList& arguments,
@@ -92,10 +153,10 @@ int runWatchdogCli(
     process.setArguments(arguments);
     process.setProcessChannelMode(QProcess::MergedChannels);
     process.start();
-    if (!process.waitForStarted(5000)) {
+    if (!process.waitForStarted(10000)) {
         return -1000;
     }
-    if (!process.waitForFinished(5000)) {
+    if (!process.waitForFinished(15000)) {
         process.kill();
         (void)process.waitForFinished(3000);
         return -1001;
@@ -104,6 +165,59 @@ int runWatchdogCli(
         *output = QString::fromUtf8(process.readAllStandardOutput());
     }
     return process.exitCode();
+}
+
+void openMigratedDatabase(
+    const std::filesystem::path& migrationPath,
+    const std::filesystem::path& dbPath,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    etfdt::data_access::DatabaseConfig config;
+    config.databasePath = dbPath;
+    config.migrationFilePath = migrationPath;
+    config.enableWal = true;
+    config.foreignKeys = true;
+
+    auto openResult = connection.open(config);
+    expectTrue(openResult.hasValue(), "SQLiteConnection open succeeds for manifest start test");
+    auto migrationResult =
+        etfdt::data_access::MigrationRunner::runInitialMigration(connection, migrationPath);
+    expectTrue(migrationResult.hasValue(), "Initial migration succeeds for manifest start test");
+    auto health = connection.healthCheck();
+    expectTrue(health.hasValue(), "healthCheck succeeds before manifest-driven serving");
+}
+
+bool socketIsClosed(const std::string& socketName)
+{
+    etfdt::data_service_client::DataServiceClient client(
+        etfdt::protocol::ServiceName::ETFWatchdog,
+        etfdt::protocol::ServiceName::ETFDataService);
+    auto connected = client.connect(socketName, 200);
+    if (connected) {
+        client.disconnect();
+        return false;
+    }
+    return true;
+}
+
+bool hasProcessWithSocketName(const std::string& socketName)
+{
+    QProcess process;
+    process.setProgram("powershell");
+    process.setArguments({
+        "-NoProfile",
+        "-Command",
+        QString("if (Get-CimInstance Win32_Process | Where-Object { $_.Name -like 'ETFDataService*' -and $_.CommandLine -like '*%1*' }) { exit 1 } else { exit 0 }")
+            .arg(QString::fromStdString(socketName)),
+    });
+    process.setProcessChannelMode(QProcess::MergedChannels);
+    process.start();
+    if (!process.waitForStarted(5000) || !process.waitForFinished(10000)) {
+        process.kill();
+        (void)process.waitForFinished(3000);
+        return true;
+    }
+    return process.exitCode() != 0;
 }
 
 void testManifestLoader(const std::filesystem::path& tempDir)
@@ -194,6 +308,126 @@ void testWatchdogCli(const std::filesystem::path& watchdogExe, const std::filesy
     expectTrue(
         listOutput.contains("socketName: ETFDataServiceReadonly"),
         "--list-services prints socketName");
+
+    QString statusOutput;
+    const int statusCode = runWatchdogCli(
+        watchdogExe,
+        {"--show-config-status", "--config", QString::fromStdWString(validPath.wstring())},
+        &statusOutput);
+    expectTrue(statusCode == 0, "--show-config-status valid config returns 0");
+    expectTrue(statusOutput.contains("autoRestart: false"), "--show-config-status prints autoRestart");
+    expectTrue(
+        statusOutput.contains("startupTimeoutMs: 5000"),
+        "--show-config-status prints startupTimeoutMs");
+}
+
+void testStartServiceFromManifest(
+    const std::filesystem::path& watchdogExe,
+    const std::filesystem::path& dataServiceExe,
+    const std::filesystem::path& migrationPath,
+    const std::filesystem::path& tempDir)
+{
+    const auto dbPath = tempDir / "manifest_start_dataservice.db";
+    etfdt::data_access::SQLiteConnection connection;
+    openMigratedDatabase(migrationPath, dbPath, connection);
+    connection.close();
+
+    const std::string socketName = "ETFDecisionTerminalManifestStart_"
+        + std::to_string(QCoreApplication::applicationPid());
+    const auto startConfigPath = writeFile(
+        tempDir,
+        "start_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName));
+
+    QString startOutput;
+    const int startCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--start-service-from-config",
+            "--config",
+            QString::fromStdWString(startConfigPath.wstring()),
+            "--service",
+            "ETFDataService",
+        },
+        &startOutput);
+    expectTrue(startCode == 0, "--start-service-from-config ETFDataService returns 0");
+    expectTrue(startOutput.contains("healthState: HEALTHY"), "manifest start health is HEALTHY");
+    expectTrue(
+        startOutput.contains("DataService ping and data.health succeeded"),
+        "manifest start ping and data.health succeed");
+    expectTrue(socketIsClosed(socketName), "DataService socket is closed after command exits");
+    expectTrue(!hasProcessWithSocketName(socketName), "no ETFDataService process remains for socket");
+
+    const int missingServiceCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--start-service-from-config",
+            "--config",
+            QString::fromStdWString(startConfigPath.wstring()),
+            "--service",
+            "MissingService",
+        });
+    expectTrue(missingServiceCode != 0, "missing service returns non-zero");
+
+    const auto disabledConfigPath = writeFile(
+        tempDir,
+        "disabled_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName + "_disabled", false));
+    const int disabledCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--start-service-from-config",
+            "--config",
+            QString::fromStdWString(disabledConfigPath.wstring()),
+            "--service",
+            "ETFDataService",
+        });
+    expectTrue(disabledCode != 0, "disabled service returns non-zero");
+
+    const auto unsupportedConfigPath = writeFile(
+        tempDir,
+        "unsupported_manifest.json",
+        R"json({"version":"1.0","services":[{"serviceName":"ETFMarketService","enabled":false,"executablePath":"future.exe"}]})json");
+    const int unsupportedCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--start-service-from-config",
+            "--config",
+            QString::fromStdWString(unsupportedConfigPath.wstring()),
+            "--service",
+            "ETFMarketService",
+        });
+    expectTrue(unsupportedCode != 0, "unsupported service returns non-zero");
+
+    const auto missingExeConfigPath = writeFile(
+        tempDir,
+        "missing_exe_manifest.json",
+        manifestJsonForDataService(tempDir / "missing.exe", dbPath, socketName + "_missing_exe"));
+    const int missingExeCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--start-service-from-config",
+            "--config",
+            QString::fromStdWString(missingExeConfigPath.wstring()),
+            "--service",
+            "ETFDataService",
+        });
+    expectTrue(missingExeCode != 0, "missing executable returns non-zero");
+
+    const auto invalidConfigPath = writeFile(
+        tempDir,
+        "invalid_start_manifest.json",
+        R"json({"version":"1.0","services":[{"serviceName":"ETFDataService","socketName":"s"}]})json");
+    const int invalidCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--start-service-from-config",
+            "--config",
+            QString::fromStdWString(invalidConfigPath.wstring()),
+            "--service",
+            "ETFDataService",
+        });
+    expectTrue(invalidCode != 0, "invalid config returns non-zero");
 }
 
 }  // namespace
@@ -203,14 +437,17 @@ int main(int argc, char* argv[])
     QCoreApplication app(argc, argv);
 
     const auto watchdogExe = optionValue(argc, argv, "--watchdog-exe");
-    if (watchdogExe.empty()) {
-        std::cerr << "--watchdog-exe <path> is required\n";
+    const auto dataServiceExe = optionValue(argc, argv, "--dataservice-exe");
+    const auto migrationPath = optionValue(argc, argv, "--migration");
+    if (watchdogExe.empty() || dataServiceExe.empty() || migrationPath.empty()) {
+        std::cerr << "--watchdog-exe <path>, --dataservice-exe <path> and --migration <path> are required\n";
         return 1;
     }
 
     const auto tempDir = createTempDirectory();
     testManifestLoader(tempDir);
     testWatchdogCli(watchdogExe, tempDir);
+    testStartServiceFromManifest(watchdogExe, dataServiceExe, migrationPath, tempDir);
     std::filesystem::remove_all(tempDir);
 
     if (gFailures != 0) {

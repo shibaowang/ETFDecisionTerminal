@@ -21,14 +21,16 @@ void printHelp()
         << "Usage:\n"
         << "  ETFWatchdog --check-config --config <path>\n"
         << "  ETFWatchdog --list-services --config <path>\n"
+        << "  ETFWatchdog --show-config-status --config <path>\n"
+        << "  ETFWatchdog --start-service-from-config --config <path> --service <serviceName>\n"
         << "  ETFWatchdog --demo-start-dataservice --dataservice-exe <path> --db <path> "
            "--socket-name <name>\n"
         << "  ETFWatchdog --help\n"
         << "\n"
         << "This is a development process-management skeleton. Config commands only "
-        << "load and validate the service manifest. The demo command starts a local "
-        << "DataService process, checks system.ping and data.health through "
-        << "DataServiceClient, then stops the child process.\n";
+        << "load, validate and display the service manifest. The start commands start "
+        << "a local DataService process, check system.ping and data.health through "
+        << "DataServiceClient, then stop the child process.\n";
 }
 
 std::string optionValue(const std::vector<std::string>& args, const std::string& option)
@@ -125,6 +127,118 @@ int listServices(const std::string& configPath)
     return 0;
 }
 
+void printServiceConfigStatus(const etfdt::watchdog::ServiceProcessConfig& service)
+{
+    std::cout << "serviceName: " << service.serviceName << '\n';
+    std::cout << "  enabled: " << (service.enabled ? "true" : "false") << '\n';
+    std::cout << "  socketName: " << service.socketName << '\n';
+    std::cout << "  executablePath: " << service.executablePath << '\n';
+    std::cout << "  autoRestart: " << (service.autoRestart ? "true" : "false") << '\n';
+    std::cout << "  startupTimeoutMs: " << service.startupTimeoutMs << '\n';
+    std::cout << "  shutdownTimeoutMs: " << service.shutdownTimeoutMs << '\n';
+    std::cout << "  healthTimeoutMs: " << service.healthTimeoutMs << '\n';
+}
+
+int showConfigStatus(const std::string& configPath)
+{
+    if (configPath.empty()) {
+        std::cerr << "--config is required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    std::cout << "version: " << manifest.value().version << '\n';
+    for (const auto& service : manifest.value().services) {
+        printServiceConfigStatus(service);
+    }
+    return 0;
+}
+
+const etfdt::watchdog::ServiceProcessConfig* findServiceConfig(
+    const etfdt::watchdog::ServiceManifest& manifest,
+    const std::string& serviceName)
+{
+    for (const auto& service : manifest.services) {
+        if (service.serviceName == serviceName) {
+            return &service;
+        }
+    }
+    return nullptr;
+}
+
+int startServiceFromConfig(const std::string& configPath, const std::string& serviceName)
+{
+    if (configPath.empty() || serviceName.empty()) {
+        std::cerr << "--config and --service are required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    const auto* service = findServiceConfig(manifest.value(), serviceName);
+    if (service == nullptr) {
+        std::cerr << "Unknown service in config: " << serviceName << '\n';
+        return 1;
+    }
+    if (service->serviceName != "ETFDataService") {
+        std::cerr << "Unsupported service for config-driven start: " << service->serviceName << '\n';
+        return 1;
+    }
+    if (!service->enabled) {
+        std::cerr << "Service is disabled: " << service->serviceName << '\n';
+        return 1;
+    }
+
+    etfdt::watchdog::ServiceProcessManager manager;
+    auto added = manager.addService(*service);
+    if (!added) {
+        std::cerr << "Failed to add service: " << added.error().message << '\n';
+        return 1;
+    }
+    auto started = manager.startService(service->serviceName);
+    if (!started) {
+        std::cerr << "Failed to start service: " << started.error().message << '\n';
+        manager.stopAll();
+        return 1;
+    }
+
+    etfdt::watchdog::ServiceProcessStatus status;
+    const bool healthy = processEventsUntil(
+        [&]() {
+            auto health = manager.checkHealth(service->serviceName);
+            if (health) {
+                status = health.value();
+                return status.healthState == etfdt::watchdog::HealthState::Healthy;
+            }
+            return false;
+        },
+        service->startupTimeoutMs);
+
+    std::cout << "serviceName: " << status.serviceName << '\n';
+    std::cout << "running: " << (status.running ? "true" : "false") << '\n';
+    std::cout << "pid: " << status.pid << '\n';
+    std::cout << "healthState: " << etfdt::watchdog::toString(status.healthState) << '\n';
+    std::cout << "message: " << status.message << '\n';
+
+    auto stopped = manager.stopService(service->serviceName);
+    if (!stopped) {
+        std::cerr << "Failed to stop service: " << stopped.error().message << '\n';
+        manager.stopAll();
+        return 1;
+    }
+    manager.stopAll();
+    return healthy ? 0 : 1;
+}
+
 int demoStartDataService(
     const std::string& dataServiceExe,
     const std::string& dbPath,
@@ -205,6 +319,16 @@ int main(int argc, char* argv[])
 
     if (hasOption(args, "--list-services")) {
         return listServices(optionValue(args, "--config"));
+    }
+
+    if (hasOption(args, "--show-config-status")) {
+        return showConfigStatus(optionValue(args, "--config"));
+    }
+
+    if (hasOption(args, "--start-service-from-config")) {
+        return startServiceFromConfig(
+            optionValue(args, "--config"),
+            optionValue(args, "--service"));
     }
 
     if (hasOption(args, "--demo-start-dataservice")) {

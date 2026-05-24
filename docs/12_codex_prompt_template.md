@@ -1,5 +1,13 @@
 # Codex 提示词模板
 
+## TASK-018 diagnostic consumer guardrails
+
+- Diagnostic consumer tasks must state whether they may start services or
+  access databases; default behavior is no service start, no socket connection,
+  and no SQLite access.
+- JSON consumer tasks must validate missing fields and field types explicitly;
+  invalid JSON or malformed schema must return a controlled non-zero result.
+
 ## 当前状态
 
 v0.1 草案。

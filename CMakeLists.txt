@@ -34,6 +34,8 @@ add_subdirectory(apps/ETFMarketService)
 add_subdirectory(apps/ETFStrategyService)
 add_subdirectory(apps/ETFAlertService)
 
+add_subdirectory(tools/ETFDiag)
+
 include(CTest)
 if(BUILD_TESTING AND ETFDT_BUILD_TESTS)
     set_property(

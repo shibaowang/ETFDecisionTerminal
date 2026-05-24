@@ -1,5 +1,34 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-018 ETFDiag diagnostic report consumer
+
+`ETFDiag` is a local diagnostic command line tool that consumes the JSON report
+produced by Watchdog. It does not start services, connect Local Socket, access
+SQLite, or implement UI/business logic.
+
+Generate a Watchdog report:
+
+```powershell
+build\apps\ETFWatchdog\Debug\ETFWatchdog.exe --manifest-status-json --config config\services.local.example.json --output build\watchdog-status.json
+```
+
+Consume the report:
+
+```powershell
+build\tools\ETFDiag\Debug\ETFDiag.exe --watchdog-report build\watchdog-status.json
+```
+
+Exit code rules:
+
+- Invalid JSON, missing required fields, or wrong field types return non-zero.
+- `errorCount > 0` returns non-zero.
+- Any enabled service with `canStart=false` returns non-zero.
+- Warnings alone return 0 and are printed in the summary.
+
+The validated report fields include top-level `version`, service counts,
+`errorCount`, `warningCount`, and `services`; each service must include stable
+string, boolean, and `issues` array fields from the Watchdog status report.
+
 Windows 本地桌面端投资决策辅助终端。第一阶段不做自动下单，不接券商真实交易接口；用户在外部平台手工下单，软件负责行情、策略建议、资金池、TradeDraft、成交确认、TradeLog、审计和复盘等辅助能力。
 
 ## TASK-001 范围

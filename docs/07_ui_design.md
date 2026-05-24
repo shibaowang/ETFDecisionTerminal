@@ -1,5 +1,13 @@
 # 界面设计总纲
 
+## Diagnostics page data source
+
+- A future Shell diagnostics page can reuse the Watchdog manifest status JSON
+  fields: service counts, issue counts, per-service health and startability
+  fields, and issue arrays.
+- TASK-018 only adds `ETFDiag` as a command line consumer of that report.
+- TASK-018 does not implement QML, a Shell page, or any UI workflow.
+
 ## 当前状态
 
 v0.1 草案。

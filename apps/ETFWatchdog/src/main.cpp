@@ -23,7 +23,9 @@ void printHelp()
         << "  ETFWatchdog --list-services --config <path>\n"
         << "  ETFWatchdog --show-config-status --config <path>\n"
         << "  ETFWatchdog --manifest-status --config <path>\n"
+        << "  ETFWatchdog --manifest-status-json --config <path> [--output <path>]\n"
         << "  ETFWatchdog --dry-run-start --config <path> --service <serviceName>\n"
+        << "  ETFWatchdog --dry-run-all --config <path>\n"
         << "  ETFWatchdog --start-service-from-config --config <path> --service <serviceName>\n"
         << "  ETFWatchdog --demo-start-dataservice --dataservice-exe <path> --db <path> "
            "--socket-name <name>\n"
@@ -257,6 +259,32 @@ int manifestStatus(const std::string& configPath)
     return report.errorCount == 0 ? 0 : 1;
 }
 
+int manifestStatusJson(const std::string& configPath, const std::string& outputPath)
+{
+    if (configPath.empty()) {
+        std::cerr << "--config is required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    const auto report = buildReport(manifest.value(), configPath);
+    if (outputPath.empty()) {
+        std::cout << etfdt::watchdog::toJsonString(report, true);
+    } else {
+        auto written = etfdt::watchdog::writeManifestStatusReportJson(report, outputPath, true);
+        if (!written) {
+            std::cerr << written.error().message << '\n';
+            return 1;
+        }
+    }
+    return report.errorCount == 0 ? 0 : 1;
+}
+
 int dryRunStart(const std::string& configPath, const std::string& serviceName)
 {
     if (configPath.empty() || serviceName.empty()) {
@@ -280,6 +308,34 @@ int dryRunStart(const std::string& configPath, const std::string& serviceName)
     printServiceStatus(*status);
     std::cout << "dryRunStart: " << (status->canStart ? "canStart" : "cannotStart") << '\n';
     return status->canStart ? 0 : 1;
+}
+
+int dryRunAll(const std::string& configPath)
+{
+    if (configPath.empty()) {
+        std::cerr << "--config is required\n";
+        return 1;
+    }
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(configPath);
+    if (!manifest) {
+        std::cerr << "Invalid config: " << manifest.error().message << '\n';
+        return 1;
+    }
+
+    const auto report = buildReport(manifest.value(), configPath);
+    printManifestStatusReport(report);
+
+    bool allEnabledCanStart = true;
+    for (const auto& status : report.serviceStatuses) {
+        if (status.enabled && !status.canStart) {
+            allEnabledCanStart = false;
+        }
+    }
+    std::cout << "dryRunAll: " << (allEnabledCanStart && report.errorCount == 0 ? "canStart"
+                                                                                  : "cannotStart")
+              << '\n';
+    return allEnabledCanStart && report.errorCount == 0 ? 0 : 1;
 }
 
 int startServiceFromConfig(const std::string& configPath, const std::string& serviceName)
@@ -440,8 +496,16 @@ int main(int argc, char* argv[])
         return manifestStatus(optionValue(args, "--config"));
     }
 
+    if (hasOption(args, "--manifest-status-json")) {
+        return manifestStatusJson(optionValue(args, "--config"), optionValue(args, "--output"));
+    }
+
     if (hasOption(args, "--dry-run-start")) {
         return dryRunStart(optionValue(args, "--config"), optionValue(args, "--service"));
+    }
+
+    if (hasOption(args, "--dry-run-all")) {
+        return dryRunAll(optionValue(args, "--config"));
     }
 
     if (hasOption(args, "--start-service-from-config")) {

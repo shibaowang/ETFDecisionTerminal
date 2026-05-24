@@ -3,6 +3,10 @@
 #include "Watchdog/Watchdog.h"
 
 #include <QCoreApplication>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QProcess>
 
 #include <chrono>
@@ -489,6 +493,149 @@ void testManifestStatusReport(
     expectTrue(unsupportedOutput.contains("SERVICE_UNSUPPORTED"), "unsupported dry-run reports warning");
 }
 
+void testManifestStatusJsonAndDryRunAll(
+    const std::filesystem::path& watchdogExe,
+    const std::filesystem::path& dataServiceExe,
+    const std::filesystem::path& tempDir)
+{
+    const auto dbPath = tempDir / "dry_run_all.db";
+    const std::string socketName = "ETFDecisionTerminalDryRunAll_"
+        + std::to_string(QCoreApplication::applicationPid());
+    const auto validConfigPath = writeFile(
+        tempDir,
+        "json_valid_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName));
+
+    auto manifest = etfdt::watchdog::ServiceManifestLoader::loadFromFile(validConfigPath);
+    expectTrue(manifest.hasValue(), "JSON export test manifest loads");
+    if (manifest) {
+        etfdt::watchdog::ManifestStatusOptions options;
+        options.configPath = validConfigPath.string();
+        options.baseDirectory = std::filesystem::current_path();
+        const auto report = etfdt::watchdog::buildManifestStatusReport(manifest.value(), options);
+        const auto json = QByteArray::fromStdString(etfdt::watchdog::toJsonString(report, true));
+        const auto document = QJsonDocument::fromJson(json);
+        expectTrue(!document.isNull() && document.isObject(), "ManifestStatusReport JSON parses");
+        const auto root = document.object();
+        expectTrue(root.value("totalServices").isDouble(), "totalServices is JSON number");
+        expectTrue(root.value("enabledServices").isDouble(), "enabledServices is JSON number");
+        expectTrue(root.value("errorCount").isDouble(), "errorCount is JSON number");
+        expectTrue(root.value("warningCount").isDouble(), "warningCount is JSON number");
+        expectTrue(root.value("services").isArray(), "services is JSON array");
+        const auto services = root.value("services").toArray();
+        expectTrue(!services.empty(), "services array is not empty");
+        if (!services.empty() && services.first().isObject()) {
+            const auto service = services.first().toObject();
+            expectTrue(service.value("enabled").isBool(), "enabled is JSON bool");
+            expectTrue(service.value("canStart").isBool(), "canStart is JSON bool");
+            expectTrue(service.value("executableExists").isBool(), "executableExists is JSON bool");
+            expectTrue(service.value("issues").isArray(), "issues is JSON array");
+        }
+    }
+
+    QString stdoutJson;
+    const int stdoutCode = runWatchdogCli(
+        watchdogExe,
+        {"--manifest-status-json", "--config", QString::fromStdWString(validConfigPath.wstring())},
+        &stdoutJson);
+    expectTrue(stdoutCode == 0, "--manifest-status-json stdout valid config returns 0");
+    const auto stdoutDocument = QJsonDocument::fromJson(stdoutJson.toUtf8());
+    expectTrue(
+        !stdoutDocument.isNull() && stdoutDocument.isObject(),
+        "--manifest-status-json stdout is parseable JSON");
+
+    const auto outputPath = tempDir / "watchdog-status.json";
+    const int outputCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--manifest-status-json",
+            "--config",
+            QString::fromStdWString(validConfigPath.wstring()),
+            "--output",
+            QString::fromStdWString(outputPath.wstring()),
+        });
+    expectTrue(outputCode == 0, "--manifest-status-json --output returns 0");
+    QFile outputFile(QString::fromStdWString(outputPath.wstring()));
+    expectTrue(outputFile.open(QIODevice::ReadOnly), "JSON output file opens");
+    if (outputFile.isOpen()) {
+        const auto outputDocument = QJsonDocument::fromJson(outputFile.readAll());
+        expectTrue(
+            !outputDocument.isNull() && outputDocument.isObject(),
+            "JSON output file is parseable");
+    }
+
+    const int invalidOutputCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--manifest-status-json",
+            "--config",
+            QString::fromStdWString(validConfigPath.wstring()),
+            "--output",
+            QString::fromStdWString((tempDir / "missing_dir" / "watchdog-status.json").wstring()),
+        });
+    expectTrue(invalidOutputCode != 0, "--manifest-status-json invalid output path returns non-zero");
+
+    const auto missingExeConfigPath = writeFile(
+        tempDir,
+        "json_missing_exe_manifest.json",
+        manifestJsonForDataService(tempDir / "missing.exe", dbPath, socketName + "_missing_exe"));
+    QString missingExeJson;
+    const int missingExeJsonCode = runWatchdogCli(
+        watchdogExe,
+        {
+            "--manifest-status-json",
+            "--config",
+            QString::fromStdWString(missingExeConfigPath.wstring()),
+        },
+        &missingExeJson);
+    expectTrue(missingExeJsonCode != 0, "--manifest-status-json config with ERROR returns non-zero");
+    expectTrue(
+        QJsonDocument::fromJson(missingExeJson.toUtf8()).isObject(),
+        "--manifest-status-json error config still emits parseable JSON");
+
+    QString dryRunAllOutput;
+    const int dryRunAllCode = runWatchdogCli(
+        watchdogExe,
+        {"--dry-run-all", "--config", QString::fromStdWString(validConfigPath.wstring())},
+        &dryRunAllOutput);
+    expectTrue(dryRunAllCode == 0, "--dry-run-all valid config returns 0");
+    expectTrue(dryRunAllOutput.contains("dryRunAll: canStart"), "--dry-run-all reports canStart");
+    expectTrue(socketIsClosed(socketName), "--dry-run-all does not open socket");
+    expectTrue(!hasProcessWithSocketName(socketName), "--dry-run-all does not start process");
+
+    const int dryRunAllMissingExe = runWatchdogCli(
+        watchdogExe,
+        {"--dry-run-all", "--config", QString::fromStdWString(missingExeConfigPath.wstring())});
+    expectTrue(dryRunAllMissingExe != 0, "--dry-run-all missing executable returns non-zero");
+
+    const auto disabledConfigPath = writeFile(
+        tempDir,
+        "dry_run_all_disabled_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName + "_disabled", false));
+    QString disabledOutput;
+    const int dryRunAllDisabled = runWatchdogCli(
+        watchdogExe,
+        {"--dry-run-all", "--config", QString::fromStdWString(disabledConfigPath.wstring())},
+        &disabledOutput);
+    expectTrue(dryRunAllDisabled == 0, "--dry-run-all disabled service does not fail");
+    expectTrue(disabledOutput.contains("SERVICE_DISABLED"), "--dry-run-all marks disabled service");
+    expectTrue(disabledOutput.contains("canStart: false"), "--dry-run-all disabled service canStart=false");
+
+    const auto autoRestartConfigPath = writeFile(
+        tempDir,
+        "dry_run_all_autorestart_manifest.json",
+        manifestJsonForDataService(dataServiceExe, dbPath, socketName + "_autorestart", true, true));
+    QString autoRestartOutput;
+    const int dryRunAllAutoRestart = runWatchdogCli(
+        watchdogExe,
+        {"--dry-run-all", "--config", QString::fromStdWString(autoRestartConfigPath.wstring())},
+        &autoRestartOutput);
+    expectTrue(dryRunAllAutoRestart == 0, "--dry-run-all autoRestart warning returns 0");
+    expectTrue(
+        autoRestartOutput.contains("AUTO_RESTART_IGNORED"),
+        "--dry-run-all reports autoRestart ignored");
+}
+
 void testStartServiceFromManifest(
     const std::filesystem::path& watchdogExe,
     const std::filesystem::path& dataServiceExe,
@@ -616,6 +763,7 @@ int main(int argc, char* argv[])
     testManifestLoader(tempDir);
     testWatchdogCli(watchdogExe, tempDir);
     testManifestStatusReport(watchdogExe, dataServiceExe, tempDir);
+    testManifestStatusJsonAndDryRunAll(watchdogExe, dataServiceExe, tempDir);
     testStartServiceFromManifest(watchdogExe, dataServiceExe, migrationPath, tempDir);
     std::filesystem::remove_all(tempDir);
 

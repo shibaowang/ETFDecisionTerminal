@@ -70,3 +70,13 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - Transport 不访问 SQLite，不依赖 DataAccess，不暴露 Repository。
 - ETFDecisionShell、ETFMarketService、ETFStrategyService、ETFAlertService 等后续只能通过协议请求 ETFDataService，不能直接读写 SQLite。
 - TASK-006 只提供传输层骨架和 echo 测试，不启动真实服务通信拓扑。
+
+## ServiceRuntime 层边界
+
+- ServiceRuntime 位于 Transport 和具体服务业务模块之间。
+- ServiceRuntime 只负责校验结构化 MessageEnvelope、按 action 路由到 handler，并生成 ProtocolResponse。
+- 未注册 action 必须返回 `E1004_INVALID_ACTION`。
+- envelope 校验失败必须返回对应协议错误码。
+- handler 异常必须转换为 `E9000_SERVICE_ERROR`，不能向外层泄漏异常。
+- TASK-007 只提供 `system.ping` 和 `system.health` 内置 action，不实现 DataService Repository socket API。
+- ServiceRuntime 不访问 SQLite，不依赖 DataAccess，不做策略计算、账务重演或 TradeDraft 生命周期处理。

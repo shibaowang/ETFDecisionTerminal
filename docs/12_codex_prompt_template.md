@@ -11,6 +11,10 @@
   start, no socket connection, and no business decisions.
 - UI tasks must not reimplement diagnostic JSON parsing in QML; they should
   reuse the Diagnostics library through a C++ boundary.
+- Shell / UI related tasks must explicitly declare their data source and
+  binding boundary.
+- UI code must not directly access SQLite or parse complex diagnostics JSON; it
+  should consume C++ ViewModel objects such as `ShellDiagnosticViewModel`.
 
 ## 当前状态
 

@@ -33,6 +33,10 @@
 - Shell UI must not directly access SQLite and must not parse raw Watchdog JSON.
 - TASK-020 does not add QML, start services, connect sockets, or implement
   strategy/trading/business logic.
+- TASK-021 keeps diagnostics filtering, sorting, aggregation, and report file
+  refresh detection in the C++ ShellCore layer.
+- Future QML should bind the processed `ShellDiagnosticViewModel`; it should not
+  duplicate sorting/filtering logic by parsing Watchdog JSON directly.
 
 ## 当前状态
 

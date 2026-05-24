@@ -33,6 +33,23 @@ The facade does not expose raw JSON to UI code, does not access SQLite, does
 not start services, and does not connect Local Socket. TASK-020 does not add
 QML or UI files.
 
+## TASK-021 Shell diagnostics ViewModel tools
+
+`ShellDiagnosticFacade` now provides C++ ViewModel processing helpers for future
+diagnostics UI:
+
+- `ShellDiagnosticFilter` filters disabled, enabled, blocked, issue-bearing,
+  minimum severity, and search matches.
+- `ShellDiagnosticSort` sorts by service name, severity, canStart, enabled, or
+  issue count.
+- `ShellDiagnosticAggregate` summarizes visible rows.
+- `ShellDiagnosticRefreshState` / `refreshIfChanged` support report file change
+  detection and reload without starting services.
+
+The implementation still only consumes Diagnostics output. It does not parse
+raw Watchdog JSON outside Diagnostics, access SQLite, start services, connect
+Local Socket, or implement QML.
+
 Generate a Watchdog report:
 
 ```powershell

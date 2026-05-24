@@ -17,6 +17,10 @@
 - A future QML page should bind to ShellCore-provided ViewModel fields and must
   not access SQLite or parse complex diagnostic JSON directly.
 - TASK-020 does not implement QML.
+- TASK-021 prepares future diagnostics UI interactions in C++: status filters,
+  severity sorting, service / issue search, aggregate counters, and report file
+  refresh detection.
+- Current task still does not implement QML or any visual page.
 
 ## 当前状态
 

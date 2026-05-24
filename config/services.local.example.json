@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "services": [
+    {
+      "serviceName": "ETFDataService",
+      "enabled": true,
+      "executablePath": "build/apps/ETFDataService/Debug/ETFDataService.exe",
+      "workingDirectory": ".",
+      "arguments": [
+        "--serve-readonly",
+        "--db",
+        "data/ETFDecision.db",
+        "--socket-name",
+        "ETFDataServiceReadonly"
+      ],
+      "socketName": "ETFDataServiceReadonly",
+      "startupTimeoutMs": 5000,
+      "shutdownTimeoutMs": 3000,
+      "healthTimeoutMs": 3000,
+      "autoRestart": false
+    }
+  ]
+}

@@ -15,6 +15,9 @@
   binding boundary.
 - UI code must not directly access SQLite or parse complex diagnostics JSON; it
   should consume C++ ViewModel objects such as `ShellDiagnosticViewModel`.
+- Shell / UI filtering, sorting, aggregation, and refresh detection should be
+  implemented in the C++ ViewModel layer unless a task explicitly authorizes a
+  narrower UI-only presentation change.
 
 ## 当前状态
 

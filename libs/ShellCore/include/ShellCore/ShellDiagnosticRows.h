@@ -24,6 +24,7 @@ struct ShellDiagnosticServiceRow final {
     bool socketNamePresent = false;
     std::string statusText;
     std::string statusSeverity;
+    int statusSeverityRank = 0;
     int issueCount = 0;
     std::vector<ShellDiagnosticIssueRow> issues;
 };

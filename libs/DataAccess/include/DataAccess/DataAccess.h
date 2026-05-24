@@ -2,6 +2,9 @@
 
 #include "DataAccess/DatabaseTypes.h"
 #include "DataAccess/MigrationRunner.h"
+#include "DataAccess/ReadOnlyRepositoryBase.h"
+#include "DataAccess/Repositories.h"
+#include "DataAccess/RepositoryTypes.h"
 #include "DataAccess/SQLiteConnection.h"
 
 #include <string_view>

@@ -49,6 +49,8 @@ endif()
 add_library(ETFDataAccess STATIC
     src/DataAccess.cpp
     src/MigrationRunner.cpp
+    src/ReadOnlyRepositoryBase.cpp
+    src/Repositories.cpp
     src/SQLiteConnection.cpp
 )
 

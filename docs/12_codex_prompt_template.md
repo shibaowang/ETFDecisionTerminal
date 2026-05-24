@@ -41,6 +41,9 @@ v0.1 草案。
 15. 不允许用刷新覆盖历史建议，必须使用状态生命周期。
 16. 所有涉及数据库写入的任务必须声明 ETFDataService 边界。
 17. 非 ETFDataService 进程不得直接写 SQLite。
+18. 任何 Repository 任务必须声明读写边界。
+19. 除非任务明确允许，不得新增 INSERT / UPDATE / DELETE / 写入类 Repository 方法。
+20. 只读 Repository 只能在 ETFDataService 进程内部使用，其他服务必须通过 Protocol 请求 DataService。
 
 ## TASK 模板
 

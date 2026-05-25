@@ -72,3 +72,8 @@ ETFDecisionTerminal/
 - Mock data must be labeled as mock / demo data and must not be presented as real service state.
 - QML pages must clearly label mock / placeholder state when no real service is connected.
 - Business logic must remain in C++ service / domain layers, not in QML.
+## Shell Navigation Metadata Rules
+
+- QML must not hardcode the full shell navigation list.
+- Shell page metadata should come from ShellCore `ShellPageRegistry`.
+- QML navigation should bind `ShellNavigationModel` / `ShellNavigationController`.

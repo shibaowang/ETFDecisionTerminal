@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <string>
 #include <string_view>
 
@@ -680,6 +681,81 @@ void testQtSummaryAndAdapter(const std::filesystem::path& tempDir)
     expectTrue(!adapter.lastError().isEmpty(), "QtAdapter refresh mock lastError");
 }
 
+void testShellPageRegistry()
+{
+    const auto items = etfdt::shell::ShellPageRegistry::listNavigationItems();
+    expectEqual(static_cast<int>(items.size()), 13, "ShellPageRegistry returns 13 navigation items");
+
+    std::set<std::string> keys;
+    for (const auto& item : items) {
+        expectTrue(keys.insert(item.key).second, "ShellPageRegistry keys are unique");
+    }
+
+    const auto diagnostics = etfdt::shell::ShellPageRegistry::metadataForKey("diagnostics");
+    expectTrue(diagnostics.has_value(), "diagnostics metadata exists");
+    expectEqual(diagnostics->qmlComponent, "DiagnosticsMockPage", "diagnostics points to DiagnosticsMockPage");
+    expectTrue(!diagnostics->placeholder, "diagnostics is the only real mock data page");
+
+    const auto dashboard = etfdt::shell::ShellPageRegistry::metadataForKey("dashboard");
+    expectTrue(dashboard.has_value(), "dashboard metadata exists");
+    expectTrue(dashboard->placeholder, "dashboard is placeholder");
+
+    const auto unknown = etfdt::shell::ShellPageRegistry::metadataForKey("unknown");
+    expectTrue(!unknown.has_value(), "unknown metadata returns nullopt");
+    const auto fallback = etfdt::shell::ShellPageRegistry::fallbackMetadata("unknown");
+    expectEqual(fallback.key, "unknown", "fallback keeps requested key");
+    expectTrue(fallback.placeholder, "fallback is placeholder");
+}
+
+void testShellNavigationModel()
+{
+    etfdt::shell::ShellNavigationModel model;
+    expectEqual(model.rowCount(), 13, "ShellNavigationModel rowCount is 13");
+
+    const auto roles = model.roleNames();
+    expectTrue(roles.contains(etfdt::shell::ShellNavigationModel::KeyRole), "NavigationModel has key role");
+    expectTrue(roles.contains(etfdt::shell::ShellNavigationModel::TitleRole), "NavigationModel has title role");
+    expectTrue(roles.contains(etfdt::shell::ShellNavigationModel::EnabledRole), "NavigationModel has enabled role");
+    expectTrue(roles.contains(etfdt::shell::ShellNavigationModel::PlaceholderRole), "NavigationModel has placeholder role");
+    expectEqual(
+        std::string(roles.value(etfdt::shell::ShellNavigationModel::KeyRole).constData()),
+        "key",
+        "NavigationModel key role name");
+
+    const auto first = model.index(0, 0);
+    expectEqual(
+        model.data(first, etfdt::shell::ShellNavigationModel::KeyRole).toString().toStdString(),
+        "dashboard",
+        "NavigationModel first key is dashboard");
+    expectTrue(
+        model.data(first, etfdt::shell::ShellNavigationModel::PlaceholderRole).toBool(),
+        "NavigationModel dashboard is placeholder");
+}
+
+void testShellNavigationController()
+{
+    etfdt::shell::ShellNavigationController controller;
+    expectEqual(controller.currentPageKey().toStdString(), "dashboard", "NavigationController default key");
+    expectTrue(controller.navigationModel() != nullptr, "NavigationController has navigation model");
+    expectEqual(controller.navigationModel()->rowCount(), 13, "NavigationController navigation model rowCount");
+
+    expectTrue(controller.selectPage(QStringLiteral("diagnostics")), "selectPage diagnostics succeeds");
+    expectEqual(controller.currentPageKey().toStdString(), "diagnostics", "current key is diagnostics");
+    expectEqual(controller.currentPageTitle().toStdString(), "诊断中心", "current title is diagnostics");
+    expectEqual(
+        controller.currentPageQmlComponent().toStdString(),
+        "DiagnosticsMockPage",
+        "diagnostics loads DiagnosticsMockPage");
+    expectTrue(!controller.currentPagePlaceholder(), "diagnostics is not placeholder");
+
+    expectTrue(!controller.selectPage(QStringLiteral("unknown")), "selectPage unknown returns false");
+    expectEqual(controller.currentPageKey().toStdString(), "diagnostics", "unknown selection keeps current page");
+
+    expectTrue(controller.selectPageByIndex(1), "selectPageByIndex succeeds");
+    expectEqual(controller.currentPageKey().toStdString(), "market", "selectPageByIndex selects sorted model item");
+    expectTrue(!controller.selectPageByIndex(999), "selectPageByIndex invalid returns false");
+}
+
 void testStates()
 {
     etfdt::shell::ShellDiagnosticFacade facade;
@@ -750,6 +826,9 @@ int main()
         testQtServiceListModelRoles();
         testQtIssueListModelRoles();
         testQtSummaryAndAdapter(tempDir);
+        testShellPageRegistry();
+        testShellNavigationModel();
+        testShellNavigationController();
         testStates();
         testFailures();
     } catch (const std::exception& ex) {

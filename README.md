@@ -549,6 +549,21 @@ Transport 稳定性重复验证命令：
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-026 Shell Navigation Metadata
+
+- `ShellPageRegistry` now owns the shell page keys, titles, QML component names, categories, and placeholder flags.
+- `ShellNavigationModel` exposes the navigation list to QML as a `QAbstractListModel`.
+- `ShellNavigationController` owns `currentPageKey`, title, description, component name, and selection methods.
+- `SideNavigation.qml` binds the C++ model instead of maintaining a full hardcoded navigation list.
+- `ContentHost.qml` uses controller metadata to load the diagnostics mock page or placeholder content.
+- The UI remains mock-only: it does not access SQLite, connect sockets, start services, or implement business logic.
+
+Run the Shell mock:
+
+```powershell
+build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
+```
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

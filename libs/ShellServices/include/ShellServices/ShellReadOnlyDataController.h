@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ShellServices/ShellDataConnectionObject.h"
+#include "ShellServices/ShellReadOnlyConnectionPresets.h"
 #include "ShellServices/ShellReadOnlyDataFacade.h"
 #include "ShellServices/ShellReadOnlyDataViewModel.h"
 #include "ShellServices/ShellReadOnlyListModels.h"
@@ -21,7 +22,12 @@ class ShellReadOnlyDataController : public QObject {
     Q_PROPERTY(ShellPortfolioListModel* portfolioModel READ portfolioModel CONSTANT)
     Q_PROPERTY(ShellInstrumentListModel* instrumentModel READ instrumentModel CONSTANT)
     Q_PROPERTY(ShellStrategyListModel* strategyModel READ strategyModel CONSTANT)
+    Q_PROPERTY(ShellReadOnlyConnectionPresetModel* connectionPresetModel READ connectionPresetModel CONSTANT)
     Q_PROPERTY(QString lastError READ lastErrorText NOTIFY lastErrorChanged)
+    Q_PROPERTY(QString selectedPresetKey READ selectedPresetKey NOTIFY connectionPresetChanged)
+    Q_PROPERTY(QString selectedSocketName READ selectedSocketName WRITE setCustomSocketName NOTIFY connectionPresetChanged)
+    Q_PROPERTY(QString commandHint READ commandHint NOTIFY connectionPresetChanged)
+    Q_PROPERTY(QString onboardingText READ onboardingText CONSTANT)
     Q_PROPERTY(QString refreshState READ refreshState NOTIFY stateChanged)
     Q_PROPERTY(bool isBusy READ isBusy NOTIFY stateChanged)
     Q_PROPERTY(bool isConnecting READ isConnecting NOTIFY stateChanged)
@@ -43,6 +49,7 @@ public:
         const std::string& socketName,
         int timeoutMs);
     Q_INVOKABLE [[nodiscard]] bool connectToDataService(const QString& socketName);
+    Q_INVOKABLE [[nodiscard]] bool connectToDataService();
     Q_INVOKABLE void disconnect();
 
     [[nodiscard]] ShellDataResult<bool> refreshHealth(int timeoutMs);
@@ -61,6 +68,8 @@ public:
     Q_INVOKABLE [[nodiscard]] bool refreshStrategies();
     Q_INVOKABLE [[nodiscard]] bool refreshAll();
     Q_INVOKABLE [[nodiscard]] bool refreshOtc(const QString& strategyCode);
+    Q_INVOKABLE [[nodiscard]] bool selectPreset(const QString& key);
+    Q_INVOKABLE void setCustomSocketName(const QString& socketName);
 
     [[nodiscard]] ShellDataConnectionObject* connectionObject();
     [[nodiscard]] const ShellReadOnlyDataViewModel& summaryViewModel() const noexcept;
@@ -69,8 +78,13 @@ public:
     [[nodiscard]] ShellPortfolioListModel* portfolioModel();
     [[nodiscard]] ShellInstrumentListModel* instrumentModel();
     [[nodiscard]] ShellStrategyListModel* strategyModel();
+    [[nodiscard]] ShellReadOnlyConnectionPresetModel* connectionPresetModel();
     [[nodiscard]] const std::string& lastError() const noexcept;
     [[nodiscard]] QString lastErrorText() const;
+    [[nodiscard]] QString selectedPresetKey() const;
+    [[nodiscard]] QString selectedSocketName() const;
+    [[nodiscard]] QString commandHint() const;
+    [[nodiscard]] QString onboardingText() const;
     [[nodiscard]] QString refreshState() const;
     [[nodiscard]] bool isBusy() const noexcept;
     [[nodiscard]] bool isConnecting() const;
@@ -89,6 +103,7 @@ public:
 signals:
     void summaryChanged();
     void lastErrorChanged();
+    void connectionPresetChanged();
     void stateChanged();
     void errorStateChanged();
 
@@ -123,7 +138,11 @@ private:
     ShellPortfolioListModel portfolios_;
     ShellInstrumentListModel instruments_;
     ShellStrategyListModel strategies_;
+    ShellReadOnlyConnectionPresetModel connectionPresets_;
     std::string lastError_;
+    QString selectedPresetKey_ = QStringLiteral("readonly_default");
+    QString selectedSocketName_ = QStringLiteral("ETFDataServiceReadonly");
+    QString commandHint_ = QStringLiteral("ETFDataService --serve-readonly --db data/ETFDecision.db --socket-name ETFDataServiceReadonly");
     QString refreshState_ = QStringLiteral("IDLE");
     bool isBusy_ = false;
     int minimumRefreshIntervalMs_ = 1000;

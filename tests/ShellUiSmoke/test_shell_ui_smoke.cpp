@@ -180,6 +180,22 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("readonlyDataGrid") != nullptr,
             "ReadOnlyDataPage data grid is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("readonlyPresetPanel") != nullptr,
+            "ReadOnlyDataPage preset panel is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readonlyPresetCombo") != nullptr,
+            "ReadOnlyDataPage preset combo is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readonlyCommandHint") != nullptr,
+            "ReadOnlyDataPage command hint is loaded");
+        expectTrue(
+            readOnlyDataController.connectionPresetModel()->rowCount() >= 3,
+            "ReadOnlyDataPage controller exposes presets to QML");
+        expectEqual(
+            readOnlyDataController.selectedPresetKey(),
+            QStringLiteral("readonly_default"),
+            "ReadOnlyDataPage default preset key");
+        expectTrue(
             appShell->findChild<QObject*>("readonlyRefreshAllButton") != nullptr,
             "ReadOnlyDataPage Refresh All button is loaded");
         expectTrue(

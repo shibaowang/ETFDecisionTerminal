@@ -261,3 +261,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - Failed refresh attempts preserve previously loaded successful models so the UI does not replace real data with fake or empty data.
 - ShellServices still only calls whitelisted read-only DataService actions through `ShellReadOnlyDataFacade`.
 - ShellServices and QML still do not access SQLite, call `data.audit.append`, expose arbitrary actions, or implement business logic.
+
+## Shell Read-Only Connection Presets
+
+- TASK-033 adds runtime-only connection presets in ShellServices for the read-only data page.
+- `ShellReadOnlyConnectionPresetModel` exposes `readonly_default`, `audit_dev`, and `custom` presets to QML through `ShellReadOnlyDataController`.
+- Presets are UI guidance only: they do not start DataService, call Watchdog, connect automatically, or persist configuration.
+- The audit development preset only fills a socket name and command hint; it does not call `data.audit.append` or any write action.
+- Shell still does not directly access SQLite and QML still does not call `DataServiceClient` directly.

@@ -631,6 +631,27 @@ build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 - Failed refreshes keep previously loaded successful list rows; they do not silently replace real data with mock data.
 - QML still does not call `DataServiceClient` directly and does not call `data.audit.append` or any write action.
 
+## TASK-033 Shell Read-Only Connection Presets
+
+- `ShellReadOnlyConnectionPresetModel` provides runtime-only connection presets for the read-only data page.
+- Built-in presets are `readonly_default`, `audit_dev`, and `custom`.
+- `readonly_default` points to `ETFDataServiceReadonly` and shows the `--serve-readonly` command hint.
+- `audit_dev` points to `ETFDataServiceAuditDev` as a development socket preset only; it does not call write actions.
+- `custom` allows a manual runtime socket name and is not persisted.
+- The Shell still does not start DataService, call Watchdog, write config files, access SQLite, or call `data.audit.append`.
+
+Start a read-only DataService manually:
+
+```powershell
+build\apps\ETFDataService\Debug\ETFDataService.exe --serve-readonly --db data\ETFDecision.db --socket-name ETFDataServiceReadonly
+```
+
+Run the Shell:
+
+```powershell
+build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
+```
+
 Run tests:
 
 ```powershell

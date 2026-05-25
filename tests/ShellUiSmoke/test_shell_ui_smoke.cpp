@@ -180,6 +180,19 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("readonlyDataGrid") != nullptr,
             "ReadOnlyDataPage data grid is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("readonlyRefreshAllButton") != nullptr,
+            "ReadOnlyDataPage Refresh All button is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readonlyErrorPanel") != nullptr,
+            "ReadOnlyDataPage error panel is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readonlyRefreshState") != nullptr,
+            "ReadOnlyDataPage refresh state text is loaded");
+        expectEqual(
+            readOnlyDataController.refreshState(),
+            QStringLiteral("IDLE"),
+            "ReadOnlyDataPage starts with IDLE state");
+        expectTrue(
             appShell->findChild<QObject*>("accountListView") != nullptr,
             "ReadOnlyDataPage account model binding exists");
         expectTrue(

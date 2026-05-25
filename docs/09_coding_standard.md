@@ -98,3 +98,11 @@ ETFDecisionTerminal/
 - QML must not call write actions, including `data.audit.append`.
 - QML must not parse DataService protocol payloads directly; Controller / Model layers own parsing and error state.
 - Read-only prototype pages must be visibly labeled and must not expose edit, trade, accounting, or strategy controls.
+
+## Shell Read-Only State Flow Rules
+
+- UI state derivation for read-only data must live in C++ Controller / ViewModel code.
+- Duplicate refresh prevention, refresh throttling, and error-state construction must not be implemented in QML.
+- QML must bind `canRefresh`, `isBusy`, `refreshState`, and error fields instead of inferring connection success.
+- Failed refreshes must not clear previously loaded successful models unless a task explicitly requires and tests that behavior.
+- QML must not fake successful real-data reads with mock data after a connection or refresh error.

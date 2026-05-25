@@ -171,3 +171,11 @@ v0.1 草案。
 - QML must not call `DataServiceClient` directly and must not expose arbitrary protocol action calls.
 - QML must not call write actions or provide edit / trade / accounting controls unless a later task explicitly authorizes them.
 - Error states must be displayed through controller state; QML must not silently substitute mock data for failed real reads.
+
+## Shell Read-Only State Flow Task Rules
+
+- UI state-flow tasks must declare the source of connection, refresh, and error state.
+- Refresh throttling and duplicate-request guards must be implemented in C++ Controller / ViewModel code.
+- QML must bind controller state fields and must not implement complex throttling or connection-success inference.
+- Failed refreshes should preserve prior successful data unless the task explicitly requires a clear-data behavior and tests it.
+- Read-only state-flow tasks must not add write actions, arbitrary action forwarding, SQLite access, or direct `DataServiceClient` calls from QML.

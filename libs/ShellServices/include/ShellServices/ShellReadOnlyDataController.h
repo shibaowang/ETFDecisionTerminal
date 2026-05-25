@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariantMap>
+#include <optional>
 #include <string>
 
 namespace etfdt::shell_services {
@@ -21,6 +22,19 @@ class ShellReadOnlyDataController : public QObject {
     Q_PROPERTY(ShellInstrumentListModel* instrumentModel READ instrumentModel CONSTANT)
     Q_PROPERTY(ShellStrategyListModel* strategyModel READ strategyModel CONSTANT)
     Q_PROPERTY(QString lastError READ lastErrorText NOTIFY lastErrorChanged)
+    Q_PROPERTY(QString refreshState READ refreshState NOTIFY stateChanged)
+    Q_PROPERTY(bool isBusy READ isBusy NOTIFY stateChanged)
+    Q_PROPERTY(bool isConnecting READ isConnecting NOTIFY stateChanged)
+    Q_PROPERTY(bool isRefreshing READ isRefreshing NOTIFY stateChanged)
+    Q_PROPERTY(bool canRefresh READ canRefresh NOTIFY stateChanged)
+    Q_PROPERTY(QString lastRefreshStartedAtText READ lastRefreshStartedAtText NOTIFY stateChanged)
+    Q_PROPERTY(QString lastRefreshFinishedAtText READ lastRefreshFinishedAtText NOTIFY stateChanged)
+    Q_PROPERTY(QString lastSuccessAtText READ lastSuccessAtText NOTIFY stateChanged)
+    Q_PROPERTY(QVariantMap errorState READ errorStateMap NOTIFY errorStateChanged)
+    Q_PROPERTY(int refreshAttemptCount READ refreshAttemptCount NOTIFY stateChanged)
+    Q_PROPERTY(int refreshSuccessCount READ refreshSuccessCount NOTIFY stateChanged)
+    Q_PROPERTY(int refreshFailureCount READ refreshFailureCount NOTIFY stateChanged)
+    Q_PROPERTY(int refreshThrottleCount READ refreshThrottleCount NOTIFY stateChanged)
 
 public:
     explicit ShellReadOnlyDataController(QObject* parent = nullptr);
@@ -46,6 +60,7 @@ public:
     Q_INVOKABLE [[nodiscard]] bool refreshInstruments();
     Q_INVOKABLE [[nodiscard]] bool refreshStrategies();
     Q_INVOKABLE [[nodiscard]] bool refreshAll();
+    Q_INVOKABLE [[nodiscard]] bool refreshOtc(const QString& strategyCode);
 
     [[nodiscard]] ShellDataConnectionObject* connectionObject();
     [[nodiscard]] const ShellReadOnlyDataViewModel& summaryViewModel() const noexcept;
@@ -56,21 +71,50 @@ public:
     [[nodiscard]] ShellStrategyListModel* strategyModel();
     [[nodiscard]] const std::string& lastError() const noexcept;
     [[nodiscard]] QString lastErrorText() const;
+    [[nodiscard]] QString refreshState() const;
+    [[nodiscard]] bool isBusy() const noexcept;
+    [[nodiscard]] bool isConnecting() const;
+    [[nodiscard]] bool isRefreshing() const;
+    [[nodiscard]] bool canRefresh() const;
+    [[nodiscard]] QString lastRefreshStartedAtText() const;
+    [[nodiscard]] QString lastRefreshFinishedAtText() const;
+    [[nodiscard]] QString lastSuccessAtText() const;
+    [[nodiscard]] QVariantMap errorStateMap() const;
+    [[nodiscard]] int refreshAttemptCount() const noexcept;
+    [[nodiscard]] int refreshSuccessCount() const noexcept;
+    [[nodiscard]] int refreshFailureCount() const noexcept;
+    [[nodiscard]] int refreshThrottleCount() const noexcept;
+    void setMinimumRefreshIntervalMs(int intervalMs) noexcept;
 
 signals:
     void summaryChanged();
     void lastErrorChanged();
+    void stateChanged();
+    void errorStateChanged();
 
 private:
+    [[nodiscard]] ShellDataResult<bool> refreshAllUnprotected(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> failureFromResponse(
         const ShellDataResponse& response,
         const char* fallbackMessage);
     [[nodiscard]] ShellDataResult<bool> failureFromError(
         const ShellDataError& error,
         const char* fallbackMessage);
+    [[nodiscard]] bool isRefreshThrottled() const;
+    [[nodiscard]] int remainingThrottleMs() const;
+    [[nodiscard]] QString utcNowText() const;
+    void setRefreshState(QString state);
+    void setBusy(bool busy);
+    void setError(
+        std::optional<etfdt::protocol::ErrorCode> errorCode,
+        std::string message,
+        QString source,
+        bool recoverable);
+    void setLocalError(QString code, std::string message, QString source, bool recoverable);
     void setLastError(std::string message);
-    void clearLastError();
+    void clearError();
     void notifySummaryChanged();
+    void scheduleCanRefreshUpdate();
 
     ShellReadOnlyDataFacade facade_;
     ShellDataConnectionObject connection_;
@@ -80,6 +124,21 @@ private:
     ShellInstrumentListModel instruments_;
     ShellStrategyListModel strategies_;
     std::string lastError_;
+    QString refreshState_ = QStringLiteral("IDLE");
+    bool isBusy_ = false;
+    int minimumRefreshIntervalMs_ = 1000;
+    QString lastRefreshStartedAtText_;
+    QString lastRefreshFinishedAtText_;
+    QString lastSuccessAtText_;
+    bool hasError_ = false;
+    QString errorCode_;
+    QString errorMessage_;
+    QString errorSource_;
+    bool errorRecoverable_ = true;
+    int refreshAttemptCount_ = 0;
+    int refreshSuccessCount_ = 0;
+    int refreshFailureCount_ = 0;
+    int refreshThrottleCount_ = 0;
 };
 
 }  // namespace etfdt::shell_services

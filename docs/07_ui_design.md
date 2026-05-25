@@ -173,3 +173,11 @@ v0.1 草案。
 - QML binds `ShellReadOnlyDataController` and the ShellServices list models; it does not call `DataServiceClient` directly.
 - The page must show connection errors instead of faking successful data.
 - The page provides no edit, trade, accounting, strategy, audit append, or write controls.
+
+## TASK-032 Read-Only Data State Flow
+
+- The read-only data page displays controller-owned `refreshState`, busy / refreshing state, last success time, and error text.
+- `Refresh All` is enabled from `canRefresh`; QML does not implement its own duplicate-click or throttle rules.
+- The controller exposes `IDLE`, `CONNECTING`, `REFRESHING`, `SUCCESS`, and `FAILED` states for direct UI binding.
+- Error state must remain visible for failed connects, disconnected refreshes, local validation failures, and throttled refreshes.
+- The page still does not edit data, call write actions, access SQLite, or directly call `DataServiceClient`.

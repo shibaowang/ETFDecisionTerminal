@@ -1,11 +1,13 @@
 #include "ShellServices/ShellReadOnlyDataController.h"
 
 #include <QByteArray>
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QString>
+#include <QTimer>
 #include <QVariant>
 #include <QVariantMap>
 
@@ -152,6 +154,15 @@ std::string summaryTextFromPayload(const std::string& json)
     return stream.str();
 }
 
+QString errorCodeText(std::optional<etfdt::protocol::ErrorCode> code)
+{
+    if (!code.has_value()) {
+        return {};
+    }
+    const auto text = etfdt::protocol::toString(*code);
+    return QString::fromUtf8(text.data(), static_cast<qsizetype>(text.size()));
+}
+
 }  // namespace
 
 ShellReadOnlyDataController::ShellReadOnlyDataController(QObject* parent)
@@ -168,12 +179,27 @@ ShellDataResult<bool> ShellReadOnlyDataController::connectToDataService(
     const std::string& socketName,
     int timeoutMs)
 {
+    if (isBusy_) {
+        setLocalError(
+            QStringLiteral("BUSY"),
+            "connectToDataService ignored because another operation is in progress",
+            QStringLiteral("connect"),
+            true);
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+    setBusy(true);
+    setRefreshState(QStringLiteral("CONNECTING"));
     auto connected = facade_.connect(socketName, timeoutMs);
     connection_.updateFromState(facade_.connectionState());
+    setBusy(false);
     if (!connected) {
-        return failureFromError(connected.error(), "connectToDataService failed");
+        setRefreshState(QStringLiteral("FAILED"));
+        auto failed = failureFromError(connected.error(), "connectToDataService failed");
+        emit stateChanged();
+        return failed;
     }
-    clearLastError();
+    clearError();
+    setRefreshState(QStringLiteral("SUCCESS"));
     return ShellDataResult<bool>::success(true);
 }
 
@@ -186,6 +212,8 @@ void ShellReadOnlyDataController::disconnect()
 {
     facade_.disconnect();
     connection_.updateFromState(facade_.connectionState());
+    setBusy(false);
+    setRefreshState(QStringLiteral("IDLE"));
 }
 
 ShellDataResult<bool> ShellReadOnlyDataController::refreshHealth(int timeoutMs)
@@ -202,7 +230,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshHealth(int timeoutMs)
     const auto object = parseObject(result.value().payloadJson);
     summary_.healthy = object.has_value() && object->value("healthy").toBool(false);
     connection_.setHealthy(summary_.healthy);
-    clearLastError();
+    clearError();
     notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
@@ -218,7 +246,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshSummary(int timeoutMs)
     }
 
     summary_.summaryText = summaryTextFromPayload(result.value().payloadJson);
-    clearLastError();
+    clearError();
     notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
@@ -235,7 +263,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshAccounts(int timeoutMs
     auto rows = parseAccounts(result.value().payloadJson);
     summary_.accountCount = static_cast<int>(rows.size());
     accounts_.setRows(std::move(rows));
-    clearLastError();
+    clearError();
     notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
@@ -252,7 +280,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshPortfolios(int timeout
     auto rows = parsePortfolios(result.value().payloadJson);
     summary_.portfolioCount = static_cast<int>(rows.size());
     portfolios_.setRows(std::move(rows));
-    clearLastError();
+    clearError();
     notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
@@ -269,7 +297,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshInstruments(int timeou
     auto rows = parseInstruments(result.value().payloadJson);
     summary_.instrumentCount = static_cast<int>(rows.size());
     instruments_.setRows(std::move(rows));
-    clearLastError();
+    clearError();
     notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
@@ -286,12 +314,57 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshStrategies(int timeout
     auto rows = parseStrategies(result.value().payloadJson);
     summary_.strategyCount = static_cast<int>(rows.size());
     strategies_.setRows(std::move(rows));
-    clearLastError();
+    clearError();
     notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
 ShellDataResult<bool> ShellReadOnlyDataController::refreshAll(int timeoutMs)
+{
+    if (isBusy_) {
+        setLocalError(
+            QStringLiteral("BUSY"),
+            "refreshAll ignored because another operation is in progress",
+            QStringLiteral("refreshAll"),
+            true);
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+    if (isRefreshThrottled()) {
+        ++refreshThrottleCount_;
+        setLocalError(
+            QStringLiteral("THROTTLED"),
+            "refreshAll throttled by minimum refresh interval",
+            QStringLiteral("refreshAll"),
+            true);
+        scheduleCanRefreshUpdate();
+        emit stateChanged();
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+
+    ++refreshAttemptCount_;
+    lastRefreshStartedAtText_ = utcNowText();
+    setBusy(true);
+    setRefreshState(QStringLiteral("REFRESHING"));
+
+    auto result = refreshAllUnprotected(timeoutMs);
+    lastRefreshFinishedAtText_ = utcNowText();
+    setBusy(false);
+    if (!result) {
+        ++refreshFailureCount_;
+        setRefreshState(QStringLiteral("FAILED"));
+        emit stateChanged();
+        return result;
+    }
+
+    ++refreshSuccessCount_;
+    lastSuccessAtText_ = lastRefreshFinishedAtText_;
+    clearError();
+    setRefreshState(QStringLiteral("SUCCESS"));
+    scheduleCanRefreshUpdate();
+    return result;
+}
+
+ShellDataResult<bool> ShellReadOnlyDataController::refreshAllUnprotected(int timeoutMs)
 {
     if (auto result = refreshHealth(timeoutMs); !result) {
         return result;
@@ -346,6 +419,30 @@ bool ShellReadOnlyDataController::refreshAll()
     return refreshAll(2000).hasValue();
 }
 
+bool ShellReadOnlyDataController::refreshOtc(const QString& strategyCode)
+{
+    const auto trimmed = strategyCode.trimmed();
+    if (trimmed.isEmpty()) {
+        setLocalError(
+            QStringLiteral("E1002_MISSING_REQUIRED_FIELD"),
+            "strategyCode is required",
+            QStringLiteral("listOtc"),
+            true);
+        return false;
+    }
+    auto result = facade_.listOtc(trimmed.toStdString(), 2000);
+    if (!result) {
+        (void)failureFromError(result.error(), "listOtc failed");
+        return false;
+    }
+    if (!result.value().success) {
+        (void)failureFromResponse(result.value(), "listOtc failed");
+        return false;
+    }
+    clearError();
+    return true;
+}
+
 ShellDataConnectionObject* ShellReadOnlyDataController::connectionObject()
 {
     return &connection_;
@@ -366,6 +463,9 @@ QVariantMap ShellReadOnlyDataController::summaryViewModelMap() const
         {QStringLiteral("instrumentCount"), summary_.instrumentCount},
         {QStringLiteral("strategyCount"), summary_.strategyCount},
         {QStringLiteral("lastError"), QString::fromStdString(summary_.lastError)},
+        {QStringLiteral("refreshState"), refreshState_},
+        {QStringLiteral("isBusy"), isBusy_},
+        {QStringLiteral("lastSuccessAtText"), lastSuccessAtText_},
     };
 }
 
@@ -399,11 +499,92 @@ QString ShellReadOnlyDataController::lastErrorText() const
     return QString::fromStdString(lastError_);
 }
 
+QString ShellReadOnlyDataController::refreshState() const
+{
+    return refreshState_;
+}
+
+bool ShellReadOnlyDataController::isBusy() const noexcept
+{
+    return isBusy_;
+}
+
+bool ShellReadOnlyDataController::isConnecting() const
+{
+    return refreshState_ == QStringLiteral("CONNECTING");
+}
+
+bool ShellReadOnlyDataController::isRefreshing() const
+{
+    return refreshState_ == QStringLiteral("REFRESHING");
+}
+
+bool ShellReadOnlyDataController::canRefresh() const
+{
+    return !isBusy_ && connection_.connected() && !isRefreshThrottled();
+}
+
+QString ShellReadOnlyDataController::lastRefreshStartedAtText() const
+{
+    return lastRefreshStartedAtText_;
+}
+
+QString ShellReadOnlyDataController::lastRefreshFinishedAtText() const
+{
+    return lastRefreshFinishedAtText_;
+}
+
+QString ShellReadOnlyDataController::lastSuccessAtText() const
+{
+    return lastSuccessAtText_;
+}
+
+QVariantMap ShellReadOnlyDataController::errorStateMap() const
+{
+    return {
+        {QStringLiteral("hasError"), hasError_},
+        {QStringLiteral("errorCode"), errorCode_},
+        {QStringLiteral("errorMessage"), errorMessage_},
+        {QStringLiteral("errorSource"), errorSource_},
+        {QStringLiteral("recoverable"), errorRecoverable_},
+    };
+}
+
+int ShellReadOnlyDataController::refreshAttemptCount() const noexcept
+{
+    return refreshAttemptCount_;
+}
+
+int ShellReadOnlyDataController::refreshSuccessCount() const noexcept
+{
+    return refreshSuccessCount_;
+}
+
+int ShellReadOnlyDataController::refreshFailureCount() const noexcept
+{
+    return refreshFailureCount_;
+}
+
+int ShellReadOnlyDataController::refreshThrottleCount() const noexcept
+{
+    return refreshThrottleCount_;
+}
+
+void ShellReadOnlyDataController::setMinimumRefreshIntervalMs(int intervalMs) noexcept
+{
+    minimumRefreshIntervalMs_ = intervalMs < 0 ? 0 : intervalMs;
+    emit stateChanged();
+}
+
 ShellDataResult<bool> ShellReadOnlyDataController::failureFromResponse(
     const ShellDataResponse& response,
     const char* fallbackMessage)
 {
-    setLastError(response.errorMessage.empty() ? fallbackMessage : response.errorMessage);
+    setError(
+        response.errorCode,
+        response.errorMessage.empty() ? fallbackMessage : response.errorMessage,
+        QStringLiteral("protocol"),
+        true);
     return ShellDataResult<bool>::failure(response.errorCode, lastError_);
 }
 
@@ -411,8 +592,81 @@ ShellDataResult<bool> ShellReadOnlyDataController::failureFromError(
     const ShellDataError& error,
     const char* fallbackMessage)
 {
-    setLastError(error.message.empty() ? fallbackMessage : error.message);
+    setError(
+        error.errorCode,
+        error.message.empty() ? fallbackMessage : error.message,
+        QStringLiteral("client"),
+        true);
     return ShellDataResult<bool>::failure(error.errorCode, lastError_);
+}
+
+bool ShellReadOnlyDataController::isRefreshThrottled() const
+{
+    return remainingThrottleMs() > 0;
+}
+
+int ShellReadOnlyDataController::remainingThrottleMs() const
+{
+    if (minimumRefreshIntervalMs_ <= 0 || lastRefreshStartedAtText_.isEmpty()) {
+        return 0;
+    }
+    const auto started =
+        QDateTime::fromString(lastRefreshStartedAtText_, Qt::ISODateWithMs);
+    if (!started.isValid()) {
+        return 0;
+    }
+    const auto elapsed = started.msecsTo(QDateTime::currentDateTimeUtc());
+    const auto remaining = minimumRefreshIntervalMs_ - static_cast<int>(elapsed);
+    return remaining > 0 ? remaining : 0;
+}
+
+QString ShellReadOnlyDataController::utcNowText() const
+{
+    return QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs);
+}
+
+void ShellReadOnlyDataController::setRefreshState(QString state)
+{
+    if (refreshState_ == state) {
+        emit stateChanged();
+        return;
+    }
+    refreshState_ = std::move(state);
+    emit stateChanged();
+}
+
+void ShellReadOnlyDataController::setBusy(bool busy)
+{
+    if (isBusy_ == busy) {
+        return;
+    }
+    isBusy_ = busy;
+    emit stateChanged();
+}
+
+void ShellReadOnlyDataController::setError(
+    std::optional<etfdt::protocol::ErrorCode> errorCode,
+    std::string message,
+    QString source,
+    bool recoverable)
+{
+    errorCode_ = errorCodeText(errorCode);
+    setLocalError(errorCode_, std::move(message), std::move(source), recoverable);
+}
+
+void ShellReadOnlyDataController::setLocalError(
+    QString code,
+    std::string message,
+    QString source,
+    bool recoverable)
+{
+    errorCode_ = std::move(code);
+    errorMessage_ = QString::fromStdString(message);
+    errorSource_ = std::move(source);
+    errorRecoverable_ = recoverable;
+    hasError_ = true;
+    setLastError(std::move(message));
+    emit errorStateChanged();
 }
 
 void ShellReadOnlyDataController::setLastError(std::string message)
@@ -424,21 +678,39 @@ void ShellReadOnlyDataController::setLastError(std::string message)
     notifySummaryChanged();
 }
 
-void ShellReadOnlyDataController::clearLastError()
+void ShellReadOnlyDataController::clearError()
 {
-    if (lastError_.empty() && summary_.lastError.empty()) {
+    if (lastError_.empty() && summary_.lastError.empty() && !hasError_) {
         return;
     }
     lastError_.clear();
     summary_.lastError.clear();
-    connection_.setLastError({});
+    hasError_ = false;
+    errorCode_.clear();
+    errorMessage_.clear();
+    errorSource_.clear();
+    errorRecoverable_ = true;
+    connection_.setLastError(std::string{});
     emit lastErrorChanged();
+    emit errorStateChanged();
     notifySummaryChanged();
 }
 
 void ShellReadOnlyDataController::notifySummaryChanged()
 {
     emit summaryChanged();
+}
+
+void ShellReadOnlyDataController::scheduleCanRefreshUpdate()
+{
+    const auto remaining = remainingThrottleMs();
+    if (remaining <= 0) {
+        emit stateChanged();
+        return;
+    }
+    QTimer::singleShot(remaining + 1, this, [this]() {
+        emit stateChanged();
+    });
 }
 
 }  // namespace etfdt::shell_services

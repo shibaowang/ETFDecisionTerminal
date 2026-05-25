@@ -48,6 +48,15 @@ void expectEqual(std::string_view actual, std::string_view expected, std::string
     }
 }
 
+void expectEqual(const QString& actual, const QString& expected, std::string_view message)
+{
+    if (actual != expected) {
+        ++gFailures;
+        std::cerr << "FAILED: " << message << " expected " << expected.toStdString()
+                  << " actual " << actual.toStdString() << '\n';
+    }
+}
+
 std::filesystem::path optionValue(int argc, char* argv[], const std::string& option)
 {
     for (int i = 1; i + 1 < argc; ++i) {
@@ -137,12 +146,19 @@ void testModelRoles()
 void testController(const std::filesystem::path& migrationPath)
 {
     etfdt::shell_services::ShellReadOnlyDataController missingSocketController;
+    expectEqual(missingSocketController.refreshState(), QStringLiteral("IDLE"), "initial refreshState is IDLE");
+    expectTrue(!missingSocketController.isBusy(), "initial controller is not busy");
+    expectTrue(!missingSocketController.canRefresh(), "initial controller cannot refresh before connect");
     auto missingConnect = missingSocketController.connectToDataService(
         "ETFDecisionTerminalMissingShellDataControllerSocket_"
             + std::to_string(QCoreApplication::applicationPid()),
         50);
     expectTrue(!missingConnect.hasValue(), "missing socket connect fails");
+    expectEqual(missingSocketController.refreshState(), QStringLiteral("FAILED"), "missing socket sets FAILED");
     expectTrue(!missingSocketController.lastError().empty(), "missing socket lastError");
+    expectTrue(
+        missingSocketController.errorStateMap().value("hasError").toBool(),
+        "missing socket sets error state");
     expectTrue(
         !missingSocketController.connectToDataService(QStringLiteral("ETFDecisionTerminalMissingShellDataControllerSocket_Qml")),
         "QML connect wrapper reports missing socket failure");
@@ -170,6 +186,8 @@ void testController(const std::filesystem::path& migrationPath)
     auto connected = controller.connectToDataService(socketName, 1000);
     expectTrue(connected.hasValue(), "controller connects");
     expectTrue(controller.connectionObject()->connected(), "connectionObject connected=true");
+    expectEqual(controller.refreshState(), QStringLiteral("SUCCESS"), "connect success sets SUCCESS state");
+    expectTrue(controller.canRefresh(), "controller can refresh after connect");
     expectTrue(waitUntil([&]() { return host.clientCount() == 1; }, 1000), "host accepts controller client");
 
     auto health = controller.refreshHealth(2000);
@@ -214,18 +232,55 @@ void testController(const std::filesystem::path& migrationPath)
     expectTrue(strategies.hasValue(), "refreshStrategies succeeds");
     expectTrue(controller.strategyModel()->rowCount() >= 0, "strategy model refreshes");
 
+    bool nestedRefreshRejected = false;
+    bool nestedRefreshAttempted = false;
+    QObject::connect(
+        &controller,
+        &etfdt::shell_services::ShellReadOnlyDataController::stateChanged,
+        [&]() {
+            if (!nestedRefreshAttempted && controller.refreshState() == QStringLiteral("REFRESHING")) {
+                nestedRefreshAttempted = true;
+                nestedRefreshRejected = !controller.refreshAll(2000).hasValue();
+            }
+        });
+
     auto all = controller.refreshAll(2000);
     expectTrue(all.hasValue(), "refreshAll succeeds");
+    expectEqual(controller.refreshState(), QStringLiteral("SUCCESS"), "refreshAll success sets SUCCESS");
+    expectTrue(nestedRefreshAttempted, "busy duplicate refresh was attempted");
+    expectTrue(nestedRefreshRejected, "busy duplicate refresh is rejected");
+    expectEqual(controller.refreshAttemptCount(), 1, "refresh attempt count increments");
+    expectEqual(controller.refreshSuccessCount(), 1, "refresh success count increments");
+    expectTrue(!controller.lastSuccessAtText().isEmpty(), "last success time is populated");
     expectTrue(controller.summaryViewModel().accountCount >= 1, "refreshAll accountCount");
     expectTrue(controller.summaryViewModel().portfolioCount >= 1, "refreshAll portfolioCount");
     expectTrue(controller.summaryViewModel().instrumentCount >= 1, "refreshAll instrumentCount");
     expectTrue(controller.summaryViewModel().strategyCount >= 0, "refreshAll strategyCount");
+    const int accountRowsAfterSuccess = controller.accountModel()->rowCount();
+    const int failureCountBeforeThrottle = controller.refreshFailureCount();
+    auto throttled = controller.refreshAll(2000);
+    expectTrue(!throttled.hasValue(), "immediate refreshAll is throttled");
+    expectEqual(controller.refreshThrottleCount(), 1, "refresh throttle count increments");
+    expectEqual(controller.refreshFailureCount(), failureCountBeforeThrottle, "throttled refresh is not a failure");
+    expectTrue(controller.accountModel()->rowCount() == accountRowsAfterSuccess, "throttled refresh preserves model rows");
+    controller.setMinimumRefreshIntervalMs(0);
     expectTrue(controller.refreshAll(), "QML refreshAll wrapper succeeds");
+    expectEqual(controller.refreshSuccessCount(), 2, "QML refreshAll wrapper increments success count");
     expectTrue(controller.summaryViewModelMap().value("accountCount").toInt() >= 1, "summaryViewModel QML map accountCount");
+    expectEqual(
+        controller.summaryViewModelMap().value("refreshState").toString(),
+        QStringLiteral("SUCCESS"),
+        "summaryViewModel QML map refreshState");
     expectTrue(controller.property("accountModel").value<QObject*>() != nullptr, "accountModel Q_PROPERTY exists");
     expectTrue(controller.property("portfolioModel").value<QObject*>() != nullptr, "portfolioModel Q_PROPERTY exists");
     expectTrue(controller.property("instrumentModel").value<QObject*>() != nullptr, "instrumentModel Q_PROPERTY exists");
     expectTrue(controller.property("strategyModel").value<QObject*>() != nullptr, "strategyModel Q_PROPERTY exists");
+    expectTrue(!controller.refreshOtc(QString()), "empty strategyCode refreshOtc fails locally");
+    expectTrue(controller.errorStateMap().value("hasError").toBool(), "empty strategyCode sets error state");
+    expectEqual(
+        controller.errorStateMap().value("errorCode").toString(),
+        QStringLiteral("E1002_MISSING_REQUIRED_FIELD"),
+        "empty strategyCode error code");
 
     expectEqual(countRows(connection, "audit_log"), auditLogBefore, "audit_log does not increase");
     expectEqual(countRows(connection, "trade_log"), 0, "trade_log remains empty");
@@ -237,9 +292,15 @@ void testController(const std::filesystem::path& migrationPath)
 
     controller.disconnect();
     expectTrue(!controller.connectionObject()->connected(), "connectionObject connected=false after disconnect");
+    expectEqual(controller.refreshState(), QStringLiteral("IDLE"), "disconnect resets refreshState to IDLE");
+    expectTrue(!controller.canRefresh(), "disconnect disables refresh");
     auto afterDisconnect = controller.refreshHealth(100);
     expectTrue(!afterDisconnect.hasValue(), "refreshHealth after disconnect fails");
     expectTrue(!controller.lastError().empty(), "after disconnect lastError");
+    auto allAfterDisconnect = controller.refreshAll(100);
+    expectTrue(!allAfterDisconnect.hasValue(), "refreshAll after disconnect fails");
+    expectEqual(controller.refreshState(), QStringLiteral("FAILED"), "refreshAll after disconnect sets FAILED");
+    expectTrue(controller.accountModel()->rowCount() == accountRowsAfterSuccess, "failed refresh preserves account rows");
 
     host.close();
     connection.close();

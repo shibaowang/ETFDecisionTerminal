@@ -595,6 +595,14 @@ build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 - It does not access SQLite directly and does not depend on DataAccess, DataServiceApi, ServiceHost, or Watchdog.
 - TASK-029 does not connect QML to real data; QML remains mock-only.
 
+## TASK-030 Shell Read-Only Data ViewModels
+
+- `libs/ShellServices` now adds read-only Shell view models and Qt Core list models on top of `ShellReadOnlyDataFacade`.
+- `ShellReadOnlyDataController` owns the facade, connection object, summary view model, and account / portfolio / instrument / strategy list models.
+- The controller only calls whitelisted read methods and does not expose raw protocol action forwarding.
+- It does not call `data.audit.append` or any write action, and it does not access SQLite directly.
+- TASK-030 does not connect QML to real data; future QML integration must bind these models through an explicitly authorized task.
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

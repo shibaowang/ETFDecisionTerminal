@@ -236,3 +236,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - It does not depend on DataAccess, DataServiceApi, ServiceHost, or Watchdog.
 - It exposes only whitelisted read methods and does not allow arbitrary action forwarding.
 - QML does not call this facade yet; future UI integration must pass through ViewModel / adapter layers.
+
+## Shell Read-Only Data ViewModels
+
+- TASK-030 adds ShellServices view models and Qt Core list models above `ShellReadOnlyDataFacade`.
+- `ShellReadOnlyDataController` loads read-only health, summary, accounts, portfolios, instruments, and strategies through the facade.
+- The controller updates `ShellDataConnectionObject`, `ShellReadOnlyDataViewModel`, and account / portfolio / instrument / strategy list models for future UI binding.
+- Shell still does not directly access SQLite and does not depend on DataAccess, DataServiceApi, ServiceHost, or Watchdog.
+- QML is not connected to these models in TASK-030; future UI tasks must explicitly authorize real data binding.

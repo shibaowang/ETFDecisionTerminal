@@ -7,6 +7,7 @@
 #include "ShellServices/ShellReadOnlyListModels.h"
 
 #include <QObject>
+#include <QAbstractItemModel>
 #include <QString>
 #include <QVariantMap>
 #include <optional>
@@ -22,7 +23,7 @@ class ShellReadOnlyDataController : public QObject {
     Q_PROPERTY(ShellPortfolioListModel* portfolioModel READ portfolioModel CONSTANT)
     Q_PROPERTY(ShellInstrumentListModel* instrumentModel READ instrumentModel CONSTANT)
     Q_PROPERTY(ShellStrategyListModel* strategyModel READ strategyModel CONSTANT)
-    Q_PROPERTY(ShellReadOnlyConnectionPresetModel* connectionPresetModel READ connectionPresetModel CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* connectionPresetModel READ connectionPresetItemModel CONSTANT)
     Q_PROPERTY(QString lastError READ lastErrorText NOTIFY lastErrorChanged)
     Q_PROPERTY(QString selectedPresetKey READ selectedPresetKey NOTIFY connectionPresetChanged)
     Q_PROPERTY(QString selectedSocketName READ selectedSocketName WRITE setCustomSocketName NOTIFY connectionPresetChanged)
@@ -78,6 +79,7 @@ public:
     [[nodiscard]] ShellPortfolioListModel* portfolioModel();
     [[nodiscard]] ShellInstrumentListModel* instrumentModel();
     [[nodiscard]] ShellStrategyListModel* strategyModel();
+    [[nodiscard]] QAbstractItemModel* connectionPresetItemModel();
     [[nodiscard]] ShellReadOnlyConnectionPresetModel* connectionPresetModel();
     [[nodiscard]] const std::string& lastError() const noexcept;
     [[nodiscard]] QString lastErrorText() const;

@@ -12,7 +12,7 @@ std::vector<ShellReadOnlyConnectionPreset> makeDefaultPresets()
     return {
         ShellReadOnlyConnectionPreset{
             "readonly_default",
-            "DataService read-only service",
+            "DataService \xE5\x8F\xAA\xE8\xAF\xBB\xE6\x9C\x8D\xE5\x8A\xA1",
             "ETFDataServiceReadonly",
             "Development read-only DataService socket. It exposes only whitelisted read actions.",
             true,
@@ -20,7 +20,7 @@ std::vector<ShellReadOnlyConnectionPreset> makeDefaultPresets()
             "ETFDataService --serve-readonly --db data/ETFDecision.db --socket-name ETFDataServiceReadonly"},
         ShellReadOnlyConnectionPreset{
             "audit_dev",
-            "DataService audit development service",
+            "DataService \xE5\xAE\xA1\xE8\xAE\xA1\xE5\xBC\x80\xE5\x8F\x91\xE6\x9C\x8D\xE5\x8A\xA1",
             "ETFDataServiceAuditDev",
             "Development audit service socket. This preset is only a connection target and does not call write actions.",
             true,
@@ -28,7 +28,7 @@ std::vector<ShellReadOnlyConnectionPreset> makeDefaultPresets()
             "ETFDataService --serve-dev-audit --db data/ETFDecision.db --socket-name ETFDataServiceAuditDev"},
         ShellReadOnlyConnectionPreset{
             "custom",
-            "Custom socket",
+            "\xE8\x87\xAA\xE5\xAE\x9A\xE4\xB9\x89 socket",
             "",
             "Manual runtime socket name. It is not saved to disk.",
             true,
@@ -58,6 +58,7 @@ QVariant ShellReadOnlyConnectionPresetModel::data(const QModelIndex& index, int 
     }
     const auto& preset = presets_[static_cast<std::size_t>(index.row())];
     switch (role) {
+    case Qt::DisplayRole: return QString::fromStdString(preset.title);
     case KeyRole: return QString::fromStdString(preset.key);
     case TitleRole: return QString::fromStdString(preset.title);
     case SocketNameRole: return QString::fromStdString(preset.socketName);

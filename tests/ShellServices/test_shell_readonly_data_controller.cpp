@@ -145,6 +145,12 @@ void testModelRoles()
     etfdt::shell_services::ShellReadOnlyConnectionPresetModel presets;
     expectTrue(presets.rowCount() >= 3, "connection preset model has default presets");
     expectTrue(
+        presets.roleNames().contains(etfdt::shell_services::ShellReadOnlyConnectionPresetModel::KeyRole),
+        "preset model has key role");
+    expectTrue(
+        presets.roleNames().contains(etfdt::shell_services::ShellReadOnlyConnectionPresetModel::TitleRole),
+        "preset model has title role");
+    expectTrue(
         presets.roleNames().contains(etfdt::shell_services::ShellReadOnlyConnectionPresetModel::SocketNameRole),
         "preset model has socketName role");
     expectTrue(
@@ -159,6 +165,15 @@ void testModelRoles()
     expectTrue(
         presets.findByKey(QStringLiteral("custom")) != nullptr,
         "preset model has custom");
+    const auto readonlyIndex = presets.index(0, 0);
+    expectEqual(
+        presets.data(readonlyIndex, etfdt::shell_services::ShellReadOnlyConnectionPresetModel::TitleRole).toString(),
+        QString::fromUtf8("DataService \xE5\x8F\xAA\xE8\xAF\xBB\xE6\x9C\x8D\xE5\x8A\xA1"),
+        "readonly_default title is localized");
+    expectEqual(
+        presets.data(readonlyIndex, Qt::DisplayRole).toString(),
+        QString::fromUtf8("DataService \xE5\x8F\xAA\xE8\xAF\xBB\xE6\x9C\x8D\xE5\x8A\xA1"),
+        "preset display role uses title");
 }
 
 void testController(const std::filesystem::path& migrationPath)
@@ -178,7 +193,9 @@ void testController(const std::filesystem::path& migrationPath)
         missingSocketController.selectedSocketName(),
         QStringLiteral("ETFDataServiceReadonly"),
         "default preset socketName");
-    expectTrue(!missingSocketController.commandHint().isEmpty(), "default commandHint is populated");
+    expectTrue(
+        missingSocketController.commandHint().contains(QStringLiteral("--serve-readonly")),
+        "default commandHint uses serve-readonly");
     expectTrue(missingSocketController.selectPreset(QStringLiteral("audit_dev")), "audit_dev preset can be selected");
     expectEqual(
         missingSocketController.selectedSocketName(),

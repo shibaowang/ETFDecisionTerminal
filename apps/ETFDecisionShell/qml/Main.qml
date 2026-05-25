@@ -12,11 +12,14 @@ Window {
     color: "#0f1724"
     title: "ETFDecisionShell Mock"
 
+    readonly property var injectedDiagnosticAdapter: diagnosticAdapter
+    readonly property var injectedReadOnlyDataController: readOnlyDataController
+
     AppShell {
         objectName: "appShell"
         anchors.fill: parent
-        diagnosticAdapter: diagnosticAdapter
-        readOnlyDataController: readOnlyDataController
+        diagnosticAdapter: root.injectedDiagnosticAdapter
+        readOnlyDataController: root.injectedReadOnlyDataController
         navigationController: shellNavigationController
         statusController: shellStatusController
     }

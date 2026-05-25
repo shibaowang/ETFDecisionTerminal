@@ -2,8 +2,13 @@ build/
 .vs/
 .vscode/
 *.user
+runtime/
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
+*.sqlite3
 *.log
+*.pid
 dist/
 out/

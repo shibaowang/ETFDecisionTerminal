@@ -187,3 +187,10 @@ v0.1 草案。
 - Presets must be runtime guidance only unless a task explicitly authorizes service discovery or config storage.
 - QML must not execute command hints and must not call `DataServiceClient` directly.
 - Presets must not expand the read/write action boundary or add arbitrary action forwarding.
+
+## Developer Runtime Output Rules
+
+- Developer demo tasks that create runtime files must document where those files are written.
+- `runtime/`, demo SQLite files, WAL/SHM files, logs, and pid files must stay ignored by Git.
+- Demo cleanup scripts must prefer precise pid-file cleanup and must not stop all service processes unless the user explicitly passes a force option.
+- Demo scripts must not modify migrations or call write actions unless a task explicitly authorizes that boundary.

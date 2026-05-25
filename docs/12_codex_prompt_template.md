@@ -164,3 +164,10 @@ v0.1 草案。
 - QML must not call `DataServiceClient`, parse DataService payloads, or connect sockets directly.
 - Read-only ViewModels and controllers must not call write actions such as `data.audit.append`.
 - Controllers must expose explicit whitelist methods and must not provide arbitrary action forwarding to UI code.
+
+## Shell Read-Only QML Task Rules
+
+- UI tasks that bind real read-only data must explicitly name the authorized Controller / ViewModel.
+- QML must not call `DataServiceClient` directly and must not expose arbitrary protocol action calls.
+- QML must not call write actions or provide edit / trade / accounting controls unless a later task explicitly authorizes them.
+- Error states must be displayed through controller state; QML must not silently substitute mock data for failed real reads.

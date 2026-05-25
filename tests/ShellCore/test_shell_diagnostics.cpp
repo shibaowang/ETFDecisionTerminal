@@ -684,7 +684,7 @@ void testQtSummaryAndAdapter(const std::filesystem::path& tempDir)
 void testShellPageRegistry()
 {
     const auto items = etfdt::shell::ShellPageRegistry::listNavigationItems();
-    expectEqual(static_cast<int>(items.size()), 13, "ShellPageRegistry returns 13 navigation items");
+    expectEqual(static_cast<int>(items.size()), 14, "ShellPageRegistry returns 14 navigation items");
 
     std::set<std::string> keys;
     for (const auto& item : items) {
@@ -695,6 +695,11 @@ void testShellPageRegistry()
     expectTrue(diagnostics.has_value(), "diagnostics metadata exists");
     expectEqual(diagnostics->qmlComponent, "DiagnosticsMockPage", "diagnostics points to DiagnosticsMockPage");
     expectTrue(!diagnostics->placeholder, "diagnostics is the only real mock data page");
+
+    const auto readonly = etfdt::shell::ShellPageRegistry::metadataForKey("readonly_data");
+    expectTrue(readonly.has_value(), "readonly_data metadata exists");
+    expectEqual(readonly->qmlComponent, "ReadOnlyDataPage", "readonly_data points to ReadOnlyDataPage");
+    expectTrue(!readonly->placeholder, "readonly_data is a read-only prototype page");
 
     const auto dashboard = etfdt::shell::ShellPageRegistry::metadataForKey("dashboard");
     expectTrue(dashboard.has_value(), "dashboard metadata exists");
@@ -710,7 +715,7 @@ void testShellPageRegistry()
 void testShellNavigationModel()
 {
     etfdt::shell::ShellNavigationModel model;
-    expectEqual(model.rowCount(), 13, "ShellNavigationModel rowCount is 13");
+    expectEqual(model.rowCount(), 14, "ShellNavigationModel rowCount is 14");
 
     const auto roles = model.roleNames();
     expectTrue(roles.contains(etfdt::shell::ShellNavigationModel::KeyRole), "NavigationModel has key role");
@@ -737,7 +742,7 @@ void testShellNavigationController()
     etfdt::shell::ShellNavigationController controller;
     expectEqual(controller.currentPageKey().toStdString(), "dashboard", "NavigationController default key");
     expectTrue(controller.navigationModel() != nullptr, "NavigationController has navigation model");
-    expectEqual(controller.navigationModel()->rowCount(), 13, "NavigationController navigation model rowCount");
+    expectEqual(controller.navigationModel()->rowCount(), 14, "NavigationController navigation model rowCount");
 
     expectTrue(controller.selectPage(QStringLiteral("diagnostics")), "selectPage diagnostics succeeds");
     expectEqual(controller.currentPageKey().toStdString(), "diagnostics", "current key is diagnostics");
@@ -752,14 +757,14 @@ void testShellNavigationController()
     expectEqual(controller.currentPageKey().toStdString(), "diagnostics", "unknown selection keeps current page");
 
     expectTrue(controller.selectPageByIndex(1), "selectPageByIndex succeeds");
-    expectEqual(controller.currentPageKey().toStdString(), "market", "selectPageByIndex selects sorted model item");
+    expectEqual(controller.currentPageKey().toStdString(), "readonly_data", "selectPageByIndex selects readonly data page");
     expectTrue(!controller.selectPageByIndex(999), "selectPageByIndex invalid returns false");
 }
 
 void testShellPageStatusModel()
 {
     etfdt::shell::ShellPageStatusModel model;
-    expectEqual(model.rowCount(), 13, "ShellPageStatusModel rowCount is 13");
+    expectEqual(model.rowCount(), 14, "ShellPageStatusModel rowCount is 14");
 
     const auto roles = model.roleNames();
     expectTrue(roles.contains(etfdt::shell::ShellPageStatusModel::PageKeyRole), "StatusModel has pageKey role");
@@ -776,6 +781,11 @@ void testShellPageStatusModel()
     expectTrue(dashboard != nullptr, "dashboard page status exists");
     expectEqual(dashboard == nullptr ? "" : dashboard->moduleStatus, "PLACEHOLDER", "dashboard moduleStatus=PLACEHOLDER");
     expectTrue(dashboard != nullptr && dashboard->placeholder, "dashboard status is placeholder");
+
+    const auto* readonly = model.statusForKey(QStringLiteral("readonly_data"));
+    expectTrue(readonly != nullptr, "readonly_data page status exists");
+    expectEqual(readonly == nullptr ? "" : readonly->moduleStatus, "READY", "readonly_data moduleStatus=READY");
+    expectEqual(readonly == nullptr ? "" : readonly->dataMode, "REAL_DATA_PENDING", "readonly_data dataMode");
 }
 
 void testShellPageInfoAndStatusController()
@@ -784,7 +794,7 @@ void testShellPageInfoAndStatusController()
     expectTrue(controller.statusModel() != nullptr, "StatusController has status model");
     expectTrue(controller.pageInfo() != nullptr, "StatusController has pageInfo");
     expectTrue(controller.logModel() != nullptr, "StatusController has logModel");
-    expectEqual(controller.statusModel()->rowCount(), 13, "StatusController status rowCount");
+    expectEqual(controller.statusModel()->rowCount(), 14, "StatusController status rowCount");
     expectEqual(controller.pageInfo()->pageKey().toStdString(), "dashboard", "StatusController default page");
     expectEqual(controller.pageInfo()->moduleStatus().toStdString(), "PLACEHOLDER", "StatusController default module status");
 

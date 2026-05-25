@@ -143,6 +143,9 @@ void testController(const std::filesystem::path& migrationPath)
         50);
     expectTrue(!missingConnect.hasValue(), "missing socket connect fails");
     expectTrue(!missingSocketController.lastError().empty(), "missing socket lastError");
+    expectTrue(
+        !missingSocketController.connectToDataService(QStringLiteral("ETFDecisionTerminalMissingShellDataControllerSocket_Qml")),
+        "QML connect wrapper reports missing socket failure");
 
     const auto tempDir = createTempDirectory();
     const auto dbPath = tempDir / "shell_readonly_controller.db";
@@ -169,16 +172,16 @@ void testController(const std::filesystem::path& migrationPath)
     expectTrue(controller.connectionObject()->connected(), "connectionObject connected=true");
     expectTrue(waitUntil([&]() { return host.clientCount() == 1; }, 1000), "host accepts controller client");
 
-    auto health = controller.refreshHealth();
+    auto health = controller.refreshHealth(2000);
     expectTrue(health.hasValue(), "refreshHealth succeeds");
     expectTrue(controller.connectionObject()->healthy(), "connectionObject healthy=true");
     expectTrue(controller.summaryViewModel().healthy, "summary healthy=true");
 
-    auto summary = controller.refreshSummary();
+    auto summary = controller.refreshSummary(2000);
     expectTrue(summary.hasValue(), "refreshSummary succeeds");
     expectTrue(!controller.summaryViewModel().summaryText.empty(), "summary text populated");
 
-    auto accounts = controller.refreshAccounts();
+    auto accounts = controller.refreshAccounts(2000);
     expectTrue(accounts.hasValue(), "refreshAccounts succeeds");
     expectTrue(controller.accountModel()->rowCount() >= 1, "account model has rows");
     const auto firstAccount = controller.accountModel()->index(0, 0);
@@ -189,11 +192,11 @@ void testController(const std::filesystem::path& migrationPath)
              .isEmpty(),
         "account name populated");
 
-    auto portfolios = controller.refreshPortfolios();
+    auto portfolios = controller.refreshPortfolios(2000);
     expectTrue(portfolios.hasValue(), "refreshPortfolios succeeds");
     expectTrue(controller.portfolioModel()->rowCount() >= 1, "portfolio model has rows");
 
-    auto instruments = controller.refreshInstruments();
+    auto instruments = controller.refreshInstruments(2000);
     expectTrue(instruments.hasValue(), "refreshInstruments succeeds");
     expectTrue(controller.instrumentModel()->rowCount() >= 1, "instrument model has rows");
     bool hasCash = false;
@@ -207,16 +210,22 @@ void testController(const std::filesystem::path& migrationPath)
     }
     expectTrue(hasCash, "instrument model contains CASH");
 
-    auto strategies = controller.refreshStrategies();
+    auto strategies = controller.refreshStrategies(2000);
     expectTrue(strategies.hasValue(), "refreshStrategies succeeds");
     expectTrue(controller.strategyModel()->rowCount() >= 0, "strategy model refreshes");
 
-    auto all = controller.refreshAll();
+    auto all = controller.refreshAll(2000);
     expectTrue(all.hasValue(), "refreshAll succeeds");
     expectTrue(controller.summaryViewModel().accountCount >= 1, "refreshAll accountCount");
     expectTrue(controller.summaryViewModel().portfolioCount >= 1, "refreshAll portfolioCount");
     expectTrue(controller.summaryViewModel().instrumentCount >= 1, "refreshAll instrumentCount");
     expectTrue(controller.summaryViewModel().strategyCount >= 0, "refreshAll strategyCount");
+    expectTrue(controller.refreshAll(), "QML refreshAll wrapper succeeds");
+    expectTrue(controller.summaryViewModelMap().value("accountCount").toInt() >= 1, "summaryViewModel QML map accountCount");
+    expectTrue(controller.property("accountModel").value<QObject*>() != nullptr, "accountModel Q_PROPERTY exists");
+    expectTrue(controller.property("portfolioModel").value<QObject*>() != nullptr, "portfolioModel Q_PROPERTY exists");
+    expectTrue(controller.property("instrumentModel").value<QObject*>() != nullptr, "instrumentModel Q_PROPERTY exists");
+    expectTrue(controller.property("strategyModel").value<QObject*>() != nullptr, "strategyModel Q_PROPERTY exists");
 
     expectEqual(countRows(connection, "audit_log"), auditLogBefore, "audit_log does not increase");
     expectEqual(countRows(connection, "trade_log"), 0, "trade_log remains empty");

@@ -34,22 +34,28 @@ qt_add_qml_module(ETFDecisionShell
         qml/pages/MarketPlaceholderPage.qml
         qml/pages/OtcChannelPlaceholderPage.qml
         qml/pages/PositionPlaceholderPage.qml
+        qml/pages/ReadOnlyDataPage.qml
         qml/pages/SettingsPlaceholderPage.qml
         qml/pages/StrategyPlaceholderPage.qml
         qml/pages/TradeConfirmPlaceholderPage.qml
         qml/pages/TradeDraftPlaceholderPage.qml
         qml/pages/TradeLogPlaceholderPage.qml
         qml/components/ActionHintList.qml
+        qml/components/AccountListView.qml
         qml/components/IssueListView.qml
+        qml/components/InstrumentListView.qml
         qml/components/MetricCard.qml
         qml/components/PlaceholderPage.qml
+        qml/components/PortfolioListView.qml
         qml/components/ServiceListView.qml
+        qml/components/StrategyListView.qml
         qml/components/SummaryCard.qml
 )
 
 target_link_libraries(ETFDecisionShell
     PRIVATE
         ETFDecisionTerminal::ShellCore
+        ETFDecisionTerminal::ShellServices
         Qt6::Core
         Qt6::Gui
         Qt6::Qml

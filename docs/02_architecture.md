@@ -244,3 +244,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - The controller updates `ShellDataConnectionObject`, `ShellReadOnlyDataViewModel`, and account / portfolio / instrument / strategy list models for future UI binding.
 - Shell still does not directly access SQLite and does not depend on DataAccess, DataServiceApi, ServiceHost, or Watchdog.
 - QML is not connected to these models in TASK-030; future UI tasks must explicitly authorize real data binding.
+
+## Shell Read-Only Data Page Prototype
+
+- TASK-031 connects one QML prototype page to `ShellReadOnlyDataController`.
+- `ReadOnlyDataPage.qml` binds only ShellServices controller / models and does not call `DataServiceClient` directly.
+- Shell still does not directly access SQLite; all read-only data flows through DataService socket actions.
+- The page is a development preview and exposes no edit, write, trade, audit append, or arbitrary action capability.
+- Future business pages must keep this Controller / ViewModel boundary instead of binding directly to protocol clients.

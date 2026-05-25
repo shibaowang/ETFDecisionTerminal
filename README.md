@@ -587,6 +587,14 @@ Run the Shell mock:
 build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 ```
 
+## TASK-029 Shell Read-Only Data Facade
+
+- `libs/ShellServices` adds `ShellReadOnlyDataFacade` as the future Shell-side C++ boundary for read-only DataService calls.
+- The facade uses `DataServiceClient` and exposes only whitelisted read methods: ping, health, summary, accounts, portfolios, instruments, strategies, OTC list, and snapshot loading.
+- It does not expose arbitrary action forwarding and does not call `data.audit.append` or any write action.
+- It does not access SQLite directly and does not depend on DataAccess, DataServiceApi, ServiceHost, or Watchdog.
+- TASK-029 does not connect QML to real data; QML remains mock-only.
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

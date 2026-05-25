@@ -227,3 +227,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - `ShellStatusController` exposes `ShellPageMetricModel` and `ShellPageActionHintModel` for QML binding.
 - `DashboardPlaceholderPage` and `RightInfoPanel` display these C++ model rows.
 - Shell metrics are mock-only and do not access SQLite, connect services, start processes, or implement business logic.
+
+## Shell Read-Only Data Facade
+
+- TASK-029 adds `ShellReadOnlyDataFacade` in `libs/ShellServices`.
+- The facade is the Shell-side C++ boundary for future read-only DataService data.
+- It calls DataService through `DataServiceClient`; it does not access SQLite directly.
+- It does not depend on DataAccess, DataServiceApi, ServiceHost, or Watchdog.
+- It exposes only whitelisted read methods and does not allow arbitrary action forwarding.
+- QML does not call this facade yet; future UI integration must pass through ViewModel / adapter layers.

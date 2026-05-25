@@ -252,3 +252,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - Shell still does not directly access SQLite; all read-only data flows through DataService socket actions.
 - The page is a development preview and exposes no edit, write, trade, audit append, or arbitrary action capability.
 - Future business pages must keep this Controller / ViewModel boundary instead of binding directly to protocol clients.
+
+## Shell Read-Only State Flow
+
+- TASK-032 keeps read-only connection, refresh, throttle, and error state in `ShellReadOnlyDataController`.
+- QML binds `refreshState`, `isBusy`, `canRefresh`, timestamp fields, counters, and `errorState`; it does not implement throttle logic itself.
+- `Refresh All` is rejected while busy and throttled by a minimum interval in C++ before any DataService request is sent.
+- Failed refresh attempts preserve previously loaded successful models so the UI does not replace real data with fake or empty data.
+- ShellServices still only calls whitelisted read-only DataService actions through `ShellReadOnlyDataFacade`.
+- ShellServices and QML still do not access SQLite, call `data.audit.append`, expose arbitrary actions, or implement business logic.

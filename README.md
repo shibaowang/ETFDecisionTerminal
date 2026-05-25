@@ -622,6 +622,24 @@ Run the Shell:
 build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 ```
 
+## TASK-032 Shell Read-Only State Flow
+
+- `ShellReadOnlyDataController` now exposes connection / refresh / error state for the read-only data page.
+- `refreshState` uses stable values: `IDLE`, `CONNECTING`, `REFRESHING`, `SUCCESS`, and `FAILED`.
+- `Refresh All` has C++-side duplicate-request and throttle guards; QML only binds `canRefresh`, `isBusy`, and state fields.
+- The controller tracks last refresh start / finish / success times plus attempt, success, failure, and throttle counts.
+- Failed refreshes keep previously loaded successful list rows; they do not silently replace real data with mock data.
+- QML still does not call `DataServiceClient` directly and does not call `data.audit.append` or any write action.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

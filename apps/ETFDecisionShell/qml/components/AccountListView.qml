@@ -12,12 +12,12 @@ ReadOnlyTable {
     emptyTitle: "暂无账户数据"
     emptyMessage: "连接只读 DataService 后刷新账户列表。"
     columns: [
-        {"key": "name", "title": "Name", "width": 190, "sortable": true},
-        {"key": "type", "title": "Type", "width": 100, "sortable": true},
-        {"key": "broker", "title": "Broker", "width": 140, "sortable": false},
-        {"key": "currency", "title": "Currency", "width": 90, "sortable": false},
-        {"key": "status", "title": "Status", "width": 96, "sortable": true},
-        {"key": "amount", "title": "Initial cash", "width": 130, "alignment": Text.AlignRight, "sortable": true}
+        {"key": "name", "title": "Name", "width": 190, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "Type", "width": 100, "required": false, "visible": true, "sortable": true},
+        {"key": "broker", "title": "Broker", "width": 140, "required": false, "visible": false, "sortable": false},
+        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": false},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "amount", "title": "Initial cash", "width": 130, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true}
     ]
     rowCount: accountList.count
 
@@ -43,48 +43,54 @@ ReadOnlyTable {
                 spacing: 8
 
                 Text {
-                    width: 190
+                    visible: root.columnVisible("name")
+                    width: root.columnWidth("name", 190)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.name
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 100
+                    visible: root.columnVisible("type")
+                    width: root.columnWidth("type", 100)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.accountType
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 140
+                    visible: root.columnVisible("broker")
+                    width: root.columnWidth("broker", 140)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.brokerName
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 90
+                    visible: root.columnVisible("currency")
+                    width: root.columnWidth("currency", 90)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.baseCurrency
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 ReadOnlyStatusBadge {
-                    width: 96
+                    visible: root.columnVisible("status")
+                    width: root.columnWidth("status", 96)
                     anchors.verticalCenter: parent.verticalCenter
                     status: model.isActive ? "ACTIVE" : "DISABLED"
                 }
                 Text {
-                    width: 130
+                    visible: root.columnVisible("amount")
+                    width: root.columnWidth("amount", 130)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.initialCashText
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     horizontalAlignment: Text.AlignRight
                     elide: Text.ElideRight
                 }

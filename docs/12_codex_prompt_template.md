@@ -208,3 +208,7 @@ v0.1 草案。
 - UI readability work must keep components display-only and must not make mock / read-only screens look trade-capable.
 - Read-only UI filter / sort tasks must keep filtering in C++ Model / ProxyModel / Controller layers.
 - Filtering and sorting must not trigger service writes, backend mutations, direct SQLite access, or arbitrary action forwarding.
+- UI display setting tasks must explicitly state whether settings are persisted.
+- By default, column visibility and table density settings are runtime-only and must not be saved to files, SQLite, registry, or service configuration.
+- Column visibility and density changes must not trigger service calls, backend writes, or source model mutation.
+- UI readability work must not change the read-only service boundary or make pages appear write-capable.

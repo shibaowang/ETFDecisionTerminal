@@ -9,12 +9,12 @@ ReadOnlyTable {
     height: 210
     title: "Portfolios"
     subtitle: "Read-only portfolio list"
-    emptyTitle: "暂无组合数据"
-    emptyMessage: "连接只读 DataService 后刷新组合列表。"
+    emptyTitle: "No portfolios"
+    emptyMessage: "Connect to the read-only DataService and refresh portfolios."
     columns: [
-        {"key": "name", "title": "Name", "width": 260, "sortable": true},
-        {"key": "amount", "title": "Base position ratio", "width": 170, "alignment": Text.AlignRight, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "sortable": true}
+        {"key": "name", "title": "Name", "width": 260, "required": true, "visible": true, "sortable": true},
+        {"key": "amount", "title": "Base position ratio", "width": 170, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     rowCount: portfolioList.count
 
@@ -40,24 +40,27 @@ ReadOnlyTable {
                 spacing: 8
 
                 Text {
-                    width: 260
+                    visible: root.columnVisible("name")
+                    width: root.columnWidth("name", 260)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.name
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 170
+                    visible: root.columnVisible("amount")
+                    width: root.columnWidth("amount", 170)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.basePositionRatioText
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     horizontalAlignment: Text.AlignRight
                     elide: Text.ElideRight
                 }
                 ReadOnlyStatusBadge {
-                    width: 96
+                    visible: root.columnVisible("status")
+                    width: root.columnWidth("status", 96)
                     anchors.verticalCenter: parent.verticalCenter
                     status: model.isActive ? "ACTIVE" : "DISABLED"
                 }

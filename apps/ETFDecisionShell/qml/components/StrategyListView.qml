@@ -9,12 +9,12 @@ ReadOnlyTable {
     height: 210
     title: "Strategies"
     subtitle: "Read-only strategy list"
-    emptyTitle: "暂无策略数据"
-    emptyMessage: "当前数据库没有策略记录，页面保持只读并可继续刷新。"
+    emptyTitle: "No strategies"
+    emptyMessage: "The current demo database may have no strategy rows; the page remains read-only."
     columns: [
-        {"key": "code", "title": "Strategy code", "width": 180, "sortable": true},
-        {"key": "name", "title": "Name", "width": 260, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "sortable": true}
+        {"key": "code", "title": "Strategy code", "width": 180, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "Name", "width": 260, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     rowCount: strategyList.count
 
@@ -40,24 +40,27 @@ ReadOnlyTable {
                 spacing: 8
 
                 Text {
-                    width: 180
+                    visible: root.columnVisible("code")
+                    width: root.columnWidth("code", 180)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.strategyCode
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     font.bold: true
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 260
+                    visible: root.columnVisible("name")
+                    width: root.columnWidth("name", 260)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.name
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 ReadOnlyStatusBadge {
-                    width: 96
+                    visible: root.columnVisible("status")
+                    width: root.columnWidth("status", 96)
                     anchors.verticalCenter: parent.verticalCenter
                     status: model.enabled ? "ENABLED" : "DISABLED"
                 }

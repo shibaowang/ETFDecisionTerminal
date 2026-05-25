@@ -13,6 +13,23 @@ Rectangle {
     border.color: "#d8e0eb"
 
     property var summary: readOnlyDataController.summaryViewModel
+    property var accountVisibleColumns: []
+    property var portfolioVisibleColumns: []
+    property string accountDensity: "normal"
+    property string portfolioDensity: "normal"
+    property var accountColumns: [
+        {"key": "name", "title": "Name", "width": 190, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "Type", "width": 100, "required": false, "visible": true, "sortable": true},
+        {"key": "broker", "title": "Broker", "width": 140, "required": false, "visible": false, "sortable": false},
+        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": false},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "amount", "title": "Initial cash", "width": 130, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true}
+    ]
+    property var portfolioColumns: [
+        {"key": "name", "title": "Name", "width": 260, "required": true, "visible": true, "sortable": true},
+        {"key": "amount", "title": "Base position ratio", "width": 170, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+    ]
 
     Flickable {
         anchors.fill: parent
@@ -241,9 +258,39 @@ Rectangle {
                 }
             }
 
+            Row {
+                width: parent.width
+                spacing: 10
+
+                ReadOnlyColumnChooser {
+                    objectName: "accountColumnChooser"
+                    columnObjectNamePrefix: "accountColumnChooserColumn"
+                    width: Math.min(parent.width * 0.68, 760)
+                    columns: root.accountColumns
+                    visibleColumnKeys: root.accountVisibleColumns
+                    title: "Account columns"
+                    onColumnVisibilityChanged: function(keys) {
+                        root.accountVisibleColumns = keys
+                    }
+                }
+
+                ReadOnlyDensityToggle {
+                    objectName: "accountDensityToggle"
+                    width: Math.min(parent.width * 0.30, 340)
+                    density: root.accountDensity
+                    onDensityChangedByUser: function(density) {
+                        root.accountDensity = density
+                    }
+                }
+            }
+
             AccountListView {
+                id: accountTable
                 accountModel: root.readOnlyDataController.filteredAccountModel
                 width: parent.width
+                columns: root.accountColumns
+                visibleColumnKeys: root.accountVisibleColumns
+                density: root.accountDensity
                 onSortRequested: function(key, ascending) {
                     root.readOnlyDataController.sortAccounts(key, ascending)
                 }
@@ -267,9 +314,39 @@ Rectangle {
                 }
             }
 
+            Row {
+                width: parent.width
+                spacing: 10
+
+                ReadOnlyColumnChooser {
+                    objectName: "portfolioColumnChooser"
+                    columnObjectNamePrefix: "portfolioColumnChooserColumn"
+                    width: Math.min(parent.width * 0.68, 760)
+                    columns: root.portfolioColumns
+                    visibleColumnKeys: root.portfolioVisibleColumns
+                    title: "Portfolio columns"
+                    onColumnVisibilityChanged: function(keys) {
+                        root.portfolioVisibleColumns = keys
+                    }
+                }
+
+                ReadOnlyDensityToggle {
+                    objectName: "portfolioDensityToggle"
+                    width: Math.min(parent.width * 0.30, 340)
+                    density: root.portfolioDensity
+                    onDensityChangedByUser: function(density) {
+                        root.portfolioDensity = density
+                    }
+                }
+            }
+
             PortfolioListView {
+                id: portfolioTable
                 portfolioModel: root.readOnlyDataController.filteredPortfolioModel
                 width: parent.width
+                columns: root.portfolioColumns
+                visibleColumnKeys: root.portfolioVisibleColumns
+                density: root.portfolioDensity
                 onSortRequested: function(key, ascending) {
                     root.readOnlyDataController.sortPortfolios(key, ascending)
                 }

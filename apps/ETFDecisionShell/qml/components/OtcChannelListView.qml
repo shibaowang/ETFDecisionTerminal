@@ -9,16 +9,16 @@ ReadOnlyTable {
     height: 220
     title: "OTC Channels"
     subtitle: "Read-only OTC channel list"
-    emptyTitle: "暂无 OTC 通道"
-    emptyMessage: "选择 strategyCode 后刷新 OTC 通道；空结果表示该策略暂无通道映射。"
+    emptyTitle: "No OTC channels"
+    emptyMessage: "Select a strategyCode and refresh OTC channels; an empty result is valid."
     columns: [
-        {"key": "strategy", "title": "Strategy", "width": 130, "sortable": true},
-        {"key": "code", "title": "Actual code", "width": 130, "sortable": true},
-        {"key": "type", "title": "Fund class", "width": 120, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "sortable": true},
-        {"key": "dailyLimit", "title": "Daily limit", "width": 120, "alignment": Text.AlignRight, "sortable": false},
-        {"key": "priority", "title": "Priority", "width": 80, "alignment": Text.AlignRight, "sortable": true},
-        {"key": "amount", "title": "Min buy", "width": 120, "alignment": Text.AlignRight, "sortable": true}
+        {"key": "strategy", "title": "Strategy", "width": 130, "required": false, "visible": false, "sortable": true},
+        {"key": "code", "title": "Actual code", "width": 130, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "Fund class", "width": 120, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "dailyLimit", "title": "Daily limit", "width": 120, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": false},
+        {"key": "priority", "title": "Priority", "width": 80, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "amount", "title": "Min buy", "width": 120, "required": false, "visible": false, "alignment": Text.AlignRight, "sortable": true}
     ]
     rowCount: otcChannelList.count
 
@@ -44,59 +44,66 @@ ReadOnlyTable {
                 spacing: 8
 
                 Text {
-                    width: 130
+                    visible: root.columnVisible("strategy")
+                    width: root.columnWidth("strategy", 130)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.strategyCode
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 130
+                    visible: root.columnVisible("code")
+                    width: root.columnWidth("code", 130)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.actualCode
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     font.bold: true
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 120
+                    visible: root.columnVisible("type")
+                    width: root.columnWidth("type", 120)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.fundClass
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 ReadOnlyStatusBadge {
-                    width: 96
+                    visible: root.columnVisible("status")
+                    width: root.columnWidth("status", 96)
                     anchors.verticalCenter: parent.verticalCenter
                     status: model.enabled ? "ENABLED" : "DISABLED"
                 }
                 Text {
-                    width: 120
+                    visible: root.columnVisible("dailyLimit")
+                    width: root.columnWidth("dailyLimit", 120)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.dailyLimitText
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     horizontalAlignment: Text.AlignRight
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 80
+                    visible: root.columnVisible("priority")
+                    width: root.columnWidth("priority", 80)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.priority
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     horizontalAlignment: Text.AlignRight
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 120
+                    visible: root.columnVisible("amount")
+                    width: root.columnWidth("amount", 120)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.minBuyAmountText
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     horizontalAlignment: Text.AlignRight
                     elide: Text.ElideRight
                 }

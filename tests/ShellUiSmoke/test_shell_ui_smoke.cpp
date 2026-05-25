@@ -165,6 +165,42 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("placeholderMetricGrid") != nullptr,
             "PlaceholderPage metric grid is loaded");
 
+        invoked = navigationController.selectPage(QStringLiteral("account_portfolio"));
+        processQmlEvents();
+        expectTrue(invoked, "navigateTo account_portfolio succeeds");
+        expectEqual(navigationController.currentPageKey(), "account_portfolio", "current page is account_portfolio");
+        expectEqual(
+            contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
+            "AccountPortfolioReadOnlyPage",
+            "ContentHost receives account portfolio qml component");
+        expectTrue(
+            appShell->findChild<QObject*>("accountPortfolioReadOnlyPage") != nullptr,
+            "AccountPortfolioReadOnlyPage is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountPortfolioReadonlyNotice") != nullptr,
+            "AccountPortfolioReadOnlyPage read-only notice is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountPortfolioStatusPanel") != nullptr,
+            "AccountPortfolioReadOnlyPage status panel is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountPortfolioRefreshButton") != nullptr,
+            "AccountPortfolioReadOnlyPage refresh button is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountListView") != nullptr,
+            "AccountPortfolioReadOnlyPage account model binding exists");
+        expectTrue(
+            appShell->findChild<QObject*>("portfolioListView") != nullptr,
+            "AccountPortfolioReadOnlyPage portfolio model binding exists");
+        expectTrue(
+            appShell->findChild<QObject*>("accountEditButton") == nullptr,
+            "AccountPortfolioReadOnlyPage has no edit button");
+        expectTrue(
+            appShell->findChild<QObject*>("accountDepositButton") == nullptr,
+            "AccountPortfolioReadOnlyPage has no deposit button");
+        expectTrue(
+            appShell->findChild<QObject*>("accountTradeButton") == nullptr,
+            "AccountPortfolioReadOnlyPage has no trade button");
+
         invoked = navigationController.selectPage(QStringLiteral("readonly_data"));
         processQmlEvents();
         expectTrue(invoked, "navigateTo readonly_data succeeds");

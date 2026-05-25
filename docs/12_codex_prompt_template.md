@@ -194,3 +194,10 @@ v0.1 草案。
 - `runtime/`, demo SQLite files, WAL/SHM files, logs, and pid files must stay ignored by Git.
 - Demo cleanup scripts must prefer precise pid-file cleanup and must not stop all service processes unless the user explicitly passes a force option.
 - Demo scripts must not modify migrations or call write actions unless a task explicitly authorizes that boundary.
+
+## Business Read-Only Page Task Rules
+
+- Business page tasks must declare whether the page is read-only or write-capable.
+- Default business pages are read-only and must bind Controller / ViewModel / Model objects rather than low-level clients.
+- QML must not expose edit, accounting, confirmation, trade, or write buttons unless a later task explicitly authorizes writes.
+- QML must not call write actions, `data.audit.append`, or `DataServiceClient` directly.

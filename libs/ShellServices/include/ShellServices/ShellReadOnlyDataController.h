@@ -57,6 +57,7 @@ public:
     [[nodiscard]] ShellDataResult<bool> refreshSummary(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshAccounts(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshPortfolios(int timeoutMs);
+    [[nodiscard]] ShellDataResult<bool> refreshAccountsAndPortfolios(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshInstruments(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshStrategies(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshAll(int timeoutMs);
@@ -65,6 +66,7 @@ public:
     Q_INVOKABLE [[nodiscard]] bool refreshSummary();
     Q_INVOKABLE [[nodiscard]] bool refreshAccounts();
     Q_INVOKABLE [[nodiscard]] bool refreshPortfolios();
+    Q_INVOKABLE [[nodiscard]] bool refreshAccountsAndPortfolios();
     Q_INVOKABLE [[nodiscard]] bool refreshInstruments();
     Q_INVOKABLE [[nodiscard]] bool refreshStrategies();
     Q_INVOKABLE [[nodiscard]] bool refreshAll();

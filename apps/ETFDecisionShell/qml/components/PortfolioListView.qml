@@ -48,6 +48,7 @@ Rectangle {
                     anchors.fill: parent
                     anchors.margins: 8
                     text: model.name + " | basePositionRatio=" + model.basePositionRatioText
+                        + " | active=" + model.isActive
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight

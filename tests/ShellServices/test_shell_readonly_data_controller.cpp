@@ -333,6 +333,30 @@ void testController(const std::filesystem::path& migrationPath)
     controller.setMinimumRefreshIntervalMs(0);
     expectTrue(controller.refreshAll(), "QML refreshAll wrapper succeeds");
     expectEqual(controller.refreshSuccessCount(), 2, "QML refreshAll wrapper increments success count");
+    auto accountPortfolioRefresh = controller.refreshAccountsAndPortfolios(2000);
+    expectTrue(accountPortfolioRefresh.hasValue(), "refreshAccountsAndPortfolios succeeds");
+    expectTrue(controller.accountModel()->rowCount() >= 1, "account portfolio refresh keeps account rows");
+    expectTrue(controller.portfolioModel()->rowCount() >= 1, "account portfolio refresh keeps portfolio rows");
+    bool hasDefaultAccount = false;
+    for (int row = 0; row < controller.accountModel()->rowCount(); ++row) {
+        const auto index = controller.accountModel()->index(row, 0);
+        hasDefaultAccount = hasDefaultAccount
+            || controller.accountModel()
+                   ->data(index, etfdt::shell_services::ShellAccountListModel::UidRole)
+                   .toString()
+                == QStringLiteral("00000000-0000-4000-8000-000000000101");
+    }
+    expectTrue(hasDefaultAccount, "account model contains default account");
+    bool hasDefaultPortfolio = false;
+    for (int row = 0; row < controller.portfolioModel()->rowCount(); ++row) {
+        const auto index = controller.portfolioModel()->index(row, 0);
+        hasDefaultPortfolio = hasDefaultPortfolio
+            || controller.portfolioModel()
+                   ->data(index, etfdt::shell_services::ShellPortfolioListModel::UidRole)
+                   .toString()
+                == QStringLiteral("00000000-0000-4000-8000-000000000201");
+    }
+    expectTrue(hasDefaultPortfolio, "portfolio model contains default portfolio");
     expectTrue(controller.summaryViewModelMap().value("accountCount").toInt() >= 1, "summaryViewModel QML map accountCount");
     expectEqual(
         controller.summaryViewModelMap().value("refreshState").toString(),

@@ -49,38 +49,103 @@ Rectangle {
                 }
             }
 
+            Rectangle {
+                objectName: "readonlyPresetPanel"
+                width: parent.width
+                height: 170
+                radius: 8
+                color: "#f8fbff"
+                border.color: "#c8d7ee"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 8
+
+                    Text {
+                        text: "Read-only connection"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: root.readOnlyDataController.onboardingText
+                        color: "#56657c"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 8
+
+                        ComboBox {
+                            id: presetCombo
+                            objectName: "readonlyPresetCombo"
+                            width: Math.min(300, parent.width * 0.28)
+                            model: root.readOnlyDataController.connectionPresetModel
+                            textRole: "title"
+                            valueRole: "key"
+                            onActivated: root.readOnlyDataController.selectPreset(currentValue)
+
+                            Component.onCompleted: {
+                                for (var i = 0; i < count; ++i) {
+                                    if (valueAt(i) === root.readOnlyDataController.selectedPresetKey) {
+                                        currentIndex = i
+                                        break
+                                    }
+                                }
+                            }
+                        }
+
+                        TextField {
+                            id: socketNameField
+                            objectName: "readonlySocketNameField"
+                            width: Math.min(360, parent.width * 0.35)
+                            text: root.readOnlyDataController.selectedSocketName
+                            placeholderText: "socketName"
+                            selectByMouse: true
+                            onTextEdited: root.readOnlyDataController.setCustomSocketName(text)
+                        }
+
+                        Button {
+                            objectName: "readonlyConnectButton"
+                            text: "Connect"
+                            enabled: !root.readOnlyDataController.isBusy
+                                && root.readOnlyDataController.selectedSocketName.length > 0
+                            onClicked: root.readOnlyDataController.connectToDataService()
+                        }
+
+                        Button {
+                            objectName: "readonlyDisconnectButton"
+                            text: "Disconnect"
+                            enabled: !root.readOnlyDataController.isBusy
+                            onClicked: root.readOnlyDataController.disconnect()
+                        }
+                    }
+
+                    Text {
+                        objectName: "readonlyCommandHint"
+                        width: parent.width
+                        text: "Start command: " + root.readOnlyDataController.commandHint
+                        color: "#244464"
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+
             Row {
                 width: parent.width
                 spacing: 8
-
-                TextField {
-                    id: socketNameField
-                    objectName: "readonlySocketNameField"
-                    width: Math.min(360, parent.width * 0.35)
-                    text: "ETFDataServiceReadonly"
-                    placeholderText: "socketName"
-                    selectByMouse: true
-                }
-
-                Button {
-                    objectName: "readonlyConnectButton"
-                    text: "Connect"
-                    enabled: !root.readOnlyDataController.isBusy
-                    onClicked: root.readOnlyDataController.connectToDataService(socketNameField.text)
-                }
 
                 Button {
                     objectName: "readonlyRefreshAllButton"
                     text: "Refresh All"
                     enabled: root.readOnlyDataController.canRefresh
                     onClicked: root.readOnlyDataController.refreshAll()
-                }
-
-                Button {
-                    objectName: "readonlyDisconnectButton"
-                    text: "Disconnect"
-                    enabled: !root.readOnlyDataController.isBusy
-                    onClicked: root.readOnlyDataController.disconnect()
                 }
             }
 

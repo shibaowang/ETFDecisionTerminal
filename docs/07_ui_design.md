@@ -181,3 +181,11 @@ v0.1 草案。
 - The controller exposes `IDLE`, `CONNECTING`, `REFRESHING`, `SUCCESS`, and `FAILED` states for direct UI binding.
 - Error state must remain visible for failed connects, disconnected refreshes, local validation failures, and throttled refreshes.
 - The page still does not edit data, call write actions, access SQLite, or directly call `DataServiceClient`.
+
+## TASK-033 Read-Only Connection Guide
+
+- The read-only data page now shows runtime connection presets and a command hint before connecting.
+- Users can choose the recommended read-only DataService socket, the audit development socket, or a custom socket name.
+- Presets are clearly development guidance and do not auto-start services or save configuration.
+- The Connect button uses controller-owned `selectedSocketName`; empty custom socket names are rejected by C++ state.
+- The page remains read-only and exposes no edit, trade, accounting, audit append, or write controls.

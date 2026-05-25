@@ -172,6 +172,7 @@ ShellReadOnlyDataController::ShellReadOnlyDataController(QObject* parent)
     , portfolios_(this)
     , instruments_(this)
     , strategies_(this)
+    , connectionPresets_(this)
 {
 }
 
@@ -179,6 +180,15 @@ ShellDataResult<bool> ShellReadOnlyDataController::connectToDataService(
     const std::string& socketName,
     int timeoutMs)
 {
+    if (socketName.empty()) {
+        setLocalError(
+            QStringLiteral("MISSING_SOCKET_NAME"),
+            "socketName is required before connecting to DataService",
+            QStringLiteral("connect"),
+            true);
+        setRefreshState(QStringLiteral("FAILED"));
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
     if (isBusy_) {
         setLocalError(
             QStringLiteral("BUSY"),
@@ -206,6 +216,11 @@ ShellDataResult<bool> ShellReadOnlyDataController::connectToDataService(
 bool ShellReadOnlyDataController::connectToDataService(const QString& socketName)
 {
     return connectToDataService(socketName.toStdString(), 2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::connectToDataService()
+{
+    return connectToDataService(selectedSocketName_.toStdString(), 2000).hasValue();
 }
 
 void ShellReadOnlyDataController::disconnect()
@@ -443,6 +458,40 @@ bool ShellReadOnlyDataController::refreshOtc(const QString& strategyCode)
     return true;
 }
 
+bool ShellReadOnlyDataController::selectPreset(const QString& key)
+{
+    const auto* preset = connectionPresets_.findByKey(key);
+    if (preset == nullptr) {
+        setLocalError(
+            QStringLiteral("UNKNOWN_PRESET"),
+            "unknown read-only connection preset",
+            QStringLiteral("connectionPreset"),
+            true);
+        return false;
+    }
+
+    selectedPresetKey_ = QString::fromStdString(preset->key);
+    selectedSocketName_ = QString::fromStdString(preset->socketName);
+    commandHint_ = QString::fromStdString(preset->commandHint);
+    clearError();
+    emit connectionPresetChanged();
+    return true;
+}
+
+void ShellReadOnlyDataController::setCustomSocketName(const QString& socketName)
+{
+    selectedSocketName_ = socketName.trimmed();
+    const auto* preset = connectionPresets_.findByKey(selectedPresetKey_);
+    if (preset != nullptr && selectedSocketName_ != QString::fromStdString(preset->socketName)) {
+        selectedPresetKey_ = QStringLiteral("custom");
+        const auto* customPreset = connectionPresets_.findByKey(selectedPresetKey_);
+        commandHint_ = customPreset == nullptr
+            ? QStringLiteral("Enter a socketName manually.")
+            : QString::fromStdString(customPreset->commandHint);
+    }
+    emit connectionPresetChanged();
+}
+
 ShellDataConnectionObject* ShellReadOnlyDataController::connectionObject()
 {
     return &connection_;
@@ -489,6 +538,11 @@ ShellStrategyListModel* ShellReadOnlyDataController::strategyModel()
     return &strategies_;
 }
 
+ShellReadOnlyConnectionPresetModel* ShellReadOnlyDataController::connectionPresetModel()
+{
+    return &connectionPresets_;
+}
+
 const std::string& ShellReadOnlyDataController::lastError() const noexcept
 {
     return lastError_;
@@ -497,6 +551,29 @@ const std::string& ShellReadOnlyDataController::lastError() const noexcept
 QString ShellReadOnlyDataController::lastErrorText() const
 {
     return QString::fromStdString(lastError_);
+}
+
+QString ShellReadOnlyDataController::selectedPresetKey() const
+{
+    return selectedPresetKey_;
+}
+
+QString ShellReadOnlyDataController::selectedSocketName() const
+{
+    return selectedSocketName_;
+}
+
+QString ShellReadOnlyDataController::commandHint() const
+{
+    return commandHint_;
+}
+
+QString ShellReadOnlyDataController::onboardingText() const
+{
+    return QStringLiteral(
+        "Development read-only prototype. Start ETFDataService manually with the command hint, "
+        "then connect to the selected socket. This page does not start services, persist config, "
+        "or call write actions.");
 }
 
 QString ShellReadOnlyDataController::refreshState() const

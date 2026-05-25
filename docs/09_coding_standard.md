@@ -106,3 +106,11 @@ ETFDecisionTerminal/
 - QML must bind `canRefresh`, `isBusy`, `refreshState`, and error fields instead of inferring connection success.
 - Failed refreshes must not clear previously loaded successful models unless a task explicitly requires and tests that behavior.
 - QML must not fake successful real-data reads with mock data after a connection or refresh error.
+
+## Shell Connection Preset Rules
+
+- Connection presets are UI guidance, not service discovery.
+- Command hints must be displayed as text only and must not be executed by QML or controllers.
+- Runtime socket names must not be persisted unless a task explicitly authorizes configuration storage.
+- Presets must not auto-start Watchdog, DataService, or any other service.
+- Development presets that point at writable-capable services must not call write actions unless a later task explicitly authorizes them.

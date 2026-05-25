@@ -141,6 +141,24 @@ void testModelRoles()
     expectTrue(
         strategies.roleNames().contains(etfdt::shell_services::ShellStrategyListModel::StrategyCodeRole),
         "strategy model has strategyCode role");
+
+    etfdt::shell_services::ShellReadOnlyConnectionPresetModel presets;
+    expectTrue(presets.rowCount() >= 3, "connection preset model has default presets");
+    expectTrue(
+        presets.roleNames().contains(etfdt::shell_services::ShellReadOnlyConnectionPresetModel::SocketNameRole),
+        "preset model has socketName role");
+    expectTrue(
+        presets.roleNames().contains(etfdt::shell_services::ShellReadOnlyConnectionPresetModel::CommandHintRole),
+        "preset model has commandHint role");
+    expectTrue(
+        presets.findByKey(QStringLiteral("readonly_default")) != nullptr,
+        "preset model has readonly_default");
+    expectTrue(
+        presets.findByKey(QStringLiteral("audit_dev")) != nullptr,
+        "preset model has audit_dev");
+    expectTrue(
+        presets.findByKey(QStringLiteral("custom")) != nullptr,
+        "preset model has custom");
 }
 
 void testController(const std::filesystem::path& migrationPath)
@@ -149,6 +167,36 @@ void testController(const std::filesystem::path& migrationPath)
     expectEqual(missingSocketController.refreshState(), QStringLiteral("IDLE"), "initial refreshState is IDLE");
     expectTrue(!missingSocketController.isBusy(), "initial controller is not busy");
     expectTrue(!missingSocketController.canRefresh(), "initial controller cannot refresh before connect");
+    expectTrue(
+        missingSocketController.connectionPresetModel()->rowCount() >= 3,
+        "controller exposes preset model");
+    expectEqual(
+        missingSocketController.selectedPresetKey(),
+        QStringLiteral("readonly_default"),
+        "default preset is readonly_default");
+    expectEqual(
+        missingSocketController.selectedSocketName(),
+        QStringLiteral("ETFDataServiceReadonly"),
+        "default preset socketName");
+    expectTrue(!missingSocketController.commandHint().isEmpty(), "default commandHint is populated");
+    expectTrue(missingSocketController.selectPreset(QStringLiteral("audit_dev")), "audit_dev preset can be selected");
+    expectEqual(
+        missingSocketController.selectedSocketName(),
+        QStringLiteral("ETFDataServiceAuditDev"),
+        "audit_dev preset socketName");
+    expectTrue(missingSocketController.selectPreset(QStringLiteral("custom")), "custom preset can be selected");
+    expectTrue(missingSocketController.selectedSocketName().isEmpty(), "custom preset starts with empty socketName");
+    expectTrue(!missingSocketController.connectToDataService(), "empty selected socketName connect fails");
+    expectTrue(!missingSocketController.lastError().empty(), "empty selected socketName sets error");
+    missingSocketController.setCustomSocketName(QStringLiteral("CustomSocket"));
+    expectEqual(
+        missingSocketController.selectedSocketName(),
+        QStringLiteral("CustomSocket"),
+        "custom socketName is runtime only");
+    expectEqual(
+        missingSocketController.selectedPresetKey(),
+        QStringLiteral("custom"),
+        "custom socketName selects custom preset");
     auto missingConnect = missingSocketController.connectToDataService(
         "ETFDecisionTerminalMissingShellDataControllerSocket_"
             + std::to_string(QCoreApplication::applicationPid()),
@@ -175,16 +223,18 @@ void testController(const std::filesystem::path& migrationPath)
     etfdt::data_service_api::registerDataServiceReadOnlyActions(dispatcher, connection);
 
     etfdt::service_host::ActionServiceHost host(dispatcher);
-    const std::string socketName = "ETFDecisionTerminalShellDataControllerTest_"
-        + std::to_string(QCoreApplication::applicationPid());
+    const std::string socketName = "ETFDataServiceReadonly";
     auto listened = host.listen(socketName);
     expectTrue(listened.hasValue(), "readonly ActionServiceHost listen succeeds");
 
     const int auditLogBefore = countRows(connection, "audit_log");
 
     etfdt::shell_services::ShellReadOnlyDataController controller;
-    auto connected = controller.connectToDataService(socketName, 1000);
-    expectTrue(connected.hasValue(), "controller connects");
+    expectEqual(
+        controller.selectedPresetKey(),
+        QStringLiteral("readonly_default"),
+        "e2e controller uses readonly_default preset");
+    expectTrue(controller.connectToDataService(), "controller connects");
     expectTrue(controller.connectionObject()->connected(), "connectionObject connected=true");
     expectEqual(controller.refreshState(), QStringLiteral("SUCCESS"), "connect success sets SUCCESS state");
     expectTrue(controller.canRefresh(), "controller can refresh after connect");
@@ -275,6 +325,10 @@ void testController(const std::filesystem::path& migrationPath)
     expectTrue(controller.property("portfolioModel").value<QObject*>() != nullptr, "portfolioModel Q_PROPERTY exists");
     expectTrue(controller.property("instrumentModel").value<QObject*>() != nullptr, "instrumentModel Q_PROPERTY exists");
     expectTrue(controller.property("strategyModel").value<QObject*>() != nullptr, "strategyModel Q_PROPERTY exists");
+    expectTrue(
+        controller.property("connectionPresetModel").value<QObject*>() != nullptr,
+        "connectionPresetModel Q_PROPERTY exists");
+    expectTrue(controller.selectPreset(QStringLiteral("audit_dev")), "audit_dev preset selection succeeds without writes");
     expectTrue(!controller.refreshOtc(QString()), "empty strategyCode refreshOtc fails locally");
     expectTrue(controller.errorStateMap().value("hasError").toBool(), "empty strategyCode sets error state");
     expectEqual(

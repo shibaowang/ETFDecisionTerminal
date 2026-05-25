@@ -179,3 +179,11 @@ v0.1 草案。
 - QML must bind controller state fields and must not implement complex throttling or connection-success inference.
 - Failed refreshes should preserve prior successful data unless the task explicitly requires a clear-data behavior and tests it.
 - Read-only state-flow tasks must not add write actions, arbitrary action forwarding, SQLite access, or direct `DataServiceClient` calls from QML.
+
+## Shell Connection Preset Task Rules
+
+- UI connection configuration tasks must state whether persistence is allowed; default is no persistence.
+- Default behavior must not auto-start DataService, Watchdog, or any service process.
+- Presets must be runtime guidance only unless a task explicitly authorizes service discovery or config storage.
+- QML must not execute command hints and must not call `DataServiceClient` directly.
+- Presets must not expand the read/write action boundary or add arbitrary action forwarding.

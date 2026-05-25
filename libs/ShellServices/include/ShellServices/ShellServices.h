@@ -2,6 +2,7 @@
 
 #include "ShellServices/ShellDataConnectionObject.h"
 #include "ShellServices/ShellDataTypes.h"
+#include "ShellServices/ShellReadOnlyConnectionPresets.h"
 #include "ShellServices/ShellReadOnlyDataController.h"
 #include "ShellServices/ShellReadOnlyDataFacade.h"
 #include "ShellServices/ShellReadOnlyDataViewModel.h"

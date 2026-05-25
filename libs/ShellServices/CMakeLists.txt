@@ -3,12 +3,14 @@ find_package(Qt6 COMPONENTS Core REQUIRED)
 add_library(ETFShellServices STATIC
     include/ShellServices/ShellDataConnectionObject.h
     include/ShellServices/ShellDataTypes.h
+    include/ShellServices/ShellReadOnlyConnectionPresets.h
     include/ShellServices/ShellReadOnlyDataController.h
     include/ShellServices/ShellReadOnlyDataFacade.h
     include/ShellServices/ShellReadOnlyDataViewModel.h
     include/ShellServices/ShellReadOnlyListModels.h
     include/ShellServices/ShellServices.h
     src/ShellDataConnectionObject.cpp
+    src/ShellReadOnlyConnectionPresets.cpp
     src/ShellReadOnlyDataController.cpp
     src/ShellReadOnlyDataFacade.cpp
     src/ShellReadOnlyListModels.cpp

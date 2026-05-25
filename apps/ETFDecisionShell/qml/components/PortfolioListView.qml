@@ -1,58 +1,65 @@
 import QtQuick
+import "readonly"
 
-Rectangle {
+ReadOnlyTable {
     id: root
     required property var portfolioModel
 
-    radius: 8
-    color: "#ffffff"
-    border.color: "#d8e0eb"
-    height: 180
+    objectName: "portfolioReadOnlyTable"
+    height: 210
+    title: "Portfolios"
+    subtitle: "Read-only portfolio list"
+    emptyTitle: "暂无组合数据"
+    emptyMessage: "连接只读 DataService 后刷新组合列表。"
+    columns: [
+        {"title": "Name", "width": 260},
+        {"title": "Base position ratio", "width": 170},
+        {"title": "Status", "width": 96}
+    ]
+    rowCount: portfolioList.count
 
-    Column {
+    ListView {
+        id: portfolioList
+        objectName: "portfolioListView"
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        clip: true
+        model: root.portfolioModel
+        spacing: 4
 
-        Text {
-            text: "Portfolios"
-            color: "#18202f"
-            font.pixelSize: 16
-            font.bold: true
-        }
+        delegate: Rectangle {
+            width: portfolioList.width
+            height: 40
+            radius: 6
+            color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
+            border.color: "#edf1f5"
 
-        Text {
-            visible: portfolioList.count === 0
-            text: "Empty / No data"
-            color: "#667086"
-            font.pixelSize: 13
-        }
-
-        ListView {
-            id: portfolioList
-            objectName: "portfolioListView"
-            width: parent.width
-            height: parent.height - 36
-            clip: true
-            model: root.portfolioModel
-            spacing: 4
-
-            delegate: Rectangle {
-                width: portfolioList.width
-                height: 38
-                radius: 6
-                color: model.isActive ? "#eef8f2" : "#f5f7fa"
-                border.color: "#d8e0eb"
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                spacing: 8
 
                 Text {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    text: model.name + " | basePositionRatio=" + model.basePositionRatioText
-                        + " | active=" + model.isActive
+                    width: 260
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.name
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    width: 170
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.basePositionRatioText
+                    color: "#26354d"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                    elide: Text.ElideRight
+                }
+                ReadOnlyStatusBadge {
+                    width: 96
+                    anchors.verticalCenter: parent.verticalCenter
+                    status: model.isActive ? "ACTIVE" : "DISABLED"
                 }
             }
         }

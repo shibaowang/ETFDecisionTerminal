@@ -183,6 +183,24 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("accountPortfolioStatusPanel") != nullptr,
             "AccountPortfolioReadOnlyPage status panel is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("accountReadOnlyTable") != nullptr,
+            "AccountPortfolioReadOnlyPage account read-only table is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountReadOnlyTableHeader") != nullptr,
+            "ReadOnlySectionHeader is loaded for account table");
+        expectTrue(
+            appShell->findChild<QObject*>("accountReadOnlyTableEmptyState") != nullptr,
+            "ReadOnlyEmptyState is loaded for account table");
+        expectTrue(
+            appShell->findChild<QObject*>("portfolioReadOnlyTable") != nullptr,
+            "AccountPortfolioReadOnlyPage portfolio read-only table is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readOnlyStatusBadge") != nullptr,
+            "ReadOnlyStatusBadge is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readOnlyFieldLabel") != nullptr,
+            "ReadOnlyFieldLabel is loaded");
+        expectTrue(
             appShell->findChild<QObject*>("accountPortfolioRefreshButton") != nullptr,
             "AccountPortfolioReadOnlyPage refresh button is loaded");
         expectTrue(
@@ -219,6 +237,18 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("instrumentStrategyStatusPanel") != nullptr,
             "InstrumentStrategyReadOnlyPage status panel is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("instrumentReadOnlyTable") != nullptr,
+            "InstrumentStrategyReadOnlyPage instrument read-only table is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyReadOnlyTable") != nullptr,
+            "InstrumentStrategyReadOnlyPage strategy read-only table is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("otcChannelReadOnlyTable") != nullptr,
+            "InstrumentStrategyReadOnlyPage OTC read-only table is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyReadOnlyTableEmptyState") != nullptr,
+            "ReadOnlyEmptyState is loaded for empty strategy table");
+        expectTrue(
             appShell->findChild<QObject*>("instrumentStrategyRefreshButton") != nullptr,
             "InstrumentStrategyReadOnlyPage refresh button is loaded");
         expectTrue(
@@ -236,6 +266,12 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("instrumentEditButton") == nullptr,
             "InstrumentStrategyReadOnlyPage has no instrument edit button");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentDeleteButton") == nullptr,
+            "InstrumentStrategyReadOnlyPage has no instrument delete button");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyDeleteButton") == nullptr,
+            "InstrumentStrategyReadOnlyPage has no strategy delete button");
         expectTrue(
             appShell->findChild<QObject*>("strategyExecuteButton") == nullptr,
             "InstrumentStrategyReadOnlyPage has no strategy execute button");

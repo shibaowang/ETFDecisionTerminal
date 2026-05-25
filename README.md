@@ -706,6 +706,13 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - The page can refresh instruments / strategies and OTC channels through explicit read-only controller methods.
 - It does not support editing, deleting, strategy execution, TradeDraft generation, trading, accounting, `data.audit.append`, or any write action.
 
+## TASK-039 Read-Only Table Components
+
+- ETFDecisionShell now has reusable QML read-only display components under `apps/ETFDecisionShell/qml/components/readonly`.
+- Account / portfolio / instrument / strategy / OTC lists use a shared table shell, section header, empty state, field label, and status badge styling.
+- The reusable components improve table headers, row spacing, empty states, status badges, and visible readonly boundaries.
+- These components are display-only: they do not connect sockets, access SQLite, call `DataServiceClient`, or expose edit / delete / accounting / trade / strategy execution controls.
+
 ## Current Milestone: v0.1 ReadOnly Shell Demo
 
 The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.

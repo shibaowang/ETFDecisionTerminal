@@ -123,3 +123,5 @@ ETFDecisionTerminal/
 - Any future write page must define a separate service boundary, tests, and authorization before adding UI controls.
 - Read-only strategy pages must not include strategy execution, signal generation, TradeDraft generation, or trading controls.
 - OTC channel views must stay display-only unless a separate write-boundary task authorizes editing.
+- Read-only lists should use the shared readonly table, badge, and empty-state components unless a task explicitly requires a specialized layout.
+- Shared QML display components must not implement business calculations, service calls, database access, or write actions.

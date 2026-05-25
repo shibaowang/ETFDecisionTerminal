@@ -26,6 +26,10 @@
   parse raw Watchdog JSON directly.
 - Qt adapters may use Qt Core model classes only when explicitly allowed; QML /
   Qt Quick remains out of scope unless a task explicitly authorizes it.
+- QML tasks must state their data source, must not access SQLite, must not
+  connect services unless explicitly authorized, and must not parse complex JSON
+  directly.
+- QML filtering / sorting should delegate to C++ Presenter / Adapter methods.
 
 ## 当前状态
 

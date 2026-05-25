@@ -51,6 +51,13 @@
 - The Qt adapter remains ShellCore-only and does not access SQLite, start
   services, connect sockets, or depend on DataAccess / DataServiceApi /
   Transport / ServiceHost.
+- TASK-024 introduces the first minimal `ETFDecisionShell` Qt Quick page:
+  `DiagnosticsMockPage.qml`.
+- The page binds only to `ShellDiagnosticQtAdapter`,
+  `ShellDiagnosticServiceListModel`, `ShellDiagnosticIssueListModel`, and
+  `ShellDiagnosticSummaryObject`.
+- This mock page does not connect to Watchdog / DataService, does not access
+  SQLite, and does not start services.
 
 ## 当前状态
 

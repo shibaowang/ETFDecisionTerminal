@@ -62,3 +62,11 @@ ETFDecisionTerminal/
 - release/*：发布候选
 - hotfix/*：紧急修复
 - tag：v0.1.0、v0.2.0、v1.0.0
+
+## QML boundary
+
+- QML files are presentation-only.
+- QML must bind C++ `QObject` / `QAbstractListModel` surfaces instead of parsing complex JSON directly.
+- QML must not access SQLite, connect sockets, start services, or implement strategy / accounting / TradeLog / TradeDraft logic.
+- Filtering and sorting should call C++ adapter / presenter methods.
+- Mock data must be labeled as mock / demo data and must not be presented as real service state.

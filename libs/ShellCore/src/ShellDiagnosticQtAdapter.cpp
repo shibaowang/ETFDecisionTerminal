@@ -66,6 +66,25 @@ void ShellDiagnosticQtAdapter::clearFilter()
     syncModels();
 }
 
+void ShellDiagnosticQtAdapter::showAll()
+{
+    clearFilter();
+}
+
+void ShellDiagnosticQtAdapter::showOnlyBlocked()
+{
+    ShellDiagnosticFilter filter;
+    filter.onlyBlocked = true;
+    setFilter(filter);
+}
+
+void ShellDiagnosticQtAdapter::showOnlyIssues()
+{
+    ShellDiagnosticFilter filter;
+    filter.onlyWithIssues = true;
+    setFilter(filter);
+}
+
 bool ShellDiagnosticQtAdapter::selectService(int index)
 {
     const auto* row = serviceModel_.rowAt(index);

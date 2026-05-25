@@ -36,7 +36,7 @@ std::vector<ShellPageMetadata> ShellPageRegistry::pages()
         makePage("market", "行情监控", "MarketPlaceholderPage", "当前页面为占位 Mock，行情接口尚未接入。", true, "market"),
         makePage("account_portfolio", "账户与组合", "AccountPortfolioReadOnlyPage", "账户与组合只读预览，不支持编辑、入账或交易。", false, "portfolio"),
         makePage("positions", "持仓明细", "PositionPlaceholderPage", "当前页面为占位 Mock，持仓数据尚未接入。", true, "portfolio"),
-        makePage("strategy", "策略中心", "StrategyPlaceholderPage", "当前页面为占位 Mock，策略计算尚未接入。", true, "strategy"),
+        makePage("strategy", "标的与策略", "InstrumentStrategyReadOnlyPage", "标的、策略与 OTC 通道只读预览，不支持编辑、策略执行或交易。", false, "strategy"),
         makePage("trade_draft", "TradeDraft 建议", "TradeDraftPlaceholderPage", "当前页面为占位 Mock，TradeDraft 生命周期尚未接入。", true, "trade"),
         makePage("execution", "成交确认", "TradeConfirmPlaceholderPage", "当前页面为占位 Mock，成交确认尚未接入。", true, "trade"),
         makePage("trade_log", "TradeLog 账本", "TradeLogPlaceholderPage", "当前页面为占位 Mock，账本查询尚未接入。", true, "trade"),

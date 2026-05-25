@@ -27,6 +27,8 @@ Rectangle {
                 ? readOnlyDataPage
             : root.pageQmlComponent === "AccountPortfolioReadOnlyPage"
                 ? accountPortfolioReadOnlyPage
+            : root.pageQmlComponent === "InstrumentStrategyReadOnlyPage"
+                ? instrumentStrategyReadOnlyPage
             : root.pageQmlComponent === "DashboardPlaceholderPage"
                 ? dashboardPage
                 : placeholderPage
@@ -61,6 +63,14 @@ Rectangle {
         id: accountPortfolioReadOnlyPage
         AccountPortfolioReadOnlyPage {
             objectName: "accountPortfolioReadOnlyPage"
+            readOnlyDataController: root.readOnlyDataController
+        }
+    }
+
+    Component {
+        id: instrumentStrategyReadOnlyPage
+        InstrumentStrategyReadOnlyPage {
+            objectName: "instrumentStrategyReadOnlyPage"
             readOnlyDataController: root.readOnlyDataController
         }
     }

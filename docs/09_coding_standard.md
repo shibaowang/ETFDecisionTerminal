@@ -121,3 +121,5 @@ ETFDecisionTerminal/
 - QML business pages must bind authorized Controller / Model objects and must not call `DataServiceClient` directly.
 - Read-only business pages must not include edit, delete, deposit, withdrawal, accounting, confirmation, or trade buttons.
 - Any future write page must define a separate service boundary, tests, and authorization before adding UI controls.
+- Read-only strategy pages must not include strategy execution, signal generation, TradeDraft generation, or trading controls.
+- OTC channel views must stay display-only unless a separate write-boundary task authorizes editing.

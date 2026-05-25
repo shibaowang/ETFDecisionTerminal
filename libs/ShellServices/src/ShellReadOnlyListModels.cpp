@@ -206,4 +206,61 @@ void ShellStrategyListModel::setRows(std::vector<ShellStrategyRow> rows)
     endResetModel();
 }
 
+ShellOtcChannelListModel::ShellOtcChannelListModel(QObject* parent)
+    : QAbstractListModel(parent)
+{
+}
+
+int ShellOtcChannelListModel::rowCount(const QModelIndex& parent) const
+{
+    return parent.isValid() ? 0 : static_cast<int>(rows_.size());
+}
+
+QVariant ShellOtcChannelListModel::data(const QModelIndex& index, int role) const
+{
+    if (invalidIndex(index, rows_)) {
+        return {};
+    }
+    const auto& row = rows_[static_cast<std::size_t>(index.row())];
+    switch (role) {
+    case IdRole: return QVariant::fromValue<qlonglong>(row.id);
+    case UidRole: return QString::fromStdString(row.uid);
+    case StrategyCodeRole: return QString::fromStdString(row.strategyCode);
+    case ActualCodeRole: return QString::fromStdString(row.actualCode);
+    case FundClassRole: return QString::fromStdString(row.fundClass);
+    case EnabledRole: return row.enabled;
+    case DailyLimitTextRole: return QString::fromStdString(row.dailyLimitText);
+    case PriorityRole: return row.priority;
+    case MinBuyAmountTextRole: return QString::fromStdString(row.minBuyAmountText);
+    default: return {};
+    }
+}
+
+QHash<int, QByteArray> ShellOtcChannelListModel::roleNames() const
+{
+    return {
+        {IdRole, "id"},
+        {UidRole, "uid"},
+        {StrategyCodeRole, "strategyCode"},
+        {ActualCodeRole, "actualCode"},
+        {FundClassRole, "fundClass"},
+        {EnabledRole, "enabled"},
+        {DailyLimitTextRole, "dailyLimitText"},
+        {PriorityRole, "priority"},
+        {MinBuyAmountTextRole, "minBuyAmountText"},
+    };
+}
+
+void ShellOtcChannelListModel::setRows(std::vector<ShellOtcChannelRow> rows)
+{
+    beginResetModel();
+    rows_ = std::move(rows);
+    endResetModel();
+}
+
+void ShellOtcChannelListModel::clearRows()
+{
+    setRows(std::vector<ShellOtcChannelRow>{});
+}
+
 }  // namespace etfdt::shell_services

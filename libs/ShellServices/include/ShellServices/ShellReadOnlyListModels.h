@@ -46,6 +46,18 @@ struct ShellStrategyRow final {
     bool enabled = false;
 };
 
+struct ShellOtcChannelRow final {
+    std::int64_t id = 0;
+    std::string uid;
+    std::string strategyCode;
+    std::string actualCode;
+    std::string fundClass;
+    bool enabled = false;
+    std::string dailyLimitText;
+    int priority = 0;
+    std::string minBuyAmountText;
+};
+
 class ShellAccountListModel final : public QAbstractListModel {
     Q_OBJECT
 
@@ -138,6 +150,33 @@ public:
 
 private:
     std::vector<ShellStrategyRow> rows_;
+};
+
+class ShellOtcChannelListModel final : public QAbstractListModel {
+    Q_OBJECT
+
+public:
+    enum Role {
+        IdRole = Qt::UserRole + 1,
+        UidRole,
+        StrategyCodeRole,
+        ActualCodeRole,
+        FundClassRole,
+        EnabledRole,
+        DailyLimitTextRole,
+        PriorityRole,
+        MinBuyAmountTextRole,
+    };
+
+    explicit ShellOtcChannelListModel(QObject* parent = nullptr);
+    [[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
+    void setRows(std::vector<ShellOtcChannelRow> rows);
+    void clearRows();
+
+private:
+    std::vector<ShellOtcChannelRow> rows_;
 };
 
 }  // namespace etfdt::shell_services

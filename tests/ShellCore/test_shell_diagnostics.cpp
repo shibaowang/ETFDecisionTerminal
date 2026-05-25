@@ -709,6 +709,14 @@ void testShellPageRegistry()
         "account_portfolio points to AccountPortfolioReadOnlyPage");
     expectTrue(!accountPortfolio->placeholder, "account_portfolio is a read-only prototype page");
 
+    const auto strategy = etfdt::shell::ShellPageRegistry::metadataForKey("strategy");
+    expectTrue(strategy.has_value(), "strategy metadata exists");
+    expectEqual(
+        strategy->qmlComponent,
+        "InstrumentStrategyReadOnlyPage",
+        "strategy points to InstrumentStrategyReadOnlyPage");
+    expectTrue(!strategy->placeholder, "strategy is a read-only prototype page");
+
     const auto dashboard = etfdt::shell::ShellPageRegistry::metadataForKey("dashboard");
     expectTrue(dashboard.has_value(), "dashboard metadata exists");
     expectTrue(dashboard->placeholder, "dashboard is placeholder");

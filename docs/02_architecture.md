@@ -277,3 +277,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - Account and portfolio data still flow through DataService read-only actions and the ShellServices facade / controller boundary.
 - The page is explicitly read-only and exposes no edit, deposit, withdrawal, accounting, trade, audit append, or write controls.
 - Shell still does not directly access SQLite, DataAccess, DataServiceApi, ServiceHost, or Watchdog for this page.
+
+## Instrument Strategy Read-Only Page
+
+- TASK-038 upgrades the `strategy` shell route to `InstrumentStrategyReadOnlyPage`.
+- The page binds instrument, strategy, and OTC channel models through `ShellReadOnlyDataController`.
+- ShellServices still obtains data only through whitelisted DataService read-only actions: `data.instruments.list`, `data.strategies.list`, and `data.otc.list`.
+- OTC refresh requires a selected strategy code; empty strategy code fails locally before any service request is sent.
+- The page is read-only and exposes no edit, delete, strategy execution, TradeDraft generation, trade, audit append, or write controls.

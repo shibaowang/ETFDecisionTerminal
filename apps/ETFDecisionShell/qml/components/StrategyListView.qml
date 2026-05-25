@@ -47,7 +47,7 @@ Rectangle {
                 Text {
                     anchors.fill: parent
                     anchors.margins: 8
-                    text: model.strategyCode + " | " + model.name
+                    text: model.strategyCode + " | " + model.name + " | enabled=" + model.enabled
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight

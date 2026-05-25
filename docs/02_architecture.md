@@ -219,3 +219,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - `ShellStatusController` provides `ShellPageStatusModel`, `ShellPageInfoObject`, and `ShellMockLogModel` to QML.
 - `TopStatusBar`, `RightInfoPanel`, and `BottomLogPanel` bind these C++ models instead of static text.
 - Current status is still mock / placeholder only; Shell does not access SQLite, connect DataService, or start services.
+
+## Shell Mock Metrics
+
+- TASK-028 adds page-level mock metrics and action hints in ShellCore.
+- `ShellMockMetricsProvider` returns metrics / hints for the current Shell page key.
+- `ShellStatusController` exposes `ShellPageMetricModel` and `ShellPageActionHintModel` for QML binding.
+- `DashboardPlaceholderPage` and `RightInfoPanel` display these C++ model rows.
+- Shell metrics are mock-only and do not access SQLite, connect services, start processes, or implement business logic.

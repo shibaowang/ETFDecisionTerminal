@@ -39,7 +39,9 @@ qt_add_qml_module(ETFDecisionShell
         qml/pages/TradeConfirmPlaceholderPage.qml
         qml/pages/TradeDraftPlaceholderPage.qml
         qml/pages/TradeLogPlaceholderPage.qml
+        qml/components/ActionHintList.qml
         qml/components/IssueListView.qml
+        qml/components/MetricCard.qml
         qml/components/PlaceholderPage.qml
         qml/components/ServiceListView.qml
         qml/components/SummaryCard.qml

@@ -10,6 +10,8 @@ Rectangle {
     required property string pageQmlComponent
     required property bool pagePlaceholder
     required property var diagnosticAdapter
+    required property var metricsModel
+    required property var actionHintModel
 
     color: "#edf1f6"
 
@@ -18,7 +20,11 @@ Rectangle {
         objectName: "contentLoader"
         anchors.fill: parent
         anchors.margins: 14
-        sourceComponent: root.pageQmlComponent === "DiagnosticsMockPage" ? diagnosticsPage : placeholderPage
+        sourceComponent: root.pageQmlComponent === "DiagnosticsMockPage"
+            ? diagnosticsPage
+            : root.pageQmlComponent === "DashboardPlaceholderPage"
+                ? dashboardPage
+                : placeholderPage
     }
 
     Component {
@@ -30,12 +36,23 @@ Rectangle {
     }
 
     Component {
+        id: dashboardPage
+        DashboardPlaceholderPage {
+            objectName: "dashboardPlaceholderPage"
+            metricsModel: root.metricsModel
+            actionHintModel: root.actionHintModel
+        }
+    }
+
+    Component {
         id: placeholderPage
         PlaceholderPage {
             objectName: "placeholderPage"
             moduleName: root.pageTitle
             title: root.pageTitle
             description: root.pageDescription
+            metricsModel: root.metricsModel
+            actionHintModel: root.actionHintModel
         }
     }
 }

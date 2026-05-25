@@ -141,3 +141,11 @@ v0.1 草案。
 - By default, UI status may only come from C++ mock / view-model layers unless a task explicitly authorizes real data.
 - QML must not access SQLite or directly connect services for status updates.
 - QML must not implement service health, accounting, trading, or strategy status logic.
+
+## Shell Metrics Task Rules
+
+- UI metrics tasks must declare the metric data source.
+- By default, metrics and action hints may only come from C++ mock / view-model layers unless a task explicitly authorizes real data.
+- Action hints are non-executable by default.
+- QML must not access SQLite, connect services, or calculate business metrics directly.
+- Future real metric integration must define service boundaries, tests, and read/write restrictions explicitly.

@@ -76,6 +76,8 @@ int main(int argc, char* argv[])
     expectTrue(adapter.selectService(0), "adapter selectService does not fail");
     expectTrue(adapter.summaryObject()->totalServices() > 0, "summaryObject has totalServices");
     expectEqual(navigationController.navigationModel()->rowCount(), 13, "navigation model has 13 rows");
+    expectTrue(statusController.metricsModel()->rowCount() >= 4, "status metrics model has dashboard rows");
+    expectTrue(statusController.actionHintModel()->rowCount() > 0, "status action hint model has rows");
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("diagnosticAdapter", &adapter);
@@ -116,8 +118,11 @@ int main(int argc, char* argv[])
         expectEqual(statusController.pageInfo()->moduleStatus(), "PLACEHOLDER", "default status is placeholder");
         expectTrue(statusController.logModel()->rowCount() > 0, "mock log model has rows");
         expectTrue(
-            appShell->findChild<QObject*>("placeholderPage") != nullptr,
-            "default placeholder page is loaded");
+            appShell->findChild<QObject*>("dashboardPlaceholderPage") != nullptr,
+            "default dashboard placeholder page is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("dashboardMetricGrid") != nullptr,
+            "dashboard metric grid is loaded");
 
         bool invoked = navigationController.selectPage(QStringLiteral("diagnostics"));
         processQmlEvents();
@@ -125,6 +130,7 @@ int main(int argc, char* argv[])
         expectEqual(navigationController.currentPageKey(), "diagnostics", "current page is diagnostics");
         expectEqual(statusController.pageInfo()->pageKey(), "diagnostics", "status page is diagnostics");
         expectEqual(statusController.pageInfo()->moduleStatus(), "MOCK", "diagnostics status is MOCK");
+        expectTrue(statusController.metricsModel()->rowCount() >= 3, "diagnostics metrics model has rows");
         QObject* contentHost = appShell->findChild<QObject*>("contentHost");
         expectEqual(
             contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
@@ -141,9 +147,13 @@ int main(int argc, char* argv[])
         expectEqual(navigationController.currentPageKey(), "market", "current page is market");
         expectEqual(statusController.pageInfo()->pageKey(), "market", "status page is market");
         expectEqual(statusController.pageInfo()->moduleStatus(), "PLACEHOLDER", "market status is PLACEHOLDER");
+        expectTrue(statusController.metricsModel()->rowCount() >= 1, "placeholder metrics model has rows");
         expectTrue(
             appShell->findChild<QObject*>("placeholderPage") != nullptr,
             "PlaceholderPage is loaded after navigation");
+        expectTrue(
+            appShell->findChild<QObject*>("placeholderMetricGrid") != nullptr,
+            "PlaceholderPage metric grid is loaded");
     }
 
     return gFailures == 0 ? 0 : 1;

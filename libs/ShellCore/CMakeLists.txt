@@ -7,7 +7,11 @@ add_library(ETFShellCore STATIC
     include/ShellCore/ShellNavigationController.h
     include/ShellCore/ShellNavigationModel.h
     include/ShellCore/ShellNavigationTypes.h
+    include/ShellCore/ShellMockMetricsProvider.h
+    include/ShellCore/ShellPageActionHintModel.h
     include/ShellCore/ShellPageInfoObject.h
+    include/ShellCore/ShellPageMetricModel.h
+    include/ShellCore/ShellPageMetricTypes.h
     include/ShellCore/ShellPageRegistry.h
     include/ShellCore/ShellPageStatusModel.h
     include/ShellCore/ShellPageStatusTypes.h
@@ -23,9 +27,12 @@ add_library(ETFShellCore STATIC
     src/ShellDiagnosticSummaryObject.cpp
     src/ShellDiagnosticViewModel.cpp
     src/ShellMockLogModel.cpp
+    src/ShellMockMetricsProvider.cpp
     src/ShellNavigationController.cpp
     src/ShellNavigationModel.cpp
+    src/ShellPageActionHintModel.cpp
     src/ShellPageInfoObject.cpp
+    src/ShellPageMetricModel.cpp
     src/ShellPageRegistry.cpp
     src/ShellPageStatusModel.cpp
     src/ShellStatusController.cpp

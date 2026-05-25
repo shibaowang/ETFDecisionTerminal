@@ -672,6 +672,24 @@ Run the script without launching Shell:
 powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -NoShell
 ```
 
+## TASK-035 Read-Only Demo Script Hardening
+
+- `runtime/` is a developer runtime output directory and is ignored by Git together with demo databases, SQLite WAL/SHM files, logs, and pid files.
+- `tools/dev/run_readonly_demo.ps1` records the read-only DataService process id under `runtime/dev/readonly_demo/ETFDataServiceReadonly.pid` and stops only the process it started by default.
+- `-ForceRecreateDb` removes the old demo database, WAL, and SHM files before initialization.
+- `-KeepDataService` leaves the read-only DataService process running for manual debugging.
+- `-NoShell` starts only the read-only DataService host.
+- `tools/dev/stop_readonly_demo.ps1` stops the pid-file process; it stops all `ETFDataService` processes only when `-ForceAll` is explicitly passed.
+
+Common commands:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -ForceRecreateDb
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -NoShell
+powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
+```
+
 Run tests:
 
 ```powershell

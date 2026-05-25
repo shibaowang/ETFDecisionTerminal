@@ -26,6 +26,8 @@ Useful options:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -SkipBuild
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -ForceRecreateDb
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -KeepDataService
 powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -SocketName ETFDataServiceReadonly
 powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -NoShell
 ```
@@ -37,6 +39,16 @@ The script will:
 3. Run `ETFDataService --check-db`.
 4. Start `ETFDataService --serve-readonly --db runtime/dev/readonly_demo/ETFDecision.db --socket-name ETFDataServiceReadonly`.
 5. Start `ETFDecisionShell --diagnostics-mock` unless `-NoShell` is set.
+6. Record the DataService pid at `runtime/dev/readonly_demo/ETFDataServiceReadonly.pid` unless disabled.
+
+`runtime/` is ignored by Git. The demo database, pid file, SQLite WAL/SHM files, and logs are developer runtime outputs and must not be committed.
+
+Option notes:
+
+- `-ForceRecreateDb` removes the old demo database, WAL, and SHM files before initialization.
+- `-KeepDataService` leaves the read-only DataService process running after the script exits.
+- `-NoShell` starts only the read-only DataService host and waits for Enter.
+- `-SkipBuild` skips the CMake configure/build step and expects existing executables under `build`.
 
 ## Manual Steps
 
@@ -75,7 +87,16 @@ The script will:
 
 - Close ETFDecisionShell.
 - The script stops the DataService process unless `-KeepDataService` was passed.
+- The script only stops the DataService process it started and recorded.
+- To stop a kept process through the pid file:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
+```
+
+- `stop_readonly_demo.ps1` does not stop every `ETFDataService` process unless `-ForceAll` is explicitly passed.
 - You may delete `runtime/dev/readonly_demo` after testing.
+- Do not treat files under `runtime/` as real portfolio data.
 
 ## Prohibited During This Demo
 

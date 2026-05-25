@@ -151,3 +151,10 @@ v0.1 草案。
 - Action hints are presentation-only; they do not execute commands or call services.
 - QML must not compute business metrics directly; metrics and hints come from ShellCore C++ models.
 - Current metrics are explicitly mock / placeholder data and do not access SQLite.
+
+## TASK-029 Read-Only Data Boundary
+
+- Future real read-only data must enter the Shell through `ShellReadOnlyDataFacade` and later ViewModel adapters.
+- QML must not call `DataServiceClient` directly.
+- QML must not connect sockets or parse DataService responses directly.
+- TASK-029 does not connect QML to real data; the visible Shell UI remains mock / placeholder.

@@ -149,3 +149,11 @@ v0.1 草案。
 - Action hints are non-executable by default.
 - QML must not access SQLite, connect services, or calculate business metrics directly.
 - Future real metric integration must define service boundaries, tests, and read/write restrictions explicitly.
+
+## Shell Read-Only Data Task Rules
+
+- UI real-data tasks must pass through a C++ facade / ViewModel boundary.
+- QML must not call `DataServiceClient` directly.
+- Read-only facades must use explicit whitelist methods and must not expose arbitrary action forwarding.
+- Read-only facades must not call write actions such as `data.audit.append`.
+- Shell-side facades must not access SQLite directly or depend on DataAccess / DataServiceApi.

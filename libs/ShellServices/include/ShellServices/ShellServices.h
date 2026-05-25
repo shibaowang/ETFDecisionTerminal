@@ -7,3 +7,4 @@
 #include "ShellServices/ShellReadOnlyDataFacade.h"
 #include "ShellServices/ShellReadOnlyDataViewModel.h"
 #include "ShellServices/ShellReadOnlyListModels.h"
+#include "ShellServices/ShellReadOnlyTableProxyModel.h"

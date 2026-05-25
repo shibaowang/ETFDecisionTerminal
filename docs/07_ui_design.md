@@ -216,3 +216,11 @@ v0.1 草案。
 - `ReadOnlyEmptyState` makes no-data states explicit instead of leaving blank panels.
 - `ReadOnlySectionHeader` and `ReadOnlyFieldLabel` standardize section titles and status fields.
 - These components must remain display-only and must not contain write buttons, service calls, JSON parsing, or business calculations.
+
+## TASK-040 Read-Only Filtering And Sorting
+
+- Read-only tables support a shared filter bar, sortable headers, stable column widths, aligned numeric columns, and explicit empty states.
+- Search and status filters are user input only; filtering and sorting happen through ShellServices proxy models.
+- Filter / sort operations do not refresh services, mutate source models, write SQLite, or call write actions.
+- QML pages forward search and sort requests to `ShellReadOnlyDataController` and bind filtered models for display.
+- Read-only pages must keep edit, delete, accounting, trade, strategy execution, and TradeDraft generation controls out of scope.

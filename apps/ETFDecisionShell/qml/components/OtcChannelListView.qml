@@ -12,13 +12,13 @@ ReadOnlyTable {
     emptyTitle: "暂无 OTC 通道"
     emptyMessage: "选择 strategyCode 后刷新 OTC 通道；空结果表示该策略暂无通道映射。"
     columns: [
-        {"title": "Strategy", "width": 130},
-        {"title": "Actual code", "width": 130},
-        {"title": "Fund class", "width": 120},
-        {"title": "Status", "width": 96},
-        {"title": "Daily limit", "width": 120},
-        {"title": "Priority", "width": 80},
-        {"title": "Min buy", "width": 120}
+        {"key": "strategy", "title": "Strategy", "width": 130, "sortable": true},
+        {"key": "code", "title": "Actual code", "width": 130, "sortable": true},
+        {"key": "type", "title": "Fund class", "width": 120, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "sortable": true},
+        {"key": "dailyLimit", "title": "Daily limit", "width": 120, "alignment": Text.AlignRight, "sortable": false},
+        {"key": "priority", "title": "Priority", "width": 80, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "amount", "title": "Min buy", "width": 120, "alignment": Text.AlignRight, "sortable": true}
     ]
     rowCount: otcChannelList.count
 
@@ -32,7 +32,7 @@ ReadOnlyTable {
 
         delegate: Rectangle {
             width: otcChannelList.width
-            height: 40
+            height: root.rowHeight
             radius: 6
             color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
             border.color: "#edf1f5"

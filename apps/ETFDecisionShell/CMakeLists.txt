@@ -52,6 +52,7 @@ qt_add_qml_module(ETFDecisionShell
         qml/components/PortfolioListView.qml
         qml/components/readonly/ReadOnlyEmptyState.qml
         qml/components/readonly/ReadOnlyFieldLabel.qml
+        qml/components/readonly/ReadOnlyFilterBar.qml
         qml/components/readonly/ReadOnlySectionHeader.qml
         qml/components/readonly/ReadOnlyStatusBadge.qml
         qml/components/readonly/ReadOnlyTable.qml

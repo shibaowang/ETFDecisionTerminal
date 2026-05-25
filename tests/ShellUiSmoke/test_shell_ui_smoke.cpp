@@ -183,6 +183,15 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("accountPortfolioStatusPanel") != nullptr,
             "AccountPortfolioReadOnlyPage status panel is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("accountFilterBar") != nullptr,
+            "AccountPortfolioReadOnlyPage account filter bar is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountFilterBarSearchField") != nullptr,
+            "AccountPortfolioReadOnlyPage account search field is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("portfolioFilterBar") != nullptr,
+            "AccountPortfolioReadOnlyPage portfolio filter bar is loaded");
+        expectTrue(
             appShell->findChild<QObject*>("accountReadOnlyTable") != nullptr,
             "AccountPortfolioReadOnlyPage account read-only table is loaded");
         expectTrue(
@@ -236,6 +245,18 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("instrumentStrategyStatusPanel") != nullptr,
             "InstrumentStrategyReadOnlyPage status panel is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentFilterBar") != nullptr,
+            "InstrumentStrategyReadOnlyPage instrument filter bar is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentFilterBarSearchField") != nullptr,
+            "InstrumentStrategyReadOnlyPage instrument search field is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyFilterBar") != nullptr,
+            "InstrumentStrategyReadOnlyPage strategy filter bar is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("otcFilterBar") != nullptr,
+            "InstrumentStrategyReadOnlyPage OTC filter bar is loaded");
         expectTrue(
             appShell->findChild<QObject*>("instrumentReadOnlyTable") != nullptr,
             "InstrumentStrategyReadOnlyPage instrument read-only table is loaded");

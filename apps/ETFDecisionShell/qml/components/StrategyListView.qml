@@ -12,9 +12,9 @@ ReadOnlyTable {
     emptyTitle: "暂无策略数据"
     emptyMessage: "当前数据库没有策略记录，页面保持只读并可继续刷新。"
     columns: [
-        {"title": "Strategy code", "width": 180},
-        {"title": "Name", "width": 260},
-        {"title": "Status", "width": 96}
+        {"key": "code", "title": "Strategy code", "width": 180, "sortable": true},
+        {"key": "name", "title": "Name", "width": 260, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "sortable": true}
     ]
     rowCount: strategyList.count
 
@@ -28,7 +28,7 @@ ReadOnlyTable {
 
         delegate: Rectangle {
             width: strategyList.width
-            height: 40
+            height: root.rowHeight
             radius: 6
             color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
             border.color: "#edf1f5"

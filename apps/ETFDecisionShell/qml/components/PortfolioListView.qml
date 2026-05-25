@@ -12,9 +12,9 @@ ReadOnlyTable {
     emptyTitle: "暂无组合数据"
     emptyMessage: "连接只读 DataService 后刷新组合列表。"
     columns: [
-        {"title": "Name", "width": 260},
-        {"title": "Base position ratio", "width": 170},
-        {"title": "Status", "width": 96}
+        {"key": "name", "title": "Name", "width": 260, "sortable": true},
+        {"key": "amount", "title": "Base position ratio", "width": 170, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "sortable": true}
     ]
     rowCount: portfolioList.count
 
@@ -28,7 +28,7 @@ ReadOnlyTable {
 
         delegate: Rectangle {
             width: portfolioList.width
-            height: 40
+            height: root.rowHeight
             radius: 6
             color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
             border.color: "#edf1f5"

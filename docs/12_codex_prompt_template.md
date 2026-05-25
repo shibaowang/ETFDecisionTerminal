@@ -206,3 +206,5 @@ v0.1 草案。
 - OTC channel prototypes must not edit channel mappings unless a later task explicitly authorizes writes.
 - Read-only UI component tasks must not change service boundaries or add write capabilities.
 - UI readability work must keep components display-only and must not make mock / read-only screens look trade-capable.
+- Read-only UI filter / sort tasks must keep filtering in C++ Model / ProxyModel / Controller layers.
+- Filtering and sorting must not trigger service writes, backend mutations, direct SQLite access, or arbitrary action forwarding.

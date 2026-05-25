@@ -5,10 +5,12 @@
 #include "ShellServices/ShellServices.h"
 
 #include <QCoreApplication>
+#include <QAbstractItemModel>
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QString>
 #include <QThread>
+#include <QVariant>
 
 #include <algorithm>
 #include <chrono>
@@ -174,6 +176,98 @@ void testModelRoles()
         presets.data(readonlyIndex, Qt::DisplayRole).toString(),
         QString::fromUtf8("DataService \xE5\x8F\xAA\xE8\xAF\xBB\xE6\x9C\x8D\xE5\x8A\xA1"),
         "preset display role uses title");
+
+    etfdt::shell_services::ShellReadOnlyTableProxyModel proxy;
+    expectTrue(proxy.setSortRoleByName(QString(), true) == false, "proxy rejects missing sort role");
+}
+
+QVariant proxyData(QAbstractItemModel* model, int row, int role)
+{
+    return model->data(model->index(row, 0), role);
+}
+
+void testReadOnlyFilterSortModels()
+{
+    etfdt::shell_services::ShellReadOnlyDataController controller;
+
+    controller.accountModel()->setRows({
+        {1, "account-alpha", "Alpha account", "REAL", "MANUAL", "CNY", true, "100"},
+        {2, "account-beta", "Beta account", "SIMULATED", "MANUAL", "USD", false, "200"},
+    });
+    expectTrue(
+        controller.filteredAccountModel()->roleNames().contains(etfdt::shell_services::ShellAccountListModel::NameRole),
+        "filtered account model keeps source role names");
+    expectEqual(controller.filteredAccountModel()->rowCount(), 2, "filtered account default rowCount");
+    controller.setAccountSearchText(QStringLiteral("Alpha"));
+    expectEqual(controller.filteredAccountModel()->rowCount(), 1, "account search filters rows");
+    expectEqual(
+        proxyData(
+            controller.filteredAccountModel(),
+            0,
+            etfdt::shell_services::ShellAccountListModel::NameRole)
+            .toString(),
+        QStringLiteral("Alpha account"),
+        "account search keeps matching row");
+    controller.setAccountSearchText(QString());
+    expectEqual(controller.filteredAccountModel()->rowCount(), 2, "clearing account search restores rows");
+    controller.setAccountActiveOnly(true);
+    expectEqual(controller.filteredAccountModel()->rowCount(), 1, "account active-only filters rows");
+    controller.setAccountActiveOnly(false);
+    expectTrue(controller.sortAccounts(QStringLiteral("name"), false), "sortAccounts by name succeeds");
+    expectEqual(
+        proxyData(
+            controller.filteredAccountModel(),
+            0,
+            etfdt::shell_services::ShellAccountListModel::NameRole)
+            .toString(),
+        QStringLiteral("Beta account"),
+        "sortAccounts descending by name");
+
+    controller.portfolioModel()->setRows({
+        {1, "portfolio-alpha", "Alpha portfolio", "100", true},
+        {2, "portfolio-beta", "Beta portfolio", "200", false},
+    });
+    expectEqual(controller.filteredPortfolioModel()->rowCount(), 2, "filtered portfolio default rowCount");
+    controller.setPortfolioSearchText(QStringLiteral("Beta"));
+    expectEqual(controller.filteredPortfolioModel()->rowCount(), 1, "portfolio search filters rows");
+    controller.setPortfolioSearchText(QString());
+    controller.setPortfolioActiveOnly(true);
+    expectEqual(controller.filteredPortfolioModel()->rowCount(), 1, "portfolio active-only filters rows");
+    controller.setPortfolioActiveOnly(false);
+
+    controller.instrumentModel()->setRows({
+        {1, "instrument-cash", "CASH", "Cash", "CASH", "CASH", "CNY", true},
+        {2, "instrument-aaa", "AAA", "Disabled ETF", "ETF", "CN_A", "CNY", false},
+    });
+    expectEqual(controller.filteredInstrumentModel()->rowCount(), 2, "filtered instrument default rowCount");
+    controller.setInstrumentSearchText(QStringLiteral("CASH"));
+    expectEqual(controller.filteredInstrumentModel()->rowCount(), 1, "instrument CASH search filters rows");
+    expectEqual(
+        proxyData(
+            controller.filteredInstrumentModel(),
+            0,
+            etfdt::shell_services::ShellInstrumentListModel::CodeRole)
+            .toString(),
+        QStringLiteral("CASH"),
+        "instrument search returns CASH");
+    controller.setInstrumentSearchText(QString());
+    controller.setInstrumentEnabledOnly(true);
+    expectEqual(controller.filteredInstrumentModel()->rowCount(), 1, "instrument enabled-only filters rows");
+    expectTrue(controller.sortInstruments(QStringLiteral("code"), true), "sortInstruments by code succeeds");
+
+    expectEqual(controller.filteredStrategyModel()->rowCount(), 0, "empty strategy proxy starts empty");
+    controller.setStrategySearchText(QStringLiteral("not_exists"));
+    expectEqual(controller.filteredStrategyModel()->rowCount(), 0, "strategy search on empty list does not crash");
+    expectTrue(controller.sortStrategies(QStringLiteral("code"), true), "sortStrategies on empty list succeeds");
+
+    expectEqual(controller.filteredOtcChannelModel()->rowCount(), 0, "empty otc proxy starts empty");
+    controller.setOtcSearchText(QStringLiteral("not_exists"));
+    expectEqual(controller.filteredOtcChannelModel()->rowCount(), 0, "otc search on empty list does not crash");
+    expectTrue(controller.sortOtcChannels(QStringLiteral("priority"), true), "sortOtcChannels on empty list succeeds");
+
+    controller.clearReadonlyFilters();
+    expectEqual(controller.filteredAccountModel()->rowCount(), 2, "clearReadonlyFilters restores accounts");
+    expectEqual(controller.filteredInstrumentModel()->rowCount(), 2, "clearReadonlyFilters restores instruments");
 }
 
 void testController(const std::filesystem::path& migrationPath)
@@ -445,6 +539,7 @@ int main(int argc, char* argv[])
     }
 
     testModelRoles();
+    testReadOnlyFilterSortModels();
     testController(migrationPath);
 
     if (gFailures != 0) {

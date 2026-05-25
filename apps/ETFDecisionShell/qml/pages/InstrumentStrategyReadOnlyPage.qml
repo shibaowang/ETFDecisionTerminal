@@ -268,19 +268,79 @@ Rectangle {
                 }
             }
 
-            InstrumentListView {
-                instrumentModel: root.readOnlyDataController.instrumentModel
+            ReadOnlyFilterBar {
+                objectName: "instrumentFilterBar"
                 width: parent.width
+                placeholderText: "Search instrument code, name, type, market, currency"
+                showEnabledFilter: true
+                onFilterTextChanged: function(text) {
+                    root.readOnlyDataController.setInstrumentSearchText(text)
+                }
+                onEnabledOnlyChangedByUser: function(enabledOnly) {
+                    root.readOnlyDataController.setInstrumentEnabledOnly(enabledOnly)
+                }
+                onClearRequested: {
+                    root.readOnlyDataController.setInstrumentSearchText("")
+                    root.readOnlyDataController.setInstrumentEnabledOnly(false)
+                }
+            }
+
+            InstrumentListView {
+                instrumentModel: root.readOnlyDataController.filteredInstrumentModel
+                width: parent.width
+                onSortRequested: function(key, ascending) {
+                    root.readOnlyDataController.sortInstruments(key, ascending)
+                }
+            }
+
+            ReadOnlyFilterBar {
+                objectName: "strategyFilterBar"
+                width: parent.width
+                placeholderText: "Search strategy code or name"
+                showEnabledFilter: true
+                onFilterTextChanged: function(text) {
+                    root.readOnlyDataController.setStrategySearchText(text)
+                }
+                onEnabledOnlyChangedByUser: function(enabledOnly) {
+                    root.readOnlyDataController.setStrategyEnabledOnly(enabledOnly)
+                }
+                onClearRequested: {
+                    root.readOnlyDataController.setStrategySearchText("")
+                    root.readOnlyDataController.setStrategyEnabledOnly(false)
+                }
             }
 
             StrategyListView {
-                strategyModel: root.readOnlyDataController.strategyModel
+                strategyModel: root.readOnlyDataController.filteredStrategyModel
                 width: parent.width
+                onSortRequested: function(key, ascending) {
+                    root.readOnlyDataController.sortStrategies(key, ascending)
+                }
+            }
+
+            ReadOnlyFilterBar {
+                objectName: "otcFilterBar"
+                width: parent.width
+                placeholderText: "Search OTC strategy, actual code, fund class"
+                showEnabledFilter: true
+                onFilterTextChanged: function(text) {
+                    root.readOnlyDataController.setOtcSearchText(text)
+                }
+                onEnabledOnlyChangedByUser: function(enabledOnly) {
+                    root.readOnlyDataController.setOtcEnabledOnly(enabledOnly)
+                }
+                onClearRequested: {
+                    root.readOnlyDataController.setOtcSearchText("")
+                    root.readOnlyDataController.setOtcEnabledOnly(false)
+                }
             }
 
             OtcChannelListView {
-                otcChannelModel: root.readOnlyDataController.otcChannelModel
+                otcChannelModel: root.readOnlyDataController.filteredOtcChannelModel
                 width: parent.width
+                onSortRequested: function(key, ascending) {
+                    root.readOnlyDataController.sortOtcChannels(key, ascending)
+                }
             }
         }
     }

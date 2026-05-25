@@ -199,8 +199,42 @@ ShellReadOnlyDataController::ShellReadOnlyDataController(QObject* parent)
     , instruments_(this)
     , strategies_(this)
     , otcChannels_(this)
+    , filteredAccounts_(this)
+    , filteredPortfolios_(this)
+    , filteredInstruments_(this)
+    , filteredStrategies_(this)
+    , filteredOtcChannels_(this)
     , connectionPresets_(this)
 {
+    filteredAccounts_.setSourceModel(&accounts_);
+    filteredAccounts_.setSearchRoleNames({"name", "accountType", "brokerName", "baseCurrency"});
+    filteredAccounts_.setActiveRoleName(QStringLiteral("isActive"));
+    filteredAccounts_.setSortRoleByName(QStringLiteral("name"), true);
+
+    filteredPortfolios_.setSourceModel(&portfolios_);
+    filteredPortfolios_.setSearchRoleNames({"name", "basePositionRatioText"});
+    filteredPortfolios_.setActiveRoleName(QStringLiteral("isActive"));
+    filteredPortfolios_.setSortRoleByName(QStringLiteral("name"), true);
+
+    filteredInstruments_.setSourceModel(&instruments_);
+    filteredInstruments_.setSearchRoleNames({"code", "name", "instrumentType", "marketCode", "currency"});
+    filteredInstruments_.setEnabledRoleName(QStringLiteral("enabled"));
+    filteredInstruments_.setTypeRoleName(QStringLiteral("instrumentType"));
+    filteredInstruments_.setMarketRoleName(QStringLiteral("marketCode"));
+    filteredInstruments_.setSortRoleByName(QStringLiteral("code"), true);
+
+    filteredStrategies_.setSourceModel(&strategies_);
+    filteredStrategies_.setSearchRoleNames({"strategyCode", "name"});
+    filteredStrategies_.setEnabledRoleName(QStringLiteral("enabled"));
+    filteredStrategies_.setStrategyCodeRoleName(QStringLiteral("strategyCode"));
+    filteredStrategies_.setSortRoleByName(QStringLiteral("strategyCode"), true);
+
+    filteredOtcChannels_.setSourceModel(&otcChannels_);
+    filteredOtcChannels_.setSearchRoleNames({"strategyCode", "actualCode", "fundClass"});
+    filteredOtcChannels_.setEnabledRoleName(QStringLiteral("enabled"));
+    filteredOtcChannels_.setStrategyCodeRoleName(QStringLiteral("strategyCode"));
+    filteredOtcChannels_.setValueRoleName(QStringLiteral("actualCode"));
+    filteredOtcChannels_.setSortRoleByName(QStringLiteral("priority"), true);
 }
 
 ShellDataResult<bool> ShellReadOnlyDataController::connectToDataService(
@@ -710,6 +744,90 @@ void ShellReadOnlyDataController::setSelectedStrategyCode(const QString& strateg
     emit selectedStrategyCodeChanged();
 }
 
+void ShellReadOnlyDataController::setAccountSearchText(const QString& text)
+{
+    filteredAccounts_.setSearchText(text);
+}
+
+void ShellReadOnlyDataController::setPortfolioSearchText(const QString& text)
+{
+    filteredPortfolios_.setSearchText(text);
+}
+
+void ShellReadOnlyDataController::setInstrumentSearchText(const QString& text)
+{
+    filteredInstruments_.setSearchText(text);
+}
+
+void ShellReadOnlyDataController::setStrategySearchText(const QString& text)
+{
+    filteredStrategies_.setSearchText(text);
+}
+
+void ShellReadOnlyDataController::setOtcSearchText(const QString& text)
+{
+    filteredOtcChannels_.setSearchText(text);
+}
+
+void ShellReadOnlyDataController::setAccountActiveOnly(bool activeOnly)
+{
+    filteredAccounts_.setActiveOnly(activeOnly);
+}
+
+void ShellReadOnlyDataController::setPortfolioActiveOnly(bool activeOnly)
+{
+    filteredPortfolios_.setActiveOnly(activeOnly);
+}
+
+void ShellReadOnlyDataController::setInstrumentEnabledOnly(bool enabledOnly)
+{
+    filteredInstruments_.setEnabledOnly(enabledOnly);
+}
+
+void ShellReadOnlyDataController::setStrategyEnabledOnly(bool enabledOnly)
+{
+    filteredStrategies_.setEnabledOnly(enabledOnly);
+}
+
+void ShellReadOnlyDataController::setOtcEnabledOnly(bool enabledOnly)
+{
+    filteredOtcChannels_.setEnabledOnly(enabledOnly);
+}
+
+bool ShellReadOnlyDataController::sortAccounts(const QString& key, bool ascending)
+{
+    return filteredAccounts_.setSortRoleByName(roleNameForSortKey(QStringLiteral("accounts"), key), ascending);
+}
+
+bool ShellReadOnlyDataController::sortPortfolios(const QString& key, bool ascending)
+{
+    return filteredPortfolios_.setSortRoleByName(roleNameForSortKey(QStringLiteral("portfolios"), key), ascending);
+}
+
+bool ShellReadOnlyDataController::sortInstruments(const QString& key, bool ascending)
+{
+    return filteredInstruments_.setSortRoleByName(roleNameForSortKey(QStringLiteral("instruments"), key), ascending);
+}
+
+bool ShellReadOnlyDataController::sortStrategies(const QString& key, bool ascending)
+{
+    return filteredStrategies_.setSortRoleByName(roleNameForSortKey(QStringLiteral("strategies"), key), ascending);
+}
+
+bool ShellReadOnlyDataController::sortOtcChannels(const QString& key, bool ascending)
+{
+    return filteredOtcChannels_.setSortRoleByName(roleNameForSortKey(QStringLiteral("otc"), key), ascending);
+}
+
+void ShellReadOnlyDataController::clearReadonlyFilters()
+{
+    filteredAccounts_.clearFilters();
+    filteredPortfolios_.clearFilters();
+    filteredInstruments_.clearFilters();
+    filteredStrategies_.clearFilters();
+    filteredOtcChannels_.clearFilters();
+}
+
 ShellDataConnectionObject* ShellReadOnlyDataController::connectionObject()
 {
     return &connection_;
@@ -759,6 +877,56 @@ ShellStrategyListModel* ShellReadOnlyDataController::strategyModel()
 ShellOtcChannelListModel* ShellReadOnlyDataController::otcChannelModel()
 {
     return &otcChannels_;
+}
+
+QAbstractItemModel* ShellReadOnlyDataController::filteredAccountItemModel()
+{
+    return &filteredAccounts_;
+}
+
+QAbstractItemModel* ShellReadOnlyDataController::filteredPortfolioItemModel()
+{
+    return &filteredPortfolios_;
+}
+
+QAbstractItemModel* ShellReadOnlyDataController::filteredInstrumentItemModel()
+{
+    return &filteredInstruments_;
+}
+
+QAbstractItemModel* ShellReadOnlyDataController::filteredStrategyItemModel()
+{
+    return &filteredStrategies_;
+}
+
+QAbstractItemModel* ShellReadOnlyDataController::filteredOtcChannelItemModel()
+{
+    return &filteredOtcChannels_;
+}
+
+ShellReadOnlyTableProxyModel* ShellReadOnlyDataController::filteredAccountModel()
+{
+    return &filteredAccounts_;
+}
+
+ShellReadOnlyTableProxyModel* ShellReadOnlyDataController::filteredPortfolioModel()
+{
+    return &filteredPortfolios_;
+}
+
+ShellReadOnlyTableProxyModel* ShellReadOnlyDataController::filteredInstrumentModel()
+{
+    return &filteredInstruments_;
+}
+
+ShellReadOnlyTableProxyModel* ShellReadOnlyDataController::filteredStrategyModel()
+{
+    return &filteredStrategies_;
+}
+
+ShellReadOnlyTableProxyModel* ShellReadOnlyDataController::filteredOtcChannelModel()
+{
+    return &filteredOtcChannels_;
 }
 
 QAbstractItemModel* ShellReadOnlyDataController::connectionPresetItemModel()
@@ -1021,6 +1189,78 @@ void ShellReadOnlyDataController::scheduleCanRefreshUpdate()
     QTimer::singleShot(remaining + 1, this, [this]() {
         emit stateChanged();
     });
+}
+
+QString ShellReadOnlyDataController::roleNameForSortKey(const QString& modelName, const QString& key) const
+{
+    const auto normalized = key.trimmed().toLower();
+    if (modelName == QStringLiteral("accounts")) {
+        if (normalized == QStringLiteral("type")) {
+            return QStringLiteral("accountType");
+        }
+        if (normalized == QStringLiteral("status") || normalized == QStringLiteral("active") || normalized == QStringLiteral("enabled")) {
+            return QStringLiteral("isActive");
+        }
+        if (normalized == QStringLiteral("amount")) {
+            return QStringLiteral("initialCashText");
+        }
+        return QStringLiteral("name");
+    }
+    if (modelName == QStringLiteral("portfolios")) {
+        if (normalized == QStringLiteral("status") || normalized == QStringLiteral("active") || normalized == QStringLiteral("enabled")) {
+            return QStringLiteral("isActive");
+        }
+        if (normalized == QStringLiteral("amount")) {
+            return QStringLiteral("basePositionRatioText");
+        }
+        return QStringLiteral("name");
+    }
+    if (modelName == QStringLiteral("instruments")) {
+        if (normalized == QStringLiteral("name")) {
+            return QStringLiteral("name");
+        }
+        if (normalized == QStringLiteral("type")) {
+            return QStringLiteral("instrumentType");
+        }
+        if (normalized == QStringLiteral("market")) {
+            return QStringLiteral("marketCode");
+        }
+        if (normalized == QStringLiteral("currency")) {
+            return QStringLiteral("currency");
+        }
+        if (normalized == QStringLiteral("status") || normalized == QStringLiteral("enabled")) {
+            return QStringLiteral("enabled");
+        }
+        return QStringLiteral("code");
+    }
+    if (modelName == QStringLiteral("strategies")) {
+        if (normalized == QStringLiteral("name")) {
+            return QStringLiteral("name");
+        }
+        if (normalized == QStringLiteral("status") || normalized == QStringLiteral("enabled")) {
+            return QStringLiteral("enabled");
+        }
+        return QStringLiteral("strategyCode");
+    }
+    if (modelName == QStringLiteral("otc")) {
+        if (normalized == QStringLiteral("code")) {
+            return QStringLiteral("actualCode");
+        }
+        if (normalized == QStringLiteral("type")) {
+            return QStringLiteral("fundClass");
+        }
+        if (normalized == QStringLiteral("status") || normalized == QStringLiteral("enabled")) {
+            return QStringLiteral("enabled");
+        }
+        if (normalized == QStringLiteral("priority")) {
+            return QStringLiteral("priority");
+        }
+        if (normalized == QStringLiteral("amount")) {
+            return QStringLiteral("minBuyAmountText");
+        }
+        return QStringLiteral("strategyCode");
+    }
+    return QStringLiteral("name");
 }
 
 }  // namespace etfdt::shell_services

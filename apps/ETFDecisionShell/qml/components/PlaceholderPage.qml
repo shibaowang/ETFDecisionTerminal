@@ -1,0 +1,58 @@
+import QtQuick
+
+Rectangle {
+    id: root
+    required property string title
+    required property string moduleName
+    property string description: "当前为占位 Mock，业务功能尚未接入。"
+
+    radius: 8
+    color: "#ffffff"
+    border.color: "#d8e0eb"
+
+    Column {
+        anchors.fill: parent
+        anchors.margins: 28
+        spacing: 14
+
+        Text {
+            text: root.title
+            color: "#18202f"
+            font.pixelSize: 24
+            font.bold: true
+        }
+
+        Rectangle {
+            width: mockText.implicitWidth + 24
+            height: 30
+            radius: 15
+            color: "#fff4d7"
+            border.color: "#e3bc5d"
+
+            Text {
+                id: mockText
+                anchors.centerIn: parent
+                text: "当前为占位 Mock"
+                color: "#7a4a00"
+                font.pixelSize: 13
+                font.bold: true
+            }
+        }
+
+        Text {
+            width: parent.width
+            text: root.description
+            color: "#465066"
+            font.pixelSize: 15
+            wrapMode: Text.WordWrap
+        }
+
+        Text {
+            width: parent.width
+            text: "模块: " + root.moduleName + "\n后续任务将接入真实数据。\n本页面不访问数据库、不连接服务、不包含业务逻辑。"
+            color: "#667086"
+            font.pixelSize: 13
+            lineHeight: 1.35
+        }
+    }
+}

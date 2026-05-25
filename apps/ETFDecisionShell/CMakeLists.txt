@@ -20,8 +20,27 @@ qt_add_qml_module(ETFDecisionShell
     VERSION 1.0
     QML_FILES
         qml/Main.qml
+        qml/layout/AppShell.qml
+        qml/layout/BottomLogPanel.qml
+        qml/layout/ContentHost.qml
+        qml/layout/RightInfoPanel.qml
+        qml/layout/SideNavigation.qml
+        qml/layout/TopStatusBar.qml
+        qml/pages/AccountPortfolioPlaceholderPage.qml
+        qml/pages/AlertPlaceholderPage.qml
+        qml/pages/CashPlanPlaceholderPage.qml
+        qml/pages/DashboardPlaceholderPage.qml
         qml/pages/DiagnosticsMockPage.qml
+        qml/pages/MarketPlaceholderPage.qml
+        qml/pages/OtcChannelPlaceholderPage.qml
+        qml/pages/PositionPlaceholderPage.qml
+        qml/pages/SettingsPlaceholderPage.qml
+        qml/pages/StrategyPlaceholderPage.qml
+        qml/pages/TradeConfirmPlaceholderPage.qml
+        qml/pages/TradeDraftPlaceholderPage.qml
+        qml/pages/TradeLogPlaceholderPage.qml
         qml/components/IssueListView.qml
+        qml/components/PlaceholderPage.qml
         qml/components/ServiceListView.qml
         qml/components/SummaryCard.qml
 )

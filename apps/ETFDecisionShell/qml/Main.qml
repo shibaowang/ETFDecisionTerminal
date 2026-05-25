@@ -1,19 +1,20 @@
 import QtQuick
 import QtQuick.Window
-import "pages"
+import "layout"
 
 Window {
     id: root
-    width: 1180
-    height: 760
-    minimumWidth: 900
-    minimumHeight: 620
+    width: 1440
+    height: 900
+    minimumWidth: 1180
+    minimumHeight: 760
     visible: true
-    color: "#f6f7f9"
-    title: "ETFDecisionShell Diagnostics Mock"
+    color: "#0f1724"
+    title: "ETFDecisionShell Mock"
 
-    DiagnosticsMockPage {
+    AppShell {
+        objectName: "appShell"
         anchors.fill: parent
-        adapter: diagnosticAdapter
+        diagnosticAdapter: diagnosticAdapter
     }
 }

@@ -58,6 +58,12 @@
   `ShellDiagnosticSummaryObject`.
 - This mock page does not connect to Watchdog / DataService, does not access
   SQLite, and does not start services.
+- TASK-025 adds the mock shell frame: top status bar, left navigation, content
+  host, right info panel, and bottom log panel.
+- Only Diagnostics Center is connected to mock `ShellDiagnosticQtAdapter` data.
+  Other routes are placeholder pages and do not implement business behavior.
+- Shell QML continues to avoid direct SQLite access and direct DataService /
+  Watchdog connections.
 
 ## 当前状态
 

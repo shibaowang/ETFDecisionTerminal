@@ -23,6 +23,7 @@ class ShellReadOnlyDataController : public QObject {
     Q_PROPERTY(ShellPortfolioListModel* portfolioModel READ portfolioModel CONSTANT)
     Q_PROPERTY(ShellInstrumentListModel* instrumentModel READ instrumentModel CONSTANT)
     Q_PROPERTY(ShellStrategyListModel* strategyModel READ strategyModel CONSTANT)
+    Q_PROPERTY(ShellOtcChannelListModel* otcChannelModel READ otcChannelModel CONSTANT)
     Q_PROPERTY(QAbstractItemModel* connectionPresetModel READ connectionPresetItemModel CONSTANT)
     Q_PROPERTY(QString lastError READ lastErrorText NOTIFY lastErrorChanged)
     Q_PROPERTY(QString selectedPresetKey READ selectedPresetKey NOTIFY connectionPresetChanged)
@@ -37,6 +38,7 @@ class ShellReadOnlyDataController : public QObject {
     Q_PROPERTY(QString lastRefreshStartedAtText READ lastRefreshStartedAtText NOTIFY stateChanged)
     Q_PROPERTY(QString lastRefreshFinishedAtText READ lastRefreshFinishedAtText NOTIFY stateChanged)
     Q_PROPERTY(QString lastSuccessAtText READ lastSuccessAtText NOTIFY stateChanged)
+    Q_PROPERTY(QString selectedStrategyCode READ selectedStrategyCode WRITE setSelectedStrategyCode NOTIFY selectedStrategyCodeChanged)
     Q_PROPERTY(QVariantMap errorState READ errorStateMap NOTIFY errorStateChanged)
     Q_PROPERTY(int refreshAttemptCount READ refreshAttemptCount NOTIFY stateChanged)
     Q_PROPERTY(int refreshSuccessCount READ refreshSuccessCount NOTIFY stateChanged)
@@ -60,6 +62,8 @@ public:
     [[nodiscard]] ShellDataResult<bool> refreshAccountsAndPortfolios(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshInstruments(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshStrategies(int timeoutMs);
+    [[nodiscard]] ShellDataResult<bool> refreshInstrumentsAndStrategies(int timeoutMs);
+    [[nodiscard]] ShellDataResult<bool> refreshOtcChannels(int timeoutMs);
     [[nodiscard]] ShellDataResult<bool> refreshAll(int timeoutMs);
 
     Q_INVOKABLE [[nodiscard]] bool refreshHealth();
@@ -69,10 +73,14 @@ public:
     Q_INVOKABLE [[nodiscard]] bool refreshAccountsAndPortfolios();
     Q_INVOKABLE [[nodiscard]] bool refreshInstruments();
     Q_INVOKABLE [[nodiscard]] bool refreshStrategies();
+    Q_INVOKABLE [[nodiscard]] bool refreshInstrumentsAndStrategies();
+    Q_INVOKABLE [[nodiscard]] bool refreshOtcChannels();
     Q_INVOKABLE [[nodiscard]] bool refreshAll();
     Q_INVOKABLE [[nodiscard]] bool refreshOtc(const QString& strategyCode);
+    Q_INVOKABLE void clearOtcChannels();
     Q_INVOKABLE [[nodiscard]] bool selectPreset(const QString& key);
     Q_INVOKABLE void setCustomSocketName(const QString& socketName);
+    Q_INVOKABLE void setSelectedStrategyCode(const QString& strategyCode);
 
     [[nodiscard]] ShellDataConnectionObject* connectionObject();
     [[nodiscard]] const ShellReadOnlyDataViewModel& summaryViewModel() const noexcept;
@@ -81,6 +89,7 @@ public:
     [[nodiscard]] ShellPortfolioListModel* portfolioModel();
     [[nodiscard]] ShellInstrumentListModel* instrumentModel();
     [[nodiscard]] ShellStrategyListModel* strategyModel();
+    [[nodiscard]] ShellOtcChannelListModel* otcChannelModel();
     [[nodiscard]] QAbstractItemModel* connectionPresetItemModel();
     [[nodiscard]] ShellReadOnlyConnectionPresetModel* connectionPresetModel();
     [[nodiscard]] const std::string& lastError() const noexcept;
@@ -97,6 +106,7 @@ public:
     [[nodiscard]] QString lastRefreshStartedAtText() const;
     [[nodiscard]] QString lastRefreshFinishedAtText() const;
     [[nodiscard]] QString lastSuccessAtText() const;
+    [[nodiscard]] QString selectedStrategyCode() const;
     [[nodiscard]] QVariantMap errorStateMap() const;
     [[nodiscard]] int refreshAttemptCount() const noexcept;
     [[nodiscard]] int refreshSuccessCount() const noexcept;
@@ -110,6 +120,7 @@ signals:
     void connectionPresetChanged();
     void stateChanged();
     void errorStateChanged();
+    void selectedStrategyCodeChanged();
 
 private:
     [[nodiscard]] ShellDataResult<bool> refreshAllUnprotected(int timeoutMs);
@@ -142,6 +153,7 @@ private:
     ShellPortfolioListModel portfolios_;
     ShellInstrumentListModel instruments_;
     ShellStrategyListModel strategies_;
+    ShellOtcChannelListModel otcChannels_;
     ShellReadOnlyConnectionPresetModel connectionPresets_;
     std::string lastError_;
     QString selectedPresetKey_ = QStringLiteral("readonly_default");
@@ -153,6 +165,7 @@ private:
     QString lastRefreshStartedAtText_;
     QString lastRefreshFinishedAtText_;
     QString lastSuccessAtText_;
+    QString selectedStrategyCode_;
     bool hasError_ = false;
     QString errorCode_;
     QString errorMessage_;

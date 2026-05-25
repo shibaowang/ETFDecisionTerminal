@@ -137,6 +137,32 @@ std::vector<ShellStrategyRow> parseStrategies(const std::string& json)
     return rows;
 }
 
+std::vector<ShellOtcChannelRow> parseOtcChannels(const std::string& json)
+{
+    std::vector<ShellOtcChannelRow> rows;
+    const auto object = parseObject(json);
+    if (!object.has_value()) {
+        return rows;
+    }
+    const auto values = object->value("channels").toArray();
+    rows.reserve(static_cast<std::size_t>(values.size()));
+    for (const auto& value : values) {
+        const auto item = value.toObject();
+        ShellOtcChannelRow row;
+        row.id = int64Value(item, "id");
+        row.uid = stringValue(item, "uid");
+        row.strategyCode = stringValue(item, "strategyCode");
+        row.actualCode = stringValue(item, "actualCode");
+        row.fundClass = stringValue(item, "fundClass");
+        row.enabled = boolValue(item, "enabled");
+        row.dailyLimitText = std::to_string(int64Value(item, "dailyLimitCents"));
+        row.priority = static_cast<int>(int64Value(item, "priority"));
+        row.minBuyAmountText = std::to_string(int64Value(item, "minBuyAmountCents"));
+        rows.push_back(std::move(row));
+    }
+    return rows;
+}
+
 std::string summaryTextFromPayload(const std::string& json)
 {
     const auto object = parseObject(json);
@@ -172,6 +198,7 @@ ShellReadOnlyDataController::ShellReadOnlyDataController(QObject* parent)
     , portfolios_(this)
     , instruments_(this)
     , strategies_(this)
+    , otcChannels_(this)
     , connectionPresets_(this)
 {
 }
@@ -383,6 +410,118 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshStrategies(int timeout
     return ShellDataResult<bool>::success(true);
 }
 
+ShellDataResult<bool> ShellReadOnlyDataController::refreshInstrumentsAndStrategies(int timeoutMs)
+{
+    if (isBusy_) {
+        setLocalError(
+            QStringLiteral("BUSY"),
+            "refreshInstrumentsAndStrategies ignored because another operation is in progress",
+            QStringLiteral("refreshInstrumentsAndStrategies"),
+            true);
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+    if (isRefreshThrottled()) {
+        ++refreshThrottleCount_;
+        setLocalError(
+            QStringLiteral("THROTTLED"),
+            "refreshInstrumentsAndStrategies throttled by minimum refresh interval",
+            QStringLiteral("refreshInstrumentsAndStrategies"),
+            true);
+        scheduleCanRefreshUpdate();
+        emit stateChanged();
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+
+    ++refreshAttemptCount_;
+    lastRefreshStartedAtText_ = utcNowText();
+    setBusy(true);
+    setRefreshState(QStringLiteral("REFRESHING"));
+
+    auto result = refreshInstruments(timeoutMs);
+    if (result) {
+        result = refreshStrategies(timeoutMs);
+    }
+
+    lastRefreshFinishedAtText_ = utcNowText();
+    setBusy(false);
+    if (!result) {
+        ++refreshFailureCount_;
+        setRefreshState(QStringLiteral("FAILED"));
+        emit stateChanged();
+        return result;
+    }
+
+    ++refreshSuccessCount_;
+    lastSuccessAtText_ = lastRefreshFinishedAtText_;
+    clearError();
+    setRefreshState(QStringLiteral("SUCCESS"));
+    scheduleCanRefreshUpdate();
+    return result;
+}
+
+ShellDataResult<bool> ShellReadOnlyDataController::refreshOtcChannels(int timeoutMs)
+{
+    const auto trimmed = selectedStrategyCode_.trimmed();
+    if (trimmed.isEmpty()) {
+        setLocalError(
+            QStringLiteral("E1002_MISSING_REQUIRED_FIELD"),
+            "strategyCode is required",
+            QStringLiteral("listOtc"),
+            true);
+        return ShellDataResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            lastError_);
+    }
+    if (isBusy_) {
+        setLocalError(
+            QStringLiteral("BUSY"),
+            "refreshOtcChannels ignored because another operation is in progress",
+            QStringLiteral("refreshOtcChannels"),
+            true);
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+    if (isRefreshThrottled()) {
+        ++refreshThrottleCount_;
+        setLocalError(
+            QStringLiteral("THROTTLED"),
+            "refreshOtcChannels throttled by minimum refresh interval",
+            QStringLiteral("refreshOtcChannels"),
+            true);
+        scheduleCanRefreshUpdate();
+        emit stateChanged();
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+
+    ++refreshAttemptCount_;
+    lastRefreshStartedAtText_ = utcNowText();
+    setBusy(true);
+    setRefreshState(QStringLiteral("REFRESHING"));
+
+    auto result = facade_.listOtc(trimmed.toStdString(), timeoutMs);
+    lastRefreshFinishedAtText_ = utcNowText();
+    setBusy(false);
+    if (!result) {
+        ++refreshFailureCount_;
+        setRefreshState(QStringLiteral("FAILED"));
+        emit stateChanged();
+        return failureFromError(result.error(), "listOtc failed");
+    }
+    if (!result.value().success) {
+        ++refreshFailureCount_;
+        setRefreshState(QStringLiteral("FAILED"));
+        emit stateChanged();
+        return failureFromResponse(result.value(), "listOtc failed");
+    }
+
+    otcChannels_.setRows(parseOtcChannels(result.value().payloadJson));
+    ++refreshSuccessCount_;
+    lastSuccessAtText_ = lastRefreshFinishedAtText_;
+    clearError();
+    setRefreshState(QStringLiteral("SUCCESS"));
+    scheduleCanRefreshUpdate();
+    return ShellDataResult<bool>::success(true);
+}
+
 ShellDataResult<bool> ShellReadOnlyDataController::refreshAll(int timeoutMs)
 {
     if (isBusy_) {
@@ -483,6 +622,16 @@ bool ShellReadOnlyDataController::refreshStrategies()
     return refreshStrategies(2000).hasValue();
 }
 
+bool ShellReadOnlyDataController::refreshInstrumentsAndStrategies()
+{
+    return refreshInstrumentsAndStrategies(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshOtcChannels()
+{
+    return refreshOtcChannels(2000).hasValue();
+}
+
 bool ShellReadOnlyDataController::refreshAll()
 {
     return refreshAll(2000).hasValue();
@@ -510,6 +659,11 @@ bool ShellReadOnlyDataController::refreshOtc(const QString& strategyCode)
     }
     clearError();
     return true;
+}
+
+void ShellReadOnlyDataController::clearOtcChannels()
+{
+    otcChannels_.clearRows();
 }
 
 bool ShellReadOnlyDataController::selectPreset(const QString& key)
@@ -544,6 +698,16 @@ void ShellReadOnlyDataController::setCustomSocketName(const QString& socketName)
             : QString::fromStdString(customPreset->commandHint);
     }
     emit connectionPresetChanged();
+}
+
+void ShellReadOnlyDataController::setSelectedStrategyCode(const QString& strategyCode)
+{
+    const auto trimmed = strategyCode.trimmed();
+    if (selectedStrategyCode_ == trimmed) {
+        return;
+    }
+    selectedStrategyCode_ = trimmed;
+    emit selectedStrategyCodeChanged();
 }
 
 ShellDataConnectionObject* ShellReadOnlyDataController::connectionObject()
@@ -590,6 +754,11 @@ ShellInstrumentListModel* ShellReadOnlyDataController::instrumentModel()
 ShellStrategyListModel* ShellReadOnlyDataController::strategyModel()
 {
     return &strategies_;
+}
+
+ShellOtcChannelListModel* ShellReadOnlyDataController::otcChannelModel()
+{
+    return &otcChannels_;
 }
 
 QAbstractItemModel* ShellReadOnlyDataController::connectionPresetItemModel()
@@ -673,6 +842,11 @@ QString ShellReadOnlyDataController::lastRefreshFinishedAtText() const
 QString ShellReadOnlyDataController::lastSuccessAtText() const
 {
     return lastSuccessAtText_;
+}
+
+QString ShellReadOnlyDataController::selectedStrategyCode() const
+{
+    return selectedStrategyCode_;
 }
 
 QVariantMap ShellReadOnlyDataController::errorStateMap() const

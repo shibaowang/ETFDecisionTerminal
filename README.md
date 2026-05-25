@@ -698,6 +698,14 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - The page is read-only: it provides no edit, deposit, withdrawal, accounting, confirmation, or trade buttons.
 - QML still does not call `DataServiceClient` directly, access SQLite, call `data.audit.append`, or invoke any write action.
 
+## TASK-038 Instrument Strategy Read-Only Page
+
+- `strategy` now routes to `InstrumentStrategyReadOnlyPage.qml` and is labeled as a read-only prototype for instruments, strategies, and OTC channels.
+- The page binds `ShellInstrumentListModel`, `ShellStrategyListModel`, and `ShellOtcChannelListModel` through `ShellReadOnlyDataController`.
+- It displays instrument code, name, type, market, currency, enabled state, strategy code / name / enabled state, and OTC channel fields.
+- The page can refresh instruments / strategies and OTC channels through explicit read-only controller methods.
+- It does not support editing, deleting, strategy execution, TradeDraft generation, trading, accounting, `data.audit.append`, or any write action.
+
 ## Current Milestone: v0.1 ReadOnly Shell Demo
 
 The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.

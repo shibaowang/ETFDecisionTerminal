@@ -2,12 +2,12 @@ import QtQuick
 
 Rectangle {
     id: root
-    required property var instrumentModel
+    required property var otcChannelModel
 
     radius: 8
     color: "#ffffff"
     border.color: "#d8e0eb"
-    height: 220
+    height: 190
 
     Column {
         anchors.fill: parent
@@ -15,30 +15,30 @@ Rectangle {
         spacing: 8
 
         Text {
-            text: "Instruments"
+            text: "OTC Channels"
             color: "#18202f"
             font.pixelSize: 16
             font.bold: true
         }
 
         Text {
-            visible: instrumentList.count === 0
-            text: "Empty / No data"
+            visible: otcChannelList.count === 0
+            text: "暂无 OTC 通道"
             color: "#667086"
             font.pixelSize: 13
         }
 
         ListView {
-            id: instrumentList
-            objectName: "instrumentListView"
+            id: otcChannelList
+            objectName: "otcChannelListView"
             width: parent.width
             height: parent.height - 36
             clip: true
-            model: root.instrumentModel
+            model: root.otcChannelModel
             spacing: 4
 
             delegate: Rectangle {
-                width: instrumentList.width
+                width: otcChannelList.width
                 height: 38
                 radius: 6
                 color: model.enabled ? "#eef8f2" : "#f5f7fa"
@@ -47,9 +47,11 @@ Rectangle {
                 Text {
                     anchors.fill: parent
                     anchors.margins: 8
-                    text: model.code + " | " + model.name + " | " + model.instrumentType
-                        + " | market=" + model.marketCode + " | " + model.currency
-                        + " | enabled=" + model.enabled
+                    text: model.strategyCode + " | actual=" + model.actualCode
+                        + " | class=" + model.fundClass + " | enabled=" + model.enabled
+                        + " | dailyLimit=" + model.dailyLimitText
+                        + " | priority=" + model.priority
+                        + " | minBuy=" + model.minBuyAmountText
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight

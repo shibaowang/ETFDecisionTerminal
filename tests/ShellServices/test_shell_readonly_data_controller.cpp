@@ -357,6 +357,35 @@ void testController(const std::filesystem::path& migrationPath)
                 == QStringLiteral("00000000-0000-4000-8000-000000000201");
     }
     expectTrue(hasDefaultPortfolio, "portfolio model contains default portfolio");
+    auto instrumentStrategyRefresh = controller.refreshInstrumentsAndStrategies(2000);
+    expectTrue(instrumentStrategyRefresh.hasValue(), "refreshInstrumentsAndStrategies succeeds");
+    expectTrue(controller.instrumentModel()->rowCount() >= 1, "instrument strategy refresh keeps instrument rows");
+    expectTrue(controller.strategyModel()->rowCount() >= 0, "instrument strategy refresh keeps strategy rows");
+    const auto otcRoles = controller.otcChannelModel()->roleNames();
+    expectTrue(
+        otcRoles.contains(etfdt::shell_services::ShellOtcChannelListModel::StrategyCodeRole),
+        "otc model has strategyCode role");
+    expectTrue(
+        otcRoles.contains(etfdt::shell_services::ShellOtcChannelListModel::ActualCodeRole),
+        "otc model has actualCode role");
+    expectTrue(
+        otcRoles.contains(etfdt::shell_services::ShellOtcChannelListModel::FundClassRole),
+        "otc model has fundClass role");
+    expectTrue(
+        otcRoles.contains(etfdt::shell_services::ShellOtcChannelListModel::EnabledRole),
+        "otc model has enabled role");
+    controller.setSelectedStrategyCode(QString());
+    auto emptyStrategyOtc = controller.refreshOtcChannels(2000);
+    expectTrue(!emptyStrategyOtc.hasValue(), "refreshOtcChannels empty strategyCode fails locally");
+    expectEqual(
+        controller.errorStateMap().value("errorCode").toString(),
+        QStringLiteral("E1002_MISSING_REQUIRED_FIELD"),
+        "refreshOtcChannels empty strategyCode error code");
+    controller.setSelectedStrategyCode(QStringLiteral("not_exists"));
+    expectEqual(controller.selectedStrategyCode(), QStringLiteral("not_exists"), "selectedStrategyCode is set");
+    auto missingOtcChannels = controller.refreshOtcChannels(2000);
+    expectTrue(missingOtcChannels.hasValue(), "refreshOtcChannels missing strategy succeeds with empty result");
+    expectEqual(controller.otcChannelModel()->rowCount(), 0, "missing strategy has no otc channels");
     expectTrue(controller.summaryViewModelMap().value("accountCount").toInt() >= 1, "summaryViewModel QML map accountCount");
     expectEqual(
         controller.summaryViewModelMap().value("refreshState").toString(),
@@ -366,6 +395,7 @@ void testController(const std::filesystem::path& migrationPath)
     expectTrue(controller.property("portfolioModel").value<QObject*>() != nullptr, "portfolioModel Q_PROPERTY exists");
     expectTrue(controller.property("instrumentModel").value<QObject*>() != nullptr, "instrumentModel Q_PROPERTY exists");
     expectTrue(controller.property("strategyModel").value<QObject*>() != nullptr, "strategyModel Q_PROPERTY exists");
+    expectTrue(controller.property("otcChannelModel").value<QObject*>() != nullptr, "otcChannelModel Q_PROPERTY exists");
     expectTrue(
         controller.property("connectionPresetModel").value<QObject*>() != nullptr,
         "connectionPresetModel Q_PROPERTY exists");

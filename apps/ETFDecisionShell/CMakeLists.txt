@@ -32,6 +32,7 @@ qt_add_qml_module(ETFDecisionShell
         qml/pages/CashPlanPlaceholderPage.qml
         qml/pages/DashboardPlaceholderPage.qml
         qml/pages/DiagnosticsMockPage.qml
+        qml/pages/InstrumentStrategyReadOnlyPage.qml
         qml/pages/MarketPlaceholderPage.qml
         qml/pages/OtcChannelPlaceholderPage.qml
         qml/pages/PositionPlaceholderPage.qml
@@ -46,6 +47,7 @@ qt_add_qml_module(ETFDecisionShell
         qml/components/IssueListView.qml
         qml/components/InstrumentListView.qml
         qml/components/MetricCard.qml
+        qml/components/OtcChannelListView.qml
         qml/components/PlaceholderPage.qml
         qml/components/PortfolioListView.qml
         qml/components/ServiceListView.qml

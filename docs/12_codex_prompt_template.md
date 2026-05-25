@@ -201,3 +201,6 @@ v0.1 草案。
 - Default business pages are read-only and must bind Controller / ViewModel / Model objects rather than low-level clients.
 - QML must not expose edit, accounting, confirmation, trade, or write buttons unless a later task explicitly authorizes writes.
 - QML must not call write actions, `data.audit.append`, or `DataServiceClient` directly.
+- Strategy-related page prototypes are read-only by default.
+- Strategy prototypes must not execute strategies, generate signals, or create TradeDraft records unless a later task explicitly authorizes that scope.
+- OTC channel prototypes must not edit channel mappings unless a later task explicitly authorizes writes.

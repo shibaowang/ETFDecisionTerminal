@@ -198,3 +198,12 @@ v0.1 草案。
 - Visible portfolio fields include name, base position ratio, and active state.
 - The page must keep edit, delete, deposit, withdrawal, accounting, confirmation, and trade controls out of scope.
 - Errors and disconnected state must remain visible; QML must not fake successful data or call `DataServiceClient` directly.
+
+## TASK-038 Instrument Strategy Read-Only Page
+
+- `标的与策略` is a read-only business page prototype for instruments, strategies, and OTC channels.
+- Visible instrument fields include code, name, instrument type, market, currency, and enabled state.
+- Visible strategy fields include strategy code, name, and enabled state.
+- Visible OTC fields include strategy code, actual code, fund class, enabled state, daily limit, priority, and minimum buy amount.
+- The page must not include edit, delete, strategy execution, TradeDraft generation, trade, or accounting controls.
+- Empty strategy lists and empty OTC channel results must be visible and must not crash the page.

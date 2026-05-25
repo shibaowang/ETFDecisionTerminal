@@ -201,6 +201,48 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("accountTradeButton") == nullptr,
             "AccountPortfolioReadOnlyPage has no trade button");
 
+        invoked = navigationController.selectPage(QStringLiteral("strategy"));
+        processQmlEvents();
+        expectTrue(invoked, "navigateTo strategy succeeds");
+        expectEqual(navigationController.currentPageKey(), "strategy", "current page is strategy");
+        expectEqual(
+            contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
+            "InstrumentStrategyReadOnlyPage",
+            "ContentHost receives instrument strategy qml component");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentStrategyReadOnlyPage") != nullptr,
+            "InstrumentStrategyReadOnlyPage is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentStrategyReadonlyNotice") != nullptr,
+            "InstrumentStrategyReadOnlyPage read-only notice is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentStrategyStatusPanel") != nullptr,
+            "InstrumentStrategyReadOnlyPage status panel is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentStrategyRefreshButton") != nullptr,
+            "InstrumentStrategyReadOnlyPage refresh button is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentStrategyRefreshOtcButton") != nullptr,
+            "InstrumentStrategyReadOnlyPage OTC refresh button is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentListView") != nullptr,
+            "InstrumentStrategyReadOnlyPage instrument model binding exists");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyListView") != nullptr,
+            "InstrumentStrategyReadOnlyPage strategy model binding exists");
+        expectTrue(
+            appShell->findChild<QObject*>("otcChannelListView") != nullptr,
+            "InstrumentStrategyReadOnlyPage OTC model binding exists");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentEditButton") == nullptr,
+            "InstrumentStrategyReadOnlyPage has no instrument edit button");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyExecuteButton") == nullptr,
+            "InstrumentStrategyReadOnlyPage has no strategy execute button");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentTradeButton") == nullptr,
+            "InstrumentStrategyReadOnlyPage has no trade button");
+
         invoked = navigationController.selectPage(QStringLiteral("readonly_data"));
         processQmlEvents();
         expectTrue(invoked, "navigateTo readonly_data succeeds");

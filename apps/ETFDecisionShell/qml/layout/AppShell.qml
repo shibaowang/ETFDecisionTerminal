@@ -4,10 +4,20 @@ Item {
     id: root
     required property var diagnosticAdapter
     required property var navigationController
+    required property var statusController
     property string currentPageKey: navigationController.currentPageKey
 
     function navigateTo(key) {
         return navigationController.selectPage(key)
+    }
+
+    Component.onCompleted: statusController.updateCurrentPageStatus(navigationController.currentPageKey)
+
+    Connections {
+        target: root.navigationController
+        function onCurrentPageChanged() {
+            root.statusController.updateCurrentPageStatus(root.navigationController.currentPageKey)
+        }
     }
 
     Rectangle {
@@ -23,6 +33,7 @@ Item {
         anchors.top: parent.top
         height: 52
         currentPageTitle: root.navigationController.currentPageTitle
+        pageInfo: root.statusController.pageInfo
     }
 
     SideNavigation {
@@ -46,6 +57,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: bottomLogPanel.top
         width: 280
+        pageInfo: root.statusController.pageInfo
     }
 
     ContentHost {
@@ -70,5 +82,6 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         height: 120
+        logModel: root.statusController.logModel
     }
 }

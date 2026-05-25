@@ -564,6 +564,15 @@ Run the Shell mock:
 build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 ```
 
+## TASK-027 Shell Page Status Model
+
+- `ShellPageStatusModel` exposes mock status for every registered Shell page.
+- `ShellPageInfoObject` exposes the currently selected page status to QML.
+- `ShellMockLogModel` provides bottom-panel mock log rows; it does not read or write `system_log`.
+- `ShellStatusController` owns page status, current page info, and mock logs.
+- `TopStatusBar.qml`, `RightInfoPanel.qml`, and `BottomLogPanel.qml` now bind C++ ShellCore mock models.
+- The UI still does not access SQLite, connect sockets, start services, or implement business logic.
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

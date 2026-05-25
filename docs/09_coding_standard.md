@@ -77,3 +77,9 @@ ETFDecisionTerminal/
 - QML must not hardcode the full shell navigation list.
 - Shell page metadata should come from ShellCore `ShellPageRegistry`.
 - QML navigation should bind `ShellNavigationModel` / `ShellNavigationController`.
+
+## Shell Status Binding Rules
+
+- UI state should come from C++ ShellCore models.
+- QML must not derive business status or service health by itself.
+- Mock / placeholder status must be visibly labeled as mock data.

@@ -1,6 +1,7 @@
 #include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellDiagnosticServiceListModel.h"
 #include "ShellCore/ShellNavigationController.h"
+#include "ShellCore/ShellStatusController.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -69,6 +70,7 @@ int main(int argc, char* argv[])
 
     etfdt::shell::ShellDiagnosticQtAdapter adapter;
     etfdt::shell::ShellNavigationController navigationController;
+    etfdt::shell::ShellStatusController statusController;
     expectTrue(adapter.loadMockMixed(), "adapter loadMockMixed succeeds");
     expectTrue(adapter.serviceModel()->rowCount() > 0, "adapter serviceModel has rows");
     expectTrue(adapter.selectService(0), "adapter selectService does not fail");
@@ -78,6 +80,7 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("diagnosticAdapter", &adapter);
     engine.rootContext()->setContextProperty("shellNavigationController", &navigationController);
+    engine.rootContext()->setContextProperty("shellStatusController", &statusController);
 
     const std::filesystem::path mainQmlPath = std::filesystem::path(ETFDT_SHELL_QML_DIR) / "Main.qml";
     expectTrue(std::filesystem::exists(mainQmlPath), "Main.qml exists");
@@ -97,9 +100,21 @@ int main(int argc, char* argv[])
     expectTrue(
         appShell == nullptr ? false : appShell->findChild<QObject*>("contentHost") != nullptr,
         "ContentHost exists");
+    expectTrue(
+        appShell == nullptr ? false : appShell->findChild<QObject*>("topStatusBar") != nullptr,
+        "TopStatusBar exists");
+    expectTrue(
+        appShell == nullptr ? false : appShell->findChild<QObject*>("rightInfoPanel") != nullptr,
+        "RightInfoPanel exists");
+    expectTrue(
+        appShell == nullptr ? false : appShell->findChild<QObject*>("bottomLogPanel") != nullptr,
+        "BottomLogPanel exists");
 
     if (appShell != nullptr) {
         expectEqual(navigationController.currentPageKey(), "dashboard", "default page is dashboard");
+        expectEqual(statusController.pageInfo()->pageKey(), "dashboard", "default status page is dashboard");
+        expectEqual(statusController.pageInfo()->moduleStatus(), "PLACEHOLDER", "default status is placeholder");
+        expectTrue(statusController.logModel()->rowCount() > 0, "mock log model has rows");
         expectTrue(
             appShell->findChild<QObject*>("placeholderPage") != nullptr,
             "default placeholder page is loaded");
@@ -108,6 +123,8 @@ int main(int argc, char* argv[])
         processQmlEvents();
         expectTrue(invoked, "navigateTo diagnostics succeeds");
         expectEqual(navigationController.currentPageKey(), "diagnostics", "current page is diagnostics");
+        expectEqual(statusController.pageInfo()->pageKey(), "diagnostics", "status page is diagnostics");
+        expectEqual(statusController.pageInfo()->moduleStatus(), "MOCK", "diagnostics status is MOCK");
         QObject* contentHost = appShell->findChild<QObject*>("contentHost");
         expectEqual(
             contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
@@ -122,6 +139,8 @@ int main(int argc, char* argv[])
         processQmlEvents();
         expectTrue(invoked, "navigateTo market succeeds");
         expectEqual(navigationController.currentPageKey(), "market", "current page is market");
+        expectEqual(statusController.pageInfo()->pageKey(), "market", "status page is market");
+        expectEqual(statusController.pageInfo()->moduleStatus(), "PLACEHOLDER", "market status is PLACEHOLDER");
         expectTrue(
             appShell->findChild<QObject*>("placeholderPage") != nullptr,
             "PlaceholderPage is loaded after navigation");

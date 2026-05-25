@@ -1,5 +1,6 @@
 #include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellNavigationController.h"
+#include "ShellCore/ShellStatusController.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -26,6 +27,7 @@ int main(int argc, char* argv[])
 
     etfdt::shell::ShellDiagnosticQtAdapter diagnosticAdapter;
     etfdt::shell::ShellNavigationController navigationController;
+    etfdt::shell::ShellStatusController statusController;
     if (app.arguments().contains("--help")) {
         std::cout << "ETFDecisionShell --diagnostics-mock" << '\n';
         return 0;
@@ -35,6 +37,7 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("diagnosticAdapter", &diagnosticAdapter);
     engine.rootContext()->setContextProperty("shellNavigationController", &navigationController);
+    engine.rootContext()->setContextProperty("shellStatusController", &statusController);
 
     QObject::connect(
         &engine,

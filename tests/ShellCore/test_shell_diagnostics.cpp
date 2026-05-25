@@ -756,6 +756,71 @@ void testShellNavigationController()
     expectTrue(!controller.selectPageByIndex(999), "selectPageByIndex invalid returns false");
 }
 
+void testShellPageStatusModel()
+{
+    etfdt::shell::ShellPageStatusModel model;
+    expectEqual(model.rowCount(), 13, "ShellPageStatusModel rowCount is 13");
+
+    const auto roles = model.roleNames();
+    expectTrue(roles.contains(etfdt::shell::ShellPageStatusModel::PageKeyRole), "StatusModel has pageKey role");
+    expectTrue(roles.contains(etfdt::shell::ShellPageStatusModel::ModuleStatusRole), "StatusModel has moduleStatus role");
+    expectTrue(roles.contains(etfdt::shell::ShellPageStatusModel::DataModeRole), "StatusModel has dataMode role");
+    expectTrue(roles.contains(etfdt::shell::ShellPageStatusModel::ConnectionStatusRole), "StatusModel has connectionStatus role");
+
+    const auto* diagnostics = model.statusForKey(QStringLiteral("diagnostics"));
+    expectTrue(diagnostics != nullptr, "diagnostics page status exists");
+    expectEqual(diagnostics == nullptr ? "" : diagnostics->moduleStatus, "MOCK", "diagnostics moduleStatus=MOCK");
+    expectEqual(diagnostics == nullptr ? "" : diagnostics->dataMode, "MOCK_DATA", "diagnostics dataMode=MOCK_DATA");
+
+    const auto* dashboard = model.statusForKey(QStringLiteral("dashboard"));
+    expectTrue(dashboard != nullptr, "dashboard page status exists");
+    expectEqual(dashboard == nullptr ? "" : dashboard->moduleStatus, "PLACEHOLDER", "dashboard moduleStatus=PLACEHOLDER");
+    expectTrue(dashboard != nullptr && dashboard->placeholder, "dashboard status is placeholder");
+}
+
+void testShellPageInfoAndStatusController()
+{
+    etfdt::shell::ShellStatusController controller;
+    expectTrue(controller.statusModel() != nullptr, "StatusController has status model");
+    expectTrue(controller.pageInfo() != nullptr, "StatusController has pageInfo");
+    expectTrue(controller.logModel() != nullptr, "StatusController has logModel");
+    expectEqual(controller.statusModel()->rowCount(), 13, "StatusController status rowCount");
+    expectEqual(controller.pageInfo()->pageKey().toStdString(), "dashboard", "StatusController default page");
+    expectEqual(controller.pageInfo()->moduleStatus().toStdString(), "PLACEHOLDER", "StatusController default module status");
+
+    expectTrue(controller.updateCurrentPageStatus(QStringLiteral("diagnostics")), "StatusController updates diagnostics");
+    expectEqual(controller.pageInfo()->pageKey().toStdString(), "diagnostics", "pageInfo diagnostics key");
+    expectEqual(controller.pageInfo()->moduleStatus().toStdString(), "MOCK", "pageInfo diagnostics status");
+    expectTrue(!controller.pageInfo()->placeholder(), "diagnostics pageInfo not placeholder");
+
+    expectTrue(controller.updateCurrentPageStatus(QStringLiteral("market")), "StatusController updates market");
+    expectEqual(controller.pageInfo()->pageKey().toStdString(), "market", "pageInfo market key");
+    expectEqual(controller.pageInfo()->moduleStatus().toStdString(), "PLACEHOLDER", "pageInfo market status");
+    expectTrue(controller.pageInfo()->placeholder(), "market pageInfo placeholder");
+
+    expectTrue(!controller.updateCurrentPageStatus(QStringLiteral("unknown")), "StatusController unknown page fails");
+}
+
+void testShellMockLogModel()
+{
+    etfdt::shell::ShellMockLogModel model;
+    expectTrue(model.rowCount() > 0, "ShellMockLogModel has default rows");
+
+    const auto roles = model.roleNames();
+    expectTrue(roles.contains(etfdt::shell::ShellMockLogModel::LevelRole), "MockLogModel has level role");
+    expectTrue(roles.contains(etfdt::shell::ShellMockLogModel::SourceRole), "MockLogModel has source role");
+    expectTrue(roles.contains(etfdt::shell::ShellMockLogModel::MessageRole), "MockLogModel has message role");
+
+    const int before = model.rowCount();
+    model.appendMockLog(QStringLiteral("INFO"), QStringLiteral("Test"), QStringLiteral("Page changed"));
+    expectEqual(model.rowCount(), before + 1, "MockLogModel appends page log");
+    const auto appended = model.index(before, 0);
+    expectEqual(
+        model.data(appended, etfdt::shell::ShellMockLogModel::MessageRole).toString().toStdString(),
+        "Page changed",
+        "MockLogModel appended message");
+}
+
 void testStates()
 {
     etfdt::shell::ShellDiagnosticFacade facade;
@@ -829,6 +894,9 @@ int main()
         testShellPageRegistry();
         testShellNavigationModel();
         testShellNavigationController();
+        testShellPageStatusModel();
+        testShellPageInfoAndStatusController();
+        testShellMockLogModel();
         testStates();
         testFailures();
     } catch (const std::exception& ex) {

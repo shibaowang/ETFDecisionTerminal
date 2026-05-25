@@ -136,3 +136,10 @@ v0.1 草案。
 - `ContentHost.qml` loads pages from `currentPageKey` / `currentPageQmlComponent`.
 - Only Diagnostics Center uses mock data; all other modules remain placeholder pages.
 - QML does not parse complex JSON, access SQLite, connect services, or contain business logic.
+
+## TASK-027 Page Status Binding
+
+- `TopStatusBar` displays page title, module status, data mode, and connection status from `ShellPageInfoObject`.
+- `RightInfoPanel` displays current page detail text and placeholder flags from `ShellPageInfoObject`.
+- `BottomLogPanel` displays mock log rows from `ShellMockLogModel`.
+- QML does not infer business state; it only binds C++ model properties and rows.

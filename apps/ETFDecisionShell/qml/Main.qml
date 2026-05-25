@@ -17,5 +17,6 @@ Window {
         anchors.fill: parent
         diagnosticAdapter: diagnosticAdapter
         navigationController: shellNavigationController
+        statusController: shellStatusController
     }
 }

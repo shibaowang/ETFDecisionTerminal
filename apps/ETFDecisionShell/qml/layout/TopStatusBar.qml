@@ -3,6 +3,7 @@ import QtQuick
 Rectangle {
     id: root
     required property string currentPageTitle
+    required property var pageInfo
     color: "#121d2e"
     border.color: "#26354d"
 
@@ -10,7 +11,7 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: 18
         anchors.rightMargin: 18
-        spacing: 18
+        spacing: 16
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
@@ -44,14 +45,23 @@ Rectangle {
             }
         }
 
-        Item {
-            width: parent.width - 720
-            height: 1
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Module: " + root.pageInfo.moduleStatus
+            color: "#8fa1ba"
+            font.pixelSize: 12
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "DataService: Mock   MarketService: Mock   StrategyService: Mock"
+            text: "Data: " + root.pageInfo.dataMode
+            color: "#8fa1ba"
+            font.pixelSize: 12
+        }
+
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: "Connection: " + root.pageInfo.connectionStatus
             color: "#8fa1ba"
             font.pixelSize: 12
         }

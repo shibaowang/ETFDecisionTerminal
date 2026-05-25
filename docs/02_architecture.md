@@ -212,3 +212,10 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - `ContentHost` uses `ShellNavigationController` metadata to load the diagnostics mock page or a placeholder page.
 - Shell does not directly access SQLite, connect DataService, start Watchdog, or start DataService.
 - The current ETFDecisionShell remains a mock / placeholder UI.
+
+## Shell Page Status Mock Models
+
+- TASK-027 adds ShellCore page status, page info, and mock log models.
+- `ShellStatusController` provides `ShellPageStatusModel`, `ShellPageInfoObject`, and `ShellMockLogModel` to QML.
+- `TopStatusBar`, `RightInfoPanel`, and `BottomLogPanel` bind these C++ models instead of static text.
+- Current status is still mock / placeholder only; Shell does not access SQLite, connect DataService, or start services.

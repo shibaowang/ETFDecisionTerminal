@@ -134,3 +134,10 @@ v0.1 草案。
 - Shell page metadata should come from ShellCore, not scattered across QML files.
 - QML must not access SQLite or directly connect services unless a task explicitly authorizes it.
 - QML must not directly parse complex JSON; diagnostic data must flow through ShellCore / Diagnostics.
+
+## Shell Status Model Task Rules
+
+- UI status model tasks must declare the data source.
+- By default, UI status may only come from C++ mock / view-model layers unless a task explicitly authorizes real data.
+- QML must not access SQLite or directly connect services for status updates.
+- QML must not implement service health, accounting, trading, or strategy status logic.

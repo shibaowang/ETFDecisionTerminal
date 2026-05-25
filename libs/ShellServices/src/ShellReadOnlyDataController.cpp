@@ -538,6 +538,11 @@ ShellStrategyListModel* ShellReadOnlyDataController::strategyModel()
     return &strategies_;
 }
 
+QAbstractItemModel* ShellReadOnlyDataController::connectionPresetItemModel()
+{
+    return &connectionPresets_;
+}
+
 ShellReadOnlyConnectionPresetModel* ShellReadOnlyDataController::connectionPresetModel()
 {
     return &connectionPresets_;

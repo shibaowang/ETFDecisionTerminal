@@ -88,14 +88,32 @@ Rectangle {
                             model: root.readOnlyDataController.connectionPresetModel
                             textRole: "title"
                             valueRole: "key"
-                            onActivated: root.readOnlyDataController.selectPreset(currentValue)
 
-                            Component.onCompleted: {
+                            function syncSelectedPreset() {
+                                if (count <= 0) {
+                                    return
+                                }
                                 for (var i = 0; i < count; ++i) {
                                     if (valueAt(i) === root.readOnlyDataController.selectedPresetKey) {
                                         currentIndex = i
-                                        break
+                                        return
                                     }
+                                }
+                                currentIndex = 0
+                                root.readOnlyDataController.selectPreset(valueAt(0))
+                            }
+
+                            onActivated: root.readOnlyDataController.selectPreset(currentValue)
+                            onCountChanged: syncSelectedPreset()
+
+                            Component.onCompleted: {
+                                Qt.callLater(syncSelectedPreset)
+                            }
+
+                            Connections {
+                                target: root.readOnlyDataController
+                                function onConnectionPresetChanged() {
+                                    presetCombo.syncSelectedPreset()
                                 }
                             }
                         }
@@ -104,10 +122,22 @@ Rectangle {
                             id: socketNameField
                             objectName: "readonlySocketNameField"
                             width: Math.min(360, parent.width * 0.35)
-                            text: root.readOnlyDataController.selectedSocketName
                             placeholderText: "socketName"
                             selectByMouse: true
                             onTextEdited: root.readOnlyDataController.setCustomSocketName(text)
+
+                            Component.onCompleted: {
+                                text = root.readOnlyDataController.selectedSocketName
+                            }
+
+                            Connections {
+                                target: root.readOnlyDataController
+                                function onConnectionPresetChanged() {
+                                    if (!socketNameField.activeFocus) {
+                                        socketNameField.text = root.readOnlyDataController.selectedSocketName
+                                    }
+                                }
+                            }
                         }
 
                         Button {

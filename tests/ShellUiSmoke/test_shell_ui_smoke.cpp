@@ -185,6 +185,26 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("readonlyPresetCombo") != nullptr,
             "ReadOnlyDataPage preset combo is loaded");
+        QObject* readOnlyPage = appShell->findChild<QObject*>("readOnlyDataPage");
+        QObject* presetCombo = appShell->findChild<QObject*>("readonlyPresetCombo");
+        QObject* socketNameField = appShell->findChild<QObject*>("readonlySocketNameField");
+        processQmlEvents();
+        expectTrue(
+            readOnlyPage == nullptr
+                ? false
+                : readOnlyPage->property("readOnlyDataController").value<QObject*>() != nullptr,
+            "ReadOnlyDataPage receives read-only controller");
+        expectTrue(
+            presetCombo == nullptr ? false : presetCombo->property("count").toInt() >= 3,
+            "ReadOnlyDataPage preset combo exposes all presets");
+        expectEqual(
+            presetCombo == nullptr ? QString() : presetCombo->property("currentText").toString(),
+            QString::fromUtf8("DataService \xE5\x8F\xAA\xE8\xAF\xBB\xE6\x9C\x8D\xE5\x8A\xA1"),
+            "ReadOnlyDataPage preset combo defaults to readonly preset");
+        expectEqual(
+            socketNameField == nullptr ? QString() : socketNameField->property("text").toString(),
+            QStringLiteral("ETFDataServiceReadonly"),
+            "ReadOnlyDataPage socketName field defaults to readonly socket");
         expectTrue(
             appShell->findChild<QObject*>("readonlyCommandHint") != nullptr,
             "ReadOnlyDataPage command hint is loaded");

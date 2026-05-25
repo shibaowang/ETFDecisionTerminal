@@ -32,6 +32,12 @@
   `ShellDiagnosticSummaryObject` for the top summary.
 - Current task still does not create QML files. Future QML should bind
   `ShellDiagnosticQtAdapter` rather than calling Diagnostics or parsing JSON.
+- TASK-024 adds a minimal diagnostics mock page. The page displays Summary,
+  Service List, and Issue List sections backed by ShellCore models.
+- The page includes visible mock labeling and load buttons for healthy, warning,
+  error, and mixed mock data.
+- QML remains presentation-only: filtering calls C++ adapter methods, QML does
+  not parse JSON, and QML does not access databases or services.
 
 ## 当前状态
 

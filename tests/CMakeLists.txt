@@ -10,6 +10,7 @@ add_subdirectory(Transport)
 add_subdirectory(DataServiceClient)
 add_subdirectory(Diagnostics)
 add_subdirectory(ShellCore)
+add_subdirectory(ShellUiSmoke)
 add_subdirectory(Watchdog)
 add_subdirectory(ETFDiag)
 

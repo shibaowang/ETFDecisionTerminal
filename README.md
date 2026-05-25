@@ -83,6 +83,23 @@ files, apply filter / sort settings through `ShellDiagnosticPresenter`, select a
 service, and refresh file-backed reports. It does not add QML, access SQLite,
 start services, connect Local Socket, or add business logic.
 
+## TASK-024 Shell QML diagnostics mock page
+
+`ETFDecisionShell` now has a minimal Qt Quick shell that loads a diagnostics mock
+page backed only by `ShellDiagnosticQtAdapter`.
+
+Run it:
+
+```powershell
+build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
+```
+
+The page shows mock summary data, a service list, selected service issues, mock
+load buttons, and simple filters. It is explicitly demo data: it does not
+connect to Watchdog or DataService, does not access SQLite, and does not start
+services. TASK-024 requires Qt Core / Gui / Qml / Quick / QuickControls2 from
+the configured Qt installation.
+
 Generate a Watchdog report:
 
 ```powershell

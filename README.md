@@ -652,6 +652,26 @@ Run the Shell:
 build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 ```
 
+## TASK-034 Read-Only Shell Demo Acceptance
+
+- `tools/dev/run_readonly_demo.ps1` starts a developer-only manual acceptance flow for the Shell read-only page.
+- The script initializes `runtime/dev/readonly_demo/ETFDecision.db` with the existing migration, checks the database, starts `ETFDataService --serve-readonly`, and opens `ETFDecisionShell --diagnostics-mock`.
+- It does not start the audit development service, does not call write actions, does not write trading tables, and does not persist user configuration.
+- Manual acceptance steps and expected results are documented in `docs/13_manual_acceptance_readonly_shell.md`.
+- The page under test remains read-only: no trade entry, no accounting entry, no TradeLog write flow, and no real account integration.
+
+Run the manual demo:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1
+```
+
+Run the script without launching Shell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -NoShell
+```
+
 Run tests:
 
 ```powershell

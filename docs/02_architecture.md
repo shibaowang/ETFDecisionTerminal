@@ -44,6 +44,13 @@
   sockets.
 - Mock report builders are only for UI prototypes and tests, not real service
   state.
+- TASK-023 adds Qt Core model adapters on top of the presenter:
+  `ShellDiagnosticServiceListModel`, `ShellDiagnosticIssueListModel`,
+  `ShellDiagnosticSummaryObject`, and `ShellDiagnosticQtAdapter`.
+- Future QML should bind these model / object surfaces instead of parsing JSON.
+- The Qt adapter remains ShellCore-only and does not access SQLite, start
+  services, connect sockets, or depend on DataAccess / DataServiceApi /
+  Transport / ServiceHost.
 
 ## 当前状态
 

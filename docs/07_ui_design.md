@@ -26,6 +26,12 @@
 - Mock diagnostics reports may be used for UI prototypes, but the UI must label
   them as mock / non-real data.
 - QML still must not parse raw Watchdog JSON or access SQLite.
+- TASK-023 adds the future diagnostics page data sources:
+  `ShellDiagnosticServiceListModel` for the service list,
+  `ShellDiagnosticIssueListModel` for the selected service issues, and
+  `ShellDiagnosticSummaryObject` for the top summary.
+- Current task still does not create QML files. Future QML should bind
+  `ShellDiagnosticQtAdapter` rather than calling Diagnostics or parsing JSON.
 
 ## 当前状态
 

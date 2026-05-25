@@ -7,6 +7,8 @@
 #include <string>
 #include <string_view>
 
+#include <QString>
+
 namespace {
 
 int gFailures = 0;
@@ -527,6 +529,157 @@ void testPresenterRefresh(const std::filesystem::path& tempDir)
     expectEqual(presenter.currentViewModel().warningCount, 1, "Presenter refresh changed warning loaded");
 }
 
+void testQtServiceListModelRoles()
+{
+    etfdt::shell::ShellDiagnosticQtAdapter adapter;
+    expectTrue(adapter.loadMockHealthy(), "QtAdapter loadMockHealthy succeeds");
+
+    auto* serviceModel = adapter.serviceModel();
+    expectTrue(serviceModel->rowCount() > 0, "ServiceListModel has rows");
+
+    const auto roles = serviceModel->roleNames();
+    expectTrue(
+        roles.contains(etfdt::shell::ShellDiagnosticServiceListModel::ServiceNameRole),
+        "ServiceListModel has serviceName role");
+    expectEqual(
+        std::string(roles.value(etfdt::shell::ShellDiagnosticServiceListModel::ServiceNameRole).constData()),
+        "serviceName",
+        "ServiceListModel serviceName role name");
+    expectTrue(
+        roles.contains(etfdt::shell::ShellDiagnosticServiceListModel::StatusSeverityRole),
+        "ServiceListModel has statusSeverity role");
+    expectTrue(
+        roles.contains(etfdt::shell::ShellDiagnosticServiceListModel::CanStartRole),
+        "ServiceListModel has canStart role");
+
+    const auto first = serviceModel->index(0, 0);
+    expectEqual(
+        serviceModel
+            ->data(first, etfdt::shell::ShellDiagnosticServiceListModel::ServiceNameRole)
+            .toString()
+            .toStdString(),
+        "ETFDataService",
+        "ServiceListModel serviceName data");
+    expectEqual(
+        serviceModel
+            ->data(first, etfdt::shell::ShellDiagnosticServiceListModel::StatusSeverityRole)
+            .toString()
+            .toStdString(),
+        "OK",
+        "ServiceListModel statusSeverity data");
+    expectTrue(
+        serviceModel
+            ->data(first, etfdt::shell::ShellDiagnosticServiceListModel::CanStartRole)
+            .toBool(),
+        "ServiceListModel canStart data");
+}
+
+void testQtIssueListModelRoles()
+{
+    etfdt::shell::ShellDiagnosticQtAdapter adapter;
+    expectTrue(adapter.loadMockHealthy(), "QtAdapter issue healthy load succeeds");
+    expectTrue(adapter.selectService(0), "QtAdapter selects healthy service");
+    expectEqual(adapter.issueModel()->rowCount(), 0, "IssueListModel empty for no issues");
+
+    expectTrue(adapter.loadMockWithWarnings(), "QtAdapter issue warning load succeeds");
+    expectTrue(adapter.selectService(0), "QtAdapter selects warning service");
+    auto* issueModel = adapter.issueModel();
+    expectTrue(issueModel->rowCount() > 0, "IssueListModel has warning issue");
+
+    const auto roles = issueModel->roleNames();
+    expectTrue(
+        roles.contains(etfdt::shell::ShellDiagnosticIssueListModel::LevelRole),
+        "IssueListModel has level role");
+    expectTrue(
+        roles.contains(etfdt::shell::ShellDiagnosticIssueListModel::DisplayTextRole),
+        "IssueListModel has displayText role");
+
+    const auto first = issueModel->index(0, 0);
+    expectEqual(
+        issueModel->data(first, etfdt::shell::ShellDiagnosticIssueListModel::LevelRole)
+            .toString()
+            .toStdString(),
+        "WARNING",
+        "IssueListModel level data");
+    expectTrue(
+        issueModel->data(first, etfdt::shell::ShellDiagnosticIssueListModel::SeverityRankRole)
+            .toInt()
+            > 0,
+        "IssueListModel severityRank data");
+}
+
+void testQtSummaryAndAdapter(const std::filesystem::path& tempDir)
+{
+    etfdt::shell::ShellDiagnosticQtAdapter adapter;
+    expectTrue(adapter.loadMockWithWarnings(), "QtAdapter warning load succeeds");
+    expectTrue(adapter.summaryObject()->ok(), "SummaryObject warning ok=true");
+    expectEqual(adapter.summaryObject()->totalServices(), 1, "SummaryObject totalServices");
+    expectEqual(adapter.summaryObject()->enabledServices(), 1, "SummaryObject enabledServices");
+    expectEqual(adapter.summaryObject()->warningCount(), 1, "SummaryObject warningCount");
+    expectEqual(adapter.summaryObject()->errorCount(), 0, "SummaryObject errorCount");
+
+    expectTrue(adapter.loadMockWithErrors(), "QtAdapter error load succeeds");
+    expectTrue(!adapter.summaryObject()->ok(), "SummaryObject error ok=false");
+    expectEqual(adapter.summaryObject()->errorCount(), 1, "SummaryObject error count");
+
+    expectTrue(adapter.loadMockMixed(), "QtAdapter mixed load succeeds");
+    expectEqual(adapter.serviceModel()->rowCount(), 4, "QtAdapter mixed rowCount");
+
+    etfdt::shell::ShellDiagnosticFilter blocked;
+    blocked.onlyBlocked = true;
+    adapter.setFilter(blocked);
+    expectEqual(adapter.serviceModel()->rowCount(), 1, "QtAdapter onlyBlocked rowCount");
+    expectEqual(
+        adapter.serviceModel()
+            ->data(adapter.serviceModel()->index(0, 0), etfdt::shell::ShellDiagnosticServiceListModel::ServiceNameRole)
+            .toString()
+            .toStdString(),
+        "ETFStrategyService",
+        "QtAdapter onlyBlocked service");
+
+    adapter.clearFilter();
+    etfdt::shell::ShellDiagnosticSort byName;
+    byName.sortKey = etfdt::shell::ShellDiagnosticSortKey::ServiceName;
+    adapter.setSort(byName);
+    expectEqual(
+        adapter.serviceModel()
+            ->data(adapter.serviceModel()->index(0, 0), etfdt::shell::ShellDiagnosticServiceListModel::ServiceNameRole)
+            .toString()
+            .toStdString(),
+        "ETFAlertService",
+        "QtAdapter sort by service name");
+
+    etfdt::shell::ShellDiagnosticSort bySeverity;
+    bySeverity.sortKey = etfdt::shell::ShellDiagnosticSortKey::Severity;
+    bySeverity.ascending = false;
+    adapter.setSort(bySeverity);
+    expectEqual(
+        adapter.serviceModel()
+            ->data(adapter.serviceModel()->index(0, 0), etfdt::shell::ShellDiagnosticServiceListModel::StatusSeverityRole)
+            .toString()
+            .toStdString(),
+        "ERROR",
+        "QtAdapter sort by severity");
+    expectTrue(adapter.selectService(0), "QtAdapter select error service");
+    expectTrue(adapter.issueModel()->rowCount() > 0, "QtAdapter selectService populates issues");
+
+    const auto reportPath = writeFile(tempDir, "qt_adapter_valid.json", validReportJson());
+    expectTrue(
+        adapter.loadFromFile(QString::fromStdString(reportPath.string())),
+        "QtAdapter loadFromFile valid succeeds");
+    expectEqual(adapter.serviceModel()->rowCount(), 1, "QtAdapter loadFromFile rowCount");
+
+    expectTrue(
+        !adapter.loadFromFile(QString::fromStdString((tempDir / "missing_qt_adapter.json").string())),
+        "QtAdapter loadFromFile missing fails");
+    expectTrue(!adapter.lastError().isEmpty(), "QtAdapter missing file lastError");
+
+    expectTrue(adapter.loadMockHealthy(), "QtAdapter refresh mock setup");
+    const auto refresh = adapter.refreshIfChanged();
+    expectTrue(!refresh.ok, "QtAdapter refreshIfChanged on mock returns failure");
+    expectTrue(!adapter.lastError().isEmpty(), "QtAdapter refresh mock lastError");
+}
+
 void testStates()
 {
     etfdt::shell::ShellDiagnosticFacade facade;
@@ -594,6 +747,9 @@ int main()
         testPresenterLoadAndState(tempDir);
         testPresenterFilterSortAggregate();
         testPresenterRefresh(tempDir);
+        testQtServiceListModelRoles();
+        testQtIssueListModelRoles();
+        testQtSummaryAndAdapter(tempDir);
         testStates();
         testFailures();
     } catch (const std::exception& ex) {

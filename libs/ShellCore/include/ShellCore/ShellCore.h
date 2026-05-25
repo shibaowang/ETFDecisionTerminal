@@ -1,8 +1,12 @@
 #pragma once
 
 #include "ShellCore/ShellDiagnosticFacade.h"
+#include "ShellCore/ShellDiagnosticIssueListModel.h"
 #include "ShellCore/ShellDiagnosticMockReportBuilder.h"
 #include "ShellCore/ShellDiagnosticPresenter.h"
+#include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellDiagnosticRows.h"
+#include "ShellCore/ShellDiagnosticServiceListModel.h"
+#include "ShellCore/ShellDiagnosticSummaryObject.h"
 #include "ShellCore/ShellDiagnosticTools.h"
 #include "ShellCore/ShellDiagnosticViewModel.h"

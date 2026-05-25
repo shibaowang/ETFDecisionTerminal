@@ -157,3 +157,10 @@ v0.1 草案。
 - Read-only facades must use explicit whitelist methods and must not expose arbitrary action forwarding.
 - Read-only facades must not call write actions such as `data.audit.append`.
 - Shell-side facades must not access SQLite directly or depend on DataAccess / DataServiceApi.
+
+## Shell Read-Only ViewModel Task Rules
+
+- UI read-only data models must obtain data through the Shell facade / controller layer, not directly through protocol clients.
+- QML must not call `DataServiceClient`, parse DataService payloads, or connect sockets directly.
+- Read-only ViewModels and controllers must not call write actions such as `data.audit.append`.
+- Controllers must expose explicit whitelist methods and must not provide arbitrary action forwarding to UI code.

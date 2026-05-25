@@ -158,3 +158,10 @@ v0.1 草案。
 - QML must not call `DataServiceClient` directly.
 - QML must not connect sockets or parse DataService responses directly.
 - TASK-029 does not connect QML to real data; the visible Shell UI remains mock / placeholder.
+
+## TASK-030 Read-Only Data ViewModels
+
+- Future account, portfolio, instrument, and strategy pages should bind ShellServices read-only list models instead of calling `DataServiceClient` directly.
+- `ShellReadOnlyDataController` is the C++ presenter boundary for loading health, summary, and list data through `ShellReadOnlyDataFacade`.
+- QML is still not connected to real DataService data in TASK-030.
+- QML must not connect sockets, call write actions, or parse DataService protocol payloads directly.

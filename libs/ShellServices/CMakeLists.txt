@@ -8,12 +8,14 @@ add_library(ETFShellServices STATIC
     include/ShellServices/ShellReadOnlyDataFacade.h
     include/ShellServices/ShellReadOnlyDataViewModel.h
     include/ShellServices/ShellReadOnlyListModels.h
+    include/ShellServices/ShellReadOnlyTableProxyModel.h
     include/ShellServices/ShellServices.h
     src/ShellDataConnectionObject.cpp
     src/ShellReadOnlyConnectionPresets.cpp
     src/ShellReadOnlyDataController.cpp
     src/ShellReadOnlyDataFacade.cpp
     src/ShellReadOnlyListModels.cpp
+    src/ShellReadOnlyTableProxyModel.cpp
 )
 
 add_library(ETFDecisionTerminal::ShellServices ALIAS ETFShellServices)

@@ -125,3 +125,5 @@ ETFDecisionTerminal/
 - OTC channel views must stay display-only unless a separate write-boundary task authorizes editing.
 - Read-only lists should use the shared readonly table, badge, and empty-state components unless a task explicitly requires a specialized layout.
 - Shared QML display components must not implement business calculations, service calls, database access, or write actions.
+- Read-only page filtering and sorting should be implemented in C++ model / proxy-model layers; QML should only collect filter input and display filtered rows.
+- Sortable table headers may emit sort requests, but they must not duplicate business data or perform service calls.

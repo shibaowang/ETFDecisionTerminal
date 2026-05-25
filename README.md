@@ -713,6 +713,13 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - The reusable components improve table headers, row spacing, empty states, status badges, and visible readonly boundaries.
 - These components are display-only: they do not connect sockets, access SQLite, call `DataServiceClient`, or expose edit / delete / accounting / trade / strategy execution controls.
 
+## TASK-040 Read-Only Page Filter / Sort
+
+- Account / portfolio / instrument / strategy / OTC lists now bind filtered proxy models exposed by `ShellReadOnlyDataController`.
+- `ShellReadOnlyTableProxyModel` provides display-only search, active / enabled filtering, and role-based sorting without calling DataService or writing SQLite.
+- `ReadOnlyTable` now supports sortable headers and stable column widths; `ReadOnlyFilterBar` provides search and status-filter input.
+- Account / portfolio and instrument / strategy pages remain read-only and still expose no edit, delete, accounting, trade, strategy execution, or TradeDraft controls.
+
 ## Current Milestone: v0.1 ReadOnly Shell Demo
 
 The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.

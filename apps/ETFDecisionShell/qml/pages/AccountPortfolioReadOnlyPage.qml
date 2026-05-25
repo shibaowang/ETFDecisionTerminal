@@ -223,14 +223,56 @@ Rectangle {
                 }
             }
 
-            AccountListView {
-                accountModel: root.readOnlyDataController.accountModel
+            ReadOnlyFilterBar {
+                objectName: "accountFilterBar"
                 width: parent.width
+                placeholderText: "Search account name, type, broker, currency"
+                showEnabledFilter: true
+                enabledOnlyText: "Active only"
+                onFilterTextChanged: function(text) {
+                    root.readOnlyDataController.setAccountSearchText(text)
+                }
+                onEnabledOnlyChangedByUser: function(enabledOnly) {
+                    root.readOnlyDataController.setAccountActiveOnly(enabledOnly)
+                }
+                onClearRequested: {
+                    root.readOnlyDataController.setAccountSearchText("")
+                    root.readOnlyDataController.setAccountActiveOnly(false)
+                }
+            }
+
+            AccountListView {
+                accountModel: root.readOnlyDataController.filteredAccountModel
+                width: parent.width
+                onSortRequested: function(key, ascending) {
+                    root.readOnlyDataController.sortAccounts(key, ascending)
+                }
+            }
+
+            ReadOnlyFilterBar {
+                objectName: "portfolioFilterBar"
+                width: parent.width
+                placeholderText: "Search portfolio name or base position ratio"
+                showEnabledFilter: true
+                enabledOnlyText: "Active only"
+                onFilterTextChanged: function(text) {
+                    root.readOnlyDataController.setPortfolioSearchText(text)
+                }
+                onEnabledOnlyChangedByUser: function(enabledOnly) {
+                    root.readOnlyDataController.setPortfolioActiveOnly(enabledOnly)
+                }
+                onClearRequested: {
+                    root.readOnlyDataController.setPortfolioSearchText("")
+                    root.readOnlyDataController.setPortfolioActiveOnly(false)
+                }
             }
 
             PortfolioListView {
-                portfolioModel: root.readOnlyDataController.portfolioModel
+                portfolioModel: root.readOnlyDataController.filteredPortfolioModel
                 width: parent.width
+                onSortRequested: function(key, ascending) {
+                    root.readOnlyDataController.sortPortfolios(key, ascending)
+                }
             }
         }
     }

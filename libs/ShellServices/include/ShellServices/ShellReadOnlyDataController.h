@@ -5,6 +5,7 @@
 #include "ShellServices/ShellReadOnlyDataFacade.h"
 #include "ShellServices/ShellReadOnlyDataViewModel.h"
 #include "ShellServices/ShellReadOnlyListModels.h"
+#include "ShellServices/ShellReadOnlyTableProxyModel.h"
 
 #include <QObject>
 #include <QAbstractItemModel>
@@ -24,6 +25,11 @@ class ShellReadOnlyDataController : public QObject {
     Q_PROPERTY(ShellInstrumentListModel* instrumentModel READ instrumentModel CONSTANT)
     Q_PROPERTY(ShellStrategyListModel* strategyModel READ strategyModel CONSTANT)
     Q_PROPERTY(ShellOtcChannelListModel* otcChannelModel READ otcChannelModel CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* filteredAccountModel READ filteredAccountItemModel CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* filteredPortfolioModel READ filteredPortfolioItemModel CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* filteredInstrumentModel READ filteredInstrumentItemModel CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* filteredStrategyModel READ filteredStrategyItemModel CONSTANT)
+    Q_PROPERTY(QAbstractItemModel* filteredOtcChannelModel READ filteredOtcChannelItemModel CONSTANT)
     Q_PROPERTY(QAbstractItemModel* connectionPresetModel READ connectionPresetItemModel CONSTANT)
     Q_PROPERTY(QString lastError READ lastErrorText NOTIFY lastErrorChanged)
     Q_PROPERTY(QString selectedPresetKey READ selectedPresetKey NOTIFY connectionPresetChanged)
@@ -81,6 +87,22 @@ public:
     Q_INVOKABLE [[nodiscard]] bool selectPreset(const QString& key);
     Q_INVOKABLE void setCustomSocketName(const QString& socketName);
     Q_INVOKABLE void setSelectedStrategyCode(const QString& strategyCode);
+    Q_INVOKABLE void setAccountSearchText(const QString& text);
+    Q_INVOKABLE void setPortfolioSearchText(const QString& text);
+    Q_INVOKABLE void setInstrumentSearchText(const QString& text);
+    Q_INVOKABLE void setStrategySearchText(const QString& text);
+    Q_INVOKABLE void setOtcSearchText(const QString& text);
+    Q_INVOKABLE void setAccountActiveOnly(bool activeOnly);
+    Q_INVOKABLE void setPortfolioActiveOnly(bool activeOnly);
+    Q_INVOKABLE void setInstrumentEnabledOnly(bool enabledOnly);
+    Q_INVOKABLE void setStrategyEnabledOnly(bool enabledOnly);
+    Q_INVOKABLE void setOtcEnabledOnly(bool enabledOnly);
+    Q_INVOKABLE bool sortAccounts(const QString& key, bool ascending);
+    Q_INVOKABLE bool sortPortfolios(const QString& key, bool ascending);
+    Q_INVOKABLE bool sortInstruments(const QString& key, bool ascending);
+    Q_INVOKABLE bool sortStrategies(const QString& key, bool ascending);
+    Q_INVOKABLE bool sortOtcChannels(const QString& key, bool ascending);
+    Q_INVOKABLE void clearReadonlyFilters();
 
     [[nodiscard]] ShellDataConnectionObject* connectionObject();
     [[nodiscard]] const ShellReadOnlyDataViewModel& summaryViewModel() const noexcept;
@@ -90,6 +112,16 @@ public:
     [[nodiscard]] ShellInstrumentListModel* instrumentModel();
     [[nodiscard]] ShellStrategyListModel* strategyModel();
     [[nodiscard]] ShellOtcChannelListModel* otcChannelModel();
+    [[nodiscard]] QAbstractItemModel* filteredAccountItemModel();
+    [[nodiscard]] QAbstractItemModel* filteredPortfolioItemModel();
+    [[nodiscard]] QAbstractItemModel* filteredInstrumentItemModel();
+    [[nodiscard]] QAbstractItemModel* filteredStrategyItemModel();
+    [[nodiscard]] QAbstractItemModel* filteredOtcChannelItemModel();
+    [[nodiscard]] ShellReadOnlyTableProxyModel* filteredAccountModel();
+    [[nodiscard]] ShellReadOnlyTableProxyModel* filteredPortfolioModel();
+    [[nodiscard]] ShellReadOnlyTableProxyModel* filteredInstrumentModel();
+    [[nodiscard]] ShellReadOnlyTableProxyModel* filteredStrategyModel();
+    [[nodiscard]] ShellReadOnlyTableProxyModel* filteredOtcChannelModel();
     [[nodiscard]] QAbstractItemModel* connectionPresetItemModel();
     [[nodiscard]] ShellReadOnlyConnectionPresetModel* connectionPresetModel();
     [[nodiscard]] const std::string& lastError() const noexcept;
@@ -145,6 +177,7 @@ private:
     void clearError();
     void notifySummaryChanged();
     void scheduleCanRefreshUpdate();
+    [[nodiscard]] QString roleNameForSortKey(const QString& modelName, const QString& key) const;
 
     ShellReadOnlyDataFacade facade_;
     ShellDataConnectionObject connection_;
@@ -154,6 +187,11 @@ private:
     ShellInstrumentListModel instruments_;
     ShellStrategyListModel strategies_;
     ShellOtcChannelListModel otcChannels_;
+    ShellReadOnlyTableProxyModel filteredAccounts_;
+    ShellReadOnlyTableProxyModel filteredPortfolios_;
+    ShellReadOnlyTableProxyModel filteredInstruments_;
+    ShellReadOnlyTableProxyModel filteredStrategies_;
+    ShellReadOnlyTableProxyModel filteredOtcChannels_;
     ShellReadOnlyConnectionPresetModel connectionPresets_;
     std::string lastError_;
     QString selectedPresetKey_ = QStringLiteral("readonly_default");

@@ -12,12 +12,12 @@ ReadOnlyTable {
     emptyTitle: "暂无账户数据"
     emptyMessage: "连接只读 DataService 后刷新账户列表。"
     columns: [
-        {"title": "Name", "width": 190},
-        {"title": "Type", "width": 100},
-        {"title": "Broker", "width": 140},
-        {"title": "Currency", "width": 90},
-        {"title": "Status", "width": 96},
-        {"title": "Initial cash", "width": 130}
+        {"key": "name", "title": "Name", "width": 190, "sortable": true},
+        {"key": "type", "title": "Type", "width": 100, "sortable": true},
+        {"key": "broker", "title": "Broker", "width": 140, "sortable": false},
+        {"key": "currency", "title": "Currency", "width": 90, "sortable": false},
+        {"key": "status", "title": "Status", "width": 96, "sortable": true},
+        {"key": "amount", "title": "Initial cash", "width": 130, "alignment": Text.AlignRight, "sortable": true}
     ]
     rowCount: accountList.count
 
@@ -31,7 +31,7 @@ ReadOnlyTable {
 
         delegate: Rectangle {
             width: accountList.width
-            height: 40
+            height: root.rowHeight
             radius: 6
             color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
             border.color: "#edf1f5"

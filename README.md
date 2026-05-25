@@ -728,6 +728,17 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - Account / portfolio and instrument / strategy pages remain read-only and still expose no edit, delete, accounting, trade, strategy execution, or TradeDraft controls.
 - Column visibility and density changes do not call DataService, do not write SQLite, and do not mutate source models.
 
+## TASK-042 Read-Only Business Pages Acceptance
+
+- v0.2 ReadOnly Business Pages acceptance now has a manual checklist for account / portfolio, instrument / strategy, and read-only data preview pages.
+- Current read-only business pages include:
+  - Account and portfolio read-only page.
+  - Instrument and strategy read-only page.
+  - Filtering / sorting / column visibility / density switching.
+- The acceptance checklist is documented in [Manual Acceptance - ReadOnly Business Pages](docs/16_manual_acceptance_readonly_business_pages.md).
+- UI readability rules are documented in [UI Readability Checklist](docs/17_ui_readability_checklist.md).
+- These pages remain read-only and still do not support writes, trading, accounting entry, strategy execution, TradeDraft generation, or direct QML access to `DataServiceClient` / SQLite.
+
 ## Current Milestone: v0.1 ReadOnly Shell Demo
 
 The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.
@@ -740,6 +751,8 @@ Milestone documents:
 - [Manual Acceptance - ReadOnly Shell](docs/13_manual_acceptance_readonly_shell.md)
 - [Milestone - v0.1 ReadOnly Shell Demo](docs/14_milestone_v0_1_readonly_shell_demo.md)
 - [Release Notes - v0.1 ReadOnly Shell Demo](docs/release_notes/v0_1_readonly_shell_demo.md)
+- [Manual Acceptance - ReadOnly Business Pages](docs/16_manual_acceptance_readonly_business_pages.md)
+- [UI Readability Checklist](docs/17_ui_readability_checklist.md)
 - [Documentation Index](docs/README.md)
 
 Run tests:

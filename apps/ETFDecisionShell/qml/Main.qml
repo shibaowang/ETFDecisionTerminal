@@ -16,6 +16,7 @@ Window {
         objectName: "appShell"
         anchors.fill: parent
         diagnosticAdapter: diagnosticAdapter
+        readOnlyDataController: readOnlyDataController
         navigationController: shellNavigationController
         statusController: shellStatusController
     }

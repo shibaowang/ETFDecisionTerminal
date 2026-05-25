@@ -3,6 +3,7 @@ import QtQuick
 Item {
     id: root
     required property var diagnosticAdapter
+    required property var readOnlyDataController
     required property var navigationController
     required property var statusController
     property string currentPageKey: navigationController.currentPageKey
@@ -75,6 +76,7 @@ Item {
         pageQmlComponent: root.navigationController.currentPageQmlComponent
         pagePlaceholder: root.navigationController.currentPagePlaceholder
         diagnosticAdapter: root.diagnosticAdapter
+        readOnlyDataController: root.readOnlyDataController
         metricsModel: root.statusController.metricsModel
         actionHintModel: root.statusController.actionHintModel
     }

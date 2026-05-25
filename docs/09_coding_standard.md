@@ -90,3 +90,11 @@ ETFDecisionTerminal/
 - QML must not calculate business metrics, trading state, cash state, or strategy state.
 - Mock metrics and mock action hints must be visibly labeled and must not be executable.
 - Future real metrics require an explicit task that authorizes the data source and service boundary.
+
+## Shell Read-Only Data Binding Rules
+
+- QML must call only authorized C++ controllers for real read-only data.
+- QML must not call `DataServiceClient` directly.
+- QML must not call write actions, including `data.audit.append`.
+- QML must not parse DataService protocol payloads directly; Controller / Model layers own parsing and error state.
+- Read-only prototype pages must be visibly labeled and must not expose edit, trade, accounting, or strategy controls.

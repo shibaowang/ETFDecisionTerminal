@@ -10,6 +10,7 @@ Rectangle {
     required property string pageQmlComponent
     required property bool pagePlaceholder
     required property var diagnosticAdapter
+    required property var readOnlyDataController
     required property var metricsModel
     required property var actionHintModel
 
@@ -22,6 +23,8 @@ Rectangle {
         anchors.margins: 14
         sourceComponent: root.pageQmlComponent === "DiagnosticsMockPage"
             ? diagnosticsPage
+            : root.pageQmlComponent === "ReadOnlyDataPage"
+                ? readOnlyDataPage
             : root.pageQmlComponent === "DashboardPlaceholderPage"
                 ? dashboardPage
                 : placeholderPage
@@ -41,6 +44,14 @@ Rectangle {
             objectName: "dashboardPlaceholderPage"
             metricsModel: root.metricsModel
             actionHintModel: root.actionHintModel
+        }
+    }
+
+    Component {
+        id: readOnlyDataPage
+        ReadOnlyDataPage {
+            objectName: "readOnlyDataPage"
+            readOnlyDataController: root.readOnlyDataController
         }
     }
 

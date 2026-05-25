@@ -2,6 +2,7 @@
 #include "ShellCore/ShellDiagnosticServiceListModel.h"
 #include "ShellCore/ShellNavigationController.h"
 #include "ShellCore/ShellStatusController.h"
+#include "ShellServices/ShellReadOnlyDataController.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -67,22 +68,31 @@ int main(int argc, char* argv[])
         1,
         0,
         "ShellNavigationController");
+    qmlRegisterType<etfdt::shell_services::ShellReadOnlyDataController>(
+        "ETFDecisionTerminal.Shell",
+        1,
+        0,
+        "ShellReadOnlyDataController");
 
     etfdt::shell::ShellDiagnosticQtAdapter adapter;
     etfdt::shell::ShellNavigationController navigationController;
     etfdt::shell::ShellStatusController statusController;
+    etfdt::shell_services::ShellReadOnlyDataController readOnlyDataController;
     expectTrue(adapter.loadMockMixed(), "adapter loadMockMixed succeeds");
     expectTrue(adapter.serviceModel()->rowCount() > 0, "adapter serviceModel has rows");
     expectTrue(adapter.selectService(0), "adapter selectService does not fail");
     expectTrue(adapter.summaryObject()->totalServices() > 0, "summaryObject has totalServices");
-    expectEqual(navigationController.navigationModel()->rowCount(), 13, "navigation model has 13 rows");
+    expectEqual(navigationController.navigationModel()->rowCount(), 14, "navigation model has 14 rows");
     expectTrue(statusController.metricsModel()->rowCount() >= 4, "status metrics model has dashboard rows");
     expectTrue(statusController.actionHintModel()->rowCount() > 0, "status action hint model has rows");
+    expectTrue(readOnlyDataController.connectionObject() != nullptr, "read-only controller has connection object");
+    expectTrue(readOnlyDataController.accountModel() != nullptr, "read-only controller has account model");
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("diagnosticAdapter", &adapter);
     engine.rootContext()->setContextProperty("shellNavigationController", &navigationController);
     engine.rootContext()->setContextProperty("shellStatusController", &statusController);
+    engine.rootContext()->setContextProperty("readOnlyDataController", &readOnlyDataController);
 
     const std::filesystem::path mainQmlPath = std::filesystem::path(ETFDT_SHELL_QML_DIR) / "Main.qml";
     expectTrue(std::filesystem::exists(mainQmlPath), "Main.qml exists");
@@ -154,6 +164,27 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("placeholderMetricGrid") != nullptr,
             "PlaceholderPage metric grid is loaded");
+
+        invoked = navigationController.selectPage(QStringLiteral("readonly_data"));
+        processQmlEvents();
+        expectTrue(invoked, "navigateTo readonly_data succeeds");
+        expectEqual(navigationController.currentPageKey(), "readonly_data", "current page is readonly_data");
+        expectEqual(
+            contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
+            "ReadOnlyDataPage",
+            "ContentHost receives readonly qml component");
+        expectTrue(
+            appShell->findChild<QObject*>("readOnlyDataPage") != nullptr,
+            "ReadOnlyDataPage is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("readonlyDataGrid") != nullptr,
+            "ReadOnlyDataPage data grid is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountListView") != nullptr,
+            "ReadOnlyDataPage account model binding exists");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentListView") != nullptr,
+            "ReadOnlyDataPage instrument model binding exists");
     }
 
     return gFailures == 0 ? 0 : 1;

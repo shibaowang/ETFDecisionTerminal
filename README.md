@@ -603,6 +603,25 @@ build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 - It does not call `data.audit.append` or any write action, and it does not access SQLite directly.
 - TASK-030 does not connect QML to real data; future QML integration must bind these models through an explicitly authorized task.
 
+## TASK-031 Shell Read-Only Data Page Prototype
+
+- ETFDecisionShell now includes a development-only `ReadOnlyDataPage.qml` under the `readonly_data` navigation key.
+- The page binds `ShellReadOnlyDataController` plus account / portfolio / instrument / strategy list models; QML does not call `DataServiceClient` directly.
+- The page can connect to a configured local socket, refresh all read-only lists, and disconnect.
+- It is read-only: no `data.audit.append`, no write action, no SQLite access from QML, and no business table writes.
+
+Start a read-only DataService for manual testing:
+
+```powershell
+build\apps\ETFDataService\Debug\ETFDataService.exe --serve-readonly --db data\ETFDecision.db --socket-name ETFDataServiceReadonly
+```
+
+Run the Shell:
+
+```powershell
+build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
+```
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

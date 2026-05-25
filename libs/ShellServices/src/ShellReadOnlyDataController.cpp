@@ -7,6 +7,7 @@
 #include <QJsonParseError>
 #include <QString>
 #include <QVariant>
+#include <QVariantMap>
 
 #include <optional>
 #include <sstream>
@@ -176,6 +177,11 @@ ShellDataResult<bool> ShellReadOnlyDataController::connectToDataService(
     return ShellDataResult<bool>::success(true);
 }
 
+bool ShellReadOnlyDataController::connectToDataService(const QString& socketName)
+{
+    return connectToDataService(socketName.toStdString(), 2000).hasValue();
+}
+
 void ShellReadOnlyDataController::disconnect()
 {
     facade_.disconnect();
@@ -197,6 +203,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshHealth(int timeoutMs)
     summary_.healthy = object.has_value() && object->value("healthy").toBool(false);
     connection_.setHealthy(summary_.healthy);
     clearLastError();
+    notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
@@ -212,6 +219,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshSummary(int timeoutMs)
 
     summary_.summaryText = summaryTextFromPayload(result.value().payloadJson);
     clearLastError();
+    notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
@@ -228,6 +236,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshAccounts(int timeoutMs
     summary_.accountCount = static_cast<int>(rows.size());
     accounts_.setRows(std::move(rows));
     clearLastError();
+    notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
@@ -244,6 +253,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshPortfolios(int timeout
     summary_.portfolioCount = static_cast<int>(rows.size());
     portfolios_.setRows(std::move(rows));
     clearLastError();
+    notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
@@ -260,6 +270,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshInstruments(int timeou
     summary_.instrumentCount = static_cast<int>(rows.size());
     instruments_.setRows(std::move(rows));
     clearLastError();
+    notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
@@ -276,6 +287,7 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshStrategies(int timeout
     summary_.strategyCount = static_cast<int>(rows.size());
     strategies_.setRows(std::move(rows));
     clearLastError();
+    notifySummaryChanged();
     return ShellDataResult<bool>::success(true);
 }
 
@@ -299,6 +311,41 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshAll(int timeoutMs)
     return refreshStrategies(timeoutMs);
 }
 
+bool ShellReadOnlyDataController::refreshHealth()
+{
+    return refreshHealth(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshSummary()
+{
+    return refreshSummary(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshAccounts()
+{
+    return refreshAccounts(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshPortfolios()
+{
+    return refreshPortfolios(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshInstruments()
+{
+    return refreshInstruments(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshStrategies()
+{
+    return refreshStrategies(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshAll()
+{
+    return refreshAll(2000).hasValue();
+}
+
 ShellDataConnectionObject* ShellReadOnlyDataController::connectionObject()
 {
     return &connection_;
@@ -307,6 +354,19 @@ ShellDataConnectionObject* ShellReadOnlyDataController::connectionObject()
 const ShellReadOnlyDataViewModel& ShellReadOnlyDataController::summaryViewModel() const noexcept
 {
     return summary_;
+}
+
+QVariantMap ShellReadOnlyDataController::summaryViewModelMap() const
+{
+    return {
+        {QStringLiteral("healthy"), summary_.healthy},
+        {QStringLiteral("summaryText"), QString::fromStdString(summary_.summaryText)},
+        {QStringLiteral("accountCount"), summary_.accountCount},
+        {QStringLiteral("portfolioCount"), summary_.portfolioCount},
+        {QStringLiteral("instrumentCount"), summary_.instrumentCount},
+        {QStringLiteral("strategyCount"), summary_.strategyCount},
+        {QStringLiteral("lastError"), QString::fromStdString(summary_.lastError)},
+    };
 }
 
 ShellAccountListModel* ShellReadOnlyDataController::accountModel()
@@ -334,6 +394,11 @@ const std::string& ShellReadOnlyDataController::lastError() const noexcept
     return lastError_;
 }
 
+QString ShellReadOnlyDataController::lastErrorText() const
+{
+    return QString::fromStdString(lastError_);
+}
+
 ShellDataResult<bool> ShellReadOnlyDataController::failureFromResponse(
     const ShellDataResponse& response,
     const char* fallbackMessage)
@@ -355,12 +420,25 @@ void ShellReadOnlyDataController::setLastError(std::string message)
     lastError_ = std::move(message);
     summary_.lastError = lastError_;
     connection_.setLastError(lastError_);
+    emit lastErrorChanged();
+    notifySummaryChanged();
 }
 
 void ShellReadOnlyDataController::clearLastError()
 {
+    if (lastError_.empty() && summary_.lastError.empty()) {
+        return;
+    }
     lastError_.clear();
     summary_.lastError.clear();
+    connection_.setLastError({});
+    emit lastErrorChanged();
+    notifySummaryChanged();
+}
+
+void ShellReadOnlyDataController::notifySummaryChanged()
+{
+    emit summaryChanged();
 }
 
 }  // namespace etfdt::shell_services

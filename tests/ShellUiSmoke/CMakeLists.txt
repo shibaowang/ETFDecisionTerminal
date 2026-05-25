@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Core Gui Qml Quick REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Qml Quick QuickControls2 REQUIRED)
 
 add_executable(ShellUiSmokeTests
     test_shell_ui_smoke.cpp
@@ -7,10 +7,12 @@ add_executable(ShellUiSmokeTests
 target_link_libraries(ShellUiSmokeTests
     PRIVATE
         ETFDecisionTerminal::ShellCore
+        ETFDecisionTerminal::ShellServices
         Qt6::Core
         Qt6::Gui
         Qt6::Qml
         Qt6::Quick
+        Qt6::QuickControls2
 )
 
 target_compile_features(ShellUiSmokeTests PRIVATE cxx_std_17)

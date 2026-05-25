@@ -26,6 +26,17 @@ ShellPageStatus makeStatus(const ShellPageMetadata& metadata)
         return status;
     }
 
+    if (metadata.key == "readonly_data") {
+        status.moduleStatus = "READY";
+        status.dataMode = "REAL_DATA_PENDING";
+        status.connectionStatus = "NOT_CONNECTED";
+        status.warningCount = 0;
+        status.errorCount = 0;
+        status.statusText = "Read-only prototype";
+        status.detailText = "This page can connect through ShellServices to DataService read-only actions only.";
+        return status;
+    }
+
     status.moduleStatus = "PLACEHOLDER";
     status.dataMode = "NO_DATA";
     status.connectionStatus = "NOT_CONNECTED";

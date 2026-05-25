@@ -165,3 +165,11 @@ v0.1 草案。
 - `ShellReadOnlyDataController` is the C++ presenter boundary for loading health, summary, and list data through `ShellReadOnlyDataFacade`.
 - QML is still not connected to real DataService data in TASK-030.
 - QML must not connect sockets, call write actions, or parse DataService protocol payloads directly.
+
+## TASK-031 Read-Only Data Prototype Page
+
+- `ReadOnlyDataPage.qml` is a development-only read-only preview page.
+- It displays connection state, health / summary counts, accounts, portfolios, instruments, and strategies.
+- QML binds `ShellReadOnlyDataController` and the ShellServices list models; it does not call `DataServiceClient` directly.
+- The page must show connection errors instead of faking successful data.
+- The page provides no edit, trade, accounting, strategy, audit append, or write controls.

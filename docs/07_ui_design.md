@@ -143,3 +143,11 @@ v0.1 草案。
 - `RightInfoPanel` displays current page detail text and placeholder flags from `ShellPageInfoObject`.
 - `BottomLogPanel` displays mock log rows from `ShellMockLogModel`.
 - QML does not infer business state; it only binds C++ model properties and rows.
+
+## TASK-028 Mock Metrics
+
+- Dashboard placeholder pages display mock metric cards from `ShellPageMetricModel`.
+- `RightInfoPanel` displays the current page's mock metric summary and non-executable action hints.
+- Action hints are presentation-only; they do not execute commands or call services.
+- QML must not compute business metrics directly; metrics and hints come from ShellCore C++ models.
+- Current metrics are explicitly mock / placeholder data and do not access SQLite.

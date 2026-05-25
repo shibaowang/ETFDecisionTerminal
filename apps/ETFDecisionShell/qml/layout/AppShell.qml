@@ -58,6 +58,8 @@ Item {
         anchors.bottom: bottomLogPanel.top
         width: 280
         pageInfo: root.statusController.pageInfo
+        metricsModel: root.statusController.metricsModel
+        actionHintModel: root.statusController.actionHintModel
     }
 
     ContentHost {
@@ -73,6 +75,8 @@ Item {
         pageQmlComponent: root.navigationController.currentPageQmlComponent
         pagePlaceholder: root.navigationController.currentPagePlaceholder
         diagnosticAdapter: root.diagnosticAdapter
+        metricsModel: root.statusController.metricsModel
+        actionHintModel: root.statusController.actionHintModel
     }
 
     BottomLogPanel {

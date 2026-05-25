@@ -821,6 +821,83 @@ void testShellMockLogModel()
         "MockLogModel appended message");
 }
 
+void testShellPageMockMetrics()
+{
+    etfdt::shell::ShellPageMetricModel metricModel;
+    const auto roles = metricModel.roleNames();
+    expectTrue(roles.contains(etfdt::shell::ShellPageMetricModel::LabelRole), "MetricModel has label role");
+    expectTrue(roles.contains(etfdt::shell::ShellPageMetricModel::ValueTextRole), "MetricModel has valueText role");
+    expectTrue(roles.contains(etfdt::shell::ShellPageMetricModel::SeverityRole), "MetricModel has severity role");
+    expectTrue(roles.contains(etfdt::shell::ShellPageMetricModel::MockRole), "MetricModel has mock role");
+    expectEqual(
+        std::string(roles.value(etfdt::shell::ShellPageMetricModel::LabelRole).constData()),
+        "label",
+        "MetricModel label role name");
+
+    metricModel.setMetrics(etfdt::shell::ShellMockMetricsProvider::metricsForPage(QStringLiteral("dashboard")));
+    expectTrue(metricModel.rowCount() >= 4, "dashboard metrics has at least four rows");
+    const auto firstMetric = metricModel.index(0, 0);
+    expectTrue(
+        metricModel.data(firstMetric, etfdt::shell::ShellPageMetricModel::MockRole).toBool(),
+        "dashboard metric is mock");
+    expectTrue(
+        !metricModel.data(firstMetric, etfdt::shell::ShellPageMetricModel::LabelRole).toString().isEmpty(),
+        "dashboard metric label is non-empty");
+
+    etfdt::shell::ShellPageActionHintModel hintModel;
+    const auto hintRoles = hintModel.roleNames();
+    expectTrue(hintRoles.contains(etfdt::shell::ShellPageActionHintModel::TitleRole), "ActionHintModel has title role");
+    expectTrue(hintRoles.contains(etfdt::shell::ShellPageActionHintModel::SeverityRole), "ActionHintModel has severity role");
+    expectTrue(hintRoles.contains(etfdt::shell::ShellPageActionHintModel::EnabledRole), "ActionHintModel has enabled role");
+    expectTrue(hintRoles.contains(etfdt::shell::ShellPageActionHintModel::MockRole), "ActionHintModel has mock role");
+    expectEqual(
+        std::string(hintRoles.value(etfdt::shell::ShellPageActionHintModel::TitleRole).constData()),
+        "title",
+        "ActionHintModel title role name");
+
+    hintModel.setHints(etfdt::shell::ShellMockMetricsProvider::actionHintsForPage(QStringLiteral("dashboard")));
+    expectTrue(hintModel.rowCount() > 0, "dashboard hints has rows");
+    const auto firstHint = hintModel.index(0, 0);
+    expectTrue(
+        hintModel.data(firstHint, etfdt::shell::ShellPageActionHintModel::MockRole).toBool(),
+        "dashboard hint is mock");
+    expectTrue(
+        !hintModel.data(firstHint, etfdt::shell::ShellPageActionHintModel::EnabledRole).toBool(),
+        "dashboard hint is not executable");
+
+    const auto diagnosticsMetrics =
+        etfdt::shell::ShellMockMetricsProvider::metricsForPage(QStringLiteral("diagnostics"));
+    expectTrue(static_cast<int>(diagnosticsMetrics.size()) >= 3, "diagnostics metrics has at least three rows");
+    const auto placeholderMetrics =
+        etfdt::shell::ShellMockMetricsProvider::metricsForPage(QStringLiteral("market"));
+    expectTrue(!placeholderMetrics.empty(), "placeholder page has mock metrics");
+    for (const auto& metric : placeholderMetrics) {
+        expectTrue(metric.mock, "placeholder metric is marked mock");
+    }
+}
+
+void testShellStatusControllerMetrics()
+{
+    etfdt::shell::ShellStatusController controller;
+    expectTrue(controller.metricsModel() != nullptr, "StatusController has metrics model");
+    expectTrue(controller.actionHintModel() != nullptr, "StatusController has action hint model");
+    expectTrue(controller.metricsModel()->rowCount() >= 4, "default dashboard metrics populated");
+    expectTrue(controller.actionHintModel()->rowCount() > 0, "default dashboard hints populated");
+
+    expectTrue(controller.updateCurrentPageStatus(QStringLiteral("diagnostics")), "StatusController metrics updates diagnostics");
+    expectTrue(controller.metricsModel()->rowCount() >= 3, "diagnostics metrics populated");
+    expectTrue(controller.actionHintModel()->rowCount() > 0, "diagnostics hints populated");
+
+    expectTrue(controller.updateCurrentPageStatus(QStringLiteral("market")), "StatusController metrics updates placeholder");
+    expectTrue(controller.metricsModel()->rowCount() >= 1, "placeholder metrics populated");
+    const auto firstMetric = controller.metricsModel()->index(0, 0);
+    expectTrue(
+        controller.metricsModel()
+            ->data(firstMetric, etfdt::shell::ShellPageMetricModel::MockRole)
+            .toBool(),
+        "placeholder status controller metric is mock");
+}
+
 void testStates()
 {
     etfdt::shell::ShellDiagnosticFacade facade;
@@ -897,6 +974,8 @@ int main()
         testShellPageStatusModel();
         testShellPageInfoAndStatusController();
         testShellMockLogModel();
+        testShellPageMockMetrics();
+        testShellStatusControllerMetrics();
         testStates();
         testFailures();
     } catch (const std::exception& ex) {

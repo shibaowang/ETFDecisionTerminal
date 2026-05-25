@@ -573,6 +573,20 @@ build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
 - `TopStatusBar.qml`, `RightInfoPanel.qml`, and `BottomLogPanel.qml` now bind C++ ShellCore mock models.
 - The UI still does not access SQLite, connect sockets, start services, or implement business logic.
 
+## TASK-028 Shell Page Mock Metrics
+
+- `ShellPageMetricModel` exposes page-level mock metric rows to QML.
+- `ShellPageActionHintModel` exposes non-executable mock action hints to QML.
+- `ShellMockMetricsProvider` supplies mock metrics and hints by Shell page key.
+- The dashboard placeholder and right-side information panel now bind ShellCore metrics / hints.
+- All TASK-028 metrics are mock / placeholder data; no real service, socket, or SQLite access is performed.
+
+Run the Shell mock:
+
+```powershell
+build\apps\ETFDecisionShell\Debug\ETFDecisionShell.exe --diagnostics-mock
+```
+
 ## 当前尚未实现
 
 - 未实现真实策略计算、六档狙击、底仓保护、TradeDraft 生命周期。

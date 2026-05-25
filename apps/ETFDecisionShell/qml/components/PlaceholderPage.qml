@@ -5,6 +5,8 @@ Rectangle {
     required property string title
     required property string moduleName
     property string description: "当前为占位 Mock，业务功能尚未接入。"
+    property var metricsModel: null
+    property var actionHintModel: null
 
     radius: 8
     color: "#ffffff"
@@ -53,6 +55,28 @@ Rectangle {
             color: "#667086"
             font.pixelSize: 13
             lineHeight: 1.35
+        }
+
+        Grid {
+            objectName: "placeholderMetricGrid"
+            width: parent.width
+            columns: Math.max(1, Math.floor(width / 210))
+            columnSpacing: 12
+            rowSpacing: 12
+            visible: root.metricsModel !== null
+
+            Repeater {
+                model: root.metricsModel
+                MetricCard {
+                    label: model.label
+                    valueText: model.valueText
+                    unitText: model.unitText
+                    trendText: model.trendText
+                    severity: model.severity
+                    mock: model.mock
+                    description: model.description
+                }
+            }
         }
     }
 }

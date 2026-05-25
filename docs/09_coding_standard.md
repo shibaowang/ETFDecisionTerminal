@@ -83,3 +83,10 @@ ETFDecisionTerminal/
 - UI state should come from C++ ShellCore models.
 - QML must not derive business status or service health by itself.
 - Mock / placeholder status must be visibly labeled as mock data.
+
+## Shell Metrics Binding Rules
+
+- UI metrics should come from C++ ShellCore models.
+- QML must not calculate business metrics, trading state, cash state, or strategy state.
+- Mock metrics and mock action hints must be visibly labeled and must not be executable.
+- Future real metrics require an explicit task that authorizes the data source and service boundary.

@@ -38,6 +38,13 @@
   error, and mixed mock data.
 - QML remains presentation-only: filtering calls C++ adapter methods, QML does
   not parse JSON, and QML does not access databases or services.
+- TASK-025 introduces the terminal shell layout: top status bar, side
+  navigation, content host, right info panel, and bottom log / alert panel.
+- The navigation contains dashboard, market, account / portfolio, positions,
+  strategy, TradeDraft, confirmation, TradeLog, cash plan, OTC A/C channel,
+  alerts, diagnostics, and settings.
+- Diagnostics is the only mock-data page; all other modules are clearly marked
+  placeholder mock pages.
 
 ## 当前状态
 

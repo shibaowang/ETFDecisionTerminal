@@ -70,3 +70,5 @@ ETFDecisionTerminal/
 - QML must not access SQLite, connect sockets, start services, or implement strategy / accounting / TradeLog / TradeDraft logic.
 - Filtering and sorting should call C++ adapter / presenter methods.
 - Mock data must be labeled as mock / demo data and must not be presented as real service state.
+- QML pages must clearly label mock / placeholder state when no real service is connected.
+- Business logic must remain in C++ service / domain layers, not in QML.

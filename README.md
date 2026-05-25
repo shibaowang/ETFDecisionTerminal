@@ -100,6 +100,22 @@ connect to Watchdog or DataService, does not access SQLite, and does not start
 services. TASK-024 requires Qt Core / Gui / Qml / Quick / QuickControls2 from
 the configured Qt installation.
 
+## TASK-025 Shell layout and navigation mock
+
+`ETFDecisionShell` now has a mock terminal frame for future pages:
+
+- `TopStatusBar` for application name, page title, and mock service status.
+- `SideNavigation` for module routing.
+- `ContentHost` for the current page.
+- `RightInfoPanel` for mock contextual information.
+- `BottomLogPanel` for mock logs / alerts.
+
+Only Diagnostics Center is backed by mock model data. Dashboard, market,
+account/portfolio, positions, strategy, TradeDraft, confirmation, TradeLog, cash
+plan, OTC channel, alerts, and settings are placeholders. The shell still does
+not connect to real services, access SQLite, start processes, or implement
+business logic.
+
 Generate a Watchdog report:
 
 ```powershell

@@ -30,6 +30,9 @@
   connect services unless explicitly authorized, and must not parse complex JSON
   directly.
 - QML filtering / sorting should delegate to C++ Presenter / Adapter methods.
+- UI page tasks must explicitly state whether real data access is allowed.
+- By default, UI tasks may use only mock / placeholder data unless the task
+  authorizes service or database integration.
 
 ## 当前状态
 

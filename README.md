@@ -69,6 +69,20 @@ Mock reports are only for tests and future UI prototypes. They are not real
 service state. TASK-022 does not add QML, access SQLite, start services, connect
 Local Socket, or add business logic.
 
+## TASK-023 Shell diagnostics Qt model adapter
+
+`ShellDiagnosticQtAdapter` adapts the existing presenter ViewModel into Qt Core
+binding surfaces for a future Shell diagnostics page. It provides:
+
+- `ShellDiagnosticServiceListModel` for service rows.
+- `ShellDiagnosticIssueListModel` for selected service issues.
+- `ShellDiagnosticSummaryObject` for summary counters and text.
+
+The adapter can load mock healthy / warning / error / mixed reports, load report
+files, apply filter / sort settings through `ShellDiagnosticPresenter`, select a
+service, and refresh file-backed reports. It does not add QML, access SQLite,
+start services, connect Local Socket, or add business logic.
+
 Generate a Watchdog report:
 
 ```powershell

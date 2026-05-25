@@ -22,6 +22,10 @@
   sockets, or implement trading / strategy behavior.
 - Mock data must be clearly scoped to tests or UI prototypes and must not be
   presented as real service state.
+- UI Model Adapter tasks must reuse Presenter / ViewModel data and must not
+  parse raw Watchdog JSON directly.
+- Qt adapters may use Qt Core model classes only when explicitly allowed; QML /
+  Qt Quick remains out of scope unless a task explicitly authorizes it.
 
 ## 当前状态
 

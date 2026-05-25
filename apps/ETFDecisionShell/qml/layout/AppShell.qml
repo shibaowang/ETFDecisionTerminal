@@ -3,34 +3,11 @@ import QtQuick
 Item {
     id: root
     required property var diagnosticAdapter
-    property string currentPageKey: "dashboard"
-    property string currentPageTitle: "首页驾驶舱"
-
-    readonly property var navigationItems: [
-        { key: "dashboard", title: "首页驾驶舱" },
-        { key: "market", title: "行情监控" },
-        { key: "accountPortfolio", title: "账户与组合" },
-        { key: "position", title: "持仓明细" },
-        { key: "strategy", title: "策略中心" },
-        { key: "tradeDraft", title: "TradeDraft 建议" },
-        { key: "tradeConfirm", title: "成交确认" },
-        { key: "tradeLog", title: "TradeLog 账本" },
-        { key: "cashPlan", title: "资金分配计划" },
-        { key: "otcChannel", title: "OTC A/C 通道" },
-        { key: "alert", title: "预警中心" },
-        { key: "diagnostics", title: "诊断中心" },
-        { key: "settings", title: "系统设置" }
-    ]
+    required property var navigationController
+    property string currentPageKey: navigationController.currentPageKey
 
     function navigateTo(key) {
-        for (let i = 0; i < navigationItems.length; ++i) {
-            if (navigationItems[i].key === key) {
-                currentPageKey = key
-                currentPageTitle = navigationItems[i].title
-                return true
-            }
-        }
-        return false
+        return navigationController.selectPage(key)
     }
 
     Rectangle {
@@ -45,7 +22,7 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         height: 52
-        currentPageTitle: root.currentPageTitle
+        currentPageTitle: root.navigationController.currentPageTitle
     }
 
     SideNavigation {
@@ -55,8 +32,8 @@ Item {
         anchors.top: topStatusBar.bottom
         anchors.bottom: bottomLogPanel.top
         width: 220
-        items: root.navigationItems
-        currentKey: root.currentPageKey
+        navigationModel: root.navigationController.navigationModel
+        currentKey: root.navigationController.currentPageKey
         onNavigate: function(key) {
             root.navigateTo(key)
         }
@@ -78,8 +55,11 @@ Item {
         anchors.right: rightInfoPanel.left
         anchors.top: topStatusBar.bottom
         anchors.bottom: bottomLogPanel.top
-        pageKey: root.currentPageKey
-        pageTitle: root.currentPageTitle
+        pageKey: root.navigationController.currentPageKey
+        pageTitle: root.navigationController.currentPageTitle
+        pageDescription: root.navigationController.currentPageDescription
+        pageQmlComponent: root.navigationController.currentPageQmlComponent
+        pagePlaceholder: root.navigationController.currentPagePlaceholder
         diagnosticAdapter: root.diagnosticAdapter
     }
 

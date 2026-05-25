@@ -129,3 +129,10 @@ v0.1 草案。
 - TradeDraft 信号时间轴
 
 不做复杂 K 线系统。
+## TASK-026 Navigation Model
+
+- Navigation items come from C++ `ShellPageRegistry`.
+- `SideNavigation.qml` binds `ShellNavigationModel` and no longer hardcodes the full navigation list.
+- `ContentHost.qml` loads pages from `currentPageKey` / `currentPageQmlComponent`.
+- Only Diagnostics Center uses mock data; all other modules remain placeholder pages.
+- QML does not parse complex JSON, access SQLite, connect services, or contain business logic.

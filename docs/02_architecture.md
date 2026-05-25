@@ -204,3 +204,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - TASK-017 新增 JSON 状态报告导出和批量 dry-run。
 - JSON 报告用于 Shell 或诊断工具读取，必须保持可解析和字段稳定。
 - `dry-run-all` 只检查配置和启动条件，不启动服务、不连接 socket、不访问数据库。
+## Shell Navigation Metadata
+
+- TASK-026 adds `ShellPageRegistry`, `ShellNavigationModel`, and `ShellNavigationController` in ShellCore.
+- Shell page keys, titles, categories, QML component names, and placeholder state are centralized in `ShellPageRegistry`.
+- QML `SideNavigation` binds `ShellNavigationModel` instead of owning the full navigation list.
+- `ContentHost` uses `ShellNavigationController` metadata to load the diagnostics mock page or a placeholder page.
+- Shell does not directly access SQLite, connect DataService, start Watchdog, or start DataService.
+- The current ETFDecisionShell remains a mock / placeholder UI.

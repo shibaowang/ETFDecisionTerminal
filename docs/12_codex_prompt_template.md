@@ -128,3 +128,9 @@ v0.1 草案。
 验收标准：
 输出要求：
 ```
+## Shell Navigation Task Rules
+
+- UI navigation tasks must declare the navigation data source.
+- Shell page metadata should come from ShellCore, not scattered across QML files.
+- QML must not access SQLite or directly connect services unless a task explicitly authorizes it.
+- QML must not directly parse complex JSON; diagnostic data must flow through ShellCore / Diagnostics.

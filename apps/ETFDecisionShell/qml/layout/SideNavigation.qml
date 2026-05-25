@@ -2,7 +2,7 @@ import QtQuick
 
 Rectangle {
     id: root
-    required property var items
+    required property var navigationModel
     required property string currentKey
     signal navigate(string key)
 
@@ -24,21 +24,22 @@ Rectangle {
         }
 
         Repeater {
-            model: root.items
+            model: root.navigationModel
 
             Rectangle {
                 width: parent.width
                 height: 38
                 radius: 6
-                color: root.currentKey === modelData.key ? "#244464" : navMouse.containsMouse ? "#1f314a" : "transparent"
-                border.color: root.currentKey === modelData.key ? "#3d77a8" : "transparent"
+                opacity: model.enabled ? 1.0 : 0.45
+                color: root.currentKey === model.key ? "#244464" : navMouse.containsMouse && model.enabled ? "#1f314a" : "transparent"
+                border.color: root.currentKey === model.key ? "#3d77a8" : "transparent"
 
                 Text {
                     anchors.fill: parent
                     anchors.leftMargin: 12
                     anchors.rightMargin: 8
-                    text: modelData.title
-                    color: root.currentKey === modelData.key ? "#ffffff" : "#c7d2e4"
+                    text: model.title
+                    color: root.currentKey === model.key ? "#ffffff" : "#c7d2e4"
                     font.pixelSize: 13
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
@@ -48,7 +49,8 @@ Rectangle {
                     id: navMouse
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.navigate(modelData.key)
+                    enabled: model.enabled
+                    onClicked: root.navigate(model.key)
                 }
             }
         }

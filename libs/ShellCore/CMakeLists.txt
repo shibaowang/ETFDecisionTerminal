@@ -3,6 +3,10 @@ add_library(ETFShellCore STATIC
     include/ShellCore/ShellDiagnosticQtAdapter.h
     include/ShellCore/ShellDiagnosticServiceListModel.h
     include/ShellCore/ShellDiagnosticSummaryObject.h
+    include/ShellCore/ShellNavigationController.h
+    include/ShellCore/ShellNavigationModel.h
+    include/ShellCore/ShellNavigationTypes.h
+    include/ShellCore/ShellPageRegistry.h
     src/ShellCore.cpp
     src/ShellDiagnosticFacade.cpp
     src/ShellDiagnosticIssueListModel.cpp
@@ -13,6 +17,9 @@ add_library(ETFShellCore STATIC
     src/ShellDiagnosticServiceListModel.cpp
     src/ShellDiagnosticSummaryObject.cpp
     src/ShellDiagnosticViewModel.cpp
+    src/ShellNavigationController.cpp
+    src/ShellNavigationModel.cpp
+    src/ShellPageRegistry.cpp
 )
 
 add_library(ETFDecisionTerminal::ShellCore ALIAS ETFShellCore)

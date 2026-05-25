@@ -10,3 +10,7 @@
 #include "ShellCore/ShellDiagnosticSummaryObject.h"
 #include "ShellCore/ShellDiagnosticTools.h"
 #include "ShellCore/ShellDiagnosticViewModel.h"
+#include "ShellCore/ShellNavigationController.h"
+#include "ShellCore/ShellNavigationModel.h"
+#include "ShellCore/ShellNavigationTypes.h"
+#include "ShellCore/ShellPageRegistry.h"

@@ -1,5 +1,6 @@
 #include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellDiagnosticServiceListModel.h"
+#include "ShellCore/ShellNavigationController.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -42,6 +43,13 @@ void expectEqual(QString actual, QString expected, std::string_view message)
     }
 }
 
+void processQmlEvents()
+{
+    for (int i = 0; i < 10; ++i) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
+    }
+}
+
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -53,15 +61,23 @@ int main(int argc, char* argv[])
         1,
         0,
         "ShellDiagnosticQtAdapter");
+    qmlRegisterType<etfdt::shell::ShellNavigationController>(
+        "ETFDecisionTerminal.Shell",
+        1,
+        0,
+        "ShellNavigationController");
 
     etfdt::shell::ShellDiagnosticQtAdapter adapter;
+    etfdt::shell::ShellNavigationController navigationController;
     expectTrue(adapter.loadMockMixed(), "adapter loadMockMixed succeeds");
     expectTrue(adapter.serviceModel()->rowCount() > 0, "adapter serviceModel has rows");
     expectTrue(adapter.selectService(0), "adapter selectService does not fail");
     expectTrue(adapter.summaryObject()->totalServices() > 0, "summaryObject has totalServices");
+    expectEqual(navigationController.navigationModel()->rowCount(), 13, "navigation model has 13 rows");
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("diagnosticAdapter", &adapter);
+    engine.rootContext()->setContextProperty("shellNavigationController", &navigationController);
 
     const std::filesystem::path mainQmlPath = std::filesystem::path(ETFDT_SHELL_QML_DIR) / "Main.qml";
     expectTrue(std::filesystem::exists(mainQmlPath), "Main.qml exists");
@@ -83,32 +99,29 @@ int main(int argc, char* argv[])
         "ContentHost exists");
 
     if (appShell != nullptr) {
-        expectEqual(appShell->property("currentPageKey").toString(), "dashboard", "default page is dashboard");
+        expectEqual(navigationController.currentPageKey(), "dashboard", "default page is dashboard");
         expectTrue(
             appShell->findChild<QObject*>("placeholderPage") != nullptr,
             "default placeholder page is loaded");
 
-        bool invoked = QMetaObject::invokeMethod(
-            appShell,
-            "navigateTo",
-            Qt::DirectConnection,
-            Q_ARG(QVariant, QVariant(QStringLiteral("diagnostics"))));
-        QCoreApplication::processEvents();
+        bool invoked = navigationController.selectPage(QStringLiteral("diagnostics"));
+        processQmlEvents();
         expectTrue(invoked, "navigateTo diagnostics succeeds");
-        expectEqual(appShell->property("currentPageKey").toString(), "diagnostics", "current page is diagnostics");
+        expectEqual(navigationController.currentPageKey(), "diagnostics", "current page is diagnostics");
+        QObject* contentHost = appShell->findChild<QObject*>("contentHost");
+        expectEqual(
+            contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
+            "DiagnosticsMockPage",
+            "ContentHost receives diagnostics qml component");
         expectTrue(
             appShell->findChild<QObject*>("diagnosticsMockPage") != nullptr,
             "DiagnosticsMockPage is loaded");
         expectTrue(adapter.serviceModel()->rowCount() > 0, "diagnostics mock serviceModel still has rows");
 
-        invoked = QMetaObject::invokeMethod(
-            appShell,
-            "navigateTo",
-            Qt::DirectConnection,
-            Q_ARG(QVariant, QVariant(QStringLiteral("market"))));
-        QCoreApplication::processEvents();
+        invoked = navigationController.selectPage(QStringLiteral("market"));
+        processQmlEvents();
         expectTrue(invoked, "navigateTo market succeeds");
-        expectEqual(appShell->property("currentPageKey").toString(), "market", "current page is market");
+        expectEqual(navigationController.currentPageKey(), "market", "current page is market");
         expectTrue(
             appShell->findChild<QObject*>("placeholderPage") != nullptr,
             "PlaceholderPage is loaded after navigation");

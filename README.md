@@ -690,6 +690,20 @@ powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -NoShel
 powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 ```
 
+## Current Milestone: v0.1 ReadOnly Shell Demo
+
+The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.
+
+This project is still in development and must not be used for real trading, broker operations, real order placement, or production accounting.
+
+Milestone documents:
+
+- [Quick Start - ReadOnly Shell Demo](docs/15_quick_start_readonly_shell_demo.md)
+- [Manual Acceptance - ReadOnly Shell](docs/13_manual_acceptance_readonly_shell.md)
+- [Milestone - v0.1 ReadOnly Shell Demo](docs/14_milestone_v0_1_readonly_shell_demo.md)
+- [Release Notes - v0.1 ReadOnly Shell Demo](docs/release_notes/v0_1_readonly_shell_demo.md)
+- [Documentation Index](docs/README.md)
+
 Run tests:
 
 ```powershell

@@ -10,10 +10,20 @@ Rectangle {
     property string emptyMessage: ""
     property string emptyHint: "Read-only table. No edit actions are available."
     property var columns: []
+    property var visibleColumnKeys: []
+    property int minimumVisibleColumns: 1
+    property var effectiveColumns: computeEffectiveColumns()
     property int rowCount: 0
     property bool empty: rowCount === 0
     property bool showHeader: true
-    property int rowHeight: compact ? 34 : 40
+    property string density: "normal"
+    property int rowHeightCompact: 28
+    property int rowHeightNormal: 36
+    property int rowHeightComfortable: 44
+    property int rowHeight: density === "compact"
+        ? rowHeightCompact
+        : (density === "comfortable" ? rowHeightComfortable : rowHeightNormal)
+    property int bodyFontPixelSize: density === "compact" ? 11 : (density === "comfortable" ? 13 : 12)
     property bool compact: false
     property string sortKey: ""
     property bool sortAscending: true
@@ -23,6 +33,48 @@ Rectangle {
     radius: 8
     color: "#ffffff"
     border.color: "#d8e0eb"
+
+    function computeEffectiveColumns() {
+        var result = []
+        var explicitKeys = root.visibleColumnKeys || []
+        var useDefaults = explicitKeys.length === 0
+        for (var i = 0; i < root.columns.length; ++i) {
+            var column = root.columns[i]
+            var key = column.key || ""
+            var required = column.required === true
+            var visibleByDefault = column.visible !== false
+            var explicitlyVisible = explicitKeys.indexOf(key) >= 0
+            if (required || (useDefaults && visibleByDefault) || (!useDefaults && explicitlyVisible)) {
+                result.push(column)
+            }
+        }
+        if (result.length < root.minimumVisibleColumns) {
+            for (var j = 0; j < root.columns.length && result.length < root.minimumVisibleColumns; ++j) {
+                if (result.indexOf(root.columns[j]) < 0) {
+                    result.push(root.columns[j])
+                }
+            }
+        }
+        return result
+    }
+
+    function columnVisible(key) {
+        for (var i = 0; i < root.effectiveColumns.length; ++i) {
+            if (root.effectiveColumns[i].key === key) {
+                return true
+            }
+        }
+        return false
+    }
+
+    function columnWidth(key, fallback) {
+        for (var i = 0; i < root.effectiveColumns.length; ++i) {
+            if (root.effectiveColumns[i].key === key) {
+                return root.effectiveColumns[i].width || fallback
+            }
+        }
+        return 0
+    }
 
     Column {
         anchors.fill: parent
@@ -53,7 +105,7 @@ Rectangle {
                 spacing: 8
 
                 Repeater {
-                    model: root.columns
+                    model: root.effectiveColumns
                     Rectangle {
                         width: modelData.width || 120
                         height: parent.height
@@ -73,14 +125,14 @@ Rectangle {
 
                         Text {
                             id: sortIndicator
-                            width: 16
+                            width: 24
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             text: (modelData.sortable && root.sortKey === modelData.key)
-                                ? (root.sortAscending ? "▲" : "▼")
-                                : (modelData.sortable ? "⇅" : "")
+                                ? (root.sortAscending ? "^" : "v")
+                                : (modelData.sortable ? "sort" : "")
                             color: modelData.sortable ? "#53657f" : "transparent"
-                            font.pixelSize: 10
+                            font.pixelSize: 9
                             horizontalAlignment: Text.AlignRight
                         }
 

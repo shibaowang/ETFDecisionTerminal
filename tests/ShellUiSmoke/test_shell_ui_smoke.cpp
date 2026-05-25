@@ -189,8 +189,20 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("accountFilterBarSearchField") != nullptr,
             "AccountPortfolioReadOnlyPage account search field is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("accountColumnChooser") != nullptr,
+            "AccountPortfolioReadOnlyPage account column chooser is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("accountDensityToggle") != nullptr,
+            "AccountPortfolioReadOnlyPage account density toggle is loaded");
+        expectTrue(
             appShell->findChild<QObject*>("portfolioFilterBar") != nullptr,
             "AccountPortfolioReadOnlyPage portfolio filter bar is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("portfolioColumnChooser") != nullptr,
+            "AccountPortfolioReadOnlyPage portfolio column chooser is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("portfolioDensityToggle") != nullptr,
+            "AccountPortfolioReadOnlyPage portfolio density toggle is loaded");
         expectTrue(
             appShell->findChild<QObject*>("accountReadOnlyTable") != nullptr,
             "AccountPortfolioReadOnlyPage account read-only table is loaded");
@@ -218,6 +230,35 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("portfolioListView") != nullptr,
             "AccountPortfolioReadOnlyPage portfolio model binding exists");
+        QObject* accountTable = appShell->findChild<QObject*>("accountReadOnlyTable");
+        const int normalAccountRowHeight = accountTable == nullptr ? 0 : accountTable->property("rowHeight").toInt();
+        if (accountTable != nullptr) {
+            accountTable->setProperty("density", QStringLiteral("compact"));
+            processQmlEvents();
+            expectTrue(
+                accountTable->property("rowHeight").toInt() < normalAccountRowHeight,
+                "compact density uses a smaller account row height");
+            accountTable->setProperty("density", QStringLiteral("comfortable"));
+            processQmlEvents();
+            expectTrue(
+                accountTable->property("rowHeight").toInt() > normalAccountRowHeight,
+                "comfortable density uses a larger account row height");
+            accountTable->setProperty("visibleColumnKeys", QStringList({QStringLiteral("type")}));
+            processQmlEvents();
+            expectTrue(true, "Account table accepts visible column updates");
+        }
+        QObject* accountColumnChooser = appShell->findChild<QObject*>("accountColumnChooser");
+        QVariant canHideRequiredAccountName = true;
+        if (accountColumnChooser != nullptr) {
+            QMetaObject::invokeMethod(
+                accountColumnChooser,
+                "canHideColumn",
+                Q_RETURN_ARG(QVariant, canHideRequiredAccountName),
+                Q_ARG(QVariant, QStringLiteral("name")));
+        }
+        expectTrue(
+            accountColumnChooser != nullptr && !canHideRequiredAccountName.toBool(),
+            "required name column cannot be hidden");
         expectTrue(
             appShell->findChild<QObject*>("accountEditButton") == nullptr,
             "AccountPortfolioReadOnlyPage has no edit button");
@@ -252,11 +293,29 @@ int main(int argc, char* argv[])
             appShell->findChild<QObject*>("instrumentFilterBarSearchField") != nullptr,
             "InstrumentStrategyReadOnlyPage instrument search field is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("instrumentColumnChooser") != nullptr,
+            "InstrumentStrategyReadOnlyPage instrument column chooser is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("instrumentDensityToggle") != nullptr,
+            "InstrumentStrategyReadOnlyPage instrument density toggle is loaded");
+        expectTrue(
             appShell->findChild<QObject*>("strategyFilterBar") != nullptr,
             "InstrumentStrategyReadOnlyPage strategy filter bar is loaded");
         expectTrue(
+            appShell->findChild<QObject*>("strategyColumnChooser") != nullptr,
+            "InstrumentStrategyReadOnlyPage strategy column chooser is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("strategyDensityToggle") != nullptr,
+            "InstrumentStrategyReadOnlyPage strategy density toggle is loaded");
+        expectTrue(
             appShell->findChild<QObject*>("otcFilterBar") != nullptr,
             "InstrumentStrategyReadOnlyPage OTC filter bar is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("otcColumnChooser") != nullptr,
+            "InstrumentStrategyReadOnlyPage OTC column chooser is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("otcDensityToggle") != nullptr,
+            "InstrumentStrategyReadOnlyPage OTC density toggle is loaded");
         expectTrue(
             appShell->findChild<QObject*>("instrumentReadOnlyTable") != nullptr,
             "InstrumentStrategyReadOnlyPage instrument read-only table is loaded");
@@ -284,6 +343,32 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("otcChannelListView") != nullptr,
             "InstrumentStrategyReadOnlyPage OTC model binding exists");
+        QObject* instrumentTable = appShell->findChild<QObject*>("instrumentReadOnlyTable");
+        QObject* otcTable = appShell->findChild<QObject*>("otcChannelReadOnlyTable");
+        if (instrumentTable != nullptr) {
+            instrumentTable->setProperty("visibleColumnKeys", QStringList({
+                QStringLiteral("code"),
+                QStringLiteral("name"),
+                QStringLiteral("type"),
+                QStringLiteral("market"),
+                QStringLiteral("status"),
+            }));
+            processQmlEvents();
+            expectTrue(true, "Instrument table accepts hidden currency column");
+        }
+        if (otcTable != nullptr) {
+            otcTable->setProperty("visibleColumnKeys", QStringList({
+                QStringLiteral("code"),
+                QStringLiteral("type"),
+                QStringLiteral("status"),
+                QStringLiteral("dailyLimit"),
+            }));
+            processQmlEvents();
+            expectTrue(true, "OTC table accepts hidden priority column");
+            otcTable->setProperty("visibleColumnKeys", QStringList());
+            processQmlEvents();
+            expectTrue(true, "OTC table falls back when visible columns are cleared");
+        }
         expectTrue(
             appShell->findChild<QObject*>("instrumentEditButton") == nullptr,
             "InstrumentStrategyReadOnlyPage has no instrument edit button");

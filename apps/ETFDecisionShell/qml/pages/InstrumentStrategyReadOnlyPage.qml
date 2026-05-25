@@ -13,6 +13,34 @@ Rectangle {
     border.color: "#d8e0eb"
 
     property var summary: readOnlyDataController.summaryViewModel
+    property var instrumentVisibleColumns: []
+    property var strategyVisibleColumns: []
+    property var otcVisibleColumns: []
+    property string instrumentDensity: "normal"
+    property string strategyDensity: "normal"
+    property string otcDensity: "normal"
+    property var instrumentColumns: [
+        {"key": "code", "title": "Code", "width": 110, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "Name", "width": 180, "required": false, "visible": true, "sortable": true},
+        {"key": "type", "title": "Type", "width": 110, "required": false, "visible": true, "sortable": true},
+        {"key": "market", "title": "Market", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+    ]
+    property var strategyColumns: [
+        {"key": "code", "title": "Strategy code", "width": 180, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "Name", "width": 260, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+    ]
+    property var otcColumns: [
+        {"key": "strategy", "title": "Strategy", "width": 130, "required": false, "visible": false, "sortable": true},
+        {"key": "code", "title": "Actual code", "width": 130, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "Fund class", "width": 120, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "dailyLimit", "title": "Daily limit", "width": 120, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": false},
+        {"key": "priority", "title": "Priority", "width": 80, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "amount", "title": "Min buy", "width": 120, "required": false, "visible": false, "alignment": Text.AlignRight, "sortable": true}
+    ]
 
     Flickable {
         anchors.fill: parent
@@ -285,9 +313,39 @@ Rectangle {
                 }
             }
 
+            Row {
+                width: parent.width
+                spacing: 10
+
+                ReadOnlyColumnChooser {
+                    objectName: "instrumentColumnChooser"
+                    columnObjectNamePrefix: "instrumentColumnChooserColumn"
+                    width: Math.min(parent.width * 0.68, 760)
+                    columns: root.instrumentColumns
+                    visibleColumnKeys: root.instrumentVisibleColumns
+                    title: "Instrument columns"
+                    onColumnVisibilityChanged: function(keys) {
+                        root.instrumentVisibleColumns = keys
+                    }
+                }
+
+                ReadOnlyDensityToggle {
+                    objectName: "instrumentDensityToggle"
+                    width: Math.min(parent.width * 0.30, 340)
+                    density: root.instrumentDensity
+                    onDensityChangedByUser: function(density) {
+                        root.instrumentDensity = density
+                    }
+                }
+            }
+
             InstrumentListView {
+                id: instrumentTable
                 instrumentModel: root.readOnlyDataController.filteredInstrumentModel
                 width: parent.width
+                columns: root.instrumentColumns
+                visibleColumnKeys: root.instrumentVisibleColumns
+                density: root.instrumentDensity
                 onSortRequested: function(key, ascending) {
                     root.readOnlyDataController.sortInstruments(key, ascending)
                 }
@@ -310,9 +368,39 @@ Rectangle {
                 }
             }
 
+            Row {
+                width: parent.width
+                spacing: 10
+
+                ReadOnlyColumnChooser {
+                    objectName: "strategyColumnChooser"
+                    columnObjectNamePrefix: "strategyColumnChooserColumn"
+                    width: Math.min(parent.width * 0.68, 760)
+                    columns: root.strategyColumns
+                    visibleColumnKeys: root.strategyVisibleColumns
+                    title: "Strategy columns"
+                    onColumnVisibilityChanged: function(keys) {
+                        root.strategyVisibleColumns = keys
+                    }
+                }
+
+                ReadOnlyDensityToggle {
+                    objectName: "strategyDensityToggle"
+                    width: Math.min(parent.width * 0.30, 340)
+                    density: root.strategyDensity
+                    onDensityChangedByUser: function(density) {
+                        root.strategyDensity = density
+                    }
+                }
+            }
+
             StrategyListView {
+                id: strategyTable
                 strategyModel: root.readOnlyDataController.filteredStrategyModel
                 width: parent.width
+                columns: root.strategyColumns
+                visibleColumnKeys: root.strategyVisibleColumns
+                density: root.strategyDensity
                 onSortRequested: function(key, ascending) {
                     root.readOnlyDataController.sortStrategies(key, ascending)
                 }
@@ -335,9 +423,39 @@ Rectangle {
                 }
             }
 
+            Row {
+                width: parent.width
+                spacing: 10
+
+                ReadOnlyColumnChooser {
+                    objectName: "otcColumnChooser"
+                    columnObjectNamePrefix: "otcColumnChooserColumn"
+                    width: Math.min(parent.width * 0.68, 760)
+                    columns: root.otcColumns
+                    visibleColumnKeys: root.otcVisibleColumns
+                    title: "OTC columns"
+                    onColumnVisibilityChanged: function(keys) {
+                        root.otcVisibleColumns = keys
+                    }
+                }
+
+                ReadOnlyDensityToggle {
+                    objectName: "otcDensityToggle"
+                    width: Math.min(parent.width * 0.30, 340)
+                    density: root.otcDensity
+                    onDensityChangedByUser: function(density) {
+                        root.otcDensity = density
+                    }
+                }
+            }
+
             OtcChannelListView {
+                id: otcTable
                 otcChannelModel: root.readOnlyDataController.filteredOtcChannelModel
                 width: parent.width
+                columns: root.otcColumns
+                visibleColumnKeys: root.otcVisibleColumns
+                density: root.otcDensity
                 onSortRequested: function(key, ascending) {
                     root.readOnlyDataController.sortOtcChannels(key, ascending)
                 }

@@ -9,15 +9,15 @@ ReadOnlyTable {
     height: 250
     title: "Instruments"
     subtitle: "Read-only instrument list"
-    emptyTitle: "暂无标的数据"
-    emptyMessage: "连接只读 DataService 后刷新标的列表。"
+    emptyTitle: "No instruments"
+    emptyMessage: "Connect to the read-only DataService and refresh instruments."
     columns: [
-        {"key": "code", "title": "Code", "width": 110, "sortable": true},
-        {"key": "name", "title": "Name", "width": 180, "sortable": true},
-        {"key": "type", "title": "Type", "width": 110, "sortable": true},
-        {"key": "market", "title": "Market", "width": 90, "sortable": true},
-        {"key": "currency", "title": "Currency", "width": 90, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "sortable": true}
+        {"key": "code", "title": "Code", "width": 110, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "Name", "width": 180, "required": false, "visible": true, "sortable": true},
+        {"key": "type", "title": "Type", "width": 110, "required": false, "visible": true, "sortable": true},
+        {"key": "market", "title": "Market", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     rowCount: instrumentList.count
 
@@ -43,48 +43,54 @@ ReadOnlyTable {
                 spacing: 8
 
                 Text {
-                    width: 110
+                    visible: root.columnVisible("code")
+                    width: root.columnWidth("code", 110)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.code
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     font.bold: true
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 180
+                    visible: root.columnVisible("name")
+                    width: root.columnWidth("name", 180)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.name
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 110
+                    visible: root.columnVisible("type")
+                    width: root.columnWidth("type", 110)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.instrumentType
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 90
+                    visible: root.columnVisible("market")
+                    width: root.columnWidth("market", 90)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.marketCode
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 Text {
-                    width: 90
+                    visible: root.columnVisible("currency")
+                    width: root.columnWidth("currency", 90)
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.currency
                     color: "#26354d"
-                    font.pixelSize: 12
+                    font.pixelSize: root.bodyFontPixelSize
                     elide: Text.ElideRight
                 }
                 ReadOnlyStatusBadge {
-                    width: 96
+                    visible: root.columnVisible("status")
+                    width: root.columnWidth("status", 96)
                     anchors.verticalCenter: parent.verticalCenter
                     status: model.enabled ? "ENABLED" : "DISABLED"
                 }

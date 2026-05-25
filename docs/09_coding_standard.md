@@ -127,3 +127,7 @@ ETFDecisionTerminal/
 - Shared QML display components must not implement business calculations, service calls, database access, or write actions.
 - Read-only page filtering and sorting should be implemented in C++ model / proxy-model layers; QML should only collect filter input and display filtered rows.
 - Sortable table headers may emit sort requests, but they must not duplicate business data or perform service calls.
+- UI display settings must not alter business data.
+- Column visibility and density settings are runtime-only by default and must not be persisted unless a task explicitly authorizes storage.
+- Required table columns must remain visible.
+- Read-only pages must not add edit, delete, deposit, accounting, trade, strategy execution, or TradeDraft controls as part of display-setting work.

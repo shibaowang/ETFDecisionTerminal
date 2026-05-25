@@ -224,3 +224,11 @@ v0.1 草案。
 - Filter / sort operations do not refresh services, mutate source models, write SQLite, or call write actions.
 - QML pages forward search and sort requests to `ShellReadOnlyDataController` and bind filtered models for display.
 - Read-only pages must keep edit, delete, accounting, trade, strategy execution, and TradeDraft generation controls out of scope.
+
+## TASK-041 Read-Only Column Visibility And Density
+
+- Read-only tables support runtime column visibility controls for account, portfolio, instrument, strategy, and OTC lists.
+- Required identity columns remain visible and cannot be hidden; optional columns can be toggled without changing source model data.
+- Table density supports `compact`, `normal`, and `comfortable`, changing only row height, padding, and text size.
+- Column visibility and density settings are not persisted and must not write files, SQLite, registry, or service configuration.
+- These controls are visual-only; they must not call services, connect sockets, execute actions, or make read-only pages look trade-capable.

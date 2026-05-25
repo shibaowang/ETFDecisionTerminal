@@ -720,6 +720,14 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - `ReadOnlyTable` now supports sortable headers and stable column widths; `ReadOnlyFilterBar` provides search and status-filter input.
 - Account / portfolio and instrument / strategy pages remain read-only and still expose no edit, delete, accounting, trade, strategy execution, or TradeDraft controls.
 
+## TASK-041 Read-Only Column Visibility / Density
+
+- Read-only business tables now support runtime column visibility controls and `compact` / `normal` / `comfortable` density settings.
+- Required identity columns, such as account name, instrument code, strategy code, and OTC actual code, remain visible and cannot be hidden.
+- These settings are display-only runtime state: they are not persisted to files, SQLite, registry, or service configuration.
+- Account / portfolio and instrument / strategy pages remain read-only and still expose no edit, delete, accounting, trade, strategy execution, or TradeDraft controls.
+- Column visibility and density changes do not call DataService, do not write SQLite, and do not mutate source models.
+
 ## Current Milestone: v0.1 ReadOnly Shell Demo
 
 The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.

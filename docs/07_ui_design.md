@@ -207,3 +207,12 @@ v0.1 草案。
 - Visible OTC fields include strategy code, actual code, fund class, enabled state, daily limit, priority, and minimum buy amount.
 - The page must not include edit, delete, strategy execution, TradeDraft generation, trade, or accounting controls.
 - Empty strategy lists and empty OTC channel results must be visible and must not crash the page.
+
+## TASK-039 Read-Only Table Components
+
+- Read-only business pages should use shared table components for headers, rows, badges, and empty states.
+- `ReadOnlyTable` provides the visual table shell and table header area.
+- `ReadOnlyStatusBadge` displays stable state labels such as `ACTIVE`, `ENABLED`, `DISABLED`, `READONLY`, `OK`, `WARNING`, and `ERROR`.
+- `ReadOnlyEmptyState` makes no-data states explicit instead of leaving blank panels.
+- `ReadOnlySectionHeader` and `ReadOnlyFieldLabel` standardize section titles and status fields.
+- These components must remain display-only and must not contain write buttons, service calls, JSON parsing, or business calculations.

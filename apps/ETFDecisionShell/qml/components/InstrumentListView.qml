@@ -1,59 +1,92 @@
 import QtQuick
+import "readonly"
 
-Rectangle {
+ReadOnlyTable {
     id: root
     required property var instrumentModel
 
-    radius: 8
-    color: "#ffffff"
-    border.color: "#d8e0eb"
-    height: 220
+    objectName: "instrumentReadOnlyTable"
+    height: 250
+    title: "Instruments"
+    subtitle: "Read-only instrument list"
+    emptyTitle: "暂无标的数据"
+    emptyMessage: "连接只读 DataService 后刷新标的列表。"
+    columns: [
+        {"title": "Code", "width": 110},
+        {"title": "Name", "width": 180},
+        {"title": "Type", "width": 110},
+        {"title": "Market", "width": 90},
+        {"title": "Currency", "width": 90},
+        {"title": "Status", "width": 96}
+    ]
+    rowCount: instrumentList.count
 
-    Column {
+    ListView {
+        id: instrumentList
+        objectName: "instrumentListView"
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        clip: true
+        model: root.instrumentModel
+        spacing: 4
 
-        Text {
-            text: "Instruments"
-            color: "#18202f"
-            font.pixelSize: 16
-            font.bold: true
-        }
+        delegate: Rectangle {
+            width: instrumentList.width
+            height: 40
+            radius: 6
+            color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
+            border.color: "#edf1f5"
 
-        Text {
-            visible: instrumentList.count === 0
-            text: "Empty / No data"
-            color: "#667086"
-            font.pixelSize: 13
-        }
-
-        ListView {
-            id: instrumentList
-            objectName: "instrumentListView"
-            width: parent.width
-            height: parent.height - 36
-            clip: true
-            model: root.instrumentModel
-            spacing: 4
-
-            delegate: Rectangle {
-                width: instrumentList.width
-                height: 38
-                radius: 6
-                color: model.enabled ? "#eef8f2" : "#f5f7fa"
-                border.color: "#d8e0eb"
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                spacing: 8
 
                 Text {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    text: model.code + " | " + model.name + " | " + model.instrumentType
-                        + " | market=" + model.marketCode + " | " + model.currency
-                        + " | enabled=" + model.enabled
+                    width: 110
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.code
+                    color: "#26354d"
+                    font.pixelSize: 12
+                    font.bold: true
+                    elide: Text.ElideRight
+                }
+                Text {
+                    width: 180
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.name
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    width: 110
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.instrumentType
+                    color: "#26354d"
+                    font.pixelSize: 12
+                    elide: Text.ElideRight
+                }
+                Text {
+                    width: 90
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.marketCode
+                    color: "#26354d"
+                    font.pixelSize: 12
+                    elide: Text.ElideRight
+                }
+                Text {
+                    width: 90
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.currency
+                    color: "#26354d"
+                    font.pixelSize: 12
+                    elide: Text.ElideRight
+                }
+                ReadOnlyStatusBadge {
+                    width: 96
+                    anchors.verticalCenter: parent.verticalCenter
+                    status: model.enabled ? "ENABLED" : "DISABLED"
                 }
             }
         }

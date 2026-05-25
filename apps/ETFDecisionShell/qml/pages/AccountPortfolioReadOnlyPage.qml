@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import "../components"
+import "../components/readonly"
 
 Rectangle {
     id: root
@@ -178,12 +179,27 @@ Rectangle {
                     anchors.margins: 12
                     spacing: 5
 
-                    Text {
-                        text: "Connection: " + root.readOnlyDataController.connectionObject.stateText
-                            + " | refreshState: " + root.readOnlyDataController.refreshState
-                            + " | healthy: " + root.summary.healthy
-                        color: "#26354d"
-                        font.pixelSize: 13
+                    Row {
+                        width: parent.width
+                        spacing: 16
+
+                        ReadOnlyFieldLabel {
+                            width: 180
+                            label: "Connection"
+                            value: root.readOnlyDataController.connectionObject.stateText
+                        }
+
+                        ReadOnlyFieldLabel {
+                            width: 150
+                            label: "Refresh"
+                            value: root.readOnlyDataController.refreshState
+                        }
+
+                        ReadOnlyFieldLabel {
+                            width: 120
+                            label: "Healthy"
+                            value: String(root.summary.healthy)
+                        }
                     }
 
                     Text {

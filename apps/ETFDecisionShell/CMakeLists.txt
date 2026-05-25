@@ -50,6 +50,11 @@ qt_add_qml_module(ETFDecisionShell
         qml/components/OtcChannelListView.qml
         qml/components/PlaceholderPage.qml
         qml/components/PortfolioListView.qml
+        qml/components/readonly/ReadOnlyEmptyState.qml
+        qml/components/readonly/ReadOnlyFieldLabel.qml
+        qml/components/readonly/ReadOnlySectionHeader.qml
+        qml/components/readonly/ReadOnlyStatusBadge.qml
+        qml/components/readonly/ReadOnlyTable.qml
         qml/components/ServiceListView.qml
         qml/components/StrategyListView.qml
         qml/components/SummaryCard.qml

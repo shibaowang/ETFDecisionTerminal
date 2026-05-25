@@ -204,3 +204,5 @@ v0.1 草案。
 - Strategy-related page prototypes are read-only by default.
 - Strategy prototypes must not execute strategies, generate signals, or create TradeDraft records unless a later task explicitly authorizes that scope.
 - OTC channel prototypes must not edit channel mappings unless a later task explicitly authorizes writes.
+- Read-only UI component tasks must not change service boundaries or add write capabilities.
+- UI readability work must keep components display-only and must not make mock / read-only screens look trade-capable.

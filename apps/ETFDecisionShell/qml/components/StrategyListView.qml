@@ -1,57 +1,65 @@
 import QtQuick
+import "readonly"
 
-Rectangle {
+ReadOnlyTable {
     id: root
     required property var strategyModel
 
-    radius: 8
-    color: "#ffffff"
-    border.color: "#d8e0eb"
-    height: 180
+    objectName: "strategyReadOnlyTable"
+    height: 210
+    title: "Strategies"
+    subtitle: "Read-only strategy list"
+    emptyTitle: "暂无策略数据"
+    emptyMessage: "当前数据库没有策略记录，页面保持只读并可继续刷新。"
+    columns: [
+        {"title": "Strategy code", "width": 180},
+        {"title": "Name", "width": 260},
+        {"title": "Status", "width": 96}
+    ]
+    rowCount: strategyList.count
 
-    Column {
+    ListView {
+        id: strategyList
+        objectName: "strategyListView"
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        clip: true
+        model: root.strategyModel
+        spacing: 4
 
-        Text {
-            text: "Strategies"
-            color: "#18202f"
-            font.pixelSize: 16
-            font.bold: true
-        }
+        delegate: Rectangle {
+            width: strategyList.width
+            height: 40
+            radius: 6
+            color: index % 2 === 0 ? "#ffffff" : "#f8fbff"
+            border.color: "#edf1f5"
 
-        Text {
-            visible: strategyList.count === 0
-            text: "Empty / No data"
-            color: "#667086"
-            font.pixelSize: 13
-        }
-
-        ListView {
-            id: strategyList
-            objectName: "strategyListView"
-            width: parent.width
-            height: parent.height - 36
-            clip: true
-            model: root.strategyModel
-            spacing: 4
-
-            delegate: Rectangle {
-                width: strategyList.width
-                height: 38
-                radius: 6
-                color: model.enabled ? "#eef8f2" : "#f5f7fa"
-                border.color: "#d8e0eb"
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                spacing: 8
 
                 Text {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    text: model.strategyCode + " | " + model.name + " | enabled=" + model.enabled
+                    width: 180
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.strategyCode
+                    color: "#26354d"
+                    font.pixelSize: 12
+                    font.bold: true
+                    elide: Text.ElideRight
+                }
+                Text {
+                    width: 260
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: model.name
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
+                }
+                ReadOnlyStatusBadge {
+                    width: 96
+                    anchors.verticalCenter: parent.verticalCenter
+                    status: model.enabled ? "ENABLED" : "DISABLED"
                 }
             }
         }

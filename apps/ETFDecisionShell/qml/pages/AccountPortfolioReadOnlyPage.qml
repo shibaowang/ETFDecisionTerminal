@@ -1,0 +1,221 @@
+import QtQuick
+import QtQuick.Controls
+import "../components"
+
+Rectangle {
+    id: root
+    objectName: "accountPortfolioReadOnlyPage"
+    required property var readOnlyDataController
+
+    radius: 8
+    color: "#ffffff"
+    border.color: "#d8e0eb"
+
+    property var summary: readOnlyDataController.summaryViewModel
+
+    Flickable {
+        anchors.fill: parent
+        anchors.margins: 20
+        contentWidth: width
+        contentHeight: contentColumn.implicitHeight
+        clip: true
+
+        Column {
+            id: contentColumn
+            width: parent.width
+            spacing: 14
+
+            Text {
+                text: "账户与组合 - 只读"
+                color: "#18202f"
+                font.pixelSize: 24
+                font.bold: true
+            }
+
+            Rectangle {
+                objectName: "accountPortfolioReadonlyNotice"
+                width: parent.width
+                height: 46
+                radius: 8
+                color: "#eef4ff"
+                border.color: "#a8c4f5"
+
+                Text {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    text: "当前页面为只读数据原型，不支持编辑、不支持入账、不支持交易；数据只能通过 ShellReadOnlyDataController 的只读模型展示。"
+                    color: "#244464"
+                    font.pixelSize: 13
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Rectangle {
+                objectName: "accountPortfolioConnectionPanel"
+                width: parent.width
+                height: 132
+                radius: 8
+                color: "#f8fbff"
+                border.color: "#c8d7ee"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 8
+
+                    Text {
+                        text: "Read-only connection"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 8
+
+                        ComboBox {
+                            id: presetCombo
+                            objectName: "accountPortfolioPresetCombo"
+                            width: Math.min(300, parent.width * 0.28)
+                            model: root.readOnlyDataController.connectionPresetModel
+                            textRole: "title"
+                            valueRole: "key"
+
+                            function syncSelectedPreset() {
+                                if (count <= 0) {
+                                    return
+                                }
+                                for (var i = 0; i < count; ++i) {
+                                    if (valueAt(i) === root.readOnlyDataController.selectedPresetKey) {
+                                        currentIndex = i
+                                        return
+                                    }
+                                }
+                                currentIndex = 0
+                                root.readOnlyDataController.selectPreset(valueAt(0))
+                            }
+
+                            onActivated: root.readOnlyDataController.selectPreset(currentValue)
+                            onCountChanged: syncSelectedPreset()
+                            Component.onCompleted: Qt.callLater(syncSelectedPreset)
+
+                            Connections {
+                                target: root.readOnlyDataController
+                                function onConnectionPresetChanged() {
+                                    presetCombo.syncSelectedPreset()
+                                }
+                            }
+                        }
+
+                        TextField {
+                            id: socketNameField
+                            objectName: "accountPortfolioSocketNameField"
+                            width: Math.min(360, parent.width * 0.35)
+                            placeholderText: "socketName"
+                            selectByMouse: true
+                            onTextEdited: root.readOnlyDataController.setCustomSocketName(text)
+
+                            Component.onCompleted: {
+                                text = root.readOnlyDataController.selectedSocketName
+                            }
+
+                            Connections {
+                                target: root.readOnlyDataController
+                                function onConnectionPresetChanged() {
+                                    if (!socketNameField.activeFocus) {
+                                        socketNameField.text = root.readOnlyDataController.selectedSocketName
+                                    }
+                                }
+                            }
+                        }
+
+                        Button {
+                            objectName: "accountPortfolioConnectButton"
+                            text: "Connect"
+                            enabled: !root.readOnlyDataController.isBusy
+                                && root.readOnlyDataController.selectedSocketName.length > 0
+                            onClicked: root.readOnlyDataController.connectToDataService()
+                        }
+
+                        Button {
+                            objectName: "accountPortfolioRefreshButton"
+                            text: "Refresh Accounts & Portfolios"
+                            enabled: root.readOnlyDataController.canRefresh
+                            onClicked: root.readOnlyDataController.refreshAccountsAndPortfolios()
+                        }
+
+                        Button {
+                            objectName: "accountPortfolioDisconnectButton"
+                            text: "Disconnect"
+                            enabled: !root.readOnlyDataController.isBusy
+                            onClicked: root.readOnlyDataController.disconnect()
+                        }
+                    }
+
+                    Text {
+                        objectName: "accountPortfolioCommandHint"
+                        width: parent.width
+                        text: "Start command: " + root.readOnlyDataController.commandHint
+                        color: "#244464"
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+
+            Rectangle {
+                objectName: "accountPortfolioStatusPanel"
+                width: parent.width
+                height: 92
+                radius: 8
+                color: "#f9fbfd"
+                border.color: "#d8e0eb"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    spacing: 5
+
+                    Text {
+                        text: "Connection: " + root.readOnlyDataController.connectionObject.stateText
+                            + " | refreshState: " + root.readOnlyDataController.refreshState
+                            + " | healthy: " + root.summary.healthy
+                        color: "#26354d"
+                        font.pixelSize: 13
+                    }
+
+                    Text {
+                        objectName: "accountPortfolioLastSuccess"
+                        text: "Last success: " + (root.readOnlyDataController.lastSuccessAtText.length > 0
+                            ? root.readOnlyDataController.lastSuccessAtText : "never")
+                        color: "#56657c"
+                        font.pixelSize: 12
+                    }
+
+                    Text {
+                        objectName: "accountPortfolioErrorPanel"
+                        width: parent.width
+                        text: root.readOnlyDataController.errorState.hasError
+                            ? "Error: " + root.readOnlyDataController.errorState.errorMessage
+                            : "Error: none"
+                        color: root.readOnlyDataController.errorState.hasError ? "#a33b2e" : "#56657c"
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+
+            AccountListView {
+                accountModel: root.readOnlyDataController.accountModel
+                width: parent.width
+            }
+
+            PortfolioListView {
+                portfolioModel: root.readOnlyDataController.portfolioModel
+                width: parent.width
+            }
+        }
+    }
+}

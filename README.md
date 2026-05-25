@@ -690,6 +690,14 @@ powershell -ExecutionPolicy Bypass -File tools/dev/run_readonly_demo.ps1 -NoShel
 powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 ```
 
+## TASK-037 Account Portfolio Read-Only Page
+
+- `account_portfolio` now routes to `AccountPortfolioReadOnlyPage.qml` instead of a generic placeholder.
+- The page binds `ShellReadOnlyDataController`, `ShellAccountListModel`, and `ShellPortfolioListModel`.
+- It displays account name, account type, broker, base currency, active state, initial cash, portfolio name, base position ratio, and active state.
+- The page is read-only: it provides no edit, deposit, withdrawal, accounting, confirmation, or trade buttons.
+- QML still does not call `DataServiceClient` directly, access SQLite, call `data.audit.append`, or invoke any write action.
+
 ## Current Milestone: v0.1 ReadOnly Shell Demo
 
 The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.

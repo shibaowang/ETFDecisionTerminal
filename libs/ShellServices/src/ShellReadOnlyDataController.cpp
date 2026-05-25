@@ -300,6 +300,55 @@ ShellDataResult<bool> ShellReadOnlyDataController::refreshPortfolios(int timeout
     return ShellDataResult<bool>::success(true);
 }
 
+ShellDataResult<bool> ShellReadOnlyDataController::refreshAccountsAndPortfolios(int timeoutMs)
+{
+    if (isBusy_) {
+        setLocalError(
+            QStringLiteral("BUSY"),
+            "refreshAccountsAndPortfolios ignored because another operation is in progress",
+            QStringLiteral("refreshAccountsAndPortfolios"),
+            true);
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+    if (isRefreshThrottled()) {
+        ++refreshThrottleCount_;
+        setLocalError(
+            QStringLiteral("THROTTLED"),
+            "refreshAccountsAndPortfolios throttled by minimum refresh interval",
+            QStringLiteral("refreshAccountsAndPortfolios"),
+            true);
+        scheduleCanRefreshUpdate();
+        emit stateChanged();
+        return ShellDataResult<bool>::failure(std::nullopt, lastError_);
+    }
+
+    ++refreshAttemptCount_;
+    lastRefreshStartedAtText_ = utcNowText();
+    setBusy(true);
+    setRefreshState(QStringLiteral("REFRESHING"));
+
+    auto result = refreshAccounts(timeoutMs);
+    if (result) {
+        result = refreshPortfolios(timeoutMs);
+    }
+
+    lastRefreshFinishedAtText_ = utcNowText();
+    setBusy(false);
+    if (!result) {
+        ++refreshFailureCount_;
+        setRefreshState(QStringLiteral("FAILED"));
+        emit stateChanged();
+        return result;
+    }
+
+    ++refreshSuccessCount_;
+    lastSuccessAtText_ = lastRefreshFinishedAtText_;
+    clearError();
+    setRefreshState(QStringLiteral("SUCCESS"));
+    scheduleCanRefreshUpdate();
+    return result;
+}
+
 ShellDataResult<bool> ShellReadOnlyDataController::refreshInstruments(int timeoutMs)
 {
     auto result = facade_.listInstruments(timeoutMs);
@@ -417,6 +466,11 @@ bool ShellReadOnlyDataController::refreshAccounts()
 bool ShellReadOnlyDataController::refreshPortfolios()
 {
     return refreshPortfolios(2000).hasValue();
+}
+
+bool ShellReadOnlyDataController::refreshAccountsAndPortfolios()
+{
+    return refreshAccountsAndPortfolios(2000).hasValue();
 }
 
 bool ShellReadOnlyDataController::refreshInstruments()

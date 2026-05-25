@@ -269,3 +269,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - Presets are UI guidance only: they do not start DataService, call Watchdog, connect automatically, or persist configuration.
 - The audit development preset only fills a socket name and command hint; it does not call `data.audit.append` or any write action.
 - Shell still does not directly access SQLite and QML still does not call `DataServiceClient` directly.
+
+## Account Portfolio Read-Only Page
+
+- TASK-037 upgrades the `account_portfolio` shell route from placeholder to `AccountPortfolioReadOnlyPage`.
+- The page binds ShellServices read-only models through `ShellReadOnlyDataController`; QML does not call `DataServiceClient` directly.
+- Account and portfolio data still flow through DataService read-only actions and the ShellServices facade / controller boundary.
+- The page is explicitly read-only and exposes no edit, deposit, withdrawal, accounting, trade, audit append, or write controls.
+- Shell still does not directly access SQLite, DataAccess, DataServiceApi, ServiceHost, or Watchdog for this page.

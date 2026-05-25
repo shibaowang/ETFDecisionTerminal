@@ -47,7 +47,9 @@ Rectangle {
                 Text {
                     anchors.fill: parent
                     anchors.margins: 8
-                    text: model.name + " | " + model.accountType + " | " + model.baseCurrency + " | cash=" + model.initialCashText
+                    text: model.name + " | " + model.accountType + " | broker=" + model.brokerName
+                        + " | " + model.baseCurrency + " | active=" + model.isActive
+                        + " | cash=" + model.initialCashText
                     color: "#26354d"
                     font.pixelSize: 12
                     elide: Text.ElideRight

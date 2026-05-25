@@ -114,3 +114,10 @@ ETFDecisionTerminal/
 - Runtime socket names must not be persisted unless a task explicitly authorizes configuration storage.
 - Presets must not auto-start Watchdog, DataService, or any other service.
 - Development presets that point at writable-capable services must not call write actions unless a later task explicitly authorizes them.
+
+## Business Read-Only Page Rules
+
+- Business page prototypes are read-only by default unless a task explicitly authorizes writes.
+- QML business pages must bind authorized Controller / Model objects and must not call `DataServiceClient` directly.
+- Read-only business pages must not include edit, delete, deposit, withdrawal, accounting, confirmation, or trade buttons.
+- Any future write page must define a separate service boundary, tests, and authorization before adding UI controls.

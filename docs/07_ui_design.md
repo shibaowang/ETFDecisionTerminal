@@ -189,3 +189,12 @@ v0.1 草案。
 - Presets are clearly development guidance and do not auto-start services or save configuration.
 - The Connect button uses controller-owned `selectedSocketName`; empty custom socket names are rejected by C++ state.
 - The page remains read-only and exposes no edit, trade, accounting, audit append, or write controls.
+
+## TASK-037 Account Portfolio Read-Only Page
+
+- `账户与组合` is the first business navigation page promoted from placeholder to a read-only prototype.
+- The page displays account and portfolio lists from ShellServices models only.
+- Visible account fields include name, account type, broker, base currency, active state, and initial cash.
+- Visible portfolio fields include name, base position ratio, and active state.
+- The page must keep edit, delete, deposit, withdrawal, accounting, confirmation, and trade controls out of scope.
+- Errors and disconnected state must remain visible; QML must not fake successful data or call `DataServiceClient` directly.

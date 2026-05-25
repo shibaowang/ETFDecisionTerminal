@@ -26,6 +26,7 @@ qt_add_qml_module(ETFDecisionShell
         qml/layout/RightInfoPanel.qml
         qml/layout/SideNavigation.qml
         qml/layout/TopStatusBar.qml
+        qml/pages/AccountPortfolioReadOnlyPage.qml
         qml/pages/AccountPortfolioPlaceholderPage.qml
         qml/pages/AlertPlaceholderPage.qml
         qml/pages/CashPlanPlaceholderPage.qml

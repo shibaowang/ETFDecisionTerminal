@@ -74,6 +74,7 @@ This milestone is not a completed trading system. It is a controlled developer m
 ## Next Stage Recommendations
 
 - Define account, portfolio, position, and strategy page ViewModels before connecting more real read-only pages.
+- Keep account / portfolio UI work read-only until a dedicated write-boundary task authorizes editing, accounting, or trading.
 - Keep TradeLog writing out of scope until a dedicated write-boundary task authorizes it.
 - Keep automatic trading out of scope.
 - Keep real market data integration out of scope until the service boundary is specified.

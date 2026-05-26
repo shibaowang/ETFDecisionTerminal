@@ -494,6 +494,95 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx003BuySellP
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx004SellExceedsPositionResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX004_SELL_EXCEEDS_POSITION") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx004SellExceedsPosition,
+            "FX004 sell-exceeds-position assertion only accepts FX004_SELL_EXCEEDS_POSITION.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusError) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx004SellExceedsPosition,
+            "FX004 replay result must be implemented=true, replayExecuted=true, and status=ERROR.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    bool hasSellExceeds = false;
+    bool sellExceedsBlocking = false;
+    for (const auto& issue : result.issues) {
+        if (issue.code == "SELL_EXCEEDS_POSITION") {
+            hasSellExceeds = true;
+            sellExceedsBlocking = issue.blocking;
+        }
+    }
+    if (!hasSellExceeds || !sellExceedsBlocking) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx004SellExceedsPosition,
+            "FX004 must contain a blocking SELL_EXCEEDS_POSITION issue.",
+            false,
+            {"issues.SELL_EXCEEDS_POSITION"});
+    }
+
+    if (!hasEmptyReplayOutputs(result)) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx004SellExceedsPosition,
+            "FX004 must not generate normal position, cash, PnL, base-position, or sniper-pool outputs.",
+            false,
+            {
+                "positionListResponseRaw",
+                "cashSummaryRaw",
+                "portfolioPnlRaw",
+                "basePositionRaw",
+                "sniperPoolRaw",
+            });
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx004SellExceedsPosition,
+        "FX004 oversell replay result exposes a blocking SELL_EXCEEDS_POSITION error without normal outputs.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "issues.SELL_EXCEEDS_POSITION",
+            "positionListResponseRaw",
+            "cashSummaryRaw",
+            "portfolioPnlRaw",
+            "basePositionRaw",
+            "sniperPoolRaw",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

@@ -19,6 +19,7 @@ namespace {
 constexpr const char* kFx001EmptyLedger = "FX001_EMPTY_LEDGER";
 constexpr const char* kFx002SingleBuy = "FX002_SINGLE_BUY";
 constexpr const char* kFx003BuySellPartial = "FX003_BUY_SELL_PARTIAL";
+constexpr const char* kFx004SellExceedsPosition = "FX004_SELL_EXCEEDS_POSITION";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -322,7 +323,8 @@ QJsonObject makePartialSellPortfolioPnl(
 
 bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId) const
 {
-    return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial;
+    return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial
+        || fixtureId == kFx004SellExceedsPosition;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -517,6 +519,71 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
             netSellInflowCents,
             feeTotalCents);
         result.portfolioPnlRaw = makePartialSellPortfolioPnl(fixture, cashBalanceCents, realizedPnlCents);
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx004SellExceedsPosition) {
+        const auto invalidFx004 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX004_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.tradeFacts.size() != 2) {
+            return invalidFx004("FX004_SELL_EXCEEDS_POSITION requires exactly two trade facts.");
+        }
+
+        std::vector<AccountingTradeFact> trades = fixture.tradeFacts;
+        std::sort(trades.begin(), trades.end(), [](const AccountingTradeFact& left, const AccountingTradeFact& right) {
+            return left.tradeTime < right.tradeTime;
+        });
+
+        const auto& buy = trades[0];
+        const auto& sell = trades[1];
+        if (buy.action != "BUY" || sell.action != "SELL") {
+            return invalidFx004("FX004_SELL_EXCEEDS_POSITION requires one BUY followed by one SELL.");
+        }
+        if (buy.instrumentCode.empty() || buy.instrumentCode != sell.instrumentCode) {
+            return invalidFx004("FX004_SELL_EXCEEDS_POSITION requires matching non-empty instrument codes.");
+        }
+        if (buy.quantityText.empty() || sell.quantityText.empty()) {
+            return invalidFx004("FX004_SELL_EXCEEDS_POSITION requires BUY and SELL quantityText.");
+        }
+
+        const auto buyQuantity = parseInteger(buy.quantityText);
+        const auto sellQuantity = parseInteger(sell.quantityText);
+        if (!buyQuantity.has_value() || !sellQuantity.has_value() || *buyQuantity <= 0 || *sellQuantity <= 0) {
+            return invalidFx004("FX004_SELL_EXCEEDS_POSITION contains an invalid quantity.");
+        }
+        if (*sellQuantity <= *buyQuantity) {
+            return invalidFx004("FX004_SELL_EXCEEDS_POSITION requires SELL quantity greater than BUY quantity.");
+        }
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = kReplayStatusError;
+        result.message = "Sell quantity exceeds available position.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.issues.push_back(makeIssue(
+            "ERROR",
+            "SELL_EXCEEDS_POSITION",
+            "Sell quantity exceeds available position.",
+            true,
+            fixture.fixtureId));
         return result;
     }
 

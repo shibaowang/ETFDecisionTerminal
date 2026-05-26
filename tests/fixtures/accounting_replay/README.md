@@ -62,4 +62,9 @@ as `fee=0`.
 `AccountingReplayMinimalEngine` now also supports `FX006_NEGATIVE_CASH`,
 returning `status=ERROR` with a blocking `NEGATIVE_CASH` issue and no normal
 position, cash, or PnL success outputs. Negative cash is not treated as an
-implicit overdraft. FX007-FX013 remain `NOT_IMPLEMENTED`.
+implicit overdraft.
+
+`AccountingReplayMinimalEngine` now also supports `FX007_MULTI_INSTRUMENT`,
+returning separate 159509 and 518880 positions, `cashBalanceText=96998.00 CNY`,
+and a non-blocking `MARKET_PRICE_MISSING` warning. It does not fabricate market
+value or unrealized PnL. FX008-FX013 remain `NOT_IMPLEMENTED`.

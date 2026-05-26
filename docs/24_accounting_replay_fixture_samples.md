@@ -1273,3 +1273,37 @@ valuation, realized PnL, unrealized PnL, base-position, sniper-pool, SQLite
 access, DataService calls, file writes, database writes, or DataService actions.
 Future implementation must add one fixture at a time without changing fixture
 expected outputs to fit an incorrect algorithm.
+
+## 19. TASK-061 Minimal FX007 Multi-Instrument Replay
+
+`FX007_MULTI_INSTRUMENT` now has a test-only minimal replay path through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` still returns `status=ERROR` with a blocking
+  `NEGATIVE_CASH` issue.
+- `FX007_MULTI_INSTRUMENT` returns `implemented=true`.
+- `FX007_MULTI_INSTRUMENT` returns `replayExecuted=true`.
+- `FX007_MULTI_INSTRUMENT` returns `status=WARNING`, matching the fixture
+  expected `MARKET_PRICE_MISSING` warning.
+- `FX007_MULTI_INSTRUMENT` creates separate positions for `159509` and `518880`
+  and does not mix their `instrumentCode` values.
+- `FX007_MULTI_INSTRUMENT` computes cash from initial cash minus each BUY
+  `amountText + feeText`, producing `cashBalanceText=96998.00 CNY`.
+- Missing market prices are reported through non-blocking `MARKET_PRICE_MISSING`.
+- Market price, market value, and unrealized PnL remain unavailable; this path
+  does not fabricate valuation or unrealized PnL.
+- `FX008_MULTI_ACCOUNT` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still return
+  `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to same-account, same-portfolio,
+CNY-only BUY facts grouped by instrument. It does not implement multi-account
+replay, multi-currency replay, market valuation, unrealized PnL, base-position,
+sniper-pool, SQLite access, DataService calls, file writes, database writes, or
+DataService actions. Future implementation must add one fixture at a time
+without changing fixture expected outputs to fit an incorrect algorithm.

@@ -15,7 +15,10 @@ def main() -> int:
     quick_start_path = root / "docs" / "15_quick_start_readonly_shell_demo.md"
     business_acceptance_path = root / "docs" / "16_manual_acceptance_readonly_business_pages.md"
     ui_readability_path = root / "docs" / "17_ui_readability_checklist.md"
+    milestone_v02_path = root / "docs" / "18_milestone_v0_2_readonly_business_pages.md"
+    business_summary_path = root / "docs" / "19_readonly_business_pages_summary.md"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
+    release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
     readme_path = root / "README.md"
     gitignore_path = root / ".gitignore"
@@ -27,7 +30,10 @@ def main() -> int:
     require(quick_start_path.exists(), "quick start doc exists")
     require(business_acceptance_path.exists(), "read-only business pages acceptance doc exists")
     require(ui_readability_path.exists(), "UI readability checklist exists")
+    require(milestone_v02_path.exists(), "v0.2 milestone doc exists")
+    require(business_summary_path.exists(), "read-only business pages summary exists")
     require(release_notes_path.exists(), "release notes doc exists")
+    require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
 
     script = script_path.read_text(encoding="utf-8")
@@ -37,7 +43,10 @@ def main() -> int:
     quick_start = quick_start_path.read_text(encoding="utf-8")
     business_acceptance = business_acceptance_path.read_text(encoding="utf-8")
     ui_readability = ui_readability_path.read_text(encoding="utf-8")
+    milestone_v02 = milestone_v02_path.read_text(encoding="utf-8")
+    business_summary = business_summary_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
+    release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
     readme = readme_path.read_text(encoding="utf-8")
     gitignore = gitignore_path.read_text(encoding="utf-8")
@@ -63,6 +72,12 @@ def main() -> int:
     )
     require("17_ui_readability_checklist.md" in readme, "README links UI readability checklist")
     require("v0.2 ReadOnly Business Pages" in readme, "README documents v0.2 read-only business pages")
+    require(
+        "18_milestone_v0_2_readonly_business_pages.md" in readme,
+        "README links v0.2 milestone doc",
+    )
+    require("v0_2_readonly_business_pages.md" in readme, "README links v0.2 release notes")
+    require("19_readonly_business_pages_summary.md" in readme, "README links read-only business summary")
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
 
@@ -136,6 +151,27 @@ def main() -> int:
     require("Column Visibility Standards" in ui_readability, "UI readability checklist includes column standards")
     require("Density Setting Standards" in ui_readability, "UI readability checklist includes density standards")
 
+    require("v0.2 ReadOnly Business Pages" in milestone_v02, "v0.2 milestone doc has milestone name")
+    require("账户与组合" in milestone_v02, "v0.2 milestone doc mentions account portfolio")
+    require("标的与策略" in milestone_v02, "v0.2 milestone doc mentions instrument strategy")
+    require("不支持自动交易" in milestone_v02, "v0.2 milestone doc states automatic trading is unsupported")
+    require("不写 TradeLog" in milestone_v02, "v0.2 milestone doc states TradeLog is not written")
+    require("QML still must not directly access SQLite" in milestone_v02, "v0.2 milestone doc prohibits direct SQLite access")
+    require("must not directly call `DataServiceClient`" in milestone_v02, "v0.2 milestone doc prohibits direct DataServiceClient use")
+    require("v0.2.0-readonly-business-pages" in milestone_v02, "v0.2 milestone doc includes suggested tag")
+
+    require("Release Notes - v0.2 ReadOnly Business Pages" in release_notes_v02, "v0.2 release notes title")
+    require("Suggested Tag After Merge" in release_notes_v02, "v0.2 release notes include suggested tag section")
+    require("v0.2.0-readonly-business-pages" in release_notes_v02, "v0.2 release notes include suggested tag")
+    require("Auto trading" in release_notes_v02, "v0.2 release notes list excluded auto trading")
+    require("Writing to `trade_log`" in release_notes_v02, "v0.2 release notes list excluded trade_log writing")
+
+    require("ReadOnlyTable" in business_summary, "business summary mentions ReadOnlyTable")
+    require("ReadOnlyColumnChooser" in business_summary, "business summary mentions ReadOnlyColumnChooser")
+    require("禁止" in business_summary or "Not supported" in business_summary, "business summary lists prohibited operations")
+    require("execute strategy" in business_summary, "business summary excludes strategy execution")
+    require("generate TradeDraft" in business_summary, "business summary excludes TradeDraft generation")
+
     require("Release Notes - v0.1 ReadOnly Shell Demo" in release_notes, "release notes title")
     require("Suggested Tag After Merge" in release_notes, "release notes include suggested tag section")
     require("v0.1.0-readonly-shell-demo" in release_notes, "release notes include suggested tag")
@@ -148,7 +184,10 @@ def main() -> int:
         "docs index links read-only business acceptance doc",
     )
     require("17_ui_readability_checklist.md" in docs_index, "docs index links UI readability checklist")
+    require("18_milestone_v0_2_readonly_business_pages.md" in docs_index, "docs index links v0.2 milestone")
+    require("19_readonly_business_pages_summary.md" in docs_index, "docs index links business summary")
     require("release_notes/v0_1_readonly_shell_demo.md" in docs_index, "docs index links release notes")
+    require("release_notes/v0_2_readonly_business_pages.md" in docs_index, "docs index links v0.2 release notes")
     return 0
 
 

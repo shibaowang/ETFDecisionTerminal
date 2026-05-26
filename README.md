@@ -739,11 +739,23 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - UI readability rules are documented in [UI Readability Checklist](docs/17_ui_readability_checklist.md).
 - These pages remain read-only and still do not support writes, trading, accounting entry, strategy execution, TradeDraft generation, or direct QML access to `DataServiceClient` / SQLite.
 
-## Current Milestone: v0.1 ReadOnly Shell Demo
+## TASK-043 v0.2 ReadOnly Business Pages Milestone
 
-The current milestone is `v0.1 ReadOnly Shell Demo`: a local desktop read-only demonstration loop for DataService, ShellServices, ETFDecisionShell, Watchdog diagnostics, and developer acceptance scripts.
+- Current milestone: `v0.2 ReadOnly Business Pages`.
+- v0.2 closes the first group of formal read-only business page prototypes: account / portfolio and instrument / strategy.
+- The pages support read-only Connect / Refresh, search, filtering, sorting, column visibility, density switching, empty states, and error states.
+- The pages remain read-only and do not support writes, trading, accounting entry, strategy execution, TradeDraft generation, direct QML SQLite access, or direct QML `DataServiceClient` usage.
+- v0.2 milestone details: [Milestone - v0.2 ReadOnly Business Pages](docs/18_milestone_v0_2_readonly_business_pages.md).
+- v0.2 release notes: [Release Notes - v0.2 ReadOnly Business Pages](docs/release_notes/v0_2_readonly_business_pages.md).
+- v0.2 summary: [ReadOnly Business Pages Summary](docs/19_readonly_business_pages_summary.md).
+
+## Current Milestone: v0.2 ReadOnly Business Pages
+
+The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.
 
 This project is still in development and must not be used for real trading, broker operations, real order placement, or production accounting.
+
+v0.2 pages are still read-only. They do not support account editing, portfolio editing, instrument editing, strategy editing, OTC editing, real accounting entry, TradeLog writes, strategy execution, broker operations, or automatic trading.
 
 Milestone documents:
 
@@ -753,6 +765,9 @@ Milestone documents:
 - [Release Notes - v0.1 ReadOnly Shell Demo](docs/release_notes/v0_1_readonly_shell_demo.md)
 - [Manual Acceptance - ReadOnly Business Pages](docs/16_manual_acceptance_readonly_business_pages.md)
 - [UI Readability Checklist](docs/17_ui_readability_checklist.md)
+- [Milestone - v0.2 ReadOnly Business Pages](docs/18_milestone_v0_2_readonly_business_pages.md)
+- [Release Notes - v0.2 ReadOnly Business Pages](docs/release_notes/v0_2_readonly_business_pages.md)
+- [ReadOnly Business Pages Summary](docs/19_readonly_business_pages_summary.md)
 - [Documentation Index](docs/README.md)
 
 Run tests:

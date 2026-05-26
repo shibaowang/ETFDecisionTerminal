@@ -17,4 +17,7 @@
 - [15 Quick Start - ReadOnly Shell Demo](15_quick_start_readonly_shell_demo.md)
 - [16 Manual Acceptance - ReadOnly Business Pages](16_manual_acceptance_readonly_business_pages.md)
 - [17 UI Readability Checklist](17_ui_readability_checklist.md)
+- [18 Milestone - v0.2 ReadOnly Business Pages](18_milestone_v0_2_readonly_business_pages.md)
+- [19 ReadOnly Business Pages Summary](19_readonly_business_pages_summary.md)
 - [Release Notes - v0.1 ReadOnly Shell Demo](release_notes/v0_1_readonly_shell_demo.md)
+- [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)

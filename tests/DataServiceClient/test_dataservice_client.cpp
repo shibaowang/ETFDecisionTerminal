@@ -240,6 +240,29 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
         auditCountBefore,
         "accountingHealth does not insert audit_log row");
 
+    auto replayPreview = client.accountingReplayPreview(
+        R"({"accountId":"ACC-DEMO-001","portfolioId":"PF-DEMO-001","requestedOutputs":["positions","cash"]})");
+    expectSuccessfulResponse(replayPreview, "client.accountingReplayPreview");
+    if (replayPreview) {
+        const auto payload = payloadObject(replayPreview.value());
+        expectTrue(!payload.value("implemented").toBool(true), "replay preview implemented=false");
+        expectTrue(!payload.value("replayExecuted").toBool(true), "replay preview replayExecuted=false");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "replay preview writeEnabled=false");
+        expectEqual(
+            payload.value("status").toString().toStdString(),
+            "REPLAY_NOT_AVAILABLE",
+            "replay preview status");
+        const auto warnings = payload.value("warnings").toArray();
+        const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
+            return value.toObject().value("code").toString() == "REPLAY_NOT_IMPLEMENTED";
+        });
+        expectTrue(hasReplayWarning, "replay preview warnings include REPLAY_NOT_IMPLEMENTED");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "accountingReplayPreview does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";
@@ -295,6 +318,11 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     expectTrue(
         afterDisconnect.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
         "accountingHealth after disconnect returns E9001");
+    auto replayAfterDisconnect = client.accountingReplayPreview("{}", 100);
+    expectTrue(!replayAfterDisconnect.hasValue(), "accountingReplayPreview after disconnect returns error");
+    expectTrue(
+        replayAfterDisconnect.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
+        "accountingReplayPreview after disconnect returns E9001");
 
     host.close();
 

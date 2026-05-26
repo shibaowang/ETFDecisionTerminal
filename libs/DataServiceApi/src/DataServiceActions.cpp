@@ -556,4 +556,107 @@ etfdt::protocol::ProtocolResponse handleAccountingHealth(
     return successResponse(context, payload);
 }
 
+etfdt::protocol::ProtocolResponse handleAccountingReplayPreview(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    const std::string trimmedPayload = trimCopy(context.request.payloadJson);
+    if (!etfdt::protocol::isLikelyJsonObjectOrArray(context.request.payloadJson)
+        || trimmedPayload.empty() || trimmedPayload.front() != '{') {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "accounting.replay.preview payload must be a JSON object");
+    }
+
+    const auto accountId = extractJsonStringField(context.request.payloadJson, "accountId").value_or("");
+    const auto portfolioId = extractJsonStringField(context.request.payloadJson, "portfolioId").value_or("");
+    const auto sourceFromTime =
+        extractJsonStringField(context.request.payloadJson, "sourceFromTime").value_or("");
+    const auto sourceToTime =
+        extractJsonStringField(context.request.payloadJson, "sourceToTime").value_or("");
+
+    std::string requestedOutputsJson = "[]";
+    if (const auto requestedOutputs = extractJsonFragmentField(context.request.payloadJson, "requestedOutputs");
+        requestedOutputs.has_value() && !requestedOutputs->empty()
+        && requestedOutputs->front() == '[') {
+        requestedOutputsJson = *requestedOutputs;
+    }
+
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":\"accounting.replay.preview\","
+            << "\"implemented\":false,"
+            << "\"readOnly\":true,"
+            << "\"replayExecuted\":false,"
+            << "\"writeEnabled\":false,"
+            << "\"contractVersion\":\"0.3-draft\","
+            << "\"calculationVersion\":\"not-implemented\","
+            << "\"status\":\"REPLAY_NOT_AVAILABLE\","
+            << "\"message\":\"Accounting replay preview is not implemented yet.\","
+            << "\"requestedScope\":{"
+            << "\"accountId\":" << jsonStringValue(accountId) << ','
+            << "\"portfolioId\":" << jsonStringValue(portfolioId) << ','
+            << "\"sourceFromTime\":" << jsonStringValue(sourceFromTime) << ','
+            << "\"sourceToTime\":" << jsonStringValue(sourceToTime) << ','
+            << "\"requestedOutputs\":" << requestedOutputsJson
+            << "},"
+            << "\"requiredFixtures\":["
+            << "\"FX001_EMPTY_LEDGER\","
+            << "\"FX002_SINGLE_BUY\","
+            << "\"FX003_BUY_SELL_PARTIAL\","
+            << "\"FX004_SELL_EXCEEDS_POSITION\","
+            << "\"FX005_MISSING_FEE\","
+            << "\"FX006_NEGATIVE_CASH\","
+            << "\"FX007_MULTI_INSTRUMENT\","
+            << "\"FX008_MULTI_ACCOUNT\","
+            << "\"FX009_BASE_POSITION_LOCKED\","
+            << "\"FX010_SNIPER_TIER_COMPLETED\","
+            << "\"FX011_STALE_SNAPSHOT\","
+            << "\"FX012_MISSING_MARKET_PRICE\","
+            << "\"FX013_MULTI_CURRENCY_UNSUPPORTED\""
+            << "],"
+            << "\"futureOutputs\":["
+            << "\"PositionListResponse\","
+            << "\"CashSummaryDto\","
+            << "\"PortfolioPnlDto\","
+            << "\"BasePositionDto\","
+            << "\"SniperPoolDto\","
+            << "\"AccountingIssueDto\""
+            << "],"
+            << "\"forbiddenWrites\":["
+            << "\"trade_log\","
+            << "\"trade_execution_group\","
+            << "\"trade_draft\","
+            << "\"cash_snapshot\","
+            << "\"position_snapshot\","
+            << "\"portfolio_summary\","
+            << "\"audit_log\""
+            << "],"
+            << "\"boundaries\":["
+            << "\"trade_log is the factual ledger\","
+            << "\"snapshots are derived data\","
+            << "\"this action does not replay accounting yet\","
+            << "\"this action does not write database tables\","
+            << "\"this action does not return calculated positions, cash, or pnl\""
+            << "],"
+            << "\"nextRequiredTask\":\"implement fixture-backed accounting replay before returning preview results\","
+            << "\"warnings\":["
+            << "{\"code\":\"REPLAY_NOT_IMPLEMENTED\","
+            << "\"message\":\"Fixture-backed accounting replay must be implemented in a future task.\","
+            << "\"blocking\":false}"
+            << "],"
+            << "\"errors\":["
+            << "{\"code\":\"REPLAY_NOT_AVAILABLE\","
+            << "\"message\":\"Accounting replay preview is not available yet.\","
+            << "\"blocking\":true}"
+            << "]"
+            << "}";
+
+    return successResponse(context, payload.str());
+}
+
 }  // namespace etfdt::data_service_api

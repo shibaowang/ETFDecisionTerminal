@@ -789,6 +789,14 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - It does not write `audit_log`, `trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`, `position_snapshot`, or `portfolio_summary`.
 - DataServiceClient exposes `accountingHealth()` as an explicit whitelist wrapper; no QML page is connected to it in this task.
 
+## TASK-049 Accounting Replay Preview Guard
+
+- `accounting.replay.preview` is now available as a read-only non-implementation guard.
+- It returns `success=true` at the protocol layer because the guard endpoint is callable, while the payload states `implemented=false`, `replayExecuted=false`, `writeEnabled=false`, and `status=REPLAY_NOT_AVAILABLE`.
+- The guard lists required fixtures `FX001` through `FX013`, future output DTO names, forbidden write tables, and a blocking `REPLAY_NOT_AVAILABLE` error.
+- It does not execute replay, read `trade_log` for calculation, return position / cash / PnL preview data, write snapshots, or write audit / trade tables.
+- DataServiceClient exposes `accountingReplayPreview(payloadJson)` as an explicit whitelist wrapper; no QML page is connected to it in this task.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

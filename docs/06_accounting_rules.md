@@ -132,3 +132,16 @@ principal_base =
   `writeEnabled=false`.
 - Future accounting actions such as `position.list`, `cash.summary`, and
   `portfolio.pnl.summary` still require separate task authorization and tests.
+
+## TASK-049 accounting.replay.preview Guard
+
+- `accounting.replay.preview` is currently a non-implementation guard.
+- It returns a callable read-only response with `implemented=false`,
+  `replayExecuted=false`, `writeEnabled=false`, and
+  `status=REPLAY_NOT_AVAILABLE`.
+- It does not read `trade_log` for accounting calculation.
+- It does not write snapshots or ledger tables.
+- It does not return fake positions, fake cash, fake PnL, fake base-position
+  state, or fake sniper-pool state.
+- Real replay preview must wait for fixture-backed implementation covering
+  FX001-FX013.

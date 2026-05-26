@@ -241,3 +241,19 @@ only reports module capability and boundary state:
 - It does not run replay, does not calculate positions, cash, PnL, base
   position, or sniper-pool values, and does not write database tables.
 - It must not call `data.audit.append`.
+
+## TASK-049 Implemented Replay Preview Guard
+
+`accounting.replay.preview` is the second accounting read-only action. It is
+only a non-implementation guard:
+
+- It declares the replay preview route and request / response contract.
+- It returns `implemented=false`, `replayExecuted=false`,
+  `writeEnabled=false`, and `status=REPLAY_NOT_AVAILABLE`.
+- It lists FX001-FX013 as required fixtures for a future real replay
+  implementation.
+- It does not implement replay, read `trade_log` for calculation, write
+  snapshots, write ledger tables, or return calculated position / cash / PnL
+  DTOs.
+- The next required task is fixture-backed replay implementation; the guard
+  must not be treated as replay being available.

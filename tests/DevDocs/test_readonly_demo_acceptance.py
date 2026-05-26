@@ -125,6 +125,8 @@ def main() -> int:
     )
     require("26_position_dto_viewmodel_mapping.md" in readme, "README links position DTO mapping")
     require("accounting.health" in readme, "README documents accounting.health")
+    require("accounting.replay.preview" in readme, "README documents accounting replay preview guard")
+    require("REPLAY_NOT_AVAILABLE" in readme, "README documents replay preview unavailable status")
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
 
@@ -246,12 +248,20 @@ def main() -> int:
     require("accounting.health" in accounting_rules, "accounting rules documents accounting.health")
     require("replayImplemented=false" in accounting_rules, "accounting rules state replay is not implemented")
     require("writeEnabled=false" in accounting_rules, "accounting rules state writes are disabled")
+    require("accounting.replay.preview" in accounting_rules, "accounting rules documents replay preview guard")
+    require("REPLAY_NOT_AVAILABLE" in accounting_rules, "accounting rules documents replay unavailable status")
 
     require("accounting.health" in protocol_doc, "protocol doc documents accounting.health")
     require("replayImplemented" in protocol_doc, "protocol doc includes replayImplemented")
     require("writeEnabled" in protocol_doc, "protocol doc includes writeEnabled")
     require("REPLAY_NOT_IMPLEMENTED" in protocol_doc, "protocol doc includes replay warning")
     require("position.list" in protocol_doc, "protocol doc lists future position action")
+    require("accounting.replay.preview" in protocol_doc, "protocol doc documents replay preview guard")
+    require("implemented=false" in protocol_doc, "protocol doc states preview guard is not implemented")
+    require("replayExecuted=false" in protocol_doc, "protocol doc states replay is not executed")
+    require("REPLAY_NOT_AVAILABLE" in protocol_doc, "protocol doc includes replay unavailable status")
+    require("FX001_EMPTY_LEDGER" in protocol_doc, "protocol doc includes first required fixture")
+    require("FX013_MULTI_CURRENCY_UNSUPPORTED" in protocol_doc, "protocol doc includes last required fixture")
 
     require("trade_log 是事实账本" in accounting_rules, "accounting rules state trade_log is fact ledger")
     require("position_accounting_boundary" in accounting_rules, "accounting rules link position boundary")
@@ -270,6 +280,8 @@ def main() -> int:
         "TASK-048 Implemented Minimal Accounting Health" in position_boundary,
         "boundary doc records implemented accounting health",
     )
+    require("TASK-049 Implemented Replay Preview Guard" in position_boundary, "boundary doc records replay preview guard")
+    require("FX001-FX013" in position_boundary, "boundary doc references required fixture range")
     require("ShellPositionSummaryViewModel" in position_boundary, "boundary doc drafts position ViewModel")
 
     require("PositionSummaryDto" in position_contract, "position contract includes PositionSummaryDto")
@@ -300,6 +312,9 @@ def main() -> int:
         "stable contract documents implemented accounting health",
     )
     require("REPLAY_NOT_IMPLEMENTED" in position_stable_contract, "stable contract includes replay warning")
+    require("TASK-049 Replay Preview Guard Status" in position_stable_contract, "stable contract documents replay preview guard")
+    require("REPLAY_NOT_AVAILABLE" in position_stable_contract, "stable contract includes replay unavailable status")
+    require("FX001-FX013" in position_stable_contract, "stable contract references required fixtures")
     require("不写 trade_log" in position_stable_contract, "stable contract prohibits trade_log writes")
     require("QML 不计算账务" in position_stable_contract, "stable contract prohibits QML accounting calculation")
     require("ShellPositionListModel" in position_stable_contract, "stable contract includes ShellPositionListModel")
@@ -373,6 +388,9 @@ def main() -> int:
         "25_position_shell_viewmodel_design.md" in accounting_fixture_samples,
         "fixture samples link position ViewModel design",
     )
+    require("accounting.replay.preview" in accounting_fixture_samples, "fixture samples mention replay preview guard")
+    require("implemented=false" in accounting_fixture_samples, "fixture samples state guard implemented false")
+    require("replayExecuted=false" in accounting_fixture_samples, "fixture samples state replay is not executed")
 
     require("ShellPositionListModel" in position_viewmodel_design, "ViewModel design includes ShellPositionListModel")
     require("ShellCashSummaryObject" in position_viewmodel_design, "ViewModel design includes ShellCashSummaryObject")

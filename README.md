@@ -809,6 +809,13 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixtures-dir tests/fixtures/accounting_replay
 ```
 
+## TASK-051 Accounting Fixture Loader Boundary
+
+- `tests/AccountingFixtures/AccountingFixtureLoader` is a test-support-only loader for static accounting replay fixtures.
+- It reads `fixtures_index.json`, loads FX001-FX013 JSON files, parses input facts / expected outputs / expected issues into memory, and validates fixture structure.
+- It does not implement replay, does not calculate cash, position, cost, or PnL, does not access SQLite, does not call DataService, and does not write output files.
+- Loader test CTest: `accounting_replay_fixture_loader`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

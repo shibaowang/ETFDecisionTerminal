@@ -983,6 +983,236 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx007MultiIns
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx008MultiAccountResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX008_MULTI_ACCOUNT") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 multi-account assertion only accepts FX008_MULTI_ACCOUNT.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    const auto expectedIssue = std::find_if(
+        fixture.expectedIssues.begin(),
+        fixture.expectedIssues.end(),
+        [](const AccountingExpectedIssue& issue) { return issue.code == "MARKET_PRICE_MISSING"; });
+    const bool expectsMissingPrice = expectedIssue != fixture.expectedIssues.end();
+    const std::string expectedStatus = expectsMissingPrice ? kReplayStatusWarning : kReplayStatusOk;
+    if (!result.implemented || !result.replayExecuted || result.status != expectedStatus) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 replay result must be implemented=true, replayExecuted=true, and match expected status.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto expectedPositions = fixture.expectedOutputsRawJson.value("positionSummaries");
+    if (!expectedPositions.isArray() || expectedPositions.toArray().size() < 2) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 fixture expected output must contain at least two account-scoped positions.",
+            false,
+            {"expectedOutputs.positionSummaries"});
+    }
+
+    const auto positionsValue = result.positionListResponseRaw.value("positions");
+    if (!positionsValue.isArray() || positionsValue.toArray().size() < 2) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 positionListResponseRaw.positions must contain at least two positions.",
+            false,
+            {"positionListResponseRaw.positions"});
+    }
+
+    const auto actualPositions = positionsValue.toArray();
+    bool sawAccountOne = false;
+    bool sawAccountTwo = false;
+    for (const auto& expectedValue : expectedPositions.toArray()) {
+        const auto expectedPosition = expectedValue.toObject();
+        const auto expectedAccount = expectedPosition.value("accountId").toString();
+        const auto expectedInstrument = expectedPosition.value("instrumentCode").toString();
+        const auto expectedQuantity = expectedPosition.value("quantityText").toString();
+        bool found = false;
+        for (const auto& actualValue : actualPositions) {
+            const auto actualPosition = actualValue.toObject();
+            if (actualPosition.value("accountId").toString() != expectedAccount
+                || actualPosition.value("instrumentCode").toString() != expectedInstrument) {
+                continue;
+            }
+            found = true;
+            if (actualPosition.value("portfolioId").toString() != "PF-DEMO-001") {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx008MultiAccount,
+                    "FX008 must preserve portfolioId on each account-scoped position.",
+                    false,
+                    {"positionListResponseRaw.positions.portfolioId"});
+            }
+            if (actualPosition.value("quantityText").toString() != expectedQuantity) {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx008MultiAccount,
+                    "FX008 quantityText must match each account-scoped expected position.",
+                    false,
+                    {"positionListResponseRaw.positions.quantityText"});
+            }
+            if (actualPosition.value("costAmountText").toString().isEmpty()) {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx008MultiAccount,
+                    "FX008 must provide costAmountText per account-scoped position.",
+                    false,
+                    {"positionListResponseRaw.positions.costAmountText"});
+            }
+            const auto marketValue = actualPosition.value("marketValueText").toString();
+            const auto unrealizedPnl = actualPosition.value("unrealizedPnlText").toString();
+            if ((!marketValue.isEmpty() && marketValue != "unavailable")
+                || (!unrealizedPnl.isEmpty() && unrealizedPnl != "unavailable")) {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx008MultiAccount,
+                    "FX008 must not fabricate market value or unrealized PnL.",
+                    false,
+                    {"marketValueText", "unrealizedPnlText"});
+            }
+            if (expectedAccount == "ACC-DEMO-001") {
+                sawAccountOne = true;
+            }
+            if (expectedAccount == "ACC-DEMO-002") {
+                sawAccountTwo = true;
+            }
+        }
+        if (!found) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx008MultiAccount,
+                "FX008 positions must contain every expected accountId and instrumentCode pair.",
+                false,
+                {"positionListResponseRaw.positions.accountId", "positionListResponseRaw.positions.instrumentCode"});
+        }
+    }
+
+    if (!sawAccountOne || !sawAccountTwo) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 must keep ACC-DEMO-001 and ACC-DEMO-002 separated.",
+            false,
+            {"positionListResponseRaw.positions.accountId"});
+    }
+
+    const auto accountCashSummaries = result.cashSummaryRaw.value("accountCashSummaries");
+    if (!accountCashSummaries.isArray() || accountCashSummaries.toArray().size() < 2) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 cashSummaryRaw must expose accountCashSummaries instead of a mixed account balance.",
+            false,
+            {"cashSummaryRaw.accountCashSummaries"});
+    }
+
+    bool sawAccountOneCash = false;
+    bool sawAccountTwoCash = false;
+    for (const auto& summaryValue : accountCashSummaries.toArray()) {
+        const auto summary = summaryValue.toObject();
+        if (summary.value("accountId").toString() == "ACC-DEMO-001") {
+            sawAccountOneCash = summary.value("cashBalanceText").toString() == "48999.00 CNY";
+        }
+        if (summary.value("accountId").toString() == "ACC-DEMO-002") {
+            sawAccountTwoCash = summary.value("cashBalanceText").toString() == "47999.00 CNY";
+        }
+    }
+    if (!sawAccountOneCash || !sawAccountTwoCash) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 account cash summaries must keep account balances separated.",
+            false,
+            {"cashSummaryRaw.accountCashSummaries.cashBalanceText"});
+    }
+
+    if (result.portfolioPnlRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx008MultiAccount,
+            "FX008 must include portfolioPnlRaw without fabricated valuation fields.",
+            false,
+            {"portfolioPnlRaw"});
+    }
+
+    if (expectsMissingPrice) {
+        bool hasMarketPriceMissing = false;
+        bool blockingMatches = false;
+        for (const auto& issue : result.issues) {
+            if (issue.code == "MARKET_PRICE_MISSING") {
+                hasMarketPriceMissing = true;
+                blockingMatches = issue.blocking == expectedIssue->blocking;
+            }
+        }
+        if (!hasMarketPriceMissing || !blockingMatches) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx008MultiAccount,
+                "FX008 must contain MARKET_PRICE_MISSING with blocking matching the fixture expected issue.",
+                false,
+                {"issues.MARKET_PRICE_MISSING"});
+        }
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx008MultiAccount,
+        "FX008 multi-account replay result keeps account and cash dimensions separated.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "positionListResponseRaw.positions.accountId",
+            "positionListResponseRaw.positions.portfolioId",
+            "positionListResponseRaw.positions.instrumentCode",
+            "positionListResponseRaw.positions.quantityText",
+            "positionListResponseRaw.positions.costAmountText",
+            "cashSummaryRaw.accountCashSummaries",
+            "portfolioPnlRaw",
+            "issues.MARKET_PRICE_MISSING",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

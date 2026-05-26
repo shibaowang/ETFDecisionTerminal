@@ -857,6 +857,15 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This does not implement sell replay, realized / unrealized PnL, market valuation, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
 - Minimal FX002 CTest: `accounting_replay_minimal_fx002`.
 
+## TASK-057 Accounting Replay Minimal FX003
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL`.
+- FX003 returns `implemented=true`, `replayExecuted=true`, `status=OK`, one remaining `159509` position with `quantityText=600`, `costAmountText=600.60 CNY`, `cashBalanceText=99478.00 CNY`, and `realizedPnlText=78.60 CNY`.
+- FX004-FX013 still return `NOT_IMPLEMENTED`.
+- Realized PnL uses the fixture standard: buy fee enters cost, sell fee is deducted from sell cash inflow, and `realizedPnl = netSellInflow - allocatedSoldCost`.
+- This does not implement FX004, multi-account, multi-instrument, market valuation, unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- Minimal FX003 CTest: `accounting_replay_minimal_fx003`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

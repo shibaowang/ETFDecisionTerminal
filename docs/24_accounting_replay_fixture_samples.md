@@ -1146,3 +1146,47 @@ base-position calculation, sniper-pool calculation, SQLite access, DataService
 calls, file writes, database writes, or DataService actions. Future replay work
 must continue one fixture at a time and keep FX001/FX002 tests passing without
 changing fixture expected outputs to fit an incorrect algorithm.
+
+## 15. TASK-057 Minimal FX003 Partial-Sell Replay
+
+`FX003_BUY_SELL_PARTIAL` now has a test-only minimal replay implementation
+through `AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` are the
+  only fixtures with `implemented=true`.
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` are the
+  only fixtures with `replayExecuted=true`.
+- `FX003_BUY_SELL_PARTIAL` returns `status=OK`.
+- `FX003_BUY_SELL_PARTIAL` returns one remaining `159509` position with
+  `quantityText=600`.
+- `FX003_BUY_SELL_PARTIAL` returns `costAmountText=600.60 CNY`.
+- `FX003_BUY_SELL_PARTIAL` returns `cashBalanceText=99478.00 CNY`.
+- `FX003_BUY_SELL_PARTIAL` returns `realizedPnlText=78.60 CNY`.
+- `FX004_SELL_EXCEEDS_POSITION` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still
+  return `NOT_IMPLEMENTED`.
+
+The realized PnL口径 for this fixture is:
+
+- buyGrossAmount = `1000.00 CNY`
+- buyFee = `1.00 CNY`
+- totalBuyCost = `1001.00 CNY`
+- buyQuantity = `1000`
+- averageCostPerUnit = `1.001 CNY`
+- sellQuantity = `400`
+- allocatedSoldCost = `400.40 CNY`
+- sellGrossAmount = `480.00 CNY`
+- sellFee = `1.00 CNY`
+- netSellInflow = `479.00 CNY`
+- `realizedPnl = netSellInflow - allocatedSoldCost = 78.60 CNY`
+- remainingQuantity = `600`
+- remainingCostAmount = `600.60 CNY`
+- cashBalance = `99478.00 CNY`
+
+This implementation is intentionally limited to one initial cash fact, one BUY
+fact, and one later SELL fact for the same instrument. It does not implement
+FX004 oversell handling, missing-fee validation, negative-cash errors,
+multi-account replay, multi-instrument replay, market valuation, unrealized PnL,
+base-position, sniper-pool, SQLite access, DataService calls, file writes,
+database writes, or DataService actions. Future implementation must add one
+fixture at a time without changing fixture expected outputs to fit an incorrect
+algorithm.

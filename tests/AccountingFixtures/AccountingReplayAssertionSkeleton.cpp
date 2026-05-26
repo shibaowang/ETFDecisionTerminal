@@ -348,6 +348,152 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx002SingleBu
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx003BuySellPartialResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX003_BUY_SELL_PARTIAL") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 partial-sell assertion only accepts FX003_BUY_SELL_PARTIAL.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusOk) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 replay result must be implemented=true, replayExecuted=true, and status=OK.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto expectedPositions = fixture.expectedOutputsRawJson.value("positionSummaries");
+    const auto expectedCash = fixture.expectedOutputsRawJson.value("cashSummary");
+    const auto expectedPnl = fixture.expectedOutputsRawJson.value("portfolioPnl");
+    if (!expectedPositions.isArray() || expectedPositions.toArray().size() != 1 || !expectedCash.isObject()
+        || !expectedPnl.isObject()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 fixture expected output must contain one position, cash summary, and portfolio PnL.",
+            false,
+            {"expectedOutputs.positionSummaries", "expectedOutputs.cashSummary", "expectedOutputs.portfolioPnl"});
+    }
+
+    const auto expectedPosition = expectedPositions.toArray().first().toObject();
+    const auto expectedCashSummary = expectedCash.toObject();
+    const auto expectedPortfolioPnl = expectedPnl.toObject();
+    const auto positionsValue = result.positionListResponseRaw.value("positions");
+    if (!positionsValue.isArray() || positionsValue.toArray().size() != 1) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 positionListResponseRaw.positions must contain exactly one position.",
+            false,
+            {"positionListResponseRaw.positions"});
+    }
+
+    const auto position = positionsValue.toArray().first().toObject();
+    if (position.value("instrumentCode").toString() != "159509"
+        || position.value("quantityText").toString() != "600"
+        || position.value("costAmountText").toString() != expectedPosition.value("costAmountText").toString()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 position output must contain 159509, quantityText=600, and expected costAmountText.",
+            false,
+            {"instrumentCode", "quantityText", "costAmountText"});
+    }
+
+    if (result.cashSummaryRaw.isEmpty() || result.portfolioPnlRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 must include cashSummaryRaw and portfolioPnlRaw.",
+            false,
+            {"cashSummaryRaw", "portfolioPnlRaw"});
+    }
+
+    if (result.cashSummaryRaw.value("cashBalanceText").toString()
+            != expectedCashSummary.value("cashBalanceText").toString()
+        || result.cashSummaryRaw.value("feeTotalText").toString()
+            != expectedCashSummary.value("feeTotalText").toString()
+        || result.cashSummaryRaw.value("sellCashInflowText").toString() != "479.00 CNY") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 cash summary must match expected cash balance, sell inflow, and fee total.",
+            false,
+            {"cashBalanceText", "sellCashInflowText", "feeTotalText"});
+    }
+
+    if (result.portfolioPnlRaw.value("realizedPnlText").toString()
+        != expectedPortfolioPnl.value("realizedPnlText").toString()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx003BuySellPartial,
+            "FX003 portfolioPnlRaw.realizedPnlText must match fixture expected output.",
+            false,
+            {"portfolioPnlRaw.realizedPnlText"});
+    }
+
+    for (const auto& issue : result.issues) {
+        if (issue.blocking) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx003BuySellPartial,
+                "FX003 partial sell result must not contain blocking issues.",
+                false,
+                {"issues"});
+        }
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx003BuySellPartial,
+        "FX003 partial-sell replay result contains the expected remaining position, cash, and realized PnL outputs.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "positionListResponseRaw.positions",
+            "instrumentCode",
+            "quantityText",
+            "costAmountText",
+            "cashSummaryRaw.cashBalanceText",
+            "cashSummaryRaw.sellCashInflowText",
+            "cashSummaryRaw.feeTotalText",
+            "portfolioPnlRaw.realizedPnlText",
+            "issues",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

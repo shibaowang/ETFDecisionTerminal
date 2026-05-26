@@ -1190,3 +1190,30 @@ base-position, sniper-pool, SQLite access, DataService calls, file writes,
 database writes, or DataService actions. Future implementation must add one
 fixture at a time without changing fixture expected outputs to fit an incorrect
 algorithm.
+
+## 16. TASK-058 Minimal FX004 Sell-Exceeds-Position Detection
+
+`FX004_SELL_EXCEEDS_POSITION` now has a test-only minimal replay error
+detection path through `AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` returns `implemented=true`.
+- `FX004_SELL_EXCEEDS_POSITION` returns `replayExecuted=true`.
+- `FX004_SELL_EXCEEDS_POSITION` returns `status=ERROR`.
+- `FX004_SELL_EXCEEDS_POSITION` returns a blocking `SELL_EXCEEDS_POSITION`
+  issue when SELL quantity exceeds available BUY quantity.
+- `FX004_SELL_EXCEEDS_POSITION` does not generate negative holdings.
+- `FX004_SELL_EXCEEDS_POSITION` does not generate normal position, cash, PnL,
+  base-position, or sniper-pool success outputs.
+- `FX005_MISSING_FEE` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still return
+  `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to detecting one BUY fact followed
+by one SELL fact for the same instrument where SELL quantity is greater than BUY
+quantity. It does not implement missing-fee validation, negative-cash errors,
+multi-account replay, multi-instrument replay, market valuation, realized PnL,
+unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls,
+file writes, database writes, or DataService actions. Future implementation
+must add one fixture at a time without changing fixture expected outputs to fit
+an incorrect algorithm.

@@ -265,3 +265,7 @@ v0.1 草案。
 - FX004 oversell handling must be implemented in its own task and must not be mixed into the FX003 partial-sell implementation.
 - Do not mix missing-fee, negative-cash, market-price, or multi-currency error handling into unrelated fixture tasks.
 - Every new fixture implementation must preserve FX001-FX003 tests and keep FX004-FX013 explicitly guarded until their own task is authorized.
+- After FX004, do not jump directly to multi-account, multi-instrument, multi-currency, base-position, sniper-pool, or market valuation replay.
+- FX005 missing-fee handling and FX006 negative-cash handling must remain separate tasks.
+- Do not mix multiple error fixtures into one implementation task.
+- Every new replay task after FX004 must preserve FX001-FX004 tests and keep FX005-FX013 explicitly guarded until their own task is authorized.

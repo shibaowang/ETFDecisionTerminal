@@ -48,4 +48,8 @@ one 159509 position, `quantityText=1000`, `costAmountText=1001.00 CNY`, and
 `FX003_BUY_SELL_PARTIAL`, returning one remaining 159509 position,
 `quantityText=600`, `costAmountText=600.60 CNY`,
 `cashBalanceText=99478.00 CNY`, and `realizedPnlText=78.60 CNY`.
-FX004-FX013 remain `NOT_IMPLEMENTED`.
+
+`AccountingReplayMinimalEngine` now also supports
+`FX004_SELL_EXCEEDS_POSITION`, returning `status=ERROR` with a blocking
+`SELL_EXCEEDS_POSITION` issue and no normal position, cash, or PnL success
+outputs. FX005-FX013 remain `NOT_IMPLEMENTED`.

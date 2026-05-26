@@ -866,6 +866,15 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This does not implement FX004, multi-account, multi-instrument, market valuation, unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
 - Minimal FX003 CTest: `accounting_replay_minimal_fx003`.
 
+## TASK-058 Accounting Replay Minimal FX004
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, `FX003_BUY_SELL_PARTIAL`, and `FX004_SELL_EXCEEDS_POSITION`.
+- FX004 only detects oversell: if SELL quantity exceeds the prior BUY quantity, it returns `implemented=true`, `replayExecuted=true`, `status=ERROR`, and a blocking `SELL_EXCEEDS_POSITION` issue.
+- FX004 does not generate negative holdings or normal position / cash / PnL success outputs.
+- FX005-FX013 still return `NOT_IMPLEMENTED`.
+- This does not implement missing-fee errors, negative-cash errors, multi-account, multi-instrument, market valuation, unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- Minimal FX004 CTest: `accounting_replay_minimal_fx004`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

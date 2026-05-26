@@ -184,3 +184,17 @@ for FX001-FX013 are defined in [Accounting Replay Fixture Samples](24_accounting
 Future replay implementation must use `docs/24_accounting_replay_fixture_samples.md`
 as the primary sample source for input facts, expected DTO outputs, expected
 issues, and blocking expectations.
+
+## 6. Static Fixture Files
+
+TASK-050 lands the fixture samples as static JSON files:
+
+- Fixture directory: `tests/fixtures/accounting_replay/`
+- Fixture index: `tests/fixtures/accounting_replay/fixtures_index.json`
+- Validator: `tests/AccountingFixtures/validate_accounting_replay_fixtures.py`
+- CTest name: `accounting_replay_fixture_static_validation`
+
+The validator checks structure, required fixture coverage, required issue
+codes, and forbidden text. It does not calculate cash, positions, PnL, or
+accounting correctness. It does not access SQLite, call DataService, or depend
+on external market data.

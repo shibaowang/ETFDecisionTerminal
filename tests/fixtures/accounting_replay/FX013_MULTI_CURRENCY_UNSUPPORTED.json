@@ -1,0 +1,47 @@
+{
+  "fixtureId": "FX013_MULTI_CURRENCY_UNSUPPORTED",
+  "name": "Multi currency unsupported",
+  "purpose": "Verify missing FX rate blocks aggregate portfolio totals.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "MULTI",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX013-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-1001.00 CNY", "currency": "CNY", "source": "fixture", "note": "CNY instrument."},
+      {"factId": "TR-FX013-002", "tradeTime": "2026-01-03T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "USD-DEMO", "action": "BUY", "quantityText": "10", "priceText": "50.00 USD", "amountText": "500.00 USD", "feeText": "1.00 USD", "cashFlowText": "-501.00 USD", "currency": "USD", "source": "fixture", "note": "USD instrument without FX rate."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX013-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100000.00 CNY", "currency": "CNY", "note": "CNY cash."},
+      {"factId": "CF-FX013-002", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "1000.00 USD", "currency": "USD", "note": "USD cash."}
+    ],
+    "marketPriceFacts": [
+      {"instrumentCode": "159509", "priceTime": "2026-01-31T15:00:00Z", "priceText": "1.000 CNY", "currency": "CNY", "source": "fixture"},
+      {"instrumentCode": "USD-DEMO", "priceTime": "2026-01-31T15:00:00Z", "priceText": "50.00 USD", "currency": "USD", "source": "fixture"}
+    ]
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "currency": "CNY", "quantityText": "1000", "dataQualityStatus": "OK"},
+      {"instrumentCode": "USD-DEMO", "currency": "USD", "quantityText": "10", "dataQualityStatus": "ERROR"}
+    ],
+    "cashSummary": {"cashBalanceText": "", "dataQualityStatus": "ERROR", "note": "Aggregate cash is blocked without FX rate."},
+    "portfolioPnl": {"totalAssetsText": "", "totalReturnRatioText": "", "dataQualityStatus": "ERROR"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [
+    {"code": "MULTI_CURRENCY_UNSUPPORTED", "level": "ERROR", "blocking": true, "message": "Multi-currency aggregation is unsupported without FX policy."},
+    {"code": "FX_RATE_MISSING", "level": "ERROR", "blocking": true, "message": "FX rate is missing."}
+  ],
+  "blocking": true,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Portfolio totalAssets must not be fabricated without FX conversion."
+  ]
+}

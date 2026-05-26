@@ -1,0 +1,41 @@
+{
+  "fixtureId": "FX009_BASE_POSITION_LOCKED",
+  "name": "Base position locked",
+  "purpose": "Verify 20 percent base position output and sellable amount above base.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX009-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "20000", "priceText": "1.000 CNY", "amountText": "20000.00 CNY", "feeText": "0.00 CNY", "cashFlowText": "-20000.00 CNY", "currency": "CNY", "source": "fixture", "note": "Representative base position fact."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX009-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100000.00 CNY", "currency": "CNY", "note": "Initial cash for 20 percent base policy sample."}
+    ],
+    "marketPriceFacts": [
+      {"instrumentCode": "159509", "priceTime": "2026-01-31T15:00:00Z", "priceText": "1.000 CNY", "currency": "CNY", "source": "fixture"}
+    ]
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "20000", "basePositionFlag": true, "dataQualityStatus": "OK"}
+    ],
+    "cashSummary": {"cashBalanceText": "80000.00 CNY", "dataQualityStatus": "OK"},
+    "portfolioPnl": {"totalAssetsText": "100000.00 CNY", "dataQualityStatus": "OK"},
+    "basePosition": {"portfolioId": "PF-DEMO-001", "targetBaseRatioText": "20%", "targetBaseAmountText": "20000.00 CNY", "currentBaseRatioText": "20%", "lockedBaseAmountText": "20000.00 CNY", "sellableAboveBaseAmountText": "0.00 CNY", "basePositionStatus": "LOCKED", "dataQualityStatus": "OK"},
+    "sniperPool": null
+  },
+  "expectedIssues": [],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "This does not implement sell logic; it validates derived display constraints only.",
+    "UI must not compute base position state."
+  ]
+}

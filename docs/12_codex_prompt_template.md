@@ -239,3 +239,7 @@ v0.1 草案。
 - `accounting.replay.preview` currently means the replay preview guard is callable; it must not be treated as replay implementation.
 - The replay preview guard must remain read-only and must not be expanded into writes, snapshot generation, or fake DTO output.
 - Real replay preview implementation must reference and test all FX001-FX013 fixture samples before returning calculated results.
+- Accounting replay implementation tasks must use `tests/fixtures/accounting_replay/` as the fixture input set.
+- Do not change fixture expected outputs to make an incorrect replay algorithm pass.
+- Any fixture expected-output change must be explicitly justified as a contract correction.
+- `tests/AccountingFixtures/validate_accounting_replay_fixtures.py` is static validation only and does not replace replay calculation tests.

@@ -1,0 +1,21 @@
+{
+  "fixtureSet": "accounting_replay_v0_3",
+  "schemaVersion": "0.1",
+  "description": "Static accounting replay fixture samples. They are not database rows and do not trigger writes.",
+  "externalDependencies": [],
+  "fixtures": [
+    {"fixtureId": "FX001_EMPTY_LEDGER", "file": "FX001_EMPTY_LEDGER.json", "expectedStatus": "OK", "blockingIssue": false},
+    {"fixtureId": "FX002_SINGLE_BUY", "file": "FX002_SINGLE_BUY.json", "expectedStatus": "OK", "blockingIssue": false},
+    {"fixtureId": "FX003_BUY_SELL_PARTIAL", "file": "FX003_BUY_SELL_PARTIAL.json", "expectedStatus": "OK", "blockingIssue": false},
+    {"fixtureId": "FX004_SELL_EXCEEDS_POSITION", "file": "FX004_SELL_EXCEEDS_POSITION.json", "expectedStatus": "ERROR", "blockingIssue": true},
+    {"fixtureId": "FX005_MISSING_FEE", "file": "FX005_MISSING_FEE.json", "expectedStatus": "WARNING", "blockingIssue": false},
+    {"fixtureId": "FX006_NEGATIVE_CASH", "file": "FX006_NEGATIVE_CASH.json", "expectedStatus": "ERROR", "blockingIssue": true},
+    {"fixtureId": "FX007_MULTI_INSTRUMENT", "file": "FX007_MULTI_INSTRUMENT.json", "expectedStatus": "WARNING", "blockingIssue": false},
+    {"fixtureId": "FX008_MULTI_ACCOUNT", "file": "FX008_MULTI_ACCOUNT.json", "expectedStatus": "OK", "blockingIssue": false},
+    {"fixtureId": "FX009_BASE_POSITION_LOCKED", "file": "FX009_BASE_POSITION_LOCKED.json", "expectedStatus": "OK", "blockingIssue": false},
+    {"fixtureId": "FX010_SNIPER_TIER_COMPLETED", "file": "FX010_SNIPER_TIER_COMPLETED.json", "expectedStatus": "OK", "blockingIssue": false},
+    {"fixtureId": "FX011_STALE_SNAPSHOT", "file": "FX011_STALE_SNAPSHOT.json", "expectedStatus": "STALE", "blockingIssue": true},
+    {"fixtureId": "FX012_MISSING_MARKET_PRICE", "file": "FX012_MISSING_MARKET_PRICE.json", "expectedStatus": "WARNING", "blockingIssue": false},
+    {"fixtureId": "FX013_MULTI_CURRENCY_UNSUPPORTED", "file": "FX013_MULTI_CURRENCY_UNSUPPORTED.json", "expectedStatus": "ERROR", "blockingIssue": true}
+  ]
+}

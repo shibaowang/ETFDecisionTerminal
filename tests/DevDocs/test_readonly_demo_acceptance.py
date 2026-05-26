@@ -24,6 +24,11 @@ def main() -> int:
     accounting_fixture_samples_path = root / "docs" / "24_accounting_replay_fixture_samples.md"
     position_viewmodel_design_path = root / "docs" / "25_position_shell_viewmodel_design.md"
     position_mapping_path = root / "docs" / "26_position_dto_viewmodel_mapping.md"
+    accounting_fixture_dir = root / "tests" / "fixtures" / "accounting_replay"
+    accounting_fixture_index_path = accounting_fixture_dir / "fixtures_index.json"
+    accounting_fixture_validator_path = (
+        root / "tests" / "AccountingFixtures" / "validate_accounting_replay_fixtures.py"
+    )
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -48,6 +53,9 @@ def main() -> int:
     require(accounting_fixture_samples_path.exists(), "accounting replay fixture samples doc exists")
     require(position_viewmodel_design_path.exists(), "position Shell ViewModel design doc exists")
     require(position_mapping_path.exists(), "position DTO ViewModel mapping doc exists")
+    require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
+    require(accounting_fixture_index_path.exists(), "accounting replay fixture index exists")
+    require(accounting_fixture_validator_path.exists(), "accounting replay fixture validator exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -70,6 +78,8 @@ def main() -> int:
     accounting_fixture_samples = accounting_fixture_samples_path.read_text(encoding="utf-8")
     position_viewmodel_design = position_viewmodel_design_path.read_text(encoding="utf-8")
     position_mapping = position_mapping_path.read_text(encoding="utf-8")
+    accounting_fixture_index = accounting_fixture_index_path.read_text(encoding="utf-8")
+    accounting_fixture_validator = accounting_fixture_validator_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -119,6 +129,7 @@ def main() -> int:
         "24_accounting_replay_fixture_samples.md" in readme,
         "README links accounting replay fixture samples",
     )
+    require("tests/fixtures/accounting_replay" in readme, "README links accounting replay fixture files")
     require(
         "25_position_shell_viewmodel_design.md" in readme,
         "README links position Shell ViewModel design",
@@ -242,6 +253,7 @@ def main() -> int:
     require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
     require("23_position_accounting_test_fixture_design.md" in docs_index, "docs index links position fixture design")
     require("24_accounting_replay_fixture_samples.md" in docs_index, "docs index links accounting fixture samples")
+    require("tests/fixtures/accounting_replay" in docs_index, "docs index links accounting replay fixture files")
     require("25_position_shell_viewmodel_design.md" in docs_index, "docs index links position ViewModel design")
     require("26_position_dto_viewmodel_mapping.md" in docs_index, "docs index links position DTO mapping")
 
@@ -323,6 +335,10 @@ def main() -> int:
         "stable contract links accounting fixture samples",
     )
     require(
+        "tests/fixtures/accounting_replay" in position_stable_contract,
+        "stable contract links static accounting fixture files",
+    )
+    require(
         "25_position_shell_viewmodel_design.md" in position_stable_contract,
         "stable contract links position ViewModel design",
     )
@@ -341,6 +357,10 @@ def main() -> int:
     require(
         "24_accounting_replay_fixture_samples.md" in position_fixture_design,
         "fixture design links detailed samples",
+    )
+    require(
+        "tests/fixtures/accounting_replay" in position_fixture_design,
+        "fixture design links static fixture files",
     )
 
     for fixture_id in [
@@ -391,6 +411,10 @@ def main() -> int:
     require("accounting.replay.preview" in accounting_fixture_samples, "fixture samples mention replay preview guard")
     require("implemented=false" in accounting_fixture_samples, "fixture samples state guard implemented false")
     require("replayExecuted=false" in accounting_fixture_samples, "fixture samples state replay is not executed")
+    require(
+        "tests/fixtures/accounting_replay" in accounting_fixture_samples,
+        "fixture samples doc links static fixture files",
+    )
 
     require("ShellPositionListModel" in position_viewmodel_design, "ViewModel design includes ShellPositionListModel")
     require("ShellCashSummaryObject" in position_viewmodel_design, "ViewModel design includes ShellCashSummaryObject")
@@ -411,6 +435,66 @@ def main() -> int:
     require("DTO field" in position_mapping, "mapping doc includes DTO field column")
     require("ViewModel role" in position_mapping, "mapping doc includes ViewModel role")
     require("QML display label" in position_mapping, "mapping doc includes QML display label")
+
+    expected_fixture_ids = [
+        "FX001_EMPTY_LEDGER",
+        "FX002_SINGLE_BUY",
+        "FX003_BUY_SELL_PARTIAL",
+        "FX004_SELL_EXCEEDS_POSITION",
+        "FX005_MISSING_FEE",
+        "FX006_NEGATIVE_CASH",
+        "FX007_MULTI_INSTRUMENT",
+        "FX008_MULTI_ACCOUNT",
+        "FX009_BASE_POSITION_LOCKED",
+        "FX010_SNIPER_TIER_COMPLETED",
+        "FX011_STALE_SNAPSHOT",
+        "FX012_MISSING_MARKET_PRICE",
+        "FX013_MULTI_CURRENCY_UNSUPPORTED",
+    ]
+    for fixture_id in expected_fixture_ids:
+        fixture_path = accounting_fixture_dir / f"{fixture_id}.json"
+        require(fixture_path.exists(), f"accounting replay fixture file exists: {fixture_id}")
+        fixture_text = fixture_path.read_text(encoding="utf-8")
+        require('"inputFacts"' in fixture_text, f"{fixture_id} has inputFacts")
+        require('"expectedOutputs"' in fixture_text, f"{fixture_id} has expectedOutputs")
+        require('"expectedIssues"' in fixture_text, f"{fixture_id} has expectedIssues")
+        require('"blocking"' in fixture_text, f"{fixture_id} has blocking")
+        require("data.audit.append" not in fixture_text, f"{fixture_id} does not reference data.audit.append")
+        require("--serve-dev-audit" not in fixture_text, f"{fixture_id} does not reference serve-dev-audit")
+        require("http://" not in fixture_text and "https://" not in fixture_text, f"{fixture_id} has no external URL")
+
+    require("accounting_replay_v0_3" in accounting_fixture_index, "fixture index names fixture set")
+    require("externalDependencies" in accounting_fixture_index, "fixture index declares external dependencies")
+    require("not database rows" in accounting_fixture_index, "fixture index states fixtures are not database rows")
+    require("do not trigger writes" in accounting_fixture_index, "fixture index states fixtures do not trigger writes")
+    require(
+        "SELL_EXCEEDS_POSITION" in (accounting_fixture_dir / "FX004_SELL_EXCEEDS_POSITION.json").read_text(encoding="utf-8"),
+        "FX004 includes sell exceeds issue",
+    )
+    require(
+        "MISSING_FEE" in (accounting_fixture_dir / "FX005_MISSING_FEE.json").read_text(encoding="utf-8"),
+        "FX005 includes missing fee issue",
+    )
+    require(
+        "NEGATIVE_CASH" in (accounting_fixture_dir / "FX006_NEGATIVE_CASH.json").read_text(encoding="utf-8"),
+        "FX006 includes negative cash issue",
+    )
+    require(
+        "SNAPSHOT_STALE" in (accounting_fixture_dir / "FX011_STALE_SNAPSHOT.json").read_text(encoding="utf-8"),
+        "FX011 includes stale snapshot issue",
+    )
+    require(
+        "MARKET_PRICE_MISSING" in (accounting_fixture_dir / "FX012_MISSING_MARKET_PRICE.json").read_text(encoding="utf-8"),
+        "FX012 includes missing market price issue",
+    )
+    fx013_text = (accounting_fixture_dir / "FX013_MULTI_CURRENCY_UNSUPPORTED.json").read_text(encoding="utf-8")
+    require(
+        "MULTI_CURRENCY_UNSUPPORTED" in fx013_text or "FX_RATE_MISSING" in fx013_text,
+        "FX013 includes multi-currency or FX issue",
+    )
+    require("sqlite" in accounting_fixture_validator.lower(), "fixture validator mentions SQLite boundary")
+    require("forbidden" in accounting_fixture_validator, "fixture validator checks forbidden tokens")
+    require("EXPECTED_ERROR_CODES" in accounting_fixture_validator, "fixture validator checks error fixture codes")
     return 0
 
 

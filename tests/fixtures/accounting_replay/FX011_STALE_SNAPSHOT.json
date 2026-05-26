@@ -1,0 +1,41 @@
+{
+  "fixtureId": "FX011_STALE_SNAPSHOT",
+  "name": "Stale snapshot",
+  "purpose": "Verify stale snapshot is visible and not treated as fact source.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX011-001", "tradeTime": "2026-01-20T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-1001.00 CNY", "currency": "CNY", "source": "fixture", "note": "Trade after snapshot time."}
+    ],
+    "cashFacts": [],
+    "marketPriceFacts": [],
+    "snapshotFacts": [
+      {"snapshotId": "SN-FX011-001", "generatedAt": "2026-01-10T00:00:00Z", "sourceToTime": "2026-01-10T00:00:00Z", "dataQualityStatus": "STALE", "note": "Snapshot predates source range end and later trade."}
+    ]
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "", "dataQualityStatus": "STALE"}
+    ],
+    "cashSummary": {"dataQualityStatus": "STALE"},
+    "portfolioPnl": {"dataQualityStatus": "STALE"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [
+    {"code": "SNAPSHOT_STALE", "level": "ERROR", "blocking": true, "message": "Snapshot is stale and must not be used as fact source."}
+  ],
+  "blocking": true,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Stale snapshot is not a fact source and must not rewrite trade_log."
+  ]
+}

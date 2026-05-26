@@ -1,0 +1,40 @@
+{
+  "fixtureId": "FX006_NEGATIVE_CASH",
+  "name": "Negative cash",
+  "purpose": "Verify cash deficit is an explicit blocking issue.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX006-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "0.00 CNY", "cashFlowText": "-1000.00 CNY", "currency": "CNY", "source": "fixture", "note": "Buy exceeds initial cash."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX006-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100.00 CNY", "currency": "CNY", "note": "Insufficient initial cash."}
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "1000", "dataQualityStatus": "ERROR"}
+    ],
+    "cashSummary": {"cashBalanceText": "-900.00 CNY", "dataQualityStatus": "ERROR"},
+    "portfolioPnl": {"dataQualityStatus": "ERROR"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [
+    {"code": "NEGATIVE_CASH", "level": "ERROR", "blocking": true, "message": "Cash balance is negative after replay."}
+  ],
+  "blocking": true,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Negative cash must be visible and blocking unless a future margin mode is explicitly authorized."
+  ]
+}

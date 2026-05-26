@@ -1,0 +1,39 @@
+{
+  "fixtureId": "FX004_SELL_EXCEEDS_POSITION",
+  "name": "Sell exceeds position",
+  "purpose": "Verify oversell is blocking and does not silently create a negative position.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX004-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "100", "priceText": "1.000 CNY", "amountText": "100.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-101.00 CNY", "currency": "CNY", "source": "fixture", "note": "Small buy."},
+      {"factId": "TR-FX004-002", "tradeTime": "2026-01-03T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "SELL", "quantityText": "200", "priceText": "1.000 CNY", "amountText": "200.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "199.00 CNY", "currency": "CNY", "source": "fixture", "note": "Oversell fact."}
+    ],
+    "cashFacts": [],
+    "marketPriceFacts": []
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "", "dataQualityStatus": "ERROR"}
+    ],
+    "cashSummary": {"dataQualityStatus": "ERROR"},
+    "portfolioPnl": {"dataQualityStatus": "ERROR"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [
+    {"code": "SELL_EXCEEDS_POSITION", "level": "ERROR", "blocking": true, "message": "Sell quantity exceeds available position."}
+  ],
+  "blocking": true,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Future replay must not silently generate negative holdings."
+  ]
+}

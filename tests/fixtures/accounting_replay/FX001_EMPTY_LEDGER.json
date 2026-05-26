@@ -1,0 +1,32 @@
+{
+  "fixtureId": "FX001_EMPTY_LEDGER",
+  "name": "Empty ledger",
+  "purpose": "Verify an empty ledger produces no positions and no blocking issue.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [],
+    "cashFacts": [],
+    "marketPriceFacts": []
+  },
+  "expectedOutputs": {
+    "positionSummaries": [],
+    "cashSummary": {"cashBalanceText": "0.00 CNY", "dataQualityStatus": "OK"},
+    "portfolioPnl": {"totalAssetsText": "0.00 CNY", "dataQualityStatus": "OK"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Empty positions are not an accounting error."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "fixtureId": "FX005_MISSING_FEE",
+  "name": "Missing fee",
+  "purpose": "Verify missing fee is visible as a warning in the proposed fixture standard.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX005-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": null, "cashFlowText": "-1000.00 CNY", "currency": "CNY", "source": "fixture", "note": "Fee intentionally missing."}
+    ],
+    "cashFacts": [],
+    "marketPriceFacts": []
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "1000", "dataQualityStatus": "WARNING"}
+    ],
+    "cashSummary": {"dataQualityStatus": "WARNING"},
+    "portfolioPnl": {"dataQualityStatus": "WARNING"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [
+    {"code": "MISSING_FEE", "level": "WARNING", "blocking": false, "message": "Fee is missing; future replay may use explicit zero only when authorized."}
+  ],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Proposed standard: missing fee is non-blocking warning until fee policy is finalized."
+  ]
+}

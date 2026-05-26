@@ -1,0 +1,39 @@
+{
+  "fixtureId": "FX010_SNIPER_TIER_COMPLETED",
+  "name": "Sniper tier completed",
+  "purpose": "Verify T1 completion can be represented from buy fact aggregation.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX010-001", "tradeTime": "2026-01-05T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "0.00 CNY", "cashFlowText": "-1000.00 CNY", "currency": "CNY", "source": "fixture", "note": "T1 tier buy fact."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX010-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100000.00 CNY", "currency": "CNY", "note": "Initial cash."}
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "1000", "dataQualityStatus": "OK"}
+    ],
+    "cashSummary": {"cashBalanceText": "99000.00 CNY", "dataQualityStatus": "OK"},
+    "portfolioPnl": {"dataQualityStatus": "OK"},
+    "basePosition": {"targetBaseRatioText": "20%", "basePositionStatus": "COMPLETED", "dataQualityStatus": "OK"},
+    "sniperPool": {"portfolioId": "PF-DEMO-001", "poolAmountText": "80000.00 CNY", "usedAmountText": "1000.00 CNY", "remainingAmountText": "79000.00 CNY", "tierCount": 6, "tierSummary": [{"tierName": "T1", "weight": 1, "targetAmountText": "1000.00 CNY", "executedAmountText": "1000.00 CNY", "remainingAmountText": "0.00 CNY", "completed": true, "dataQualityStatus": "OK"}], "dataQualityStatus": "OK"}
+  },
+  "expectedIssues": [],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "T1 completed comes from buy fact aggregation, not current market value.",
+    "80% pool does not expand or shrink with floating profit or loss."
+  ]
+}

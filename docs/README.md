@@ -31,6 +31,8 @@
 - [30 Accounting Replay Incremental Implementation Plan](30_accounting_replay_incremental_implementation_plan.md)
 - [31 Accounting Replay Test-only Coverage Milestone](31_accounting_replay_testonly_coverage_milestone.md)
 - [32 Production Accounting Replay Readiness Review](32_production_accounting_replay_readiness_review.md)
+- [33 Production Accounting Replay Architecture Boundary](33_production_accounting_replay_architecture.md)
+- [34 AccountingEngine Module Candidate](34_accounting_engine_module_candidate.md)
 - [Release Notes - v0.1 ReadOnly Shell Demo](release_notes/v0_1_readonly_shell_demo.md)
 - [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)
 - [Release Notes - v0.3 Accounting Replay Test-only Coverage](release_notes/v0_3_accounting_replay_testonly_coverage.md)

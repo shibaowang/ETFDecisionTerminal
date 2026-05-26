@@ -988,12 +988,16 @@ Milestone documents:
 
 - [Accounting Replay Test-only Coverage Milestone](docs/31_accounting_replay_testonly_coverage_milestone.md)
 - [Production Accounting Replay Readiness Review](docs/32_production_accounting_replay_readiness_review.md)
+- [Production Accounting Replay Architecture Boundary](docs/33_production_accounting_replay_architecture.md)
+- [AccountingEngine Module Candidate](docs/34_accounting_engine_module_candidate.md)
 - [Release Notes - v0.3 Accounting Replay Test-only Coverage](docs/release_notes/v0_3_accounting_replay_testonly_coverage.md)
 
 Production accounting replay is still not implemented. DataService accounting
 replay actions are still not implemented. The current project does not perform
 SQLite replay writes, `trade_log` writes, snapshot writes, or production
 portfolio summary writes.
+
+The next phase is architecture boundary review and module placement, not direct code migration from `tests/AccountingFixtures` into production libraries.
 
 Run tests:
 

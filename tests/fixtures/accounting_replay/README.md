@@ -67,4 +67,11 @@ implicit overdraft.
 `AccountingReplayMinimalEngine` now also supports `FX007_MULTI_INSTRUMENT`,
 returning separate 159509 and 518880 positions, `cashBalanceText=96998.00 CNY`,
 and a non-blocking `MARKET_PRICE_MISSING` warning. It does not fabricate market
-value or unrealized PnL. FX008-FX013 remain `NOT_IMPLEMENTED`.
+value or unrealized PnL.
+
+`AccountingReplayMinimalEngine` now also supports `FX008_MULTI_ACCOUNT`,
+returning separate account-scoped 159509 positions for `ACC-DEMO-001` and
+`ACC-DEMO-002`, plus account cash summaries with `cashBalanceText=48999.00 CNY`
+and `cashBalanceText=47999.00 CNY`. It does not mix accountId or portfolioId
+dimensions, and does not fabricate market value or unrealized PnL. FX009-FX013
+remain `NOT_IMPLEMENTED`.

@@ -29,6 +29,7 @@ using etfdt::tests::accounting::kAssertionPassFx004SellExceedsPosition;
 using etfdt::tests::accounting::kAssertionPassFx005MissingFee;
 using etfdt::tests::accounting::kAssertionPassFx006NegativeCash;
 using etfdt::tests::accounting::kAssertionPassFx007MultiInstrument;
+using etfdt::tests::accounting::kAssertionPassFx008MultiAccount;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
@@ -110,6 +111,7 @@ int main(int argc, char** argv)
     const auto fx005 = requireValue(harness.fixtureByIdForTest("FX005_MISSING_FEE"), "FX005 fixture exists");
     const auto fx006 = requireValue(harness.fixtureByIdForTest("FX006_NEGATIVE_CASH"), "FX006 fixture exists");
     const auto fx007 = requireValue(harness.fixtureByIdForTest("FX007_MULTI_INSTRUMENT"), "FX007 fixture exists");
+    const auto fx008 = requireValue(harness.fixtureByIdForTest("FX008_MULTI_ACCOUNT"), "FX008 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
@@ -119,7 +121,8 @@ int main(int argc, char** argv)
     require(engine.supportsFixture("FX005_MISSING_FEE"), "minimal engine supports FX005");
     require(engine.supportsFixture("FX006_NEGATIVE_CASH"), "minimal engine supports FX006");
     require(engine.supportsFixture("FX007_MULTI_INSTRUMENT"), "minimal engine supports FX007");
-    require(!engine.supportsFixture("FX008_MULTI_ACCOUNT"), "minimal engine does not support FX008");
+    require(engine.supportsFixture("FX008_MULTI_ACCOUNT"), "minimal engine supports FX008");
+    require(!engine.supportsFixture("FX009_BASE_POSITION_LOCKED"), "minimal engine does not support FX009");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -231,6 +234,59 @@ int main(int argc, char** argv)
     require(hasReplayIssueCode(fx007Direct, "MARKET_PRICE_MISSING"), "FX007 issues contain MARKET_PRICE_MISSING");
     require(issueBlockingMatches(fx007Direct, "MARKET_PRICE_MISSING", false), "FX007 MARKET_PRICE_MISSING is non-blocking");
 
+    const auto fx008Direct = engine.replayFixture(fx008);
+    require(fx008Direct.implemented, "FX008 direct replay implemented=true");
+    require(fx008Direct.replayExecuted, "FX008 direct replayExecuted=true");
+    require(fx008Direct.status == kReplayStatusOk, "FX008 direct status=OK");
+    require(hasPositionListResponse(fx008Direct), "FX008 has positionListResponseRaw");
+    require(fx008Direct.positionListResponseRaw.value("positions").isArray(), "FX008 positions is an array");
+    require(fx008Direct.positionListResponseRaw.value("positions").toArray().size() == 2, "FX008 positions array has two rows");
+    bool hasAccountOnePosition = false;
+    bool hasAccountTwoPosition = false;
+    for (const auto& value : fx008Direct.positionListResponseRaw.value("positions").toArray()) {
+        const auto position = value.toObject();
+        require(position.value("instrumentCode").toString() == "159509", "FX008 instrumentCode remains 159509");
+        require(position.value("portfolioId").toString() == "PF-DEMO-001", "FX008 preserves portfolioId");
+        require(position.value("marketValueText").toString() == "unavailable", "FX008 does not fabricate marketValueText");
+        require(position.value("unrealizedPnlText").toString() == "unavailable", "FX008 does not fabricate unrealizedPnlText");
+        require(position.value("quantityText").toString() != "3000", "FX008 does not merge account quantities");
+        if (position.value("accountId").toString() == "ACC-DEMO-001") {
+            hasAccountOnePosition = true;
+            require(position.value("quantityText").toString() == "1000", "FX008 account one quantityText is 1000");
+            require(position.value("costAmountText").toString() == "1001.00 CNY", "FX008 account one costAmountText is 1001.00 CNY");
+        }
+        if (position.value("accountId").toString() == "ACC-DEMO-002") {
+            hasAccountTwoPosition = true;
+            require(position.value("quantityText").toString() == "2000", "FX008 account two quantityText is 2000");
+            require(position.value("costAmountText").toString() == "2001.00 CNY", "FX008 account two costAmountText is 2001.00 CNY");
+        }
+    }
+    require(hasAccountOnePosition, "FX008 positions include ACC-DEMO-001");
+    require(hasAccountTwoPosition, "FX008 positions include ACC-DEMO-002");
+    require(hasCashSummary(fx008Direct), "FX008 has cashSummaryRaw");
+    require(fx008Direct.cashSummaryRaw.value("accountCashSummaries").isArray(), "FX008 cashSummaryRaw has accountCashSummaries");
+    bool hasAccountOneCash = false;
+    bool hasAccountTwoCash = false;
+    for (const auto& value : fx008Direct.cashSummaryRaw.value("accountCashSummaries").toArray()) {
+        const auto cash = value.toObject();
+        require(cash.value("portfolioId").toString() == "PF-DEMO-001", "FX008 account cash preserves portfolioId");
+        if (cash.value("accountId").toString() == "ACC-DEMO-001") {
+            hasAccountOneCash = true;
+            require(cash.value("cashBalanceText").toString() == "48999.00 CNY", "FX008 account one cashBalanceText is 48999.00 CNY");
+        }
+        if (cash.value("accountId").toString() == "ACC-DEMO-002") {
+            hasAccountTwoCash = true;
+            require(cash.value("cashBalanceText").toString() == "47999.00 CNY", "FX008 account two cashBalanceText is 47999.00 CNY");
+        }
+    }
+    require(hasAccountOneCash, "FX008 cash summaries include ACC-DEMO-001");
+    require(hasAccountTwoCash, "FX008 cash summaries include ACC-DEMO-002");
+    require(hasPortfolioPnl(fx008Direct), "FX008 has portfolioPnlRaw");
+    require(fx008Direct.portfolioPnlRaw.value("marketValueText").toString() == "unavailable", "FX008 portfolio PnL does not fabricate marketValueText");
+    require(fx008Direct.portfolioPnlRaw.value("unrealizedPnlText").toString() == "unavailable", "FX008 portfolio PnL does not fabricate unrealizedPnlText");
+    require(!hasReplayIssueCode(fx008Direct, "MARKET_PRICE_MISSING"), "FX008 does not report missing market price when fixture provides one");
+    require(!hasBlockingIssue(fx008Direct), "FX008 has no blocking issue");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -303,6 +359,15 @@ int main(int argc, char** argv)
     require(fx007Assertion.passed, "FX007 multi-instrument assertion passes");
     require(fx007Assertion.status == kAssertionPassFx007MultiInstrument, "FX007 assertion status is PASS_FX007_MULTI_INSTRUMENT");
 
+    const auto fx008Harness = requireResult(harness, "FX008_MULTI_ACCOUNT");
+    require(fx008Harness.status == kReplayStatusOk, "minimal harness FX008 status=OK");
+    require(fx008Harness.implemented, "minimal harness FX008 implemented=true");
+    require(fx008Harness.replayExecuted, "minimal harness FX008 replayExecuted=true");
+    require(!hasReplayIssueCode(fx008Harness, "MARKET_PRICE_MISSING"), "minimal harness FX008 has no missing market price issue");
+    const auto fx008Assertion = assertions.assertFx008MultiAccountResult(fx008, fx008Harness);
+    require(fx008Assertion.passed, "FX008 multi-account assertion passes");
+    require(fx008Assertion.status == kAssertionPassFx008MultiAccount, "FX008 assertion status is PASS_FX008_MULTI_ACCOUNT");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -338,6 +403,12 @@ int main(int argc, char** argv)
             require(issueBlockingMatches(result, "MARKET_PRICE_MISSING", false), "FX007 keeps non-blocking MARKET_PRICE_MISSING in minimal loop");
             continue;
         }
+        if (fixtureId == "FX008_MULTI_ACCOUNT") {
+            require(result.status == kReplayStatusOk, "FX008 remains OK in minimal loop");
+            require(result.implemented, "FX008 remains implemented=true in minimal loop");
+            require(result.replayExecuted, "FX008 remains replayExecuted=true in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -347,6 +418,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008 tests passed\n";
     return 0;
 }

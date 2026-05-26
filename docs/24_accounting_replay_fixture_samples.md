@@ -1301,6 +1301,42 @@ expected outputs to fit an incorrect algorithm.
 - `FX008_MULTI_ACCOUNT` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still return
   `NOT_IMPLEMENTED`.
 
+## 20. TASK-062 Minimal FX008 Multi-Account Replay
+
+`FX008_MULTI_ACCOUNT` now has a test-only minimal replay path through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` still returns `status=ERROR` with a blocking
+  `NEGATIVE_CASH` issue.
+- `FX007_MULTI_INSTRUMENT` still returns `status=WARNING` and keeps different
+  `instrumentCode` values separated.
+- `FX008_MULTI_ACCOUNT` returns `implemented=true`.
+- `FX008_MULTI_ACCOUNT` returns `replayExecuted=true`.
+- `FX008_MULTI_ACCOUNT` returns `status=OK`, matching the fixture contract.
+- `FX008_MULTI_ACCOUNT` creates separate `159509` positions for
+  `ACC-DEMO-001` and `ACC-DEMO-002` and does not merge or mix their `accountId`
+  values.
+- `FX008_MULTI_ACCOUNT` preserves `portfolioId=PF-DEMO-001` on account-scoped
+  positions and account cash summaries.
+- Account cash is exposed through `accountCashSummaries`, producing
+  `cashBalanceText=48999.00 CNY` for `ACC-DEMO-001` and
+  `cashBalanceText=47999.00 CNY` for `ACC-DEMO-002`.
+- Market value and unrealized PnL remain unavailable; this path does not
+  fabricate valuation or unrealized PnL.
+- `FX009_BASE_POSITION_LOCKED` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still
+  return `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to grouping CNY BUY facts by
+`accountId + portfolioId + instrumentCode`. It does not implement base-position,
+sniper-pool, multi-currency, real market valuation, SQLite access, DataService
+calls, output file writes, database writes, or DataService actions.
+
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account
 replay, multi-currency replay, market valuation, unrealized PnL, base-position,

@@ -282,3 +282,7 @@ v0.1 草案。
 - Multi-instrument replay must not merge different `instrumentCode` values into one position.
 - Missing market price must not be hidden by fabricated market value or unrealized PnL.
 - Every new replay task after FX007 must preserve FX001-FX007 tests and keep FX008-FX013 explicitly guarded until their own task is authorized.
+- After FX008, do not jump directly to sniper-pool, multi-currency, or market valuation replay.
+- FX009 base-position handling must remain a separate task.
+- Multi-account replay must not mix `accountId`, `portfolioId`, position, or cash dimensions.
+- Every new replay task after FX008 must preserve FX001-FX008 tests and keep FX009-FX013 explicitly guarded until their own task is authorized.

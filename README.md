@@ -903,6 +903,17 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This does not implement multi-account, multi-currency, base-position, sniper-pool, real market valuation, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
 - Minimal FX007 CTest: `accounting_replay_minimal_fx007`.
 
+## TASK-062 Accounting Replay Minimal FX008
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through `FX008_MULTI_ACCOUNT`.
+- FX008 only handles fixture-scoped multi-account BUY facts and keeps `ACC-DEMO-001` and `ACC-DEMO-002` separated by `accountId`, `portfolioId`, and `instrumentCode`.
+- FX008 returns `implemented=true`, `replayExecuted=true`, `status=OK`, account-scoped `159509` positions, and account cash balances through `accountCashSummaries`.
+- FX008 computes `cashBalanceText=48999.00 CNY` for `ACC-DEMO-001` and `cashBalanceText=47999.00 CNY` for `ACC-DEMO-002`; it does not mix account cash.
+- FX008 does not fabricate `marketValueText` or `unrealizedPnlText`.
+- FX009-FX013 still return `NOT_IMPLEMENTED`.
+- This does not implement base-position, sniper-pool, multi-currency, real market valuation, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- Minimal FX008 CTest: `accounting_replay_minimal_fx008`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

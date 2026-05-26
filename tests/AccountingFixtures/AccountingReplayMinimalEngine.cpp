@@ -23,6 +23,7 @@ constexpr const char* kFx004SellExceedsPosition = "FX004_SELL_EXCEEDS_POSITION";
 constexpr const char* kFx005MissingFee = "FX005_MISSING_FEE";
 constexpr const char* kFx006NegativeCash = "FX006_NEGATIVE_CASH";
 constexpr const char* kFx007MultiInstrument = "FX007_MULTI_INSTRUMENT";
+constexpr const char* kFx008MultiAccount = "FX008_MULTI_ACCOUNT";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -36,6 +37,14 @@ struct PositionAggregate {
     std::string instrumentCode;
     long long quantity{0};
     long long costCents{0};
+};
+
+struct AccountCashAggregate {
+    std::string accountId;
+    std::string portfolioId;
+    long long initialCashCents{0};
+    long long buyCashOutflowCents{0};
+    long long feeTotalCents{0};
 };
 
 std::string trim(std::string_view value)
@@ -347,6 +356,36 @@ QJsonObject makeMultiInstrumentCashSummary(
     return response;
 }
 
+QJsonObject makeMultiAccountCashSummary(
+    const AccountingFixture& fixture,
+    const std::vector<AccountCashAggregate>& accounts,
+    const QString& dataQualityStatus)
+{
+    const auto currency = scopeString(fixture, "currency");
+    QJsonArray accountCashSummaries;
+    for (const auto& account : accounts) {
+        const long long cashBalanceCents = account.initialCashCents - account.buyCashOutflowCents;
+        QJsonObject summary;
+        summary.insert(QStringLiteral("accountId"), QString::fromStdString(account.accountId));
+        summary.insert(QStringLiteral("portfolioId"), QString::fromStdString(account.portfolioId));
+        summary.insert(QStringLiteral("currency"), QString::fromStdString(currency));
+        summary.insert(QStringLiteral("cashBalanceText"), QString::fromStdString(formatMoney(cashBalanceCents, currency)));
+        summary.insert(QStringLiteral("availableCashText"), QString::fromStdString(formatMoney(cashBalanceCents, currency)));
+        summary.insert(QStringLiteral("buyCashOutflowText"), QString::fromStdString(formatMoney(account.buyCashOutflowCents, currency)));
+        summary.insert(QStringLiteral("feeTotalText"), QString::fromStdString(formatMoney(account.feeTotalCents, currency)));
+        summary.insert(QStringLiteral("dataQualityStatus"), dataQualityStatus);
+        accountCashSummaries.append(summary);
+    }
+
+    QJsonObject response;
+    response.insert(QStringLiteral("accountId"), QString::fromStdString(scopeString(fixture, "accountId")));
+    response.insert(QStringLiteral("portfolioId"), QString::fromStdString(scopeString(fixture, "portfolioId")));
+    response.insert(QStringLiteral("currency"), QString::fromStdString(currency));
+    response.insert(QStringLiteral("accountCashSummaries"), accountCashSummaries);
+    response.insert(QStringLiteral("dataQualityStatus"), dataQualityStatus);
+    return response;
+}
+
 QJsonObject makeSingleBuyPortfolioPnl(
     const AccountingFixture& fixture,
     long long initialCashCents,
@@ -394,13 +433,26 @@ QJsonObject makeMissingPricePortfolioPnl(const AccountingFixture& fixture)
     return response;
 }
 
+QJsonObject makeUnavailableValuationPortfolioPnl(const AccountingFixture& fixture, const QString& dataQualityStatus)
+{
+    const auto currency = scopeString(fixture, "currency");
+    QJsonObject response;
+    response.insert(QStringLiteral("portfolioId"), QString::fromStdString(scopeString(fixture, "portfolioId")));
+    response.insert(QStringLiteral("currency"), QString::fromStdString(currency));
+    response.insert(QStringLiteral("marketValueText"), QStringLiteral("unavailable"));
+    response.insert(QStringLiteral("unrealizedPnlText"), QStringLiteral("unavailable"));
+    response.insert(QStringLiteral("dataQualityStatus"), dataQualityStatus);
+    return response;
+}
+
 } // namespace
 
 bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId) const
 {
     return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial
         || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee
-        || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument;
+        || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument
+        || fixtureId == kFx008MultiAccount;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -924,6 +976,162 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
             totalFeeCents);
         result.portfolioPnlRaw = hasMarketPriceMissing ? makeMissingPricePortfolioPnl(fixture)
                                                        : makeSingleBuyPortfolioPnl(fixture, initial->cents, initial->cents - totalBuyCashOutflowCents);
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx008MultiAccount) {
+        const auto invalidFx008 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX008_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.cashFacts.size() < 2) {
+            return invalidFx008("FX008_MULTI_ACCOUNT requires initial cash facts for at least two accounts.");
+        }
+        if (fixture.tradeFacts.size() < 2) {
+            return invalidFx008("FX008_MULTI_ACCOUNT requires at least two BUY trade facts.");
+        }
+
+        const auto currency = scopeString(fixture, "currency");
+        const auto portfolioId = scopeString(fixture, "portfolioId");
+        if (currency != "CNY" || portfolioId.empty()) {
+            return invalidFx008("FX008_MULTI_ACCOUNT requires one CNY portfolio scope.");
+        }
+
+        std::vector<AccountCashAggregate> accounts;
+        for (const auto& cashFact : fixture.cashFacts) {
+            if (cashFact.action != "INITIAL_CASH") {
+                return invalidFx008("FX008_MULTI_ACCOUNT only supports INITIAL_CASH facts.");
+            }
+            if (cashFact.accountId.empty() || cashFact.portfolioId.empty() || cashFact.currency != currency) {
+                return invalidFx008("FX008_MULTI_ACCOUNT requires account, portfolio, and CNY on every cash fact.");
+            }
+            const auto initial = parseMoneyText(cashFact.amountText, currency);
+            if (!initial.has_value() || initial->currency != currency) {
+                return invalidFx008("FX008_MULTI_ACCOUNT contains an invalid initial cash amount.");
+            }
+            const auto existing = std::find_if(accounts.begin(), accounts.end(), [&](const AccountCashAggregate& item) {
+                return item.accountId == cashFact.accountId && item.portfolioId == cashFact.portfolioId;
+            });
+            if (existing != accounts.end()) {
+                return invalidFx008("FX008_MULTI_ACCOUNT requires one initial cash fact per account and portfolio.");
+            }
+            accounts.push_back(AccountCashAggregate{
+                cashFact.accountId,
+                cashFact.portfolioId,
+                initial->cents,
+                0,
+                0,
+            });
+        }
+
+        std::vector<PositionAggregate> positions;
+        std::vector<std::string> accountIds;
+        for (const auto& trade : fixture.tradeFacts) {
+            if (trade.action != "BUY") {
+                return invalidFx008("FX008_MULTI_ACCOUNT only supports BUY trade facts.");
+            }
+            if (trade.accountId.empty() || trade.portfolioId.empty() || trade.instrumentCode.empty()
+                || trade.quantityText.empty() || trade.priceText.empty() || trade.amountText.empty()
+                || trade.feeText.empty()) {
+                return invalidFx008("FX008_MULTI_ACCOUNT requires account, portfolio, instrument, quantity, price, amount, and fee on every BUY.");
+            }
+            if (trade.currency != currency) {
+                return invalidFx008("FX008_MULTI_ACCOUNT money fields must use fixture currency.");
+            }
+
+            const auto quantity = parseInteger(trade.quantityText);
+            const auto priceMills = parseDecimalToScale(trade.priceText, 3);
+            const auto amount = parseMoneyText(trade.amountText, currency);
+            const auto fee = parseMoneyText(trade.feeText, currency);
+            if (!quantity.has_value() || *quantity <= 0 || !priceMills.has_value() || !amount.has_value()
+                || !fee.has_value()) {
+                return invalidFx008("FX008_MULTI_ACCOUNT contains an invalid BUY numeric field.");
+            }
+            if (amount->currency != currency || fee->currency != currency) {
+                return invalidFx008("FX008_MULTI_ACCOUNT money fields must use fixture currency.");
+            }
+
+            auto account = std::find_if(accounts.begin(), accounts.end(), [&](const AccountCashAggregate& item) {
+                return item.accountId == trade.accountId && item.portfolioId == trade.portfolioId;
+            });
+            if (account == accounts.end()) {
+                return invalidFx008("FX008_MULTI_ACCOUNT requires matching initial cash for each BUY account and portfolio.");
+            }
+
+            const long long tradeCostCents = amount->cents + fee->cents;
+            auto position = std::find_if(positions.begin(), positions.end(), [&](const PositionAggregate& item) {
+                return item.accountId == trade.accountId && item.portfolioId == trade.portfolioId
+                    && item.instrumentCode == trade.instrumentCode;
+            });
+            if (position == positions.end()) {
+                positions.push_back(PositionAggregate{
+                    trade.accountId,
+                    trade.portfolioId,
+                    trade.instrumentCode,
+                    *quantity,
+                    tradeCostCents,
+                });
+            } else {
+                position->quantity += *quantity;
+                position->costCents += tradeCostCents;
+            }
+
+            account->buyCashOutflowCents += tradeCostCents;
+            account->feeTotalCents += fee->cents;
+            if (std::find(accountIds.begin(), accountIds.end(), trade.accountId) == accountIds.end()) {
+                accountIds.push_back(trade.accountId);
+            }
+        }
+
+        if (accountIds.size() < 2) {
+            return invalidFx008("FX008_MULTI_ACCOUNT requires at least two distinct accounts.");
+        }
+        if (positions.size() < 2) {
+            return invalidFx008("FX008_MULTI_ACCOUNT must produce separate account-scoped positions.");
+        }
+
+        const auto expectedIssue = std::find_if(
+            fixture.expectedIssues.begin(),
+            fixture.expectedIssues.end(),
+            [](const AccountingExpectedIssue& issue) { return issue.code == "MARKET_PRICE_MISSING"; });
+        const bool hasMarketPriceMissing = expectedIssue != fixture.expectedIssues.end();
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = hasMarketPriceMissing ? kReplayStatusWarning : kReplayStatusOk;
+        result.message = hasMarketPriceMissing ? "Multi-account replay completed without market prices."
+                                               : "Multi-account replay completed.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        if (hasMarketPriceMissing) {
+            result.issues.push_back(makeIssue(
+                expectedIssue->level.empty() ? "WARNING" : expectedIssue->level,
+                "MARKET_PRICE_MISSING",
+                expectedIssue->message.empty() ? "Market prices are missing for valuation." : expectedIssue->message,
+                expectedIssue->blocking,
+                fixture.fixtureId));
+        }
+        result.positionListResponseRaw =
+            makeMultiInstrumentPositionListResponse(fixture, positions, hasMarketPriceMissing ? QStringLiteral("WARNING") : QStringLiteral("OK"));
+        result.cashSummaryRaw =
+            makeMultiAccountCashSummary(fixture, accounts, hasMarketPriceMissing ? QStringLiteral("WARNING") : QStringLiteral("OK"));
+        result.portfolioPnlRaw = hasMarketPriceMissing ? makeMissingPricePortfolioPnl(fixture)
+                                                       : makeUnavailableValuationPortfolioPnl(fixture, QStringLiteral("OK"));
         return result;
     }
 

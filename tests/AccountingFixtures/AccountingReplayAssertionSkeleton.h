@@ -19,6 +19,7 @@ inline constexpr const char* kAssertionPassFx004SellExceedsPosition = "PASS_FX00
 inline constexpr const char* kAssertionPassFx005MissingFee = "PASS_FX005_MISSING_FEE";
 inline constexpr const char* kAssertionPassFx006NegativeCash = "PASS_FX006_NEGATIVE_CASH";
 inline constexpr const char* kAssertionPassFx007MultiInstrument = "PASS_FX007_MULTI_INSTRUMENT";
+inline constexpr const char* kAssertionPassFx008MultiAccount = "PASS_FX008_MULTI_ACCOUNT";
 inline constexpr const char* kAssertionFailInvalidFx001EmptyLedger = "FAIL_INVALID_FX001_EMPTY_LEDGER";
 inline constexpr const char* kAssertionFailInvalidFx002SingleBuy = "FAIL_INVALID_FX002_SINGLE_BUY";
 inline constexpr const char* kAssertionFailInvalidFx003BuySellPartial = "FAIL_INVALID_FX003_BUY_SELL_PARTIAL";
@@ -26,6 +27,7 @@ inline constexpr const char* kAssertionFailInvalidFx004SellExceedsPosition = "FA
 inline constexpr const char* kAssertionFailInvalidFx005MissingFee = "FAIL_INVALID_FX005_MISSING_FEE";
 inline constexpr const char* kAssertionFailInvalidFx006NegativeCash = "FAIL_INVALID_FX006_NEGATIVE_CASH";
 inline constexpr const char* kAssertionFailInvalidFx007MultiInstrument = "FAIL_INVALID_FX007_MULTI_INSTRUMENT";
+inline constexpr const char* kAssertionFailInvalidFx008MultiAccount = "FAIL_INVALID_FX008_MULTI_ACCOUNT";
 inline constexpr const char* kAssertionSkippedByDesign = "SKIPPED_BY_DESIGN";
 
 struct AccountingAssertionResult {
@@ -63,6 +65,9 @@ public:
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertFx007MultiInstrumentResult(
+        const AccountingFixture& fixture,
+        const AccountingReplayResult& result) const;
+    [[nodiscard]] AccountingAssertionResult assertFx008MultiAccountResult(
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertExpectedOutputShape(const AccountingFixture& fixture) const;

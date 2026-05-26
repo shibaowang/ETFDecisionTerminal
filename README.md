@@ -749,6 +749,15 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - v0.2 release notes: [Release Notes - v0.2 ReadOnly Business Pages](docs/release_notes/v0_2_readonly_business_pages.md).
 - v0.2 summary: [ReadOnly Business Pages Summary](docs/19_readonly_business_pages_summary.md).
 
+## TASK-044 v0.3 Position Accounting Boundary Docs
+
+- v0.3 planning begins with a documentation-only boundary for read-only position and accounting-derived data.
+- The position page is not implemented yet.
+- `trade_log` remains the fact ledger; `cash_snapshot`, `position_snapshot`, and `portfolio_summary` are derived data only.
+- Future position, cash, PnL, base position, and sniper-pool pages must use ViewModel boundaries and must not calculate accounting values in QML.
+- v0.3 design boundary: [Position Accounting Boundary](docs/20_position_accounting_boundary.md).
+- v0.3 data contract draft: [Position Read-Only Data Contract Draft](docs/21_position_readonly_data_contract_draft.md).
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.
@@ -768,6 +777,8 @@ Milestone documents:
 - [Milestone - v0.2 ReadOnly Business Pages](docs/18_milestone_v0_2_readonly_business_pages.md)
 - [Release Notes - v0.2 ReadOnly Business Pages](docs/release_notes/v0_2_readonly_business_pages.md)
 - [ReadOnly Business Pages Summary](docs/19_readonly_business_pages_summary.md)
+- [Position Accounting Boundary](docs/20_position_accounting_boundary.md)
+- [Position Read-Only Data Contract Draft](docs/21_position_readonly_data_contract_draft.md)
 - [Documentation Index](docs/README.md)
 
 Run tests:

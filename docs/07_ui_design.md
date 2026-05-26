@@ -232,3 +232,10 @@ v0.1 草案。
 - Table density supports `compact`, `normal`, and `comfortable`, changing only row height, padding, and text size.
 - Column visibility and density settings are not persisted and must not write files, SQLite, registry, or service configuration.
 - These controls are visual-only; they must not call services, connect sockets, execute actions, or make read-only pages look trade-capable.
+## TASK-044 Future Position Page Boundary
+
+- A future position page must bind ShellServices ViewModel / Model objects for position, cash, PnL, base position, and sniper-pool data.
+- QML must not calculate cost,收益, position quantity, cash balance, principal, base-position completion, or sniper-pool tiers.
+- QML must not directly access SQLite or call `DataServiceClient`.
+- The current task does not implement a position page, position replay, cash replay, PnL calculation, snapshot generation, or TradeLog writes.
+- Position and accounting UI work must follow [Position Accounting Boundary](20_position_accounting_boundary.md) and the [Position Read-Only Data Contract Draft](21_position_readonly_data_contract_draft.md).

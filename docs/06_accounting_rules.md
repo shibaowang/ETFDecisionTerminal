@@ -111,3 +111,12 @@ principal_base =
 - `data.audit.append` 不写 `trade_log`，不创建 `trade_execution_group`，不改变 TradeDraft 状态。
 - `data.audit.append` 不写 `position_snapshot`、`cash_snapshot` 或 `portfolio_summary`。
 - trade_log 仍是唯一事实账本；任何真实业务入账必须由后续专门任务授权并定义完整事务、审计和回滚规则。
+## v0.3 Accounting Boundary References
+
+- trade_log 是事实账本 and remains the only accounting fact ledger for future position and cash replay.
+- `cash_snapshot`, `position_snapshot`, and `portfolio_summary` are derived data and must not be treated as fact sources.
+- Derived snapshots must never rewrite or silently correct `trade_log`.
+- Position, cash, cost, principal, and PnL definitions must be unified before implementation.
+- The v0.3 position and accounting boundary is documented in [Position Accounting Boundary](20_position_accounting_boundary.md).
+- The future read-only DTO draft is documented in [Position Read-Only Data Contract Draft](21_position_readonly_data_contract_draft.md).
+- Current scope remains documentation-only: no `trade_log` writes, no snapshot writes, no schema changes, no accounting replay implementation.

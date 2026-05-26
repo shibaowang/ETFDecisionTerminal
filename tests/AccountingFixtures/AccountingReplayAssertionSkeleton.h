@@ -14,8 +14,10 @@ inline constexpr const char* kAssertionFailResultOutputNotEmpty = "FAIL_RESULT_O
 inline constexpr const char* kAssertionFailMissingExpectedOutput = "FAIL_MISSING_EXPECTED_OUTPUT";
 inline constexpr const char* kAssertionPassFx001EmptyLedger = "PASS_FX001_EMPTY_LEDGER";
 inline constexpr const char* kAssertionPassFx002SingleBuy = "PASS_FX002_SINGLE_BUY";
+inline constexpr const char* kAssertionPassFx003BuySellPartial = "PASS_FX003_BUY_SELL_PARTIAL";
 inline constexpr const char* kAssertionFailInvalidFx001EmptyLedger = "FAIL_INVALID_FX001_EMPTY_LEDGER";
 inline constexpr const char* kAssertionFailInvalidFx002SingleBuy = "FAIL_INVALID_FX002_SINGLE_BUY";
+inline constexpr const char* kAssertionFailInvalidFx003BuySellPartial = "FAIL_INVALID_FX003_BUY_SELL_PARTIAL";
 inline constexpr const char* kAssertionSkippedByDesign = "SKIPPED_BY_DESIGN";
 
 struct AccountingAssertionResult {
@@ -38,6 +40,9 @@ public:
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertFx002SingleBuyResult(
+        const AccountingFixture& fixture,
+        const AccountingReplayResult& result) const;
+    [[nodiscard]] AccountingAssertionResult assertFx003BuySellPartialResult(
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertExpectedOutputShape(const AccountingFixture& fixture) const;

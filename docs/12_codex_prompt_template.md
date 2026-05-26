@@ -261,3 +261,7 @@ v0.1 草案。
 - Do not modify fixture expected outputs to fit a replay implementation.
 - After FX002, do not jump directly to complex PnL, base-position, sniper-pool, or multi-fixture replay.
 - Sell replay and partial-sell replay require separate task authorization.
+- After FX003, do not jump directly to base-position, sniper-pool, multi-account, multi-instrument, or multi-currency replay.
+- FX004 oversell handling must be implemented in its own task and must not be mixed into the FX003 partial-sell implementation.
+- Do not mix missing-fee, negative-cash, market-price, or multi-currency error handling into unrelated fixture tasks.
+- Every new fixture implementation must preserve FX001-FX003 tests and keep FX004-FX013 explicitly guarded until their own task is authorized.

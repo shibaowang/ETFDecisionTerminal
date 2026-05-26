@@ -22,6 +22,7 @@ using etfdt::tests::accounting::hasPortfolioPnl;
 using etfdt::tests::accounting::hasPositionListResponse;
 using etfdt::tests::accounting::kAssertionPassFx001EmptyLedger;
 using etfdt::tests::accounting::kAssertionPassFx002SingleBuy;
+using etfdt::tests::accounting::kAssertionPassFx003BuySellPartial;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
 using etfdt::tests::accounting::kReplayStatusNotImplemented;
@@ -82,7 +83,8 @@ int main(int argc, char** argv)
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
     require(engine.supportsFixture("FX002_SINGLE_BUY"), "minimal engine supports FX002");
-    require(!engine.supportsFixture("FX003_BUY_SELL_PARTIAL"), "minimal engine does not support FX003");
+    require(engine.supportsFixture("FX003_BUY_SELL_PARTIAL"), "minimal engine supports FX003");
+    require(!engine.supportsFixture("FX004_SELL_EXCEEDS_POSITION"), "minimal engine does not support FX004");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -112,9 +114,23 @@ int main(int argc, char** argv)
     require(!hasBlockingIssue(fx002Direct), "FX002 has no blocking issue");
 
     const auto fx003Direct = engine.replayFixture(fx003);
-    require(!fx003Direct.implemented, "FX003 direct replay remains implemented=false");
-    require(!fx003Direct.replayExecuted, "FX003 direct replayExecuted=false");
-    require(fx003Direct.status == kReplayStatusNotImplemented, "FX003 direct status=NOT_IMPLEMENTED");
+    require(fx003Direct.implemented, "FX003 direct replay implemented=true");
+    require(fx003Direct.replayExecuted, "FX003 direct replayExecuted=true");
+    require(fx003Direct.status == kReplayStatusOk, "FX003 direct status=OK");
+    require(hasPositionListResponse(fx003Direct), "FX003 has positionListResponseRaw");
+    require(fx003Direct.positionListResponseRaw.value("positions").isArray(), "FX003 positions is an array");
+    require(fx003Direct.positionListResponseRaw.value("positions").toArray().size() == 1, "FX003 positions array has one row");
+    const auto fx003Position = fx003Direct.positionListResponseRaw.value("positions").toArray().first().toObject();
+    require(fx003Position.value("instrumentCode").toString() == "159509", "FX003 instrumentCode is 159509");
+    require(fx003Position.value("quantityText").toString() == "600", "FX003 quantityText is 600");
+    require(fx003Position.value("costAmountText").toString() == "600.60 CNY", "FX003 costAmountText is 600.60 CNY");
+    require(hasCashSummary(fx003Direct), "FX003 has cashSummaryRaw");
+    require(fx003Direct.cashSummaryRaw.value("cashBalanceText").toString() == "99478.00 CNY", "FX003 cashBalanceText is 99478.00 CNY");
+    require(fx003Direct.cashSummaryRaw.value("sellCashInflowText").toString() == "479.00 CNY", "FX003 sellCashInflowText is 479.00 CNY");
+    require(fx003Direct.cashSummaryRaw.value("feeTotalText").toString() == "2.00 CNY", "FX003 feeTotalText is 2.00 CNY");
+    require(hasPortfolioPnl(fx003Direct), "FX003 has portfolioPnlRaw");
+    require(fx003Direct.portfolioPnlRaw.value("realizedPnlText").toString() == "78.60 CNY", "FX003 realizedPnlText is 78.60 CNY");
+    require(!hasBlockingIssue(fx003Direct), "FX003 has no blocking issue");
 
     const auto fx004Direct = engine.replayFixture(fx004);
     require(fx004Direct.status == kReplayStatusNotImplemented, "FX004 direct status=NOT_IMPLEMENTED");
@@ -145,6 +161,14 @@ int main(int argc, char** argv)
     require(fx002Assertion.passed, "FX002 single-buy assertion passes");
     require(fx002Assertion.status == kAssertionPassFx002SingleBuy, "FX002 assertion status is PASS_FX002_SINGLE_BUY");
 
+    const auto fx003Harness = requireResult(harness, "FX003_BUY_SELL_PARTIAL");
+    require(fx003Harness.status == kReplayStatusOk, "minimal harness FX003 status=OK");
+    require(fx003Harness.implemented, "minimal harness FX003 implemented=true");
+    require(fx003Harness.replayExecuted, "minimal harness FX003 replayExecuted=true");
+    const auto fx003Assertion = assertions.assertFx003BuySellPartialResult(fx003, fx003Harness);
+    require(fx003Assertion.passed, "FX003 buy-sell partial assertion passes");
+    require(fx003Assertion.status == kAssertionPassFx003BuySellPartial, "FX003 assertion status is PASS_FX003_BUY_SELL_PARTIAL");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -156,6 +180,10 @@ int main(int argc, char** argv)
             require(result.status == kReplayStatusOk, "FX002 remains OK in minimal loop");
             continue;
         }
+        if (fixtureId == "FX003_BUY_SELL_PARTIAL") {
+            require(result.status == kReplayStatusOk, "FX003 remains OK in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -165,6 +193,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003 tests passed\n";
     return 0;
 }

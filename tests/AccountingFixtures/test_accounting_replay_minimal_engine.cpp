@@ -27,6 +27,7 @@ using etfdt::tests::accounting::kAssertionPassFx002SingleBuy;
 using etfdt::tests::accounting::kAssertionPassFx003BuySellPartial;
 using etfdt::tests::accounting::kAssertionPassFx004SellExceedsPosition;
 using etfdt::tests::accounting::kAssertionPassFx005MissingFee;
+using etfdt::tests::accounting::kAssertionPassFx006NegativeCash;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
@@ -106,6 +107,7 @@ int main(int argc, char** argv)
     const auto fx003 = requireValue(harness.fixtureByIdForTest("FX003_BUY_SELL_PARTIAL"), "FX003 fixture exists");
     const auto fx004 = requireValue(harness.fixtureByIdForTest("FX004_SELL_EXCEEDS_POSITION"), "FX004 fixture exists");
     const auto fx005 = requireValue(harness.fixtureByIdForTest("FX005_MISSING_FEE"), "FX005 fixture exists");
+    const auto fx006 = requireValue(harness.fixtureByIdForTest("FX006_NEGATIVE_CASH"), "FX006 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
@@ -113,7 +115,8 @@ int main(int argc, char** argv)
     require(engine.supportsFixture("FX003_BUY_SELL_PARTIAL"), "minimal engine supports FX003");
     require(engine.supportsFixture("FX004_SELL_EXCEEDS_POSITION"), "minimal engine supports FX004");
     require(engine.supportsFixture("FX005_MISSING_FEE"), "minimal engine supports FX005");
-    require(!engine.supportsFixture("FX006_NEGATIVE_CASH"), "minimal engine does not support FX006");
+    require(engine.supportsFixture("FX006_NEGATIVE_CASH"), "minimal engine supports FX006");
+    require(!engine.supportsFixture("FX007_MULTI_INSTRUMENT"), "minimal engine does not support FX007");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -179,6 +182,14 @@ int main(int argc, char** argv)
     require(!hasBlockingIssue(fx005Direct), "FX005 has no blocking issue");
     require(hasEmptyReplayOutputs(fx005Direct), "FX005 does not generate normal raw outputs");
 
+    const auto fx006Direct = engine.replayFixture(fx006);
+    require(fx006Direct.implemented, "FX006 direct replay implemented=true");
+    require(fx006Direct.replayExecuted, "FX006 direct replayExecuted=true");
+    require(fx006Direct.status == kReplayStatusError, "FX006 direct status=ERROR");
+    require(hasReplayIssueCode(fx006Direct, "NEGATIVE_CASH"), "FX006 issues contain NEGATIVE_CASH");
+    require(hasBlockingIssueCode(fx006Direct, "NEGATIVE_CASH"), "FX006 NEGATIVE_CASH is blocking");
+    require(hasEmptyReplayOutputs(fx006Direct), "FX006 does not generate normal raw outputs");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -232,6 +243,16 @@ int main(int argc, char** argv)
     require(fx005Assertion.passed, "FX005 missing-fee assertion passes");
     require(fx005Assertion.status == kAssertionPassFx005MissingFee, "FX005 assertion status is PASS_FX005_MISSING_FEE");
 
+    const auto fx006Harness = requireResult(harness, "FX006_NEGATIVE_CASH");
+    require(fx006Harness.status == kReplayStatusError, "minimal harness FX006 status=ERROR");
+    require(fx006Harness.implemented, "minimal harness FX006 implemented=true");
+    require(fx006Harness.replayExecuted, "minimal harness FX006 replayExecuted=true");
+    require(hasBlockingIssueCode(fx006Harness, "NEGATIVE_CASH"), "minimal harness FX006 has blocking NEGATIVE_CASH");
+    require(hasEmptyReplayOutputs(fx006Harness), "minimal harness FX006 keeps raw outputs empty");
+    const auto fx006Assertion = assertions.assertFx006NegativeCashResult(fx006, fx006Harness);
+    require(fx006Assertion.passed, "FX006 negative-cash assertion passes");
+    require(fx006Assertion.status == kAssertionPassFx006NegativeCash, "FX006 assertion status is PASS_FX006_NEGATIVE_CASH");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -257,6 +278,11 @@ int main(int argc, char** argv)
             require(issueBlockingMatches(result, "MISSING_FEE", false), "FX005 keeps non-blocking MISSING_FEE in minimal loop");
             continue;
         }
+        if (fixtureId == "FX006_NEGATIVE_CASH") {
+            require(result.status == kReplayStatusError, "FX006 remains ERROR in minimal loop");
+            require(hasBlockingIssueCode(result, "NEGATIVE_CASH"), "FX006 keeps blocking NEGATIVE_CASH in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -266,6 +292,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006 tests passed\n";
     return 0;
 }

@@ -57,4 +57,9 @@ outputs.
 `AccountingReplayMinimalEngine` now also supports `FX005_MISSING_FEE`,
 returning `status=WARNING` with a non-blocking `MISSING_FEE` issue and no
 normal cost, position, cash, or PnL success outputs. Missing fee is not treated
-as `fee=0`. FX006-FX013 remain `NOT_IMPLEMENTED`.
+as `fee=0`.
+
+`AccountingReplayMinimalEngine` now also supports `FX006_NEGATIVE_CASH`,
+returning `status=ERROR` with a blocking `NEGATIVE_CASH` issue and no normal
+position, cash, or PnL success outputs. Negative cash is not treated as an
+implicit overdraft. FX007-FX013 remain `NOT_IMPLEMENTED`.

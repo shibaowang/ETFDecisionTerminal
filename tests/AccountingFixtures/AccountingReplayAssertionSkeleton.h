@@ -17,11 +17,13 @@ inline constexpr const char* kAssertionPassFx002SingleBuy = "PASS_FX002_SINGLE_B
 inline constexpr const char* kAssertionPassFx003BuySellPartial = "PASS_FX003_BUY_SELL_PARTIAL";
 inline constexpr const char* kAssertionPassFx004SellExceedsPosition = "PASS_FX004_SELL_EXCEEDS_POSITION";
 inline constexpr const char* kAssertionPassFx005MissingFee = "PASS_FX005_MISSING_FEE";
+inline constexpr const char* kAssertionPassFx006NegativeCash = "PASS_FX006_NEGATIVE_CASH";
 inline constexpr const char* kAssertionFailInvalidFx001EmptyLedger = "FAIL_INVALID_FX001_EMPTY_LEDGER";
 inline constexpr const char* kAssertionFailInvalidFx002SingleBuy = "FAIL_INVALID_FX002_SINGLE_BUY";
 inline constexpr const char* kAssertionFailInvalidFx003BuySellPartial = "FAIL_INVALID_FX003_BUY_SELL_PARTIAL";
 inline constexpr const char* kAssertionFailInvalidFx004SellExceedsPosition = "FAIL_INVALID_FX004_SELL_EXCEEDS_POSITION";
 inline constexpr const char* kAssertionFailInvalidFx005MissingFee = "FAIL_INVALID_FX005_MISSING_FEE";
+inline constexpr const char* kAssertionFailInvalidFx006NegativeCash = "FAIL_INVALID_FX006_NEGATIVE_CASH";
 inline constexpr const char* kAssertionSkippedByDesign = "SKIPPED_BY_DESIGN";
 
 struct AccountingAssertionResult {
@@ -53,6 +55,9 @@ public:
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertFx005MissingFeeResult(
+        const AccountingFixture& fixture,
+        const AccountingReplayResult& result) const;
+    [[nodiscard]] AccountingAssertionResult assertFx006NegativeCashResult(
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertExpectedOutputShape(const AccountingFixture& fixture) const;

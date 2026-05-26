@@ -21,6 +21,7 @@ constexpr const char* kFx002SingleBuy = "FX002_SINGLE_BUY";
 constexpr const char* kFx003BuySellPartial = "FX003_BUY_SELL_PARTIAL";
 constexpr const char* kFx004SellExceedsPosition = "FX004_SELL_EXCEEDS_POSITION";
 constexpr const char* kFx005MissingFee = "FX005_MISSING_FEE";
+constexpr const char* kFx006NegativeCash = "FX006_NEGATIVE_CASH";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -325,7 +326,8 @@ QJsonObject makePartialSellPortfolioPnl(
 bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId) const
 {
     return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial
-        || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee;
+        || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee
+        || fixtureId == kFx006NegativeCash;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -640,6 +642,88 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
             "MISSING_FEE",
             expectedIssue->message.empty() ? "Fee is missing." : expectedIssue->message,
             expectedIssue->blocking,
+            fixture.fixtureId));
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx006NegativeCash) {
+        const auto invalidFx006 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX006_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.cashFacts.size() != 1 || fixture.cashFacts.front().action != "INITIAL_CASH") {
+            return invalidFx006("FX006_NEGATIVE_CASH requires exactly one INITIAL_CASH fact.");
+        }
+        if (fixture.tradeFacts.size() != 1 || fixture.tradeFacts.front().action != "BUY") {
+            return invalidFx006("FX006_NEGATIVE_CASH requires exactly one BUY trade fact.");
+        }
+
+        const auto& initialCash = fixture.cashFacts.front();
+        const auto& trade = fixture.tradeFacts.front();
+        const auto currency = scopeString(fixture, "currency");
+        if (currency != "CNY" || initialCash.currency != "CNY" || trade.currency != "CNY") {
+            return invalidFx006("FX006_NEGATIVE_CASH requires CNY currency.");
+        }
+        if (trade.instrumentCode.empty() || trade.quantityText.empty() || trade.priceText.empty()
+            || trade.amountText.empty()) {
+            return invalidFx006("FX006_NEGATIVE_CASH requires instrument, quantity, price, and amount.");
+        }
+        if (trade.feeText.empty()) {
+            return invalidFx006("FX006_NEGATIVE_CASH requires explicit feeText; missing fee is FX005 scope.");
+        }
+
+        const auto quantity = parseInteger(trade.quantityText);
+        const auto priceMills = parseDecimalToScale(trade.priceText, 3);
+        const auto amount = parseMoneyText(trade.amountText, currency);
+        const auto fee = parseMoneyText(trade.feeText, currency);
+        const auto initial = parseMoneyText(initialCash.amountText, currency);
+        if (!quantity.has_value() || *quantity <= 0 || !priceMills.has_value() || !amount.has_value()
+            || !fee.has_value() || !initial.has_value()) {
+            return invalidFx006("FX006_NEGATIVE_CASH contains an invalid numeric field.");
+        }
+        if (amount->currency != currency || fee->currency != currency || initial->currency != currency) {
+            return invalidFx006("FX006_NEGATIVE_CASH money fields must use fixture currency.");
+        }
+
+        const long long buyCashRequirementCents = amount->cents + fee->cents;
+        if (buyCashRequirementCents <= initial->cents) {
+            return invalidFx006("FX006_NEGATIVE_CASH requires buy cash requirement greater than initial cash.");
+        }
+
+        const auto expectedIssue = std::find_if(
+            fixture.expectedIssues.begin(),
+            fixture.expectedIssues.end(),
+            [](const AccountingExpectedIssue& issue) { return issue.code == "NEGATIVE_CASH"; });
+        if (expectedIssue == fixture.expectedIssues.end()) {
+            return invalidFx006("FX006_NEGATIVE_CASH requires an expected NEGATIVE_CASH issue.");
+        }
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = kReplayStatusError;
+        result.message = "Buy cash requirement exceeds available cash.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.issues.push_back(makeIssue(
+            expectedIssue->level.empty() ? "ERROR" : expectedIssue->level,
+            "NEGATIVE_CASH",
+            expectedIssue->message.empty() ? "Buy cash requirement exceeds available cash." : expectedIssue->message,
+            true,
             fixture.fixtureId));
         return result;
     }

@@ -249,3 +249,5 @@ v0.1 草案。
 - Do not make replay tests pass by deleting fixtures, skipping fixtures, or excluding error fixtures.
 - Replacing `AccountingReplayStubEngine` with real replay logic requires explicit task authorization and fixture-backed assertions.
 - Stub harness tasks must keep `NOT_IMPLEMENTED` as the expected result until replay implementation is authorized.
+- Replay implementation tasks must preserve the `AccountingReplayResult` contract and must not hide fixture failures by changing result fields or statuses.
+- Stub replacement must fill `positionListResponseRaw`, `cashSummaryRaw`, `portfolioPnlRaw`, `basePositionRaw`, and `sniperPoolRaw` gradually with explicit fixture-backed assertions.

@@ -1054,3 +1054,25 @@ does not write database tables.
 Future replay implementation must replace the stub only after fixture-backed
 tests are explicitly defined. It must not skip fixtures, remove error fixtures,
 or change expected fixture outputs without a separate contract justification.
+
+## 11. TASK-053 AccountingReplayResult Skeleton
+
+The fixture-backed harness now returns a test-only `AccountingReplayResult`
+skeleton.
+
+- `AccountingReplayResult` carries `fixtureId`, `implemented`,
+  `replayExecuted`, `status`, `message`, `metadata`, `issues`, and raw output
+  placeholders.
+- `AccountingReplayResultMapper` maps valid fixtures to `NOT_IMPLEMENTED` and
+  invalid fixtures to `INVALID_FIXTURE`.
+- `AccountingReplayStubEngine` returns `implemented=false`,
+  `replayExecuted=false`, `status=NOT_IMPLEMENTED`, and an issue with
+  `code=REPLAY_NOT_IMPLEMENTED`.
+- `positionListResponseRaw`, `cashSummaryRaw`, `portfolioPnlRaw`,
+  `basePositionRaw`, and `sniperPoolRaw` remain empty.
+
+This is still not a replay implementation. The skeleton does not calculate
+cash, position, PnL, cost basis, base-position, or sniper-pool output. Future
+replay implementation must fill result fields gradually while preserving
+FX001-FX013 coverage and must not hide fixture failures by changing the result
+contract or fixture expectations without separate justification.

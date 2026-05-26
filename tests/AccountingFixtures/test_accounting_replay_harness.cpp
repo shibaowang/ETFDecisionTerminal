@@ -1,5 +1,6 @@
 #include "AccountingReplayStubEngine.h"
 #include "AccountingReplayTestHarness.h"
+#include "AccountingReplayResult.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -12,6 +13,8 @@ namespace {
 using etfdt::tests::accounting::AccountingFixture;
 using etfdt::tests::accounting::AccountingReplayStubEngine;
 using etfdt::tests::accounting::AccountingReplayTestHarness;
+using etfdt::tests::accounting::hasEmptyReplayOutputs;
+using etfdt::tests::accounting::hasReplayIssueCode;
 
 void require(bool condition, const std::string& message)
 {
@@ -79,18 +82,21 @@ int main(int argc, char** argv)
         require(!result.implemented, result.fixtureId + " implemented is false");
         require(!result.replayExecuted, result.fixtureId + " replayExecuted is false");
         require(result.status == "NOT_IMPLEMENTED", result.fixtureId + " status is NOT_IMPLEMENTED");
-        require(result.sourceFixtureId == result.fixtureId, result.fixtureId + " sourceFixtureId matches");
-        require(result.requiredFutureTask == "Implement fixture-backed accounting replay.", result.fixtureId + " future task is explicit");
+        require(result.metadata.sourceFixtureId == result.fixtureId, result.fixtureId + " sourceFixtureId matches");
+        require(result.metadata.requiredFutureTask == "Implement fixture-backed accounting replay.", result.fixtureId + " future task is explicit");
+        require(hasReplayIssueCode(result, "REPLAY_NOT_IMPLEMENTED"), result.fixtureId + " issue includes REPLAY_NOT_IMPLEMENTED");
+        require(hasEmptyReplayOutputs(result), result.fixtureId + " raw replay outputs are empty");
     }
 
     const auto fx004 = harness.resultForFixture("FX004_SELL_EXCEEDS_POSITION");
     require(fx004.has_value(), "FX004 result exists");
-    require(fx004->blockingExpected, "FX004 blockingExpected is true");
+    require(fx004->metadata.fixtureBlockingExpected, "FX004 blockingExpected is true");
+    require(fx004->metadata.fixtureIssueCount == 1, "FX004 fixtureIssueCount is one");
 
     const auto fx001 = harness.resultForFixture("FX001_EMPTY_LEDGER");
     require(fx001.has_value(), "FX001 result exists");
-    require(!fx001->blockingExpected, "FX001 blockingExpected is false");
-    require(fx001->issueCount == 0, "FX001 issueCount is zero");
+    require(!fx001->metadata.fixtureBlockingExpected, "FX001 blockingExpected is false");
+    require(fx001->metadata.fixtureIssueCount == 0, "FX001 issueCount is zero");
 
     require(!harness.resultForFixture("FX999_MISSING").has_value(), "missing result returns empty optional");
 

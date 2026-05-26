@@ -824,6 +824,14 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This harness does not implement replay, does not calculate cash, position, or PnL, does not access SQLite, does not call DataService, and does not write output files or database tables.
 - Harness CTest: `accounting_replay_harness_skeleton`.
 
+## TASK-053 Accounting Replay Result Skeleton
+
+- `tests/AccountingFixtures/AccountingReplayResult` defines the test-only replay result skeleton for future fixture-backed replay tests.
+- `AccountingReplayResultMapper` maps valid fixtures to a uniform `NOT_IMPLEMENTED` result and invalid fixtures to `INVALID_FIXTURE`.
+- `AccountingReplayStubEngine` now returns `AccountingReplayResult` with `implemented=false`, `replayExecuted=false`, `status=NOT_IMPLEMENTED`, and a `REPLAY_NOT_IMPLEMENTED` issue.
+- Position, cash, PnL, base-position, and sniper-pool raw outputs remain empty; replay is still not implemented.
+- Result skeleton CTest: `accounting_replay_result_skeleton`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

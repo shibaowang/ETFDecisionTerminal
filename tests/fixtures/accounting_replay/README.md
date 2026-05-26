@@ -22,3 +22,8 @@ The fixture-backed test harness is
 `AccountingReplayStubEngine`, which returns `NOT_IMPLEMENTED` with
 `implemented=false` and `replayExecuted=false` for valid fixtures. This is a
 coverage skeleton only and does not implement accounting replay.
+
+The test-only replay result skeleton is
+`tests/AccountingFixtures/AccountingReplayResult`. Current stub results keep
+position, cash, PnL, base-position, and sniper-pool raw outputs empty and add a
+`REPLAY_NOT_IMPLEMENTED` issue.

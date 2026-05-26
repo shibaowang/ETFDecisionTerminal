@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include <algorithm>
 #include <utility>
 
 namespace etfdt::tests::accounting {
@@ -575,6 +576,110 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx004SellExce
             "replayExecuted",
             "status",
             "issues.SELL_EXCEEDS_POSITION",
+            "positionListResponseRaw",
+            "cashSummaryRaw",
+            "portfolioPnlRaw",
+            "basePositionRaw",
+            "sniperPoolRaw",
+        });
+}
+
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx005MissingFeeResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX005_MISSING_FEE") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx005MissingFee,
+            "FX005 missing-fee assertion only accepts FX005_MISSING_FEE.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    const auto expectedIssue = std::find_if(
+        fixture.expectedIssues.begin(),
+        fixture.expectedIssues.end(),
+        [](const AccountingExpectedIssue& issue) { return issue.code == "MISSING_FEE"; });
+    if (expectedIssue == fixture.expectedIssues.end()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx005MissingFee,
+            "FX005 fixture must declare an expected MISSING_FEE issue.",
+            false,
+            {"expectedIssues.MISSING_FEE"});
+    }
+
+    const std::string expectedStatus = expectedIssue->level == "ERROR" ? kReplayStatusError : kReplayStatusWarning;
+    if (!result.implemented || !result.replayExecuted || result.status != expectedStatus) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx005MissingFee,
+            "FX005 replay result must be implemented=true, replayExecuted=true, and match the fixture status.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    bool hasMissingFee = false;
+    bool blockingMatches = false;
+    for (const auto& issue : result.issues) {
+        if (issue.code == "MISSING_FEE") {
+            hasMissingFee = true;
+            blockingMatches = issue.blocking == expectedIssue->blocking;
+        }
+    }
+    if (!hasMissingFee || !blockingMatches) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx005MissingFee,
+            "FX005 must contain MISSING_FEE with blocking matching the fixture expected issue.",
+            false,
+            {"issues.MISSING_FEE"});
+    }
+
+    if (!hasEmptyReplayOutputs(result)) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx005MissingFee,
+            "FX005 must not generate normal position, cash, PnL, base-position, or sniper-pool outputs.",
+            false,
+            {
+                "positionListResponseRaw",
+                "cashSummaryRaw",
+                "portfolioPnlRaw",
+                "basePositionRaw",
+                "sniperPoolRaw",
+            });
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx005MissingFee,
+        "FX005 missing-fee replay result exposes MISSING_FEE without normal outputs or fee=0 fallback.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "issues.MISSING_FEE",
             "positionListResponseRaw",
             "cashSummaryRaw",
             "portfolioPnlRaw",

@@ -1217,3 +1217,30 @@ unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls,
 file writes, database writes, or DataService actions. Future implementation
 must add one fixture at a time without changing fixture expected outputs to fit
 an incorrect algorithm.
+
+## 17. TASK-059 Minimal FX005 Missing-Fee Detection
+
+`FX005_MISSING_FEE` now has a test-only minimal replay warning path through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR`.
+- `FX005_MISSING_FEE` returns `implemented=true`.
+- `FX005_MISSING_FEE` returns `replayExecuted=true`.
+- `FX005_MISSING_FEE` returns `status=WARNING`, matching the fixture expected
+  output and expected issue level.
+- `FX005_MISSING_FEE` returns a non-blocking `MISSING_FEE` issue.
+- Missing fee is not silently treated as `fee=0`.
+- `FX005_MISSING_FEE` does not generate normal cost, position, cash, PnL,
+  base-position, or sniper-pool success outputs.
+- `FX006_NEGATIVE_CASH` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still return
+  `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to detecting one BUY fact where
+`feeText` is missing, null, or empty. It does not implement negative-cash errors,
+multi-account replay, multi-instrument replay, market valuation, realized PnL,
+unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls,
+file writes, database writes, or DataService actions. Future implementation
+must add one fixture at a time without changing fixture expected outputs to fit
+an incorrect algorithm.

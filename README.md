@@ -875,6 +875,15 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This does not implement missing-fee errors, negative-cash errors, multi-account, multi-instrument, market valuation, unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
 - Minimal FX004 CTest: `accounting_replay_minimal_fx004`.
 
+## TASK-059 Accounting Replay Minimal FX005
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, `FX003_BUY_SELL_PARTIAL`, `FX004_SELL_EXCEEDS_POSITION`, and `FX005_MISSING_FEE`.
+- FX005 only detects missing fee: when the BUY fact has missing / null / empty `feeText`, it returns `implemented=true`, `replayExecuted=true`, `status=WARNING`, and a non-blocking `MISSING_FEE` issue matching the fixture contract.
+- FX005 does not default missing fee to `0`, and does not generate normal cost, position, cash, or PnL success outputs.
+- FX006-FX013 still return `NOT_IMPLEMENTED`.
+- This does not implement negative-cash errors, multi-account, multi-instrument, market valuation, unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- Minimal FX005 CTest: `accounting_replay_minimal_fx005`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

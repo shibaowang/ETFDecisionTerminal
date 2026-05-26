@@ -52,4 +52,9 @@ one 159509 position, `quantityText=1000`, `costAmountText=1001.00 CNY`, and
 `AccountingReplayMinimalEngine` now also supports
 `FX004_SELL_EXCEEDS_POSITION`, returning `status=ERROR` with a blocking
 `SELL_EXCEEDS_POSITION` issue and no normal position, cash, or PnL success
-outputs. FX005-FX013 remain `NOT_IMPLEMENTED`.
+outputs.
+
+`AccountingReplayMinimalEngine` now also supports `FX005_MISSING_FEE`,
+returning `status=WARNING` with a non-blocking `MISSING_FEE` issue and no
+normal cost, position, cash, or PnL success outputs. Missing fee is not treated
+as `fee=0`. FX006-FX013 remain `NOT_IMPLEMENTED`.

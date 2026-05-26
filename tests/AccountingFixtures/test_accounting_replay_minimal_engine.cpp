@@ -26,11 +26,13 @@ using etfdt::tests::accounting::kAssertionPassFx001EmptyLedger;
 using etfdt::tests::accounting::kAssertionPassFx002SingleBuy;
 using etfdt::tests::accounting::kAssertionPassFx003BuySellPartial;
 using etfdt::tests::accounting::kAssertionPassFx004SellExceedsPosition;
+using etfdt::tests::accounting::kAssertionPassFx005MissingFee;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
 using etfdt::tests::accounting::kReplayStatusNotImplemented;
 using etfdt::tests::accounting::kReplayStatusOk;
+using etfdt::tests::accounting::kReplayStatusWarning;
 
 void require(bool condition, const std::string& message)
 {
@@ -80,6 +82,16 @@ bool hasBlockingIssueCode(const AccountingReplayResult& result, const std::strin
     return false;
 }
 
+bool issueBlockingMatches(const AccountingReplayResult& result, const std::string& code, bool expectedBlocking)
+{
+    for (const auto& issue : result.issues) {
+        if (issue.code == code) {
+            return issue.blocking == expectedBlocking;
+        }
+    }
+    return false;
+}
+
 } // namespace
 
 int main(int argc, char** argv)
@@ -93,13 +105,15 @@ int main(int argc, char** argv)
     const auto fx002 = requireValue(harness.fixtureByIdForTest("FX002_SINGLE_BUY"), "FX002 fixture exists");
     const auto fx003 = requireValue(harness.fixtureByIdForTest("FX003_BUY_SELL_PARTIAL"), "FX003 fixture exists");
     const auto fx004 = requireValue(harness.fixtureByIdForTest("FX004_SELL_EXCEEDS_POSITION"), "FX004 fixture exists");
+    const auto fx005 = requireValue(harness.fixtureByIdForTest("FX005_MISSING_FEE"), "FX005 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
     require(engine.supportsFixture("FX002_SINGLE_BUY"), "minimal engine supports FX002");
     require(engine.supportsFixture("FX003_BUY_SELL_PARTIAL"), "minimal engine supports FX003");
     require(engine.supportsFixture("FX004_SELL_EXCEEDS_POSITION"), "minimal engine supports FX004");
-    require(!engine.supportsFixture("FX005_MISSING_FEE"), "minimal engine does not support FX005");
+    require(engine.supportsFixture("FX005_MISSING_FEE"), "minimal engine supports FX005");
+    require(!engine.supportsFixture("FX006_NEGATIVE_CASH"), "minimal engine does not support FX006");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -156,6 +170,15 @@ int main(int argc, char** argv)
     require(hasEmptyReplayOutputs(fx004Direct), "FX004 does not generate normal raw outputs");
     require(fx004Direct.metadata.fixtureBlockingExpected, "FX004 keeps blocking expected metadata");
 
+    const auto fx005Direct = engine.replayFixture(fx005);
+    require(fx005Direct.implemented, "FX005 direct replay implemented=true");
+    require(fx005Direct.replayExecuted, "FX005 direct replayExecuted=true");
+    require(fx005Direct.status == kReplayStatusWarning, "FX005 direct status=WARNING");
+    require(hasReplayIssueCode(fx005Direct, "MISSING_FEE"), "FX005 issues contain MISSING_FEE");
+    require(issueBlockingMatches(fx005Direct, "MISSING_FEE", false), "FX005 MISSING_FEE blocking matches fixture");
+    require(!hasBlockingIssue(fx005Direct), "FX005 has no blocking issue");
+    require(hasEmptyReplayOutputs(fx005Direct), "FX005 does not generate normal raw outputs");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -199,6 +222,16 @@ int main(int argc, char** argv)
     require(fx004Assertion.passed, "FX004 sell-exceeds-position assertion passes");
     require(fx004Assertion.status == kAssertionPassFx004SellExceedsPosition, "FX004 assertion status is PASS_FX004_SELL_EXCEEDS_POSITION");
 
+    const auto fx005Harness = requireResult(harness, "FX005_MISSING_FEE");
+    require(fx005Harness.status == kReplayStatusWarning, "minimal harness FX005 status=WARNING");
+    require(fx005Harness.implemented, "minimal harness FX005 implemented=true");
+    require(fx005Harness.replayExecuted, "minimal harness FX005 replayExecuted=true");
+    require(issueBlockingMatches(fx005Harness, "MISSING_FEE", false), "minimal harness FX005 has non-blocking MISSING_FEE");
+    require(hasEmptyReplayOutputs(fx005Harness), "minimal harness FX005 keeps raw outputs empty");
+    const auto fx005Assertion = assertions.assertFx005MissingFeeResult(fx005, fx005Harness);
+    require(fx005Assertion.passed, "FX005 missing-fee assertion passes");
+    require(fx005Assertion.status == kAssertionPassFx005MissingFee, "FX005 assertion status is PASS_FX005_MISSING_FEE");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -219,6 +252,11 @@ int main(int argc, char** argv)
             require(hasBlockingIssueCode(result, "SELL_EXCEEDS_POSITION"), "FX004 keeps blocking SELL_EXCEEDS_POSITION in minimal loop");
             continue;
         }
+        if (fixtureId == "FX005_MISSING_FEE") {
+            require(result.status == kReplayStatusWarning, "FX005 remains WARNING in minimal loop");
+            require(issueBlockingMatches(result, "MISSING_FEE", false), "FX005 keeps non-blocking MISSING_FEE in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -228,6 +266,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005 tests passed\n";
     return 0;
 }

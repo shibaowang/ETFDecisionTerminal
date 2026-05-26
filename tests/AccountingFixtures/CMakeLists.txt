@@ -170,3 +170,14 @@ add_test(
 set_tests_properties(accounting_replay_minimal_fx004 PROPERTIES
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+    NAME accounting_replay_minimal_fx005
+    COMMAND
+        AccountingReplayMinimalFx001Tests
+        ${PROJECT_SOURCE_DIR}/tests/fixtures/accounting_replay
+)
+
+set_tests_properties(accounting_replay_minimal_fx005 PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)

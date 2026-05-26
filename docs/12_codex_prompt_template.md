@@ -277,3 +277,8 @@ v0.1 草案。
 - FX007 multi-instrument handling must remain a separate task.
 - Negative cash must not silently pass as an overdraft or produce normal position / cash / PnL success outputs.
 - Every new replay task after FX006 must preserve FX001-FX006 tests and keep FX007-FX013 explicitly guarded until their own task is authorized.
+- After FX007, do not jump directly to base-position, sniper-pool, multi-currency, or market valuation replay.
+- FX008 multi-account handling must remain a separate task.
+- Multi-instrument replay must not merge different `instrumentCode` values into one position.
+- Missing market price must not be hidden by fabricated market value or unrealized PnL.
+- Every new replay task after FX007 must preserve FX001-FX007 tests and keep FX008-FX013 explicitly guarded until their own task is authorized.

@@ -24,6 +24,10 @@ def main() -> int:
     accounting_fixture_samples_path = root / "docs" / "24_accounting_replay_fixture_samples.md"
     position_viewmodel_design_path = root / "docs" / "25_position_shell_viewmodel_design.md"
     position_mapping_path = root / "docs" / "26_position_dto_viewmodel_mapping.md"
+    codex_prompt_template_path = root / "docs" / "12_codex_prompt_template.md"
+    accounting_replay_incremental_plan_path = root / "docs" / "30_accounting_replay_incremental_implementation_plan.md"
+    accounting_replay_milestone_path = root / "docs" / "31_accounting_replay_testonly_coverage_milestone.md"
+    accounting_replay_readiness_path = root / "docs" / "32_production_accounting_replay_readiness_review.md"
     accounting_fixture_dir = root / "tests" / "fixtures" / "accounting_replay"
     accounting_fixture_index_path = accounting_fixture_dir / "fixtures_index.json"
     accounting_fixture_validator_path = (
@@ -62,6 +66,7 @@ def main() -> int:
     accounting_replay_minimal_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_replay_minimal_engine.cpp"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
+    release_notes_v03_path = root / "docs" / "release_notes" / "v0_3_accounting_replay_testonly_coverage.md"
     docs_index_path = root / "docs" / "README.md"
     protocol_path = root / "docs" / "04_protocol.md"
     accounting_rules_path = root / "docs" / "06_accounting_rules.md"
@@ -84,6 +89,10 @@ def main() -> int:
     require(accounting_fixture_samples_path.exists(), "accounting replay fixture samples doc exists")
     require(position_viewmodel_design_path.exists(), "position Shell ViewModel design doc exists")
     require(position_mapping_path.exists(), "position DTO ViewModel mapping doc exists")
+    require(codex_prompt_template_path.exists(), "Codex prompt template doc exists")
+    require(accounting_replay_incremental_plan_path.exists(), "accounting replay incremental plan doc exists")
+    require(accounting_replay_milestone_path.exists(), "accounting replay test-only coverage milestone doc exists")
+    require(accounting_replay_readiness_path.exists(), "production accounting replay readiness review doc exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
     require(accounting_fixture_index_path.exists(), "accounting replay fixture index exists")
     require(accounting_fixture_validator_path.exists(), "accounting replay fixture validator exists")
@@ -110,6 +119,7 @@ def main() -> int:
     require(accounting_replay_minimal_test_path.exists(), "accounting replay minimal engine test exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
+    require(release_notes_v03_path.exists(), "v0.3 accounting replay release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
     require(protocol_path.exists(), "protocol doc exists")
     require(accounting_rules_path.exists(), "accounting rules doc exists")
@@ -130,6 +140,10 @@ def main() -> int:
     accounting_fixture_samples = accounting_fixture_samples_path.read_text(encoding="utf-8")
     position_viewmodel_design = position_viewmodel_design_path.read_text(encoding="utf-8")
     position_mapping = position_mapping_path.read_text(encoding="utf-8")
+    codex_prompt_template = codex_prompt_template_path.read_text(encoding="utf-8")
+    accounting_replay_incremental_plan = accounting_replay_incremental_plan_path.read_text(encoding="utf-8")
+    accounting_replay_milestone = accounting_replay_milestone_path.read_text(encoding="utf-8")
+    accounting_replay_readiness = accounting_replay_readiness_path.read_text(encoding="utf-8")
     accounting_fixture_index = accounting_fixture_index_path.read_text(encoding="utf-8")
     accounting_fixture_validator = accounting_fixture_validator_path.read_text(encoding="utf-8")
     accounting_fixture_loader_header = accounting_fixture_loader_header_path.read_text(encoding="utf-8")
@@ -155,6 +169,7 @@ def main() -> int:
     accounting_replay_minimal_test = accounting_replay_minimal_test_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
+    release_notes_v03 = release_notes_v03_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
     protocol_doc = protocol_path.read_text(encoding="utf-8")
     accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
@@ -225,6 +240,21 @@ def main() -> int:
     require("FX011_STALE_SNAPSHOT" in readme, "README documents FX011 minimal replay")
     require("FX012_MISSING_MARKET_PRICE" in readme, "README documents FX012 minimal replay")
     require("FX013_MULTI_CURRENCY_UNSUPPORTED" in readme, "README documents FX013 minimal replay")
+    require("v0.3 Accounting Replay Test-only Coverage" in readme, "README documents v0.3 accounting replay milestone")
+    require(
+        "31_accounting_replay_testonly_coverage_milestone.md" in readme,
+        "README links accounting replay test-only milestone",
+    )
+    require(
+        "32_production_accounting_replay_readiness_review.md" in readme,
+        "README links production accounting replay readiness review",
+    )
+    require(
+        "v0_3_accounting_replay_testonly_coverage.md" in readme,
+        "README links v0.3 accounting replay release notes",
+    )
+    require("FX001-FX013 test-only coverage is complete" in readme, "README states FX001-FX013 test-only coverage complete")
+    require("not production accounting replay" in readme, "README states test-only coverage is not production replay")
     require("accounting_replay_minimal_fx001" in readme, "README documents minimal FX001 CTest")
     require("accounting_replay_minimal_fx002" in readme, "README documents minimal FX002 CTest")
     require("accounting_replay_minimal_fx003" in readme, "README documents minimal FX003 CTest")
@@ -334,6 +364,12 @@ def main() -> int:
     require("v0.2.0-readonly-business-pages" in release_notes_v02, "v0.2 release notes include suggested tag")
     require("Auto trading" in release_notes_v02, "v0.2 release notes list excluded auto trading")
     require("Writing to `trade_log`" in release_notes_v02, "v0.2 release notes list excluded trade_log writing")
+    require("Release Notes - v0.3 Accounting Replay Test-only Coverage" in release_notes_v03, "v0.3 release notes title")
+    require("FX001-FX013 test-only minimal replay coverage complete" in release_notes_v03, "v0.3 release notes highlight full fixture coverage")
+    require("Production readiness review" in release_notes_v03, "v0.3 release notes mention readiness review")
+    require("Production accounting replay" in release_notes_v03, "v0.3 release notes list excluded production replay")
+    require("DataService `position.list`" in release_notes_v03, "v0.3 release notes list excluded position action")
+    require("v0.3.0-accounting-replay-testonly-coverage" in release_notes_v03, "v0.3 release notes include suggested tag")
 
     require("ReadOnlyTable" in business_summary, "business summary mentions ReadOnlyTable")
     require("ReadOnlyColumnChooser" in business_summary, "business summary mentions ReadOnlyColumnChooser")
@@ -357,6 +393,10 @@ def main() -> int:
     require("19_readonly_business_pages_summary.md" in docs_index, "docs index links business summary")
     require("release_notes/v0_1_readonly_shell_demo.md" in docs_index, "docs index links release notes")
     require("release_notes/v0_2_readonly_business_pages.md" in docs_index, "docs index links v0.2 release notes")
+    require("30_accounting_replay_incremental_implementation_plan.md" in docs_index, "docs index links accounting replay incremental plan")
+    require("31_accounting_replay_testonly_coverage_milestone.md" in docs_index, "docs index links accounting replay test-only milestone")
+    require("32_production_accounting_replay_readiness_review.md" in docs_index, "docs index links production accounting replay readiness review")
+    require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
     require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
@@ -366,6 +406,41 @@ def main() -> int:
     require("tests/AccountingFixtures" in docs_index, "docs index links accounting fixture loader")
     require("25_position_shell_viewmodel_design.md" in docs_index, "docs index links position ViewModel design")
     require("26_position_dto_viewmodel_mapping.md" in docs_index, "docs index links position DTO mapping")
+
+    require("FX001-FX013 test-only minimal engine coverage is complete" in accounting_replay_incremental_plan, "incremental plan states test-only coverage complete")
+    require("not mean production accounting replay is complete" in accounting_replay_incremental_plan, "incremental plan distinguishes production replay")
+    require("Do not directly migrate `AccountingReplayMinimalEngine`" in accounting_replay_incremental_plan, "incremental plan blocks direct migration")
+    require("DataService read-only action boundary" in accounting_replay_incremental_plan, "incremental plan calls out DataService boundary")
+
+    require("Accounting Replay Test-only Coverage Milestone" in accounting_replay_milestone, "milestone doc title exists")
+    require("FX001_EMPTY_LEDGER" in accounting_replay_milestone, "milestone doc includes FX001")
+    require("FX013_MULTI_CURRENCY_UNSUPPORTED" in accounting_replay_milestone, "milestone doc includes FX013")
+    require("test-only" in accounting_replay_milestone, "milestone doc states test-only")
+    require("production accounting replay is not implemented" in accounting_replay_milestone, "milestone doc states production replay not implemented")
+    require("AccountingReplayMinimalEngine" in accounting_replay_milestone, "milestone doc documents minimal engine")
+    require("tests/AccountingFixtures" in accounting_replay_milestone, "milestone doc names test-only directory")
+    require("must not be directly copied into production" in accounting_replay_milestone, "milestone doc blocks direct production copy")
+    require("DataService read-only action boundary" in accounting_replay_milestone, "milestone doc recommends DataService boundary")
+    require("v0.3.0-accounting-replay-testonly-coverage" in accounting_replay_milestone, "milestone doc includes suggested v0.3 tag")
+    require("TASK-068 does not create a tag" in accounting_replay_milestone, "milestone doc states task does not create tag")
+
+    require("Production Accounting Replay Readiness Review" in accounting_replay_readiness, "readiness doc title exists")
+    require("test-only fixture engine" in accounting_replay_readiness, "readiness doc mentions test-only engine")
+    require("must not be moved directly into `libs`" in accounting_replay_readiness, "readiness doc blocks direct migration")
+    require("DataService read-only action" in accounting_replay_readiness, "readiness doc mentions DataService read-only action")
+    require("no snapshot writes" in accounting_replay_readiness, "readiness doc checklist includes no snapshot writes")
+    require("no TradeLog writes" in accounting_replay_readiness, "readiness doc checklist includes no TradeLog writes")
+    require("no QML accounting calculation" in accounting_replay_readiness, "readiness doc checklist includes no QML accounting")
+    require("TASK-069" in accounting_replay_readiness, "readiness doc suggests TASK-069")
+    require("After FX001-FX013 test-only coverage, do not start production replay without readiness review" in codex_prompt_template, "prompt template requires readiness review after coverage")
+    require("Do not move the test-only minimal engine into production code" in codex_prompt_template, "prompt template blocks direct test-only engine migration")
+    require("Production replay tasks must explicitly declare whether they are read-only or write-capable" in codex_prompt_template, "prompt template requires read/write declaration")
+    require("DataAccess dependency boundaries" in codex_prompt_template, "prompt template requires DataAccess boundary")
+    require("DataService action scope" in codex_prompt_template, "prompt template requires DataService action scope")
+    require("snapshot behavior" in codex_prompt_template, "prompt template requires snapshot behavior")
+    require("TradeLog behavior" in codex_prompt_template, "prompt template requires TradeLog behavior")
+    require("QML boundary" in codex_prompt_template, "prompt template requires QML boundary")
+    require("no writes, no QML accounting calculation, no TradeDraft, and no auto-trading" in codex_prompt_template, "prompt template keeps default no-write boundary")
 
     require("accounting.health" in accounting_rules, "accounting rules documents accounting.health")
     require("replayImplemented=false" in accounting_rules, "accounting rules state replay is not implemented")
@@ -600,6 +675,9 @@ def main() -> int:
     require("FX_RATE_MISSING" in accounting_fixture_samples, "fixture samples doc documents FX013 FX issue")
     require("does not perform FX conversion" in accounting_fixture_samples, "fixture samples doc documents FX013 no FX conversion")
     require("does not fabricate `totalAssetsText`" in accounting_fixture_samples, "fixture samples doc documents FX013 no fake total assets")
+    require("test-only minimal engine coverage complete" in accounting_fixture_samples, "fixture samples doc states test-only coverage complete")
+    require("This is not production replay" in accounting_fixture_samples, "fixture samples doc distinguishes production replay")
+    require("Production implementation requires the" in accounting_fixture_samples, "fixture samples doc requires readiness review")
     require("status=NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents NOT_IMPLEMENTED status")
     require("REPLAY_NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents replay issue")
     require("positionListResponseRaw" in accounting_fixture_samples, "fixture samples doc documents position raw output")

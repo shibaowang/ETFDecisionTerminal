@@ -1524,6 +1524,19 @@ writes, database writes, TradeDraft generation, strategy execution, or
 DataService actions. Future production implementation must still be separately
 authorized.
 
+## 26. TASK-068 Test-only Coverage Milestone
+
+FX001-FX013 now have test-only minimal engine coverage complete through
+`tests/AccountingFixtures`.
+
+This is not production replay. Production implementation requires the
+readiness review in `32_production_accounting_replay_readiness_review.md`
+before any DataService action, SQLite source boundary, snapshot write path, or
+TradeLog write path is authorized.
+
+The test-only minimal engine validates fixture contracts and incremental
+boundaries. It must not be moved directly into production libraries.
+
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account
 replay, multi-currency replay, market valuation, unrealized PnL, base-position,

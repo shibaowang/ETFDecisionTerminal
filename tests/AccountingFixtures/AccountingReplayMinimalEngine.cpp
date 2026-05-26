@@ -26,6 +26,7 @@ constexpr const char* kFx007MultiInstrument = "FX007_MULTI_INSTRUMENT";
 constexpr const char* kFx008MultiAccount = "FX008_MULTI_ACCOUNT";
 constexpr const char* kFx009BasePositionLocked = "FX009_BASE_POSITION_LOCKED";
 constexpr const char* kFx010SniperTierCompleted = "FX010_SNIPER_TIER_COMPLETED";
+constexpr const char* kFx011StaleSnapshot = "FX011_STALE_SNAPSHOT";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -543,7 +544,7 @@ bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId
         || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee
         || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument
         || fixtureId == kFx008MultiAccount || fixtureId == kFx009BasePositionLocked
-        || fixtureId == kFx010SniperTierCompleted;
+        || fixtureId == kFx010SniperTierCompleted || fixtureId == kFx011StaleSnapshot;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -1450,6 +1451,81 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
                 issue.blocking,
                 fixture.fixtureId));
         }
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx011StaleSnapshot) {
+        const auto invalidFx011 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX011_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.snapshotFactsRawJson.isEmpty()) {
+            return invalidFx011("FX011_STALE_SNAPSHOT requires snapshotFacts input metadata.");
+        }
+        if (fixture.tradeFacts.empty()) {
+            return invalidFx011("FX011_STALE_SNAPSHOT requires at least one later source trade fact.");
+        }
+
+        const auto snapshot = fixture.snapshotFactsRawJson.first().toObject();
+        const auto generatedAt = snapshot.value("generatedAt").toString();
+        const auto snapshotSourceToTime = snapshot.value("sourceToTime").toString();
+        const auto snapshotDataQualityStatus = snapshot.value("dataQualityStatus").toString();
+        const auto fixtureSourceToTime = fixture.defaultScope.value("sourceToTime").toString();
+        if (generatedAt.isEmpty() || snapshotSourceToTime.isEmpty() || fixtureSourceToTime.isEmpty()) {
+            return invalidFx011("FX011_STALE_SNAPSHOT requires generatedAt, snapshot sourceToTime, and fixture sourceToTime.");
+        }
+
+        bool hasTradeAfterSnapshot = false;
+        for (const auto& trade : fixture.tradeFacts) {
+            if (trade.tradeTime.empty()) {
+                return invalidFx011("FX011_STALE_SNAPSHOT requires tradeTime on each source trade fact.");
+            }
+            if (QString::fromStdString(trade.tradeTime) > generatedAt) {
+                hasTradeAfterSnapshot = true;
+            }
+        }
+
+        const bool staleBySourceRange = generatedAt < fixtureSourceToTime || snapshotSourceToTime < fixtureSourceToTime;
+        const bool stale = staleBySourceRange || hasTradeAfterSnapshot || snapshotDataQualityStatus == QStringLiteral("STALE");
+        if (!stale) {
+            return invalidFx011("FX011_STALE_SNAPSHOT must contain stale snapshot metadata.");
+        }
+
+        const auto expectedIssue = std::find_if(
+            fixture.expectedIssues.begin(),
+            fixture.expectedIssues.end(),
+            [](const AccountingExpectedIssue& issue) { return issue.code == "SNAPSHOT_STALE"; });
+        if (expectedIssue == fixture.expectedIssues.end()) {
+            return invalidFx011("FX011_STALE_SNAPSHOT expectedIssues must contain SNAPSHOT_STALE.");
+        }
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = kReplayStatusStale;
+        result.message = "Snapshot is stale and was not used as a fact source.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.issues.push_back(makeIssue(
+            expectedIssue->level.empty() ? "ERROR" : expectedIssue->level,
+            "SNAPSHOT_STALE",
+            expectedIssue->message.empty() ? "Snapshot is stale and must not be used as fact source." : expectedIssue->message,
+            expectedIssue->blocking,
+            fixture.fixtureId));
         return result;
     }
 

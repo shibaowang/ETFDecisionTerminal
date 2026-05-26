@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QJsonArray>
 #include <QJsonObject>
 
 #include <filesystem>
@@ -77,6 +78,7 @@ struct AccountingFixture {
     std::vector<AccountingTradeFact> tradeFacts;
     std::vector<AccountingCashFact> cashFacts;
     std::vector<AccountingMarketPriceFact> marketPriceFacts;
+    QJsonArray snapshotFactsRawJson;
     QJsonObject expectedOutputsRawJson;
     std::vector<AccountingExpectedIssue> expectedIssues;
     bool blocking{false};

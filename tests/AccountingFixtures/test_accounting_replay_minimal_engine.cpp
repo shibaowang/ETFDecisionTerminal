@@ -34,11 +34,13 @@ using etfdt::tests::accounting::kAssertionPassFx007MultiInstrument;
 using etfdt::tests::accounting::kAssertionPassFx008MultiAccount;
 using etfdt::tests::accounting::kAssertionPassFx009BasePositionLocked;
 using etfdt::tests::accounting::kAssertionPassFx010SniperTierCompleted;
+using etfdt::tests::accounting::kAssertionPassFx011StaleSnapshot;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
 using etfdt::tests::accounting::kReplayStatusNotImplemented;
 using etfdt::tests::accounting::kReplayStatusOk;
+using etfdt::tests::accounting::kReplayStatusStale;
 using etfdt::tests::accounting::kReplayStatusWarning;
 
 void require(bool condition, const std::string& message)
@@ -118,6 +120,7 @@ int main(int argc, char** argv)
     const auto fx008 = requireValue(harness.fixtureByIdForTest("FX008_MULTI_ACCOUNT"), "FX008 fixture exists");
     const auto fx009 = requireValue(harness.fixtureByIdForTest("FX009_BASE_POSITION_LOCKED"), "FX009 fixture exists");
     const auto fx010 = requireValue(harness.fixtureByIdForTest("FX010_SNIPER_TIER_COMPLETED"), "FX010 fixture exists");
+    const auto fx011 = requireValue(harness.fixtureByIdForTest("FX011_STALE_SNAPSHOT"), "FX011 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
@@ -130,7 +133,8 @@ int main(int argc, char** argv)
     require(engine.supportsFixture("FX008_MULTI_ACCOUNT"), "minimal engine supports FX008");
     require(engine.supportsFixture("FX009_BASE_POSITION_LOCKED"), "minimal engine supports FX009");
     require(engine.supportsFixture("FX010_SNIPER_TIER_COMPLETED"), "minimal engine supports FX010");
-    require(!engine.supportsFixture("FX011_STALE_SNAPSHOT"), "minimal engine does not support FX011");
+    require(engine.supportsFixture("FX011_STALE_SNAPSHOT"), "minimal engine supports FX011");
+    require(!engine.supportsFixture("FX012_MISSING_MARKET_PRICE"), "minimal engine does not support FX012");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -349,6 +353,15 @@ int main(int argc, char** argv)
     require(!fx010Direct.sniperPoolRaw.contains("recommendedAction"), "FX010 does not generate trading recommendation output");
     require(!hasBlockingIssue(fx010Direct), "FX010 has no blocking issue");
 
+    const auto fx011Direct = engine.replayFixture(fx011);
+    require(fx011Direct.implemented, "FX011 direct replay implemented=true");
+    require(fx011Direct.replayExecuted, "FX011 direct replayExecuted=true");
+    require(fx011Direct.status == kReplayStatusStale, "FX011 direct status=STALE");
+    require(hasReplayIssueCode(fx011Direct, "SNAPSHOT_STALE"), "FX011 issues contain SNAPSHOT_STALE");
+    require(hasBlockingIssueCode(fx011Direct, "SNAPSHOT_STALE"), "FX011 SNAPSHOT_STALE is blocking");
+    require(hasEmptyReplayOutputs(fx011Direct), "FX011 does not generate normal raw outputs");
+    require(fx011Direct.message.find("not used as a fact source") != std::string::npos, "FX011 does not use snapshot as fact source");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -448,6 +461,16 @@ int main(int argc, char** argv)
     require(fx010Assertion.passed, "FX010 sniper-tier assertion passes");
     require(fx010Assertion.status == kAssertionPassFx010SniperTierCompleted, "FX010 assertion status is PASS_FX010_SNIPER_TIER_COMPLETED");
 
+    const auto fx011Harness = requireResult(harness, "FX011_STALE_SNAPSHOT");
+    require(fx011Harness.status == kReplayStatusStale, "minimal harness FX011 status=STALE");
+    require(fx011Harness.implemented, "minimal harness FX011 implemented=true");
+    require(fx011Harness.replayExecuted, "minimal harness FX011 replayExecuted=true");
+    require(hasBlockingIssueCode(fx011Harness, "SNAPSHOT_STALE"), "minimal harness FX011 has blocking SNAPSHOT_STALE");
+    require(hasEmptyReplayOutputs(fx011Harness), "minimal harness FX011 keeps raw outputs empty");
+    const auto fx011Assertion = assertions.assertFx011StaleSnapshotResult(fx011, fx011Harness);
+    require(fx011Assertion.passed, "FX011 stale-snapshot assertion passes");
+    require(fx011Assertion.status == kAssertionPassFx011StaleSnapshot, "FX011 assertion status is PASS_FX011_STALE_SNAPSHOT");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -503,6 +526,14 @@ int main(int argc, char** argv)
             require(hasSniperPool(result), "FX010 keeps sniperPoolRaw in minimal loop");
             continue;
         }
+        if (fixtureId == "FX011_STALE_SNAPSHOT") {
+            require(result.status == kReplayStatusStale, "FX011 remains STALE in minimal loop");
+            require(result.implemented, "FX011 remains implemented=true in minimal loop");
+            require(result.replayExecuted, "FX011 remains replayExecuted=true in minimal loop");
+            require(hasBlockingIssueCode(result, "SNAPSHOT_STALE"), "FX011 keeps blocking SNAPSHOT_STALE in minimal loop");
+            require(hasEmptyReplayOutputs(result), "FX011 keeps raw outputs empty in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -512,6 +543,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009/FX010 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009/FX010/FX011 tests passed\n";
     return 0;
 }

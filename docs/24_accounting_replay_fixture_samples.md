@@ -1416,6 +1416,42 @@ SQLite access, DataService calls, output file writes, database writes,
 TradeDraft generation, buy / sell actions, strategy execution, or DataService
 actions.
 
+## 23. TASK-065 Minimal FX011 Stale Snapshot Replay
+
+`FX011_STALE_SNAPSHOT` now has a test-only minimal stale snapshot detection path
+through `AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` still returns `status=ERROR` with a blocking
+  `NEGATIVE_CASH` issue.
+- `FX007_MULTI_INSTRUMENT`, `FX008_MULTI_ACCOUNT`,
+  `FX009_BASE_POSITION_LOCKED`, and `FX010_SNIPER_TIER_COMPLETED` keep their
+  prior minimal replay behavior.
+- `FX011_STALE_SNAPSHOT` returns `implemented=true`.
+- `FX011_STALE_SNAPSHOT` returns `replayExecuted=true`.
+- `FX011_STALE_SNAPSHOT` returns `status=STALE`, matching the fixture index and
+  expected stale data-quality contract.
+- `FX011_STALE_SNAPSHOT` reports a blocking `SNAPSHOT_STALE` issue.
+- `snapshotFacts` are read only as stale snapshot metadata. They are derived
+  cache inputs, not fact sources.
+- Stale snapshot metadata is not used to generate normal position, cash, PnL,
+  base-position, or sniper-pool success outputs.
+- This path does not generate new snapshots, refresh snapshots, or write
+  `position_snapshot`, `cash_snapshot`, or `portfolio_summary`.
+- `FX012_MISSING_MARKET_PRICE` and `FX013_MULTI_CURRENCY_UNSUPPORTED` still
+  return `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to detecting stale snapshot
+metadata from the FX011 fixture. It does not implement missing market price
+replay, multi-currency replay, real market valuation, unrealized PnL, SQLite
+access, DataService calls, output file writes, database writes, snapshot writes,
+TradeDraft generation, strategy execution, or DataService actions.
+
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account
 replay, multi-currency replay, market valuation, unrealized PnL, base-position,

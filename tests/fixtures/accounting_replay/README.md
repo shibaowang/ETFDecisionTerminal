@@ -75,3 +75,10 @@ returning separate account-scoped 159509 positions for `ACC-DEMO-001` and
 and `cashBalanceText=47999.00 CNY`. It does not mix accountId or portfolioId
 dimensions, and does not fabricate market value or unrealized PnL. FX009-FX013
 remain `NOT_IMPLEMENTED`.
+
+`AccountingReplayMinimalEngine` now also supports `FX009_BASE_POSITION_LOCKED`,
+returning readonly `basePositionRaw` for the 20% locked-base sample:
+`targetBaseRatioText=20%`, `lockedBaseAmountText=20000.00 CNY`, and
+`sellableAboveBaseAmountText=0.00 CNY`. The sellable amount is display-only and
+is not a sell suggestion, TradeDraft, sell action, strategy command, or broker
+order. FX010-FX013 remain `NOT_IMPLEMENTED`.

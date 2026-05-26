@@ -1337,6 +1337,42 @@ This implementation is intentionally limited to grouping CNY BUY facts by
 sniper-pool, multi-currency, real market valuation, SQLite access, DataService
 calls, output file writes, database writes, or DataService actions.
 
+## 21. TASK-063 Minimal FX009 Base-Position Replay
+
+`FX009_BASE_POSITION_LOCKED` now has a test-only minimal replay path through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` still returns `status=ERROR` with a blocking
+  `NEGATIVE_CASH` issue.
+- `FX007_MULTI_INSTRUMENT` and `FX008_MULTI_ACCOUNT` keep their prior minimal
+  replay behavior.
+- `FX009_BASE_POSITION_LOCKED` returns `implemented=true`.
+- `FX009_BASE_POSITION_LOCKED` returns `replayExecuted=true`.
+- `FX009_BASE_POSITION_LOCKED` returns `status=OK`, matching the fixture
+  contract.
+- `FX009_BASE_POSITION_LOCKED` only outputs readonly `basePositionRaw`.
+- The 20% locked base position is represented by `targetBaseRatioText=20%`,
+  `targetBaseAmountText=20000.00 CNY`, `currentBaseAmountText=20000.00 CNY`,
+  `lockedBaseAmountText=20000.00 CNY`, and
+  `sellableAboveBaseAmountText=0.00 CNY`.
+- `sellableAboveBaseAmountText` is not a sell suggestion and must not be treated
+  as a TradeDraft, sell action, strategy command, or broker order.
+- `FX009_BASE_POSITION_LOCKED` does not produce `sniperPoolRaw`.
+- `FX010_SNIPER_TIER_COMPLETED` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still
+  return `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to deriving display-only
+base-position fields from the FX009 input facts. It does not implement
+sniper-pool, multi-currency, real market valuation, SQLite access, DataService
+calls, output file writes, database writes, TradeDraft generation, sell actions,
+strategy execution, or DataService actions.
+
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account
 replay, multi-currency replay, market valuation, unrealized PnL, base-position,

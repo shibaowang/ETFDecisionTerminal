@@ -53,6 +53,12 @@ std::optional<AccountingReplayResult> AccountingReplayTestHarness::resultForFixt
     return *it;
 }
 
+std::optional<AccountingFixture> AccountingReplayTestHarness::fixtureByIdForTest(
+    const std::string& fixtureId) const
+{
+    return loader_.fixtureById(fixtureId);
+}
+
 const std::vector<AccountingReplayResult>& AccountingReplayTestHarness::results() const noexcept
 {
     return results_;

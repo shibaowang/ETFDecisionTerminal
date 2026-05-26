@@ -21,6 +21,7 @@ def main() -> int:
     position_contract_path = root / "docs" / "21_position_readonly_data_contract_draft.md"
     position_stable_contract_path = root / "docs" / "22_position_accounting_data_contract.md"
     position_fixture_design_path = root / "docs" / "23_position_accounting_test_fixture_design.md"
+    accounting_fixture_samples_path = root / "docs" / "24_accounting_replay_fixture_samples.md"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -41,6 +42,7 @@ def main() -> int:
     require(position_contract_path.exists(), "position read-only data contract draft exists")
     require(position_stable_contract_path.exists(), "position accounting data contract doc exists")
     require(position_fixture_design_path.exists(), "position accounting test fixture design exists")
+    require(accounting_fixture_samples_path.exists(), "accounting replay fixture samples doc exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -59,6 +61,7 @@ def main() -> int:
     position_contract = position_contract_path.read_text(encoding="utf-8")
     position_stable_contract = position_stable_contract_path.read_text(encoding="utf-8")
     position_fixture_design = position_fixture_design_path.read_text(encoding="utf-8")
+    accounting_fixture_samples = accounting_fixture_samples_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -102,6 +105,10 @@ def main() -> int:
     require(
         "23_position_accounting_test_fixture_design.md" in readme,
         "README links position accounting fixture design",
+    )
+    require(
+        "24_accounting_replay_fixture_samples.md" in readme,
+        "README links accounting replay fixture samples",
     )
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
@@ -217,6 +224,7 @@ def main() -> int:
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
     require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
     require("23_position_accounting_test_fixture_design.md" in docs_index, "docs index links position fixture design")
+    require("24_accounting_replay_fixture_samples.md" in docs_index, "docs index links accounting fixture samples")
 
     require("trade_log 是事实账本" in accounting_rules, "accounting rules state trade_log is fact ledger")
     require("position_accounting_boundary" in accounting_rules, "accounting rules link position boundary")
@@ -259,6 +267,10 @@ def main() -> int:
     require("不写 trade_log" in position_stable_contract, "stable contract prohibits trade_log writes")
     require("QML 不计算账务" in position_stable_contract, "stable contract prohibits QML accounting calculation")
     require("ShellPositionListModel" in position_stable_contract, "stable contract includes ShellPositionListModel")
+    require(
+        "24_accounting_replay_fixture_samples.md" in position_stable_contract,
+        "stable contract links accounting fixture samples",
+    )
 
     require("FX001_EMPTY_LEDGER" in position_fixture_design, "fixture design includes empty ledger")
     require(
@@ -271,6 +283,52 @@ def main() -> int:
         "fixture design prohibits hidden market dependency",
     )
     require("FX010_SNIPER_TIER_COMPLETED" in position_fixture_design, "fixture design includes sniper tier fixture")
+    require(
+        "24_accounting_replay_fixture_samples.md" in position_fixture_design,
+        "fixture design links detailed samples",
+    )
+
+    for fixture_id in [
+        "FX001_EMPTY_LEDGER",
+        "FX002_SINGLE_BUY",
+        "FX003_BUY_SELL_PARTIAL",
+        "FX004_SELL_EXCEEDS_POSITION",
+        "FX005_MISSING_FEE",
+        "FX006_NEGATIVE_CASH",
+        "FX007_MULTI_INSTRUMENT",
+        "FX008_MULTI_ACCOUNT",
+        "FX009_BASE_POSITION_LOCKED",
+        "FX010_SNIPER_TIER_COMPLETED",
+        "FX011_STALE_SNAPSHOT",
+        "FX012_MISSING_MARKET_PRICE",
+        "FX013_MULTI_CURRENCY_UNSUPPORTED",
+    ]:
+        require(fixture_id in accounting_fixture_samples, f"fixture samples include {fixture_id}")
+
+    require("Expected PositionSummaryDto" in accounting_fixture_samples, "fixture samples include expected position output")
+    require("Expected CashSummaryDto" in accounting_fixture_samples, "fixture samples include expected cash output")
+    require("Expected PortfolioPnlDto" in accounting_fixture_samples, "fixture samples include expected pnl output")
+    require("Expected issues" in accounting_fixture_samples, "fixture samples include expected issues")
+    require(accounting_fixture_samples.count("### Input facts") >= 13, "each fixture includes input facts")
+    require(
+        accounting_fixture_samples.count("### Expected PositionSummaryDto") >= 13,
+        "each fixture includes expected position output",
+    )
+    require(
+        accounting_fixture_samples.count("### Expected CashSummaryDto") >= 13,
+        "each fixture includes expected cash output",
+    )
+    require(
+        accounting_fixture_samples.count("### Expected PortfolioPnlDto") >= 13,
+        "each fixture includes expected pnl output",
+    )
+    require(accounting_fixture_samples.count("### Expected issues") >= 13, "each fixture includes expected issues")
+    require(
+        "no hidden external market dependency" in accounting_fixture_samples,
+        "fixture samples prohibit hidden market dependency",
+    )
+    require("trade_log 是事实账本" in accounting_fixture_samples, "fixture samples state trade_log fact ledger")
+    require("不写数据库" in accounting_fixture_samples, "fixture samples state no database writes")
     return 0
 
 

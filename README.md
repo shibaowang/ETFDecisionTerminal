@@ -767,6 +767,12 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - Stable contract: [Position Accounting Data Contract](docs/22_position_accounting_data_contract.md).
 - Fixture design: [Position Accounting Test Fixture Design](docs/23_position_accounting_test_fixture_design.md).
 
+## TASK-046 Accounting Replay Fixture Samples
+
+- FX001-FX013 now have detailed implementation-before fixture samples with input facts, expected Position / Cash / PnL outputs, expected issues, and blocking expectations.
+- These samples are documentation only: they are not database seed data, do not write SQLite, do not call services, do not drive trading, and do not generate TradeDraft.
+- Fixture samples: [Accounting Replay Fixture Samples](docs/24_accounting_replay_fixture_samples.md).
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.
@@ -790,6 +796,7 @@ Milestone documents:
 - [Position Read-Only Data Contract Draft](docs/21_position_readonly_data_contract_draft.md)
 - [Position Accounting Data Contract](docs/22_position_accounting_data_contract.md)
 - [Position Accounting Test Fixture Design](docs/23_position_accounting_test_fixture_design.md)
+- [Accounting Replay Fixture Samples](docs/24_accounting_replay_fixture_samples.md)
 - [Documentation Index](docs/README.md)
 
 Run tests:

@@ -225,3 +225,7 @@ v0.1 草案。
 - Accounting replay implementation tasks must first reference the fixture design and list exact fixture coverage.
 - Default scope is no snapshot writes and no `trade_log` writes.
 - Default scope is no QML accounting calculation.
+- Accounting replay implementation tasks must reference `docs/24_accounting_replay_fixture_samples.md`.
+- Replay implementation must not skip FX001-FX013 without an explicit task update.
+- Fixtures without expected output are not acceptable.
+- Fixtures must not use external market data as a hidden dependency.

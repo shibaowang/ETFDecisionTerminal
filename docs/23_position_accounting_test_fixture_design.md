@@ -176,3 +176,11 @@ output, expected PnL output, expected issues, blocking status, and notes.
 - fixture must not create TradeDraft.
 - fixture must not call write actions.
 - fixture must not mutate trade_log, snapshots, or audit_log.
+
+## 5. Detailed Samples
+
+This document is the fixture overview. Detailed implementation-before samples
+for FX001-FX013 are defined in [Accounting Replay Fixture Samples](24_accounting_replay_fixture_samples.md).
+Future replay implementation must use `docs/24_accounting_replay_fixture_samples.md`
+as the primary sample source for input facts, expected DTO outputs, expected
+issues, and blocking expectations.

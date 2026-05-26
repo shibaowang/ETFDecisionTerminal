@@ -1,0 +1,979 @@
+# Accounting Replay Fixture Samples
+
+## 1. Document Purpose
+
+This document details accounting replay test fixture samples for future
+implementation. It only defines examples and does not implement code.
+
+Future replay implementation must first use these fixtures to build automated
+tests. Every fixture should have input facts, expected output, and expected
+issues before production replay logic is implemented.
+
+These fixtures are not actual database data, do not write a real database, do
+not call DataService actions, do not drive trading, and do not generate
+TradeDraft. trade_log 是事实账本 in these samples: trade facts are input
+examples for future replay assertions only. Expected output is the assertion
+target for future replay, not a fact source.
+
+## 2. Common Conventions
+
+- default accountId: `ACC-DEMO-001`
+- default portfolioId: `PF-DEMO-001`
+- default currency: `CNY`
+- default instruments: `CASH`, `159509`, `518880`
+- default source range: `2026-01-01T00:00:00+08:00` to `2026-01-31T23:59:59+08:00`
+- amount fields use `xxxText` and future raw `xxxCents` drafts.
+- quantity fields use `quantityText` and future raw `quantity1e6` drafts.
+- fee fields use `feeText` and future raw `feeCents` drafts.
+- market price is treated as missing when not specified.
+- all expected DTOs are read-only results and are not fact sources.
+- QML 不计算账务.
+- no hidden external market dependency is allowed.
+- 不写数据库.
+
+Proposed standard for these samples: buy cost includes fee. Sell proceeds are
+reduced by fee. This is a proposed standard for fixture consistency; future
+implementation must either adopt it or update the contract and all fixtures in
+one reviewed task.
+
+## 3. Input Fact Format
+
+These formats are fixture input drafts only. They are not schema changes. The
+real schema remains defined by `migrations/001_initial_schema.sql`.
+
+### TradeFact
+
+- factId
+- tradeTime
+- accountId
+- portfolioId
+- instrumentCode
+- action
+- quantityText
+- priceText
+- amountText
+- feeText
+- cashFlowText
+- currency
+- source
+- note
+
+### CashFact
+
+- factId
+- time
+- accountId
+- portfolioId
+- action
+- amountText
+- currency
+- note
+
+### MarketPriceFact
+
+- instrumentCode
+- priceTime
+- priceText
+- currency
+- source
+
+## 4. Expected Output Format
+
+Every fixture should provide:
+
+- Expected PositionSummaryDto
+- Expected CashSummaryDto
+- Expected PortfolioPnlDto
+- Expected issues
+- Blocking or non-blocking
+- Notes
+
+Expected output is the future replay assertion target. It must not be treated
+as source data and must not write `cash_snapshot`, `position_snapshot`, or
+`portfolio_summary`.
+
+## 5. Fixture Overview
+
+| fixtureId | name | purpose | expectedStatus | blockingIssue | mainErrorCode |
+| --- | --- | --- | --- | --- | --- |
+| FX001_EMPTY_LEDGER | Empty ledger | no facts | OK or INCOMPLETE | no | SOURCE_RANGE_EMPTY |
+| FX002_SINGLE_BUY | Single buy | one buy with fee | OK | no | none |
+| FX003_BUY_SELL_PARTIAL | Partial sell | realized / remaining split | OK | no | none |
+| FX004_SELL_EXCEEDS_POSITION | Sell exceeds position | prevent negative holdings | ERROR | yes | SELL_EXCEEDS_POSITION |
+| FX005_MISSING_FEE | Missing fee | fee validation | WARNING or ERROR | policy-dependent | MISSING_FEE |
+| FX006_NEGATIVE_CASH | Negative cash | cash boundary | ERROR | yes | NEGATIVE_CASH |
+| FX007_MULTI_INSTRUMENT | Multi instrument | instrument grouping | WARNING if price missing | no for quantity | MARKET_PRICE_MISSING |
+| FX008_MULTI_ACCOUNT | Multi account | dimension isolation | OK | no | none |
+| FX009_BASE_POSITION_LOCKED | Base locked | 20% base boundary | OK | no | none |
+| FX010_SNIPER_TIER_COMPLETED | Sniper tier completed | tier fact aggregation | OK | no | none |
+| FX011_STALE_SNAPSHOT | Stale snapshot | stale derived cache | STALE | yes for fresh calc | SNAPSHOT_STALE |
+| FX012_MISSING_MARKET_PRICE | Missing market price | valuation degradation | WARNING | no for quantity | MARKET_PRICE_MISSING |
+| FX013_MULTI_CURRENCY_UNSUPPORTED | Multi-currency unsupported | FX boundary | ERROR | yes | MULTI_CURRENCY_UNSUPPORTED |
+
+## FX001_EMPTY_LEDGER
+
+### Purpose
+
+Empty ledger. No trade facts and no cash facts. Verifies empty positions are not
+an accounting error.
+
+### Input facts
+
+```text
+TradeFact: []
+CashFact: []
+```
+
+### Market price facts
+
+```text
+MarketPriceFact: []
+```
+
+### Expected PositionSummaryDto
+
+```text
+positions: []
+dataQualityStatus: OK
+metadata.sourceTradeCount: 0
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "0.00"
+availableCashText: "0.00"
+currency: "CNY"
+dataQualityStatus: OK or INCOMPLETE
+```
+
+The accepted status must be chosen by implementation. `OK` means an empty
+ledger is valid. `INCOMPLETE` means an initial cash fact is required.
+
+### Expected PortfolioPnlDto
+
+```text
+totalAssetsText: "0.00" or ""
+principalText: ""
+dataQualityStatus: OK or INCOMPLETE
+```
+
+### Expected issues
+
+```text
+SOURCE_RANGE_EMPTY, blocking=false, userVisible=true
+```
+
+### Blocking?
+
+Non-blocking.
+
+### Notes
+
+Do not create fake cash, fake positions, or snapshot rows.
+
+## FX002_SINGLE_BUY
+
+### Purpose
+
+Single buy with initial cash. This fixture fixes the proposed standard that buy
+cost includes fee.
+
+### Input facts
+
+```text
+CashFact CF-001:
+  time: 2026-01-01T09:00:00+08:00
+  accountId: ACC-DEMO-001
+  portfolioId: PF-DEMO-001
+  action: INITIAL_CASH
+  amountText: "100000.00"
+  currency: CNY
+
+TradeFact TF-001:
+  tradeTime: 2026-01-02T10:00:00+08:00
+  instrumentCode: 159509
+  action: BUY
+  quantityText: "1000"
+  quantity1e6: 1000000000
+  priceText: "1.000"
+  amountText: "1000.00"
+  feeText: "1.00"
+  feeCents: 100
+  cashFlowText: "-1001.00"
+  currency: CNY
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001:
+  instrumentCode: 159509
+  priceTime: 2026-01-31T15:00:00+08:00
+  priceText: "1.000"
+  currency: CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+instrumentCode: 159509
+quantityText: "1000"
+costAmountText: "1001.00"
+costPriceText: "1.001"
+marketPriceText: "1.000"
+marketValueText: "1000.00"
+unrealizedPnlText: "-1.00"
+dataQualityStatus: OK
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "98999.00"
+availableCashText: "98999.00"
+buyCashOutflowText: "1001.00"
+feeTotalText: "1.00"
+dataQualityStatus: OK
+```
+
+### Expected PortfolioPnlDto
+
+```text
+cashText: "98999.00"
+marketValueText: "1000.00"
+totalAssetsText: "99999.00"
+unrealizedPnlText: "-1.00"
+realizedPnlText: "0.00"
+dataQualityStatus: OK
+```
+
+### Expected issues
+
+```text
+[]
+```
+
+### Blocking?
+
+Non-blocking.
+
+### Notes
+
+This is the baseline buy fixture for cost-with-fee behavior.
+
+## FX003_BUY_SELL_PARTIAL
+
+### Purpose
+
+Partial sell after a buy. Verifies remaining quantity, cash balance, and
+realized / unrealized separation.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+
+TradeFact TF-001:
+  action: BUY
+  instrumentCode: 159509
+  quantityText: "1000"
+  priceText: "1.000"
+  amountText: "1000.00"
+  feeText: "1.00"
+  cashFlowText: "-1001.00"
+
+TradeFact TF-002:
+  action: SELL
+  instrumentCode: 159509
+  quantityText: "400"
+  priceText: "1.200"
+  amountText: "480.00"
+  feeText: "1.00"
+  cashFlowText: "479.00"
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.100 CNY on 2026-01-31
+```
+
+### Expected PositionSummaryDto
+
+```text
+instrumentCode: 159509
+quantityText: "600"
+costAmountText: "600.60"
+costPriceText: "1.001"
+marketPriceText: "1.100"
+marketValueText: "660.00"
+realizedPnlText: "78.60"
+unrealizedPnlText: "59.40"
+dataQualityStatus: OK
+```
+
+Realized PnL draft: sell proceeds 479.00 minus sold cost 400.40.
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "99478.00"
+buyCashOutflowText: "1001.00"
+sellCashInflowText: "479.00"
+feeTotalText: "2.00"
+dataQualityStatus: OK
+```
+
+### Expected PortfolioPnlDto
+
+```text
+cashText: "99478.00"
+marketValueText: "660.00"
+totalAssetsText: "100138.00"
+realizedPnlText: "78.60"
+unrealizedPnlText: "59.40"
+totalPnlText: "138.00"
+dataQualityStatus: OK
+```
+
+### Expected issues
+
+```text
+[]
+```
+
+### Blocking?
+
+Non-blocking.
+
+### Notes
+
+The fixture assumes average cost with fee included. If the project later chooses
+another cost convention, this fixture must be updated with the contract.
+
+## FX004_SELL_EXCEEDS_POSITION
+
+### Purpose
+
+Selling more than replayed holdings must not silently produce negative
+holdings.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+TradeFact TF-001: BUY 159509 quantity 100 @ 1.000, fee 1.00
+TradeFact TF-002: SELL 159509 quantity 200 @ 1.100, fee 1.00
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.100 CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+instrumentCode: 159509
+quantityText: ""
+dataQualityStatus: ERROR
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: ""
+dataQualityStatus: ERROR
+```
+
+### Expected PortfolioPnlDto
+
+```text
+totalAssetsText: ""
+dataQualityStatus: ERROR
+```
+
+### Expected issues
+
+```text
+SELL_EXCEEDS_POSITION, blocking=true, sourceId=TF-002
+NEGATIVE_POSITION, blocking=true, instrumentCode=159509
+```
+
+### Blocking?
+
+Blocking.
+
+### Notes
+
+Future replay must stop or degrade the result instead of presenting negative
+position as normal.
+
+## FX005_MISSING_FEE
+
+### Purpose
+
+Missing fee must be visible. This fixture defines both accepted interpretations
+until fee strictness is finalized.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+TradeFact TF-001: BUY 159509 quantity 1000 @ 1.000, fee missing
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.000 CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+quantityText: "1000"
+costAmountText: "1000.00" or ""
+dataQualityStatus: WARNING or ERROR
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "99000.00" or ""
+feeTotalText: ""
+dataQualityStatus: WARNING or ERROR
+```
+
+### Expected PortfolioPnlDto
+
+```text
+dataQualityStatus: WARNING or ERROR
+```
+
+### Expected issues
+
+```text
+MISSING_FEE, blocking=false if zero-fee fallback is allowed
+MISSING_FEE, blocking=true if fee is mandatory
+```
+
+### Blocking?
+
+Policy-dependent. The fixture must be resolved before implementation.
+
+### Notes
+
+The implementation must not silently assume zero fee without the accounting
+contract explicitly allowing it.
+
+## FX006_NEGATIVE_CASH
+
+### Purpose
+
+Cash replay must detect negative cash.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100.00 CNY
+TradeFact TF-001: BUY 159509 quantity 1000 @ 1.000, fee 1.00, cashFlow -1001.00
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.000 CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+quantityText: "1000"
+dataQualityStatus: ERROR
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "-901.00"
+dataQualityStatus: ERROR
+```
+
+### Expected PortfolioPnlDto
+
+```text
+dataQualityStatus: ERROR
+```
+
+### Expected issues
+
+```text
+NEGATIVE_CASH, blocking=true, sourceId=TF-001
+```
+
+### Blocking?
+
+Blocking.
+
+### Notes
+
+Whether margin is later supported must be a separate accounting mode. Default
+mode treats this as an error.
+
+## FX007_MULTI_INSTRUMENT
+
+### Purpose
+
+Replay groups positions by instrument and does not confuse `159509` with
+`518880`.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+TradeFact TF-001: BUY 159509 quantity 1000 @ 1.000, fee 1.00
+TradeFact TF-002: BUY 518880 quantity 500 @ 4.000, fee 2.00
+```
+
+### Market price facts
+
+```text
+MarketPriceFact: []
+```
+
+### Expected PositionSummaryDto
+
+```text
+positions:
+  - instrumentCode: 159509, quantityText: "1000", costAmountText: "1001.00"
+  - instrumentCode: 518880, quantityText: "500", costAmountText: "2002.00"
+dataQualityStatus: WARNING
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "96997.00"
+buyCashOutflowText: "3003.00"
+feeTotalText: "3.00"
+dataQualityStatus: OK
+```
+
+### Expected PortfolioPnlDto
+
+```text
+marketValueText: ""
+totalAssetsText: ""
+dataQualityStatus: WARNING
+```
+
+### Expected issues
+
+```text
+MARKET_PRICE_MISSING, blocking=false for quantity, blocking=true for valuation
+```
+
+### Blocking?
+
+Non-blocking for position quantity; blocking for valuation totals.
+
+### Notes
+
+This fixture has no hidden external market dependency.
+
+## FX008_MULTI_ACCOUNT
+
+### Purpose
+
+Facts from different accounts must not be merged accidentally.
+
+### Input facts
+
+```text
+CashFact CF-001: ACC-DEMO-001 / PF-DEMO-001 INITIAL_CASH 100000.00 CNY
+CashFact CF-002: ACC-DEMO-002 / PF-DEMO-001 INITIAL_CASH 50000.00 CNY
+TradeFact TF-001: ACC-DEMO-001 BUY 159509 quantity 1000 @ 1.000, fee 1.00
+TradeFact TF-002: ACC-DEMO-002 BUY 159509 quantity 200 @ 1.000, fee 1.00
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.000 CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+ACC-DEMO-001 position: 159509 quantityText "1000"
+ACC-DEMO-002 position: 159509 quantityText "200"
+dataQualityStatus: OK
+```
+
+### Expected CashSummaryDto
+
+```text
+ACC-DEMO-001 cashBalanceText: "98999.00"
+ACC-DEMO-002 cashBalanceText: "49799.00"
+```
+
+### Expected PortfolioPnlDto
+
+```text
+portfolio-scoped output must state whether it aggregates both accounts or is account-filtered
+dataQualityStatus: OK
+```
+
+### Expected issues
+
+```text
+[]
+```
+
+### Blocking?
+
+Non-blocking.
+
+### Notes
+
+Account and portfolio dimensions must be explicit in requests and responses.
+
+## FX009_BASE_POSITION_LOCKED
+
+### Purpose
+
+Verify the 20% locked base-position boundary. UI must display the derived
+result and must not compute it.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+TradeFact TF-001: BUY 159509 quantity 20000 @ 1.000, fee 10.00
+Base policy draft: targetBaseRatioText "20%"
+Portfolio total asset draft: 100000.00 CNY
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.000 CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+instrumentCode: 159509
+quantityText: "20000"
+basePositionFlag: true
+dataQualityStatus: OK
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "79990.00"
+dataQualityStatus: OK
+```
+
+### Expected PortfolioPnlDto
+
+```text
+totalAssetsText: "99990.00"
+dataQualityStatus: OK
+```
+
+### Expected issues
+
+```text
+[]
+```
+
+### Blocking?
+
+Non-blocking.
+
+### Notes
+
+Expected BasePositionDto:
+
+```text
+targetBaseRatioText: "20%"
+currentBaseRatioText: "20%"
+lockedBaseAmountText: "20000.00"
+sellableAboveBaseAmountText: "0.00"
+```
+
+This fixture does not implement sell logic. It only asserts the derived
+boundary: sellable amount excludes locked base.
+
+## FX010_SNIPER_TIER_COMPLETED
+
+### Purpose
+
+Verify sniper tier completion comes from buy fact aggregation, not from current
+market value.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+TradeFact TF-BASE: BUY 159509 base position amount 20000.00, fee 10.00
+TradeFact TF-T1: BUY 159509 sniper T1 amount 1000.00, fee 1.00
+Sniper policy draft:
+  poolAmountText: "63000.00"
+  tiers: T1..T6 weights 1/2/4/8/16/32
+  T1 targetAmountText: "1000.00"
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.050 CNY
+```
+
+### Expected PositionSummaryDto
+
+```text
+instrumentCode: 159509
+dataQualityStatus: OK
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "78989.00"
+dataQualityStatus: OK
+```
+
+### Expected PortfolioPnlDto
+
+```text
+dataQualityStatus: OK
+```
+
+### Expected issues
+
+```text
+[]
+```
+
+### Blocking?
+
+Non-blocking.
+
+### Notes
+
+Expected SniperPoolDto tier summary:
+
+```text
+tierName: T1
+weight: 1
+targetAmountText: "1000.00"
+executedAmountText: "1000.00"
+remainingAmountText: "0.00"
+completed: true
+```
+
+The 80% sniper pool must not resize from floating PnL.
+
+## FX011_STALE_SNAPSHOT
+
+### Purpose
+
+Stale snapshots must be visible and must not become fact sources.
+
+### Input facts
+
+```text
+Snapshot draft:
+  snapshotId: SNAP-OLD-001
+  generatedAt: 2026-01-10T15:00:00+08:00
+  sourceToTime: 2026-01-10T15:00:00+08:00
+TradeFact TF-NEW:
+  tradeTime: 2026-01-20T10:00:00+08:00
+  action: BUY
+  instrumentCode: 159509
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-001: 159509 @ 1.000 CNY on 2026-01-31
+```
+
+### Expected PositionSummaryDto
+
+```text
+dataQualityStatus: STALE
+metadata.stale: true
+metadata.staleReason: "snapshot older than source trade range"
+```
+
+### Expected CashSummaryDto
+
+```text
+dataQualityStatus: STALE
+metadata.stale: true
+```
+
+### Expected PortfolioPnlDto
+
+```text
+dataQualityStatus: STALE
+metadata.stale: true
+```
+
+### Expected issues
+
+```text
+SNAPSHOT_STALE, blocking=true for fresh calculation, userVisible=true
+```
+
+### Blocking?
+
+Blocking for fresh calculation.
+
+### Notes
+
+Do not use the stale snapshot to overwrite or correct trade facts.
+
+## FX012_MISSING_MARKET_PRICE
+
+### Purpose
+
+Missing market price should not hide quantity or cost, but it blocks valuation
+and unrealized PnL.
+
+### Input facts
+
+```text
+CashFact CF-001: INITIAL_CASH 100000.00 CNY
+TradeFact TF-001: BUY 159509 quantity 1000 @ 1.000, fee 1.00
+```
+
+### Market price facts
+
+```text
+MarketPriceFact: []
+```
+
+### Expected PositionSummaryDto
+
+```text
+quantityText: "1000"
+costAmountText: "1001.00"
+marketPriceText: ""
+marketValueText: ""
+unrealizedPnlText: ""
+dataQualityStatus: WARNING
+```
+
+### Expected CashSummaryDto
+
+```text
+cashBalanceText: "98999.00"
+dataQualityStatus: OK
+```
+
+### Expected PortfolioPnlDto
+
+```text
+marketValueText: ""
+unrealizedPnlText: ""
+totalAssetsText: ""
+dataQualityStatus: WARNING
+```
+
+### Expected issues
+
+```text
+MARKET_PRICE_MISSING, blocking=false for quantity and cost, blocking=true for valuation
+```
+
+### Blocking?
+
+Non-blocking for position quantity; blocking for valuation output.
+
+### Notes
+
+Do not infer market value from cost.
+
+## FX013_MULTI_CURRENCY_UNSUPPORTED
+
+### Purpose
+
+Unsupported multi-currency aggregation must be explicit when FX rates are
+missing.
+
+### Input facts
+
+```text
+CashFact CF-CNY: INITIAL_CASH 100000.00 CNY
+CashFact CF-USD: INITIAL_CASH 1000.00 USD
+TradeFact TF-CNY: BUY 159509 quantity 1000 @ 1.000 CNY, fee 1.00 CNY
+TradeFact TF-USD: BUY USDETF quantity 10 @ 50.000 USD, fee 1.00 USD
+```
+
+### Market price facts
+
+```text
+MarketPriceFact MP-CNY: 159509 @ 1.000 CNY
+MarketPriceFact MP-USD: USDETF @ 50.000 USD
+FX rate: missing
+```
+
+### Expected PositionSummaryDto
+
+```text
+CNY position row may display in CNY.
+USD position row may display in USD.
+portfolio aggregate dataQualityStatus: ERROR
+```
+
+### Expected CashSummaryDto
+
+```text
+CNY cashBalanceText: "98999.00"
+USD cashBalanceText: "499.00"
+aggregate cashBalanceText: ""
+dataQualityStatus: ERROR
+```
+
+### Expected PortfolioPnlDto
+
+```text
+totalAssetsText: ""
+totalReturnRatioText: ""
+dataQualityStatus: ERROR
+```
+
+### Expected issues
+
+```text
+MULTI_CURRENCY_UNSUPPORTED, blocking=true
+FX_RATE_MISSING, blocking=true
+```
+
+### Blocking?
+
+Blocking for aggregate portfolio output.
+
+### Notes
+
+No hidden FX fallback is allowed. Future implementation must show unsupported
+currency or missing FX status in UI-visible issues.
+
+## 6. Implementation Guardrails
+
+- fixture samples are documentation only.
+- fixture samples must not write a real database.
+- fixture samples must not depend on external market data.
+- fixture samples must not perform automatic trading.
+- fixture samples must not generate TradeDraft.
+- fixture samples must not call write actions.
+- future implementation must create tests from FX001-FX013 before replay logic
+  is accepted.

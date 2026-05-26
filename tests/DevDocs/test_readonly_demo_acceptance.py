@@ -19,6 +19,8 @@ def main() -> int:
     business_summary_path = root / "docs" / "19_readonly_business_pages_summary.md"
     position_boundary_path = root / "docs" / "20_position_accounting_boundary.md"
     position_contract_path = root / "docs" / "21_position_readonly_data_contract_draft.md"
+    position_stable_contract_path = root / "docs" / "22_position_accounting_data_contract.md"
+    position_fixture_design_path = root / "docs" / "23_position_accounting_test_fixture_design.md"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -37,6 +39,8 @@ def main() -> int:
     require(business_summary_path.exists(), "read-only business pages summary exists")
     require(position_boundary_path.exists(), "position accounting boundary doc exists")
     require(position_contract_path.exists(), "position read-only data contract draft exists")
+    require(position_stable_contract_path.exists(), "position accounting data contract doc exists")
+    require(position_fixture_design_path.exists(), "position accounting test fixture design exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -53,6 +57,8 @@ def main() -> int:
     business_summary = business_summary_path.read_text(encoding="utf-8")
     position_boundary = position_boundary_path.read_text(encoding="utf-8")
     position_contract = position_contract_path.read_text(encoding="utf-8")
+    position_stable_contract = position_stable_contract_path.read_text(encoding="utf-8")
+    position_fixture_design = position_fixture_design_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -91,6 +97,11 @@ def main() -> int:
     require(
         "21_position_readonly_data_contract_draft.md" in readme,
         "README links position read-only data contract draft",
+    )
+    require("position_accounting_data_contract" in readme, "README links position accounting data contract")
+    require(
+        "23_position_accounting_test_fixture_design.md" in readme,
+        "README links position accounting fixture design",
     )
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
@@ -204,6 +215,8 @@ def main() -> int:
     require("release_notes/v0_2_readonly_business_pages.md" in docs_index, "docs index links v0.2 release notes")
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
+    require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
+    require("23_position_accounting_test_fixture_design.md" in docs_index, "docs index links position fixture design")
 
     require("trade_log 是事实账本" in accounting_rules, "accounting rules state trade_log is fact ledger")
     require("position_accounting_boundary" in accounting_rules, "accounting rules link position boundary")
@@ -227,6 +240,37 @@ def main() -> int:
     require("SniperPoolDto" in position_contract, "position contract includes SniperPoolDto")
     require("当前未实现" in position_contract, "position contract states currently not implemented")
     require("DTOs must not write to the database" in position_contract, "position contract prohibits DTO writes")
+    require("22_position_accounting_data_contract.md" in position_boundary, "boundary doc links stable data contract")
+    require("23_position_accounting_test_fixture_design.md" in position_boundary, "boundary doc links fixture design")
+    require("22_position_accounting_data_contract.md" in position_contract, "draft contract links stable data contract")
+
+    require("DataQualityStatus" in position_stable_contract, "stable contract includes DataQualityStatus")
+    require("AccountingErrorCode" in position_stable_contract, "stable contract includes AccountingErrorCode")
+    require("CalculationMetadataDto" in position_stable_contract, "stable contract includes CalculationMetadataDto")
+    require("AccountingIssueDto" in position_stable_contract, "stable contract includes AccountingIssueDto")
+    require("PositionSummaryDto" in position_stable_contract, "stable contract includes PositionSummaryDto")
+    require("PositionListResponse" in position_stable_contract, "stable contract includes PositionListResponse")
+    require("CashSummaryDto" in position_stable_contract, "stable contract includes CashSummaryDto")
+    require("PortfolioPnlDto" in position_stable_contract, "stable contract includes PortfolioPnlDto")
+    require("BasePositionDto" in position_stable_contract, "stable contract includes BasePositionDto")
+    require("SniperPoolDto" in position_stable_contract, "stable contract includes SniperPoolDto")
+    require("accounting.health" in position_stable_contract, "stable contract includes accounting.health")
+    require("position.list" in position_stable_contract, "stable contract includes position.list")
+    require("不写 trade_log" in position_stable_contract, "stable contract prohibits trade_log writes")
+    require("QML 不计算账务" in position_stable_contract, "stable contract prohibits QML accounting calculation")
+    require("ShellPositionListModel" in position_stable_contract, "stable contract includes ShellPositionListModel")
+
+    require("FX001_EMPTY_LEDGER" in position_fixture_design, "fixture design includes empty ledger")
+    require(
+        "FX013_MULTI_CURRENCY_UNSUPPORTED" in position_fixture_design,
+        "fixture design includes unsupported multi-currency fixture",
+    )
+    require("Expected issues" in position_fixture_design, "fixture design includes expected issues")
+    require(
+        "no hidden external market dependency" in position_fixture_design,
+        "fixture design prohibits hidden market dependency",
+    )
+    require("FX010_SNIPER_TIER_COMPLETED" in position_fixture_design, "fixture design includes sniper tier fixture")
     return 0
 
 

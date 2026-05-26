@@ -21,5 +21,7 @@
 - [19 ReadOnly Business Pages Summary](19_readonly_business_pages_summary.md)
 - [20 Position Accounting Boundary](20_position_accounting_boundary.md)
 - [21 Position Read-Only Data Contract Draft](21_position_readonly_data_contract_draft.md)
+- [22 Position Accounting Data Contract](22_position_accounting_data_contract.md)
+- [23 Position Accounting Test Fixture Design](23_position_accounting_test_fixture_design.md)
 - [Release Notes - v0.1 ReadOnly Shell Demo](release_notes/v0_1_readonly_shell_demo.md)
 - [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)

@@ -156,3 +156,9 @@ Contract:
 - DTOs must not become fact sources.
 - DTOs must not hide accounting errors.
 - DTOs must not be calculated directly in QML.
+
+## Superseded By Stable Contract
+
+This draft has been refined into [Position Accounting Data Contract](22_position_accounting_data_contract.md).
+It remains as an early draft record for TASK-044. Future implementation planning
+should use the stable contract and [Position Accounting Test Fixture Design](23_position_accounting_test_fixture_design.md).

@@ -758,6 +758,15 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - v0.3 design boundary: [Position Accounting Boundary](docs/20_position_accounting_boundary.md).
 - v0.3 data contract draft: [Position Read-Only Data Contract Draft](docs/21_position_readonly_data_contract_draft.md).
 
+## TASK-045 Position Accounting Data Contract Design
+
+- v0.3 now has an implementation-before-contract document for future read-only position, cash, PnL, base-position, and sniper-pool DTOs.
+- The contract defines `DataQualityStatus`, `AccountingErrorCode`, `CalculationMetadataDto`, `AccountingIssueDto`, future read-only action request / response shapes, and ShellServices ViewModel mapping drafts.
+- Future accounting replay implementation must first use deterministic test fixtures; the fixture design is documented separately.
+- This remains documentation-only: no position page, no replay code, no DataService action, no schema change, no writes, and no Git tag.
+- Stable contract: [Position Accounting Data Contract](docs/22_position_accounting_data_contract.md).
+- Fixture design: [Position Accounting Test Fixture Design](docs/23_position_accounting_test_fixture_design.md).
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.
@@ -779,6 +788,8 @@ Milestone documents:
 - [ReadOnly Business Pages Summary](docs/19_readonly_business_pages_summary.md)
 - [Position Accounting Boundary](docs/20_position_accounting_boundary.md)
 - [Position Read-Only Data Contract Draft](docs/21_position_readonly_data_contract_draft.md)
+- [Position Accounting Data Contract](docs/22_position_accounting_data_contract.md)
+- [Position Accounting Test Fixture Design](docs/23_position_accounting_test_fixture_design.md)
 - [Documentation Index](docs/README.md)
 
 Run tests:

@@ -1,0 +1,43 @@
+{
+  "fixtureId": "FX008_MULTI_ACCOUNT",
+  "name": "Multi account",
+  "purpose": "Verify same instrument positions are separated by account.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "MULTI",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX008-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-1001.00 CNY", "currency": "CNY", "source": "fixture", "note": "Account one buy."},
+      {"factId": "TR-FX008-002", "tradeTime": "2026-01-02T09:36:00Z", "accountId": "ACC-DEMO-002", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "2000", "priceText": "1.000 CNY", "amountText": "2000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-2001.00 CNY", "currency": "CNY", "source": "fixture", "note": "Account two buy."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX008-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "50000.00 CNY", "currency": "CNY", "note": "Account one cash."},
+      {"factId": "CF-FX008-002", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-002", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "50000.00 CNY", "currency": "CNY", "note": "Account two cash."}
+    ],
+    "marketPriceFacts": [
+      {"instrumentCode": "159509", "priceTime": "2026-01-31T15:00:00Z", "priceText": "1.000 CNY", "currency": "CNY", "source": "fixture"}
+    ]
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"accountId": "ACC-DEMO-001", "instrumentCode": "159509", "quantityText": "1000", "dataQualityStatus": "OK"},
+      {"accountId": "ACC-DEMO-002", "instrumentCode": "159509", "quantityText": "2000", "dataQualityStatus": "OK"}
+    ],
+    "cashSummary": {"dataQualityStatus": "OK", "note": "Cash summaries must remain account scoped."},
+    "portfolioPnl": {"dataQualityStatus": "OK", "note": "Aggregates must preserve account dimension in source details."},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Future replay must not combine facts from different accounts without an explicit aggregate view."
+  ]
+}

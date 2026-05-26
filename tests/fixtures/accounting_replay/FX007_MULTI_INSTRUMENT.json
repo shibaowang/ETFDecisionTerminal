@@ -1,0 +1,42 @@
+{
+  "fixtureId": "FX007_MULTI_INSTRUMENT",
+  "name": "Multi instrument",
+  "purpose": "Verify positions remain separated by instrument.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX007-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-1001.00 CNY", "currency": "CNY", "source": "fixture", "note": "ETF buy."},
+      {"factId": "TR-FX007-002", "tradeTime": "2026-01-03T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "518880", "action": "BUY", "quantityText": "500", "priceText": "4.000 CNY", "amountText": "2000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-2001.00 CNY", "currency": "CNY", "source": "fixture", "note": "Second instrument buy."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX007-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100000.00 CNY", "currency": "CNY", "note": "Initial cash."}
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "1000", "dataQualityStatus": "WARNING"},
+      {"instrumentCode": "518880", "quantityText": "500", "dataQualityStatus": "WARNING"}
+    ],
+    "cashSummary": {"cashBalanceText": "96998.00 CNY", "dataQualityStatus": "OK"},
+    "portfolioPnl": {"totalAssetsText": "", "dataQualityStatus": "WARNING"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [
+    {"code": "MARKET_PRICE_MISSING", "level": "WARNING", "blocking": false, "message": "Market prices are missing for valuation."}
+  ],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Future replay must not merge different instruments."
+  ]
+}

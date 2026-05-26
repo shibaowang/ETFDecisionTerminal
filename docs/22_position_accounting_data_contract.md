@@ -497,6 +497,22 @@ Current guard fields include:
 not produced by the guard. A future implementation must first cover all
 fixture samples in [Accounting Replay Fixture Samples](24_accounting_replay_fixture_samples.md).
 
+## TASK-050 Static Fixture Files
+
+The first accounting replay fixture set is now available as static JSON files
+under `tests/fixtures/accounting_replay/`.
+
+- `fixtures_index.json` lists FX001-FX013 and confirms that the fixture set has
+  no external dependencies.
+- `tests/AccountingFixtures/validate_accounting_replay_fixtures.py` performs
+  structural validation and forbidden-token checks.
+- The validator is static only: it does not implement replay, does not access
+  SQLite, does not call DataService, and does not verify accounting math.
+
+Future `accounting.replay.preview` implementation work must treat these fixture
+files as test inputs and expected-output contracts. Fixture expected outputs
+must not be changed merely to fit an incorrect algorithm.
+
 ## 18. Prohibited Scope
 
 - 不写 trade_log.

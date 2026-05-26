@@ -1,0 +1,40 @@
+{
+  "fixtureId": "FX002_SINGLE_BUY",
+  "name": "Single buy with fee",
+  "purpose": "Verify single buy replay with initial cash and fee-included proposed cost basis.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX002-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "quantityRaw": 1000000000, "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-1001.00 CNY", "currency": "CNY", "source": "fixture", "note": "Single buy fact."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX002-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100000.00 CNY", "currency": "CNY", "note": "Initial demo cash."}
+    ],
+    "marketPriceFacts": [
+      {"instrumentCode": "159509", "priceTime": "2026-01-31T15:00:00Z", "priceText": "1.000 CNY", "currency": "CNY", "source": "fixture"}
+    ]
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "quantityText": "1000", "costAmountText": "1001.00 CNY", "costPriceText": "1.001 CNY", "marketValueText": "1000.00 CNY", "dataQualityStatus": "OK"}
+    ],
+    "cashSummary": {"cashBalanceText": "98999.00 CNY", "availableCashText": "98999.00 CNY", "feeTotalText": "1.00 CNY", "dataQualityStatus": "OK"},
+    "portfolioPnl": {"principalText": "100000.00 CNY", "cashText": "98999.00 CNY", "marketValueText": "1000.00 CNY", "unrealizedPnlText": "-1.00 CNY", "dataQualityStatus": "OK"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Proposed standard: costAmountText includes fee."
+  ]
+}

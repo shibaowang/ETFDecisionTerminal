@@ -797,6 +797,18 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - It does not execute replay, read `trade_log` for calculation, return position / cash / PnL preview data, write snapshots, or write audit / trade tables.
 - DataServiceClient exposes `accountingReplayPreview(payloadJson)` as an explicit whitelist wrapper; no QML page is connected to it in this task.
 
+## TASK-050 Accounting Replay Fixture Files
+
+- FX001-FX013 accounting replay fixture samples are now available as static JSON files under `tests/fixtures/accounting_replay/`.
+- `tests/fixtures/accounting_replay/fixtures_index.json` lists the full fixture set and confirms there are no external dependencies.
+- `tests/AccountingFixtures/validate_accounting_replay_fixtures.py` performs static structure and forbidden-token validation.
+- These fixtures are not database data, do not write SQLite, do not call DataService, do not implement replay, do not drive trading, and do not generate TradeDraft.
+- Run the validator directly with:
+
+```powershell
+python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixtures-dir tests/fixtures/accounting_replay
+```
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.
@@ -821,6 +833,7 @@ Milestone documents:
 - [Position Accounting Data Contract](docs/22_position_accounting_data_contract.md)
 - [Position Accounting Test Fixture Design](docs/23_position_accounting_test_fixture_design.md)
 - [Accounting Replay Fixture Samples](docs/24_accounting_replay_fixture_samples.md)
+- [Accounting Replay Fixture Files](tests/fixtures/accounting_replay/README.md)
 - [Position Shell ViewModel Design](docs/25_position_shell_viewmodel_design.md)
 - [Position DTO ViewModel Mapping](docs/26_position_dto_viewmodel_mapping.md)
 - [Documentation Index](docs/README.md)

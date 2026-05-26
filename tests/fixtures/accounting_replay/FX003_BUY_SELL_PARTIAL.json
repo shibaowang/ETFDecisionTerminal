@@ -1,0 +1,41 @@
+{
+  "fixtureId": "FX003_BUY_SELL_PARTIAL",
+  "name": "Partial sell after buy",
+  "purpose": "Verify remaining quantity and separated realized versus unrealized PnL.",
+  "schemaVersion": "0.1",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "ACC-DEMO-001",
+    "portfolioId": "PF-DEMO-001",
+    "currency": "CNY",
+    "sourceFromTime": "2026-01-01T00:00:00Z",
+    "sourceToTime": "2026-01-31T23:59:59Z"
+  },
+  "inputFacts": {
+    "tradeFacts": [
+      {"factId": "TR-FX003-001", "tradeTime": "2026-01-02T09:35:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "BUY", "quantityText": "1000", "priceText": "1.000 CNY", "amountText": "1000.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "-1001.00 CNY", "currency": "CNY", "source": "fixture", "note": "Buy before partial sell."},
+      {"factId": "TR-FX003-002", "tradeTime": "2026-01-10T09:40:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "instrumentCode": "159509", "action": "SELL", "quantityText": "400", "priceText": "1.200 CNY", "amountText": "480.00 CNY", "feeText": "1.00 CNY", "cashFlowText": "479.00 CNY", "currency": "CNY", "source": "fixture", "note": "Partial sell."}
+    ],
+    "cashFacts": [
+      {"factId": "CF-FX003-001", "time": "2026-01-01T00:00:00Z", "accountId": "ACC-DEMO-001", "portfolioId": "PF-DEMO-001", "action": "INITIAL_CASH", "amountText": "100000.00 CNY", "currency": "CNY", "note": "Initial demo cash."}
+    ],
+    "marketPriceFacts": [
+      {"instrumentCode": "159509", "priceTime": "2026-01-31T15:00:00Z", "priceText": "1.200 CNY", "currency": "CNY", "source": "fixture"}
+    ]
+  },
+  "expectedOutputs": {
+    "positionSummaries": [
+      {"instrumentCode": "159509", "quantityText": "600", "costAmountText": "600.60 CNY", "marketValueText": "720.00 CNY", "realizedPnlText": "78.60 CNY", "unrealizedPnlText": "119.40 CNY", "dataQualityStatus": "OK"}
+    ],
+    "cashSummary": {"cashBalanceText": "99478.00 CNY", "feeTotalText": "2.00 CNY", "dataQualityStatus": "OK"},
+    "portfolioPnl": {"realizedPnlText": "78.60 CNY", "unrealizedPnlText": "119.40 CNY", "totalPnlText": "198.00 CNY", "dataQualityStatus": "OK"},
+    "basePosition": null,
+    "sniperPool": null
+  },
+  "expectedIssues": [],
+  "blocking": false,
+  "notes": [
+    "This fixture does not write any database table.",
+    "Realized and unrealized values are proposed expected outputs for future tests."
+  ]
+}

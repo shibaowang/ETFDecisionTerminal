@@ -993,3 +993,20 @@ but it remains a non-implementation guard.
   before returning real preview output.
 - The fixture samples still do not write a real database, do not rely on
   external market data, do not drive trading, and do not generate TradeDraft.
+
+## 8. TASK-050 Static JSON Fixture Files
+
+The FX001-FX013 samples are now mirrored as static JSON fixture files under
+`tests/fixtures/accounting_replay/`.
+
+- `tests/fixtures/accounting_replay/fixtures_index.json` lists the complete
+  fixture set.
+- `tests/AccountingFixtures/validate_accounting_replay_fixtures.py` validates
+  required structure and forbidden tokens.
+- `accounting_replay_fixture_static_validation` runs the validator through
+  CTest.
+
+Current validation is static only. It does not calculate cash, position, PnL,
+base-position, or sniper-pool values; it does not access SQLite; it does not
+call DataService; it does not depend on external market data; and it does not
+implement accounting replay.

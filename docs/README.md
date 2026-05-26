@@ -24,5 +24,7 @@
 - [22 Position Accounting Data Contract](22_position_accounting_data_contract.md)
 - [23 Position Accounting Test Fixture Design](23_position_accounting_test_fixture_design.md)
 - [24 Accounting Replay Fixture Samples](24_accounting_replay_fixture_samples.md)
+- [25 Position Shell ViewModel Design](25_position_shell_viewmodel_design.md)
+- [26 Position DTO ViewModel Mapping](26_position_dto_viewmodel_mapping.md)
 - [Release Notes - v0.1 ReadOnly Shell Demo](release_notes/v0_1_readonly_shell_demo.md)
 - [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)

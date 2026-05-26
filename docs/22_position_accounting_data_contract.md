@@ -448,6 +448,10 @@ Detailed DTO expected outputs for the first fixture set are in
 [Accounting Replay Fixture Samples](24_accounting_replay_fixture_samples.md).
 FX001-FX013 are the first future replay implementation test sources.
 
+ShellServices ViewModel mapping is defined in
+[Position Shell ViewModel Design](25_position_shell_viewmodel_design.md) and
+[Position DTO ViewModel Mapping](26_position_dto_viewmodel_mapping.md).
+
 ## 18. Prohibited Scope
 
 - 不写 trade_log.

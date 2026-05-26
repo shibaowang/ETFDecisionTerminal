@@ -22,6 +22,8 @@ def main() -> int:
     position_stable_contract_path = root / "docs" / "22_position_accounting_data_contract.md"
     position_fixture_design_path = root / "docs" / "23_position_accounting_test_fixture_design.md"
     accounting_fixture_samples_path = root / "docs" / "24_accounting_replay_fixture_samples.md"
+    position_viewmodel_design_path = root / "docs" / "25_position_shell_viewmodel_design.md"
+    position_mapping_path = root / "docs" / "26_position_dto_viewmodel_mapping.md"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -43,6 +45,8 @@ def main() -> int:
     require(position_stable_contract_path.exists(), "position accounting data contract doc exists")
     require(position_fixture_design_path.exists(), "position accounting test fixture design exists")
     require(accounting_fixture_samples_path.exists(), "accounting replay fixture samples doc exists")
+    require(position_viewmodel_design_path.exists(), "position Shell ViewModel design doc exists")
+    require(position_mapping_path.exists(), "position DTO ViewModel mapping doc exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -62,6 +66,8 @@ def main() -> int:
     position_stable_contract = position_stable_contract_path.read_text(encoding="utf-8")
     position_fixture_design = position_fixture_design_path.read_text(encoding="utf-8")
     accounting_fixture_samples = accounting_fixture_samples_path.read_text(encoding="utf-8")
+    position_viewmodel_design = position_viewmodel_design_path.read_text(encoding="utf-8")
+    position_mapping = position_mapping_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -110,6 +116,11 @@ def main() -> int:
         "24_accounting_replay_fixture_samples.md" in readme,
         "README links accounting replay fixture samples",
     )
+    require(
+        "25_position_shell_viewmodel_design.md" in readme,
+        "README links position Shell ViewModel design",
+    )
+    require("26_position_dto_viewmodel_mapping.md" in readme, "README links position DTO mapping")
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
 
@@ -225,6 +236,8 @@ def main() -> int:
     require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
     require("23_position_accounting_test_fixture_design.md" in docs_index, "docs index links position fixture design")
     require("24_accounting_replay_fixture_samples.md" in docs_index, "docs index links accounting fixture samples")
+    require("25_position_shell_viewmodel_design.md" in docs_index, "docs index links position ViewModel design")
+    require("26_position_dto_viewmodel_mapping.md" in docs_index, "docs index links position DTO mapping")
 
     require("trade_log 是事实账本" in accounting_rules, "accounting rules state trade_log is fact ledger")
     require("position_accounting_boundary" in accounting_rules, "accounting rules link position boundary")
@@ -270,6 +283,10 @@ def main() -> int:
     require(
         "24_accounting_replay_fixture_samples.md" in position_stable_contract,
         "stable contract links accounting fixture samples",
+    )
+    require(
+        "25_position_shell_viewmodel_design.md" in position_stable_contract,
+        "stable contract links position ViewModel design",
     )
 
     require("FX001_EMPTY_LEDGER" in position_fixture_design, "fixture design includes empty ledger")
@@ -329,6 +346,30 @@ def main() -> int:
     )
     require("trade_log 是事实账本" in accounting_fixture_samples, "fixture samples state trade_log fact ledger")
     require("不写数据库" in accounting_fixture_samples, "fixture samples state no database writes")
+    require(
+        "25_position_shell_viewmodel_design.md" in accounting_fixture_samples,
+        "fixture samples link position ViewModel design",
+    )
+
+    require("ShellPositionListModel" in position_viewmodel_design, "ViewModel design includes ShellPositionListModel")
+    require("ShellCashSummaryObject" in position_viewmodel_design, "ViewModel design includes ShellCashSummaryObject")
+    require("ShellPortfolioPnlObject" in position_viewmodel_design, "ViewModel design includes ShellPortfolioPnlObject")
+    require("ShellBasePositionObject" in position_viewmodel_design, "ViewModel design includes ShellBasePositionObject")
+    require("ShellSniperPoolObject" in position_viewmodel_design, "ViewModel design includes ShellSniperPoolObject")
+    require("ShellAccountingIssueListModel" in position_viewmodel_design, "ViewModel design includes issue model")
+    require("不在 QML 中计算持仓" in position_viewmodel_design, "ViewModel design prohibits QML position calculation")
+    require("不在 QML 中计算成本" in position_viewmodel_design, "ViewModel design prohibits QML cost calculation")
+    require("不在 QML 中计算收益" in position_viewmodel_design, "ViewModel design prohibits QML return calculation")
+
+    require("PositionSummaryDto" in position_mapping, "mapping doc includes PositionSummaryDto")
+    require("CashSummaryDto" in position_mapping, "mapping doc includes CashSummaryDto")
+    require("PortfolioPnlDto" in position_mapping, "mapping doc includes PortfolioPnlDto")
+    require("BasePositionDto" in position_mapping, "mapping doc includes BasePositionDto")
+    require("SniperPoolDto" in position_mapping, "mapping doc includes SniperPoolDto")
+    require("AccountingIssueDto" in position_mapping, "mapping doc includes AccountingIssueDto")
+    require("DTO field" in position_mapping, "mapping doc includes DTO field column")
+    require("ViewModel role" in position_mapping, "mapping doc includes ViewModel role")
+    require("QML display label" in position_mapping, "mapping doc includes QML display label")
     return 0
 
 

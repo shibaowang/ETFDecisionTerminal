@@ -27,6 +27,7 @@ def main() -> int:
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
+    protocol_path = root / "docs" / "04_protocol.md"
     accounting_rules_path = root / "docs" / "06_accounting_rules.md"
     readme_path = root / "README.md"
     gitignore_path = root / ".gitignore"
@@ -50,6 +51,7 @@ def main() -> int:
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
+    require(protocol_path.exists(), "protocol doc exists")
     require(accounting_rules_path.exists(), "accounting rules doc exists")
 
     script = script_path.read_text(encoding="utf-8")
@@ -71,6 +73,7 @@ def main() -> int:
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
+    protocol_doc = protocol_path.read_text(encoding="utf-8")
     accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
     readme = readme_path.read_text(encoding="utf-8")
     gitignore = gitignore_path.read_text(encoding="utf-8")
@@ -121,6 +124,7 @@ def main() -> int:
         "README links position Shell ViewModel design",
     )
     require("26_position_dto_viewmodel_mapping.md" in readme, "README links position DTO mapping")
+    require("accounting.health" in readme, "README documents accounting.health")
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
 
@@ -239,6 +243,16 @@ def main() -> int:
     require("25_position_shell_viewmodel_design.md" in docs_index, "docs index links position ViewModel design")
     require("26_position_dto_viewmodel_mapping.md" in docs_index, "docs index links position DTO mapping")
 
+    require("accounting.health" in accounting_rules, "accounting rules documents accounting.health")
+    require("replayImplemented=false" in accounting_rules, "accounting rules state replay is not implemented")
+    require("writeEnabled=false" in accounting_rules, "accounting rules state writes are disabled")
+
+    require("accounting.health" in protocol_doc, "protocol doc documents accounting.health")
+    require("replayImplemented" in protocol_doc, "protocol doc includes replayImplemented")
+    require("writeEnabled" in protocol_doc, "protocol doc includes writeEnabled")
+    require("REPLAY_NOT_IMPLEMENTED" in protocol_doc, "protocol doc includes replay warning")
+    require("position.list" in protocol_doc, "protocol doc lists future position action")
+
     require("trade_log 是事实账本" in accounting_rules, "accounting rules state trade_log is fact ledger")
     require("position_accounting_boundary" in accounting_rules, "accounting rules link position boundary")
 
@@ -252,6 +266,10 @@ def main() -> int:
     require("不写快照表" in position_boundary, "boundary doc prohibits snapshot writes")
     require("QML 不计算成本" in position_boundary, "boundary doc prohibits QML cost calculation")
     require("accounting.health" in position_boundary, "boundary doc drafts accounting health action")
+    require(
+        "TASK-048 Implemented Minimal Accounting Health" in position_boundary,
+        "boundary doc records implemented accounting health",
+    )
     require("ShellPositionSummaryViewModel" in position_boundary, "boundary doc drafts position ViewModel")
 
     require("PositionSummaryDto" in position_contract, "position contract includes PositionSummaryDto")
@@ -277,6 +295,11 @@ def main() -> int:
     require("SniperPoolDto" in position_stable_contract, "stable contract includes SniperPoolDto")
     require("accounting.health" in position_stable_contract, "stable contract includes accounting.health")
     require("position.list" in position_stable_contract, "stable contract includes position.list")
+    require(
+        "TASK-048 Minimal Implemented Action Status" in position_stable_contract,
+        "stable contract documents implemented accounting health",
+    )
+    require("REPLAY_NOT_IMPLEMENTED" in position_stable_contract, "stable contract includes replay warning")
     require("不写 trade_log" in position_stable_contract, "stable contract prohibits trade_log writes")
     require("QML 不计算账务" in position_stable_contract, "stable contract prohibits QML accounting calculation")
     require("ShellPositionListModel" in position_stable_contract, "stable contract includes ShellPositionListModel")

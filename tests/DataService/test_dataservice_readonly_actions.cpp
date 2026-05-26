@@ -43,6 +43,15 @@ void expectEqual(std::string_view actual, std::string_view expected, std::string
     }
 }
 
+void expectEqual(int actual, int expected, std::string_view message)
+{
+    if (actual != expected) {
+        ++gFailures;
+        std::cerr << "FAILED: " << message << " expected " << expected << " actual " << actual
+                  << '\n';
+    }
+}
+
 std::filesystem::path optionValue(int argc, char* argv[], const std::string& option)
 {
     for (int i = 1; i + 1 < argc; ++i) {
@@ -129,6 +138,13 @@ QJsonObject sendEnvelope(
     return parseJsonObject(responses.back());
 }
 
+int countRows(etfdt::data_access::SQLiteConnection& connection, const std::string& tableName)
+{
+    auto count = connection.querySingleInt("SELECT COUNT(*) FROM " + tableName + ";");
+    expectTrue(count.hasValue(), "count query succeeds for " + tableName);
+    return count.hasValue() ? count.value() : -1;
+}
+
 void expectSuccess(const QJsonObject& response, std::string_view label)
 {
     expectTrue(response.value("success").toBool(false), std::string(label) + " success=true");
@@ -153,6 +169,7 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
     expectTrue(migrationResult.hasValue(), "Initial migration succeeds");
     auto healthCheck = connection.healthCheck();
     expectTrue(healthCheck.hasValue(), "healthCheck succeeds before serving");
+    const int auditLogBefore = countRows(connection, "audit_log");
 
     etfdt::service_runtime::ActionDispatcher dispatcher(
         etfdt::protocol::ServiceName::ETFDataService);
@@ -268,6 +285,63 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         missingOtc.value("payload").toObject().value("channels").toArray().isEmpty(),
         "data.otc.list nonexistent strategyCode returns empty channels");
 
+    auto accountingHealth = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionAccountingHealth),
+        responses,
+        "accounting.health");
+    expectSuccess(accountingHealth, "accounting.health");
+    const auto accountingPayload = accountingHealth.value("payload").toObject();
+    expectTrue(!accountingPayload.isEmpty(), "accounting.health payload is JSON object");
+    expectEqual(
+        accountingPayload.value("module").toString().toStdString(),
+        "accounting",
+        "accounting.health module");
+    expectTrue(accountingPayload.value("healthy").toBool(false), "accounting.health healthy=true");
+    expectTrue(accountingPayload.value("readOnly").toBool(false), "accounting.health readOnly=true");
+    expectTrue(
+        !accountingPayload.value("replayImplemented").toBool(true),
+        "accounting.health replayImplemented=false");
+    expectTrue(
+        !accountingPayload.value("snapshotImplemented").toBool(true),
+        "accounting.health snapshotImplemented=false");
+    expectTrue(
+        !accountingPayload.value("writeEnabled").toBool(true),
+        "accounting.health writeEnabled=false");
+
+    const auto implementedActions = accountingPayload.value("implementedActions").toArray();
+    const bool hasAccountingHealth =
+        std::any_of(implementedActions.begin(), implementedActions.end(), [](const auto& value) {
+            return value.toString() == "accounting.health";
+        });
+    expectTrue(hasAccountingHealth, "accounting.health implementedActions contains accounting.health");
+
+    const auto futureActions = accountingPayload.value("futureActions").toArray();
+    const bool hasPositionList =
+        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
+            return value.toString() == "position.list";
+        });
+    expectTrue(hasPositionList, "accounting.health futureActions contains position.list");
+
+    const auto warnings = accountingPayload.value("warnings").toArray();
+    const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
+        return value.toObject().value("code").toString() == "REPLAY_NOT_IMPLEMENTED";
+    });
+    expectTrue(hasReplayWarning, "accounting.health warnings contains REPLAY_NOT_IMPLEMENTED");
+    expectTrue(
+        accountingPayload.value("errors").toArray().isEmpty(),
+        "accounting.health errors is empty array");
+
+    auto unknownAccounting =
+        sendEnvelope(client, envelope("accounting.replay.preview"), responses, "unknown accounting action");
+    expectTrue(
+        !unknownAccounting.value("success").toBool(true),
+        "unknown accounting action success=false");
+    expectEqual(
+        unknownAccounting.value("errorCode").toString().toStdString(),
+        "E1004_INVALID_ACTION",
+        "unknown accounting action returns E1004");
+
     auto unknown = sendEnvelope(client, envelope("data.unknown"), responses, "unknown data action");
     expectTrue(!unknown.value("success").toBool(true), "unknown data action success=false");
     expectEqual(
@@ -285,6 +359,14 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
             code == "E1001_INVALID_JSON" || code == "E1002_MISSING_REQUIRED_FIELD",
             "invalid JSON returns protocol error");
     }
+
+    expectEqual(countRows(connection, "audit_log"), auditLogBefore, "audit_log does not increase");
+    expectEqual(countRows(connection, "trade_log"), 0, "trade_log remains empty");
+    expectEqual(countRows(connection, "trade_execution_group"), 0, "trade_execution_group remains empty");
+    expectEqual(countRows(connection, "trade_draft"), 0, "trade_draft remains empty");
+    expectEqual(countRows(connection, "position_snapshot"), 0, "position_snapshot remains empty");
+    expectEqual(countRows(connection, "cash_snapshot"), 0, "cash_snapshot remains empty");
+    expectEqual(countRows(connection, "portfolio_summary"), 0, "portfolio_summary remains empty");
 
     client.disconnect();
     expectTrue(waitUntil([&]() { return !client.isConnected(); }, 1000), "client disconnects");

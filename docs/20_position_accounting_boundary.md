@@ -227,3 +227,17 @@ These are planning suggestions only and do not implement code:
 - Detailed stable data contract: [Position Accounting Data Contract](22_position_accounting_data_contract.md).
 - Future replay fixture design: [Position Accounting Test Fixture Design](23_position_accounting_test_fixture_design.md).
 - The stable contract refines the earlier action and ViewModel drafts in this boundary document.
+
+## TASK-048 Implemented Minimal Accounting Health
+
+`accounting.health` is the first implemented accounting read-only action. It
+only reports module capability and boundary state:
+
+- It returns `module=accounting`, `readOnly=true`, `replayImplemented=false`,
+  `snapshotImplemented=false`, and `writeEnabled=false`.
+- `implementedActions` currently contains only `accounting.health`.
+- `futureActions` lists the planned accounting and position actions, but those
+  actions remain unimplemented.
+- It does not run replay, does not calculate positions, cash, PnL, base
+  position, or sniper-pool values, and does not write database tables.
+- It must not call `data.audit.append`.

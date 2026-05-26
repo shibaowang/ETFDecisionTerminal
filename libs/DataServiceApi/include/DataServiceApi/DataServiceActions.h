@@ -13,6 +13,7 @@ constexpr const char* kActionDataInstrumentsList = "data.instruments.list";
 constexpr const char* kActionDataStrategiesList = "data.strategies.list";
 constexpr const char* kActionDataOtcList = "data.otc.list";
 constexpr const char* kActionDataAuditAppend = "data.audit.append";
+constexpr const char* kActionAccountingHealth = "accounting.health";
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleDataHealth(
     const etfdt::service_runtime::ActionContext& context,
@@ -43,6 +44,10 @@ constexpr const char* kActionDataAuditAppend = "data.audit.append";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleDataAuditAppend(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingHealth(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

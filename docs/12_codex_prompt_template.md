@@ -233,3 +233,6 @@ v0.1 草案。
 - QML must not calculate accounting fields.
 - ShellServices ViewModels must not write data.
 - Future implementation must test fixture-to-DTO-to-ViewModel mapping.
+- `accounting.health` only means the accounting boundary health action is callable; it must not be treated as replay, position, cash, PnL, base-position, or sniper-pool implementation.
+- `accounting.health` must remain read-only and must not be extended into a write action.
+- New accounting actions require separate task authorization, explicit read/write scope, fixture coverage, and boundary tests.

@@ -1244,3 +1244,32 @@ unrealized PnL, base-position, sniper-pool, SQLite access, DataService calls,
 file writes, database writes, or DataService actions. Future implementation
 must add one fixture at a time without changing fixture expected outputs to fit
 an incorrect algorithm.
+
+## 18. TASK-060 Minimal FX006 Negative-Cash Detection
+
+`FX006_NEGATIVE_CASH` now has a test-only minimal replay error path through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` returns `implemented=true`.
+- `FX006_NEGATIVE_CASH` returns `replayExecuted=true`.
+- `FX006_NEGATIVE_CASH` returns `status=ERROR`.
+- `FX006_NEGATIVE_CASH` returns a blocking `NEGATIVE_CASH` issue when buy cash requirement exceeds available initial cash.
+- Negative cash is not silently accepted as an implicit overdraft.
+- `FX006_NEGATIVE_CASH` does not generate normal position, cash, PnL,
+  base-position, or sniper-pool success outputs.
+- `FX007_MULTI_INSTRUMENT` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still
+  return `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to detecting one initial cash fact
+and one BUY fact where `amountText + feeText` is greater than initial cash. It
+does not implement multi-account replay, multi-instrument replay, market
+valuation, realized PnL, unrealized PnL, base-position, sniper-pool, SQLite
+access, DataService calls, file writes, database writes, or DataService actions.
+Future implementation must add one fixture at a time without changing fixture
+expected outputs to fit an incorrect algorithm.

@@ -688,6 +688,109 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx005MissingF
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx006NegativeCashResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX006_NEGATIVE_CASH") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx006NegativeCash,
+            "FX006 negative-cash assertion only accepts FX006_NEGATIVE_CASH.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    const auto expectedIssue = std::find_if(
+        fixture.expectedIssues.begin(),
+        fixture.expectedIssues.end(),
+        [](const AccountingExpectedIssue& issue) { return issue.code == "NEGATIVE_CASH"; });
+    if (expectedIssue == fixture.expectedIssues.end()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx006NegativeCash,
+            "FX006 fixture must declare an expected NEGATIVE_CASH issue.",
+            false,
+            {"expectedIssues.NEGATIVE_CASH"});
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusError) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx006NegativeCash,
+            "FX006 replay result must be implemented=true, replayExecuted=true, and status=ERROR.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    bool hasNegativeCash = false;
+    bool negativeCashBlocking = false;
+    for (const auto& issue : result.issues) {
+        if (issue.code == "NEGATIVE_CASH") {
+            hasNegativeCash = true;
+            negativeCashBlocking = issue.blocking;
+        }
+    }
+    if (!hasNegativeCash || !negativeCashBlocking || !expectedIssue->blocking) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx006NegativeCash,
+            "FX006 must contain a blocking NEGATIVE_CASH issue matching the fixture contract.",
+            false,
+            {"issues.NEGATIVE_CASH"});
+    }
+
+    if (!hasEmptyReplayOutputs(result)) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx006NegativeCash,
+            "FX006 must not generate normal position, cash, PnL, base-position, or sniper-pool outputs.",
+            false,
+            {
+                "positionListResponseRaw",
+                "cashSummaryRaw",
+                "portfolioPnlRaw",
+                "basePositionRaw",
+                "sniperPoolRaw",
+            });
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx006NegativeCash,
+        "FX006 negative-cash replay result exposes a blocking NEGATIVE_CASH error without normal outputs.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "issues.NEGATIVE_CASH",
+            "positionListResponseRaw",
+            "cashSummaryRaw",
+            "portfolioPnlRaw",
+            "basePositionRaw",
+            "sniperPoolRaw",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

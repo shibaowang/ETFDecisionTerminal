@@ -1373,6 +1373,49 @@ sniper-pool, multi-currency, real market valuation, SQLite access, DataService
 calls, output file writes, database writes, TradeDraft generation, sell actions,
 strategy execution, or DataService actions.
 
+## 22. TASK-064 Minimal FX010 Sniper-Tier Replay
+
+`FX010_SNIPER_TIER_COMPLETED` now has a test-only minimal replay path through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` still returns `status=ERROR` with a blocking
+  `NEGATIVE_CASH` issue.
+- `FX007_MULTI_INSTRUMENT`, `FX008_MULTI_ACCOUNT`, and
+  `FX009_BASE_POSITION_LOCKED` keep their prior minimal replay behavior.
+- `FX010_SNIPER_TIER_COMPLETED` returns `implemented=true`.
+- `FX010_SNIPER_TIER_COMPLETED` returns `replayExecuted=true`.
+- `FX010_SNIPER_TIER_COMPLETED` returns `status=OK`, matching the fixture
+  contract.
+- `FX010_SNIPER_TIER_COMPLETED` only outputs readonly `sniperPoolRaw`.
+- The static fixture result contains `poolAmountText=80000.00 CNY`,
+  `usedAmountText=1000.00 CNY`, and `remainingAmountText=79000.00 CNY`.
+- `tierSummary` contains `T1` with `weight=1`,
+  `targetAmountText=1000.00 CNY`, `executedAmountText=1000.00 CNY`,
+  `remainingAmountText=0.00 CNY`, and `completed=true`.
+- `T1 completed=true` comes from BUY fact aggregation or explicit fixture input
+  metadata; it is not derived from current market value.
+- The 80% sniper pool is fixed for this fixture and does not expand or shrink
+  with floating profit or loss.
+- `remainingAmountText` is readonly remaining pool capacity. It is not a buy
+  suggestion, sell suggestion, TradeDraft, strategy command, or broker order.
+- `FX010_SNIPER_TIER_COMPLETED` does not produce TradeDraft output, buy action
+  output, sell action output, or trading recommendations.
+- `FX011_STALE_SNAPSHOT` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still return
+  `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to deriving display-only sniper
+pool tier fields from the FX010 input facts. It does not implement stale
+snapshot handling, multi-currency replay, real market valuation, unrealized PnL,
+SQLite access, DataService calls, output file writes, database writes,
+TradeDraft generation, buy / sell actions, strategy execution, or DataService
+actions.
+
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account
 replay, multi-currency replay, market valuation, unrealized PnL, base-position,

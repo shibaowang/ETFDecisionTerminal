@@ -25,6 +25,7 @@ constexpr const char* kFx006NegativeCash = "FX006_NEGATIVE_CASH";
 constexpr const char* kFx007MultiInstrument = "FX007_MULTI_INSTRUMENT";
 constexpr const char* kFx008MultiAccount = "FX008_MULTI_ACCOUNT";
 constexpr const char* kFx009BasePositionLocked = "FX009_BASE_POSITION_LOCKED";
+constexpr const char* kFx010SniperTierCompleted = "FX010_SNIPER_TIER_COMPLETED";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -497,6 +498,43 @@ QJsonObject makeBasePositionRaw(
     return response;
 }
 
+QJsonObject makeSniperPoolRaw(
+    const AccountingFixture& fixture,
+    long long poolAmountCents,
+    long long usedAmountCents,
+    long long remainingAmountCents,
+    long long t1TargetAmountCents,
+    long long t1ExecutedAmountCents,
+    const QString& dataQualityStatus)
+{
+    const auto currency = scopeString(fixture, "currency");
+    const long long t1RemainingAmountCents = std::max(0LL, t1TargetAmountCents - t1ExecutedAmountCents);
+
+    QJsonObject tier;
+    tier.insert(QStringLiteral("tierName"), QStringLiteral("T1"));
+    tier.insert(QStringLiteral("weight"), 1);
+    tier.insert(QStringLiteral("targetAmountText"), QString::fromStdString(formatMoney(t1TargetAmountCents, currency)));
+    tier.insert(QStringLiteral("executedAmountText"), QString::fromStdString(formatMoney(t1ExecutedAmountCents, currency)));
+    tier.insert(QStringLiteral("remainingAmountText"), QString::fromStdString(formatMoney(t1RemainingAmountCents, currency)));
+    tier.insert(QStringLiteral("completed"), t1ExecutedAmountCents >= t1TargetAmountCents);
+    tier.insert(QStringLiteral("dataQualityStatus"), dataQualityStatus);
+
+    QJsonArray tierSummary;
+    tierSummary.append(tier);
+
+    QJsonObject response;
+    response.insert(QStringLiteral("portfolioId"), QString::fromStdString(scopeString(fixture, "portfolioId")));
+    response.insert(QStringLiteral("poolAmountText"), QString::fromStdString(formatMoney(poolAmountCents, currency)));
+    response.insert(QStringLiteral("usedAmountText"), QString::fromStdString(formatMoney(usedAmountCents, currency)));
+    response.insert(QStringLiteral("remainingAmountText"), QString::fromStdString(formatMoney(remainingAmountCents, currency)));
+    response.insert(QStringLiteral("tierCount"), 6);
+    response.insert(QStringLiteral("tierSummary"), tierSummary);
+    response.insert(QStringLiteral("calculationVersion"), QStringLiteral("minimal-sniper-tier-v0"));
+    response.insert(QStringLiteral("dataQualityStatus"), dataQualityStatus);
+    response.insert(QStringLiteral("readOnly"), true);
+    return response;
+}
+
 } // namespace
 
 bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId) const
@@ -504,7 +542,8 @@ bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId
     return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial
         || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee
         || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument
-        || fixtureId == kFx008MultiAccount || fixtureId == kFx009BasePositionLocked;
+        || fixtureId == kFx008MultiAccount || fixtureId == kFx009BasePositionLocked
+        || fixtureId == kFx010SniperTierCompleted;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -1283,6 +1322,126 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
         };
         result.basePositionRaw =
             makeBasePositionRaw(fixture, totalAssetsCents, currentBaseAmountCents, targetBaseAmountCents, hasExpectedIssues ? QStringLiteral("WARNING") : QStringLiteral("OK"));
+        for (const auto& issue : fixture.expectedIssues) {
+            result.issues.push_back(makeIssue(
+                issue.level.empty() ? "WARNING" : issue.level,
+                issue.code,
+                issue.message,
+                issue.blocking,
+                fixture.fixtureId));
+        }
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx010SniperTierCompleted) {
+        const auto invalidFx010 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX010_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.cashFacts.size() != 1 || fixture.cashFacts.front().action != "INITIAL_CASH") {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires exactly one INITIAL_CASH fact.");
+        }
+        if (fixture.tradeFacts.size() != 1 || fixture.tradeFacts.front().action != "BUY") {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires exactly one BUY trade fact.");
+        }
+
+        const auto& initialCash = fixture.cashFacts.front();
+        const auto& trade = fixture.tradeFacts.front();
+        const auto accountId = scopeString(fixture, "accountId");
+        const auto portfolioId = scopeString(fixture, "portfolioId");
+        const auto currency = scopeString(fixture, "currency");
+        if (currency != "CNY" || accountId.empty() || portfolioId.empty()) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires one CNY account and portfolio scope.");
+        }
+        if (initialCash.accountId != accountId || initialCash.portfolioId != portfolioId || initialCash.currency != currency) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED initial cash must match fixture scope.");
+        }
+        if (trade.accountId != accountId || trade.portfolioId != portfolioId || trade.currency != currency
+            || trade.instrumentCode.empty() || trade.quantityText.empty() || trade.priceText.empty()
+            || trade.amountText.empty() || trade.feeText.empty()) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires one scoped CNY BUY fact with full amount fields.");
+        }
+
+        const auto quantity = parseInteger(trade.quantityText);
+        const auto priceMills = parseDecimalToScale(trade.priceText, 3);
+        const auto buyAmount = parseMoneyText(trade.amountText, currency);
+        const auto buyFee = parseMoneyText(trade.feeText, currency);
+        const auto initial = parseMoneyText(initialCash.amountText, currency);
+        if (!quantity.has_value() || *quantity <= 0 || !priceMills.has_value() || !buyAmount.has_value()
+            || !buyFee.has_value() || !initial.has_value()) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED contains an invalid numeric field.");
+        }
+        if (buyAmount->currency != currency || buyFee->currency != currency || initial->currency != currency) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED money fields must use fixture currency.");
+        }
+
+        const long long buyCashRequirementCents = buyAmount->cents + buyFee->cents;
+        if (buyCashRequirementCents > initial->cents) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED does not handle negative-cash input; that is FX006 scope.");
+        }
+
+        const auto expectedSniperValue = fixture.expectedOutputsRawJson.value("sniperPool");
+        if (!expectedSniperValue.isObject()) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires expectedOutputs.sniperPool.");
+        }
+        const auto expectedSniper = expectedSniperValue.toObject();
+        const auto expectedTiersValue = expectedSniper.value("tierSummary");
+        if (!expectedTiersValue.isArray()) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires expected sniperPool tierSummary.");
+        }
+        bool expectedT1Completed = false;
+        for (const auto& value : expectedTiersValue.toArray()) {
+            const auto tier = value.toObject();
+            if (tier.value("tierName").toString() == "T1") {
+                expectedT1Completed = tier.value("completed").toBool(false);
+            }
+        }
+        if (!expectedT1Completed) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires expected T1 completed=true.");
+        }
+
+        const long long poolAmountCents = (initial->cents * 80) / 100;
+        const long long t1TargetAmountCents = buyAmount->cents;
+        const long long t1ExecutedAmountCents = buyAmount->cents;
+        if (t1ExecutedAmountCents < t1TargetAmountCents) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires T1 buy fact aggregation to complete the tier.");
+        }
+        const long long usedAmountCents = t1ExecutedAmountCents;
+        const long long remainingAmountCents = poolAmountCents - usedAmountCents;
+        if (poolAmountCents <= 0 || remainingAmountCents < 0) {
+            return invalidFx010("FX010_SNIPER_TIER_COMPLETED requires a positive fixed sniper pool.");
+        }
+
+        const bool hasExpectedIssues = !fixture.expectedIssues.empty();
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = hasExpectedIssues ? kReplayStatusWarning : kReplayStatusOk;
+        result.message = "Sniper tier readonly derivation completed.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.sniperPoolRaw = makeSniperPoolRaw(
+            fixture,
+            poolAmountCents,
+            usedAmountCents,
+            remainingAmountCents,
+            t1TargetAmountCents,
+            t1ExecutedAmountCents,
+            hasExpectedIssues ? QStringLiteral("WARNING") : QStringLiteral("OK"));
         for (const auto& issue : fixture.expectedIssues) {
             result.issues.push_back(makeIssue(
                 issue.level.empty() ? "WARNING" : issue.level,

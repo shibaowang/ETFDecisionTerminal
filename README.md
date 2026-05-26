@@ -924,6 +924,18 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - FX010-FX013 still return `NOT_IMPLEMENTED`.
 - Minimal FX009 CTest: `accounting_replay_minimal_fx009`.
 
+## TASK-064 Accounting Replay Minimal FX010
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through `FX010_SNIPER_TIER_COMPLETED`.
+- FX010 only derives readonly `sniperPoolRaw` for the sniper tier completion fixture.
+- FX010 returns `implemented=true`, `replayExecuted=true`, `status=OK`, `poolAmountText=80000.00 CNY`, `usedAmountText=1000.00 CNY`, `remainingAmountText=79000.00 CNY`, and `T1 completed=true`.
+- T1 completion comes from BUY fact aggregation, not current market value.
+- The 80% pool amount is fixed from the fixture cash scope and does not expand or shrink with floating profit or loss.
+- `remainingAmountText` is readonly remaining pool capacity; it is not a buy suggestion, sell suggestion, order instruction, TradeDraft, or strategy output.
+- FX010 does not produce TradeDraft output, buy actions, sell actions, QML bindings, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- FX011-FX013 still return `NOT_IMPLEMENTED`.
+- Minimal FX010 CTest: `accounting_replay_minimal_fx010`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

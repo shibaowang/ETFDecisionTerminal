@@ -1354,6 +1354,205 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx009BasePosi
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx010SniperTierCompletedResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX010_SNIPER_TIER_COMPLETED") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 sniper-tier assertion only accepts FX010_SNIPER_TIER_COMPLETED.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    const std::string expectedStatus = fixture.expectedIssues.empty() ? kReplayStatusOk : kReplayStatusWarning;
+    if (!result.implemented || !result.replayExecuted || result.status != expectedStatus) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 replay result must be implemented=true, replayExecuted=true, and match expected status.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto expectedSniperValue = fixture.expectedOutputsRawJson.value("sniperPool");
+    if (!expectedSniperValue.isObject()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 fixture expected output must contain sniperPool.",
+            false,
+            {"expectedOutputs.sniperPool"});
+    }
+    const auto expectedSniper = expectedSniperValue.toObject();
+    if (result.sniperPoolRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 must produce sniperPoolRaw.",
+            false,
+            {"sniperPoolRaw"});
+    }
+
+    const auto checkSniperField = [&](const char* field, const QString& expected) -> bool {
+        return result.sniperPoolRaw.value(QString::fromUtf8(field)).toString() == expected;
+    };
+    if (!checkSniperField("portfolioId", expectedSniper.value("portfolioId").toString())
+        || !checkSniperField("poolAmountText", expectedSniper.value("poolAmountText").toString())
+        || !checkSniperField("usedAmountText", expectedSniper.value("usedAmountText").toString())
+        || !checkSniperField("remainingAmountText", expectedSniper.value("remainingAmountText").toString())
+        || result.sniperPoolRaw.value("tierCount").toInt() != expectedSniper.value("tierCount").toInt()
+        || !checkSniperField("dataQualityStatus", expectedSniper.value("dataQualityStatus").toString())) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 sniperPoolRaw must match fixture expected pool fields.",
+            false,
+            {
+                "sniperPoolRaw.portfolioId",
+                "sniperPoolRaw.poolAmountText",
+                "sniperPoolRaw.usedAmountText",
+                "sniperPoolRaw.remainingAmountText",
+                "sniperPoolRaw.tierCount",
+                "sniperPoolRaw.dataQualityStatus",
+            });
+    }
+
+    if (result.sniperPoolRaw.value("calculationVersion").toString().isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 sniperPoolRaw must expose a stable calculationVersion.",
+            false,
+            {"sniperPoolRaw.calculationVersion"});
+    }
+
+    const auto expectedTiersValue = expectedSniper.value("tierSummary");
+    const auto actualTiersValue = result.sniperPoolRaw.value("tierSummary");
+    if (!expectedTiersValue.isArray() || !actualTiersValue.isArray()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 must expose tierSummary arrays in expected output and result.",
+            false,
+            {"expectedOutputs.sniperPool.tierSummary", "sniperPoolRaw.tierSummary"});
+    }
+
+    QJsonObject expectedT1;
+    for (const auto& value : expectedTiersValue.toArray()) {
+        const auto tier = value.toObject();
+        if (tier.value("tierName").toString() == "T1") {
+            expectedT1 = tier;
+        }
+    }
+    QJsonObject actualT1;
+    for (const auto& value : actualTiersValue.toArray()) {
+        const auto tier = value.toObject();
+        if (tier.value("tierName").toString() == "T1") {
+            actualT1 = tier;
+        }
+    }
+    if (expectedT1.isEmpty() || actualT1.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 tierSummary must contain T1.",
+            false,
+            {"sniperPoolRaw.tierSummary.T1"});
+    }
+
+    if (actualT1.value("weight").toInt() != expectedT1.value("weight").toInt()
+        || actualT1.value("targetAmountText").toString() != expectedT1.value("targetAmountText").toString()
+        || actualT1.value("executedAmountText").toString() != expectedT1.value("executedAmountText").toString()
+        || actualT1.value("remainingAmountText").toString() != expectedT1.value("remainingAmountText").toString()
+        || actualT1.value("completed").toBool(false) != true
+        || actualT1.value("dataQualityStatus").toString() != expectedT1.value("dataQualityStatus").toString()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 T1 tier output must match expected target, executed, remaining, and completed fields.",
+            false,
+            {
+                "sniperPoolRaw.tierSummary.T1.weight",
+                "sniperPoolRaw.tierSummary.T1.targetAmountText",
+                "sniperPoolRaw.tierSummary.T1.executedAmountText",
+                "sniperPoolRaw.tierSummary.T1.remainingAmountText",
+                "sniperPoolRaw.tierSummary.T1.completed",
+            });
+    }
+
+    if (!result.basePositionRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 must not produce basePositionRaw.",
+            false,
+            {"basePositionRaw"});
+    }
+
+    if (result.sniperPoolRaw.contains("tradeDraft") || result.sniperPoolRaw.contains("buyAction")
+        || result.sniperPoolRaw.contains("sellAction") || result.sniperPoolRaw.contains("recommendedAction")) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx010SniperTierCompleted,
+            "FX010 must not expose TradeDraft, buy action, sell action, or trading recommendation fields.",
+            false,
+            {
+                "sniperPoolRaw.tradeDraft",
+                "sniperPoolRaw.buyAction",
+                "sniperPoolRaw.sellAction",
+                "sniperPoolRaw.recommendedAction",
+            });
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx010SniperTierCompleted,
+        "FX010 sniper-tier replay result exposes readonly sniper pool tier fields without actions.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "sniperPoolRaw.poolAmountText",
+            "sniperPoolRaw.usedAmountText",
+            "sniperPoolRaw.remainingAmountText",
+            "sniperPoolRaw.tierCount",
+            "sniperPoolRaw.tierSummary.T1",
+            "sniperPoolRaw.calculationVersion",
+            "basePositionRaw",
+            "tradeDraft",
+            "buyAction",
+            "sellAction",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

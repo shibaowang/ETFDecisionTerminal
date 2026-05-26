@@ -82,3 +82,12 @@ returning readonly `basePositionRaw` for the 20% locked-base sample:
 `sellableAboveBaseAmountText=0.00 CNY`. The sellable amount is display-only and
 is not a sell suggestion, TradeDraft, sell action, strategy command, or broker
 order. FX010-FX013 remain `NOT_IMPLEMENTED`.
+
+`AccountingReplayMinimalEngine` now also supports
+`FX010_SNIPER_TIER_COMPLETED`, returning readonly `sniperPoolRaw` with
+`poolAmountText=80000.00 CNY`, `usedAmountText=1000.00 CNY`,
+`remainingAmountText=79000.00 CNY`, and `T1 completed=true`. Completion is
+derived from BUY fact aggregation, not current market value; the 80% pool does
+not expand or shrink with floating profit or loss. The remaining amount is
+display-only and is not a buy suggestion, sell suggestion, TradeDraft, strategy
+command, or broker order. FX011-FX013 remain `NOT_IMPLEMENTED`.

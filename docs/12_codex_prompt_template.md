@@ -259,3 +259,5 @@ v0.1 草案。
 - Do not mix multiple fixture implementations into one task unless explicitly authorized.
 - Each new replay fixture must preserve all previous fixture tests.
 - Do not modify fixture expected outputs to fit a replay implementation.
+- After FX002, do not jump directly to complex PnL, base-position, sniper-pool, or multi-fixture replay.
+- Sell replay and partial-sell replay require separate task authorization.

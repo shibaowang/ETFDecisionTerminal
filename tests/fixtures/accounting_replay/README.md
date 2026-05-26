@@ -36,6 +36,10 @@ position, cash, and PnL value assertions remain `SKIPPED_BY_DESIGN` until replay
 is implemented.
 
 The test-only minimal replay engine is
-`tests/AccountingFixtures/AccountingReplayMinimalEngine`. It currently supports
-only `FX001_EMPTY_LEDGER`, returning `status=OK` with empty positions and zero
-cash / PnL raw summaries. FX002-FX013 remain `NOT_IMPLEMENTED`.
+`tests/AccountingFixtures/AccountingReplayMinimalEngine`. It supports
+`FX001_EMPTY_LEDGER`, returning `status=OK` with empty positions and zero cash /
+PnL raw summaries.
+
+`AccountingReplayMinimalEngine` now also supports `FX002_SINGLE_BUY`, returning
+one 159509 position, `quantityText=1000`, `costAmountText=1001.00 CNY`, and
+`cashBalanceText=98999.00 CNY`. FX003-FX013 remain `NOT_IMPLEMENTED`.

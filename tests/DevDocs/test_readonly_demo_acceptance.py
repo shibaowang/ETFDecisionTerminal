@@ -13,6 +13,8 @@ def main() -> int:
     doc_path = root / "docs" / "13_manual_acceptance_readonly_shell.md"
     milestone_path = root / "docs" / "14_milestone_v0_1_readonly_shell_demo.md"
     quick_start_path = root / "docs" / "15_quick_start_readonly_shell_demo.md"
+    business_acceptance_path = root / "docs" / "16_manual_acceptance_readonly_business_pages.md"
+    ui_readability_path = root / "docs" / "17_ui_readability_checklist.md"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     docs_index_path = root / "docs" / "README.md"
     readme_path = root / "README.md"
@@ -23,6 +25,8 @@ def main() -> int:
     require(doc_path.exists(), "manual acceptance doc exists")
     require(milestone_path.exists(), "v0.1 milestone doc exists")
     require(quick_start_path.exists(), "quick start doc exists")
+    require(business_acceptance_path.exists(), "read-only business pages acceptance doc exists")
+    require(ui_readability_path.exists(), "UI readability checklist exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
 
@@ -31,6 +35,8 @@ def main() -> int:
     doc = doc_path.read_text(encoding="utf-8")
     milestone = milestone_path.read_text(encoding="utf-8")
     quick_start = quick_start_path.read_text(encoding="utf-8")
+    business_acceptance = business_acceptance_path.read_text(encoding="utf-8")
+    ui_readability = ui_readability_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
     readme = readme_path.read_text(encoding="utf-8")
@@ -51,6 +57,12 @@ def main() -> int:
     require("15_quick_start_readonly_shell_demo.md" in readme, "README links quick start doc")
     require("14_milestone_v0_1_readonly_shell_demo.md" in readme, "README links milestone doc")
     require("release_notes/v0_1_readonly_shell_demo.md" in readme, "README links release notes")
+    require(
+        "16_manual_acceptance_readonly_business_pages.md" in readme,
+        "README links read-only business acceptance doc",
+    )
+    require("17_ui_readability_checklist.md" in readme, "README links UI readability checklist")
+    require("v0.2 ReadOnly Business Pages" in readme, "README documents v0.2 read-only business pages")
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
 
@@ -103,6 +115,27 @@ def main() -> int:
     require("C:\\Qt\\6.9.3\\msvc2022_64" in quick_start, "quick start documents Qt path")
     require("stop_readonly_demo.ps1" in quick_start, "quick start documents cleanup script")
 
+    require("账户与组合" in business_acceptance, "business acceptance doc mentions account portfolio page")
+    require("标的与策略" in business_acceptance, "business acceptance doc mentions instrument strategy page")
+    require("筛选" in business_acceptance, "business acceptance doc mentions filtering")
+    require("排序" in business_acceptance, "business acceptance doc mentions sorting")
+    require("列显示" in business_acceptance, "business acceptance doc mentions column visibility")
+    require("密度" in business_acceptance, "business acceptance doc mentions density")
+    require(
+        "不得调用 data.audit.append" in business_acceptance,
+        "business acceptance doc prohibits data.audit.append",
+    )
+    require("不写 trade_log" in business_acceptance, "business acceptance doc prohibits trade_log writes")
+    require("QML must not directly call `DataServiceClient`" in business_acceptance, "business acceptance doc prohibits direct DataServiceClient use")
+    require("QML must not directly access SQLite" in business_acceptance, "business acceptance doc prohibits direct SQLite access")
+    require("runtime/" in business_acceptance, "business acceptance doc mentions runtime cleanup")
+
+    require("禁止写入按钮" in ui_readability, "UI readability checklist includes prohibited write button rule")
+    require("QML 不做业务逻辑" in ui_readability, "UI readability checklist includes QML business logic rule")
+    require("Mock / Placeholder / ReadOnly" in ui_readability, "UI readability checklist includes state labels")
+    require("Column Visibility Standards" in ui_readability, "UI readability checklist includes column standards")
+    require("Density Setting Standards" in ui_readability, "UI readability checklist includes density standards")
+
     require("Release Notes - v0.1 ReadOnly Shell Demo" in release_notes, "release notes title")
     require("Suggested Tag After Merge" in release_notes, "release notes include suggested tag section")
     require("v0.1.0-readonly-shell-demo" in release_notes, "release notes include suggested tag")
@@ -110,6 +143,11 @@ def main() -> int:
 
     require("14_milestone_v0_1_readonly_shell_demo.md" in docs_index, "docs index links milestone")
     require("15_quick_start_readonly_shell_demo.md" in docs_index, "docs index links quick start")
+    require(
+        "16_manual_acceptance_readonly_business_pages.md" in docs_index,
+        "docs index links read-only business acceptance doc",
+    )
+    require("17_ui_readability_checklist.md" in docs_index, "docs index links UI readability checklist")
     require("release_notes/v0_1_readonly_shell_demo.md" in docs_index, "docs index links release notes")
     return 0
 

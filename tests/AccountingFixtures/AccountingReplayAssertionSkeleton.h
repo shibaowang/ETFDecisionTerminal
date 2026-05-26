@@ -23,6 +23,7 @@ inline constexpr const char* kAssertionPassFx008MultiAccount = "PASS_FX008_MULTI
 inline constexpr const char* kAssertionPassFx009BasePositionLocked = "PASS_FX009_BASE_POSITION_LOCKED";
 inline constexpr const char* kAssertionPassFx010SniperTierCompleted = "PASS_FX010_SNIPER_TIER_COMPLETED";
 inline constexpr const char* kAssertionPassFx011StaleSnapshot = "PASS_FX011_STALE_SNAPSHOT";
+inline constexpr const char* kAssertionPassFx012MissingMarketPrice = "PASS_FX012_MISSING_MARKET_PRICE";
 inline constexpr const char* kAssertionFailInvalidFx001EmptyLedger = "FAIL_INVALID_FX001_EMPTY_LEDGER";
 inline constexpr const char* kAssertionFailInvalidFx002SingleBuy = "FAIL_INVALID_FX002_SINGLE_BUY";
 inline constexpr const char* kAssertionFailInvalidFx003BuySellPartial = "FAIL_INVALID_FX003_BUY_SELL_PARTIAL";
@@ -34,6 +35,7 @@ inline constexpr const char* kAssertionFailInvalidFx008MultiAccount = "FAIL_INVA
 inline constexpr const char* kAssertionFailInvalidFx009BasePositionLocked = "FAIL_INVALID_FX009_BASE_POSITION_LOCKED";
 inline constexpr const char* kAssertionFailInvalidFx010SniperTierCompleted = "FAIL_INVALID_FX010_SNIPER_TIER_COMPLETED";
 inline constexpr const char* kAssertionFailInvalidFx011StaleSnapshot = "FAIL_INVALID_FX011_STALE_SNAPSHOT";
+inline constexpr const char* kAssertionFailInvalidFx012MissingMarketPrice = "FAIL_INVALID_FX012_MISSING_MARKET_PRICE";
 inline constexpr const char* kAssertionSkippedByDesign = "SKIPPED_BY_DESIGN";
 
 struct AccountingAssertionResult {
@@ -83,6 +85,9 @@ public:
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertFx011StaleSnapshotResult(
+        const AccountingFixture& fixture,
+        const AccountingReplayResult& result) const;
+    [[nodiscard]] AccountingAssertionResult assertFx012MissingMarketPriceResult(
         const AccountingFixture& fixture,
         const AccountingReplayResult& result) const;
     [[nodiscard]] AccountingAssertionResult assertExpectedOutputShape(const AccountingFixture& fixture) const;

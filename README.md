@@ -933,7 +933,8 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - The 80% pool amount is fixed from the fixture cash scope and does not expand or shrink with floating profit or loss.
 - `remainingAmountText` is readonly remaining pool capacity; it is not a buy suggestion, sell suggestion, order instruction, TradeDraft, or strategy output.
 - FX010 does not produce TradeDraft output, buy actions, sell actions, QML bindings, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
-- FX011-FX013 still return `NOT_IMPLEMENTED`.
+- FX011-FX012 are implemented in later test-only minimal replay tasks; FX013
+  still returns `NOT_IMPLEMENTED`.
 - Minimal FX010 CTest: `accounting_replay_minimal_fx010`.
 
 ## TASK-065 Accounting Replay Minimal FX011
@@ -944,7 +945,8 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - Stale snapshot input is treated as derived cache metadata, not a fact source.
 - FX011 does not produce normal position, cash, PnL, base-position, or sniper-pool success outputs.
 - FX011 does not generate or write snapshots, does not refresh snapshots, and does not write `position_snapshot`, `cash_snapshot`, or `portfolio_summary`.
-- FX012-FX013 still return `NOT_IMPLEMENTED`.
+- FX012 is implemented in a later test-only minimal replay task; FX013 still
+  returns `NOT_IMPLEMENTED`.
 - This does not implement missing market price replay, multi-currency replay, real market valuation, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
 - Minimal FX011 CTest: `accounting_replay_minimal_fx011`.
 
@@ -985,6 +987,22 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
+
+## TASK-066 Accounting Replay Minimal FX012
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through
+  `FX012_MISSING_MARKET_PRICE`.
+- FX012 only detects missing market price for the fixture-backed BUY position.
+- FX012 returns `implemented=true`, `replayExecuted=true`, `status=WARNING`,
+  and a non-blocking `MARKET_PRICE_MISSING` issue.
+- FX012 exposes quantity / cost through `positionListResponseRaw`; it does not
+  fabricate `marketValueText` or `unrealizedPnlText`.
+- FX013 still returns `NOT_IMPLEMENTED`.
+- This remains test-only code under `tests/AccountingFixtures`; it does not
+  access SQLite, call DataService, query real market data, perform network
+  requests, write files or database tables, add server actions, add write
+  capability, modify QML, or modify `migrations/001_initial_schema.sql`.
+- Minimal FX012 CTest: `accounting_replay_minimal_fx012`.
 
 ## 当前尚未实现
 

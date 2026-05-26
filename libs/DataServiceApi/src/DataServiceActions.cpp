@@ -510,4 +510,50 @@ etfdt::protocol::ProtocolResponse handleDataAuditAppend(
     return successResponse(context, payload.str());
 }
 
+etfdt::protocol::ProtocolResponse handleAccountingHealth(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    const std::string payload = R"json({
+"module":"accounting",
+"healthy":true,
+"readOnly":true,
+"contractVersion":"0.3-draft",
+"calculationVersion":"not-implemented",
+"replayImplemented":false,
+"snapshotImplemented":false,
+"writeEnabled":false,
+"implementedActions":["accounting.health"],
+"futureActions":[
+"accounting.replay.preview",
+"position.list",
+"cash.summary",
+"portfolio.pnl.summary",
+"base_position.summary",
+"sniper_pool.summary"
+],
+"sourceOfTruth":"trade_log",
+"derivedTables":[
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary"
+],
+"boundaries":[
+"trade_log is the factual ledger",
+"snapshots are derived data",
+"this action does not replay accounting",
+"this action does not write database tables",
+"QML must not calculate accounting fields"
+],
+"warnings":[
+{"code":"REPLAY_NOT_IMPLEMENTED","message":"Accounting replay is not implemented yet.","blocking":false}
+],
+"errors":[]
+})json";
+
+    return successResponse(context, payload);
+}
+
 }  // namespace etfdt::data_service_api

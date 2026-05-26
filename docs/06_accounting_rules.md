@@ -120,3 +120,15 @@ principal_base =
 - The v0.3 position and accounting boundary is documented in [Position Accounting Boundary](20_position_accounting_boundary.md).
 - The future read-only DTO draft is documented in [Position Read-Only Data Contract Draft](21_position_readonly_data_contract_draft.md).
 - Current scope remains documentation-only: no `trade_log` writes, no snapshot writes, no schema changes, no accounting replay implementation.
+
+## TASK-048 accounting.health Boundary
+
+- `accounting.health` is a health and capability action, not accounting replay.
+- It does not read `trade_log` to calculate positions, cash, principal, cost,
+  PnL, base position, or sniper-pool state.
+- It does not write `trade_log`, `trade_execution_group`, `trade_draft`,
+  `cash_snapshot`, `position_snapshot`, `portfolio_summary`, or `audit_log`.
+- It returns `replayImplemented=false`, `snapshotImplemented=false`, and
+  `writeEnabled=false`.
+- Future accounting actions such as `position.list`, `cash.summary`, and
+  `portfolio.pnl.summary` still require separate task authorization and tests.

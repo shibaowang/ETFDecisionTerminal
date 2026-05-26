@@ -443,3 +443,67 @@ TradeDraft / 入账类：
 - E9000_SERVICE_ERROR
 - E9001_SERVICE_UNAVAILABLE
 - E9002_HEARTBEAT_TIMEOUT
+
+## TASK-048 accounting.health read-only action
+
+`accounting.health` is a DataService read-only action. It is a capability and
+boundary health check only. It does not run accounting replay, does not inspect
+`trade_log` for calculation, and does not write any database table.
+
+Response payload:
+
+```json
+{
+  "module": "accounting",
+  "healthy": true,
+  "readOnly": true,
+  "contractVersion": "0.3-draft",
+  "calculationVersion": "not-implemented",
+  "replayImplemented": false,
+  "snapshotImplemented": false,
+  "writeEnabled": false,
+  "implementedActions": ["accounting.health"],
+  "futureActions": [
+    "accounting.replay.preview",
+    "position.list",
+    "cash.summary",
+    "portfolio.pnl.summary",
+    "base_position.summary",
+    "sniper_pool.summary"
+  ],
+  "sourceOfTruth": "trade_log",
+  "derivedTables": [
+    "cash_snapshot",
+    "position_snapshot",
+    "portfolio_summary"
+  ],
+  "boundaries": [
+    "trade_log is the factual ledger",
+    "snapshots are derived data",
+    "this action does not replay accounting",
+    "this action does not write database tables",
+    "QML must not calculate accounting fields"
+  ],
+  "warnings": [
+    {
+      "code": "REPLAY_NOT_IMPLEMENTED",
+      "message": "Accounting replay is not implemented yet.",
+      "blocking": false
+    }
+  ],
+  "errors": []
+}
+```
+
+Boundary rules:
+
+- `healthy=true` means the health action itself is callable; it does not mean
+  replay, positions, cash, or PnL are implemented.
+- `replayImplemented=false`, `snapshotImplemented=false`, and
+  `writeEnabled=false` are required for the current implementation.
+- `implementedActions` currently contains only `accounting.health`.
+- `futureActions` are listed for contract planning only and are not registered
+  by this task.
+- The action must not call `data.audit.append` and must not write `audit_log`,
+  `trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+  `position_snapshot`, or `portfolio_summary`.

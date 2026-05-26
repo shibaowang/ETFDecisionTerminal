@@ -29,6 +29,7 @@ constexpr const char* kActionDataInstrumentsList = "data.instruments.list";
 constexpr const char* kActionDataStrategiesList = "data.strategies.list";
 constexpr const char* kActionDataOtcList = "data.otc.list";
 constexpr const char* kActionDataAuditAppend = "data.audit.append";
+constexpr const char* kActionAccountingHealth = "accounting.health";
 
 std::string nextId(std::string_view prefix)
 {
@@ -215,6 +216,12 @@ DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::li
     int timeoutMs)
 {
     return sendAction(kActionDataOtcList, objectWithStringField("strategyCode", strategyCode), timeoutMs);
+}
+
+DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::accountingHealth(
+    int timeoutMs)
+{
+    return sendAction(kActionAccountingHealth, "{}", timeoutMs);
 }
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::appendAuditDemo(

@@ -452,6 +452,30 @@ ShellServices ViewModel mapping is defined in
 [Position Shell ViewModel Design](25_position_shell_viewmodel_design.md) and
 [Position DTO ViewModel Mapping](26_position_dto_viewmodel_mapping.md).
 
+## TASK-048 Minimal Implemented Action Status
+
+`accounting.health` has been implemented as a minimal DataService read-only
+health action. It is part of this contract only as a capability and boundary
+status endpoint:
+
+- `replayImplemented=false`
+- `snapshotImplemented=false`
+- `writeEnabled=false`
+- `implementedActions=["accounting.health"]`
+- `warnings` includes `REPLAY_NOT_IMPLEMENTED`
+
+The following actions are still contract drafts and are not implemented:
+
+- `accounting.replay.preview`
+- `position.list`
+- `cash.summary`
+- `portfolio.pnl.summary`
+- `base_position.summary`
+- `sniper_pool.summary`
+
+`accounting.health` does not write `trade_log`, snapshots, or `audit_log`, and
+does not calculate accounting values.
+
 ## 18. Prohibited Scope
 
 - 不写 trade_log.

@@ -781,6 +781,14 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - ViewModel design: [Position Shell ViewModel Design](docs/25_position_shell_viewmodel_design.md).
 - DTO mapping: [Position DTO ViewModel Mapping](docs/26_position_dto_viewmodel_mapping.md).
 
+## TASK-048 Accounting Health Read-Only Action
+
+- `accounting.health` is now available as a minimal DataService read-only action.
+- It reports the accounting module boundary, contract version, read-only status, implemented action list, future action list, derived-table names, and `REPLAY_NOT_IMPLEMENTED` warning.
+- `accounting.health` does not implement accounting replay, position calculation, cash summary, PnL summary, base-position calculation, sniper-pool calculation, or snapshot generation.
+- It does not write `audit_log`, `trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`, `position_snapshot`, or `portfolio_summary`.
+- DataServiceClient exposes `accountingHealth()` as an explicit whitelist wrapper; no QML page is connected to it in this task.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

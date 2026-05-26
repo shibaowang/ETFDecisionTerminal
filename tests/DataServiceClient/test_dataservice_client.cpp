@@ -219,6 +219,27 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     }
 
     const int auditCountBefore = countRows(connection, "audit_log");
+    auto accountingHealth = client.accountingHealth();
+    expectSuccessfulResponse(accountingHealth, "client.accountingHealth");
+    if (accountingHealth) {
+        const auto payload = payloadObject(accountingHealth.value());
+        expectEqual(payload.value("module").toString().toStdString(), "accounting", "accountingHealth module");
+        expectTrue(payload.value("readOnly").toBool(false), "accountingHealth readOnly=true");
+        expectTrue(
+            !payload.value("replayImplemented").toBool(true),
+            "accountingHealth replayImplemented=false");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "accountingHealth writeEnabled=false");
+        const auto warnings = payload.value("warnings").toArray();
+        const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
+            return value.toObject().value("code").toString() == "REPLAY_NOT_IMPLEMENTED";
+        });
+        expectTrue(hasReplayWarning, "accountingHealth warnings include REPLAY_NOT_IMPLEMENTED");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "accountingHealth does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";
@@ -269,11 +290,11 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
 
     client.disconnect();
     expectTrue(!client.isConnected(), "client disconnects");
-    auto afterDisconnect = client.ping(100);
-    expectTrue(!afterDisconnect.hasValue(), "send after disconnect returns error");
+    auto afterDisconnect = client.accountingHealth(100);
+    expectTrue(!afterDisconnect.hasValue(), "accountingHealth after disconnect returns error");
     expectTrue(
         afterDisconnect.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "send after disconnect returns E9001");
+        "accountingHealth after disconnect returns E9001");
 
     host.close();
 

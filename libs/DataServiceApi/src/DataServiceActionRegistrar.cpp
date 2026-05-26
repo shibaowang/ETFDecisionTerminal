@@ -30,6 +30,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionDataOtcList, [&connection](const auto& context) {
         return handleDataOtcList(context, connection);
     });
+    (void)dispatcher.registerAction(kActionAccountingHealth, [&connection](const auto& context) {
+        return handleAccountingHealth(context, connection);
+    });
 }
 
 void registerDataServiceWriteActions(

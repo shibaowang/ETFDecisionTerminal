@@ -243,3 +243,5 @@ v0.1 草案。
 - Do not change fixture expected outputs to make an incorrect replay algorithm pass.
 - Any fixture expected-output change must be explicitly justified as a contract correction.
 - `tests/AccountingFixtures/validate_accounting_replay_fixtures.py` is static validation only and does not replace replay calculation tests.
+- Replay implementation tasks must not bypass `tests/AccountingFixtures/AccountingFixtureLoader` or an explicitly compatible fixture loader.
+- Fixture loader / parser tasks must stay read-only and must not implement replay, cash calculation, position calculation, PnL calculation, SQLite access, service calls, or output writes.

@@ -29,6 +29,9 @@ def main() -> int:
     accounting_fixture_validator_path = (
         root / "tests" / "AccountingFixtures" / "validate_accounting_replay_fixtures.py"
     )
+    accounting_fixture_loader_header_path = root / "tests" / "AccountingFixtures" / "AccountingFixtureLoader.h"
+    accounting_fixture_loader_source_path = root / "tests" / "AccountingFixtures" / "AccountingFixtureLoader.cpp"
+    accounting_fixture_loader_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_fixture_loader.cpp"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -56,6 +59,9 @@ def main() -> int:
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
     require(accounting_fixture_index_path.exists(), "accounting replay fixture index exists")
     require(accounting_fixture_validator_path.exists(), "accounting replay fixture validator exists")
+    require(accounting_fixture_loader_header_path.exists(), "accounting fixture loader header exists")
+    require(accounting_fixture_loader_source_path.exists(), "accounting fixture loader source exists")
+    require(accounting_fixture_loader_test_path.exists(), "accounting fixture loader test exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -80,6 +86,9 @@ def main() -> int:
     position_mapping = position_mapping_path.read_text(encoding="utf-8")
     accounting_fixture_index = accounting_fixture_index_path.read_text(encoding="utf-8")
     accounting_fixture_validator = accounting_fixture_validator_path.read_text(encoding="utf-8")
+    accounting_fixture_loader_header = accounting_fixture_loader_header_path.read_text(encoding="utf-8")
+    accounting_fixture_loader_source = accounting_fixture_loader_source_path.read_text(encoding="utf-8")
+    accounting_fixture_loader_test = accounting_fixture_loader_test_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -130,6 +139,7 @@ def main() -> int:
         "README links accounting replay fixture samples",
     )
     require("tests/fixtures/accounting_replay" in readme, "README links accounting replay fixture files")
+    require("AccountingFixtureLoader" in readme, "README documents accounting fixture loader")
     require(
         "25_position_shell_viewmodel_design.md" in readme,
         "README links position Shell ViewModel design",
@@ -254,6 +264,7 @@ def main() -> int:
     require("23_position_accounting_test_fixture_design.md" in docs_index, "docs index links position fixture design")
     require("24_accounting_replay_fixture_samples.md" in docs_index, "docs index links accounting fixture samples")
     require("tests/fixtures/accounting_replay" in docs_index, "docs index links accounting replay fixture files")
+    require("tests/AccountingFixtures" in docs_index, "docs index links accounting fixture loader")
     require("25_position_shell_viewmodel_design.md" in docs_index, "docs index links position ViewModel design")
     require("26_position_dto_viewmodel_mapping.md" in docs_index, "docs index links position DTO mapping")
 
@@ -415,6 +426,10 @@ def main() -> int:
         "tests/fixtures/accounting_replay" in accounting_fixture_samples,
         "fixture samples doc links static fixture files",
     )
+    require("AccountingFixtureLoader" in accounting_fixture_samples, "fixture samples doc documents loader")
+    require("does not calculate cash balances" in accounting_fixture_samples, "fixture samples doc states loader does not calculate")
+    require("does not access SQLite" in accounting_fixture_samples, "fixture samples doc states loader does not access SQLite")
+    require("does not call DataService" in accounting_fixture_samples, "fixture samples doc states loader does not call service")
 
     require("ShellPositionListModel" in position_viewmodel_design, "ViewModel design includes ShellPositionListModel")
     require("ShellCashSummaryObject" in position_viewmodel_design, "ViewModel design includes ShellCashSummaryObject")
@@ -495,6 +510,25 @@ def main() -> int:
     require("sqlite" in accounting_fixture_validator.lower(), "fixture validator mentions SQLite boundary")
     require("forbidden" in accounting_fixture_validator, "fixture validator checks forbidden tokens")
     require("EXPECTED_ERROR_CODES" in accounting_fixture_validator, "fixture validator checks error fixture codes")
+    require("AccountingFixtureLoader" in accounting_fixture_loader_header, "loader header declares AccountingFixtureLoader")
+    require("loadIndex" in accounting_fixture_loader_header, "loader header declares loadIndex")
+    require("loadAll" in accounting_fixture_loader_header, "loader header declares loadAll")
+    require("fixtureById" in accounting_fixture_loader_header, "loader header declares fixtureById")
+    require("fixtureIds" in accounting_fixture_loader_header, "loader header declares fixtureIds")
+    require("validateFixtureStructure" in accounting_fixture_loader_header, "loader header declares fixture structure validation")
+    require("QJsonDocument" in accounting_fixture_loader_source, "loader source uses Qt JSON parser")
+    require("SELL_EXCEEDS_POSITION" in accounting_fixture_loader_source, "loader validates sell exceeds issue")
+    require("MISSING_FEE" in accounting_fixture_loader_source, "loader validates missing fee issue")
+    require("NEGATIVE_CASH" in accounting_fixture_loader_source, "loader validates negative cash issue")
+    require("SNAPSHOT_STALE" in accounting_fixture_loader_source, "loader validates stale snapshot issue")
+    require("MARKET_PRICE_MISSING" in accounting_fixture_loader_source, "loader validates missing market price issue")
+    require("MULTI_CURRENCY_UNSUPPORTED" in accounting_fixture_loader_source, "loader validates multi-currency issue")
+    require("DataService" not in accounting_fixture_loader_source, "loader source does not call DataService")
+    require("sqlite" not in accounting_fixture_loader_source.lower(), "loader source does not access SQLite")
+    require("loadAll" in accounting_fixture_loader_test, "loader test covers loadAll")
+    require("FX001_EMPTY_LEDGER" in accounting_fixture_loader_test, "loader test covers FX001")
+    require("FX013_MULTI_CURRENCY_UNSUPPORTED" in accounting_fixture_loader_test, "loader test covers FX013")
+    require("accounting_replay_fixture_loader" in (root / "tests" / "AccountingFixtures" / "CMakeLists.txt").read_text(encoding="utf-8"), "CTest includes fixture loader test")
     return 0
 
 

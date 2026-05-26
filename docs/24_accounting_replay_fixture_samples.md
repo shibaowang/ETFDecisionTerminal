@@ -1010,3 +1010,24 @@ Current validation is static only. It does not calculate cash, position, PnL,
 base-position, or sniper-pool values; it does not access SQLite; it does not
 call DataService; it does not depend on external market data; and it does not
 implement accounting replay.
+
+## 9. TASK-051 Static Fixture Loader Boundary
+
+`tests/AccountingFixtures/AccountingFixtureLoader` provides a test-support-only
+C++ loader for the static fixture files.
+
+- It reads `tests/fixtures/accounting_replay/fixtures_index.json`.
+- It loads FX001-FX013 JSON fixture files.
+- It parses `tradeFacts`, `cashFacts`, `marketPriceFacts`, `expectedOutputs`,
+  `expectedIssues`, `blocking`, and `notes` into in-memory structures.
+- It validates fixture IDs, missing files, JSON shape, empty
+  `externalDependencies`, required `expectedOutputs`, and required issue codes
+  for error fixtures.
+- It exposes read-only access through `fixtureIds()` and `fixtureById()`.
+
+The loader is not a replay implementation. It does not calculate cash balances,
+position quantities, cost basis, PnL, base-position status, or sniper-pool
+tiers. It does not access SQLite, does not call DataService, does not use
+external market data, and does not write files. Future replay implementation
+must use this loader or a compatible fixture contract instead of bypassing the
+fixture set.

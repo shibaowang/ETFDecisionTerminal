@@ -1553,6 +1553,116 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx010SniperTi
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx011StaleSnapshotResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX011_STALE_SNAPSHOT") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx011StaleSnapshot,
+            "FX011 stale-snapshot assertion only accepts FX011_STALE_SNAPSHOT.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusStale) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx011StaleSnapshot,
+            "FX011 replay result must be implemented=true, replayExecuted=true, and status=STALE.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto expectedIssue = std::find_if(
+        fixture.expectedIssues.begin(),
+        fixture.expectedIssues.end(),
+        [](const AccountingExpectedIssue& issue) { return issue.code == "SNAPSHOT_STALE"; });
+    if (expectedIssue == fixture.expectedIssues.end()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx011StaleSnapshot,
+            "FX011 fixture expectedIssues must contain SNAPSHOT_STALE.",
+            false,
+            {"expectedIssues.SNAPSHOT_STALE"});
+    }
+
+    bool hasSnapshotStale = false;
+    bool blockingMatches = false;
+    for (const auto& issue : result.issues) {
+        if (issue.code == "SNAPSHOT_STALE") {
+            hasSnapshotStale = true;
+            blockingMatches = issue.blocking == expectedIssue->blocking;
+        }
+    }
+    if (!hasSnapshotStale || !blockingMatches) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx011StaleSnapshot,
+            "FX011 must contain SNAPSHOT_STALE with blocking matching the fixture expected issue.",
+            false,
+            {"issues.SNAPSHOT_STALE"});
+    }
+
+    if (!hasEmptyReplayOutputs(result)) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx011StaleSnapshot,
+            "FX011 stale snapshot result must not carry normal position, cash, PnL, base, or sniper outputs.",
+            false,
+            {
+                "positionListResponseRaw",
+                "cashSummaryRaw",
+                "portfolioPnlRaw",
+                "basePositionRaw",
+                "sniperPoolRaw",
+            });
+    }
+
+    if (result.message.find("not used as a fact source") == std::string::npos) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx011StaleSnapshot,
+            "FX011 result message must state that the stale snapshot is not used as a fact source.",
+            false,
+            {"message"});
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx011StaleSnapshot,
+        "FX011 stale-snapshot replay result reports SNAPSHOT_STALE without normal replay outputs.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "issues.SNAPSHOT_STALE",
+            "rawOutputs",
+            "message",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

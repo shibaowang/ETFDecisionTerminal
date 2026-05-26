@@ -296,3 +296,8 @@ v0.1 草案。
 - Sniper tier completion must come from BUY fact aggregation or explicit fixture input metadata, not current market value.
 - Sniper pool amount must not expand or shrink with floating profit or loss.
 - Every new replay task after FX010 must preserve FX001-FX010 tests and keep FX011-FX013 explicitly guarded until their own task is authorized.
+- After FX011, do not jump directly to multi-currency, real market valuation, strategy execution, automatic trading, or snapshot write paths.
+- FX012 missing market price handling must remain a separate task.
+- Stale snapshots must not be treated as fact sources.
+- Stale snapshot handling must not write, refresh, or generate `position_snapshot`, `cash_snapshot`, or `portfolio_summary`.
+- Every new replay task after FX011 must preserve FX001-FX011 tests and keep FX012-FX013 explicitly guarded until their own task is authorized.

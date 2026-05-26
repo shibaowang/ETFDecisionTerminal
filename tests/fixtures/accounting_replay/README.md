@@ -91,3 +91,10 @@ derived from BUY fact aggregation, not current market value; the 80% pool does
 not expand or shrink with floating profit or loss. The remaining amount is
 display-only and is not a buy suggestion, sell suggestion, TradeDraft, strategy
 command, or broker order. FX011-FX013 remain `NOT_IMPLEMENTED`.
+
+`AccountingReplayMinimalEngine` now also supports `FX011_STALE_SNAPSHOT`,
+returning `status=STALE` with a blocking `SNAPSHOT_STALE` issue. Snapshot facts
+are stale cache metadata, not accounting fact sources. The minimal path does not
+generate normal position, cash, PnL, base-position, or sniper-pool outputs, does
+not write snapshots, and does not create new snapshot rows. FX012-FX013 remain
+`NOT_IMPLEMENTED`.

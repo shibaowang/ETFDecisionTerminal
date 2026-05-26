@@ -280,6 +280,7 @@ bool AccountingFixtureLoader::loadFixture(
         parseObjectArray<AccountingMarketPriceFact>(
             inputFacts.value("marketPriceFacts").toArray(),
             parseMarketPriceFact),
+        inputFacts.value("snapshotFacts").toArray(),
         expectedOutputs,
         parseObjectArray<AccountingExpectedIssue>(object.value("expectedIssues").toArray(), parseIssue),
         object.value("blocking").toBool(false),

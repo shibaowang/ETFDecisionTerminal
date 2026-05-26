@@ -936,6 +936,18 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - FX011-FX013 still return `NOT_IMPLEMENTED`.
 - Minimal FX010 CTest: `accounting_replay_minimal_fx010`.
 
+## TASK-065 Accounting Replay Minimal FX011
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through `FX011_STALE_SNAPSHOT`.
+- FX011 only detects stale snapshot metadata and reports `SNAPSHOT_STALE`.
+- FX011 returns `implemented=true`, `replayExecuted=true`, `status=STALE`, and a blocking `SNAPSHOT_STALE` issue matching the fixture contract.
+- Stale snapshot input is treated as derived cache metadata, not a fact source.
+- FX011 does not produce normal position, cash, PnL, base-position, or sniper-pool success outputs.
+- FX011 does not generate or write snapshots, does not refresh snapshots, and does not write `position_snapshot`, `cash_snapshot`, or `portfolio_summary`.
+- FX012-FX013 still return `NOT_IMPLEMENTED`.
+- This does not implement missing market price replay, multi-currency replay, real market valuation, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- Minimal FX011 CTest: `accounting_replay_minimal_fx011`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

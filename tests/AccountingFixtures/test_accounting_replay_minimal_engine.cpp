@@ -36,6 +36,7 @@ using etfdt::tests::accounting::kAssertionPassFx009BasePositionLocked;
 using etfdt::tests::accounting::kAssertionPassFx010SniperTierCompleted;
 using etfdt::tests::accounting::kAssertionPassFx011StaleSnapshot;
 using etfdt::tests::accounting::kAssertionPassFx012MissingMarketPrice;
+using etfdt::tests::accounting::kAssertionPassFx013MultiCurrencyUnsupported;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
@@ -123,6 +124,7 @@ int main(int argc, char** argv)
     const auto fx010 = requireValue(harness.fixtureByIdForTest("FX010_SNIPER_TIER_COMPLETED"), "FX010 fixture exists");
     const auto fx011 = requireValue(harness.fixtureByIdForTest("FX011_STALE_SNAPSHOT"), "FX011 fixture exists");
     const auto fx012 = requireValue(harness.fixtureByIdForTest("FX012_MISSING_MARKET_PRICE"), "FX012 fixture exists");
+    const auto fx013 = requireValue(harness.fixtureByIdForTest("FX013_MULTI_CURRENCY_UNSUPPORTED"), "FX013 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
@@ -137,7 +139,7 @@ int main(int argc, char** argv)
     require(engine.supportsFixture("FX010_SNIPER_TIER_COMPLETED"), "minimal engine supports FX010");
     require(engine.supportsFixture("FX011_STALE_SNAPSHOT"), "minimal engine supports FX011");
     require(engine.supportsFixture("FX012_MISSING_MARKET_PRICE"), "minimal engine supports FX012");
-    require(!engine.supportsFixture("FX013_MULTI_CURRENCY_UNSUPPORTED"), "minimal engine does not support FX013");
+    require(engine.supportsFixture("FX013_MULTI_CURRENCY_UNSUPPORTED"), "minimal engine supports FX013");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -388,6 +390,17 @@ int main(int argc, char** argv)
     require(!hasBasePosition(fx012Direct), "FX012 does not implement basePositionRaw");
     require(!hasSniperPool(fx012Direct), "FX012 does not implement sniperPoolRaw");
 
+    const auto fx013Direct = engine.replayFixture(fx013);
+    require(fx013Direct.implemented, "FX013 direct replay implemented=true");
+    require(fx013Direct.replayExecuted, "FX013 direct replayExecuted=true");
+    require(fx013Direct.status == kReplayStatusError, "FX013 direct status=ERROR");
+    require(hasReplayIssueCode(fx013Direct, "MULTI_CURRENCY_UNSUPPORTED"), "FX013 issues contain MULTI_CURRENCY_UNSUPPORTED");
+    require(hasReplayIssueCode(fx013Direct, "FX_RATE_MISSING"), "FX013 issues contain FX_RATE_MISSING");
+    require(hasBlockingIssueCode(fx013Direct, "MULTI_CURRENCY_UNSUPPORTED"), "FX013 MULTI_CURRENCY_UNSUPPORTED is blocking");
+    require(hasBlockingIssueCode(fx013Direct, "FX_RATE_MISSING"), "FX013 FX_RATE_MISSING is blocking");
+    require(hasEmptyReplayOutputs(fx013Direct), "FX013 does not generate normal raw outputs");
+    require(fx013Direct.message.find("No FX conversion") != std::string::npos, "FX013 does not perform FX conversion");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -507,6 +520,17 @@ int main(int argc, char** argv)
     require(fx012Assertion.passed, "FX012 missing-market-price assertion passes");
     require(fx012Assertion.status == kAssertionPassFx012MissingMarketPrice, "FX012 assertion status is PASS_FX012_MISSING_MARKET_PRICE");
 
+    const auto fx013Harness = requireResult(harness, "FX013_MULTI_CURRENCY_UNSUPPORTED");
+    require(fx013Harness.status == kReplayStatusError, "minimal harness FX013 status=ERROR");
+    require(fx013Harness.implemented, "minimal harness FX013 implemented=true");
+    require(fx013Harness.replayExecuted, "minimal harness FX013 replayExecuted=true");
+    require(hasBlockingIssueCode(fx013Harness, "MULTI_CURRENCY_UNSUPPORTED"), "minimal harness FX013 has blocking MULTI_CURRENCY_UNSUPPORTED");
+    require(hasBlockingIssueCode(fx013Harness, "FX_RATE_MISSING"), "minimal harness FX013 has blocking FX_RATE_MISSING");
+    require(hasEmptyReplayOutputs(fx013Harness), "minimal harness FX013 keeps raw outputs empty");
+    const auto fx013Assertion = assertions.assertFx013MultiCurrencyUnsupportedResult(fx013, fx013Harness);
+    require(fx013Assertion.passed, "FX013 multi-currency unsupported assertion passes");
+    require(fx013Assertion.status == kAssertionPassFx013MultiCurrencyUnsupported, "FX013 assertion status is PASS_FX013_MULTI_CURRENCY_UNSUPPORTED");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -578,6 +602,15 @@ int main(int argc, char** argv)
             require(hasPositionListResponse(result), "FX012 keeps quantity/cost position output in minimal loop");
             continue;
         }
+        if (fixtureId == "FX013_MULTI_CURRENCY_UNSUPPORTED") {
+            require(result.status == kReplayStatusError, "FX013 remains ERROR in minimal loop");
+            require(result.implemented, "FX013 remains implemented=true in minimal loop");
+            require(result.replayExecuted, "FX013 remains replayExecuted=true in minimal loop");
+            require(hasBlockingIssueCode(result, "MULTI_CURRENCY_UNSUPPORTED"), "FX013 keeps blocking MULTI_CURRENCY_UNSUPPORTED in minimal loop");
+            require(hasBlockingIssueCode(result, "FX_RATE_MISSING"), "FX013 keeps blocking FX_RATE_MISSING in minimal loop");
+            require(hasEmptyReplayOutputs(result), "FX013 keeps raw outputs empty in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -587,6 +620,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009/FX010/FX011/FX012 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009/FX010/FX011/FX012/FX013 tests passed\n";
     return 0;
 }

@@ -1482,7 +1482,8 @@ detection path through `AccountingReplayMinimalEngine`.
 - FX012 does not fabricate `unrealizedPnlText`.
 - FX012 does not query real market data, does not call any market service, and
   does not perform network requests.
-- `FX013_MULTI_CURRENCY_UNSUPPORTED` still returns `NOT_IMPLEMENTED`.
+- `FX013_MULTI_CURRENCY_UNSUPPORTED` is implemented in a later test-only
+  minimal replay task.
 
 This implementation is intentionally limited to detecting missing market price
 for the FX012 fixture while preserving quantity and cost display. It does not
@@ -1491,6 +1492,37 @@ access, DataService calls, market service calls, network access, output file
 writes, database writes, TradeDraft generation, strategy execution, or
 DataService actions. Future implementation must add one fixture at a time
 without changing fixture expected outputs to fit an incorrect algorithm.
+
+## 25. TASK-067 Minimal FX013 Multi-Currency Unsupported Replay
+
+`FX013_MULTI_CURRENCY_UNSUPPORTED` now has a test-only minimal replay path
+through `AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER` through `FX012_MISSING_MARKET_PRICE` keep their prior
+  minimal replay behavior.
+- `FX013_MULTI_CURRENCY_UNSUPPORTED` returns `implemented=true`.
+- `FX013_MULTI_CURRENCY_UNSUPPORTED` returns `replayExecuted=true`.
+- `FX013_MULTI_CURRENCY_UNSUPPORTED` returns `status=ERROR`.
+- FX013 reports blocking `MULTI_CURRENCY_UNSUPPORTED` and `FX_RATE_MISSING`
+  issues, matching the fixture expected issues.
+- FX013 detects CNY plus non-CNY facts without an FX policy.
+- FX013 does not perform FX conversion.
+- FX013 does not fabricate `totalAssetsText`.
+- FX013 does not fabricate `marketValueText`.
+- FX013 does not fabricate `unrealizedPnlText`.
+- FX013 does not fabricate `totalReturnRatioText`.
+- FX013 does not query FX services, does not query market services, and does
+  not perform network requests.
+- FX001-FX013 fixture coverage is now complete for the test-only minimal
+  engine, but production accounting replay is still not complete.
+
+This implementation is intentionally limited to detecting unsupported
+multi-currency replay for the FX013 fixture. It does not implement FX rate
+lookup, FX conversion, multi-currency portfolio valuation, real market
+valuation, unrealized PnL, SQLite access, DataService calls, output file
+writes, database writes, TradeDraft generation, strategy execution, or
+DataService actions. Future production implementation must still be separately
+authorized.
 
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account

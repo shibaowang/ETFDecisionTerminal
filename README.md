@@ -849,6 +849,14 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This remains test-only and does not access SQLite, call DataService, write output files, write database tables, or add DataService actions.
 - Minimal FX001 CTest: `accounting_replay_minimal_fx001`.
 
+## TASK-056 Accounting Replay Minimal FX002
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` and `FX002_SINGLE_BUY`.
+- FX002 returns `implemented=true`, `replayExecuted=true`, `status=OK`, one `159509` position with `quantityText=1000`, `costAmountText=1001.00 CNY`, and `cashBalanceText=98999.00 CNY`.
+- FX003-FX013 still return `NOT_IMPLEMENTED`.
+- This does not implement sell replay, realized / unrealized PnL, market valuation, base-position, sniper-pool, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- Minimal FX002 CTest: `accounting_replay_minimal_fx002`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

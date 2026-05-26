@@ -3,6 +3,7 @@
 #include "AccountingExpectedOutputInspector.h"
 
 #include <QJsonArray>
+#include <QJsonObject>
 #include <QJsonValue>
 
 #include <utility>
@@ -212,6 +213,136 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx001EmptyLed
             "status",
             "positionListResponseRaw.positions",
             "cashSummaryRaw",
+            "portfolioPnlRaw",
+            "issues",
+        });
+}
+
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx002SingleBuyResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX002_SINGLE_BUY") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 single-buy assertion only accepts FX002_SINGLE_BUY.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusOk) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 replay result must be implemented=true, replayExecuted=true, and status=OK.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto expectedPositions = fixture.expectedOutputsRawJson.value("positionSummaries");
+    const auto expectedCash = fixture.expectedOutputsRawJson.value("cashSummary");
+    if (!expectedPositions.isArray() || expectedPositions.toArray().size() != 1 || !expectedCash.isObject()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 fixture expected output must contain one position and one cash summary.",
+            false,
+            {"expectedOutputs.positionSummaries", "expectedOutputs.cashSummary"});
+    }
+
+    const auto expectedPosition = expectedPositions.toArray().first().toObject();
+    const auto expectedCashSummary = expectedCash.toObject();
+    const auto positionsValue = result.positionListResponseRaw.value("positions");
+    if (!positionsValue.isArray() || positionsValue.toArray().size() != 1) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 positionListResponseRaw.positions must contain exactly one position.",
+            false,
+            {"positionListResponseRaw.positions"});
+    }
+
+    const auto position = positionsValue.toArray().first().toObject();
+    const auto instrumentCode = position.value("instrumentCode").toString();
+    const auto quantityText = position.value("quantityText").toString();
+    const auto costAmountText = position.value("costAmountText").toString();
+    const auto expectedCostAmountText = expectedPosition.value("costAmountText").toString();
+    if (instrumentCode != "159509" || quantityText != "1000" || costAmountText != expectedCostAmountText) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 position output must contain 159509, quantityText=1000, and expected costAmountText.",
+            false,
+            {"instrumentCode", "quantityText", "costAmountText"});
+    }
+
+    if (result.cashSummaryRaw.isEmpty() || result.portfolioPnlRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 must include cashSummaryRaw and portfolioPnlRaw.",
+            false,
+            {"cashSummaryRaw", "portfolioPnlRaw"});
+    }
+
+    const auto cashBalanceText = result.cashSummaryRaw.value("cashBalanceText").toString();
+    const auto expectedCashBalanceText = expectedCashSummary.value("cashBalanceText").toString();
+    if (cashBalanceText != expectedCashBalanceText) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx002SingleBuy,
+            "FX002 cashSummaryRaw.cashBalanceText must match fixture expected output.",
+            false,
+            {"cashSummaryRaw.cashBalanceText"});
+    }
+
+    for (const auto& issue : result.issues) {
+        if (issue.blocking) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx002SingleBuy,
+                "FX002 single buy result must not contain blocking issues.",
+                false,
+                {"issues"});
+        }
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx002SingleBuy,
+        "FX002 single-buy replay result contains the expected minimal position and cash outputs.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "positionListResponseRaw.positions",
+            "instrumentCode",
+            "quantityText",
+            "costAmountText",
+            "cashSummaryRaw.cashBalanceText",
             "portfolioPnlRaw",
             "issues",
         });

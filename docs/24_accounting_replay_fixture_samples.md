@@ -1120,3 +1120,29 @@ basis, PnL, base-position, sniper-pool, market price valuation, SQLite access,
 DataService calls, file writes, database writes, or DataService actions. Future
 replay work must add one fixture at a time and must keep earlier fixture tests
 passing without changing fixture expected outputs to fit an incorrect algorithm.
+
+## 14. TASK-056 Minimal FX002 Single-Buy Replay
+
+`FX002_SINGLE_BUY` now has a test-only minimal replay implementation through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER` and `FX002_SINGLE_BUY` are the only fixtures with
+  `implemented=true`.
+- `FX001_EMPTY_LEDGER` and `FX002_SINGLE_BUY` are the only fixtures with
+  `replayExecuted=true`.
+- `FX002_SINGLE_BUY` returns `status=OK`.
+- `FX002_SINGLE_BUY` returns one `159509` position with `quantityText=1000`.
+- `FX002_SINGLE_BUY` uses the fixture proposed standard that buy cost includes
+  fee, so `costAmountText=1001.00 CNY`.
+- `FX002_SINGLE_BUY` returns `cashBalanceText=98999.00 CNY`.
+- `FX003_BUY_SELL_PARTIAL` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still
+  return `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to a single BUY fact and one
+initial cash fact. It does not implement sell replay, partial sells, realized
+PnL, unrealized PnL, market valuation, multi-instrument replay, multi-account
+replay, missing-fee errors, negative-cash errors, oversell errors,
+base-position calculation, sniper-pool calculation, SQLite access, DataService
+calls, file writes, database writes, or DataService actions. Future replay work
+must continue one fixture at a time and keep FX001/FX002 tests passing without
+changing fixture expected outputs to fit an incorrect algorithm.

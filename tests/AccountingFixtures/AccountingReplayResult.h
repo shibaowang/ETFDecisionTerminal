@@ -8,6 +8,7 @@
 namespace etfdt::tests::accounting {
 
 inline constexpr const char* kReplayStatusNotImplemented = "NOT_IMPLEMENTED";
+inline constexpr const char* kReplayStatusOk = "OK";
 inline constexpr const char* kReplayStatusInvalidFixture = "INVALID_FIXTURE";
 inline constexpr const char* kReplayStatusUnsupported = "UNSUPPORTED";
 inline constexpr const char* kReplayStatusError = "ERROR";
@@ -48,5 +49,10 @@ struct AccountingReplayResult {
 
 [[nodiscard]] bool hasReplayIssueCode(const AccountingReplayResult& result, const std::string& code);
 [[nodiscard]] bool hasEmptyReplayOutputs(const AccountingReplayResult& result);
+[[nodiscard]] bool hasPositionListResponse(const AccountingReplayResult& result);
+[[nodiscard]] bool hasCashSummary(const AccountingReplayResult& result);
+[[nodiscard]] bool hasPortfolioPnl(const AccountingReplayResult& result);
+[[nodiscard]] bool hasBasePosition(const AccountingReplayResult& result);
+[[nodiscard]] bool hasSniperPool(const AccountingReplayResult& result);
 
 } // namespace etfdt::tests::accounting

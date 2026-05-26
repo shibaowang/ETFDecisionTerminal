@@ -14,6 +14,7 @@ class AccountingReplayTestHarness {
 public:
     [[nodiscard]] bool loadFixtures(const std::filesystem::path& fixturesDir);
     [[nodiscard]] bool runAll();
+    [[nodiscard]] bool runAllWithMinimalEngine();
 
     [[nodiscard]] std::optional<AccountingReplayResult> resultForFixture(const std::string& fixtureId) const;
     [[nodiscard]] std::optional<AccountingFixture> fixtureByIdForTest(const std::string& fixtureId) const;

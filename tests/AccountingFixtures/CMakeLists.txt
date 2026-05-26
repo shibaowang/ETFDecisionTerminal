@@ -9,6 +9,7 @@ add_executable(AccountingReplayHarnessTests
     AccountingFixtureLoader.cpp
     AccountingReplayResult.cpp
     AccountingReplayResultMapper.cpp
+    AccountingReplayMinimalEngine.cpp
     AccountingReplayStubEngine.cpp
     AccountingReplayTestHarness.cpp
     test_accounting_replay_harness.cpp
@@ -25,11 +26,24 @@ add_executable(AccountingReplayAssertionTests
     AccountingFixtureLoader.cpp
     AccountingReplayResult.cpp
     AccountingReplayResultMapper.cpp
+    AccountingReplayMinimalEngine.cpp
     AccountingReplayStubEngine.cpp
     AccountingReplayTestHarness.cpp
     AccountingExpectedOutputInspector.cpp
     AccountingReplayAssertionSkeleton.cpp
     test_accounting_replay_assertions.cpp
+)
+
+add_executable(AccountingReplayMinimalFx001Tests
+    AccountingFixtureLoader.cpp
+    AccountingReplayResult.cpp
+    AccountingReplayResultMapper.cpp
+    AccountingReplayMinimalEngine.cpp
+    AccountingReplayStubEngine.cpp
+    AccountingReplayTestHarness.cpp
+    AccountingExpectedOutputInspector.cpp
+    AccountingReplayAssertionSkeleton.cpp
+    test_accounting_replay_minimal_engine.cpp
 )
 
 target_link_libraries(AccountingFixtureLoaderTests
@@ -48,6 +62,11 @@ target_link_libraries(AccountingReplayResultTests
 )
 
 target_link_libraries(AccountingReplayAssertionTests
+    PRIVATE
+        Qt6::Core
+)
+
+target_link_libraries(AccountingReplayMinimalFx001Tests
     PRIVATE
         Qt6::Core
 )
@@ -105,5 +124,16 @@ add_test(
 )
 
 set_tests_properties(accounting_replay_expected_output_assertions PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME accounting_replay_minimal_fx001
+    COMMAND
+        AccountingReplayMinimalFx001Tests
+        ${PROJECT_SOURCE_DIR}/tests/fixtures/accounting_replay
+)
+
+set_tests_properties(accounting_replay_minimal_fx001 PROPERTIES
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

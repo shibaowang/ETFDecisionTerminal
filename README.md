@@ -840,6 +840,15 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - The assertion skeleton covers FX001-FX013 and must not be removed or bypassed by future replay work.
 - Expected-output assertion CTest: `accounting_replay_expected_output_assertions`.
 
+## TASK-055 Accounting Replay Minimal FX001
+
+- `tests/AccountingFixtures/AccountingReplayMinimalEngine` is a test-only minimal replay engine.
+- It supports only `FX001_EMPTY_LEDGER`; FX001 returns `implemented=true`, `replayExecuted=true`, `status=OK`, empty `positions`, and zero cash / PnL summary raw objects.
+- `FX002` through `FX013` still return `NOT_IMPLEMENTED`; buy, sell, cost, cash-flow, PnL, base-position, and sniper-pool replay are not implemented.
+- `AccountingReplayTestHarness::runAllWithMinimalEngine()` runs all FX001-FX013 fixtures through the minimal mode while preserving full fixture coverage.
+- This remains test-only and does not access SQLite, call DataService, write output files, write database tables, or add DataService actions.
+- Minimal FX001 CTest: `accounting_replay_minimal_fx001`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

@@ -1,5 +1,7 @@
 #include "AccountingReplayTestHarness.h"
 
+#include "AccountingReplayMinimalEngine.h"
+
 #include <algorithm>
 
 namespace etfdt::tests::accounting {
@@ -36,6 +38,29 @@ bool AccountingReplayTestHarness::runAll()
             return false;
         }
         results_.push_back(engine_.previewFixture(*fixture));
+    }
+
+    return true;
+}
+
+bool AccountingReplayTestHarness::runAllWithMinimalEngine()
+{
+    results_.clear();
+    lastError_.clear();
+
+    if (fixtureIds_.empty()) {
+        lastError_ = "No fixtures are loaded.";
+        return false;
+    }
+
+    AccountingReplayMinimalEngine minimalEngine;
+    for (const auto& fixtureId : fixtureIds_) {
+        const auto fixture = loader_.fixtureById(fixtureId);
+        if (!fixture.has_value()) {
+            lastError_ = "Loaded fixture id cannot be resolved: " + fixtureId;
+            return false;
+        }
+        results_.push_back(minimalEngine.replayFixture(*fixture));
     }
 
     return true;

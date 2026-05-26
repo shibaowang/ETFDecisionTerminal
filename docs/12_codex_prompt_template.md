@@ -221,3 +221,7 @@ v0.1 草案。
 - Default scope is no automatic trading, no broker API, no real order placement, and no TradeDraft generation.
 - Future write-capable accounting tasks require explicit authorization, transaction rules, audit rules, rollback rules, and tests.
 - Future read-only position pages must bind Controller / ViewModel / Model objects and must not directly call `DataServiceClient` or access SQLite.
+- Accounting DTO / data contract tasks are documentation-only unless explicitly authorized to implement code.
+- Accounting replay implementation tasks must first reference the fixture design and list exact fixture coverage.
+- Default scope is no snapshot writes and no `trade_log` writes.
+- Default scope is no QML accounting calculation.

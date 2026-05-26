@@ -221,3 +221,9 @@ These are planning suggestions only and do not implement code:
 - TASK-048: DataService accounting health read-only action
 - TASK-049: Position page mock UI
 - TASK-050: Position replay implementation, separate authorization required
+
+## Follow-up Contract References
+
+- Detailed stable data contract: [Position Accounting Data Contract](22_position_accounting_data_contract.md).
+- Future replay fixture design: [Position Accounting Test Fixture Design](23_position_accounting_test_fixture_design.md).
+- The stable contract refines the earlier action and ViewModel drafts in this boundary document.

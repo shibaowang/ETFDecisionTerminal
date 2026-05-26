@@ -212,3 +212,12 @@ v0.1 草案。
 - By default, column visibility and table density settings are runtime-only and must not be saved to files, SQLite, registry, or service configuration.
 - Column visibility and density changes must not trigger service calls, backend writes, or source model mutation.
 - UI readability work must not change the read-only service boundary or make pages appear write-capable.
+## Position And Accounting Task Rules
+
+- Position / accounting tasks must declare whether writing `trade_log` is allowed.
+- Default scope is no `trade_log` writes.
+- Default scope is no `cash_snapshot`, `position_snapshot`, or `portfolio_summary` writes.
+- Default scope is no QML accounting calculation for position, cost, cash, principal,收益, base position, or sniper pool.
+- Default scope is no automatic trading, no broker API, no real order placement, and no TradeDraft generation.
+- Future write-capable accounting tasks require explicit authorization, transaction rules, audit rules, rollback rules, and tests.
+- Future read-only position pages must bind Controller / ViewModel / Model objects and must not directly call `DataServiceClient` or access SQLite.

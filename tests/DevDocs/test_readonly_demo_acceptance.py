@@ -17,9 +17,12 @@ def main() -> int:
     ui_readability_path = root / "docs" / "17_ui_readability_checklist.md"
     milestone_v02_path = root / "docs" / "18_milestone_v0_2_readonly_business_pages.md"
     business_summary_path = root / "docs" / "19_readonly_business_pages_summary.md"
+    position_boundary_path = root / "docs" / "20_position_accounting_boundary.md"
+    position_contract_path = root / "docs" / "21_position_readonly_data_contract_draft.md"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
+    accounting_rules_path = root / "docs" / "06_accounting_rules.md"
     readme_path = root / "README.md"
     gitignore_path = root / ".gitignore"
 
@@ -32,9 +35,12 @@ def main() -> int:
     require(ui_readability_path.exists(), "UI readability checklist exists")
     require(milestone_v02_path.exists(), "v0.2 milestone doc exists")
     require(business_summary_path.exists(), "read-only business pages summary exists")
+    require(position_boundary_path.exists(), "position accounting boundary doc exists")
+    require(position_contract_path.exists(), "position read-only data contract draft exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
+    require(accounting_rules_path.exists(), "accounting rules doc exists")
 
     script = script_path.read_text(encoding="utf-8")
     stop_script = stop_script_path.read_text(encoding="utf-8")
@@ -45,9 +51,12 @@ def main() -> int:
     ui_readability = ui_readability_path.read_text(encoding="utf-8")
     milestone_v02 = milestone_v02_path.read_text(encoding="utf-8")
     business_summary = business_summary_path.read_text(encoding="utf-8")
+    position_boundary = position_boundary_path.read_text(encoding="utf-8")
+    position_contract = position_contract_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
+    accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
     readme = readme_path.read_text(encoding="utf-8")
     gitignore = gitignore_path.read_text(encoding="utf-8")
     gitignore_lines = {line.strip() for line in gitignore.splitlines()}
@@ -78,6 +87,11 @@ def main() -> int:
     )
     require("v0_2_readonly_business_pages.md" in readme, "README links v0.2 release notes")
     require("19_readonly_business_pages_summary.md" in readme, "README links read-only business summary")
+    require("position_accounting_boundary" in readme, "README links position accounting boundary")
+    require(
+        "21_position_readonly_data_contract_draft.md" in readme,
+        "README links position read-only data contract draft",
+    )
     require("runtime/" in readme, "README documents runtime output directory")
     require("ForceRecreateDb" in readme, "README documents ForceRecreateDb")
 
@@ -188,6 +202,31 @@ def main() -> int:
     require("19_readonly_business_pages_summary.md" in docs_index, "docs index links business summary")
     require("release_notes/v0_1_readonly_shell_demo.md" in docs_index, "docs index links release notes")
     require("release_notes/v0_2_readonly_business_pages.md" in docs_index, "docs index links v0.2 release notes")
+    require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
+    require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
+
+    require("trade_log 是事实账本" in accounting_rules, "accounting rules state trade_log is fact ledger")
+    require("position_accounting_boundary" in accounting_rules, "accounting rules link position boundary")
+
+    require("trade_log 是唯一事实账本" in position_boundary, "boundary doc states trade_log is the only fact ledger")
+    require("position_snapshot 是派生数据" in position_boundary, "boundary doc states position_snapshot is derived")
+    require("cash_snapshot 是派生数据" in position_boundary, "boundary doc states cash_snapshot is derived")
+    require("portfolio_summary 是派生数据" in position_boundary, "boundary doc states portfolio_summary is derived")
+    require("20% 底仓" in position_boundary, "boundary doc states 20 percent base position")
+    require("80% 狙击资金池" in position_boundary, "boundary doc states 80 percent sniper pool")
+    require("不写 trade_log" in position_boundary, "boundary doc prohibits trade_log writes")
+    require("不写快照表" in position_boundary, "boundary doc prohibits snapshot writes")
+    require("QML 不计算成本" in position_boundary, "boundary doc prohibits QML cost calculation")
+    require("accounting.health" in position_boundary, "boundary doc drafts accounting health action")
+    require("ShellPositionSummaryViewModel" in position_boundary, "boundary doc drafts position ViewModel")
+
+    require("PositionSummaryDto" in position_contract, "position contract includes PositionSummaryDto")
+    require("CashSummaryDto" in position_contract, "position contract includes CashSummaryDto")
+    require("PortfolioPnlDto" in position_contract, "position contract includes PortfolioPnlDto")
+    require("BasePositionDto" in position_contract, "position contract includes BasePositionDto")
+    require("SniperPoolDto" in position_contract, "position contract includes SniperPoolDto")
+    require("当前未实现" in position_contract, "position contract states currently not implemented")
+    require("DTOs must not write to the database" in position_contract, "position contract prohibits DTO writes")
     return 0
 
 

@@ -773,6 +773,14 @@ powershell -ExecutionPolicy Bypass -File tools/dev/stop_readonly_demo.ps1
 - These samples are documentation only: they are not database seed data, do not write SQLite, do not call services, do not drive trading, and do not generate TradeDraft.
 - Fixture samples: [Accounting Replay Fixture Samples](docs/24_accounting_replay_fixture_samples.md).
 
+## TASK-047 Position Shell ViewModel Design
+
+- v0.3 now has a ShellServices ViewModel / Model design for future read-only position, cash, PnL, base-position, sniper-pool, and accounting issue surfaces.
+- The design maps DTOs from future DataService read-only actions into QObject / QAbstractListModel boundaries for QML.
+- This remains documentation-only: no C++ ViewModel, no QML page, no DataService action, no replay implementation, no writes, and no Git tag.
+- ViewModel design: [Position Shell ViewModel Design](docs/25_position_shell_viewmodel_design.md).
+- DTO mapping: [Position DTO ViewModel Mapping](docs/26_position_dto_viewmodel_mapping.md).
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.
@@ -797,6 +805,8 @@ Milestone documents:
 - [Position Accounting Data Contract](docs/22_position_accounting_data_contract.md)
 - [Position Accounting Test Fixture Design](docs/23_position_accounting_test_fixture_design.md)
 - [Accounting Replay Fixture Samples](docs/24_accounting_replay_fixture_samples.md)
+- [Position Shell ViewModel Design](docs/25_position_shell_viewmodel_design.md)
+- [Position DTO ViewModel Mapping](docs/26_position_dto_viewmodel_mapping.md)
 - [Documentation Index](docs/README.md)
 
 Run tests:

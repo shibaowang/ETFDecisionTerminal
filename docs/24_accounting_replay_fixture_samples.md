@@ -977,3 +977,6 @@ currency or missing FX status in UI-visible issues.
 - fixture samples must not call write actions.
 - future implementation must create tests from FX001-FX013 before replay logic
   is accepted.
+- Future ViewModel tests should use these fixtures through
+  [Position Shell ViewModel Design](25_position_shell_viewmodel_design.md) and
+  [Position DTO ViewModel Mapping](26_position_dto_viewmodel_mapping.md).

@@ -229,3 +229,7 @@ v0.1 草案。
 - Replay implementation must not skip FX001-FX013 without an explicit task update.
 - Fixtures without expected output are not acceptable.
 - Fixtures must not use external market data as a hidden dependency.
+- Position ViewModel implementation tasks must reference `docs/25_position_shell_viewmodel_design.md` and `docs/26_position_dto_viewmodel_mapping.md`.
+- QML must not calculate accounting fields.
+- ShellServices ViewModels must not write data.
+- Future implementation must test fixture-to-DTO-to-ViewModel mapping.

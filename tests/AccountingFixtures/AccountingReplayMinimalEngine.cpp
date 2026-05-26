@@ -27,6 +27,7 @@ constexpr const char* kFx008MultiAccount = "FX008_MULTI_ACCOUNT";
 constexpr const char* kFx009BasePositionLocked = "FX009_BASE_POSITION_LOCKED";
 constexpr const char* kFx010SniperTierCompleted = "FX010_SNIPER_TIER_COMPLETED";
 constexpr const char* kFx011StaleSnapshot = "FX011_STALE_SNAPSHOT";
+constexpr const char* kFx012MissingMarketPrice = "FX012_MISSING_MARKET_PRICE";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -453,6 +454,7 @@ QJsonObject makeMissingPricePortfolioPnl(const AccountingFixture& fixture)
     response.insert(QStringLiteral("totalAssetsText"), QStringLiteral(""));
     response.insert(QStringLiteral("marketValueText"), QStringLiteral("unavailable"));
     response.insert(QStringLiteral("unrealizedPnlText"), QStringLiteral("unavailable"));
+    response.insert(QStringLiteral("totalReturnRatioText"), QStringLiteral("unavailable"));
     response.insert(QStringLiteral("dataQualityStatus"), QStringLiteral("WARNING"));
     return response;
 }
@@ -544,7 +546,8 @@ bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId
         || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee
         || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument
         || fixtureId == kFx008MultiAccount || fixtureId == kFx009BasePositionLocked
-        || fixtureId == kFx010SniperTierCompleted || fixtureId == kFx011StaleSnapshot;
+        || fixtureId == kFx010SniperTierCompleted || fixtureId == kFx011StaleSnapshot
+        || fixtureId == kFx012MissingMarketPrice;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -1526,6 +1529,112 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
             expectedIssue->message.empty() ? "Snapshot is stale and must not be used as fact source." : expectedIssue->message,
             expectedIssue->blocking,
             fixture.fixtureId));
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx012MissingMarketPrice) {
+        const auto invalidFx012 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX012_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.cashFacts.size() != 1 || fixture.cashFacts.front().action != "INITIAL_CASH") {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE requires exactly one INITIAL_CASH fact.");
+        }
+        if (fixture.tradeFacts.size() != 1 || fixture.tradeFacts.front().action != "BUY") {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE requires exactly one BUY trade fact.");
+        }
+
+        const auto& initialCash = fixture.cashFacts.front();
+        const auto& trade = fixture.tradeFacts.front();
+        const auto accountId = scopeString(fixture, "accountId");
+        const auto portfolioId = scopeString(fixture, "portfolioId");
+        const auto currency = scopeString(fixture, "currency");
+        if (currency != "CNY" || accountId.empty() || portfolioId.empty()) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE requires one CNY account and portfolio scope.");
+        }
+        if (initialCash.accountId != accountId || initialCash.portfolioId != portfolioId || initialCash.currency != currency) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE initial cash must match fixture scope.");
+        }
+        if (trade.accountId != accountId || trade.portfolioId != portfolioId || trade.currency != currency
+            || trade.instrumentCode.empty() || trade.quantityText.empty() || trade.priceText.empty()
+            || trade.amountText.empty() || trade.feeText.empty()) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE requires one scoped CNY BUY fact with full amount fields.");
+        }
+
+        for (const auto& marketPrice : fixture.marketPriceFacts) {
+            if (marketPrice.instrumentCode == trade.instrumentCode && !marketPrice.priceText.empty()) {
+                return invalidFx012("FX012_MISSING_MARKET_PRICE must not include a valid market price for the target instrument.");
+            }
+        }
+
+        const auto quantity = parseInteger(trade.quantityText);
+        const auto priceMills = parseDecimalToScale(trade.priceText, 3);
+        const auto buyAmount = parseMoneyText(trade.amountText, currency);
+        const auto buyFee = parseMoneyText(trade.feeText, currency);
+        const auto initial = parseMoneyText(initialCash.amountText, currency);
+        if (!quantity.has_value() || *quantity <= 0 || !priceMills.has_value() || !buyAmount.has_value()
+            || !buyFee.has_value() || !initial.has_value()) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE contains an invalid numeric field.");
+        }
+        if (buyAmount->currency != currency || buyFee->currency != currency || initial->currency != currency) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE money fields must use fixture currency.");
+        }
+
+        const long long buyCashRequirementCents = buyAmount->cents + buyFee->cents;
+        if (buyCashRequirementCents > initial->cents) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE does not handle negative-cash input; that is FX006 scope.");
+        }
+
+        const auto expectedIssue = std::find_if(
+            fixture.expectedIssues.begin(),
+            fixture.expectedIssues.end(),
+            [](const AccountingExpectedIssue& issue) { return issue.code == "MARKET_PRICE_MISSING"; });
+        if (expectedIssue == fixture.expectedIssues.end()) {
+            return invalidFx012("FX012_MISSING_MARKET_PRICE expectedIssues must contain MARKET_PRICE_MISSING.");
+        }
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = expectedIssue->level == "ERROR" ? kReplayStatusError : kReplayStatusWarning;
+        result.message = "Market price is missing; valuation fields are unavailable.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.issues.push_back(makeIssue(
+            expectedIssue->level.empty() ? "WARNING" : expectedIssue->level,
+            "MARKET_PRICE_MISSING",
+            expectedIssue->message.empty() ? "Market price is missing; valuation is unavailable." : expectedIssue->message,
+            expectedIssue->blocking,
+            fixture.fixtureId));
+        result.positionListResponseRaw = makeMultiInstrumentPositionListResponse(
+            fixture,
+            std::vector<PositionAggregate>{
+                PositionAggregate{
+                    trade.accountId,
+                    trade.portfolioId,
+                    trade.instrumentCode,
+                    *quantity,
+                    buyCashRequirementCents,
+                },
+            },
+            result.status == kReplayStatusError ? QStringLiteral("ERROR") : QStringLiteral("WARNING"));
+        result.cashSummaryRaw =
+            makeSingleBuyCashSummary(fixture, initialCash, initial->cents - buyCashRequirementCents, buyFee->cents);
+        result.portfolioPnlRaw = makeMissingPricePortfolioPnl(fixture);
         return result;
     }
 

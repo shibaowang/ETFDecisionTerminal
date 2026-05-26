@@ -1443,14 +1443,54 @@ through `AccountingReplayMinimalEngine`.
   base-position, or sniper-pool success outputs.
 - This path does not generate new snapshots, refresh snapshots, or write
   `position_snapshot`, `cash_snapshot`, or `portfolio_summary`.
-- `FX012_MISSING_MARKET_PRICE` and `FX013_MULTI_CURRENCY_UNSUPPORTED` still
-  return `NOT_IMPLEMENTED`.
+- `FX012_MISSING_MARKET_PRICE` is implemented in a later test-only minimal
+  replay task. `FX013_MULTI_CURRENCY_UNSUPPORTED` still returns
+  `NOT_IMPLEMENTED`.
 
 This implementation is intentionally limited to detecting stale snapshot
 metadata from the FX011 fixture. It does not implement missing market price
 replay, multi-currency replay, real market valuation, unrealized PnL, SQLite
 access, DataService calls, output file writes, database writes, snapshot writes,
 TradeDraft generation, strategy execution, or DataService actions.
+
+## 24. TASK-066 Minimal FX012 Missing Market Price Replay
+
+`FX012_MISSING_MARKET_PRICE` now has a test-only minimal missing market price
+detection path through `AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER`, `FX002_SINGLE_BUY`, and `FX003_BUY_SELL_PARTIAL` still
+  return `status=OK`.
+- `FX004_SELL_EXCEEDS_POSITION` still returns `status=ERROR` with a blocking
+  `SELL_EXCEEDS_POSITION` issue.
+- `FX005_MISSING_FEE` still returns `status=WARNING` with a non-blocking
+  `MISSING_FEE` issue.
+- `FX006_NEGATIVE_CASH` still returns `status=ERROR` with a blocking
+  `NEGATIVE_CASH` issue.
+- `FX007_MULTI_INSTRUMENT`, `FX008_MULTI_ACCOUNT`,
+  `FX009_BASE_POSITION_LOCKED`, `FX010_SNIPER_TIER_COMPLETED`, and
+  `FX011_STALE_SNAPSHOT` keep their prior minimal replay behavior.
+- `FX012_MISSING_MARKET_PRICE` returns `implemented=true`.
+- `FX012_MISSING_MARKET_PRICE` returns `replayExecuted=true`.
+- `FX012_MISSING_MARKET_PRICE` returns `status=WARNING`, matching the fixture
+  index and expected issue level.
+- `FX012_MISSING_MARKET_PRICE` reports a non-blocking
+  `MARKET_PRICE_MISSING` issue.
+- FX012 quantity / cost can display from fixture input facts:
+  `quantityText=1000`, `costAmountText=1001.00 CNY`, and
+  `cashBalanceText=98999.00 CNY`.
+- FX012 does not fabricate `marketValueText`.
+- FX012 does not fabricate `unrealizedPnlText`.
+- FX012 does not query real market data, does not call any market service, and
+  does not perform network requests.
+- `FX013_MULTI_CURRENCY_UNSUPPORTED` still returns `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to detecting missing market price
+for the FX012 fixture while preserving quantity and cost display. It does not
+implement multi-currency replay, real market valuation, unrealized PnL, SQLite
+access, DataService calls, market service calls, network access, output file
+writes, database writes, TradeDraft generation, strategy execution, or
+DataService actions. Future implementation must add one fixture at a time
+without changing fixture expected outputs to fit an incorrect algorithm.
 
 This implementation is intentionally limited to same-account, same-portfolio,
 CNY-only BUY facts grouped by instrument. It does not implement multi-account

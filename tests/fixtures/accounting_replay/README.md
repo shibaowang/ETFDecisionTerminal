@@ -90,11 +90,20 @@ order. FX010-FX013 remain `NOT_IMPLEMENTED`.
 derived from BUY fact aggregation, not current market value; the 80% pool does
 not expand or shrink with floating profit or loss. The remaining amount is
 display-only and is not a buy suggestion, sell suggestion, TradeDraft, strategy
-command, or broker order. FX011-FX013 remain `NOT_IMPLEMENTED`.
+command, or broker order. FX011-FX012 are implemented in later test-only
+minimal replay tasks; FX013 remains `NOT_IMPLEMENTED`.
 
 `AccountingReplayMinimalEngine` now also supports `FX011_STALE_SNAPSHOT`,
 returning `status=STALE` with a blocking `SNAPSHOT_STALE` issue. Snapshot facts
 are stale cache metadata, not accounting fact sources. The minimal path does not
 generate normal position, cash, PnL, base-position, or sniper-pool outputs, does
-not write snapshots, and does not create new snapshot rows. FX012-FX013 remain
+not write snapshots, and does not create new snapshot rows. FX013 remains
+`NOT_IMPLEMENTED`.
+
+`AccountingReplayMinimalEngine` now also supports
+`FX012_MISSING_MARKET_PRICE`, returning `status=WARNING` with a non-blocking
+`MARKET_PRICE_MISSING` issue. The minimal path displays quantity and cost from
+fixture input facts, keeps `marketValueText` and `unrealizedPnlText`
+`unavailable`, does not query real market data, does not perform network
+requests, and does not call any market service. FX013 remains
 `NOT_IMPLEMENTED`.

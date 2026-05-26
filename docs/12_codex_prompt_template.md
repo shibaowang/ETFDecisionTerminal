@@ -301,3 +301,9 @@ v0.1 草案。
 - Stale snapshots must not be treated as fact sources.
 - Stale snapshot handling must not write, refresh, or generate `position_snapshot`, `cash_snapshot`, or `portfolio_summary`.
 - Every new replay task after FX011 must preserve FX001-FX011 tests and keep FX012-FX013 explicitly guarded until their own task is authorized.
+- After FX012, do not jump directly to real market data integration, network market queries, multi-currency replay, strategy execution, or automatic trading.
+- FX013 multi-currency unsupported handling must remain a separate task.
+- Missing market prices must not be hidden by fabricated `marketValueText`.
+- Missing market prices must not be hidden by fabricated `unrealizedPnlText`.
+- FX012 missing market price replay must not query real market data, call a market service, or perform network requests.
+- Every new replay task after FX012 must preserve FX001-FX012 tests and keep FX013 explicitly guarded until its own task is authorized.

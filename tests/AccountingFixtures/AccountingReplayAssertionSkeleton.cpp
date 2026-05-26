@@ -1663,6 +1663,193 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx011StaleSna
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx012MissingMarketPriceResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX012_MISSING_MARKET_PRICE") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 missing-market-price assertion only accepts FX012_MISSING_MARKET_PRICE.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    const auto expectedIssue = std::find_if(
+        fixture.expectedIssues.begin(),
+        fixture.expectedIssues.end(),
+        [](const AccountingExpectedIssue& issue) { return issue.code == "MARKET_PRICE_MISSING"; });
+    if (expectedIssue == fixture.expectedIssues.end()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 fixture expectedIssues must contain MARKET_PRICE_MISSING.",
+            false,
+            {"expectedIssues.MARKET_PRICE_MISSING"});
+    }
+
+    const std::string expectedStatus = expectedIssue->level == "ERROR" ? kReplayStatusError : kReplayStatusWarning;
+    if (!result.implemented || !result.replayExecuted || result.status != expectedStatus) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 replay result must be implemented=true, replayExecuted=true, and match the expected warning/error status.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    bool hasMarketPriceMissing = false;
+    bool blockingMatches = false;
+    for (const auto& issue : result.issues) {
+        if (issue.code == "MARKET_PRICE_MISSING") {
+            hasMarketPriceMissing = true;
+            blockingMatches = issue.blocking == expectedIssue->blocking;
+        }
+    }
+    if (!hasMarketPriceMissing || !blockingMatches) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 must contain MARKET_PRICE_MISSING with blocking matching the fixture expected issue.",
+            false,
+            {"issues.MARKET_PRICE_MISSING"});
+    }
+
+    const auto expectedPositions = fixture.expectedOutputsRawJson.value("positionSummaries");
+    if (!expectedPositions.isArray() || expectedPositions.toArray().isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 fixture expected output must contain a position summary.",
+            false,
+            {"expectedOutputs.positionSummaries"});
+    }
+    const auto positionsValue = result.positionListResponseRaw.value("positions");
+    if (!positionsValue.isArray() || positionsValue.toArray().isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 positionListResponseRaw.positions must contain the cost-bearing position.",
+            false,
+            {"positionListResponseRaw.positions"});
+    }
+
+    const auto actualPositions = positionsValue.toArray();
+    for (const auto& expectedValue : expectedPositions.toArray()) {
+        const auto expectedPosition = expectedValue.toObject();
+        const auto expectedInstrument = expectedPosition.value("instrumentCode").toString();
+        bool found = false;
+        for (const auto& actualValue : actualPositions) {
+            const auto actualPosition = actualValue.toObject();
+            if (actualPosition.value("instrumentCode").toString() != expectedInstrument) {
+                continue;
+            }
+            found = true;
+            if (actualPosition.value("quantityText").toString() != expectedPosition.value("quantityText").toString()
+                || actualPosition.value("costAmountText").toString() != expectedPosition.value("costAmountText").toString()) {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx012MissingMarketPrice,
+                    "FX012 quantityText and costAmountText must match fixture expected output.",
+                    false,
+                    {"positionListResponseRaw.positions.quantityText", "positionListResponseRaw.positions.costAmountText"});
+            }
+            const auto marketValue = actualPosition.value("marketValueText").toString();
+            const auto unrealizedPnl = actualPosition.value("unrealizedPnlText").toString();
+            if ((!marketValue.isEmpty() && marketValue != "unavailable")
+                || (!unrealizedPnl.isEmpty() && unrealizedPnl != "unavailable")) {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx012MissingMarketPrice,
+                    "FX012 must not fabricate marketValueText or unrealizedPnlText when market price is missing.",
+                    false,
+                    {"positionListResponseRaw.positions.marketValueText", "positionListResponseRaw.positions.unrealizedPnlText"});
+            }
+        }
+        if (!found) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx012MissingMarketPrice,
+                "FX012 positions must contain the expected instrumentCode.",
+                false,
+                {"positionListResponseRaw.positions.instrumentCode"});
+        }
+    }
+
+    if (result.portfolioPnlRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 must include portfolioPnlRaw with unavailable valuation fields.",
+            false,
+            {"portfolioPnlRaw"});
+    }
+    const auto marketValue = result.portfolioPnlRaw.value("marketValueText").toString();
+    const auto unrealizedPnl = result.portfolioPnlRaw.value("unrealizedPnlText").toString();
+    if ((!marketValue.isEmpty() && marketValue != "unavailable")
+        || (!unrealizedPnl.isEmpty() && unrealizedPnl != "unavailable")) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 portfolioPnlRaw must not fabricate market value or unrealized PnL.",
+            false,
+            {"portfolioPnlRaw.marketValueText", "portfolioPnlRaw.unrealizedPnlText"});
+    }
+
+    if (!result.basePositionRaw.isEmpty() || !result.sniperPoolRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx012MissingMarketPrice,
+            "FX012 must not produce base-position or sniper-pool outputs.",
+            false,
+            {"basePositionRaw", "sniperPoolRaw"});
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx012MissingMarketPrice,
+        "FX012 missing-market-price replay result exposes quantity and cost while keeping valuation unavailable.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "issues.MARKET_PRICE_MISSING",
+            "positionListResponseRaw.positions.quantityText",
+            "positionListResponseRaw.positions.costAmountText",
+            "positionListResponseRaw.positions.marketValueText",
+            "positionListResponseRaw.positions.unrealizedPnlText",
+            "portfolioPnlRaw.marketValueText",
+            "portfolioPnlRaw.unrealizedPnlText",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

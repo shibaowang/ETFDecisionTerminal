@@ -35,6 +35,7 @@ using etfdt::tests::accounting::kAssertionPassFx008MultiAccount;
 using etfdt::tests::accounting::kAssertionPassFx009BasePositionLocked;
 using etfdt::tests::accounting::kAssertionPassFx010SniperTierCompleted;
 using etfdt::tests::accounting::kAssertionPassFx011StaleSnapshot;
+using etfdt::tests::accounting::kAssertionPassFx012MissingMarketPrice;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
@@ -121,6 +122,7 @@ int main(int argc, char** argv)
     const auto fx009 = requireValue(harness.fixtureByIdForTest("FX009_BASE_POSITION_LOCKED"), "FX009 fixture exists");
     const auto fx010 = requireValue(harness.fixtureByIdForTest("FX010_SNIPER_TIER_COMPLETED"), "FX010 fixture exists");
     const auto fx011 = requireValue(harness.fixtureByIdForTest("FX011_STALE_SNAPSHOT"), "FX011 fixture exists");
+    const auto fx012 = requireValue(harness.fixtureByIdForTest("FX012_MISSING_MARKET_PRICE"), "FX012 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
@@ -134,7 +136,8 @@ int main(int argc, char** argv)
     require(engine.supportsFixture("FX009_BASE_POSITION_LOCKED"), "minimal engine supports FX009");
     require(engine.supportsFixture("FX010_SNIPER_TIER_COMPLETED"), "minimal engine supports FX010");
     require(engine.supportsFixture("FX011_STALE_SNAPSHOT"), "minimal engine supports FX011");
-    require(!engine.supportsFixture("FX012_MISSING_MARKET_PRICE"), "minimal engine does not support FX012");
+    require(engine.supportsFixture("FX012_MISSING_MARKET_PRICE"), "minimal engine supports FX012");
+    require(!engine.supportsFixture("FX013_MULTI_CURRENCY_UNSUPPORTED"), "minimal engine does not support FX013");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -362,6 +365,29 @@ int main(int argc, char** argv)
     require(hasEmptyReplayOutputs(fx011Direct), "FX011 does not generate normal raw outputs");
     require(fx011Direct.message.find("not used as a fact source") != std::string::npos, "FX011 does not use snapshot as fact source");
 
+    const auto fx012Direct = engine.replayFixture(fx012);
+    require(fx012Direct.implemented, "FX012 direct replay implemented=true");
+    require(fx012Direct.replayExecuted, "FX012 direct replayExecuted=true");
+    require(fx012Direct.status == kReplayStatusWarning, "FX012 direct status=WARNING");
+    require(hasReplayIssueCode(fx012Direct, "MARKET_PRICE_MISSING"), "FX012 issues contain MARKET_PRICE_MISSING");
+    require(issueBlockingMatches(fx012Direct, "MARKET_PRICE_MISSING", false), "FX012 MARKET_PRICE_MISSING is non-blocking");
+    require(hasPositionListResponse(fx012Direct), "FX012 has positionListResponseRaw");
+    require(fx012Direct.positionListResponseRaw.value("positions").isArray(), "FX012 positions is an array");
+    require(fx012Direct.positionListResponseRaw.value("positions").toArray().size() == 1, "FX012 positions array has one row");
+    const auto fx012Position = fx012Direct.positionListResponseRaw.value("positions").toArray().first().toObject();
+    require(fx012Position.value("instrumentCode").toString() == "159509", "FX012 instrumentCode is 159509");
+    require(fx012Position.value("quantityText").toString() == "1000", "FX012 quantityText is 1000");
+    require(fx012Position.value("costAmountText").toString() == "1001.00 CNY", "FX012 costAmountText is 1001.00 CNY");
+    require(fx012Position.value("marketValueText").toString() == "unavailable", "FX012 does not fabricate marketValueText");
+    require(fx012Position.value("unrealizedPnlText").toString() == "unavailable", "FX012 does not fabricate unrealizedPnlText");
+    require(hasCashSummary(fx012Direct), "FX012 has cashSummaryRaw");
+    require(fx012Direct.cashSummaryRaw.value("cashBalanceText").toString() == "98999.00 CNY", "FX012 cashBalanceText is 98999.00 CNY");
+    require(hasPortfolioPnl(fx012Direct), "FX012 has portfolioPnlRaw");
+    require(fx012Direct.portfolioPnlRaw.value("marketValueText").toString() == "unavailable", "FX012 portfolio PnL does not fabricate marketValueText");
+    require(fx012Direct.portfolioPnlRaw.value("unrealizedPnlText").toString() == "unavailable", "FX012 portfolio PnL does not fabricate unrealizedPnlText");
+    require(!hasBasePosition(fx012Direct), "FX012 does not implement basePositionRaw");
+    require(!hasSniperPool(fx012Direct), "FX012 does not implement sniperPoolRaw");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -471,6 +497,16 @@ int main(int argc, char** argv)
     require(fx011Assertion.passed, "FX011 stale-snapshot assertion passes");
     require(fx011Assertion.status == kAssertionPassFx011StaleSnapshot, "FX011 assertion status is PASS_FX011_STALE_SNAPSHOT");
 
+    const auto fx012Harness = requireResult(harness, "FX012_MISSING_MARKET_PRICE");
+    require(fx012Harness.status == kReplayStatusWarning, "minimal harness FX012 status=WARNING");
+    require(fx012Harness.implemented, "minimal harness FX012 implemented=true");
+    require(fx012Harness.replayExecuted, "minimal harness FX012 replayExecuted=true");
+    require(issueBlockingMatches(fx012Harness, "MARKET_PRICE_MISSING", false), "minimal harness FX012 has non-blocking MARKET_PRICE_MISSING");
+    require(hasPositionListResponse(fx012Harness), "minimal harness FX012 has positionListResponseRaw");
+    const auto fx012Assertion = assertions.assertFx012MissingMarketPriceResult(fx012, fx012Harness);
+    require(fx012Assertion.passed, "FX012 missing-market-price assertion passes");
+    require(fx012Assertion.status == kAssertionPassFx012MissingMarketPrice, "FX012 assertion status is PASS_FX012_MISSING_MARKET_PRICE");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -534,6 +570,14 @@ int main(int argc, char** argv)
             require(hasEmptyReplayOutputs(result), "FX011 keeps raw outputs empty in minimal loop");
             continue;
         }
+        if (fixtureId == "FX012_MISSING_MARKET_PRICE") {
+            require(result.status == kReplayStatusWarning, "FX012 remains WARNING in minimal loop");
+            require(result.implemented, "FX012 remains implemented=true in minimal loop");
+            require(result.replayExecuted, "FX012 remains replayExecuted=true in minimal loop");
+            require(issueBlockingMatches(result, "MARKET_PRICE_MISSING", false), "FX012 keeps non-blocking MARKET_PRICE_MISSING in minimal loop");
+            require(hasPositionListResponse(result), "FX012 keeps quantity/cost position output in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -543,6 +587,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009/FX010/FX011 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009/FX010/FX011/FX012 tests passed\n";
     return 0;
 }

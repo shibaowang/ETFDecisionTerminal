@@ -16,3 +16,9 @@ The test-only C++ loader is `tests/AccountingFixtures/AccountingFixtureLoader`.
 It only parses and validates the JSON structure. It does not implement replay,
 calculate cash, position, or PnL, access SQLite, call DataService, or write
 output files.
+
+The fixture-backed test harness is
+`tests/AccountingFixtures/AccountingReplayTestHarness`. It currently uses
+`AccountingReplayStubEngine`, which returns `NOT_IMPLEMENTED` with
+`implemented=false` and `replayExecuted=false` for valid fixtures. This is a
+coverage skeleton only and does not implement accounting replay.

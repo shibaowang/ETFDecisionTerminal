@@ -1031,3 +1031,26 @@ tiers. It does not access SQLite, does not call DataService, does not use
 external market data, and does not write files. Future replay implementation
 must use this loader or a compatible fixture contract instead of bypassing the
 fixture set.
+
+## 10. TASK-052 Fixture-Backed Harness Skeleton
+
+FX001-FX013 are now connected to
+`tests/AccountingFixtures/AccountingReplayTestHarness`.
+
+- The harness loads fixtures through `AccountingFixtureLoader`.
+- The harness iterates every fixture and calls `AccountingReplayStubEngine`.
+- The current stub result is `implemented=false`, `replayExecuted=false`, and
+  `status=NOT_IMPLEMENTED`.
+- `NOT_IMPLEMENTED` is the expected result for this stage and must not be
+  treated as a failed replay calculation.
+- The harness verifies that all FX001-FX013 fixtures are covered, including
+  error fixtures.
+
+The harness still does not implement replay. It does not calculate cash,
+position, PnL, cost basis, base-position status, or sniper-pool tiers. It does
+not access SQLite, does not call DataService, does not write output files, and
+does not write database tables.
+
+Future replay implementation must replace the stub only after fixture-backed
+tests are explicitly defined. It must not skip fixtures, remove error fixtures,
+or change expected fixture outputs without a separate contract justification.

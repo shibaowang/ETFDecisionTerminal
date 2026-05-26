@@ -251,3 +251,7 @@ v0.1 草案。
 - Stub harness tasks must keep `NOT_IMPLEMENTED` as the expected result until replay implementation is authorized.
 - Replay implementation tasks must preserve the `AccountingReplayResult` contract and must not hide fixture failures by changing result fields or statuses.
 - Stub replacement must fill `positionListResponseRaw`, `cashSummaryRaw`, `portfolioPnlRaw`, `basePositionRaw`, and `sniperPoolRaw` gradually with explicit fixture-backed assertions.
+- Replay implementation tasks must not delete or bypass `AccountingReplayAssertionSkeleton`.
+- Replay implementation must gradually replace `SKIPPED_BY_DESIGN` position / cash / PnL assertions with real checks.
+- Do not clear fixture `expectedOutputs` to make tests pass.
+- Do not put fake position, cash, PnL, base-position, or sniper-pool outputs into a `NOT_IMPLEMENTED` result.

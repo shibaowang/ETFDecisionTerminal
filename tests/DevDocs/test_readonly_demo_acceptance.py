@@ -42,6 +42,21 @@ def main() -> int:
     accounting_replay_harness_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayTestHarness.h"
     accounting_replay_harness_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayTestHarness.cpp"
     accounting_replay_harness_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_replay_harness.cpp"
+    accounting_expected_inspector_header_path = (
+        root / "tests" / "AccountingFixtures" / "AccountingExpectedOutputInspector.h"
+    )
+    accounting_expected_inspector_source_path = (
+        root / "tests" / "AccountingFixtures" / "AccountingExpectedOutputInspector.cpp"
+    )
+    accounting_replay_assertion_header_path = (
+        root / "tests" / "AccountingFixtures" / "AccountingReplayAssertionSkeleton.h"
+    )
+    accounting_replay_assertion_source_path = (
+        root / "tests" / "AccountingFixtures" / "AccountingReplayAssertionSkeleton.cpp"
+    )
+    accounting_replay_assertion_test_path = (
+        root / "tests" / "AccountingFixtures" / "test_accounting_replay_assertions.cpp"
+    )
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -82,6 +97,11 @@ def main() -> int:
     require(accounting_replay_harness_header_path.exists(), "accounting replay harness header exists")
     require(accounting_replay_harness_source_path.exists(), "accounting replay harness source exists")
     require(accounting_replay_harness_test_path.exists(), "accounting replay harness test exists")
+    require(accounting_expected_inspector_header_path.exists(), "accounting expected output inspector header exists")
+    require(accounting_expected_inspector_source_path.exists(), "accounting expected output inspector source exists")
+    require(accounting_replay_assertion_header_path.exists(), "accounting replay assertion skeleton header exists")
+    require(accounting_replay_assertion_source_path.exists(), "accounting replay assertion skeleton source exists")
+    require(accounting_replay_assertion_test_path.exists(), "accounting replay assertion skeleton test exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -119,6 +139,11 @@ def main() -> int:
     accounting_replay_harness_header = accounting_replay_harness_header_path.read_text(encoding="utf-8")
     accounting_replay_harness_source = accounting_replay_harness_source_path.read_text(encoding="utf-8")
     accounting_replay_harness_test = accounting_replay_harness_test_path.read_text(encoding="utf-8")
+    accounting_expected_inspector_header = accounting_expected_inspector_header_path.read_text(encoding="utf-8")
+    accounting_expected_inspector_source = accounting_expected_inspector_source_path.read_text(encoding="utf-8")
+    accounting_replay_assertion_header = accounting_replay_assertion_header_path.read_text(encoding="utf-8")
+    accounting_replay_assertion_source = accounting_replay_assertion_source_path.read_text(encoding="utf-8")
+    accounting_replay_assertion_test = accounting_replay_assertion_test_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -174,6 +199,9 @@ def main() -> int:
     require("AccountingReplayStubEngine" in readme, "README documents replay stub engine")
     require("AccountingReplayResult" in readme, "README documents replay result")
     require("AccountingReplayResultMapper" in readme, "README documents replay result mapper")
+    require("AccountingExpectedOutputInspector" in readme, "README documents expected output inspector")
+    require("AccountingReplayAssertionSkeleton" in readme, "README documents assertion skeleton")
+    require("SKIPPED_BY_DESIGN" in readme, "README documents skipped assertion state")
     require("NOT_IMPLEMENTED" in readme, "README documents replay stub status")
     require(
         "25_position_shell_viewmodel_design.md" in readme,
@@ -469,6 +497,15 @@ def main() -> int:
     require("AccountingReplayStubEngine" in accounting_fixture_samples, "fixture samples doc documents stub engine")
     require("AccountingReplayResult" in accounting_fixture_samples, "fixture samples doc documents replay result")
     require("AccountingReplayResultMapper" in accounting_fixture_samples, "fixture samples doc documents result mapper")
+    require(
+        "AccountingExpectedOutputInspector" in accounting_fixture_samples,
+        "fixture samples doc documents expected output inspector",
+    )
+    require(
+        "AccountingReplayAssertionSkeleton" in accounting_fixture_samples,
+        "fixture samples doc documents assertion skeleton",
+    )
+    require("SKIPPED_BY_DESIGN" in accounting_fixture_samples, "fixture samples doc documents skipped assertions")
     require("status=NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents NOT_IMPLEMENTED status")
     require("REPLAY_NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents replay issue")
     require("positionListResponseRaw" in accounting_fixture_samples, "fixture samples doc documents position raw output")
@@ -613,10 +650,45 @@ def main() -> int:
     require("makeInvalidFixtureResult" in accounting_replay_result_test, "result test covers invalid fixture mapper")
     require("REPLAY_NOT_IMPLEMENTED" in accounting_replay_result_test, "result test checks replay issue")
     require("hasEmptyReplayOutputs" in accounting_replay_result_test, "result test checks empty raw outputs")
+    require("AccountingExpectedOutputInspector" in accounting_expected_inspector_header, "inspector header declares inspector")
+    require("ExpectedOutputShape" in accounting_expected_inspector_header, "inspector header declares expected output shape")
+    require("hasRequiredExpectedOutputs" in accounting_expected_inspector_header, "inspector exposes required output check")
+    require("expectedIssueCodes" in accounting_expected_inspector_header, "inspector exposes expected issue codes")
+    require("hasErrorCode" in accounting_expected_inspector_header, "inspector exposes error code check")
+    require("positionSummaries" in accounting_expected_inspector_source, "inspector checks positionSummaries")
+    require("cashSummary" in accounting_expected_inspector_source, "inspector checks cashSummary")
+    require("portfolioPnl" in accounting_expected_inspector_source, "inspector checks portfolioPnl")
+    require("AccountingReplayAssertionSkeleton" in accounting_replay_assertion_header, "assertion header declares skeleton")
+    require("PASS_NOT_IMPLEMENTED_GUARD" in accounting_replay_assertion_header, "assertion header declares guard pass status")
+    require("FAIL_UNEXPECTED_IMPLEMENTED" in accounting_replay_assertion_header, "assertion header declares implemented failure")
+    require("FAIL_RESULT_OUTPUT_NOT_EMPTY" in accounting_replay_assertion_header, "assertion header declares non-empty output failure")
+    require("SKIPPED_BY_DESIGN" in accounting_replay_assertion_header, "assertion header declares skipped status")
+    require("assertCurrentStubResult" in accounting_replay_assertion_header, "assertion exposes current stub result check")
+    require("assertPositionList" in accounting_replay_assertion_header, "assertion exposes position placeholder")
+    require("assertCashSummary" in accounting_replay_assertion_header, "assertion exposes cash placeholder")
+    require("assertPortfolioPnl" in accounting_replay_assertion_header, "assertion exposes pnl placeholder")
+    require("REPLAY_NOT_IMPLEMENTED" in accounting_replay_assertion_source, "assertion requires replay not implemented issue")
+    require("hasEmptyReplayOutputs" in accounting_replay_assertion_source, "assertion checks empty raw outputs")
+    require("AccountingExpectedOutputInspector" in accounting_replay_assertion_test, "assertion test uses inspector")
+    require("AccountingReplayAssertionSkeleton" in accounting_replay_assertion_test, "assertion test uses skeleton")
+    require("FX001_EMPTY_LEDGER" in accounting_replay_assertion_test, "assertion test covers FX001")
+    require("FX013_MULTI_CURRENCY_UNSUPPORTED" in accounting_replay_assertion_test, "assertion test covers FX013")
+    require("SELL_EXCEEDS_POSITION" in accounting_replay_assertion_test, "assertion test checks sell exceeds issue")
+    require("MISSING_FEE" in accounting_replay_assertion_test, "assertion test checks missing fee issue")
+    require("NEGATIVE_CASH" in accounting_replay_assertion_test, "assertion test checks negative cash issue")
+    require("SNAPSHOT_STALE" in accounting_replay_assertion_test, "assertion test checks stale snapshot issue")
+    require("MARKET_PRICE_MISSING" in accounting_replay_assertion_test, "assertion test checks missing market price issue")
+    require("PASS_NOT_IMPLEMENTED_GUARD" in accounting_replay_assertion_test, "assertion test checks not implemented guard")
+    require("SKIPPED_BY_DESIGN" in accounting_replay_assertion_test, "assertion test checks skipped placeholders")
+    require("implemented=true" in accounting_replay_assertion_test, "assertion test fails implemented true result")
+    require("raw output" in accounting_replay_assertion_test, "assertion test fails non-empty raw output")
+    require("accounting_replay_expected_output_assertions" in accounting_fixtures_cmake, "CTest includes expected output assertion test")
     require("SQLite" not in accounting_replay_harness_source, "harness source does not access SQLite")
     require("DataService" not in accounting_replay_harness_source, "harness source does not call DataService")
     require("SQLite" not in accounting_replay_stub_source, "stub source does not access SQLite")
     require("DataService" not in accounting_replay_stub_source, "stub source does not call DataService")
+    require("SQLite" not in accounting_replay_assertion_source, "assertion source does not access SQLite")
+    require("DataService" not in accounting_replay_assertion_source, "assertion source does not call DataService")
     return 0
 
 

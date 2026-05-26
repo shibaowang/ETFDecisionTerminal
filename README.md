@@ -832,6 +832,14 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - Position, cash, PnL, base-position, and sniper-pool raw outputs remain empty; replay is still not implemented.
 - Result skeleton CTest: `accounting_replay_result_skeleton`.
 
+## TASK-054 Accounting Expected Output Assertion Skeleton
+
+- `tests/AccountingFixtures/AccountingExpectedOutputInspector` inspects fixture `expectedOutputs` shape and expected issue codes.
+- `tests/AccountingFixtures/AccountingReplayAssertionSkeleton` checks the current `NOT_IMPLEMENTED` guard result and requires empty position / cash / PnL / base-position / sniper-pool raw outputs.
+- Real `assertPositionList`, `assertCashSummary`, and `assertPortfolioPnl` value assertions currently return `SKIPPED_BY_DESIGN`; replay math is still not implemented.
+- The assertion skeleton covers FX001-FX013 and must not be removed or bypassed by future replay work.
+- Expected-output assertion CTest: `accounting_replay_expected_output_assertions`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

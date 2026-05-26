@@ -16,6 +16,7 @@ public:
     [[nodiscard]] bool runAll();
 
     [[nodiscard]] std::optional<AccountingReplayResult> resultForFixture(const std::string& fixtureId) const;
+    [[nodiscard]] std::optional<AccountingFixture> fixtureByIdForTest(const std::string& fixtureId) const;
     [[nodiscard]] const std::vector<AccountingReplayResult>& results() const noexcept;
     [[nodiscard]] std::vector<std::string> coveredFixtureIds() const;
     [[nodiscard]] std::vector<std::string> missingFixtureIds(const std::vector<std::string>& expectedIds) const;

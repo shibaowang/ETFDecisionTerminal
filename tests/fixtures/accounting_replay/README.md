@@ -27,3 +27,10 @@ The test-only replay result skeleton is
 `tests/AccountingFixtures/AccountingReplayResult`. Current stub results keep
 position, cash, PnL, base-position, and sniper-pool raw outputs empty and add a
 `REPLAY_NOT_IMPLEMENTED` issue.
+
+The test-only expected-output assertion skeleton is
+`tests/AccountingFixtures/AccountingReplayAssertionSkeleton`, with shape
+inspection in `AccountingExpectedOutputInspector`. It currently validates
+fixture expected-output structure and the `NOT_IMPLEMENTED` guard only. Real
+position, cash, and PnL value assertions remain `SKIPPED_BY_DESIGN` until replay
+is implemented.

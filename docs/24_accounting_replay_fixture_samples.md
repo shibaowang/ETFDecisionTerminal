@@ -1076,3 +1076,26 @@ cash, position, PnL, cost basis, base-position, or sniper-pool output. Future
 replay implementation must fill result fields gradually while preserving
 FX001-FX013 coverage and must not hide fixture failures by changing the result
 contract or fixture expectations without separate justification.
+
+## 12. TASK-054 Expected-Output Assertion Skeleton
+
+FX001-FX013 are now connected to a test-only expected-output assertion skeleton.
+
+- `AccountingExpectedOutputInspector` reads fixture `expectedOutputs` and checks
+  that `positionSummaries`, `cashSummary`, and `portfolioPnl` are present.
+- The inspector reads expected issue codes such as `SELL_EXCEEDS_POSITION`,
+  `MISSING_FEE`, `NEGATIVE_CASH`, `SNAPSHOT_STALE`,
+  `MARKET_PRICE_MISSING`, and `MULTI_CURRENCY_UNSUPPORTED`.
+- `AccountingReplayAssertionSkeleton` currently asserts only the
+  `NOT_IMPLEMENTED` guard: `implemented=false`, `replayExecuted=false`,
+  `status=NOT_IMPLEMENTED`, `REPLAY_NOT_IMPLEMENTED` issue present, and all raw
+  result outputs empty.
+- Real position, cash, and PnL value assertions return `SKIPPED_BY_DESIGN`
+  until fixture-backed replay is authorized and implemented.
+- Future replay implementation must replace the skipped assertions with real
+  checks instead of deleting the skeleton, skipping fixtures, clearing
+  `expectedOutputs`, or placing fake outputs in a `NOT_IMPLEMENTED` result.
+
+The assertion skeleton does not calculate cash, position, PnL, cost basis,
+base-position, or sniper-pool output. It does not access SQLite, does not call
+DataService, does not write output files, and does not write database tables.

@@ -21,6 +21,17 @@ add_executable(AccountingReplayResultTests
     test_accounting_replay_result.cpp
 )
 
+add_executable(AccountingReplayAssertionTests
+    AccountingFixtureLoader.cpp
+    AccountingReplayResult.cpp
+    AccountingReplayResultMapper.cpp
+    AccountingReplayStubEngine.cpp
+    AccountingReplayTestHarness.cpp
+    AccountingExpectedOutputInspector.cpp
+    AccountingReplayAssertionSkeleton.cpp
+    test_accounting_replay_assertions.cpp
+)
+
 target_link_libraries(AccountingFixtureLoaderTests
     PRIVATE
         Qt6::Core
@@ -32,6 +43,11 @@ target_link_libraries(AccountingReplayHarnessTests
 )
 
 target_link_libraries(AccountingReplayResultTests
+    PRIVATE
+        Qt6::Core
+)
+
+target_link_libraries(AccountingReplayAssertionTests
     PRIVATE
         Qt6::Core
 )
@@ -78,5 +94,16 @@ add_test(
 )
 
 set_tests_properties(accounting_replay_result_skeleton PROPERTIES
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME accounting_replay_expected_output_assertions
+    COMMAND
+        AccountingReplayAssertionTests
+        ${PROJECT_SOURCE_DIR}/tests/fixtures/accounting_replay
+)
+
+set_tests_properties(accounting_replay_expected_output_assertions PROPERTIES
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )

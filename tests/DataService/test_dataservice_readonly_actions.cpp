@@ -332,8 +332,109 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         accountingPayload.value("errors").toArray().isEmpty(),
         "accounting.health errors is empty array");
 
+    auto replayPreview = sendEnvelope(
+        client,
+        envelope(
+            etfdt::data_service_api::kActionAccountingReplayPreview,
+            R"({"accountId":"ACC-DEMO-001","portfolioId":"PF-DEMO-001","sourceFromTime":"2026-01-01T00:00:00Z","sourceToTime":"2026-01-31T23:59:59Z","fixtureMode":false,"requestedOutputs":["positions","cash","pnl"]})"),
+        responses,
+        "accounting.replay.preview");
+    expectSuccess(replayPreview, "accounting.replay.preview guard");
+    const auto replayPayload = replayPreview.value("payload").toObject();
+    expectTrue(!replayPayload.value("implemented").toBool(true), "replay preview implemented=false");
+    expectTrue(!replayPayload.value("replayExecuted").toBool(true), "replay preview replayExecuted=false");
+    expectTrue(!replayPayload.value("writeEnabled").toBool(true), "replay preview writeEnabled=false");
+    expectEqual(
+        replayPayload.value("status").toString().toStdString(),
+        "REPLAY_NOT_AVAILABLE",
+        "replay preview status");
+    expectEqual(
+        replayPayload.value("requestedScope").toObject().value("accountId").toString().toStdString(),
+        "ACC-DEMO-001",
+        "replay preview echoes accountId");
+
+    const auto requiredFixtures = replayPayload.value("requiredFixtures").toArray();
+    const bool hasFirstFixture =
+        std::any_of(requiredFixtures.begin(), requiredFixtures.end(), [](const auto& value) {
+            return value.toString() == "FX001_EMPTY_LEDGER";
+        });
+    const bool hasLastFixture =
+        std::any_of(requiredFixtures.begin(), requiredFixtures.end(), [](const auto& value) {
+            return value.toString() == "FX013_MULTI_CURRENCY_UNSUPPORTED";
+        });
+    expectTrue(hasFirstFixture, "replay preview requiredFixtures contains FX001");
+    expectTrue(hasLastFixture, "replay preview requiredFixtures contains FX013");
+
+    const auto futureOutputs = replayPayload.value("futureOutputs").toArray();
+    const bool hasPositionOutput =
+        std::any_of(futureOutputs.begin(), futureOutputs.end(), [](const auto& value) {
+            return value.toString() == "PositionListResponse";
+        });
+    const bool hasCashOutput =
+        std::any_of(futureOutputs.begin(), futureOutputs.end(), [](const auto& value) {
+            return value.toString() == "CashSummaryDto";
+        });
+    expectTrue(hasPositionOutput, "replay preview futureOutputs contains PositionListResponse");
+    expectTrue(hasCashOutput, "replay preview futureOutputs contains CashSummaryDto");
+
+    const auto replayErrors = replayPayload.value("errors").toArray();
+    const bool hasUnavailableError =
+        std::any_of(replayErrors.begin(), replayErrors.end(), [](const auto& value) {
+            return value.toObject().value("code").toString() == "REPLAY_NOT_AVAILABLE";
+        });
+    expectTrue(hasUnavailableError, "replay preview errors contains REPLAY_NOT_AVAILABLE");
+
+    const auto replayWarnings = replayPayload.value("warnings").toArray();
+    const bool hasNotImplementedWarning =
+        std::any_of(replayWarnings.begin(), replayWarnings.end(), [](const auto& value) {
+            return value.toObject().value("code").toString() == "REPLAY_NOT_IMPLEMENTED";
+        });
+    expectTrue(hasNotImplementedWarning, "replay preview warnings contains REPLAY_NOT_IMPLEMENTED");
+
+    const auto forbiddenWrites = replayPayload.value("forbiddenWrites").toArray();
+    const bool forbidsTradeLog =
+        std::any_of(forbiddenWrites.begin(), forbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_log";
+        });
+    const bool forbidsPositionSnapshot =
+        std::any_of(forbiddenWrites.begin(), forbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    expectTrue(forbidsTradeLog, "replay preview forbiddenWrites contains trade_log");
+    expectTrue(forbidsPositionSnapshot, "replay preview forbiddenWrites contains position_snapshot");
+
+    const auto boundaries = replayPayload.value("boundaries").toArray();
+    const bool statesNoReplay =
+        std::any_of(boundaries.begin(), boundaries.end(), [](const auto& value) {
+            return value.toString().contains("does not replay accounting");
+        });
+    expectTrue(statesNoReplay, "replay preview boundaries state no replay");
+
+    auto replayPreviewMissingPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionAccountingReplayPreview),
+        responses,
+        "accounting.replay.preview missing payload");
+    expectSuccess(replayPreviewMissingPayload, "accounting.replay.preview missing payload guard");
+    expectTrue(
+        !replayPreviewMissingPayload.value("payload").toObject().value("implemented").toBool(true),
+        "replay preview missing payload implemented=false");
+
+    auto replayPreviewInvalidPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionAccountingReplayPreview, "[]"),
+        responses,
+        "accounting.replay.preview invalid payload");
+    expectTrue(
+        !replayPreviewInvalidPayload.value("success").toBool(true),
+        "accounting.replay.preview invalid payload success=false");
+    expectEqual(
+        replayPreviewInvalidPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "accounting.replay.preview invalid payload returns E1001");
+
     auto unknownAccounting =
-        sendEnvelope(client, envelope("accounting.replay.preview"), responses, "unknown accounting action");
+        sendEnvelope(client, envelope("accounting.unknown"), responses, "unknown accounting action");
     expectTrue(
         !unknownAccounting.value("success").toBool(true),
         "unknown accounting action success=false");

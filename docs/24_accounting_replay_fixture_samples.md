@@ -980,3 +980,16 @@ currency or missing FX status in UI-visible issues.
 - Future ViewModel tests should use these fixtures through
   [Position Shell ViewModel Design](25_position_shell_viewmodel_design.md) and
   [Position DTO ViewModel Mapping](26_position_dto_viewmodel_mapping.md).
+
+## 7. TASK-049 Replay Preview Guard Reference
+
+`accounting.replay.preview` now references FX001-FX013 as required fixtures,
+but it remains a non-implementation guard.
+
+- The guard must return `implemented=false` and `replayExecuted=false`.
+- The guard must not return calculated position, cash, PnL, base-position, or
+  sniper-pool results.
+- Fixture-backed replay implementation must cover all FX001-FX013 samples
+  before returning real preview output.
+- The fixture samples still do not write a real database, do not rely on
+  external market data, do not drive trading, and do not generate TradeDraft.

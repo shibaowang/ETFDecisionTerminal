@@ -236,3 +236,6 @@ v0.1 草案。
 - `accounting.health` only means the accounting boundary health action is callable; it must not be treated as replay, position, cash, PnL, base-position, or sniper-pool implementation.
 - `accounting.health` must remain read-only and must not be extended into a write action.
 - New accounting actions require separate task authorization, explicit read/write scope, fixture coverage, and boundary tests.
+- `accounting.replay.preview` currently means the replay preview guard is callable; it must not be treated as replay implementation.
+- The replay preview guard must remain read-only and must not be expanded into writes, snapshot generation, or fake DTO output.
+- Real replay preview implementation must reference and test all FX001-FX013 fixture samples before returning calculated results.

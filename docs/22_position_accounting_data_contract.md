@@ -476,6 +476,27 @@ The following actions are still contract drafts and are not implemented:
 `accounting.health` does not write `trade_log`, snapshots, or `audit_log`, and
 does not calculate accounting values.
 
+## TASK-049 Replay Preview Guard Status
+
+`accounting.replay.preview` has been implemented as a read-only guard. It is
+not a replay implementation and it does not return real accounting DTOs.
+
+Current guard fields include:
+
+- `implemented=false`
+- `replayExecuted=false`
+- `writeEnabled=false`
+- `status=REPLAY_NOT_AVAILABLE`
+- `requiredFixtures=FX001-FX013`
+- `futureOutputs` naming `PositionListResponse`, `CashSummaryDto`,
+  `PortfolioPnlDto`, `BasePositionDto`, `SniperPoolDto`, and
+  `AccountingIssueDto`
+
+`PositionListResponse`, `CashSummaryDto`, `PortfolioPnlDto`,
+`BasePositionDto`, and `SniperPoolDto` remain future output contracts. They are
+not produced by the guard. A future implementation must first cover all
+fixture samples in [Accounting Replay Fixture Samples](24_accounting_replay_fixture_samples.md).
+
 ## 18. Prohibited Scope
 
 - 不写 trade_log.

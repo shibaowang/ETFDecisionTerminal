@@ -285,3 +285,11 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - ShellServices still obtains data only through whitelisted DataService read-only actions: `data.instruments.list`, `data.strategies.list`, and `data.otc.list`.
 - OTC refresh requires a selected strategy code; empty strategy code fails locally before any service request is sent.
 - The page is read-only and exposes no edit, delete, strategy execution, TradeDraft generation, trade, audit append, or write controls.
+
+## Accounting Read-Only Guard Actions
+
+- TASK-048 adds `accounting.health` as a read-only accounting capability endpoint.
+- TASK-049 adds `accounting.replay.preview` as a read-only non-implementation guard.
+- `accounting.replay.preview` confirms the replay preview route and contract exist, but returns `implemented=false`, `replayExecuted=false`, and `status=REPLAY_NOT_AVAILABLE`.
+- It does not run accounting replay, does not calculate positions / cash / PnL, does not read `trade_log` for calculation, and does not write `audit_log`, `trade_log`, snapshots, or TradeDraft tables.
+- Future real replay implementation must be fixture-backed and cover FX001-FX013 before returning calculated preview data.

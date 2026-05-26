@@ -507,3 +507,131 @@ Boundary rules:
 - The action must not call `data.audit.append` and must not write `audit_log`,
   `trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
   `position_snapshot`, or `portfolio_summary`.
+
+## TASK-049 accounting.replay.preview read-only guard
+
+`accounting.replay.preview` is a read-only action, but it is not an accounting
+replay implementation. It exists so clients can discover the future replay
+preview contract and receive an explicit non-implementation response.
+
+Success semantics: this action uses `ProtocolResponse.success=true` when the
+guard endpoint is called with a JSON object payload. The payload then carries
+the domain status:
+
+- `implemented=false`
+- `replayExecuted=false`
+- `writeEnabled=false`
+- `status=REPLAY_NOT_AVAILABLE`
+
+This choice means the protocol call succeeded and the action returned the
+expected guard. Callers must not treat it as a successful replay result.
+
+Request payload:
+
+```json
+{
+  "accountId": "optional",
+  "portfolioId": "optional",
+  "sourceFromTime": "optional ISO-8601",
+  "sourceToTime": "optional ISO-8601",
+  "fixtureMode": false,
+  "requestedOutputs": [
+    "positions",
+    "cash",
+    "pnl",
+    "basePosition",
+    "sniperPool"
+  ]
+}
+```
+
+Current request handling:
+
+- Missing payload is treated as `{}` and returns the guard.
+- Payload must be a JSON object; array or malformed payloads return a protocol
+  error.
+- `accountId`, `portfolioId`, time range, `fixtureMode`, and
+  `requestedOutputs` do not trigger database calculation.
+- `requestedOutputs` is echoed only as request scope metadata.
+
+Response payload:
+
+```json
+{
+  "module": "accounting",
+  "action": "accounting.replay.preview",
+  "implemented": false,
+  "readOnly": true,
+  "replayExecuted": false,
+  "writeEnabled": false,
+  "contractVersion": "0.3-draft",
+  "calculationVersion": "not-implemented",
+  "status": "REPLAY_NOT_AVAILABLE",
+  "message": "Accounting replay preview is not implemented yet.",
+  "requestedScope": {
+    "accountId": "",
+    "portfolioId": "",
+    "sourceFromTime": "",
+    "sourceToTime": "",
+    "requestedOutputs": []
+  },
+  "requiredFixtures": [
+    "FX001_EMPTY_LEDGER",
+    "FX002_SINGLE_BUY",
+    "FX003_BUY_SELL_PARTIAL",
+    "FX004_SELL_EXCEEDS_POSITION",
+    "FX005_MISSING_FEE",
+    "FX006_NEGATIVE_CASH",
+    "FX007_MULTI_INSTRUMENT",
+    "FX008_MULTI_ACCOUNT",
+    "FX009_BASE_POSITION_LOCKED",
+    "FX010_SNIPER_TIER_COMPLETED",
+    "FX011_STALE_SNAPSHOT",
+    "FX012_MISSING_MARKET_PRICE",
+    "FX013_MULTI_CURRENCY_UNSUPPORTED"
+  ],
+  "futureOutputs": [
+    "PositionListResponse",
+    "CashSummaryDto",
+    "PortfolioPnlDto",
+    "BasePositionDto",
+    "SniperPoolDto",
+    "AccountingIssueDto"
+  ],
+  "forbiddenWrites": [
+    "trade_log",
+    "trade_execution_group",
+    "trade_draft",
+    "cash_snapshot",
+    "position_snapshot",
+    "portfolio_summary",
+    "audit_log"
+  ],
+  "nextRequiredTask": "implement fixture-backed accounting replay before returning preview results",
+  "warnings": [
+    {
+      "code": "REPLAY_NOT_IMPLEMENTED",
+      "message": "Fixture-backed accounting replay must be implemented in a future task.",
+      "blocking": false
+    }
+  ],
+  "errors": [
+    {
+      "code": "REPLAY_NOT_AVAILABLE",
+      "message": "Accounting replay preview is not available yet.",
+      "blocking": true
+    }
+  ]
+}
+```
+
+Boundary rules:
+
+- The action must not execute replay.
+- The action must not read `trade_log` for calculation.
+- The action must not return fake `PositionSummaryDto`, `CashSummaryDto`, or
+  `PortfolioPnlDto` values.
+- The action must not call `data.audit.append`.
+- The action must not write `audit_log`, `trade_log`,
+  `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+  `position_snapshot`, or `portfolio_summary`.

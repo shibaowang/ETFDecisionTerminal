@@ -444,6 +444,10 @@ Required fixture categories:
 The detailed fixture plan is in
 [Position Accounting Test Fixture Design](23_position_accounting_test_fixture_design.md).
 
+Detailed DTO expected outputs for the first fixture set are in
+[Accounting Replay Fixture Samples](24_accounting_replay_fixture_samples.md).
+FX001-FX013 are the first future replay implementation test sources.
+
 ## 18. Prohibited Scope
 
 - 不写 trade_log.

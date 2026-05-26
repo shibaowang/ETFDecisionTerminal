@@ -20,6 +20,7 @@ constexpr const char* kFx001EmptyLedger = "FX001_EMPTY_LEDGER";
 constexpr const char* kFx002SingleBuy = "FX002_SINGLE_BUY";
 constexpr const char* kFx003BuySellPartial = "FX003_BUY_SELL_PARTIAL";
 constexpr const char* kFx004SellExceedsPosition = "FX004_SELL_EXCEEDS_POSITION";
+constexpr const char* kFx005MissingFee = "FX005_MISSING_FEE";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -324,7 +325,7 @@ QJsonObject makePartialSellPortfolioPnl(
 bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId) const
 {
     return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial
-        || fixtureId == kFx004SellExceedsPosition;
+        || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -583,6 +584,62 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
             "SELL_EXCEEDS_POSITION",
             "Sell quantity exceeds available position.",
             true,
+            fixture.fixtureId));
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx005MissingFee) {
+        const auto invalidFx005 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX005_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.tradeFacts.size() != 1 || fixture.tradeFacts.front().action != "BUY") {
+            return invalidFx005("FX005_MISSING_FEE requires exactly one BUY trade fact.");
+        }
+
+        const auto& trade = fixture.tradeFacts.front();
+        if (trade.instrumentCode.empty() || trade.quantityText.empty() || trade.priceText.empty()
+            || trade.amountText.empty()) {
+            return invalidFx005("FX005_MISSING_FEE requires instrument, quantity, price, and amount.");
+        }
+        if (!trade.feeText.empty()) {
+            return invalidFx005("FX005_MISSING_FEE requires missing or empty feeText.");
+        }
+
+        const auto expectedIssue = std::find_if(
+            fixture.expectedIssues.begin(),
+            fixture.expectedIssues.end(),
+            [](const AccountingExpectedIssue& issue) { return issue.code == "MISSING_FEE"; });
+        if (expectedIssue == fixture.expectedIssues.end()) {
+            return invalidFx005("FX005_MISSING_FEE requires an expected MISSING_FEE issue.");
+        }
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = expectedIssue->level == "ERROR" ? kReplayStatusError : kReplayStatusWarning;
+        result.message = "Fee is missing.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.issues.push_back(makeIssue(
+            expectedIssue->level.empty() ? "WARNING" : expectedIssue->level,
+            "MISSING_FEE",
+            expectedIssue->message.empty() ? "Fee is missing." : expectedIssue->message,
+            expectedIssue->blocking,
             fixture.fixtureId));
         return result;
     }

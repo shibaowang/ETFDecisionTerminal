@@ -269,3 +269,7 @@ v0.1 草案。
 - FX005 missing-fee handling and FX006 negative-cash handling must remain separate tasks.
 - Do not mix multiple error fixtures into one implementation task.
 - Every new replay task after FX004 must preserve FX001-FX004 tests and keep FX005-FX013 explicitly guarded until their own task is authorized.
+- After FX005, do not jump directly to multi-account, multi-instrument, multi-currency, base-position, sniper-pool, or market valuation replay.
+- FX006 negative-cash handling must remain a separate task.
+- Missing fee must not be silently defaulted to `fee=0`; any zero-fee policy must be explicitly authorized by a fixture contract or task.
+- Every new replay task after FX005 must preserve FX001-FX005 tests and keep FX006-FX013 explicitly guarded until their own task is authorized.

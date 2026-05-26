@@ -245,3 +245,7 @@ v0.1 草案。
 - `tests/AccountingFixtures/validate_accounting_replay_fixtures.py` is static validation only and does not replace replay calculation tests.
 - Replay implementation tasks must not bypass `tests/AccountingFixtures/AccountingFixtureLoader` or an explicitly compatible fixture loader.
 - Fixture loader / parser tasks must stay read-only and must not implement replay, cash calculation, position calculation, PnL calculation, SQLite access, service calls, or output writes.
+- Replay implementation tasks must preserve `AccountingReplayTestHarness` coverage for all FX001-FX013 fixtures.
+- Do not make replay tests pass by deleting fixtures, skipping fixtures, or excluding error fixtures.
+- Replacing `AccountingReplayStubEngine` with real replay logic requires explicit task authorization and fixture-backed assertions.
+- Stub harness tasks must keep `NOT_IMPLEMENTED` as the expected result until replay implementation is authorized.

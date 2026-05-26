@@ -32,6 +32,11 @@ def main() -> int:
     accounting_fixture_loader_header_path = root / "tests" / "AccountingFixtures" / "AccountingFixtureLoader.h"
     accounting_fixture_loader_source_path = root / "tests" / "AccountingFixtures" / "AccountingFixtureLoader.cpp"
     accounting_fixture_loader_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_fixture_loader.cpp"
+    accounting_replay_stub_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayStubEngine.h"
+    accounting_replay_stub_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayStubEngine.cpp"
+    accounting_replay_harness_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayTestHarness.h"
+    accounting_replay_harness_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayTestHarness.cpp"
+    accounting_replay_harness_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_replay_harness.cpp"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -62,6 +67,11 @@ def main() -> int:
     require(accounting_fixture_loader_header_path.exists(), "accounting fixture loader header exists")
     require(accounting_fixture_loader_source_path.exists(), "accounting fixture loader source exists")
     require(accounting_fixture_loader_test_path.exists(), "accounting fixture loader test exists")
+    require(accounting_replay_stub_header_path.exists(), "accounting replay stub header exists")
+    require(accounting_replay_stub_source_path.exists(), "accounting replay stub source exists")
+    require(accounting_replay_harness_header_path.exists(), "accounting replay harness header exists")
+    require(accounting_replay_harness_source_path.exists(), "accounting replay harness source exists")
+    require(accounting_replay_harness_test_path.exists(), "accounting replay harness test exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -89,6 +99,11 @@ def main() -> int:
     accounting_fixture_loader_header = accounting_fixture_loader_header_path.read_text(encoding="utf-8")
     accounting_fixture_loader_source = accounting_fixture_loader_source_path.read_text(encoding="utf-8")
     accounting_fixture_loader_test = accounting_fixture_loader_test_path.read_text(encoding="utf-8")
+    accounting_replay_stub_header = accounting_replay_stub_header_path.read_text(encoding="utf-8")
+    accounting_replay_stub_source = accounting_replay_stub_source_path.read_text(encoding="utf-8")
+    accounting_replay_harness_header = accounting_replay_harness_header_path.read_text(encoding="utf-8")
+    accounting_replay_harness_source = accounting_replay_harness_source_path.read_text(encoding="utf-8")
+    accounting_replay_harness_test = accounting_replay_harness_test_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -140,6 +155,9 @@ def main() -> int:
     )
     require("tests/fixtures/accounting_replay" in readme, "README links accounting replay fixture files")
     require("AccountingFixtureLoader" in readme, "README documents accounting fixture loader")
+    require("AccountingReplayTestHarness" in readme, "README documents replay harness")
+    require("AccountingReplayStubEngine" in readme, "README documents replay stub engine")
+    require("NOT_IMPLEMENTED" in readme, "README documents replay stub status")
     require(
         "25_position_shell_viewmodel_design.md" in readme,
         "README links position Shell ViewModel design",
@@ -430,6 +448,10 @@ def main() -> int:
     require("does not calculate cash balances" in accounting_fixture_samples, "fixture samples doc states loader does not calculate")
     require("does not access SQLite" in accounting_fixture_samples, "fixture samples doc states loader does not access SQLite")
     require("does not call DataService" in accounting_fixture_samples, "fixture samples doc states loader does not call service")
+    require("AccountingReplayTestHarness" in accounting_fixture_samples, "fixture samples doc documents replay harness")
+    require("AccountingReplayStubEngine" in accounting_fixture_samples, "fixture samples doc documents stub engine")
+    require("status=NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents NOT_IMPLEMENTED status")
+    require("all FX001-FX013 fixtures are covered" in accounting_fixture_samples, "fixture samples doc documents full fixture coverage")
 
     require("ShellPositionListModel" in position_viewmodel_design, "ViewModel design includes ShellPositionListModel")
     require("ShellCashSummaryObject" in position_viewmodel_design, "ViewModel design includes ShellCashSummaryObject")
@@ -528,7 +550,32 @@ def main() -> int:
     require("loadAll" in accounting_fixture_loader_test, "loader test covers loadAll")
     require("FX001_EMPTY_LEDGER" in accounting_fixture_loader_test, "loader test covers FX001")
     require("FX013_MULTI_CURRENCY_UNSUPPORTED" in accounting_fixture_loader_test, "loader test covers FX013")
-    require("accounting_replay_fixture_loader" in (root / "tests" / "AccountingFixtures" / "CMakeLists.txt").read_text(encoding="utf-8"), "CTest includes fixture loader test")
+    accounting_fixtures_cmake = (root / "tests" / "AccountingFixtures" / "CMakeLists.txt").read_text(encoding="utf-8")
+    require("accounting_replay_fixture_loader" in accounting_fixtures_cmake, "CTest includes fixture loader test")
+    require("accounting_replay_harness_skeleton" in accounting_fixtures_cmake, "CTest includes replay harness test")
+    require("AccountingReplayStubResult" in accounting_replay_stub_header, "stub header declares result")
+    require("implemented" in accounting_replay_stub_header, "stub result exposes implemented")
+    require("replayExecuted" in accounting_replay_stub_header, "stub result exposes replayExecuted")
+    require("requiredFutureTask" in accounting_replay_stub_header, "stub result exposes requiredFutureTask")
+    require("NOT_IMPLEMENTED" in accounting_replay_stub_source, "stub returns NOT_IMPLEMENTED")
+    require("INVALID_FIXTURE" in accounting_replay_stub_source, "stub handles invalid fixture")
+    require("expectedIssues.size" in accounting_replay_stub_source, "stub reads issue count metadata")
+    require("AccountingReplayTestHarness" in accounting_replay_harness_header, "harness header declares harness")
+    require("loadFixtures" in accounting_replay_harness_header, "harness exposes loadFixtures")
+    require("runAll" in accounting_replay_harness_header, "harness exposes runAll")
+    require("missingFixtureIds" in accounting_replay_harness_header, "harness exposes missingFixtureIds")
+    require("AccountingFixtureLoader" in accounting_replay_harness_header, "harness owns fixture loader")
+    require("loader_.loadAll" in accounting_replay_harness_source, "harness uses fixture loader")
+    require("previewFixture" in accounting_replay_harness_source, "harness calls stub preview")
+    require("FX001_EMPTY_LEDGER" in accounting_replay_harness_test, "harness test covers FX001")
+    require("FX013_MULTI_CURRENCY_UNSUPPORTED" in accounting_replay_harness_test, "harness test covers FX013")
+    require("NOT_IMPLEMENTED" in accounting_replay_harness_test, "harness test expects NOT_IMPLEMENTED")
+    require("implemented is false" in accounting_replay_harness_test, "harness test checks implemented false")
+    require("replayExecuted is false" in accounting_replay_harness_test, "harness test checks replayExecuted false")
+    require("SQLite" not in accounting_replay_harness_source, "harness source does not access SQLite")
+    require("DataService" not in accounting_replay_harness_source, "harness source does not call DataService")
+    require("SQLite" not in accounting_replay_stub_source, "stub source does not access SQLite")
+    require("DataService" not in accounting_replay_stub_source, "stub source does not call DataService")
     return 0
 
 

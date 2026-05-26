@@ -17,6 +17,7 @@ using etfdt::tests::accounting::AccountingReplayAssertionSkeleton;
 using etfdt::tests::accounting::AccountingReplayMinimalEngine;
 using etfdt::tests::accounting::AccountingReplayResult;
 using etfdt::tests::accounting::AccountingReplayTestHarness;
+using etfdt::tests::accounting::hasBasePosition;
 using etfdt::tests::accounting::hasCashSummary;
 using etfdt::tests::accounting::hasEmptyReplayOutputs;
 using etfdt::tests::accounting::hasPortfolioPnl;
@@ -30,6 +31,7 @@ using etfdt::tests::accounting::kAssertionPassFx005MissingFee;
 using etfdt::tests::accounting::kAssertionPassFx006NegativeCash;
 using etfdt::tests::accounting::kAssertionPassFx007MultiInstrument;
 using etfdt::tests::accounting::kAssertionPassFx008MultiAccount;
+using etfdt::tests::accounting::kAssertionPassFx009BasePositionLocked;
 using etfdt::tests::accounting::kAssertionPassNotImplementedGuard;
 using etfdt::tests::accounting::kReplayStatusError;
 using etfdt::tests::accounting::kReplayStatusInvalidFixture;
@@ -112,6 +114,7 @@ int main(int argc, char** argv)
     const auto fx006 = requireValue(harness.fixtureByIdForTest("FX006_NEGATIVE_CASH"), "FX006 fixture exists");
     const auto fx007 = requireValue(harness.fixtureByIdForTest("FX007_MULTI_INSTRUMENT"), "FX007 fixture exists");
     const auto fx008 = requireValue(harness.fixtureByIdForTest("FX008_MULTI_ACCOUNT"), "FX008 fixture exists");
+    const auto fx009 = requireValue(harness.fixtureByIdForTest("FX009_BASE_POSITION_LOCKED"), "FX009 fixture exists");
 
     AccountingReplayMinimalEngine engine;
     require(engine.supportsFixture("FX001_EMPTY_LEDGER"), "minimal engine supports FX001");
@@ -122,7 +125,8 @@ int main(int argc, char** argv)
     require(engine.supportsFixture("FX006_NEGATIVE_CASH"), "minimal engine supports FX006");
     require(engine.supportsFixture("FX007_MULTI_INSTRUMENT"), "minimal engine supports FX007");
     require(engine.supportsFixture("FX008_MULTI_ACCOUNT"), "minimal engine supports FX008");
-    require(!engine.supportsFixture("FX009_BASE_POSITION_LOCKED"), "minimal engine does not support FX009");
+    require(engine.supportsFixture("FX009_BASE_POSITION_LOCKED"), "minimal engine supports FX009");
+    require(!engine.supportsFixture("FX010_SNIPER_TIER_COMPLETED"), "minimal engine does not support FX010");
 
     const auto fx001Direct = engine.replayFixture(fx001);
     require(fx001Direct.implemented, "FX001 direct replay implemented=true");
@@ -287,6 +291,27 @@ int main(int argc, char** argv)
     require(!hasReplayIssueCode(fx008Direct, "MARKET_PRICE_MISSING"), "FX008 does not report missing market price when fixture provides one");
     require(!hasBlockingIssue(fx008Direct), "FX008 has no blocking issue");
 
+    const auto fx009Direct = engine.replayFixture(fx009);
+    require(fx009Direct.implemented, "FX009 direct replay implemented=true");
+    require(fx009Direct.replayExecuted, "FX009 direct replayExecuted=true");
+    require(fx009Direct.status == kReplayStatusOk, "FX009 direct status=OK");
+    require(hasBasePosition(fx009Direct), "FX009 has basePositionRaw");
+    require(fx009Direct.basePositionRaw.value("portfolioId").toString() == "PF-DEMO-001", "FX009 base position preserves portfolioId");
+    require(fx009Direct.basePositionRaw.value("targetBaseRatioText").toString() == "20%", "FX009 targetBaseRatioText is 20%");
+    require(fx009Direct.basePositionRaw.value("targetBaseAmountText").toString() == "20000.00 CNY", "FX009 targetBaseAmountText is 20000.00 CNY");
+    require(fx009Direct.basePositionRaw.value("currentBaseRatioText").toString() == "20%", "FX009 currentBaseRatioText is 20%");
+    require(fx009Direct.basePositionRaw.value("currentBaseAmountText").toString() == "20000.00 CNY", "FX009 currentBaseAmountText is 20000.00 CNY");
+    require(fx009Direct.basePositionRaw.value("lockedBaseAmountText").toString() == "20000.00 CNY", "FX009 lockedBaseAmountText is 20000.00 CNY");
+    require(fx009Direct.basePositionRaw.value("damagedBaseAmountText").toString() == "0.00 CNY", "FX009 damagedBaseAmountText is 0.00 CNY");
+    require(fx009Direct.basePositionRaw.value("sellableAboveBaseAmountText").toString() == "0.00 CNY", "FX009 sellableAboveBaseAmountText is 0.00 CNY");
+    require(fx009Direct.basePositionRaw.value("basePositionStatus").toString() == "LOCKED", "FX009 basePositionStatus is LOCKED");
+    require(fx009Direct.basePositionRaw.value("dataQualityStatus").toString() == "OK", "FX009 dataQualityStatus is OK");
+    require(fx009Direct.sniperPoolRaw.isEmpty(), "FX009 does not implement sniperPoolRaw");
+    require(!fx009Direct.basePositionRaw.contains("tradeDraft"), "FX009 does not generate TradeDraft output");
+    require(!fx009Direct.basePositionRaw.contains("sellAction"), "FX009 does not generate sell action output");
+    require(!fx009Direct.basePositionRaw.contains("recommendedAction"), "FX009 does not generate trading recommendation output");
+    require(!hasBlockingIssue(fx009Direct), "FX009 has no blocking issue");
+
     AccountingFixture emptyFixture;
     const auto invalid = engine.replayFixture(emptyFixture);
     require(invalid.status == kReplayStatusInvalidFixture, "empty fixture id returns INVALID_FIXTURE");
@@ -368,6 +393,15 @@ int main(int argc, char** argv)
     require(fx008Assertion.passed, "FX008 multi-account assertion passes");
     require(fx008Assertion.status == kAssertionPassFx008MultiAccount, "FX008 assertion status is PASS_FX008_MULTI_ACCOUNT");
 
+    const auto fx009Harness = requireResult(harness, "FX009_BASE_POSITION_LOCKED");
+    require(fx009Harness.status == kReplayStatusOk, "minimal harness FX009 status=OK");
+    require(fx009Harness.implemented, "minimal harness FX009 implemented=true");
+    require(fx009Harness.replayExecuted, "minimal harness FX009 replayExecuted=true");
+    require(hasBasePosition(fx009Harness), "minimal harness FX009 has basePositionRaw");
+    const auto fx009Assertion = assertions.assertFx009BasePositionLockedResult(fx009, fx009Harness);
+    require(fx009Assertion.passed, "FX009 base-position assertion passes");
+    require(fx009Assertion.status == kAssertionPassFx009BasePositionLocked, "FX009 assertion status is PASS_FX009_BASE_POSITION_LOCKED");
+
     for (const auto& fixtureId : harness.coveredFixtureIds()) {
         const auto fixture = requireValue(harness.fixtureByIdForTest(fixtureId), "fixture exists for minimal result loop");
         const auto result = requireResult(harness, fixtureId);
@@ -409,6 +443,13 @@ int main(int argc, char** argv)
             require(result.replayExecuted, "FX008 remains replayExecuted=true in minimal loop");
             continue;
         }
+        if (fixtureId == "FX009_BASE_POSITION_LOCKED") {
+            require(result.status == kReplayStatusOk, "FX009 remains OK in minimal loop");
+            require(result.implemented, "FX009 remains implemented=true in minimal loop");
+            require(result.replayExecuted, "FX009 remains replayExecuted=true in minimal loop");
+            require(hasBasePosition(result), "FX009 keeps basePositionRaw in minimal loop");
+            continue;
+        }
 
         require(result.status == kReplayStatusNotImplemented, fixtureId + " remains NOT_IMPLEMENTED");
         require(!result.implemented, fixtureId + " remains implemented=false");
@@ -418,6 +459,6 @@ int main(int argc, char** argv)
         require(assertion.status == kAssertionPassNotImplementedGuard, fixtureId + " guard status is PASS_NOT_IMPLEMENTED_GUARD");
     }
 
-    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008 tests passed\n";
+    std::cout << "Accounting replay minimal FX001/FX002/FX003/FX004/FX005/FX006/FX007/FX008/FX009 tests passed\n";
     return 0;
 }

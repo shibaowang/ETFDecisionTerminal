@@ -286,3 +286,7 @@ v0.1 草案。
 - FX009 base-position handling must remain a separate task.
 - Multi-account replay must not mix `accountId`, `portfolioId`, position, or cash dimensions.
 - Every new replay task after FX008 must preserve FX001-FX008 tests and keep FX009-FX013 explicitly guarded until their own task is authorized.
+- After FX009, do not jump directly to multi-currency, real market valuation, strategy execution, or TradeDraft generation.
+- FX010 sniper tier handling must remain a separate task.
+- `sellableAboveBaseAmountText` must not be interpreted as a sell recommendation, sell action, broker order, or TradeDraft.
+- Every new replay task after FX009 must preserve FX001-FX009 tests and keep FX010-FX013 explicitly guarded until their own task is authorized.

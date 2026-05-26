@@ -24,6 +24,7 @@ constexpr const char* kFx005MissingFee = "FX005_MISSING_FEE";
 constexpr const char* kFx006NegativeCash = "FX006_NEGATIVE_CASH";
 constexpr const char* kFx007MultiInstrument = "FX007_MULTI_INSTRUMENT";
 constexpr const char* kFx008MultiAccount = "FX008_MULTI_ACCOUNT";
+constexpr const char* kFx009BasePositionLocked = "FX009_BASE_POSITION_LOCKED";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -168,6 +169,27 @@ std::string formatUnitPriceFromCost(long long costCents, long long quantity, con
     text += std::to_string(fraction);
     text += " ";
     text += currency;
+    return text;
+}
+
+std::string formatRatioText(long long numeratorCents, long long denominatorCents)
+{
+    if (denominatorCents <= 0) {
+        return {};
+    }
+
+    const long long basisPoints = (numeratorCents * 10000) / denominatorCents;
+    const auto whole = basisPoints / 100;
+    const auto fraction = std::llabs(basisPoints % 100);
+    std::string text = std::to_string(whole);
+    if (fraction != 0) {
+        text += ".";
+        if (fraction < 10) {
+            text += "0";
+        }
+        text += std::to_string(fraction);
+    }
+    text += "%";
     return text;
 }
 
@@ -445,6 +467,36 @@ QJsonObject makeUnavailableValuationPortfolioPnl(const AccountingFixture& fixtur
     return response;
 }
 
+QJsonObject makeBasePositionRaw(
+    const AccountingFixture& fixture,
+    long long totalAssetsCents,
+    long long currentBaseAmountCents,
+    long long targetBaseAmountCents,
+    const QString& dataQualityStatus)
+{
+    const auto currency = scopeString(fixture, "currency");
+    const long long lockedBaseAmountCents = std::min(currentBaseAmountCents, targetBaseAmountCents);
+    const long long damagedBaseAmountCents = std::max(0LL, targetBaseAmountCents - currentBaseAmountCents);
+    const long long sellableAboveBaseAmountCents = std::max(0LL, currentBaseAmountCents - targetBaseAmountCents);
+    const auto basePositionStatus = currentBaseAmountCents < targetBaseAmountCents
+        ? QStringLiteral("UNDER_BASE")
+        : QStringLiteral("LOCKED");
+
+    QJsonObject response;
+    response.insert(QStringLiteral("portfolioId"), QString::fromStdString(scopeString(fixture, "portfolioId")));
+    response.insert(QStringLiteral("targetBaseRatioText"), QStringLiteral("20%"));
+    response.insert(QStringLiteral("targetBaseAmountText"), QString::fromStdString(formatMoney(targetBaseAmountCents, currency)));
+    response.insert(QStringLiteral("currentBaseRatioText"), QString::fromStdString(formatRatioText(currentBaseAmountCents, totalAssetsCents)));
+    response.insert(QStringLiteral("currentBaseAmountText"), QString::fromStdString(formatMoney(currentBaseAmountCents, currency)));
+    response.insert(QStringLiteral("lockedBaseAmountText"), QString::fromStdString(formatMoney(lockedBaseAmountCents, currency)));
+    response.insert(QStringLiteral("basePositionStatus"), basePositionStatus);
+    response.insert(QStringLiteral("damagedBaseAmountText"), QString::fromStdString(formatMoney(damagedBaseAmountCents, currency)));
+    response.insert(QStringLiteral("sellableAboveBaseAmountText"), QString::fromStdString(formatMoney(sellableAboveBaseAmountCents, currency)));
+    response.insert(QStringLiteral("dataQualityStatus"), dataQualityStatus);
+    response.insert(QStringLiteral("readOnly"), true);
+    return response;
+}
+
 } // namespace
 
 bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId) const
@@ -452,7 +504,7 @@ bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId
     return fixtureId == kFx001EmptyLedger || fixtureId == kFx002SingleBuy || fixtureId == kFx003BuySellPartial
         || fixtureId == kFx004SellExceedsPosition || fixtureId == kFx005MissingFee
         || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument
-        || fixtureId == kFx008MultiAccount;
+        || fixtureId == kFx008MultiAccount || fixtureId == kFx009BasePositionLocked;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -1132,6 +1184,113 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
             makeMultiAccountCashSummary(fixture, accounts, hasMarketPriceMissing ? QStringLiteral("WARNING") : QStringLiteral("OK"));
         result.portfolioPnlRaw = hasMarketPriceMissing ? makeMissingPricePortfolioPnl(fixture)
                                                        : makeUnavailableValuationPortfolioPnl(fixture, QStringLiteral("OK"));
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx009BasePositionLocked) {
+        const auto invalidFx009 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX009_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        if (fixture.cashFacts.size() != 1 || fixture.cashFacts.front().action != "INITIAL_CASH") {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires exactly one INITIAL_CASH fact.");
+        }
+        if (fixture.tradeFacts.size() != 1 || fixture.tradeFacts.front().action != "BUY") {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires exactly one BUY trade fact.");
+        }
+        if (fixture.marketPriceFacts.size() != 1) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires one market price fact for the base instrument.");
+        }
+
+        const auto& initialCash = fixture.cashFacts.front();
+        const auto& trade = fixture.tradeFacts.front();
+        const auto& marketPrice = fixture.marketPriceFacts.front();
+        const auto accountId = scopeString(fixture, "accountId");
+        const auto portfolioId = scopeString(fixture, "portfolioId");
+        const auto currency = scopeString(fixture, "currency");
+        if (currency != "CNY" || accountId.empty() || portfolioId.empty()) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires one CNY account and portfolio scope.");
+        }
+        if (initialCash.accountId != accountId || initialCash.portfolioId != portfolioId || initialCash.currency != currency) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED initial cash must match fixture scope.");
+        }
+        if (trade.accountId != accountId || trade.portfolioId != portfolioId || trade.currency != currency
+            || trade.instrumentCode.empty() || trade.quantityText.empty() || trade.priceText.empty()
+            || trade.amountText.empty() || trade.feeText.empty()) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires one scoped CNY BUY fact with full amount fields.");
+        }
+        if (marketPrice.instrumentCode != trade.instrumentCode || marketPrice.currency != currency
+            || marketPrice.priceText.empty()) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED market price must match the base instrument and currency.");
+        }
+
+        const auto quantity = parseInteger(trade.quantityText);
+        const auto buyAmount = parseMoneyText(trade.amountText, currency);
+        const auto buyFee = parseMoneyText(trade.feeText, currency);
+        const auto initial = parseMoneyText(initialCash.amountText, currency);
+        const auto marketPriceMills = parseDecimalToScale(marketPrice.priceText, 3);
+        if (!quantity.has_value() || *quantity <= 0 || !buyAmount.has_value() || !buyFee.has_value()
+            || !initial.has_value() || !marketPriceMills.has_value()) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED contains an invalid numeric field.");
+        }
+        if (buyAmount->currency != currency || buyFee->currency != currency || initial->currency != currency) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED money fields must use fixture currency.");
+        }
+
+        const long long buyCashRequirementCents = buyAmount->cents + buyFee->cents;
+        if (buyCashRequirementCents > initial->cents) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED does not handle negative-cash input; that is FX006 scope.");
+        }
+
+        const long long currentBaseAmountCents = (*quantity * *marketPriceMills) / 10;
+        const long long cashBalanceCents = initial->cents - buyCashRequirementCents;
+        const long long totalAssetsCents = cashBalanceCents + currentBaseAmountCents;
+        const long long targetBaseAmountCents = (totalAssetsCents * 20) / 100;
+        if (totalAssetsCents <= 0 || currentBaseAmountCents <= 0 || targetBaseAmountCents <= 0) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires positive total assets and base amount.");
+        }
+
+        const auto expectedBaseValue = fixture.expectedOutputsRawJson.value("basePosition");
+        if (!expectedBaseValue.isObject()) {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED requires expectedOutputs.basePosition.");
+        }
+        const auto expectedBase = expectedBaseValue.toObject();
+        if (expectedBase.value("targetBaseRatioText").toString() != "20%") {
+            return invalidFx009("FX009_BASE_POSITION_LOCKED fixture must declare a 20% target base ratio.");
+        }
+
+        const bool hasExpectedIssues = !fixture.expectedIssues.empty();
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = hasExpectedIssues ? kReplayStatusWarning : kReplayStatusOk;
+        result.message = "Base position readonly derivation completed.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement the next fixture in a separate task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        result.basePositionRaw =
+            makeBasePositionRaw(fixture, totalAssetsCents, currentBaseAmountCents, targetBaseAmountCents, hasExpectedIssues ? QStringLiteral("WARNING") : QStringLiteral("OK"));
+        for (const auto& issue : fixture.expectedIssues) {
+            result.issues.push_back(makeIssue(
+                issue.level.empty() ? "WARNING" : issue.level,
+                issue.code,
+                issue.message,
+                issue.blocking,
+                fixture.fixtureId));
+        }
         return result;
     }
 

@@ -914,6 +914,16 @@ python tests/AccountingFixtures/validate_accounting_replay_fixtures.py --fixture
 - This does not implement base-position, sniper-pool, multi-currency, real market valuation, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
 - Minimal FX008 CTest: `accounting_replay_minimal_fx008`.
 
+## TASK-063 Accounting Replay Minimal FX009
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through `FX009_BASE_POSITION_LOCKED`.
+- FX009 only derives readonly `basePositionRaw` for the 20% locked base-position fixture.
+- FX009 returns `implemented=true`, `replayExecuted=true`, `status=OK`, `targetBaseRatioText=20%`, `lockedBaseAmountText=20000.00 CNY`, and `sellableAboveBaseAmountText=0.00 CNY`.
+- `sellableAboveBaseAmountText` is a readonly display amount above the locked base; it is not a sell suggestion, order instruction, TradeDraft, or strategy output.
+- FX009 does not produce `sniperPoolRaw`, TradeDraft output, sell actions, QML bindings, SQLite access, DataService calls, output file writes, database writes, or DataService actions.
+- FX010-FX013 still return `NOT_IMPLEMENTED`.
+- Minimal FX009 CTest: `accounting_replay_minimal_fx009`.
+
 ## Current Milestone: v0.2 ReadOnly Business Pages
 
 The current milestone is `v0.2 ReadOnly Business Pages`: a local desktop read-only business page prototype layer on top of the v0.1 DataService / Shell read-only loop.

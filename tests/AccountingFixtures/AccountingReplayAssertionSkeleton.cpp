@@ -1213,6 +1213,147 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx008MultiAcc
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx009BasePositionLockedResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX009_BASE_POSITION_LOCKED") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 base-position assertion only accepts FX009_BASE_POSITION_LOCKED.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    const std::string expectedStatus = fixture.expectedIssues.empty() ? kReplayStatusOk : kReplayStatusWarning;
+    if (!result.implemented || !result.replayExecuted || result.status != expectedStatus) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 replay result must be implemented=true, replayExecuted=true, and match expected status.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto expectedBaseValue = fixture.expectedOutputsRawJson.value("basePosition");
+    if (!expectedBaseValue.isObject()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 fixture expected output must contain basePosition.",
+            false,
+            {"expectedOutputs.basePosition"});
+    }
+    const auto expectedBase = expectedBaseValue.toObject();
+    if (result.basePositionRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 must produce basePositionRaw.",
+            false,
+            {"basePositionRaw"});
+    }
+
+    const auto checkBaseField = [&](const char* field, const QString& expected) -> bool {
+        return result.basePositionRaw.value(QString::fromUtf8(field)).toString() == expected;
+    };
+    if (!checkBaseField("portfolioId", expectedBase.value("portfolioId").toString())
+        || !checkBaseField("targetBaseRatioText", expectedBase.value("targetBaseRatioText").toString())
+        || !checkBaseField("targetBaseAmountText", expectedBase.value("targetBaseAmountText").toString())
+        || !checkBaseField("currentBaseRatioText", expectedBase.value("currentBaseRatioText").toString())
+        || !checkBaseField("lockedBaseAmountText", expectedBase.value("lockedBaseAmountText").toString())
+        || !checkBaseField("sellableAboveBaseAmountText", expectedBase.value("sellableAboveBaseAmountText").toString())
+        || !checkBaseField("basePositionStatus", expectedBase.value("basePositionStatus").toString())
+        || !checkBaseField("dataQualityStatus", expectedBase.value("dataQualityStatus").toString())) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 basePositionRaw must match fixture expected base-position fields.",
+            false,
+            {
+                "basePositionRaw.portfolioId",
+                "basePositionRaw.targetBaseRatioText",
+                "basePositionRaw.targetBaseAmountText",
+                "basePositionRaw.currentBaseRatioText",
+                "basePositionRaw.lockedBaseAmountText",
+                "basePositionRaw.sellableAboveBaseAmountText",
+                "basePositionRaw.basePositionStatus",
+                "basePositionRaw.dataQualityStatus",
+            });
+    }
+
+    if (result.basePositionRaw.value("currentBaseAmountText").toString() != "20000.00 CNY"
+        || result.basePositionRaw.value("damagedBaseAmountText").toString() != "0.00 CNY") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 must expose current base amount and zero damaged base amount for the locked sample.",
+            false,
+            {"basePositionRaw.currentBaseAmountText", "basePositionRaw.damagedBaseAmountText"});
+    }
+
+    if (!result.sniperPoolRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 must not produce sniperPoolRaw.",
+            false,
+            {"sniperPoolRaw"});
+    }
+
+    if (result.basePositionRaw.contains("tradeDraft") || result.basePositionRaw.contains("sellAction")
+        || result.basePositionRaw.contains("recommendedAction")) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx009BasePositionLocked,
+            "FX009 must not expose TradeDraft, sell action, or trading recommendation fields.",
+            false,
+            {"basePositionRaw.tradeDraft", "basePositionRaw.sellAction", "basePositionRaw.recommendedAction"});
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx009BasePositionLocked,
+        "FX009 base-position replay result exposes readonly locked-base fields without actions.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "basePositionRaw.targetBaseRatioText",
+            "basePositionRaw.targetBaseAmountText",
+            "basePositionRaw.currentBaseAmountText",
+            "basePositionRaw.lockedBaseAmountText",
+            "basePositionRaw.sellableAboveBaseAmountText",
+            "basePositionRaw.basePositionStatus",
+            "sniperPoolRaw",
+            "tradeDraft",
+            "sellAction",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

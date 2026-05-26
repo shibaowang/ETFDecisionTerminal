@@ -255,3 +255,7 @@ v0.1 草案。
 - Replay implementation must gradually replace `SKIPPED_BY_DESIGN` position / cash / PnL assertions with real checks.
 - Do not clear fixture `expectedOutputs` to make tests pass.
 - Do not put fake position, cash, PnL, base-position, or sniper-pool outputs into a `NOT_IMPLEMENTED` result.
+- Replay implementation must proceed fixture by fixture.
+- Do not mix multiple fixture implementations into one task unless explicitly authorized.
+- Each new replay fixture must preserve all previous fixture tests.
+- Do not modify fixture expected outputs to fit a replay implementation.

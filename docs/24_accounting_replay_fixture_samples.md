@@ -1099,3 +1099,24 @@ FX001-FX013 are now connected to a test-only expected-output assertion skeleton.
 The assertion skeleton does not calculate cash, position, PnL, cost basis,
 base-position, or sniper-pool output. It does not access SQLite, does not call
 DataService, does not write output files, and does not write database tables.
+
+## 13. TASK-055 Minimal FX001 Empty-Ledger Replay
+
+`FX001_EMPTY_LEDGER` now has a test-only minimal replay implementation through
+`AccountingReplayMinimalEngine`.
+
+- `FX001_EMPTY_LEDGER` is the only fixture with `implemented=true`.
+- `FX001_EMPTY_LEDGER` is the only fixture with `replayExecuted=true`.
+- `FX001_EMPTY_LEDGER` returns `status=OK`.
+- The result contains `positionListResponseRaw.positions=[]`.
+- The result contains zero-style `cashSummaryRaw` and `portfolioPnlRaw` objects
+  generated from the empty input scope.
+- `FX002_SINGLE_BUY` through `FX013_MULTI_CURRENCY_UNSUPPORTED` still return
+  `NOT_IMPLEMENTED`.
+
+This implementation is intentionally limited to empty input facts. It does not
+implement buy replay, sell replay, fee handling, cash-flow calculation, cost
+basis, PnL, base-position, sniper-pool, market price valuation, SQLite access,
+DataService calls, file writes, database writes, or DataService actions. Future
+replay work must add one fixture at a time and must keep earlier fixture tests
+passing without changing fixture expected outputs to fit an incorrect algorithm.

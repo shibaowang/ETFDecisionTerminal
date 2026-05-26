@@ -2,6 +2,9 @@
 
 #include "AccountingExpectedOutputInspector.h"
 
+#include <QJsonArray>
+#include <QJsonValue>
+
 #include <utility>
 
 namespace etfdt::tests::accounting {
@@ -125,6 +128,92 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertCurrentStubRe
             "status",
             "issues",
             "rawOutputs",
+        });
+}
+
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx001EmptyLedgerResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX001_EMPTY_LEDGER") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx001EmptyLedger,
+            "FX001 empty-ledger assertion only accepts FX001_EMPTY_LEDGER.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusOk) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx001EmptyLedger,
+            "FX001 replay result must be implemented=true, replayExecuted=true, and status=OK.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    const auto positionsValue = result.positionListResponseRaw.value("positions");
+    if (!positionsValue.isArray() || !positionsValue.toArray().isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx001EmptyLedger,
+            "FX001 positionListResponseRaw.positions must exist and be empty.",
+            false,
+            {"positionListResponseRaw.positions"});
+    }
+
+    if (result.cashSummaryRaw.isEmpty() || result.portfolioPnlRaw.isEmpty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx001EmptyLedger,
+            "FX001 must include cashSummaryRaw and portfolioPnlRaw.",
+            false,
+            {"cashSummaryRaw", "portfolioPnlRaw"});
+    }
+
+    for (const auto& issue : result.issues) {
+        if (issue.blocking) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx001EmptyLedger,
+                "FX001 empty ledger result must not contain blocking issues.",
+                false,
+                {"issues"});
+        }
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx001EmptyLedger,
+        "FX001 empty-ledger replay result is implemented and contains empty positions with cash and PnL summaries.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "positionListResponseRaw.positions",
+            "cashSummaryRaw",
+            "portfolioPnlRaw",
+            "issues",
         });
 }
 

@@ -34,3 +34,8 @@ inspection in `AccountingExpectedOutputInspector`. It currently validates
 fixture expected-output structure and the `NOT_IMPLEMENTED` guard only. Real
 position, cash, and PnL value assertions remain `SKIPPED_BY_DESIGN` until replay
 is implemented.
+
+The test-only minimal replay engine is
+`tests/AccountingFixtures/AccountingReplayMinimalEngine`. It currently supports
+only `FX001_EMPTY_LEDGER`, returning `status=OK` with empty positions and zero
+cash / PnL raw summaries. FX002-FX013 remain `NOT_IMPLEMENTED`.

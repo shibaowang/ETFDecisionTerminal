@@ -20,4 +20,29 @@ bool hasEmptyReplayOutputs(const AccountingReplayResult& result)
         && result.sniperPoolRaw.isEmpty();
 }
 
+bool hasPositionListResponse(const AccountingReplayResult& result)
+{
+    return !result.positionListResponseRaw.isEmpty();
+}
+
+bool hasCashSummary(const AccountingReplayResult& result)
+{
+    return !result.cashSummaryRaw.isEmpty();
+}
+
+bool hasPortfolioPnl(const AccountingReplayResult& result)
+{
+    return !result.portfolioPnlRaw.isEmpty();
+}
+
+bool hasBasePosition(const AccountingReplayResult& result)
+{
+    return !result.basePositionRaw.isEmpty();
+}
+
+bool hasSniperPool(const AccountingReplayResult& result)
+{
+    return !result.sniperPoolRaw.isEmpty();
+}
+
 } // namespace etfdt::tests::accounting

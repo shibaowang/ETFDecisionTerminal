@@ -57,6 +57,9 @@ def main() -> int:
     accounting_replay_assertion_test_path = (
         root / "tests" / "AccountingFixtures" / "test_accounting_replay_assertions.cpp"
     )
+    accounting_replay_minimal_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayMinimalEngine.h"
+    accounting_replay_minimal_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayMinimalEngine.cpp"
+    accounting_replay_minimal_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_replay_minimal_engine.cpp"
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     docs_index_path = root / "docs" / "README.md"
@@ -102,6 +105,9 @@ def main() -> int:
     require(accounting_replay_assertion_header_path.exists(), "accounting replay assertion skeleton header exists")
     require(accounting_replay_assertion_source_path.exists(), "accounting replay assertion skeleton source exists")
     require(accounting_replay_assertion_test_path.exists(), "accounting replay assertion skeleton test exists")
+    require(accounting_replay_minimal_header_path.exists(), "accounting replay minimal engine header exists")
+    require(accounting_replay_minimal_source_path.exists(), "accounting replay minimal engine source exists")
+    require(accounting_replay_minimal_test_path.exists(), "accounting replay minimal engine test exists")
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
@@ -144,6 +150,9 @@ def main() -> int:
     accounting_replay_assertion_header = accounting_replay_assertion_header_path.read_text(encoding="utf-8")
     accounting_replay_assertion_source = accounting_replay_assertion_source_path.read_text(encoding="utf-8")
     accounting_replay_assertion_test = accounting_replay_assertion_test_path.read_text(encoding="utf-8")
+    accounting_replay_minimal_header = accounting_replay_minimal_header_path.read_text(encoding="utf-8")
+    accounting_replay_minimal_source = accounting_replay_minimal_source_path.read_text(encoding="utf-8")
+    accounting_replay_minimal_test = accounting_replay_minimal_test_path.read_text(encoding="utf-8")
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
@@ -202,6 +211,9 @@ def main() -> int:
     require("AccountingExpectedOutputInspector" in readme, "README documents expected output inspector")
     require("AccountingReplayAssertionSkeleton" in readme, "README documents assertion skeleton")
     require("SKIPPED_BY_DESIGN" in readme, "README documents skipped assertion state")
+    require("AccountingReplayMinimalEngine" in readme, "README documents minimal replay engine")
+    require("FX001_EMPTY_LEDGER" in readme, "README documents FX001 minimal replay")
+    require("accounting_replay_minimal_fx001" in readme, "README documents minimal FX001 CTest")
     require("NOT_IMPLEMENTED" in readme, "README documents replay stub status")
     require(
         "25_position_shell_viewmodel_design.md" in readme,
@@ -506,6 +518,9 @@ def main() -> int:
         "fixture samples doc documents assertion skeleton",
     )
     require("SKIPPED_BY_DESIGN" in accounting_fixture_samples, "fixture samples doc documents skipped assertions")
+    require("AccountingReplayMinimalEngine" in accounting_fixture_samples, "fixture samples doc documents minimal engine")
+    require("FX001_EMPTY_LEDGER" in accounting_fixture_samples, "fixture samples doc documents FX001 minimal replay")
+    require("FX002_SINGLE_BUY" in accounting_fixture_samples, "fixture samples doc documents FX002 remains guarded")
     require("status=NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents NOT_IMPLEMENTED status")
     require("REPLAY_NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents replay issue")
     require("positionListResponseRaw" in accounting_fixture_samples, "fixture samples doc documents position raw output")
@@ -683,12 +698,27 @@ def main() -> int:
     require("implemented=true" in accounting_replay_assertion_test, "assertion test fails implemented true result")
     require("raw output" in accounting_replay_assertion_test, "assertion test fails non-empty raw output")
     require("accounting_replay_expected_output_assertions" in accounting_fixtures_cmake, "CTest includes expected output assertion test")
+    require("AccountingReplayMinimalEngine" in accounting_replay_minimal_header, "minimal engine header declares minimal engine")
+    require("supportsFixture" in accounting_replay_minimal_header, "minimal engine exposes supportsFixture")
+    require("replayFixture" in accounting_replay_minimal_header, "minimal engine exposes replayFixture")
+    require("FX001_EMPTY_LEDGER" in accounting_replay_minimal_source, "minimal engine supports only FX001")
+    require("kReplayStatusOk" in accounting_replay_minimal_source, "minimal engine returns OK status")
+    require("positions" in accounting_replay_minimal_source, "minimal engine creates positions array")
+    require("cashSummaryRaw" in accounting_replay_minimal_test, "minimal test checks cash summary raw")
+    require("portfolioPnlRaw" in accounting_replay_minimal_test, "minimal test checks portfolio pnl raw")
+    require("FX002_SINGLE_BUY" in accounting_replay_minimal_test, "minimal test checks FX002 remains not implemented")
+    require("FX004_SELL_EXCEEDS_POSITION" in accounting_replay_minimal_test, "minimal test checks error fixture remains covered")
+    require("runAllWithMinimalEngine" in accounting_replay_harness_header, "harness exposes minimal engine mode")
+    require("runAllWithMinimalEngine" in accounting_replay_harness_source, "harness implements minimal engine mode")
+    require("accounting_replay_minimal_fx001" in accounting_fixtures_cmake, "CTest includes minimal FX001 test")
     require("SQLite" not in accounting_replay_harness_source, "harness source does not access SQLite")
     require("DataService" not in accounting_replay_harness_source, "harness source does not call DataService")
     require("SQLite" not in accounting_replay_stub_source, "stub source does not access SQLite")
     require("DataService" not in accounting_replay_stub_source, "stub source does not call DataService")
     require("SQLite" not in accounting_replay_assertion_source, "assertion source does not access SQLite")
     require("DataService" not in accounting_replay_assertion_source, "assertion source does not call DataService")
+    require("SQLite" not in accounting_replay_minimal_source, "minimal engine source does not access SQLite")
+    require("DataService" not in accounting_replay_minimal_source, "minimal engine source does not call DataService")
     return 0
 
 

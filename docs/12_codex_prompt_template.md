@@ -313,3 +313,11 @@ v0.1 草案。
 - Do not move the test-only minimal engine into production code.
 - Do not add real FX rate, market data, or network services unless a separate task authorizes them.
 - Do not modify fixture expected outputs to fit a replay implementation.
+- After FX001-FX013 test-only coverage, do not start production replay without readiness review.
+- Production replay tasks must explicitly declare whether they are read-only or write-capable.
+- Production replay tasks must explicitly declare DataAccess dependency boundaries.
+- Production replay tasks must explicitly declare DataService action scope.
+- Production replay tasks must explicitly declare snapshot behavior.
+- Production replay tasks must explicitly declare TradeLog behavior.
+- Production replay tasks must explicitly declare the QML boundary.
+- Default remains no writes, no QML accounting calculation, no TradeDraft, and no auto-trading.

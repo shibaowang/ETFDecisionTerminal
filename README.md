@@ -979,6 +979,22 @@ Milestone documents:
 - [Position DTO ViewModel Mapping](docs/26_position_dto_viewmodel_mapping.md)
 - [Documentation Index](docs/README.md)
 
+## Current Accounting Replay Milestone: v0.3 Accounting Replay Test-only Coverage
+
+FX001-FX013 test-only coverage is complete through the
+`tests/AccountingFixtures` minimal replay engine. This is not production accounting replay.
+
+Milestone documents:
+
+- [Accounting Replay Test-only Coverage Milestone](docs/31_accounting_replay_testonly_coverage_milestone.md)
+- [Production Accounting Replay Readiness Review](docs/32_production_accounting_replay_readiness_review.md)
+- [Release Notes - v0.3 Accounting Replay Test-only Coverage](docs/release_notes/v0_3_accounting_replay_testonly_coverage.md)
+
+Production accounting replay is still not implemented. DataService accounting
+replay actions are still not implemented. The current project does not perform
+SQLite replay writes, `trade_log` writes, snapshot writes, or production
+portfolio summary writes.
+
 Run tests:
 
 ```powershell

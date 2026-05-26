@@ -997,12 +997,31 @@ ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --o
   and a non-blocking `MARKET_PRICE_MISSING` issue.
 - FX012 exposes quantity / cost through `positionListResponseRaw`; it does not
   fabricate `marketValueText` or `unrealizedPnlText`.
-- FX013 still returns `NOT_IMPLEMENTED`.
+- FX013 is implemented in a later test-only minimal replay task.
 - This remains test-only code under `tests/AccountingFixtures`; it does not
   access SQLite, call DataService, query real market data, perform network
   requests, write files or database tables, add server actions, add write
   capability, modify QML, or modify `migrations/001_initial_schema.sql`.
 - Minimal FX012 CTest: `accounting_replay_minimal_fx012`.
+
+## TASK-067 Accounting Replay Minimal FX013
+
+- `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through
+  `FX013_MULTI_CURRENCY_UNSUPPORTED`.
+- FX013 only detects unsupported multi-currency replay without an FX policy.
+- FX013 returns `implemented=true`, `replayExecuted=true`, `status=ERROR`, and
+  blocking `MULTI_CURRENCY_UNSUPPORTED` / `FX_RATE_MISSING` issues matching the
+  fixture contract.
+- FX013 does not perform FX conversion.
+- FX013 does not fabricate `totalAssetsText`, `marketValueText`,
+  `unrealizedPnlText`, or `totalReturnRatioText`.
+- This completes test-only minimal engine coverage for FX001-FX013. It does not
+  mean production accounting replay is complete.
+- This remains test-only code under `tests/AccountingFixtures`; it does not
+  access SQLite, call DataService, query FX or market services, perform network
+  requests, write files or database tables, add server actions, add write
+  capability, modify QML, or modify `migrations/001_initial_schema.sql`.
+- Minimal FX013 CTest: `accounting_replay_minimal_fx013`.
 
 ## 当前尚未实现
 

@@ -307,3 +307,9 @@ v0.1 草案。
 - Missing market prices must not be hidden by fabricated `unrealizedPnlText`.
 - FX012 missing market price replay must not query real market data, call a market service, or perform network requests.
 - Every new replay task after FX012 must preserve FX001-FX012 tests and keep FX013 explicitly guarded until its own task is authorized.
+- FX013 completion does not mean production accounting replay is complete.
+- The next accounting replay milestone should be a test-only replay coverage or readiness review.
+- Real DataService replay actions must be separately authorized.
+- Do not move the test-only minimal engine into production code.
+- Do not add real FX rate, market data, or network services unless a separate task authorizes them.
+- Do not modify fixture expected outputs to fit a replay implementation.

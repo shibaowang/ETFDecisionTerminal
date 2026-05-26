@@ -28,6 +28,7 @@ constexpr const char* kFx009BasePositionLocked = "FX009_BASE_POSITION_LOCKED";
 constexpr const char* kFx010SniperTierCompleted = "FX010_SNIPER_TIER_COMPLETED";
 constexpr const char* kFx011StaleSnapshot = "FX011_STALE_SNAPSHOT";
 constexpr const char* kFx012MissingMarketPrice = "FX012_MISSING_MARKET_PRICE";
+constexpr const char* kFx013MultiCurrencyUnsupported = "FX013_MULTI_CURRENCY_UNSUPPORTED";
 constexpr const char* kMinimalSource = "AccountingReplayMinimalEngine";
 
 struct MoneyValue {
@@ -547,7 +548,7 @@ bool AccountingReplayMinimalEngine::supportsFixture(const std::string& fixtureId
         || fixtureId == kFx006NegativeCash || fixtureId == kFx007MultiInstrument
         || fixtureId == kFx008MultiAccount || fixtureId == kFx009BasePositionLocked
         || fixtureId == kFx010SniperTierCompleted || fixtureId == kFx011StaleSnapshot
-        || fixtureId == kFx012MissingMarketPrice;
+        || fixtureId == kFx012MissingMarketPrice || fixtureId == kFx013MultiCurrencyUnsupported;
 }
 
 AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const AccountingFixture& fixture)
@@ -1635,6 +1636,98 @@ AccountingReplayResult AccountingReplayMinimalEngine::replayFixture(const Accoun
         result.cashSummaryRaw =
             makeSingleBuyCashSummary(fixture, initialCash, initial->cents - buyCashRequirementCents, buyFee->cents);
         result.portfolioPnlRaw = makeMissingPricePortfolioPnl(fixture);
+        return result;
+    }
+
+    if (fixture.fixtureId == kFx013MultiCurrencyUnsupported) {
+        const auto invalidFx013 = [&](std::string message) {
+            setError(std::move(message));
+            AccountingReplayResult result = AccountingReplayResultMapper::makeInvalidFixtureResult(lastError_);
+            result.fixtureId = fixture.fixtureId;
+            result.metadata.fixtureId = fixture.fixtureId;
+            result.metadata.sourceFixtureId = fixture.fixtureId;
+            result.issues.push_back(makeIssue("ERROR", "FX013_INVALID_INPUT", lastError_, true, fixture.fixtureId));
+            return result;
+        };
+
+        std::vector<std::string> currencies;
+        const auto addCurrency = [&](const std::string& currency) {
+            if (!currency.empty() && std::find(currencies.begin(), currencies.end(), currency) == currencies.end()) {
+                currencies.push_back(currency);
+            }
+        };
+        for (const auto& trade : fixture.tradeFacts) {
+            if (trade.action != "BUY") {
+                return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED only inspects BUY facts.");
+            }
+            if (trade.accountId.empty() || trade.portfolioId.empty() || trade.instrumentCode.empty()
+                || trade.quantityText.empty() || trade.amountText.empty() || trade.feeText.empty()
+                || trade.currency.empty()) {
+                return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED requires account, portfolio, instrument, quantity, amount, fee, and currency on every BUY.");
+            }
+            addCurrency(trade.currency);
+        }
+        for (const auto& cashFact : fixture.cashFacts) {
+            if (cashFact.action != "INITIAL_CASH") {
+                return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED only inspects INITIAL_CASH facts.");
+            }
+            if (cashFact.accountId.empty() || cashFact.portfolioId.empty() || cashFact.amountText.empty()
+                || cashFact.currency.empty()) {
+                return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED requires account, portfolio, amount, and currency on every cash fact.");
+            }
+            addCurrency(cashFact.currency);
+        }
+        for (const auto& marketPrice : fixture.marketPriceFacts) {
+            if (marketPrice.instrumentCode.empty() || marketPrice.priceText.empty() || marketPrice.currency.empty()) {
+                return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED requires complete market price metadata when prices are present.");
+            }
+            addCurrency(marketPrice.currency);
+        }
+
+        const bool hasCny = std::find(currencies.begin(), currencies.end(), "CNY") != currencies.end();
+        const bool hasNonCny = std::any_of(currencies.begin(), currencies.end(), [](const std::string& currency) {
+            return currency != "CNY";
+        });
+        if (currencies.size() < 2 || !hasCny || !hasNonCny) {
+            return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED requires at least CNY and one non-CNY currency.");
+        }
+
+        std::vector<AccountingExpectedIssue> expectedFxIssues;
+        for (const auto& issue : fixture.expectedIssues) {
+            if (issue.code == "MULTI_CURRENCY_UNSUPPORTED" || issue.code == "FX_RATE_MISSING") {
+                if (!issue.blocking) {
+                    return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED expected FX issues must be blocking.");
+                }
+                expectedFxIssues.push_back(issue);
+            }
+        }
+        if (expectedFxIssues.empty()) {
+            return invalidFx013("FX013_MULTI_CURRENCY_UNSUPPORTED expectedIssues must contain MULTI_CURRENCY_UNSUPPORTED or FX_RATE_MISSING.");
+        }
+
+        AccountingReplayResult result;
+        result.fixtureId = fixture.fixtureId;
+        result.implemented = true;
+        result.replayExecuted = true;
+        result.status = kReplayStatusError;
+        result.message = "Multi-currency replay is unsupported without FX rate policy. No FX conversion was performed.";
+        result.metadata = AccountingReplayMetadata{
+            fixture.fixtureId,
+            fixture.fixtureId,
+            fixture.schemaVersion,
+            "",
+            "Implement production FX policy in a separate authorized task.",
+            static_cast<int>(fixture.expectedIssues.size()),
+            fixture.blocking,
+        };
+        for (const auto& issue : expectedFxIssues) {
+            result.issues.push_back(makeIssue(
+                issue.level.empty() ? "ERROR" : issue.level,
+                issue.code,
+                issue.message.empty() ? "Multi-currency aggregation is unsupported without FX policy." : issue.message,
+                true,
+                fixture.fixtureId));
+        }
         return result;
     }
 

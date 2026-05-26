@@ -105,5 +105,14 @@ not write snapshots, and does not create new snapshot rows. FX013 remains
 `MARKET_PRICE_MISSING` issue. The minimal path displays quantity and cost from
 fixture input facts, keeps `marketValueText` and `unrealizedPnlText`
 `unavailable`, does not query real market data, does not perform network
-requests, and does not call any market service. FX013 remains
-`NOT_IMPLEMENTED`.
+requests, and does not call any market service. FX013 is implemented in a later
+test-only minimal replay task.
+
+`AccountingReplayMinimalEngine` now also supports
+`FX013_MULTI_CURRENCY_UNSUPPORTED`, returning `status=ERROR` with blocking
+`MULTI_CURRENCY_UNSUPPORTED` and `FX_RATE_MISSING` issues. The minimal path
+detects CNY + USD facts without an FX policy, does not perform FX conversion,
+does not fabricate portfolio totals, market value, unrealized PnL, or return
+ratios, does not query FX services, and does not perform network requests.
+FX001-FX013 are now covered by the test-only minimal engine; production replay
+is still not implemented.

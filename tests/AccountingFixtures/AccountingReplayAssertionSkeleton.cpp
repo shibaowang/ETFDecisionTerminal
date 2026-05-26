@@ -1850,6 +1850,128 @@ AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx012MissingM
         });
 }
 
+AccountingAssertionResult AccountingReplayAssertionSkeleton::assertFx013MultiCurrencyUnsupportedResult(
+    const AccountingFixture& fixture,
+    const AccountingReplayResult& result) const
+{
+    if (fixture.fixtureId != "FX013_MULTI_CURRENCY_UNSUPPORTED") {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+            "FX013 multi-currency assertion only accepts FX013_MULTI_CURRENCY_UNSUPPORTED.",
+            false,
+            {"fixtureId"});
+    }
+
+    const auto shapeResult = assertExpectedOutputShape(fixture);
+    if (!shapeResult.passed) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailMissingExpectedOutput,
+            shapeResult.message,
+            false,
+            shapeResult.checkedFields);
+    }
+
+    if (!result.implemented || !result.replayExecuted || result.status != kReplayStatusError) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+            "FX013 replay result must be implemented=true, replayExecuted=true, and status=ERROR.",
+            false,
+            {"implemented", "replayExecuted", "status"});
+    }
+
+    std::vector<std::string> expectedIssueCodes;
+    for (const auto& issue : fixture.expectedIssues) {
+        if (issue.code == "MULTI_CURRENCY_UNSUPPORTED" || issue.code == "FX_RATE_MISSING") {
+            if (!issue.blocking) {
+                return makeResult(
+                    fixture.fixtureId,
+                    false,
+                    kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+                    "FX013 expected multi-currency issues must be blocking.",
+                    false,
+                    {"expectedIssues.blocking"});
+            }
+            expectedIssueCodes.push_back(issue.code);
+        }
+    }
+    if (expectedIssueCodes.empty()) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+            "FX013 fixture expectedIssues must contain MULTI_CURRENCY_UNSUPPORTED or FX_RATE_MISSING.",
+            false,
+            {"expectedIssues"});
+    }
+
+    for (const auto& code : expectedIssueCodes) {
+        bool foundBlocking = false;
+        for (const auto& issue : result.issues) {
+            if (issue.code == code && issue.blocking) {
+                foundBlocking = true;
+            }
+        }
+        if (!foundBlocking) {
+            return makeResult(
+                fixture.fixtureId,
+                false,
+                kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+                "FX013 must contain each expected blocking multi-currency or FX issue.",
+                false,
+                {"issues.MULTI_CURRENCY_UNSUPPORTED", "issues.FX_RATE_MISSING"});
+        }
+    }
+
+    if (!hasEmptyReplayOutputs(result)) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+            "FX013 must not carry normal position, cash, PnL, base, or sniper outputs.",
+            false,
+            {
+                "positionListResponseRaw",
+                "cashSummaryRaw",
+                "portfolioPnlRaw",
+                "basePositionRaw",
+                "sniperPoolRaw",
+            });
+    }
+
+    if (result.message.find("No FX conversion") == std::string::npos) {
+        return makeResult(
+            fixture.fixtureId,
+            false,
+            kAssertionFailInvalidFx013MultiCurrencyUnsupported,
+            "FX013 result message must state that no FX conversion was performed.",
+            false,
+            {"message"});
+    }
+
+    return makeResult(
+        fixture.fixtureId,
+        true,
+        kAssertionPassFx013MultiCurrencyUnsupported,
+        "FX013 multi-currency replay result reports blocking FX issues without fabricated aggregate outputs.",
+        false,
+        {
+            "fixtureId",
+            "implemented",
+            "replayExecuted",
+            "status",
+            "issues.MULTI_CURRENCY_UNSUPPORTED",
+            "issues.FX_RATE_MISSING",
+            "rawOutputs",
+            "message",
+        });
+}
+
 AccountingAssertionResult AccountingReplayAssertionSkeleton::assertPositionList(
     const AccountingFixture& fixture,
     const AccountingReplayResult&) const

@@ -41,10 +41,10 @@ bool AccountingReplayTestHarness::runAll()
     return true;
 }
 
-std::optional<AccountingReplayStubResult> AccountingReplayTestHarness::resultForFixture(
+std::optional<AccountingReplayResult> AccountingReplayTestHarness::resultForFixture(
     const std::string& fixtureId) const
 {
-    const auto it = std::find_if(results_.begin(), results_.end(), [&](const AccountingReplayStubResult& result) {
+    const auto it = std::find_if(results_.begin(), results_.end(), [&](const AccountingReplayResult& result) {
         return result.fixtureId == fixtureId;
     });
     if (it == results_.end()) {
@@ -53,7 +53,7 @@ std::optional<AccountingReplayStubResult> AccountingReplayTestHarness::resultFor
     return *it;
 }
 
-const std::vector<AccountingReplayStubResult>& AccountingReplayTestHarness::results() const noexcept
+const std::vector<AccountingReplayResult>& AccountingReplayTestHarness::results() const noexcept
 {
     return results_;
 }

@@ -34,6 +34,11 @@ def main() -> int:
     accounting_fixture_loader_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_fixture_loader.cpp"
     accounting_replay_stub_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayStubEngine.h"
     accounting_replay_stub_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayStubEngine.cpp"
+    accounting_replay_result_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayResult.h"
+    accounting_replay_result_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayResult.cpp"
+    accounting_replay_mapper_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayResultMapper.h"
+    accounting_replay_mapper_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayResultMapper.cpp"
+    accounting_replay_result_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_replay_result.cpp"
     accounting_replay_harness_header_path = root / "tests" / "AccountingFixtures" / "AccountingReplayTestHarness.h"
     accounting_replay_harness_source_path = root / "tests" / "AccountingFixtures" / "AccountingReplayTestHarness.cpp"
     accounting_replay_harness_test_path = root / "tests" / "AccountingFixtures" / "test_accounting_replay_harness.cpp"
@@ -69,6 +74,11 @@ def main() -> int:
     require(accounting_fixture_loader_test_path.exists(), "accounting fixture loader test exists")
     require(accounting_replay_stub_header_path.exists(), "accounting replay stub header exists")
     require(accounting_replay_stub_source_path.exists(), "accounting replay stub source exists")
+    require(accounting_replay_result_header_path.exists(), "accounting replay result header exists")
+    require(accounting_replay_result_source_path.exists(), "accounting replay result source exists")
+    require(accounting_replay_mapper_header_path.exists(), "accounting replay result mapper header exists")
+    require(accounting_replay_mapper_source_path.exists(), "accounting replay result mapper source exists")
+    require(accounting_replay_result_test_path.exists(), "accounting replay result test exists")
     require(accounting_replay_harness_header_path.exists(), "accounting replay harness header exists")
     require(accounting_replay_harness_source_path.exists(), "accounting replay harness source exists")
     require(accounting_replay_harness_test_path.exists(), "accounting replay harness test exists")
@@ -101,6 +111,11 @@ def main() -> int:
     accounting_fixture_loader_test = accounting_fixture_loader_test_path.read_text(encoding="utf-8")
     accounting_replay_stub_header = accounting_replay_stub_header_path.read_text(encoding="utf-8")
     accounting_replay_stub_source = accounting_replay_stub_source_path.read_text(encoding="utf-8")
+    accounting_replay_result_header = accounting_replay_result_header_path.read_text(encoding="utf-8")
+    accounting_replay_result_source = accounting_replay_result_source_path.read_text(encoding="utf-8")
+    accounting_replay_mapper_header = accounting_replay_mapper_header_path.read_text(encoding="utf-8")
+    accounting_replay_mapper_source = accounting_replay_mapper_source_path.read_text(encoding="utf-8")
+    accounting_replay_result_test = accounting_replay_result_test_path.read_text(encoding="utf-8")
     accounting_replay_harness_header = accounting_replay_harness_header_path.read_text(encoding="utf-8")
     accounting_replay_harness_source = accounting_replay_harness_source_path.read_text(encoding="utf-8")
     accounting_replay_harness_test = accounting_replay_harness_test_path.read_text(encoding="utf-8")
@@ -157,6 +172,8 @@ def main() -> int:
     require("AccountingFixtureLoader" in readme, "README documents accounting fixture loader")
     require("AccountingReplayTestHarness" in readme, "README documents replay harness")
     require("AccountingReplayStubEngine" in readme, "README documents replay stub engine")
+    require("AccountingReplayResult" in readme, "README documents replay result")
+    require("AccountingReplayResultMapper" in readme, "README documents replay result mapper")
     require("NOT_IMPLEMENTED" in readme, "README documents replay stub status")
     require(
         "25_position_shell_viewmodel_design.md" in readme,
@@ -450,7 +467,13 @@ def main() -> int:
     require("does not call DataService" in accounting_fixture_samples, "fixture samples doc states loader does not call service")
     require("AccountingReplayTestHarness" in accounting_fixture_samples, "fixture samples doc documents replay harness")
     require("AccountingReplayStubEngine" in accounting_fixture_samples, "fixture samples doc documents stub engine")
+    require("AccountingReplayResult" in accounting_fixture_samples, "fixture samples doc documents replay result")
+    require("AccountingReplayResultMapper" in accounting_fixture_samples, "fixture samples doc documents result mapper")
     require("status=NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents NOT_IMPLEMENTED status")
+    require("REPLAY_NOT_IMPLEMENTED" in accounting_fixture_samples, "fixture samples doc documents replay issue")
+    require("positionListResponseRaw" in accounting_fixture_samples, "fixture samples doc documents position raw output")
+    require("cashSummaryRaw" in accounting_fixture_samples, "fixture samples doc documents cash raw output")
+    require("portfolioPnlRaw" in accounting_fixture_samples, "fixture samples doc documents pnl raw output")
     require("all FX001-FX013 fixtures are covered" in accounting_fixture_samples, "fixture samples doc documents full fixture coverage")
 
     require("ShellPositionListModel" in position_viewmodel_design, "ViewModel design includes ShellPositionListModel")
@@ -553,13 +576,24 @@ def main() -> int:
     accounting_fixtures_cmake = (root / "tests" / "AccountingFixtures" / "CMakeLists.txt").read_text(encoding="utf-8")
     require("accounting_replay_fixture_loader" in accounting_fixtures_cmake, "CTest includes fixture loader test")
     require("accounting_replay_harness_skeleton" in accounting_fixtures_cmake, "CTest includes replay harness test")
-    require("AccountingReplayStubResult" in accounting_replay_stub_header, "stub header declares result")
-    require("implemented" in accounting_replay_stub_header, "stub result exposes implemented")
-    require("replayExecuted" in accounting_replay_stub_header, "stub result exposes replayExecuted")
-    require("requiredFutureTask" in accounting_replay_stub_header, "stub result exposes requiredFutureTask")
-    require("NOT_IMPLEMENTED" in accounting_replay_stub_source, "stub returns NOT_IMPLEMENTED")
-    require("INVALID_FIXTURE" in accounting_replay_stub_source, "stub handles invalid fixture")
-    require("expectedIssues.size" in accounting_replay_stub_source, "stub reads issue count metadata")
+    require("AccountingReplayResult" in accounting_replay_stub_header, "stub header returns replay result")
+    require("AccountingReplayResult" in accounting_replay_result_header, "result header declares AccountingReplayResult")
+    require("AccountingReplayIssue" in accounting_replay_result_header, "result header declares issue")
+    require("AccountingReplayMetadata" in accounting_replay_result_header, "result header declares metadata")
+    require("positionListResponseRaw" in accounting_replay_result_header, "result header has position raw output")
+    require("cashSummaryRaw" in accounting_replay_result_header, "result header has cash raw output")
+    require("portfolioPnlRaw" in accounting_replay_result_header, "result header has pnl raw output")
+    require("basePositionRaw" in accounting_replay_result_header, "result header has base-position raw output")
+    require("sniperPoolRaw" in accounting_replay_result_header, "result header has sniper-pool raw output")
+    require("hasEmptyReplayOutputs" in accounting_replay_result_source, "result source checks empty outputs")
+    require("AccountingReplayResultMapper" in accounting_replay_mapper_header, "mapper header declares mapper")
+    require("makeNotImplementedResult" in accounting_replay_mapper_header, "mapper exposes not implemented result")
+    require("makeInvalidFixtureResult" in accounting_replay_mapper_header, "mapper exposes invalid fixture result")
+    require("REPLAY_NOT_IMPLEMENTED" in accounting_replay_mapper_source, "mapper creates replay not implemented issue")
+    require("INVALID_FIXTURE" in accounting_replay_mapper_source, "mapper creates invalid fixture issue")
+    require("NOT_IMPLEMENTED" in accounting_replay_mapper_source, "mapper returns NOT_IMPLEMENTED")
+    require("INVALID_FIXTURE" in accounting_replay_mapper_source, "mapper handles invalid fixture")
+    require("AccountingReplayResultMapper::makeNotImplementedResult" in accounting_replay_stub_source, "stub delegates to mapper")
     require("AccountingReplayTestHarness" in accounting_replay_harness_header, "harness header declares harness")
     require("loadFixtures" in accounting_replay_harness_header, "harness exposes loadFixtures")
     require("runAll" in accounting_replay_harness_header, "harness exposes runAll")
@@ -572,6 +606,13 @@ def main() -> int:
     require("NOT_IMPLEMENTED" in accounting_replay_harness_test, "harness test expects NOT_IMPLEMENTED")
     require("implemented is false" in accounting_replay_harness_test, "harness test checks implemented false")
     require("replayExecuted is false" in accounting_replay_harness_test, "harness test checks replayExecuted false")
+    require("REPLAY_NOT_IMPLEMENTED" in accounting_replay_harness_test, "harness test checks replay issue")
+    require("hasEmptyReplayOutputs" in accounting_replay_harness_test, "harness test checks empty raw outputs")
+    require("accounting_replay_result_skeleton" in accounting_fixtures_cmake, "CTest includes result skeleton test")
+    require("makeNotImplementedResult" in accounting_replay_result_test, "result test covers not implemented mapper")
+    require("makeInvalidFixtureResult" in accounting_replay_result_test, "result test covers invalid fixture mapper")
+    require("REPLAY_NOT_IMPLEMENTED" in accounting_replay_result_test, "result test checks replay issue")
+    require("hasEmptyReplayOutputs" in accounting_replay_result_test, "result test checks empty raw outputs")
     require("SQLite" not in accounting_replay_harness_source, "harness source does not access SQLite")
     require("DataService" not in accounting_replay_harness_source, "harness source does not call DataService")
     require("SQLite" not in accounting_replay_stub_source, "stub source does not access SQLite")

@@ -290,3 +290,9 @@ v0.1 草案。
 - FX010 sniper tier handling must remain a separate task.
 - `sellableAboveBaseAmountText` must not be interpreted as a sell recommendation, sell action, broker order, or TradeDraft.
 - Every new replay task after FX009 must preserve FX001-FX009 tests and keep FX010-FX013 explicitly guarded until their own task is authorized.
+- After FX010, do not jump directly to multi-currency, real market valuation, strategy execution, automatic trading, or TradeDraft generation.
+- FX011 stale snapshot handling must remain a separate task.
+- `remainingAmountText` in sniper-pool output must not be interpreted as a buy recommendation, sell recommendation, broker order, strategy command, or TradeDraft.
+- Sniper tier completion must come from BUY fact aggregation or explicit fixture input metadata, not current market value.
+- Sniper pool amount must not expand or shrink with floating profit or loss.
+- Every new replay task after FX010 must preserve FX001-FX010 tests and keep FX011-FX013 explicitly guarded until their own task is authorized.

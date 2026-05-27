@@ -2,6 +2,7 @@
 
 #include "AccountingEngine/AccountingReplayValidation.h"
 
+#include <algorithm>
 #include <cctype>
 #include <iomanip>
 #include <map>
@@ -897,6 +898,129 @@ AccountingReplayResult tryReplayMultiAccountBuy(
     return makeMultiAccountBuyReplayResult(commonPortfolioId, std::move(positions), std::move(accountCashSummaries));
 }
 
+AccountingReplayResult tryReplayMultiCurrencyUnsupported(
+    const ReplayRequestDto&,
+    const std::vector<TradeFactDto>& tradeFacts,
+    const std::vector<CashFactDto>& cashFacts,
+    const std::vector<MarketPriceFactDto>&,
+    const std::vector<FxRateFactDto>& fxRateFacts)
+{
+    if (tradeFacts.size() < 2) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    std::vector<AccountingIssueDto> validationIssues;
+    for (const auto& cashFact : cashFacts) {
+        const auto cashValidation = validateCashFact(cashFact);
+        appendIssues(validationIssues, cashValidation.issues);
+    }
+
+    for (const auto& tradeFact : tradeFacts) {
+        auto tradeFactForValidation = tradeFact;
+        if (isMissingFeeText(tradeFactForValidation.feeText)) {
+            tradeFactForValidation.feeText.clear();
+        }
+        const auto tradeValidation = validateTradeFact(tradeFactForValidation);
+        appendIssues(validationIssues, tradeValidation.issues);
+
+        if (!hasNonZeroQuantity(tradeFact.quantityText)) {
+            validationIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidQuantityText,
+                "BUY quantityText must be greater than zero.",
+                true,
+                "quantityText",
+                tradeFact.factId));
+        }
+    }
+
+    for (const auto& fxRateFact : fxRateFacts) {
+        const auto fxValidation = validateFxRateFact(fxRateFact);
+        appendIssues(validationIssues, fxValidation.issues);
+    }
+
+    if (!validationIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(validationIssues));
+    }
+
+    std::set<std::string> currencies;
+    for (const auto& cashFact : cashFacts) {
+        currencies.insert(cashFact.currency);
+    }
+    for (const auto& tradeFact : tradeFacts) {
+        if (tradeFact.action != TradeAction::Buy) {
+            return makeUnsupportedReplayScenarioResult();
+        }
+        currencies.insert(tradeFact.currency);
+    }
+
+    const auto hasCny = currencies.find("CNY") != currencies.end();
+    const auto hasNonCny = std::any_of(currencies.begin(), currencies.end(), [](const auto& currency) {
+        return currency != "CNY";
+    });
+    if (!hasCny || !hasNonCny) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    for (const auto& tradeFact : tradeFacts) {
+        if (isMissingFeeText(tradeFact.feeText)) {
+            return makeMissingFeeReplayResult();
+        }
+    }
+
+    std::vector<AccountingIssueDto> parseIssues;
+    for (const auto& cashFact : cashFacts) {
+        const auto amount = parseMoneyToCents(cashFact.amountText);
+        if (!amount.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "cash amount is not valid for multi-currency replay detection.",
+                true,
+                "amountText",
+                cashFact.factId));
+        }
+    }
+    for (const auto& tradeFact : tradeFacts) {
+        const auto amount = parseMoneyToCents(tradeFact.amountText);
+        const auto fee = parseMoneyToCents(tradeFact.feeText);
+        const auto quantity = parseQuantityToMicroUnits(tradeFact.quantityText);
+        if (!amount.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "BUY amount is not valid for multi-currency replay detection.",
+                true,
+                "amountText",
+                tradeFact.factId));
+        }
+        if (!fee.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "BUY fee is not valid for multi-currency replay detection.",
+                true,
+                "feeText",
+                tradeFact.factId));
+        }
+        if (!quantity.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidQuantityText,
+                "BUY quantity is not valid for multi-currency replay detection.",
+                true,
+                "quantityText",
+                tradeFact.factId));
+        }
+    }
+    if (!parseIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(parseIssues));
+    }
+
+    return fxRateFacts.empty() ? makeMultiCurrencyUnsupportedReplayResult(true)
+                              : makeUnsupportedReplayScenarioResult();
+}
+
 } // namespace
 
 AccountingReplayResult AccountingReplayEngine::replayReadOnly(
@@ -917,6 +1041,14 @@ AccountingReplayResult AccountingReplayEngine::replayReadOnly(
 
     if (tradeFacts.size() == 1) {
         return tryReplaySingleBuy(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+    }
+
+    if (tradeFacts.size() >= 2) {
+        const auto multiCurrencyResult =
+            tryReplayMultiCurrencyUnsupported(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+        if (multiCurrencyResult.status != AccountingReplayStatus::UnsupportedScenario) {
+            return multiCurrencyResult;
+        }
     }
 
     if (tradeFacts.size() >= 2 && cashFacts.size() >= 2) {

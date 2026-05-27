@@ -251,8 +251,10 @@ int main()
                               {makeInitialCash()},
                               {},
                               {});
-    failures += expect(usdResult.status == AccountingReplayStatus::UnsupportedScenario,
-                       "multi-instrument with USD should remain unsupported");
+    failures += expect(usdResult.status == AccountingReplayStatus::Error,
+                       "multi-instrument with USD should be rejected by multi-currency handling");
+    failures += expect(hasIssueCode(usdResult, AccountingIssueCode::MultiCurrencyUnsupported),
+                       "multi-instrument with USD should return MULTI_CURRENCY_UNSUPPORTED");
 
     const auto multiMissingFeeResult =
         engine.replayReadOnly(request,

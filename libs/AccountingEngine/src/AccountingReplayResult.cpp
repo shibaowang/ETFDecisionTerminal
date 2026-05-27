@@ -290,4 +290,29 @@ AccountingReplayResult makeMissingFeeReplayResult()
     return result;
 }
 
+AccountingReplayResult makeMultiCurrencyUnsupportedReplayResult(bool fxRateMissing)
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Error;
+    result.message = fxRateMissing ? "Multi-currency replay requires FX rate support."
+                                   : "Multi-currency replay is not supported by this skeleton.";
+    result.issues.push_back(makeAccountingIssue(
+        AccountingIssueLevel::Error,
+        AccountingIssueCode::MultiCurrencyUnsupported,
+        "Multi-currency replay is not supported.",
+        true,
+        "currency"));
+    if (fxRateMissing) {
+        result.issues.push_back(makeAccountingIssue(
+            AccountingIssueLevel::Error,
+            AccountingIssueCode::FxRateMissing,
+            "FX rate facts are missing for multi-currency replay.",
+            true,
+            "fxRateFacts"));
+    }
+    return result;
+}
+
 } // namespace etfdt::accounting

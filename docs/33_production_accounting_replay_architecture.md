@@ -464,6 +464,41 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-080 Multi-currency Unsupported Detection Status
+
+TASK-080 adds production-side read-only multi-currency unsupported detection to
+`libs/AccountingEngine`.
+
+Scope:
+
+- Two or more `BUY` trade facts.
+- At least one CNY fact.
+- At least one non-CNY fact, currently exercised with USD.
+- Missing FX rate facts trigger a controlled rejection.
+- Returns `ERROR` with blocking `MULTI_CURRENCY_UNSUPPORTED` and
+  `FX_RATE_MISSING` issues.
+- Emits no successful positions, cash summaries, portfolio PnL, base-position,
+  or sniper-pool data.
+
+This is detection and rejection only. AccountingEngine still does not support
+FX rate conversion, does not support successful multi-currency replay, and does
+not fabricate FX rates, portfolio total assets, market value, or unrealized PnL.
+
+If FX rate facts are present, this skeleton still does not perform FX
+conversion or return a successful multi-currency valuation. Real FX rate
+support and multi-currency valuation require separate authorization.
+
+Current boundaries remain:
+
+- `supportsFxRate=false`.
+- `supportsMultiCurrency=false`.
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No network access.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-076 Missing Fee Detection Status
 
 TASK-076 adds a production-side read-only `MISSING_FEE` controlled warning

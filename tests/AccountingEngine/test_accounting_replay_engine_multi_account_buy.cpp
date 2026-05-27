@@ -293,8 +293,10 @@ int main()
                               makeMultiAccountCashFacts(),
                               {},
                               {});
-    failures += expect(usdResult.status == AccountingReplayStatus::UnsupportedScenario,
-                       "multi-account with USD should remain unsupported");
+    failures += expect(usdResult.status == AccountingReplayStatus::Error,
+                       "multi-account with USD should be rejected by multi-currency handling");
+    failures += expect(hasIssueCode(usdResult, AccountingIssueCode::MultiCurrencyUnsupported),
+                       "multi-account with USD should return MULTI_CURRENCY_UNSUPPORTED");
 
     const auto missingCashResult =
         engine.replayReadOnly(request,

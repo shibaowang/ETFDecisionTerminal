@@ -28,6 +28,8 @@ def main() -> int:
     accounting_replay_incremental_plan_path = root / "docs" / "30_accounting_replay_incremental_implementation_plan.md"
     accounting_replay_milestone_path = root / "docs" / "31_accounting_replay_testonly_coverage_milestone.md"
     accounting_replay_readiness_path = root / "docs" / "32_production_accounting_replay_readiness_review.md"
+    accounting_replay_architecture_path = root / "docs" / "33_production_accounting_replay_architecture.md"
+    accounting_engine_candidate_path = root / "docs" / "34_accounting_engine_module_candidate.md"
     accounting_fixture_dir = root / "tests" / "fixtures" / "accounting_replay"
     accounting_fixture_index_path = accounting_fixture_dir / "fixtures_index.json"
     accounting_fixture_validator_path = (
@@ -93,6 +95,8 @@ def main() -> int:
     require(accounting_replay_incremental_plan_path.exists(), "accounting replay incremental plan doc exists")
     require(accounting_replay_milestone_path.exists(), "accounting replay test-only coverage milestone doc exists")
     require(accounting_replay_readiness_path.exists(), "production accounting replay readiness review doc exists")
+    require(accounting_replay_architecture_path.exists(), "production accounting replay architecture doc exists")
+    require(accounting_engine_candidate_path.exists(), "AccountingEngine module candidate doc exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
     require(accounting_fixture_index_path.exists(), "accounting replay fixture index exists")
     require(accounting_fixture_validator_path.exists(), "accounting replay fixture validator exists")
@@ -144,6 +148,8 @@ def main() -> int:
     accounting_replay_incremental_plan = accounting_replay_incremental_plan_path.read_text(encoding="utf-8")
     accounting_replay_milestone = accounting_replay_milestone_path.read_text(encoding="utf-8")
     accounting_replay_readiness = accounting_replay_readiness_path.read_text(encoding="utf-8")
+    accounting_replay_architecture = accounting_replay_architecture_path.read_text(encoding="utf-8")
+    accounting_engine_candidate = accounting_engine_candidate_path.read_text(encoding="utf-8")
     accounting_fixture_index = accounting_fixture_index_path.read_text(encoding="utf-8")
     accounting_fixture_validator = accounting_fixture_validator_path.read_text(encoding="utf-8")
     accounting_fixture_loader_header = accounting_fixture_loader_header_path.read_text(encoding="utf-8")
@@ -253,8 +259,17 @@ def main() -> int:
         "v0_3_accounting_replay_testonly_coverage.md" in readme,
         "README links v0.3 accounting replay release notes",
     )
+    require(
+        "33_production_accounting_replay_architecture.md" in readme,
+        "README links production accounting replay architecture",
+    )
+    require(
+        "34_accounting_engine_module_candidate.md" in readme,
+        "README links AccountingEngine module candidate",
+    )
     require("FX001-FX013 test-only coverage is complete" in readme, "README states FX001-FX013 test-only coverage complete")
     require("not production accounting replay" in readme, "README states test-only coverage is not production replay")
+    require("not direct code migration" in readme, "README states next phase is not direct code migration")
     require("accounting_replay_minimal_fx001" in readme, "README documents minimal FX001 CTest")
     require("accounting_replay_minimal_fx002" in readme, "README documents minimal FX002 CTest")
     require("accounting_replay_minimal_fx003" in readme, "README documents minimal FX003 CTest")
@@ -396,6 +411,8 @@ def main() -> int:
     require("30_accounting_replay_incremental_implementation_plan.md" in docs_index, "docs index links accounting replay incremental plan")
     require("31_accounting_replay_testonly_coverage_milestone.md" in docs_index, "docs index links accounting replay test-only milestone")
     require("32_production_accounting_replay_readiness_review.md" in docs_index, "docs index links production accounting replay readiness review")
+    require("33_production_accounting_replay_architecture.md" in docs_index, "docs index links production accounting replay architecture")
+    require("34_accounting_engine_module_candidate.md" in docs_index, "docs index links AccountingEngine module candidate")
     require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
@@ -423,11 +440,15 @@ def main() -> int:
     require("DataService read-only action boundary" in accounting_replay_milestone, "milestone doc recommends DataService boundary")
     require("v0.3.0-accounting-replay-testonly-coverage" in accounting_replay_milestone, "milestone doc includes suggested v0.3 tag")
     require("TASK-068 does not create a tag" in accounting_replay_milestone, "milestone doc states task does not create tag")
+    require("33_production_accounting_replay_architecture.md" in accounting_replay_milestone, "milestone doc links architecture boundary")
+    require("34_accounting_engine_module_candidate.md" in accounting_replay_milestone, "milestone doc links AccountingEngine candidate")
 
     require("Production Accounting Replay Readiness Review" in accounting_replay_readiness, "readiness doc title exists")
     require("test-only fixture engine" in accounting_replay_readiness, "readiness doc mentions test-only engine")
     require("must not be moved directly into `libs`" in accounting_replay_readiness, "readiness doc blocks direct migration")
     require("DataService read-only action" in accounting_replay_readiness, "readiness doc mentions DataService read-only action")
+    require("33_production_accounting_replay_architecture.md" in accounting_replay_readiness, "readiness doc links architecture boundary")
+    require("34_accounting_engine_module_candidate.md" in accounting_replay_readiness, "readiness doc links AccountingEngine candidate")
     require("no snapshot writes" in accounting_replay_readiness, "readiness doc checklist includes no snapshot writes")
     require("no TradeLog writes" in accounting_replay_readiness, "readiness doc checklist includes no TradeLog writes")
     require("no QML accounting calculation" in accounting_replay_readiness, "readiness doc checklist includes no QML accounting")
@@ -441,6 +462,49 @@ def main() -> int:
     require("TradeLog behavior" in codex_prompt_template, "prompt template requires TradeLog behavior")
     require("QML boundary" in codex_prompt_template, "prompt template requires QML boundary")
     require("no writes, no QML accounting calculation, no TradeDraft, and no auto-trading" in codex_prompt_template, "prompt template keeps default no-write boundary")
+    require("docs/33_production_accounting_replay_architecture.md" in codex_prompt_template, "prompt template requires docs/33")
+    require("docs/34_accounting_engine_module_candidate.md" in codex_prompt_template, "prompt template requires docs/34")
+    require("DataService action implementation requires architecture boundary approval" in codex_prompt_template, "prompt template gates DataService actions")
+    require("AccountingEngine dependency on DataAccess requires explicit authorization" in codex_prompt_template, "prompt template gates AccountingEngine DataAccess dependency")
+    require("default production replay phase is read-only and has no snapshot writes" in codex_prompt_template, "prompt template keeps read-only no-snapshot default")
+
+    require("Production Accounting Replay Architecture Boundary" in accounting_replay_architecture, "architecture doc title exists")
+    require("test-only `AccountingReplayMinimalEngine`" in accounting_replay_architecture, "architecture doc names test-only engine")
+    require("must not be directly migrated to production" in accounting_replay_architecture, "architecture doc blocks direct migration")
+    require("Production replay is read-only by default" in accounting_replay_architecture, "architecture doc states read-only default")
+    require("DataServiceApi does not carry complex replay algorithms" in accounting_replay_architecture, "architecture doc keeps algorithms out of DataServiceApi")
+    require("DataAccess does not carry replay algorithms" in accounting_replay_architecture, "architecture doc keeps algorithms out of DataAccess")
+    require("QML does not calculate accounting" in accounting_replay_architecture, "architecture doc keeps accounting out of QML")
+    require("ShellServices does not calculate accounting" in accounting_replay_architecture, "architecture doc keeps accounting out of ShellServices")
+    require("Snapshot writes require separate authorization" in accounting_replay_architecture, "architecture doc requires snapshot authorization")
+    require("TradeLog writes are not authorized" in accounting_replay_architecture, "architecture doc requires TradeLog authorization")
+    require("Production libs -> tests/AccountingFixtures" in accounting_replay_architecture, "architecture doc forbids production libs to test fixture dependency")
+    require("DataServiceApi -> AccountingEngine" in accounting_replay_architecture, "architecture doc lists DataServiceApi to AccountingEngine direction")
+    require("AccountingEngine -> SQLiteConnection" in accounting_replay_architecture, "architecture doc forbids AccountingEngine to SQLiteConnection")
+    require("position.list" in accounting_replay_architecture, "architecture doc lists position.list")
+    require("cash.summary" in accounting_replay_architecture, "architecture doc lists cash.summary")
+    require("portfolio.pnl.summary" in accounting_replay_architecture, "architecture doc lists portfolio.pnl.summary")
+    require("base_position.summary" in accounting_replay_architecture, "architecture doc lists base_position.summary")
+    require("sniper_pool.summary" in accounting_replay_architecture, "architecture doc lists sniper_pool.summary")
+    require("SELL_EXCEEDS_POSITION" in accounting_replay_architecture, "architecture doc lists oversell error")
+    require("DATA_VERSION_MISMATCH" in accounting_replay_architecture, "architecture doc lists data version issue")
+    require("UNSUPPORTED_ACCOUNTING_MODE" in accounting_replay_architecture, "architecture doc lists unsupported mode issue")
+
+    require("AccountingEngine Module Candidate" in accounting_engine_candidate, "AccountingEngine candidate doc title exists")
+    require("libs/AccountingEngine" in accounting_engine_candidate, "AccountingEngine candidate doc names module")
+    require("Replay facts" in accounting_engine_candidate, "AccountingEngine candidate doc lists replay responsibility")
+    require("SQLite connection management" in accounting_engine_candidate, "AccountingEngine candidate doc excludes SQLite management")
+    require("TradeLog writes" in accounting_engine_candidate, "AccountingEngine candidate doc excludes TradeLog writes")
+    require("Snapshot writes" in accounting_engine_candidate, "AccountingEngine candidate doc excludes snapshot writes")
+    require("Market data fetching" in accounting_engine_candidate, "AccountingEngine candidate doc excludes market fetching")
+    require("FX rate fetching" in accounting_engine_candidate, "AccountingEngine candidate doc excludes FX fetching")
+    require("TradeFactDto" in accounting_engine_candidate, "AccountingEngine candidate doc lists TradeFactDto")
+    require("FxRateFactDto" in accounting_engine_candidate, "AccountingEngine candidate doc lists FxRateFactDto")
+    require("PositionListResponse" in accounting_engine_candidate, "AccountingEngine candidate doc lists PositionListResponse")
+    require("does not directly depend on DataAccess" in accounting_engine_candidate, "AccountingEngine candidate doc avoids direct DataAccess dependency")
+    require("does not directly depend on SQLite" in accounting_engine_candidate, "AccountingEngine candidate doc avoids direct SQLite dependency")
+    require("FX001-FX013" in accounting_engine_candidate, "AccountingEngine candidate doc keeps fixture coverage")
+    require("must not be directly migrated to" in accounting_engine_candidate, "AccountingEngine candidate doc blocks direct minimal engine migration")
 
     require("accounting.health" in accounting_rules, "accounting rules documents accounting.health")
     require("replayImplemented=false" in accounting_rules, "accounting rules state replay is not implemented")

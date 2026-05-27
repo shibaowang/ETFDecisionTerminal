@@ -321,3 +321,8 @@ v0.1 草案。
 - Production replay tasks must explicitly declare TradeLog behavior.
 - Production replay tasks must explicitly declare the QML boundary.
 - Default remains no writes, no QML accounting calculation, no TradeDraft, and no auto-trading.
+- Production replay tasks must reference `docs/33_production_accounting_replay_architecture.md` and `docs/34_accounting_engine_module_candidate.md`.
+- Do not migrate `tests/AccountingFixtures` into production `libs` directly.
+- DataService action implementation requires architecture boundary approval.
+- AccountingEngine dependency on DataAccess requires explicit authorization.
+- The default production replay phase is read-only and has no snapshot writes.

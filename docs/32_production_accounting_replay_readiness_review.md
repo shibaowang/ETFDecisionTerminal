@@ -8,6 +8,10 @@ work starts.
 It prevents moving the test-only fixture engine into production and prevents
 connecting DataService or SQLite before module boundaries are explicit.
 
+Detailed architecture boundary: `33_production_accounting_replay_architecture.md`.
+
+AccountingEngine candidate design: `34_accounting_engine_module_candidate.md`.
+
 ## Production Replay Preconditions
 
 - Data contracts are stable.

@@ -123,6 +123,13 @@ The tag should only be created after PR merge. TASK-068 does not create a tag.
 The next stage should start with production accounting replay architecture and
 boundary design, not a direct DataService action.
 
+Next architecture boundary documents are
+`33_production_accounting_replay_architecture.md` and
+`34_accounting_engine_module_candidate.md`.
+
+This test-only milestone is complete. Production work is separate and requires
+its own architecture approval and implementation tasks.
+
 Recommended decisions:
 
 - Production accounting replay architecture design.

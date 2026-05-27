@@ -336,3 +336,29 @@ Current declared state remains:
 
 Future replay implementation requires separate authorization and must preserve
 the dependency boundary tests.
+
+## TASK-071 DTO Parser Boundary Status
+
+TASK-071 adds production replay DTO parser and validation boundaries to
+`libs/AccountingEngine`.
+
+The boundary currently provides:
+
+- Request and fact DTO skeletons.
+- Accounting issue DTO skeletons.
+- Required-field validation.
+- Enum validation.
+- Source time range validation.
+- Money text and quantity text validation.
+- Currency code validation.
+
+DTO validation is not replay. It does not calculate positions, cash, cost, PnL,
+base position, sniper pool, market value, or FX conversion.
+
+Current state remains:
+
+- No replay algorithm.
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No write capability.

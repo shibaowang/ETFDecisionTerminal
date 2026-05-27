@@ -330,3 +330,7 @@ v0.1 草案。
 - Future AccountingEngine tasks must not introduce DataAccess unless explicitly authorized.
 - Future AccountingEngine tasks must not copy `tests/AccountingFixtures` into production.
 - Future replay implementation must keep AccountingEngine dependency boundary tests.
+- AccountingEngine DTO parser tasks must not implement replay.
+- DTO validation must not calculate positions, cash balances, cost, PnL, base position, or sniper pool.
+- Future replay tasks must explicitly state whether they are read-only, whether they access DataAccess, and whether they expose a DataService action.
+- The default remains no writes, no snapshot writes, no TradeLog writes, no TradeDraft, and no QML accounting calculation.

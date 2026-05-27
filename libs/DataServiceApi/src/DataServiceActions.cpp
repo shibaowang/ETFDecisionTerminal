@@ -891,4 +891,89 @@ etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
     return successResponse(context, payload);
 }
 
+etfdt::protocol::ProtocolResponse handleBasePositionSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "base_position.summary payload must be a JSON object");
+    }
+
+    const std::string payload = R"json({
+"module":"accounting",
+"action":"base_position.summary",
+"implemented":false,
+"readOnly":true,
+"writeEnabled":false,
+"replayExecuted":false,
+"dataSourceAccessed":false,
+"sqliteAccessed":false,
+"tradeFactsAccessed":false,
+"snapshotAccessed":false,
+"positionSnapshotAccessed":false,
+"portfolioSummaryAccessed":false,
+"accountingEngineCalled":false,
+"tradeDraftGenerated":false,
+"tradeSuggestionGenerated":false,
+"strategyExecuted":false,
+"contractVersion":"0.4-draft",
+"calculationVersion":"not-implemented",
+"status":"BASE_POSITION_SUMMARY_NOT_AVAILABLE",
+"message":"base_position.summary is a read-only contract guard and is not implemented yet.",
+"futureOutput":{
+"type":"BasePositionSummaryResponse",
+"basePosition":null
+},
+"forbiddenSources":[
+"position_snapshot",
+"cash_snapshot",
+"portfolio_summary"
+],
+"forbiddenWrites":[
+"trade_log",
+"trade_execution_group",
+"trade_draft",
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary",
+"audit_log"
+],
+"forbiddenActions":[
+"trade_draft_generation",
+"trade_suggestion_generation",
+"strategy_execution",
+"broker_order"
+],
+"requiredNextTasks":[
+"Base position production calculation boundary review",
+"AccountingEngine integration boundary",
+"base_position.summary no-write integration test",
+"real BasePositionSummaryResponse mapping"
+],
+"issues":[
+{
+"level":"ERROR",
+"code":"BASE_POSITION_SUMMARY_NOT_AVAILABLE",
+"message":"base_position.summary is not implemented.",
+"blocking":true
+}
+],
+"warnings":[
+"BASE_POSITION_SUMMARY_NOT_IMPLEMENTED",
+"NO_TRADE_FACTS_QUERY_IN_ACTION",
+"NO_POSITION_SNAPSHOT_SOURCE",
+"NO_SQLITE_FACTS_QUERY",
+"NO_ACCOUNTING_ENGINE_CALL",
+"NO_TRADE_DRAFT_GENERATION"
+]
+})json";
+
+    return successResponse(context, payload);
+}
+
 }  // namespace etfdt::data_service_api

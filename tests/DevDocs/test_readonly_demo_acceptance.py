@@ -429,6 +429,11 @@ def main() -> int:
     portfolio_pnl_summary_guard_source = extract_between(
         dataservice_actions_source,
         "etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary",
+        "etfdt::protocol::ProtocolResponse handleBasePositionSummary",
+    )
+    base_position_summary_guard_source = extract_between(
+        dataservice_actions_source,
+        "etfdt::protocol::ProtocolResponse handleBasePositionSummary",
         "}  // namespace etfdt::data_service_api",
     )
     gitignore_lines = {line.strip() for line in gitignore.splitlines()}
@@ -1090,21 +1095,28 @@ def main() -> int:
     require("handleCashSummary" in dataservice_actions_header, "DataServiceActions declares cash.summary handler")
     require("kActionPortfolioPnlSummary" in dataservice_actions_header, "DataServiceActions exposes portfolio.pnl.summary action constant")
     require("handlePortfolioPnlSummary" in dataservice_actions_header, "DataServiceActions declares portfolio.pnl.summary handler")
+    require("kActionBasePositionSummary" in dataservice_actions_header, "DataServiceActions exposes base_position.summary action constant")
+    require("handleBasePositionSummary" in dataservice_actions_header, "DataServiceActions declares base_position.summary handler")
     require("kActionPositionList" in dataservice_action_registrar, "DataService registrar registers position.list")
     require("handlePositionList" in dataservice_action_registrar, "DataService registrar wires position.list handler")
     require("kActionCashSummary" in dataservice_action_registrar, "DataService registrar registers cash.summary")
     require("handleCashSummary" in dataservice_action_registrar, "DataService registrar wires cash.summary handler")
     require("kActionPortfolioPnlSummary" in dataservice_action_registrar, "DataService registrar registers portfolio.pnl.summary")
     require("handlePortfolioPnlSummary" in dataservice_action_registrar, "DataService registrar wires portfolio.pnl.summary handler")
+    require("kActionBasePositionSummary" in dataservice_action_registrar, "DataService registrar registers base_position.summary")
+    require("handleBasePositionSummary" in dataservice_action_registrar, "DataService registrar wires base_position.summary handler")
     require("positionList(" in dataservice_client_header, "DataServiceClient exposes positionList wrapper")
     require("cashSummary(" in dataservice_client_header, "DataServiceClient exposes cashSummary wrapper")
     require("portfolioPnlSummary(" in dataservice_client_header, "DataServiceClient exposes portfolioPnlSummary wrapper")
+    require("basePositionSummary(" in dataservice_client_header, "DataServiceClient exposes basePositionSummary wrapper")
     require("kActionPositionList" in dataservice_client_source, "DataServiceClient has position.list action constant")
     require("sendAction(kActionPositionList" in dataservice_client_source, "DataServiceClient wrapper sends position.list")
     require("kActionCashSummary" in dataservice_client_source, "DataServiceClient has cash.summary action constant")
     require("sendAction(kActionCashSummary" in dataservice_client_source, "DataServiceClient wrapper sends cash.summary")
     require("kActionPortfolioPnlSummary" in dataservice_client_source, "DataServiceClient has portfolio.pnl.summary action constant")
     require("sendAction(kActionPortfolioPnlSummary" in dataservice_client_source, "DataServiceClient wrapper sends portfolio.pnl.summary")
+    require("kActionBasePositionSummary" in dataservice_client_source, "DataServiceClient has base_position.summary action constant")
+    require("sendAction(kActionBasePositionSummary" in dataservice_client_source, "DataServiceClient wrapper sends base_position.summary")
     require("POSITION_LIST_NOT_AVAILABLE" in position_list_guard_source, "position.list guard source returns not available status")
     require('"implemented":false' in position_list_guard_source, "position.list guard source sets implemented=false")
     require('"readOnly":true' in position_list_guard_source, "position.list guard source sets readOnly=true")
@@ -1174,6 +1186,50 @@ def main() -> int:
     require("data.audit.append" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not call data.audit.append")
     for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
         require(forbidden_sql not in portfolio_pnl_summary_guard_source, f"portfolio.pnl.summary guard source does not contain {forbidden_sql}")
+    require(
+        "BASE_POSITION_SUMMARY_NOT_AVAILABLE" in base_position_summary_guard_source,
+        "base_position.summary guard source returns not available status",
+    )
+    require('"implemented":false' in base_position_summary_guard_source, "base_position.summary guard source sets implemented=false")
+    require('"readOnly":true' in base_position_summary_guard_source, "base_position.summary guard source sets readOnly=true")
+    require('"writeEnabled":false' in base_position_summary_guard_source, "base_position.summary guard source sets writeEnabled=false")
+    require('"sqliteAccessed":false' in base_position_summary_guard_source, "base_position.summary guard source sets sqliteAccessed=false")
+    require('"tradeFactsAccessed":false' in base_position_summary_guard_source, "base_position.summary guard source sets tradeFactsAccessed=false")
+    require('"snapshotAccessed":false' in base_position_summary_guard_source, "base_position.summary guard source sets snapshotAccessed=false")
+    require(
+        '"positionSnapshotAccessed":false' in base_position_summary_guard_source,
+        "base_position.summary guard source sets positionSnapshotAccessed=false",
+    )
+    require(
+        '"portfolioSummaryAccessed":false' in base_position_summary_guard_source,
+        "base_position.summary guard source sets portfolioSummaryAccessed=false",
+    )
+    require(
+        '"accountingEngineCalled":false' in base_position_summary_guard_source,
+        "base_position.summary guard source sets accountingEngineCalled=false",
+    )
+    require(
+        '"tradeDraftGenerated":false' in base_position_summary_guard_source,
+        "base_position.summary guard source sets tradeDraftGenerated=false",
+    )
+    require(
+        '"tradeSuggestionGenerated":false' in base_position_summary_guard_source,
+        "base_position.summary guard source sets tradeSuggestionGenerated=false",
+    )
+    require('"strategyExecuted":false' in base_position_summary_guard_source, "base_position.summary guard source sets strategyExecuted=false")
+    require(
+        "BasePositionSummaryResponse" in base_position_summary_guard_source,
+        "base_position.summary guard source declares future BasePositionSummaryResponse",
+    )
+    require("position_snapshot" in base_position_summary_guard_source, "base_position.summary guard source forbids position_snapshot")
+    require("portfolio_summary" in base_position_summary_guard_source, "base_position.summary guard source forbids portfolio_summary")
+    require("trade_draft_generation" in base_position_summary_guard_source, "base_position.summary guard source forbids trade draft generation")
+    require("trade_suggestion_generation" in base_position_summary_guard_source, "base_position.summary guard source forbids trade suggestion generation")
+    require("AccountingEngine/" not in base_position_summary_guard_source, "base_position.summary guard source does not include AccountingEngine")
+    require("DataAccess" not in base_position_summary_guard_source, "base_position.summary guard source does not reference DataAccess repository")
+    require("data.audit.append" not in base_position_summary_guard_source, "base_position.summary guard source does not call data.audit.append")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
+        require(forbidden_sql not in base_position_summary_guard_source, f"base_position.summary guard source does not contain {forbidden_sql}")
     require("dataservice_position_list_guard" in dataservice_test_cmake, "DataService CMake registers position.list guard test")
     require("dataservice_position_list_no_write" in dataservice_test_cmake, "DataService CMake registers position.list no-write test")
     require("dataservice_cash_summary_guard" in dataservice_test_cmake, "DataService CMake registers cash.summary guard test")
@@ -1187,6 +1243,14 @@ def main() -> int:
         "DataService CMake registers portfolio.pnl.summary no-write test",
     )
     require(
+        "dataservice_base_position_summary_guard" in dataservice_test_cmake,
+        "DataService CMake registers base_position.summary guard test",
+    )
+    require(
+        "dataservice_base_position_summary_no_write" in dataservice_test_cmake,
+        "DataService CMake registers base_position.summary no-write test",
+    )
+    require(
         "dataservice_client_position_list_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers position.list client guard test",
     )
@@ -1197,6 +1261,10 @@ def main() -> int:
     require(
         "dataservice_client_portfolio_pnl_summary_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers portfolio.pnl.summary client guard test",
+    )
+    require(
+        "dataservice_client_base_position_summary_guard" in dataservice_client_test_cmake,
+        "DataServiceClient CMake registers base_position.summary client guard test",
     )
     require("kActionPositionList" in dataservice_readonly_test, "DataService test calls position.list action")
     require("POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks position.list status")
@@ -1236,9 +1304,31 @@ def main() -> int:
         "portfolio.pnl.summary does not return real totalAssets" in dataservice_readonly_test,
         "DataService test checks no real totalAssets",
     )
+    require("kActionBasePositionSummary" in dataservice_readonly_test, "DataService test calls base_position.summary action")
+    require(
+        "BASE_POSITION_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test,
+        "DataService test checks base_position.summary status",
+    )
+    require(
+        "base_position.summary tradeFactsAccessed=false" in dataservice_readonly_test,
+        "DataService test checks trade facts not accessed for base position",
+    )
+    require(
+        "base_position.summary positionSnapshotAccessed=false" in dataservice_readonly_test,
+        "DataService test checks position snapshot not accessed for base position",
+    )
+    require(
+        "base_position.summary tradeDraftGenerated=false" in dataservice_readonly_test,
+        "DataService test checks TradeDraft not generated",
+    )
+    require(
+        "base_position.summary does not return real sellableAboveBaseAmountText" in dataservice_readonly_test,
+        "DataService test checks no real sellable amount",
+    )
     require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
     require("client.cashSummary" in dataservice_client_test, "DataServiceClient test calls cashSummary wrapper")
     require("client.portfolioPnlSummary" in dataservice_client_test, "DataServiceClient test calls portfolioPnlSummary wrapper")
+    require("client.basePositionSummary" in dataservice_client_test, "DataServiceClient test calls basePositionSummary wrapper")
 
     require("add_subdirectory(AccountingNoWrite)" in tests_cmake, "tests CMake adds AccountingNoWrite tests")
     require("accounting_forbidden_sql_scanner" in accounting_no_write_cmake, "AccountingNoWrite CMake registers scanner CTest")
@@ -1461,6 +1551,63 @@ def main() -> int:
     require(
         "must not return real" in codex_prompt_template and "totalAssets" in codex_prompt_template,
         "prompt template forbids real totalAssets from PnL guard",
+    )
+    require("base_position.summary DataService action guard" in readme, "README documents base_position.summary guard")
+    require(
+        "BASE_POSITION_SUMMARY_NOT_AVAILABLE" in readme,
+        "README documents base_position.summary guard status",
+    )
+    require(
+        "dataservice_base_position_summary_guard" in readme,
+        "README documents base_position.summary guard test",
+    )
+    require(
+        "dataservice_base_position_summary_no_write" in readme,
+        "README documents base_position.summary no-write test",
+    )
+    require("TASK-091" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-091")
+    require(
+        "base_position.summary` as a DataService read-only action" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents base_position.summary guard",
+    )
+    require(
+        "BASE_POSITION_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents base_position.summary status",
+    )
+    require(
+        "BasePositionSummaryResponse" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents BasePositionSummaryResponse",
+    )
+    require(
+        "sellableAboveBaseAmountText` is not a trade suggestion" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc says sellableAboveBaseAmountText is not trade suggestion",
+    )
+    require("TASK-091" in dataservice_accounting_no_write_plan, "no-write plan records TASK-091")
+    require(
+        "base_position.summary` guard has no-write table count coverage" in dataservice_accounting_no_write_plan,
+        "no-write plan documents base_position.summary guard no-write coverage",
+    )
+    require("TASK-091" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-091")
+    require(
+        "base_position.summary` guard does not use SQLite facts query" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc says base_position.summary guard avoids SQLite",
+    )
+    require("TASK-091" in accounting_facts_source_mapping, "facts source mapping records TASK-091")
+    require(
+        "base_position.summary` guard does not use this facts mapping" in accounting_facts_source_mapping,
+        "facts source mapping says base_position.summary guard avoids mapping",
+    )
+    require(
+        "DataService `base_position.summary` guard tasks must not pretend to be real" in codex_prompt_template,
+        "prompt template says base_position.summary guard is not real implementation",
+    )
+    require(
+        "sellableAboveBaseAmountText` is not a sell suggestion" in codex_prompt_template,
+        "prompt template says sellableAboveBaseAmountText is not sell suggestion",
+    )
+    require(
+        "must not generate TradeDraft" in codex_prompt_template,
+        "prompt template forbids TradeDraft from base position guard",
     )
 
     require(

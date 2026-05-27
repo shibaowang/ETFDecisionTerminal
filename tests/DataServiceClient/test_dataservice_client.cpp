@@ -372,6 +372,62 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
         auditCountBefore,
         "portfolioPnlSummary does not insert audit_log row");
 
+    auto basePositionSummary = client.basePositionSummary();
+    expectSuccessfulResponse(basePositionSummary, "client.basePositionSummary");
+    if (basePositionSummary) {
+        const auto payload = payloadObject(basePositionSummary.value());
+        expectEqual(
+            payload.value("action").toString().toStdString(),
+            "base_position.summary",
+            "basePositionSummary action");
+        expectEqual(
+            payload.value("module").toString().toStdString(),
+            "accounting",
+            "basePositionSummary module");
+        expectTrue(!payload.value("implemented").toBool(true), "basePositionSummary implemented=false");
+        expectTrue(payload.value("readOnly").toBool(false), "basePositionSummary readOnly=true");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "basePositionSummary writeEnabled=false");
+        expectTrue(!payload.value("replayExecuted").toBool(true), "basePositionSummary replayExecuted=false");
+        expectTrue(!payload.value("sqliteAccessed").toBool(true), "basePositionSummary sqliteAccessed=false");
+        expectTrue(!payload.value("tradeFactsAccessed").toBool(true), "basePositionSummary tradeFactsAccessed=false");
+        expectTrue(!payload.value("snapshotAccessed").toBool(true), "basePositionSummary snapshotAccessed=false");
+        expectTrue(
+            !payload.value("positionSnapshotAccessed").toBool(true),
+            "basePositionSummary positionSnapshotAccessed=false");
+        expectTrue(
+            !payload.value("portfolioSummaryAccessed").toBool(true),
+            "basePositionSummary portfolioSummaryAccessed=false");
+        expectTrue(
+            !payload.value("accountingEngineCalled").toBool(true),
+            "basePositionSummary accountingEngineCalled=false");
+        expectTrue(
+            !payload.value("tradeDraftGenerated").toBool(true),
+            "basePositionSummary tradeDraftGenerated=false");
+        expectTrue(
+            !payload.value("tradeSuggestionGenerated").toBool(true),
+            "basePositionSummary tradeSuggestionGenerated=false");
+        expectTrue(!payload.value("strategyExecuted").toBool(true), "basePositionSummary strategyExecuted=false");
+        expectEqual(
+            payload.value("status").toString().toStdString(),
+            "BASE_POSITION_SUMMARY_NOT_AVAILABLE",
+            "basePositionSummary status");
+        const auto futureOutput = payload.value("futureOutput").toObject();
+        expectTrue(
+            futureOutput.value("basePosition").isNull(),
+            "basePositionSummary wrapper returns no real base position");
+        expectTrue(!payload.contains("targetBaseRatioText"), "basePositionSummary wrapper returns no target base ratio");
+        expectTrue(
+            !payload.contains("lockedBaseAmountText"),
+            "basePositionSummary wrapper returns no locked base amount");
+        expectTrue(
+            !payload.contains("sellableAboveBaseAmountText"),
+            "basePositionSummary wrapper returns no sellable amount");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "basePositionSummary does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";

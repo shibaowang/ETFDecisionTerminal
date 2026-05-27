@@ -362,6 +362,13 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
     expectTrue(
         hasPortfolioPnlSummary,
         "accounting.health futureActions contains portfolio.pnl.summary");
+    const bool hasBasePositionSummary =
+        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
+            return value.toString() == "base_position.summary";
+        });
+    expectTrue(
+        hasBasePositionSummary,
+        "accounting.health futureActions contains base_position.summary");
 
     const auto warnings = accountingPayload.value("warnings").toArray();
     const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
@@ -782,6 +789,174 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         portfolioPnlMalformedPayload.value("errorCode").toString().toStdString(),
         "E1001_INVALID_JSON",
         "portfolio.pnl.summary malformed payload returns E1001");
+
+    const auto basePositionCountsBefore = protectedTableCounts(connection);
+    auto basePositionSummary = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionBasePositionSummary),
+        responses,
+        "base_position.summary");
+    expectSuccess(basePositionSummary, "base_position.summary guard");
+    const auto basePositionPayload = basePositionSummary.value("payload").toObject();
+    expectEqual(
+        basePositionPayload.value("action").toString().toStdString(),
+        "base_position.summary",
+        "base_position.summary payload action");
+    expectEqual(
+        basePositionPayload.value("module").toString().toStdString(),
+        "accounting",
+        "base_position.summary module");
+    expectTrue(
+        !basePositionPayload.value("implemented").toBool(true),
+        "base_position.summary implemented=false");
+    expectTrue(
+        basePositionPayload.value("readOnly").toBool(false),
+        "base_position.summary readOnly=true");
+    expectTrue(
+        !basePositionPayload.value("writeEnabled").toBool(true),
+        "base_position.summary writeEnabled=false");
+    expectTrue(
+        !basePositionPayload.value("replayExecuted").toBool(true),
+        "base_position.summary replayExecuted=false");
+    expectTrue(
+        !basePositionPayload.value("dataSourceAccessed").toBool(true),
+        "base_position.summary dataSourceAccessed=false");
+    expectTrue(
+        !basePositionPayload.value("sqliteAccessed").toBool(true),
+        "base_position.summary sqliteAccessed=false");
+    expectTrue(
+        !basePositionPayload.value("tradeFactsAccessed").toBool(true),
+        "base_position.summary tradeFactsAccessed=false");
+    expectTrue(
+        !basePositionPayload.value("snapshotAccessed").toBool(true),
+        "base_position.summary snapshotAccessed=false");
+    expectTrue(
+        !basePositionPayload.value("positionSnapshotAccessed").toBool(true),
+        "base_position.summary positionSnapshotAccessed=false");
+    expectTrue(
+        !basePositionPayload.value("portfolioSummaryAccessed").toBool(true),
+        "base_position.summary portfolioSummaryAccessed=false");
+    expectTrue(
+        !basePositionPayload.value("accountingEngineCalled").toBool(true),
+        "base_position.summary accountingEngineCalled=false");
+    expectTrue(
+        !basePositionPayload.value("tradeDraftGenerated").toBool(true),
+        "base_position.summary tradeDraftGenerated=false");
+    expectTrue(
+        !basePositionPayload.value("tradeSuggestionGenerated").toBool(true),
+        "base_position.summary tradeSuggestionGenerated=false");
+    expectTrue(
+        !basePositionPayload.value("strategyExecuted").toBool(true),
+        "base_position.summary strategyExecuted=false");
+    expectEqual(
+        basePositionPayload.value("status").toString().toStdString(),
+        "BASE_POSITION_SUMMARY_NOT_AVAILABLE",
+        "base_position.summary status");
+    const auto basePositionIssues = basePositionPayload.value("issues").toArray();
+    const bool hasBasePositionUnavailableIssue =
+        std::any_of(basePositionIssues.begin(), basePositionIssues.end(), [](const auto& value) {
+            const auto issue = value.toObject();
+            return issue.value("code").toString() == "BASE_POSITION_SUMMARY_NOT_AVAILABLE"
+                && issue.value("blocking").toBool(false);
+        });
+    expectTrue(
+        hasBasePositionUnavailableIssue,
+        "base_position.summary issues contains blocking BASE_POSITION_SUMMARY_NOT_AVAILABLE");
+    const auto baseForbiddenSources = basePositionPayload.value("forbiddenSources").toArray();
+    const bool baseForbidsPositionSnapshotSource =
+        std::any_of(baseForbiddenSources.begin(), baseForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    const bool baseForbidsPortfolioSummarySource =
+        std::any_of(baseForbiddenSources.begin(), baseForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(
+        baseForbidsPositionSnapshotSource,
+        "base_position.summary forbiddenSources contains position_snapshot");
+    expectTrue(
+        baseForbidsPortfolioSummarySource,
+        "base_position.summary forbiddenSources contains portfolio_summary");
+    const auto baseForbiddenWrites = basePositionPayload.value("forbiddenWrites").toArray();
+    const bool baseForbidsTradeLog =
+        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_log";
+        });
+    const bool baseForbidsTradeDraft =
+        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_draft";
+        });
+    const bool baseForbidsPositionSnapshot =
+        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    const bool baseForbidsPortfolioSummary =
+        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(baseForbidsTradeLog, "base_position.summary forbiddenWrites contains trade_log");
+    expectTrue(baseForbidsTradeDraft, "base_position.summary forbiddenWrites contains trade_draft");
+    expectTrue(baseForbidsPositionSnapshot, "base_position.summary forbiddenWrites contains position_snapshot");
+    expectTrue(baseForbidsPortfolioSummary, "base_position.summary forbiddenWrites contains portfolio_summary");
+    const auto baseForbiddenActions = basePositionPayload.value("forbiddenActions").toArray();
+    const bool baseForbidsTradeDraftGeneration =
+        std::any_of(baseForbiddenActions.begin(), baseForbiddenActions.end(), [](const auto& value) {
+            return value.toString() == "trade_draft_generation";
+        });
+    const bool baseForbidsTradeSuggestionGeneration =
+        std::any_of(baseForbiddenActions.begin(), baseForbiddenActions.end(), [](const auto& value) {
+            return value.toString() == "trade_suggestion_generation";
+        });
+    expectTrue(
+        baseForbidsTradeDraftGeneration,
+        "base_position.summary forbiddenActions contains trade_draft_generation");
+    expectTrue(
+        baseForbidsTradeSuggestionGeneration,
+        "base_position.summary forbiddenActions contains trade_suggestion_generation");
+    const auto basePositionFutureOutput = basePositionPayload.value("futureOutput").toObject();
+    expectEqual(
+        basePositionFutureOutput.value("type").toString().toStdString(),
+        "BasePositionSummaryResponse",
+        "base_position.summary futureOutput type");
+    expectTrue(
+        basePositionFutureOutput.value("basePosition").isNull(),
+        "base_position.summary futureOutput basePosition is null");
+    expectTrue(
+        !basePositionPayload.contains("targetBaseRatioText"),
+        "base_position.summary does not return real targetBaseRatioText");
+    expectTrue(
+        !basePositionPayload.contains("lockedBaseAmountText"),
+        "base_position.summary does not return real lockedBaseAmountText");
+    expectTrue(
+        !basePositionPayload.contains("sellableAboveBaseAmountText"),
+        "base_position.summary does not return real sellableAboveBaseAmountText");
+    expectProtectedTableCountsUnchanged(connection, basePositionCountsBefore, "base_position.summary guard");
+
+    auto basePositionInvalidPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionBasePositionSummary, "[]"),
+        responses,
+        "base_position.summary invalid payload");
+    expectTrue(
+        !basePositionInvalidPayload.value("success").toBool(true),
+        "base_position.summary invalid payload success=false");
+    expectEqual(
+        basePositionInvalidPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "base_position.summary invalid payload returns E1001");
+
+    auto basePositionMalformedPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionBasePositionSummary, "{ invalid }"),
+        responses,
+        "base_position.summary malformed payload");
+    expectTrue(
+        !basePositionMalformedPayload.value("success").toBool(true),
+        "base_position.summary malformed payload success=false");
+    expectEqual(
+        basePositionMalformedPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "base_position.summary malformed payload returns E1001");
 
     auto replayPreviewMissingPayload = sendEnvelope(
         client,

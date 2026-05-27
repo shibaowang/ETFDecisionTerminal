@@ -180,3 +180,15 @@ Future real `portfolio.pnl.summary` implementation is the point where
 `TradeFactDto`, `CashFactDto`, and `MarketPriceFactDto` mapping may be composed
 for PnL calculation. That work still requires separate read-only query,
 AccountingEngine integration, and no-write test authorization.
+
+## TASK-091 base_position.summary Guard Mapping Boundary
+
+The `base_position.summary` guard does not use this facts mapping. It returns a
+`BasePositionSummaryResponse` future output shape with `basePosition=null` only
+to describe the contract.
+
+Future real `base_position.summary` implementation is the point where
+`TradeFactDto`, position derivation, and portfolio-derived DTO mapping may be
+composed for base position calculation. That work still requires separate
+read-only query, AccountingEngine integration, and no-write test authorization.
+`sellableAboveBaseAmountText` is not a trade suggestion.

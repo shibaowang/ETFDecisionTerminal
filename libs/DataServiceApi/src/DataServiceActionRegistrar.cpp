@@ -45,6 +45,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionPortfolioPnlSummary, [&connection](const auto& context) {
         return handlePortfolioPnlSummary(context, connection);
     });
+    (void)dispatcher.registerAction(kActionBasePositionSummary, [&connection](const auto& context) {
+        return handleBasePositionSummary(context, connection);
+    });
 }
 
 void registerDataServiceWriteActions(

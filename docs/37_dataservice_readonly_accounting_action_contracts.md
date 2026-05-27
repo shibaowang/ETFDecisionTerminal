@@ -529,3 +529,41 @@ This does not implement the real `PortfolioPnlSummaryResponse`. Trade facts,
 cash facts, market price facts, and PnL mapping are still not integrated.
 SQLite facts query integration remains unimplemented, and DataService still
 does not call AccountingEngine for `portfolio.pnl.summary`.
+
+## TASK-091 base_position.summary Guard
+
+TASK-091 registers `base_position.summary` as a DataService read-only action
+guard. Current guard payload fields include:
+
+- `module="accounting"`
+- `action="base_position.summary"`
+- `implemented=false`
+- `readOnly=true`
+- `writeEnabled=false`
+- `replayExecuted=false`
+- `dataSourceAccessed=false`
+- `sqliteAccessed=false`
+- `tradeFactsAccessed=false`
+- `snapshotAccessed=false`
+- `positionSnapshotAccessed=false`
+- `portfolioSummaryAccessed=false`
+- `accountingEngineCalled=false`
+- `tradeDraftGenerated=false`
+- `tradeSuggestionGenerated=false`
+- `strategyExecuted=false`
+- `status="BASE_POSITION_SUMMARY_NOT_AVAILABLE"`
+- `futureOutput.type="BasePositionSummaryResponse"`
+- `futureOutput.basePosition=null`
+- `forbiddenSources[]` with `position_snapshot`, `cash_snapshot`, and
+  `portfolio_summary`
+- `forbiddenActions[]` with `trade_draft_generation`,
+  `trade_suggestion_generation`, `strategy_execution`, and `broker_order`
+- `issues[]` with blocking `BASE_POSITION_SUMMARY_NOT_AVAILABLE`
+- `forbiddenWrites[]`
+- `requiredNextTasks[]`
+
+This does not implement the real `BasePositionSummaryResponse`.
+`sellableAboveBaseAmountText` is not a trade suggestion, and the guard does not
+generate trade suggestions or TradeDraft rows. SQLite facts query integration
+remains unimplemented, and DataService still does not call AccountingEngine for
+`base_position.summary`.

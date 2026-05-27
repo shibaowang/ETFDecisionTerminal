@@ -65,3 +65,12 @@ skeleton.
 
 Any implementation must reference `docs/41_cash_facts_source_boundary.md` and
 `docs/42_cash_facts_query_decision.md`.
+
+## TASK-089 cash.summary Guard Decision
+
+TASK-089 follows Route D and keeps `cash.summary` as a guard. The current action
+returns `CASH_SUMMARY_NOT_AVAILABLE` with `implemented=false`.
+
+Until a cash facts source is confirmed, future work must not implement real
+`cash.summary`, must not return real cash balances, and must not infer cash
+facts from `cash_snapshot` or `portfolio_summary`.

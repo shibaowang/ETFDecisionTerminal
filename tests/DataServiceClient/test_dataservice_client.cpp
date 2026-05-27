@@ -290,6 +290,41 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
         auditCountBefore,
         "positionList does not insert audit_log row");
 
+    auto cashSummary = client.cashSummary();
+    expectSuccessfulResponse(cashSummary, "client.cashSummary");
+    if (cashSummary) {
+        const auto payload = payloadObject(cashSummary.value());
+        expectEqual(payload.value("action").toString().toStdString(), "cash.summary", "cashSummary action");
+        expectEqual(payload.value("module").toString().toStdString(), "accounting", "cashSummary module");
+        expectTrue(!payload.value("implemented").toBool(true), "cashSummary implemented=false");
+        expectTrue(payload.value("readOnly").toBool(false), "cashSummary readOnly=true");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "cashSummary writeEnabled=false");
+        expectTrue(!payload.value("replayExecuted").toBool(true), "cashSummary replayExecuted=false");
+        expectTrue(!payload.value("sqliteAccessed").toBool(true), "cashSummary sqliteAccessed=false");
+        expectTrue(!payload.value("cashFactsAccessed").toBool(true), "cashSummary cashFactsAccessed=false");
+        expectTrue(!payload.value("snapshotAccessed").toBool(true), "cashSummary snapshotAccessed=false");
+        expectTrue(
+            !payload.value("portfolioSummaryAccessed").toBool(true),
+            "cashSummary portfolioSummaryAccessed=false");
+        expectTrue(
+            !payload.value("accountingEngineCalled").toBool(true),
+            "cashSummary accountingEngineCalled=false");
+        expectEqual(
+            payload.value("status").toString().toStdString(),
+            "CASH_SUMMARY_NOT_AVAILABLE",
+            "cashSummary status");
+        const auto futureOutput = payload.value("futureOutput").toObject();
+        expectTrue(futureOutput.value("cashSummary").isNull(), "cashSummary wrapper returns no real summary");
+        expectTrue(
+            futureOutput.value("accountCashSummaries").toArray().isEmpty(),
+            "cashSummary wrapper returns no account cash summaries");
+        expectTrue(!payload.contains("cashBalance"), "cashSummary wrapper returns no real cashBalance");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "cashSummary does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";

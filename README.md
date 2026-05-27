@@ -1555,6 +1555,28 @@ facts repository, does not add a DataService action, does not access SQLite,
 does not call AccountingEngine, does not modify schema, does not change QML,
 and does not write database tables.
 
+## TASK-089 cash.summary DataService action guard
+
+`cash.summary` is now registered as a DataService read-only action guard. The
+guard returns `implemented=false`, `readOnly=true`, `writeEnabled=false`, and
+`status=CASH_SUMMARY_NOT_AVAILABLE`.
+
+The guard does not implement real `cash.summary`, does not return real
+`cashBalance`, does not read cash facts, does not read `cash_snapshot` or
+`portfolio_summary`, does not access SQLite facts queries, does not call
+AccountingEngine, does not add a DataAccess repository, does not write database
+tables, and does not expose a QML entry point.
+
+No-write coverage verifies that calling the guard does not change `trade_log`,
+`trade_execution_group`, `trade_draft`, `cash_snapshot`, `position_snapshot`,
+`portfolio_summary`, or `audit_log`.
+
+New guard tests:
+
+- `dataservice_cash_summary_guard`
+- `dataservice_cash_summary_no_write`
+- `dataservice_client_cash_summary_guard`
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

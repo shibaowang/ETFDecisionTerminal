@@ -118,3 +118,32 @@ Current forbidden boundaries include:
 
 Any future replay logic, DataAccess dependency, DataService action, or write
 capability must be authorized by a separate task.
+
+## TASK-071 DTO / Parser / Validation Boundary
+
+TASK-071 extends the skeleton with DTO, parser, and validation boundary types.
+The current responsibility expands only to defining input contracts and field
+validation.
+
+Added contract areas:
+
+- `ReplayRequestDto`.
+- `TradeFactDto`.
+- `CashFactDto`.
+- `MarketPriceFactDto`.
+- `FxRateFactDto`.
+- `AccountingIssueDto`.
+- Parser result and validation result types.
+
+The validation boundary checks required fields, supported action enums,
+requested output enums, source time ranges, money text, quantity text, and
+currency code shape.
+
+It still does not own:
+
+- SQLite access.
+- DataService action registration.
+- TradeLog writes.
+- Snapshot writes.
+- TradeDraft generation.
+- Position, cash, cost, PnL, base-position, or sniper-pool calculation.

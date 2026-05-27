@@ -1019,6 +1019,30 @@ Current declared state:
 The boundary test is `accounting_engine_boundary`. This skeleton is not a replay
 implementation and does not change the production accounting behavior.
 
+## TASK-071 AccountingEngine replay DTO parser boundary
+
+`libs/AccountingEngine` now includes production replay DTO parser and validation
+boundary types. This is only an input contract boundary.
+
+Added DTO boundary types:
+
+- `ReplayRequestDto`
+- `TradeFactDto`
+- `CashFactDto`
+- `MarketPriceFactDto`
+- `FxRateFactDto`
+- `AccountingIssueDto`
+
+The validation layer checks required fields, supported enum values, source time
+ranges, money text, quantity text, and three-letter uppercase currency codes.
+It does not implement replay, calculate positions, calculate cash balances,
+calculate cost, calculate PnL, access SQLite, call DataService, add server
+actions, write tables, or copy test-only replay code.
+
+AccountingEngine still declares `replayImplemented=false` and
+`writeEnabled=false`. The DTO/parser boundary test is
+`accounting_replay_dto_parser_boundary`.
+
 Run tests:
 
 ```powershell

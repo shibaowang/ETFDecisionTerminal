@@ -34,7 +34,16 @@ def main() -> int:
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
     accounting_engine_cmake_path = accounting_engine_dir / "CMakeLists.txt"
+    accounting_issue_header_path = accounting_engine_dir / "include" / "AccountingEngine" / "AccountingIssue.h"
+    accounting_replay_dtos_header_path = accounting_engine_dir / "include" / "AccountingEngine" / "AccountingReplayDtos.h"
+    accounting_replay_validation_header_path = (
+        accounting_engine_dir / "include" / "AccountingEngine" / "AccountingReplayValidation.h"
+    )
+    accounting_replay_parser_header_path = accounting_engine_dir / "include" / "AccountingEngine" / "AccountingReplayParser.h"
     accounting_engine_boundary_test_path = root / "tests" / "AccountingEngine" / "test_accounting_engine_boundary.cpp"
+    accounting_replay_dto_parser_test_path = (
+        root / "tests" / "AccountingEngine" / "test_accounting_replay_dto_parser.cpp"
+    )
     accounting_engine_test_cmake_path = root / "tests" / "AccountingEngine" / "CMakeLists.txt"
     accounting_fixture_dir = root / "tests" / "fixtures" / "accounting_replay"
     accounting_fixture_index_path = accounting_fixture_dir / "fixtures_index.json"
@@ -107,7 +116,12 @@ def main() -> int:
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
     require(accounting_engine_cmake_path.exists(), "AccountingEngine CMake exists")
+    require(accounting_issue_header_path.exists(), "AccountingIssue header exists")
+    require(accounting_replay_dtos_header_path.exists(), "AccountingReplayDtos header exists")
+    require(accounting_replay_validation_header_path.exists(), "AccountingReplayValidation header exists")
+    require(accounting_replay_parser_header_path.exists(), "AccountingReplayParser header exists")
     require(accounting_engine_boundary_test_path.exists(), "AccountingEngine boundary test exists")
+    require(accounting_replay_dto_parser_test_path.exists(), "Accounting replay DTO parser test exists")
     require(accounting_engine_test_cmake_path.exists(), "AccountingEngine test CMake exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
     require(accounting_fixture_index_path.exists(), "accounting replay fixture index exists")
@@ -165,7 +179,11 @@ def main() -> int:
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
+    accounting_replay_dtos_header = accounting_replay_dtos_header_path.read_text(encoding="utf-8")
+    accounting_replay_validation_header = accounting_replay_validation_header_path.read_text(encoding="utf-8")
+    accounting_replay_parser_header = accounting_replay_parser_header_path.read_text(encoding="utf-8")
     accounting_engine_boundary_test = accounting_engine_boundary_test_path.read_text(encoding="utf-8")
+    accounting_replay_dto_parser_test = accounting_replay_dto_parser_test_path.read_text(encoding="utf-8")
     accounting_engine_test_cmake = accounting_engine_test_cmake_path.read_text(encoding="utf-8")
     accounting_engine_sources = "\n".join(
         path.read_text(encoding="utf-8")
@@ -436,6 +454,7 @@ def main() -> int:
     require("33_production_accounting_replay_architecture.md" in docs_index, "docs index links production accounting replay architecture")
     require("34_accounting_engine_module_candidate.md" in docs_index, "docs index links AccountingEngine module candidate")
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
+    require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
     require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
@@ -490,6 +509,8 @@ def main() -> int:
     require("DataService action implementation requires architecture boundary approval" in codex_prompt_template, "prompt template gates DataService actions")
     require("AccountingEngine dependency on DataAccess requires explicit authorization" in codex_prompt_template, "prompt template gates AccountingEngine DataAccess dependency")
     require("default production replay phase is read-only and has no snapshot writes" in codex_prompt_template, "prompt template keeps read-only no-snapshot default")
+    require("AccountingEngine DTO parser tasks must not implement replay" in codex_prompt_template, "prompt template blocks replay in DTO parser tasks")
+    require("DTO validation must not calculate positions" in codex_prompt_template, "prompt template blocks accounting calculation in DTO validation")
 
     require("Production Accounting Replay Architecture Boundary" in accounting_replay_architecture, "architecture doc title exists")
     require("test-only `AccountingReplayMinimalEngine`" in accounting_replay_architecture, "architecture doc names test-only engine")
@@ -513,6 +534,8 @@ def main() -> int:
     require("DATA_VERSION_MISMATCH" in accounting_replay_architecture, "architecture doc lists data version issue")
     require("UNSUPPORTED_ACCOUNTING_MODE" in accounting_replay_architecture, "architecture doc lists unsupported mode issue")
     require("TASK-070" in accounting_replay_architecture, "architecture doc records TASK-070 skeleton")
+    require("TASK-071" in accounting_replay_architecture, "architecture doc records TASK-071 DTO parser boundary")
+    require("DTO validation is not replay" in accounting_replay_architecture, "architecture doc states DTO validation is not replay")
     require("No replay algorithm" in accounting_replay_architecture, "architecture doc states skeleton has no replay")
     require("No DataAccess dependency" in accounting_replay_architecture, "architecture doc states skeleton has no DataAccess")
     require("No DataService action" in accounting_replay_architecture, "architecture doc states skeleton has no DataService action")
@@ -534,12 +557,18 @@ def main() -> int:
     require("must not be directly migrated to" in accounting_engine_candidate, "AccountingEngine candidate doc blocks direct minimal engine migration")
     require("TASK-070" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-070 skeleton")
     require("Candidate Skeleton Created" in accounting_engine_candidate, "AccountingEngine candidate doc records skeleton creation")
+    require("TASK-071" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-071")
+    require("DTO / Parser / Validation Boundary" in accounting_engine_candidate, "AccountingEngine candidate doc records DTO parser boundary")
     require("replayImplemented=false" in accounting_engine_candidate, "AccountingEngine candidate doc records replay false")
     require("snapshotWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records snapshot write false")
     require("tradeLogWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records trade log write false")
     require("No DataAccess dependency" in accounting_engine_candidate, "AccountingEngine candidate doc keeps DataAccess forbidden")
 
     require("AccountingEngine skeleton" in readme, "README documents AccountingEngine skeleton")
+    require("AccountingEngine replay DTO parser boundary" in readme, "README documents DTO parser boundary")
+    require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
+    require("TradeFactDto" in readme, "README documents TradeFactDto")
+    require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
     require("replayImplemented=false" in readme, "README records AccountingEngine replay false")
     require("productionReady=false" in readme, "README records AccountingEngine productionReady false")
     require("writeEnabled=false" in readme, "README records AccountingEngine write false")
@@ -550,8 +579,25 @@ def main() -> int:
     require("add_library(ETFAccountingEngine" in accounting_engine_cmake, "AccountingEngine CMake defines library")
     require("ETFDecisionTerminal::AccountingEngine" in accounting_engine_cmake, "AccountingEngine CMake defines alias")
     require("add_test(NAME accounting_engine_boundary" in accounting_engine_test_cmake, "AccountingEngine CMake registers boundary test")
+    require(
+        "add_test(NAME accounting_replay_dto_parser_boundary" in accounting_engine_test_cmake,
+        "AccountingEngine CMake registers DTO parser boundary test",
+    )
     require("AccountingEngineBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine boundary test target exists")
     require("accountingEngineBoundary" in accounting_engine_boundary_test, "AccountingEngine boundary test source exists")
+    require("AccountingReplayDtoParserBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine DTO parser test target exists")
+    require("validateTradeFact" in accounting_replay_dto_parser_test, "DTO parser test validates trade facts")
+    require("ReplayRequestDto" in accounting_replay_dtos_header, "ReplayRequestDto exists")
+    require("TradeFactDto" in accounting_replay_dtos_header, "TradeFactDto exists")
+    require("CashFactDto" in accounting_replay_dtos_header, "CashFactDto exists")
+    require("MarketPriceFactDto" in accounting_replay_dtos_header, "MarketPriceFactDto exists")
+    require("FxRateFactDto" in accounting_replay_dtos_header, "FxRateFactDto exists")
+    require("validateReplayRequest" in accounting_replay_validation_header, "validateReplayRequest exists")
+    require("validateTradeFact" in accounting_replay_validation_header, "validateTradeFact exists")
+    require("validateCashFact" in accounting_replay_validation_header, "validateCashFact exists")
+    require("validateMarketPriceFact" in accounting_replay_validation_header, "validateMarketPriceFact exists")
+    require("validateFxRateFact" in accounting_replay_validation_header, "validateFxRateFact exists")
+    require("parseTradeFactBoundary" in accounting_replay_parser_header, "parseTradeFactBoundary exists")
 
     for forbidden in ["DataAccess/", "DataServiceApi/", "DataServiceClient/", "ServiceHost/", "Watchdog/"]:
         require(forbidden not in accounting_engine_sources, f"AccountingEngine sources do not include {forbidden}")

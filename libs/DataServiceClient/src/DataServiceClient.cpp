@@ -33,6 +33,7 @@ constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
+constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
 
 std::string nextId(std::string_view prefix)
 {
@@ -246,6 +247,13 @@ DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::ca
     int timeoutMs)
 {
     return sendAction(kActionCashSummary, payloadJson, timeoutMs);
+}
+
+DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::portfolioPnlSummary(
+    const std::string& payloadJson,
+    int timeoutMs)
+{
+    return sendAction(kActionPortfolioPnlSummary, payloadJson, timeoutMs);
 }
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::appendAuditDemo(

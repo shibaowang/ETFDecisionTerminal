@@ -42,6 +42,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionCashSummary, [&connection](const auto& context) {
         return handleCashSummary(context, connection);
     });
+    (void)dispatcher.registerAction(kActionPortfolioPnlSummary, [&connection](const auto& context) {
+        return handlePortfolioPnlSummary(context, connection);
+    });
 }
 
 void registerDataServiceWriteActions(

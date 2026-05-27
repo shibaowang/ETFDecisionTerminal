@@ -331,3 +331,14 @@ snapshots.
 Future SQLite cash facts query integration for real `cash.summary` requires a
 separate task and must keep the read-only and no-write boundaries in this
 document.
+
+## TASK-090 portfolio.pnl.summary Guard Boundary
+
+The `portfolio.pnl.summary` guard does not use SQLite facts query. It returns
+`PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE` without reading `trade_log`, cash facts,
+market price facts, `cash_snapshot`, `position_snapshot`, `portfolio_summary`,
+FX rate facts, or snapshots.
+
+Future SQLite trade, cash, and market price facts query integration for real
+`portfolio.pnl.summary` requires separate tasks and must keep the read-only and
+no-write boundaries in this document.

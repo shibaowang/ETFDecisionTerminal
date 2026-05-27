@@ -812,4 +812,83 @@ etfdt::protocol::ProtocolResponse handleCashSummary(
     return successResponse(context, payload);
 }
 
+etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "portfolio.pnl.summary payload must be a JSON object");
+    }
+
+    const std::string payload = R"json({
+"module":"accounting",
+"action":"portfolio.pnl.summary",
+"implemented":false,
+"readOnly":true,
+"writeEnabled":false,
+"replayExecuted":false,
+"dataSourceAccessed":false,
+"sqliteAccessed":false,
+"tradeFactsAccessed":false,
+"cashFactsAccessed":false,
+"marketPriceFactsAccessed":false,
+"snapshotAccessed":false,
+"portfolioSummaryAccessed":false,
+"accountingEngineCalled":false,
+"contractVersion":"0.4-draft",
+"calculationVersion":"not-implemented",
+"status":"PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
+"message":"portfolio.pnl.summary is a read-only contract guard and is not implemented yet.",
+"futureOutput":{
+"type":"PortfolioPnlSummaryResponse",
+"portfolioPnl":null
+},
+"forbiddenSources":[
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary"
+],
+"forbiddenWrites":[
+"trade_log",
+"trade_execution_group",
+"trade_draft",
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary",
+"audit_log"
+],
+"requiredNextTasks":[
+"Trade facts read-only query integration review",
+"Cash facts source review",
+"Market price facts source review",
+"AccountingEngine integration boundary",
+"portfolio.pnl.summary no-write integration test",
+"real PortfolioPnlSummaryResponse mapping"
+],
+"issues":[
+{
+"level":"ERROR",
+"code":"PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
+"message":"portfolio.pnl.summary is not implemented.",
+"blocking":true
+}
+],
+"warnings":[
+"PORTFOLIO_PNL_SUMMARY_NOT_IMPLEMENTED",
+"NO_TRADE_FACTS_QUERY_IN_ACTION",
+"NO_CASH_FACTS_SOURCE",
+"NO_MARKET_PRICE_FACTS_SOURCE",
+"NO_SQLITE_FACTS_QUERY",
+"NO_ACCOUNTING_ENGINE_CALL"
+]
+})json";
+
+    return successResponse(context, payload);
+}
+
 }  // namespace etfdt::data_service_api

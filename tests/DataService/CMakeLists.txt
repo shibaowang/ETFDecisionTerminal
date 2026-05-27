@@ -65,6 +65,22 @@ add_test(
         ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
 )
 
+add_test(
+    NAME dataservice_portfolio_pnl_summary_guard
+    COMMAND
+        DataServiceActionTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
+add_test(
+    NAME dataservice_portfolio_pnl_summary_no_write
+    COMMAND
+        DataServiceActionTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
 set_tests_properties(dataservice_readonly_socket_actions PROPERTIES
     ENVIRONMENT_MODIFICATION
         "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
@@ -86,6 +102,16 @@ set_tests_properties(dataservice_cash_summary_guard PROPERTIES
 )
 
 set_tests_properties(dataservice_cash_summary_no_write PROPERTIES
+    ENVIRONMENT_MODIFICATION
+        "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+)
+
+set_tests_properties(dataservice_portfolio_pnl_summary_guard PROPERTIES
+    ENVIRONMENT_MODIFICATION
+        "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+)
+
+set_tests_properties(dataservice_portfolio_pnl_summary_no_write PROPERTIES
     ENVIRONMENT_MODIFICATION
         "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
 )

@@ -169,3 +169,14 @@ The `cash.summary` guard does not use this facts mapping. It returns a
 Future real `cash.summary` implementation is the point where `CashFactDto`
 mapping may be used, after `docs/41_cash_facts_source_boundary.md` and
 `docs/42_cash_facts_query_decision.md` confirm the facts source.
+
+## TASK-090 portfolio.pnl.summary Guard Mapping Boundary
+
+The `portfolio.pnl.summary` guard does not use this facts mapping. It returns a
+`PortfolioPnlSummaryResponse` future output shape with `portfolioPnl=null` only
+to describe the contract.
+
+Future real `portfolio.pnl.summary` implementation is the point where
+`TradeFactDto`, `CashFactDto`, and `MarketPriceFactDto` mapping may be composed
+for PnL calculation. That work still requires separate read-only query,
+AccountingEngine integration, and no-write test authorization.

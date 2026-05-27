@@ -355,6 +355,13 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
             return value.toString() == "cash.summary";
         });
     expectTrue(hasCashSummary, "accounting.health futureActions contains cash.summary");
+    const bool hasPortfolioPnlSummary =
+        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
+            return value.toString() == "portfolio.pnl.summary";
+        });
+    expectTrue(
+        hasPortfolioPnlSummary,
+        "accounting.health futureActions contains portfolio.pnl.summary");
 
     const auto warnings = accountingPayload.value("warnings").toArray();
     const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
@@ -642,6 +649,139 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         cashSummaryMalformedPayload.value("errorCode").toString().toStdString(),
         "E1001_INVALID_JSON",
         "cash.summary malformed payload returns E1001");
+
+    const auto portfolioPnlCountsBefore = protectedTableCounts(connection);
+    auto portfolioPnlSummary = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionPortfolioPnlSummary),
+        responses,
+        "portfolio.pnl.summary");
+    expectSuccess(portfolioPnlSummary, "portfolio.pnl.summary guard");
+    const auto portfolioPnlPayload = portfolioPnlSummary.value("payload").toObject();
+    expectEqual(
+        portfolioPnlPayload.value("action").toString().toStdString(),
+        "portfolio.pnl.summary",
+        "portfolio.pnl.summary payload action");
+    expectEqual(
+        portfolioPnlPayload.value("module").toString().toStdString(),
+        "accounting",
+        "portfolio.pnl.summary module");
+    expectTrue(
+        !portfolioPnlPayload.value("implemented").toBool(true),
+        "portfolio.pnl.summary implemented=false");
+    expectTrue(
+        portfolioPnlPayload.value("readOnly").toBool(false),
+        "portfolio.pnl.summary readOnly=true");
+    expectTrue(
+        !portfolioPnlPayload.value("writeEnabled").toBool(true),
+        "portfolio.pnl.summary writeEnabled=false");
+    expectTrue(
+        !portfolioPnlPayload.value("replayExecuted").toBool(true),
+        "portfolio.pnl.summary replayExecuted=false");
+    expectTrue(
+        !portfolioPnlPayload.value("dataSourceAccessed").toBool(true),
+        "portfolio.pnl.summary dataSourceAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("sqliteAccessed").toBool(true),
+        "portfolio.pnl.summary sqliteAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("tradeFactsAccessed").toBool(true),
+        "portfolio.pnl.summary tradeFactsAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("cashFactsAccessed").toBool(true),
+        "portfolio.pnl.summary cashFactsAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("marketPriceFactsAccessed").toBool(true),
+        "portfolio.pnl.summary marketPriceFactsAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("snapshotAccessed").toBool(true),
+        "portfolio.pnl.summary snapshotAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("portfolioSummaryAccessed").toBool(true),
+        "portfolio.pnl.summary portfolioSummaryAccessed=false");
+    expectTrue(
+        !portfolioPnlPayload.value("accountingEngineCalled").toBool(true),
+        "portfolio.pnl.summary accountingEngineCalled=false");
+    expectEqual(
+        portfolioPnlPayload.value("status").toString().toStdString(),
+        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
+        "portfolio.pnl.summary status");
+    const auto portfolioPnlIssues = portfolioPnlPayload.value("issues").toArray();
+    const bool hasPortfolioPnlUnavailableIssue =
+        std::any_of(portfolioPnlIssues.begin(), portfolioPnlIssues.end(), [](const auto& value) {
+            const auto issue = value.toObject();
+            return issue.value("code").toString() == "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE"
+                && issue.value("blocking").toBool(false);
+        });
+    expectTrue(
+        hasPortfolioPnlUnavailableIssue,
+        "portfolio.pnl.summary issues contains blocking PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE");
+    const auto pnlForbiddenSources = portfolioPnlPayload.value("forbiddenSources").toArray();
+    const bool pnlForbidsCashSnapshotSource =
+        std::any_of(pnlForbiddenSources.begin(), pnlForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "cash_snapshot";
+        });
+    const bool pnlForbidsPositionSnapshotSource =
+        std::any_of(pnlForbiddenSources.begin(), pnlForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    const bool pnlForbidsPortfolioSummarySource =
+        std::any_of(pnlForbiddenSources.begin(), pnlForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(pnlForbidsCashSnapshotSource, "portfolio.pnl.summary forbiddenSources contains cash_snapshot");
+    expectTrue(pnlForbidsPositionSnapshotSource, "portfolio.pnl.summary forbiddenSources contains position_snapshot");
+    expectTrue(pnlForbidsPortfolioSummarySource, "portfolio.pnl.summary forbiddenSources contains portfolio_summary");
+    const auto pnlForbiddenWrites = portfolioPnlPayload.value("forbiddenWrites").toArray();
+    const bool pnlForbidsTradeLog =
+        std::any_of(pnlForbiddenWrites.begin(), pnlForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_log";
+        });
+    const bool pnlForbidsPortfolioSummary =
+        std::any_of(pnlForbiddenWrites.begin(), pnlForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(pnlForbidsTradeLog, "portfolio.pnl.summary forbiddenWrites contains trade_log");
+    expectTrue(pnlForbidsPortfolioSummary, "portfolio.pnl.summary forbiddenWrites contains portfolio_summary");
+    const auto portfolioPnlFutureOutput = portfolioPnlPayload.value("futureOutput").toObject();
+    expectEqual(
+        portfolioPnlFutureOutput.value("type").toString().toStdString(),
+        "PortfolioPnlSummaryResponse",
+        "portfolio.pnl.summary futureOutput type");
+    expectTrue(
+        portfolioPnlFutureOutput.value("portfolioPnl").isNull(),
+        "portfolio.pnl.summary futureOutput portfolioPnl is null");
+    expectTrue(!portfolioPnlPayload.contains("totalAssets"), "portfolio.pnl.summary does not return real totalAssets");
+    expectTrue(!portfolioPnlPayload.contains("realizedPnl"), "portfolio.pnl.summary does not return real realizedPnl");
+    expectTrue(!portfolioPnlPayload.contains("unrealizedPnl"), "portfolio.pnl.summary does not return real unrealizedPnl");
+    expectTrue(!portfolioPnlPayload.contains("totalPnl"), "portfolio.pnl.summary does not return real totalPnl");
+    expectProtectedTableCountsUnchanged(connection, portfolioPnlCountsBefore, "portfolio.pnl.summary guard");
+
+    auto portfolioPnlInvalidPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionPortfolioPnlSummary, "[]"),
+        responses,
+        "portfolio.pnl.summary invalid payload");
+    expectTrue(
+        !portfolioPnlInvalidPayload.value("success").toBool(true),
+        "portfolio.pnl.summary invalid payload success=false");
+    expectEqual(
+        portfolioPnlInvalidPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "portfolio.pnl.summary invalid payload returns E1001");
+
+    auto portfolioPnlMalformedPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionPortfolioPnlSummary, "{ invalid }"),
+        responses,
+        "portfolio.pnl.summary malformed payload");
+    expectTrue(
+        !portfolioPnlMalformedPayload.value("success").toBool(true),
+        "portfolio.pnl.summary malformed payload success=false");
+    expectEqual(
+        portfolioPnlMalformedPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "portfolio.pnl.summary malformed payload returns E1001");
 
     auto replayPreviewMissingPayload = sendEnvelope(
         client,

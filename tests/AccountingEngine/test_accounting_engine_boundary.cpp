@@ -42,6 +42,7 @@ int main()
 
     const auto capabilities = accountingEngineCapabilities();
     failures += expect(!capabilities.replayImplemented, "capabilities.replayImplemented should be false");
+    failures += expect(capabilities.emptyLedgerReplaySupported, "emptyLedgerReplaySupported should be true");
     failures += expect(!capabilities.readOnlyReplaySupported, "readOnlyReplaySupported should be false");
     failures += expect(!capabilities.writeEnabled, "writeEnabled should be false");
     failures += expect(!capabilities.snapshotWriteEnabled, "snapshotWriteEnabled should be false");

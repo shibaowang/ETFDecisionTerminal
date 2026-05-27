@@ -4,7 +4,9 @@ add_library(ETFAccountingEngine STATIC
     src/AccountingEngineBoundary.cpp
     src/AccountingIssue.cpp
     src/AccountingReplayDtos.cpp
+    src/AccountingReplayEngine.cpp
     src/AccountingReplayParser.cpp
+    src/AccountingReplayResult.cpp
     src/AccountingReplayValidation.cpp
 )
 

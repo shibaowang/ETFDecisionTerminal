@@ -334,3 +334,8 @@ v0.1 草案。
 - DTO validation must not calculate positions, cash balances, cost, PnL, base position, or sniper pool.
 - Future replay tasks must explicitly state whether they are read-only, whether they access DataAccess, and whether they expose a DataService action.
 - The default remains no writes, no snapshot writes, no TradeLog writes, no TradeDraft, and no QML accounting calculation.
+- AccountingEngine empty ledger skeleton does not mean full replay is implemented.
+- Future production replay tasks must proceed one scenario at a time.
+- Future replay tasks must not introduce DataAccess or DataService actions unless explicitly authorized.
+- Future replay tasks must not write snapshots, TradeLog, TradeDraft, or business summary tables by default.
+- Future replay tasks must not copy `tests/AccountingFixtures` implementations.

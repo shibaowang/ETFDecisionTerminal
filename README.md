@@ -1043,6 +1043,32 @@ AccountingEngine still declares `replayImplemented=false` and
 `writeEnabled=false`. The DTO/parser boundary test is
 `accounting_replay_dto_parser_boundary`.
 
+## TASK-072 AccountingEngine empty ledger replay skeleton
+
+`libs/AccountingEngine` now includes a production-side read-only replay skeleton
+entry for empty ledger only.
+
+The `AccountingReplayEngine::replayReadOnly` API accepts replay request DTOs and
+fact DTO vectors. It only handles the FX001-equivalent empty ledger shape:
+
+- `tradeFacts=[]`
+- `cashFacts=[]`
+- `marketPriceFacts=[]`
+- `fxRateFacts=[]`
+
+Empty ledger returns `implemented=true`, `replayExecuted=true`, `status=OK`,
+empty positions, `cashSummary.cashBalanceText="0.00 CNY"`, and
+`portfolioPnl.totalAssetsText="0.00 CNY"`.
+
+Any non-empty facts currently return `UNSUPPORTED_SCENARIO` with
+`REPLAY_NOT_IMPLEMENTED` and do not output successful position / cash / PnL
+results. `replayImplemented=false` still means full production replay is not
+implemented. This task does not implement FX002, buy/sell replay, costs, cash
+flows, PnL, base position, sniper pool, SQLite access, DataService actions,
+snapshot writes, TradeLog writes, or QML behavior.
+
+The empty-ledger skeleton test is `accounting_replay_engine_empty_ledger`.
+
 Run tests:
 
 ```powershell

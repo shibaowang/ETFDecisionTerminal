@@ -23,3 +23,16 @@ target_link_libraries(AccountingReplayDtoParserBoundaryTests
 target_compile_features(AccountingReplayDtoParserBoundaryTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_dto_parser_boundary COMMAND AccountingReplayDtoParserBoundaryTests)
+
+add_executable(AccountingReplayEngineEmptyLedgerTests
+    test_accounting_replay_engine_empty_ledger.cpp
+)
+
+target_link_libraries(AccountingReplayEngineEmptyLedgerTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineEmptyLedgerTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_empty_ledger COMMAND AccountingReplayEngineEmptyLedgerTests)

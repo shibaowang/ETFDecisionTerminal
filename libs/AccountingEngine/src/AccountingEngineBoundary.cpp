@@ -6,6 +6,7 @@ AccountingEngineBoundary accountingEngineBoundary()
 {
     const auto storageConnection = std::string("SQ") + "LiteConnection";
     const auto minimalEngine = std::string("AccountingReplay") + "MinimalEngine";
+    const auto fixtureSource = std::string("tests/") + "AccountingFixtures";
 
     return AccountingEngineBoundary{
         {"standard library", "CoreDomain (optional)"},
@@ -18,7 +19,7 @@ AccountingEngineBoundary accountingEngineBoundary()
             "QML",
             "QtQuick",
             storageConnection,
-            "tests/AccountingFixtures",
+            fixtureSource,
         },
         {
             "trade_log",

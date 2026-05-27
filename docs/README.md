@@ -35,6 +35,7 @@
 - [34 AccountingEngine Module Candidate](34_accounting_engine_module_candidate.md)
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
+- AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)
 - [Release Notes - v0.1 ReadOnly Shell Demo](release_notes/v0_1_readonly_shell_demo.md)
 - [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)
 - [Release Notes - v0.3 Accounting Replay Test-only Coverage](release_notes/v0_3_accounting_replay_testonly_coverage.md)

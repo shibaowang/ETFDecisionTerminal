@@ -154,3 +154,19 @@ The SQLite facts query boundary is documented in
 
 Accounting facts source mapping is documented in
 `docs/40_accounting_facts_source_mapping.md`.
+
+## TASK-085 position.list Guard No-write Coverage
+
+The `position.list` guard has no-write table count coverage. The guard test
+checks that calling `position.list` leaves these protected tables unchanged:
+
+- `trade_log`
+- `trade_execution_group`
+- `trade_draft`
+- `cash_snapshot`
+- `position_snapshot`
+- `portfolio_summary`
+- `audit_log`
+
+The real `position.list` implementation must extend these no-write tests before
+it can read facts or map real positions.

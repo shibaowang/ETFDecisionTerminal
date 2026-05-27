@@ -39,6 +39,8 @@
 - [38 DataService Accounting No-write Test Plan](38_dataservice_accounting_no_write_test_plan.md)
 - [39 SQLite Read-only Facts Query Boundary](39_sqlite_readonly_facts_query_boundary.md)
 - [40 Accounting Facts Source Mapping](40_accounting_facts_source_mapping.md)
+- DataService `position.list` guard: registered read-only guard with
+  `implemented=false`; real position query remains unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

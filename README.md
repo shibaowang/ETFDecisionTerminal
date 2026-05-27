@@ -1325,6 +1325,48 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-080 AccountingEngine multi-currency unsupported scenario
+
+`libs/AccountingEngine` now includes a production-side read-only
+multi-currency unsupported detection scenario. It detects CNY plus non-CNY
+facts, such as CNY and USD BUY facts, when FX rate facts are missing.
+
+The scenario returns `implemented=true`, `replayExecuted=true`,
+`status=ERROR`, and blocking `MULTI_CURRENCY_UNSUPPORTED` plus
+`FX_RATE_MISSING` issues. This is a rejection path only: it does not perform FX
+conversion, does not fabricate FX rates, and does not treat USD as CNY.
+
+No successful accounting outputs are emitted for the rejected multi-currency
+case. The result does not output successful positions, cash summaries,
+portfolio PnL, base-position, or sniper-pool data, and it does not fabricate
+`totalAssetsText`, `marketValueText`, or `unrealizedPnlText`.
+
+Current production-side replay skeleton coverage is limited to empty ledger,
+single BUY, one BUY + one partial SELL, one BUY + one SELL oversell detection,
+single BUY missing fee detection, single BUY negative cash detection,
+same-account same-portfolio CNY multi-instrument BUY, CNY BUY-only
+multi-account isolation, and multi-currency unsupported detection.
+`supportsMultiCurrency=false`, `supportsFxRate=false`, and
+`replayImplemented=false` still mean complete production replay, FX support,
+and successful multi-currency replay are not implemented.
+
+This task does not implement real FX rates, FX rate services, network access,
+multi-currency valuation, market value, unrealized PnL, base position, sniper
+pool, SQLite access, DataService actions, snapshot writes, TradeLog writes, or
+QML behavior.
+
+The multi-currency unsupported test is
+`accounting_replay_engine_multi_currency_unsupported`.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

@@ -115,5 +115,6 @@ struct AccountingReplayResult {
 [[nodiscard]] AccountingReplayResult makeNegativeCashReplayResult();
 [[nodiscard]] AccountingReplayResult makeSellExceedsPositionReplayResult();
 [[nodiscard]] AccountingReplayResult makeMissingFeeReplayResult();
+[[nodiscard]] AccountingReplayResult makeMultiCurrencyUnsupportedReplayResult(bool fxRateMissing);
 
 } // namespace etfdt::accounting

@@ -284,3 +284,23 @@ stay `UNAVAILABLE` rather than being fabricated.
 Multi-currency replay, multi-account SELL, cross-portfolio aggregation,
 base-position, sniper-pool, DataAccess, DataService actions, snapshots, and
 TradeLog writes remain out of scope unless separately authorized.
+
+## TASK-080 Multi-currency Unsupported Detection
+
+The skeleton now includes multi-currency unsupported detection. This is a
+production-side incremental error handling skeleton for the FX013-equivalent
+boundary, not a complete multi-currency engine.
+
+The entry detects CNY plus non-CNY facts, currently exercised with USD, when FX
+rate facts are missing. It returns `ERROR` with blocking
+`MULTI_CURRENCY_UNSUPPORTED` and `FX_RATE_MISSING` issues and emits no
+successful output DTOs.
+
+This is rejection only. AccountingEngine still has `supportsFxRate=false` and
+`supportsMultiCurrency=false`. It does not perform FX conversion, does not
+fabricate exchange rates, and does not fabricate portfolio total assets,
+market value, or unrealized PnL.
+
+Real FX rate support, real multi-currency valuation, market data integration,
+DataAccess, DataService actions, snapshots, and TradeLog writes remain out of
+scope unless separately authorized.

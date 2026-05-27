@@ -368,3 +368,10 @@ v0.1 草案。
 - Multi-account BUY must not fabricate market value or unrealized PnL.
 - Future production replay tasks after multi-account BUY must still remain one scenario at a time.
 - Multi-currency replay, multi-account SELL, cross-portfolio aggregation, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine multi-currency unsupported scenario does not mean multi-currency replay is supported.
+- Multi-currency unsupported detection must reject CNY plus non-CNY facts without FX rate facts.
+- USD must not be treated as CNY or directly added to CNY totals.
+- FX rates must not be fabricated, fetched over the network, or inferred from market data.
+- Multi-currency unsupported results must not fabricate `totalAssetsText`, `marketValueText`, or `unrealizedPnlText`.
+- Future production replay tasks after multi-currency unsupported detection must still remain one scenario at a time.
+- Real FX rate support, successful multi-currency valuation, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

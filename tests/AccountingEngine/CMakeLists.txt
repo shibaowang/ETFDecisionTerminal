@@ -127,3 +127,16 @@ target_link_libraries(AccountingReplayEngineMultiAccountBuyTests
 target_compile_features(AccountingReplayEngineMultiAccountBuyTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_multi_account_buy COMMAND AccountingReplayEngineMultiAccountBuyTests)
+
+add_executable(AccountingReplayEngineMultiCurrencyUnsupportedTests
+    test_accounting_replay_engine_multi_currency_unsupported.cpp
+)
+
+target_link_libraries(AccountingReplayEngineMultiCurrencyUnsupportedTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineMultiCurrencyUnsupportedTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_multi_currency_unsupported COMMAND AccountingReplayEngineMultiCurrencyUnsupportedTests)

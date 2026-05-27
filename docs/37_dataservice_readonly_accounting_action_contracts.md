@@ -567,3 +567,45 @@ This does not implement the real `BasePositionSummaryResponse`.
 generate trade suggestions or TradeDraft rows. SQLite facts query integration
 remains unimplemented, and DataService still does not call AccountingEngine for
 `base_position.summary`.
+
+## TASK-092 sniper_pool.summary Guard
+
+TASK-092 registers `sniper_pool.summary` as a DataService read-only action
+guard. Current guard payload fields include:
+
+- `module="accounting"`
+- `action="sniper_pool.summary"`
+- `implemented=false`
+- `readOnly=true`
+- `writeEnabled=false`
+- `replayExecuted=false`
+- `dataSourceAccessed=false`
+- `sqliteAccessed=false`
+- `tradeFactsAccessed=false`
+- `snapshotAccessed=false`
+- `positionSnapshotAccessed=false`
+- `cashSnapshotAccessed=false`
+- `portfolioSummaryAccessed=false`
+- `accountingEngineCalled=false`
+- `sniperPoolCalculated=false`
+- `tierSummaryCalculated=false`
+- `tradeDraftGenerated=false`
+- `tradeSuggestionGenerated=false`
+- `strategyExecuted=false`
+- `status="SNIPER_POOL_SUMMARY_NOT_AVAILABLE"`
+- `futureOutput.type="SniperPoolSummaryResponse"`
+- `futureOutput.sniperPool=null`
+- `futureOutput.tierSummary=[]`
+- `forbiddenSources[]` with `position_snapshot`, `cash_snapshot`, and
+  `portfolio_summary`
+- `forbiddenActions[]` with `trade_draft_generation`,
+  `trade_suggestion_generation`, `strategy_execution`, and `broker_order`
+- `issues[]` with blocking `SNIPER_POOL_SUMMARY_NOT_AVAILABLE`
+- `forbiddenWrites[]`
+- `requiredNextTasks[]`
+
+This does not implement the real `SniperPoolSummaryResponse`.
+`remainingAmountText` is not a trade suggestion. `completed` is not derived from current market value in this guard. The guard does not calculate T1-T6 tiers,
+does not generate trade suggestions, and does not generate TradeDraft rows.
+SQLite facts query integration remains unimplemented, and DataService still
+does not call AccountingEngine for `sniper_pool.summary`.

@@ -354,3 +354,15 @@ The guard does not generate trade suggestions and does not generate TradeDraft
 rows. Future SQLite trade facts or position derivation integration for real
 `base_position.summary` requires separate tasks and must keep the read-only and
 no-write boundaries in this document.
+
+## TASK-092 sniper_pool.summary Guard Boundary
+
+The `sniper_pool.summary` guard does not use SQLite facts query. It returns
+`SNIPER_POOL_SUMMARY_NOT_AVAILABLE` without reading `trade_log`,
+`position_snapshot`, `cash_snapshot`, `portfolio_summary`, FX rate facts,
+market price facts, or snapshots.
+
+The guard does not calculate T1-T6 tiers, does not generate trade suggestions,
+and does not generate TradeDraft rows. Future SQLite trade facts or tier
+derivation integration for real `sniper_pool.summary` requires separate tasks
+and must keep the read-only and no-write boundaries in this document.

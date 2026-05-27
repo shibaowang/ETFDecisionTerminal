@@ -454,3 +454,19 @@ v0.1 草案。
   `docs/39_sqlite_readonly_facts_query_boundary.md`, and
   `docs/40_accounting_facts_source_mapping.md`, and must include no-write
   tests.
+- DataService `sniper_pool.summary` guard tasks must not pretend to be real
+  implementations.
+- `implemented=false` sniper-pool guards may exist, but they must not return
+  real `poolAmountText`, `usedAmountText`, `remainingAmountText`, or
+  `tierSummary` data.
+- `remainingAmountText` is not a trade suggestion.
+- `completed` is not derived from current market value in a guard task.
+- Sniper-pool guard or implementation tasks must not generate TradeDraft rows
+  unless a later task explicitly authorizes writes.
+- Sniper-pool guard tasks must not generate strategy execution.
+- Future real `sniper_pool.summary` tasks must reference
+  `docs/37_dataservice_readonly_accounting_action_contracts.md`,
+  `docs/38_dataservice_accounting_no_write_test_plan.md`,
+  `docs/39_sqlite_readonly_facts_query_boundary.md`, and
+  `docs/40_accounting_facts_source_mapping.md`, and must include no-write
+  tests.

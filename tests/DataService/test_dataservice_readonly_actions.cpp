@@ -369,6 +369,13 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
     expectTrue(
         hasBasePositionSummary,
         "accounting.health futureActions contains base_position.summary");
+    const bool hasSniperPoolSummary =
+        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
+            return value.toString() == "sniper_pool.summary";
+        });
+    expectTrue(
+        hasSniperPoolSummary,
+        "accounting.health futureActions contains sniper_pool.summary");
 
     const auto warnings = accountingPayload.value("warnings").toArray();
     const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
@@ -957,6 +964,189 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         basePositionMalformedPayload.value("errorCode").toString().toStdString(),
         "E1001_INVALID_JSON",
         "base_position.summary malformed payload returns E1001");
+
+    const auto sniperPoolCountsBefore = protectedTableCounts(connection);
+    auto sniperPoolSummary = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionSniperPoolSummary),
+        responses,
+        "sniper_pool.summary");
+    expectSuccess(sniperPoolSummary, "sniper_pool.summary guard");
+    const auto sniperPoolPayload = sniperPoolSummary.value("payload").toObject();
+    expectEqual(
+        sniperPoolPayload.value("action").toString().toStdString(),
+        "sniper_pool.summary",
+        "sniper_pool.summary payload action");
+    expectEqual(
+        sniperPoolPayload.value("module").toString().toStdString(),
+        "accounting",
+        "sniper_pool.summary module");
+    expectTrue(
+        !sniperPoolPayload.value("implemented").toBool(true),
+        "sniper_pool.summary implemented=false");
+    expectTrue(
+        sniperPoolPayload.value("readOnly").toBool(false),
+        "sniper_pool.summary readOnly=true");
+    expectTrue(
+        !sniperPoolPayload.value("writeEnabled").toBool(true),
+        "sniper_pool.summary writeEnabled=false");
+    expectTrue(
+        !sniperPoolPayload.value("replayExecuted").toBool(true),
+        "sniper_pool.summary replayExecuted=false");
+    expectTrue(
+        !sniperPoolPayload.value("dataSourceAccessed").toBool(true),
+        "sniper_pool.summary dataSourceAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("sqliteAccessed").toBool(true),
+        "sniper_pool.summary sqliteAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("tradeFactsAccessed").toBool(true),
+        "sniper_pool.summary tradeFactsAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("snapshotAccessed").toBool(true),
+        "sniper_pool.summary snapshotAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("positionSnapshotAccessed").toBool(true),
+        "sniper_pool.summary positionSnapshotAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("cashSnapshotAccessed").toBool(true),
+        "sniper_pool.summary cashSnapshotAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("portfolioSummaryAccessed").toBool(true),
+        "sniper_pool.summary portfolioSummaryAccessed=false");
+    expectTrue(
+        !sniperPoolPayload.value("accountingEngineCalled").toBool(true),
+        "sniper_pool.summary accountingEngineCalled=false");
+    expectTrue(
+        !sniperPoolPayload.value("sniperPoolCalculated").toBool(true),
+        "sniper_pool.summary sniperPoolCalculated=false");
+    expectTrue(
+        !sniperPoolPayload.value("tierSummaryCalculated").toBool(true),
+        "sniper_pool.summary tierSummaryCalculated=false");
+    expectTrue(
+        !sniperPoolPayload.value("tradeDraftGenerated").toBool(true),
+        "sniper_pool.summary tradeDraftGenerated=false");
+    expectTrue(
+        !sniperPoolPayload.value("tradeSuggestionGenerated").toBool(true),
+        "sniper_pool.summary tradeSuggestionGenerated=false");
+    expectTrue(
+        !sniperPoolPayload.value("strategyExecuted").toBool(true),
+        "sniper_pool.summary strategyExecuted=false");
+    expectEqual(
+        sniperPoolPayload.value("status").toString().toStdString(),
+        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
+        "sniper_pool.summary status");
+    const auto sniperPoolIssues = sniperPoolPayload.value("issues").toArray();
+    const bool hasSniperPoolUnavailableIssue =
+        std::any_of(sniperPoolIssues.begin(), sniperPoolIssues.end(), [](const auto& value) {
+            const auto issue = value.toObject();
+            return issue.value("code").toString() == "SNIPER_POOL_SUMMARY_NOT_AVAILABLE"
+                && issue.value("blocking").toBool(false);
+        });
+    expectTrue(
+        hasSniperPoolUnavailableIssue,
+        "sniper_pool.summary issues contains blocking SNIPER_POOL_SUMMARY_NOT_AVAILABLE");
+    const auto sniperForbiddenSources = sniperPoolPayload.value("forbiddenSources").toArray();
+    const bool sniperForbidsPositionSnapshotSource =
+        std::any_of(sniperForbiddenSources.begin(), sniperForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    const bool sniperForbidsPortfolioSummarySource =
+        std::any_of(sniperForbiddenSources.begin(), sniperForbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(
+        sniperForbidsPositionSnapshotSource,
+        "sniper_pool.summary forbiddenSources contains position_snapshot");
+    expectTrue(
+        sniperForbidsPortfolioSummarySource,
+        "sniper_pool.summary forbiddenSources contains portfolio_summary");
+    const auto sniperForbiddenWrites = sniperPoolPayload.value("forbiddenWrites").toArray();
+    const bool sniperForbidsTradeLog =
+        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_log";
+        });
+    const bool sniperForbidsTradeDraft =
+        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_draft";
+        });
+    const bool sniperForbidsPositionSnapshot =
+        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    const bool sniperForbidsPortfolioSummary =
+        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(sniperForbidsTradeLog, "sniper_pool.summary forbiddenWrites contains trade_log");
+    expectTrue(sniperForbidsTradeDraft, "sniper_pool.summary forbiddenWrites contains trade_draft");
+    expectTrue(sniperForbidsPositionSnapshot, "sniper_pool.summary forbiddenWrites contains position_snapshot");
+    expectTrue(sniperForbidsPortfolioSummary, "sniper_pool.summary forbiddenWrites contains portfolio_summary");
+    const auto sniperForbiddenActions = sniperPoolPayload.value("forbiddenActions").toArray();
+    const bool sniperForbidsTradeDraftGeneration =
+        std::any_of(sniperForbiddenActions.begin(), sniperForbiddenActions.end(), [](const auto& value) {
+            return value.toString() == "trade_draft_generation";
+        });
+    const bool sniperForbidsTradeSuggestionGeneration =
+        std::any_of(sniperForbiddenActions.begin(), sniperForbiddenActions.end(), [](const auto& value) {
+            return value.toString() == "trade_suggestion_generation";
+        });
+    expectTrue(
+        sniperForbidsTradeDraftGeneration,
+        "sniper_pool.summary forbiddenActions contains trade_draft_generation");
+    expectTrue(
+        sniperForbidsTradeSuggestionGeneration,
+        "sniper_pool.summary forbiddenActions contains trade_suggestion_generation");
+    const auto sniperPoolFutureOutput = sniperPoolPayload.value("futureOutput").toObject();
+    expectEqual(
+        sniperPoolFutureOutput.value("type").toString().toStdString(),
+        "SniperPoolSummaryResponse",
+        "sniper_pool.summary futureOutput type");
+    expectTrue(
+        sniperPoolFutureOutput.value("sniperPool").isNull(),
+        "sniper_pool.summary futureOutput sniperPool is null");
+    expectTrue(
+        sniperPoolFutureOutput.value("tierSummary").toArray().isEmpty(),
+        "sniper_pool.summary futureOutput tierSummary is empty");
+    expectTrue(
+        !sniperPoolPayload.contains("poolAmountText"),
+        "sniper_pool.summary does not return real poolAmountText");
+    expectTrue(
+        !sniperPoolPayload.contains("remainingAmountText"),
+        "sniper_pool.summary does not return real remainingAmountText");
+    expectTrue(
+        !sniperPoolPayload.contains("T1"),
+        "sniper_pool.summary does not return real T1 tier data");
+    expectTrue(
+        !sniperPoolPayload.contains("T6"),
+        "sniper_pool.summary does not return real T6 tier data");
+    expectProtectedTableCountsUnchanged(connection, sniperPoolCountsBefore, "sniper_pool.summary guard");
+
+    auto sniperPoolInvalidPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionSniperPoolSummary, "[]"),
+        responses,
+        "sniper_pool.summary invalid payload");
+    expectTrue(
+        !sniperPoolInvalidPayload.value("success").toBool(true),
+        "sniper_pool.summary invalid payload success=false");
+    expectEqual(
+        sniperPoolInvalidPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "sniper_pool.summary invalid payload returns E1001");
+
+    auto sniperPoolMalformedPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionSniperPoolSummary, "{ invalid }"),
+        responses,
+        "sniper_pool.summary malformed payload");
+    expectTrue(
+        !sniperPoolMalformedPayload.value("success").toBool(true),
+        "sniper_pool.summary malformed payload success=false");
+    expectEqual(
+        sniperPoolMalformedPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "sniper_pool.summary malformed payload returns E1001");
 
     auto replayPreviewMissingPayload = sendEnvelope(
         client,

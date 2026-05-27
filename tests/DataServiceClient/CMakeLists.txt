@@ -54,6 +54,14 @@ add_test(
         ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
 )
 
+add_test(
+    NAME dataservice_client_sniper_pool_summary_guard
+    COMMAND
+        DataServiceClientTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
 set_tests_properties(dataservice_client_end_to_end PROPERTIES
     ENVIRONMENT_MODIFICATION
         "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
@@ -75,6 +83,11 @@ set_tests_properties(dataservice_client_portfolio_pnl_summary_guard PROPERTIES
 )
 
 set_tests_properties(dataservice_client_base_position_summary_guard PROPERTIES
+    ENVIRONMENT_MODIFICATION
+        "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+)
+
+set_tests_properties(dataservice_client_sniper_pool_summary_guard PROPERTIES
     ENVIRONMENT_MODIFICATION
         "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
 )

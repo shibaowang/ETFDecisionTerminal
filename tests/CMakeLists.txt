@@ -1,6 +1,7 @@
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 add_subdirectory(CoreDomain)
+add_subdirectory(AccountingEngine)
 add_subdirectory(AccountingFixtures)
 add_subdirectory(DataAccess)
 add_subdirectory(DataService)

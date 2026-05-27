@@ -14,6 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(ETFDT_BUILD_TESTS "Build ETFDecisionTerminal tests" ON)
 
 add_subdirectory(libs/CoreDomain)
+add_subdirectory(libs/AccountingEngine)
 add_subdirectory(libs/Protocol)
 add_subdirectory(libs/ServiceRuntime)
 add_subdirectory(libs/Transport)

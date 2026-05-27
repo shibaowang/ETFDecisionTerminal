@@ -496,3 +496,36 @@ review still depends on `docs/41_cash_facts_source_boundary.md` and
 `docs/42_cash_facts_query_decision.md`. SQLite facts query integration remains
 unimplemented, and DataService still does not call AccountingEngine for
 `cash.summary`.
+
+## TASK-090 portfolio.pnl.summary Guard
+
+TASK-090 registers `portfolio.pnl.summary` as a DataService read-only action
+guard. Current guard payload fields include:
+
+- `module="accounting"`
+- `action="portfolio.pnl.summary"`
+- `implemented=false`
+- `readOnly=true`
+- `writeEnabled=false`
+- `replayExecuted=false`
+- `dataSourceAccessed=false`
+- `sqliteAccessed=false`
+- `tradeFactsAccessed=false`
+- `cashFactsAccessed=false`
+- `marketPriceFactsAccessed=false`
+- `snapshotAccessed=false`
+- `portfolioSummaryAccessed=false`
+- `accountingEngineCalled=false`
+- `status="PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE"`
+- `futureOutput.type="PortfolioPnlSummaryResponse"`
+- `futureOutput.portfolioPnl=null`
+- `forbiddenSources[]` with `cash_snapshot`, `position_snapshot`, and
+  `portfolio_summary`
+- `issues[]` with blocking `PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE`
+- `forbiddenWrites[]`
+- `requiredNextTasks[]`
+
+This does not implement the real `PortfolioPnlSummaryResponse`. Trade facts,
+cash facts, market price facts, and PnL mapping are still not integrated.
+SQLite facts query integration remains unimplemented, and DataService still
+does not call AccountingEngine for `portfolio.pnl.summary`.

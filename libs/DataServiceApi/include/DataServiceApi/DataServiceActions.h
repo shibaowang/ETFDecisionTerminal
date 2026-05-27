@@ -17,6 +17,7 @@ constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
+constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleDataHealth(
     const etfdt::service_runtime::ActionContext& context,
@@ -63,6 +64,10 @@ constexpr const char* kActionCashSummary = "cash.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleCashSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

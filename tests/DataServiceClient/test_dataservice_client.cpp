@@ -325,6 +325,53 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
         auditCountBefore,
         "cashSummary does not insert audit_log row");
 
+    auto portfolioPnlSummary = client.portfolioPnlSummary();
+    expectSuccessfulResponse(portfolioPnlSummary, "client.portfolioPnlSummary");
+    if (portfolioPnlSummary) {
+        const auto payload = payloadObject(portfolioPnlSummary.value());
+        expectEqual(
+            payload.value("action").toString().toStdString(),
+            "portfolio.pnl.summary",
+            "portfolioPnlSummary action");
+        expectEqual(
+            payload.value("module").toString().toStdString(),
+            "accounting",
+            "portfolioPnlSummary module");
+        expectTrue(!payload.value("implemented").toBool(true), "portfolioPnlSummary implemented=false");
+        expectTrue(payload.value("readOnly").toBool(false), "portfolioPnlSummary readOnly=true");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "portfolioPnlSummary writeEnabled=false");
+        expectTrue(!payload.value("replayExecuted").toBool(true), "portfolioPnlSummary replayExecuted=false");
+        expectTrue(!payload.value("sqliteAccessed").toBool(true), "portfolioPnlSummary sqliteAccessed=false");
+        expectTrue(!payload.value("tradeFactsAccessed").toBool(true), "portfolioPnlSummary tradeFactsAccessed=false");
+        expectTrue(!payload.value("cashFactsAccessed").toBool(true), "portfolioPnlSummary cashFactsAccessed=false");
+        expectTrue(
+            !payload.value("marketPriceFactsAccessed").toBool(true),
+            "portfolioPnlSummary marketPriceFactsAccessed=false");
+        expectTrue(!payload.value("snapshotAccessed").toBool(true), "portfolioPnlSummary snapshotAccessed=false");
+        expectTrue(
+            !payload.value("portfolioSummaryAccessed").toBool(true),
+            "portfolioPnlSummary portfolioSummaryAccessed=false");
+        expectTrue(
+            !payload.value("accountingEngineCalled").toBool(true),
+            "portfolioPnlSummary accountingEngineCalled=false");
+        expectEqual(
+            payload.value("status").toString().toStdString(),
+            "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
+            "portfolioPnlSummary status");
+        const auto futureOutput = payload.value("futureOutput").toObject();
+        expectTrue(
+            futureOutput.value("portfolioPnl").isNull(),
+            "portfolioPnlSummary wrapper returns no real pnl summary");
+        expectTrue(!payload.contains("totalAssets"), "portfolioPnlSummary wrapper returns no real totalAssets");
+        expectTrue(!payload.contains("realizedPnl"), "portfolioPnlSummary wrapper returns no real realizedPnl");
+        expectTrue(!payload.contains("unrealizedPnl"), "portfolioPnlSummary wrapper returns no real unrealizedPnl");
+        expectTrue(!payload.contains("totalPnl"), "portfolioPnlSummary wrapper returns no real totalPnl");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "portfolioPnlSummary does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";

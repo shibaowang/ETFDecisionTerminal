@@ -424,6 +424,11 @@ def main() -> int:
     cash_summary_guard_source = extract_between(
         dataservice_actions_source,
         "etfdt::protocol::ProtocolResponse handleCashSummary",
+        "etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary",
+    )
+    portfolio_pnl_summary_guard_source = extract_between(
+        dataservice_actions_source,
+        "etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary",
         "}  // namespace etfdt::data_service_api",
     )
     gitignore_lines = {line.strip() for line in gitignore.splitlines()}
@@ -1083,16 +1088,23 @@ def main() -> int:
     require("handlePositionList" in dataservice_actions_header, "DataServiceActions declares position.list handler")
     require("kActionCashSummary" in dataservice_actions_header, "DataServiceActions exposes cash.summary action constant")
     require("handleCashSummary" in dataservice_actions_header, "DataServiceActions declares cash.summary handler")
+    require("kActionPortfolioPnlSummary" in dataservice_actions_header, "DataServiceActions exposes portfolio.pnl.summary action constant")
+    require("handlePortfolioPnlSummary" in dataservice_actions_header, "DataServiceActions declares portfolio.pnl.summary handler")
     require("kActionPositionList" in dataservice_action_registrar, "DataService registrar registers position.list")
     require("handlePositionList" in dataservice_action_registrar, "DataService registrar wires position.list handler")
     require("kActionCashSummary" in dataservice_action_registrar, "DataService registrar registers cash.summary")
     require("handleCashSummary" in dataservice_action_registrar, "DataService registrar wires cash.summary handler")
+    require("kActionPortfolioPnlSummary" in dataservice_action_registrar, "DataService registrar registers portfolio.pnl.summary")
+    require("handlePortfolioPnlSummary" in dataservice_action_registrar, "DataService registrar wires portfolio.pnl.summary handler")
     require("positionList(" in dataservice_client_header, "DataServiceClient exposes positionList wrapper")
     require("cashSummary(" in dataservice_client_header, "DataServiceClient exposes cashSummary wrapper")
+    require("portfolioPnlSummary(" in dataservice_client_header, "DataServiceClient exposes portfolioPnlSummary wrapper")
     require("kActionPositionList" in dataservice_client_source, "DataServiceClient has position.list action constant")
     require("sendAction(kActionPositionList" in dataservice_client_source, "DataServiceClient wrapper sends position.list")
     require("kActionCashSummary" in dataservice_client_source, "DataServiceClient has cash.summary action constant")
     require("sendAction(kActionCashSummary" in dataservice_client_source, "DataServiceClient wrapper sends cash.summary")
+    require("kActionPortfolioPnlSummary" in dataservice_client_source, "DataServiceClient has portfolio.pnl.summary action constant")
+    require("sendAction(kActionPortfolioPnlSummary" in dataservice_client_source, "DataServiceClient wrapper sends portfolio.pnl.summary")
     require("POSITION_LIST_NOT_AVAILABLE" in position_list_guard_source, "position.list guard source returns not available status")
     require('"implemented":false' in position_list_guard_source, "position.list guard source sets implemented=false")
     require('"readOnly":true' in position_list_guard_source, "position.list guard source sets readOnly=true")
@@ -1127,10 +1139,53 @@ def main() -> int:
     require("data.audit.append" not in cash_summary_guard_source, "cash.summary guard source does not call data.audit.append")
     for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
         require(forbidden_sql not in cash_summary_guard_source, f"cash.summary guard source does not contain {forbidden_sql}")
+    require(
+        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE" in portfolio_pnl_summary_guard_source,
+        "portfolio.pnl.summary guard source returns not available status",
+    )
+    require('"implemented":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets implemented=false")
+    require('"readOnly":true' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets readOnly=true")
+    require('"writeEnabled":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets writeEnabled=false")
+    require('"sqliteAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets sqliteAccessed=false")
+    require('"tradeFactsAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets tradeFactsAccessed=false")
+    require('"cashFactsAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets cashFactsAccessed=false")
+    require(
+        '"marketPriceFactsAccessed":false' in portfolio_pnl_summary_guard_source,
+        "portfolio.pnl.summary guard source sets marketPriceFactsAccessed=false",
+    )
+    require('"snapshotAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets snapshotAccessed=false")
+    require(
+        '"portfolioSummaryAccessed":false' in portfolio_pnl_summary_guard_source,
+        "portfolio.pnl.summary guard source sets portfolioSummaryAccessed=false",
+    )
+    require(
+        '"accountingEngineCalled":false' in portfolio_pnl_summary_guard_source,
+        "portfolio.pnl.summary guard source sets accountingEngineCalled=false",
+    )
+    require(
+        "PortfolioPnlSummaryResponse" in portfolio_pnl_summary_guard_source,
+        "portfolio.pnl.summary guard source declares future PortfolioPnlSummaryResponse",
+    )
+    require("cash_snapshot" in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source forbids cash_snapshot source/write")
+    require("position_snapshot" in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source forbids position_snapshot source/write")
+    require("portfolio_summary" in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source forbids portfolio_summary source/write")
+    require("AccountingEngine/" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not include AccountingEngine")
+    require("DataAccess" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not reference DataAccess repository")
+    require("data.audit.append" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not call data.audit.append")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
+        require(forbidden_sql not in portfolio_pnl_summary_guard_source, f"portfolio.pnl.summary guard source does not contain {forbidden_sql}")
     require("dataservice_position_list_guard" in dataservice_test_cmake, "DataService CMake registers position.list guard test")
     require("dataservice_position_list_no_write" in dataservice_test_cmake, "DataService CMake registers position.list no-write test")
     require("dataservice_cash_summary_guard" in dataservice_test_cmake, "DataService CMake registers cash.summary guard test")
     require("dataservice_cash_summary_no_write" in dataservice_test_cmake, "DataService CMake registers cash.summary no-write test")
+    require(
+        "dataservice_portfolio_pnl_summary_guard" in dataservice_test_cmake,
+        "DataService CMake registers portfolio.pnl.summary guard test",
+    )
+    require(
+        "dataservice_portfolio_pnl_summary_no_write" in dataservice_test_cmake,
+        "DataService CMake registers portfolio.pnl.summary no-write test",
+    )
     require(
         "dataservice_client_position_list_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers position.list client guard test",
@@ -1138,6 +1193,10 @@ def main() -> int:
     require(
         "dataservice_client_cash_summary_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers cash.summary client guard test",
+    )
+    require(
+        "dataservice_client_portfolio_pnl_summary_guard" in dataservice_client_test_cmake,
+        "DataServiceClient CMake registers portfolio.pnl.summary client guard test",
     )
     require("kActionPositionList" in dataservice_readonly_test, "DataService test calls position.list action")
     require("POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks position.list status")
@@ -1152,8 +1211,34 @@ def main() -> int:
         "cash.summary portfolioSummaryAccessed=false" in dataservice_readonly_test,
         "DataService test checks portfolio summary not accessed",
     )
+    require("kActionPortfolioPnlSummary" in dataservice_readonly_test, "DataService test calls portfolio.pnl.summary action")
+    require(
+        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test,
+        "DataService test checks portfolio.pnl.summary status",
+    )
+    require(
+        "portfolio.pnl.summary tradeFactsAccessed=false" in dataservice_readonly_test,
+        "DataService test checks trade facts not accessed",
+    )
+    require(
+        "portfolio.pnl.summary cashFactsAccessed=false" in dataservice_readonly_test,
+        "DataService test checks cash facts not accessed for PnL",
+    )
+    require(
+        "portfolio.pnl.summary marketPriceFactsAccessed=false" in dataservice_readonly_test,
+        "DataService test checks market price facts not accessed",
+    )
+    require(
+        "portfolio.pnl.summary portfolioSummaryAccessed=false" in dataservice_readonly_test,
+        "DataService test checks portfolio summary not accessed for PnL",
+    )
+    require(
+        "portfolio.pnl.summary does not return real totalAssets" in dataservice_readonly_test,
+        "DataService test checks no real totalAssets",
+    )
     require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
     require("client.cashSummary" in dataservice_client_test, "DataServiceClient test calls cashSummary wrapper")
+    require("client.portfolioPnlSummary" in dataservice_client_test, "DataServiceClient test calls portfolioPnlSummary wrapper")
 
     require("add_subdirectory(AccountingNoWrite)" in tests_cmake, "tests CMake adds AccountingNoWrite tests")
     require("accounting_forbidden_sql_scanner" in accounting_no_write_cmake, "AccountingNoWrite CMake registers scanner CTest")
@@ -1327,6 +1412,55 @@ def main() -> int:
     require(
         "must not return real cash" in codex_prompt_template,
         "prompt template forbids real cash balance from guard",
+    )
+    require("portfolio.pnl.summary DataService action guard" in readme, "README documents portfolio.pnl.summary guard")
+    require(
+        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE" in readme,
+        "README documents portfolio.pnl.summary guard status",
+    )
+    require(
+        "dataservice_portfolio_pnl_summary_guard" in readme,
+        "README documents portfolio.pnl.summary guard test",
+    )
+    require(
+        "dataservice_portfolio_pnl_summary_no_write" in readme,
+        "README documents portfolio.pnl.summary no-write test",
+    )
+    require("TASK-090" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-090")
+    require(
+        "portfolio.pnl.summary` as a DataService read-only action" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents portfolio.pnl.summary guard",
+    )
+    require(
+        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents portfolio.pnl.summary status",
+    )
+    require(
+        "PortfolioPnlSummaryResponse" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents PortfolioPnlSummaryResponse",
+    )
+    require("TASK-090" in dataservice_accounting_no_write_plan, "no-write plan records TASK-090")
+    require(
+        "portfolio.pnl.summary` guard has no-write table count coverage" in dataservice_accounting_no_write_plan,
+        "no-write plan documents portfolio.pnl.summary guard no-write coverage",
+    )
+    require("TASK-090" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-090")
+    require(
+        "portfolio.pnl.summary` guard does not use SQLite facts query" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc says portfolio.pnl.summary guard avoids SQLite",
+    )
+    require("TASK-090" in accounting_facts_source_mapping, "facts source mapping records TASK-090")
+    require(
+        "portfolio.pnl.summary` guard does not use this facts mapping" in accounting_facts_source_mapping,
+        "facts source mapping says portfolio.pnl.summary guard avoids mapping",
+    )
+    require(
+        "DataService `portfolio.pnl.summary` guard tasks must not pretend to be real" in codex_prompt_template,
+        "prompt template says portfolio.pnl.summary guard is not real implementation",
+    )
+    require(
+        "must not return real" in codex_prompt_template and "totalAssets" in codex_prompt_template,
+        "prompt template forbids real totalAssets from PnL guard",
     )
 
     require(

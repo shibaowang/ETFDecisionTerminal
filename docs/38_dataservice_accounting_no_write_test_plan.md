@@ -237,3 +237,23 @@ read `cash_snapshot` or `portfolio_summary`, does not access SQLite facts
 queries, and does not call AccountingEngine. The real `cash.summary`
 implementation must extend these no-write tests before it can read facts or map
 real cash DTOs.
+
+## TASK-090 portfolio.pnl.summary Guard No-write Coverage
+
+The `portfolio.pnl.summary` guard has no-write table count coverage. The guard
+test checks that calling `portfolio.pnl.summary` leaves these protected tables
+unchanged:
+
+- `trade_log`
+- `trade_execution_group`
+- `trade_draft`
+- `cash_snapshot`
+- `position_snapshot`
+- `portfolio_summary`
+- `audit_log`
+
+The guard also confirms that `portfolio.pnl.summary` does not read `trade_log`,
+cash facts, market price facts, `cash_snapshot`, `position_snapshot`, or
+`portfolio_summary`, does not access SQLite facts queries, and does not call
+AccountingEngine. The real `portfolio.pnl.summary` implementation must extend
+these no-write tests before it can read facts or map real PnL DTOs.

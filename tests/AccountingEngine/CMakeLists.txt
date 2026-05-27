@@ -49,3 +49,16 @@ target_link_libraries(AccountingReplayEngineSingleBuyTests
 target_compile_features(AccountingReplayEngineSingleBuyTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_single_buy COMMAND AccountingReplayEngineSingleBuyTests)
+
+add_executable(AccountingReplayEngineBuySellPartialTests
+    test_accounting_replay_engine_buy_sell_partial.cpp
+)
+
+target_link_libraries(AccountingReplayEngineBuySellPartialTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineBuySellPartialTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_buy_sell_partial COMMAND AccountingReplayEngineBuySellPartialTests)

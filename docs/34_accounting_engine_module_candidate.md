@@ -174,3 +174,19 @@ derive market value or unrealized PnL.
 SELL, PnL, market valuation, multi-account, multi-instrument, base-position,
 sniper-pool, DataAccess, DataService actions, snapshots, and TradeLog writes
 remain out of scope unless separately authorized.
+
+## TASK-074 Partial Sell Replay Entry
+
+The skeleton now includes a one BUY + one SELL partial sell replay entry. This
+is a production-side incremental replay skeleton for the FX003-equivalent
+scenario, not a complete replay engine.
+
+The entry accepts one `INITIAL_CASH` fact, one CNY `BUY` trade fact, and one
+CNY `SELL` trade fact for the same account, portfolio, and instrument. It
+derives the remaining position, cash summary, and realized PnL. It keeps market
+value, unrealized PnL, total return, base-position, and sniper-pool outputs out
+of scope.
+
+Multi-transaction replay, multi-account replay, multi-instrument replay,
+DataAccess, DataService actions, snapshots, and TradeLog writes remain out of
+scope unless separately authorized.

@@ -1104,6 +1104,38 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-074 AccountingEngine partial sell replay skeleton
+
+`libs/AccountingEngine` now includes a production-side read-only BUY + SELL
+partial sell replay skeleton. It accepts exactly one `INITIAL_CASH` fact, one
+CNY `BUY` trade fact, and one CNY `SELL` trade fact for the same account,
+portfolio, and instrument.
+
+The partial sell skeleton derives the remaining position quantity and cost,
+cash balance, and realized PnL from DTO inputs only. It keeps market valuation
+and unrealized PnL unavailable, and it does not output base-position or sniper
+pool data.
+
+Current production-side replay skeleton coverage is limited to empty ledger,
+single BUY, and one BUY + one partial SELL. `replayImplemented=false` still
+means complete production replay is not implemented.
+
+This task does not implement multi-transaction replay, multi-instrument replay,
+multi-account replay, market value, unrealized PnL, base position, sniper pool,
+SQLite access, DataService actions, snapshot writes, TradeLog writes, or QML
+behavior.
+
+The partial sell skeleton test is `accounting_replay_engine_buy_sell_partial`.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

@@ -342,3 +342,6 @@ v0.1 草案。
 - AccountingEngine single buy skeleton does not mean complete replay is implemented.
 - Future production replay tasks after single BUY must remain one scenario at a time.
 - Future SELL, PnL, market value, base-position, sniper-pool, multi-account, and multi-instrument work requires separate authorization.
+- AccountingEngine partial sell skeleton does not mean complete replay is implemented.
+- Future production replay tasks after one BUY + one SELL must still remain one scenario at a time.
+- Multi-transaction, multi-account, multi-instrument, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

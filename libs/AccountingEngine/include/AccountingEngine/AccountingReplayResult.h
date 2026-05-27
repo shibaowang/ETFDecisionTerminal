@@ -42,6 +42,8 @@ struct CashSummaryDto {
 struct PortfolioPnlDto {
     std::string portfolioId;
     std::string currency;
+    std::string realizedPnlText;
+    std::string unrealizedPnlText;
     std::string totalAssetsText;
     std::string totalPnlText;
     std::string dataQualityStatus;
@@ -84,8 +86,18 @@ struct AccountingReplayResult {
     long long costCents,
     long long cashBalanceCents);
 
+[[nodiscard]] AccountingReplayResult makeBuySellPartialReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    const std::string& instrumentCode,
+    const std::string& remainingQuantityText,
+    long long remainingCostCents,
+    long long cashBalanceCents,
+    long long realizedPnlCents);
+
 [[nodiscard]] AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues);
 [[nodiscard]] AccountingReplayResult makeUnsupportedReplayScenarioResult();
 [[nodiscard]] AccountingReplayResult makeNegativeCashReplayResult();
+[[nodiscard]] AccountingReplayResult makeSellExceedsPositionReplayResult();
 
 } // namespace etfdt::accounting

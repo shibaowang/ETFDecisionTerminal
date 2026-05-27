@@ -20,6 +20,7 @@ inline constexpr const char* UnsupportedAction = "UNSUPPORTED_ACTION";
 inline constexpr const char* UnsupportedCurrency = "UNSUPPORTED_CURRENCY";
 inline constexpr const char* ReplayNotImplemented = "REPLAY_NOT_IMPLEMENTED";
 inline constexpr const char* NegativeCash = "NEGATIVE_CASH";
+inline constexpr const char* SellExceedsPosition = "SELL_EXCEEDS_POSITION";
 } // namespace AccountingIssueCode
 
 struct AccountingIssueDto {

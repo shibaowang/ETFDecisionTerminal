@@ -430,3 +430,14 @@ Current guard payload fields include:
 This does not implement the real `PositionListResponse`. SQLite facts query
 integration remains unimplemented. DataService still does not call
 AccountingEngine for `position.list`.
+
+## TASK-086 No-write Harness Skeleton
+
+TASK-086 adds a reusable test-only no-write harness skeleton for future
+DataService accounting actions and SQLite facts query work. The existing
+`position.list` guard keeps its no-write coverage, and future real action
+implementations must extend those tests before they can read facts or map real
+DTOs.
+
+The harness is not a DataService action, does not call AccountingEngine, and
+does not change any guard payload.

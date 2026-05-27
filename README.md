@@ -1489,6 +1489,30 @@ New guard tests:
 - `dataservice_position_list_no_write`
 - `dataservice_client_position_list_guard`
 
+## TASK-086 SQLite read-only no-write harness skeleton
+
+A test-only SQLite read-only / no-write harness skeleton now lives under
+`tests/AccountingNoWrite`. It provides protected table row-count capture,
+no-write comparison helpers, and a forbidden SQL scanner for future accounting
+read-only action and facts query tests.
+
+The harness protects `trade_log`, `trade_execution_group`, `trade_draft`,
+`cash_snapshot`, `position_snapshot`, `portfolio_summary`, and `audit_log`.
+The scanner detects write-oriented SQL such as `INSERT`, `UPDATE`, `DELETE`,
+`CREATE`, `DROP`, `ALTER`, `REPLACE`, `UPSERT`, `VACUUM`,
+`PRAGMA writable_schema`, `BEGIN IMMEDIATE`, and `BEGIN EXCLUSIVE`, while
+allowing `SELECT`-only SQL.
+
+This is test infrastructure only. It does not implement a real SQLite facts
+query, does not add a DataAccess repository, does not add a DataService action,
+does not modify `position.list` guard behavior, does not call AccountingEngine,
+and does not write database tables.
+
+New harness tests:
+
+- `accounting_forbidden_sql_scanner`
+- `accounting_no_write_harness`
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

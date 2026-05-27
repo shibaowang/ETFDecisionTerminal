@@ -259,3 +259,17 @@ price facts, FX rate facts, or snapshots.
 
 Future SQLite query integration for real `position.list` requires a separate
 task and must keep the read-only and no-write boundaries in this document.
+
+## TASK-086 Read-only / No-write Harness Skeleton
+
+TASK-086 adds a test-only read-only / no-write harness skeleton. It validates
+the testing boundary needed before a future SQLite facts query can be
+implemented.
+
+The harness provides protected table row-count checks and a forbidden SQL
+scanner, but it does not implement a SQLite facts query. The DataAccess
+accounting facts repository remains unimplemented, and `position.list` remains a
+guard.
+
+Any future SQLite facts query implementation must pass the no-write harness,
+must keep SQL `SELECT`-only, and must remain separately authorized.

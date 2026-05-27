@@ -23,6 +23,8 @@ struct PositionSummaryDto {
     std::string quantityText;
     std::string costAmountText;
     std::string costPriceText;
+    std::string marketValueText;
+    std::string unrealizedPnlText;
     std::string currency;
     std::string dataQualityStatus;
 };
@@ -95,6 +97,12 @@ struct AccountingReplayResult {
     long long remainingCostCents,
     long long cashBalanceCents,
     long long realizedPnlCents);
+
+[[nodiscard]] AccountingReplayResult makeMultiInstrumentBuyReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    std::vector<PositionSummaryDto> positions,
+    long long cashBalanceCents);
 
 [[nodiscard]] AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues);
 [[nodiscard]] AccountingReplayResult makeUnsupportedReplayScenarioResult();

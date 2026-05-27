@@ -3,6 +3,10 @@
 #include "AccountingEngine/AccountingReplayValidation.h"
 
 #include <cctype>
+#include <iomanip>
+#include <map>
+#include <set>
+#include <sstream>
 #include <utility>
 
 namespace etfdt::accounting {
@@ -134,6 +138,48 @@ std::string formatQuantityFromMicroUnits(long long microUnits)
         fractionText.pop_back();
     }
     return std::to_string(units) + "." + fractionText;
+}
+
+std::string formatCentsForReplay(long long cents)
+{
+    const bool negative = cents < 0;
+    const auto absolute = negative ? -cents : cents;
+    std::ostringstream stream;
+    if (negative) {
+        stream << '-';
+    }
+    stream << (absolute / 100) << '.' << std::setw(2) << std::setfill('0') << (absolute % 100) << " CNY";
+    return stream.str();
+}
+
+std::string formatCostPriceForReplay(long long costCents, const std::string& quantityText)
+{
+    std::string whole;
+    std::string fraction;
+    const auto dot = quantityText.find('.');
+    if (dot == std::string::npos) {
+        whole = quantityText;
+    } else {
+        whole = quantityText.substr(0, dot);
+        fraction = quantityText.substr(dot + 1);
+    }
+
+    long long quantityUnits = 0;
+    for (const auto ch : whole) {
+        quantityUnits = quantityUnits * 10 + (ch - '0');
+    }
+
+    long long scale = 1;
+    for (const auto ch : fraction) {
+        quantityUnits = quantityUnits * 10 + (ch - '0');
+        scale *= 10;
+    }
+
+    const auto numerator = costCents * scale * 10;
+    const auto roundedMilli = (numerator + quantityUnits / 2) / quantityUnits;
+    std::ostringstream stream;
+    stream << (roundedMilli / 1000) << '.' << std::setw(3) << std::setfill('0') << (roundedMilli % 1000) << " CNY";
+    return stream.str();
 }
 
 void appendIssues(std::vector<AccountingIssueDto>& target, const std::vector<AccountingIssueDto>& source)
@@ -466,6 +512,178 @@ AccountingReplayResult tryReplayBuySellPartial(
         realizedPnlCents);
 }
 
+struct InstrumentBuyAggregate {
+    long long quantityMicroUnits = 0;
+    long long costCents = 0;
+};
+
+AccountingReplayResult tryReplayMultiInstrumentBuy(
+    const ReplayRequestDto& request,
+    const std::vector<TradeFactDto>& tradeFacts,
+    const std::vector<CashFactDto>& cashFacts,
+    const std::vector<MarketPriceFactDto>& marketPriceFacts,
+    const std::vector<FxRateFactDto>& fxRateFacts)
+{
+    if (!marketPriceFacts.empty() || !fxRateFacts.empty() || tradeFacts.size() < 2 || cashFacts.size() != 1) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    const auto& cashFact = cashFacts.front();
+
+    std::vector<AccountingIssueDto> validationIssues;
+    const auto cashValidation = validateCashFact(cashFact);
+    appendIssues(validationIssues, cashValidation.issues);
+
+    for (const auto& tradeFact : tradeFacts) {
+        auto tradeFactForValidation = tradeFact;
+        if (isMissingFeeText(tradeFactForValidation.feeText)) {
+            tradeFactForValidation.feeText.clear();
+        }
+        const auto tradeValidation = validateTradeFact(tradeFactForValidation);
+        appendIssues(validationIssues, tradeValidation.issues);
+
+        if (!hasNonZeroQuantity(tradeFact.quantityText)) {
+            validationIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidQuantityText,
+                "BUY quantityText must be greater than zero.",
+                true,
+                "quantityText",
+                tradeFact.factId));
+        }
+    }
+
+    if (!validationIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(validationIssues));
+    }
+
+    if (cashFact.action != CashAction::InitialCash) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    const auto& firstTrade = tradeFacts.front();
+    if (firstTrade.action != TradeAction::Buy) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (firstTrade.accountId != cashFact.accountId || firstTrade.portfolioId != cashFact.portfolioId) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if ((!request.accountId.empty() && request.accountId != firstTrade.accountId) ||
+        (!request.portfolioId.empty() && request.portfolioId != firstTrade.portfolioId)) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (cashFact.currency != "CNY") {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    std::set<std::string> instrumentCodes;
+    for (const auto& tradeFact : tradeFacts) {
+        if (tradeFact.action != TradeAction::Buy || tradeFact.accountId != firstTrade.accountId ||
+            tradeFact.portfolioId != firstTrade.portfolioId || tradeFact.currency != "CNY") {
+            return makeUnsupportedReplayScenarioResult();
+        }
+
+        instrumentCodes.insert(tradeFact.instrumentCode);
+    }
+
+    if (instrumentCodes.size() < 2) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    for (const auto& tradeFact : tradeFacts) {
+        if (isMissingFeeText(tradeFact.feeText)) {
+            return makeMissingFeeReplayResult();
+        }
+    }
+
+    const auto initialCash = parseMoneyToCents(cashFact.amountText);
+    if (!initialCash.valid) {
+        return makeInvalidReplayRequestResult({makeAccountingIssue(
+            AccountingIssueLevel::Error,
+            AccountingIssueCode::InvalidMoneyText,
+            "initial cash amount is not valid for multi-instrument buy replay.",
+            true,
+            "amountText",
+            cashFact.factId)});
+    }
+
+    std::map<std::string, InstrumentBuyAggregate> aggregates;
+    long long totalCostCents = 0;
+    std::vector<AccountingIssueDto> parseIssues;
+    for (const auto& tradeFact : tradeFacts) {
+        const auto amount = parseMoneyToCents(tradeFact.amountText);
+        const auto fee = parseMoneyToCents(tradeFact.feeText);
+        const auto quantity = parseQuantityToMicroUnits(tradeFact.quantityText);
+        if (!amount.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "BUY amount is not valid for multi-instrument buy replay.",
+                true,
+                "amountText",
+                tradeFact.factId));
+        }
+        if (!fee.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "BUY fee is not valid for multi-instrument buy replay.",
+                true,
+                "feeText",
+                tradeFact.factId));
+        }
+        if (!quantity.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidQuantityText,
+                "BUY quantity is not valid for multi-instrument buy replay.",
+                true,
+                "quantityText",
+                tradeFact.factId));
+        }
+        if (!amount.valid || !fee.valid || !quantity.valid) {
+            continue;
+        }
+
+        const auto costCents = amount.cents + fee.cents;
+        totalCostCents += costCents;
+        auto& aggregate = aggregates[tradeFact.instrumentCode];
+        aggregate.quantityMicroUnits += quantity.microUnits;
+        aggregate.costCents += costCents;
+    }
+
+    if (!parseIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(parseIssues));
+    }
+
+    const auto cashBalanceCents = initialCash.cents - totalCostCents;
+    if (cashBalanceCents < 0) {
+        return makeNegativeCashReplayResult();
+    }
+
+    std::vector<PositionSummaryDto> positions;
+    for (const auto& [instrumentCode, aggregate] : aggregates) {
+        const auto quantityText = formatQuantityFromMicroUnits(aggregate.quantityMicroUnits);
+        positions.push_back(PositionSummaryDto{
+            firstTrade.accountId,
+            firstTrade.portfolioId,
+            instrumentCode,
+            quantityText,
+            formatCentsForReplay(aggregate.costCents),
+            formatCostPriceForReplay(aggregate.costCents, quantityText),
+            "UNAVAILABLE",
+            "UNAVAILABLE",
+            "CNY",
+            "OK",
+        });
+    }
+
+    return makeMultiInstrumentBuyReplayResult(firstTrade.accountId, firstTrade.portfolioId, std::move(positions), cashBalanceCents);
+}
+
 } // namespace
 
 AccountingReplayResult AccountingReplayEngine::replayReadOnly(
@@ -489,7 +707,16 @@ AccountingReplayResult AccountingReplayEngine::replayReadOnly(
     }
 
     if (tradeFacts.size() == 2) {
-        return tryReplayBuySellPartial(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+        const auto partialSellResult =
+            tryReplayBuySellPartial(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+        if (partialSellResult.status != AccountingReplayStatus::UnsupportedScenario) {
+            return partialSellResult;
+        }
+        return tryReplayMultiInstrumentBuy(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+    }
+
+    if (tradeFacts.size() > 2) {
+        return tryReplayMultiInstrumentBuy(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
     }
 
     return makeUnsupportedReplayScenarioResult();

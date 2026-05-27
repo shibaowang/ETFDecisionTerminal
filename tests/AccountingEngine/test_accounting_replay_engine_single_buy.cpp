@@ -145,8 +145,10 @@ int main()
 
     const auto multiInstrumentResult =
         engine.replayReadOnly(request, {makeBuy("159509"), makeBuy("518880")}, {makeInitialCash()}, {}, {});
-    failures += expect(multiInstrumentResult.status == AccountingReplayStatus::UnsupportedScenario,
-                       "multi-instrument facts should remain unsupported");
+    failures += expect(multiInstrumentResult.status == AccountingReplayStatus::Ok,
+                       "multi-instrument BUY facts should be handled by the dedicated boundary");
+    failures += expect(multiInstrumentResult.positionList.positions.size() == 2,
+                       "multi-instrument BUY should output separate positions");
 
     const auto invalidMoneyResult = engine.replayReadOnly(request, {makeBuy("159509", "1000", "not-money")}, {makeInitialCash()}, {}, {});
     failures += expect(invalidMoneyResult.status == AccountingReplayStatus::InvalidRequest,

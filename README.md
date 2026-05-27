@@ -1245,6 +1245,45 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-078 AccountingEngine multi-instrument BUY scenario
+
+`libs/AccountingEngine` now includes a production-side read-only
+multi-instrument BUY scenario. It accepts one `INITIAL_CASH` fact and multiple
+CNY `BUY` trade facts for the same account and portfolio, then groups positions
+by `instrumentCode`.
+
+The scenario returns `implemented=true`, `replayExecuted=true`, and
+`status=OK`. Each instrument gets an independent position: `159509` and
+`518880` remain separate, quantities and costs are not merged across
+instrument codes, and cash is reduced by the sum of all BUY `amount + fee`.
+
+Market valuation remains unavailable. Position `marketValueText` and
+`unrealizedPnlText`, plus portfolio valuation fields, use `UNAVAILABLE`; this
+does not fabricate market value or unrealized PnL. The scenario does not output
+base-position or sniper-pool data.
+
+Current production-side replay skeleton coverage is limited to empty ledger,
+single BUY, one BUY + one partial SELL, one BUY + one SELL oversell detection,
+single BUY missing fee detection, single BUY negative cash detection, and
+same-account same-portfolio CNY multi-instrument BUY. `replayImplemented=false`
+still means complete production replay is not implemented.
+
+This task does not implement multi-account replay, multi-currency replay,
+multi-instrument SELL, mixed multi-instrument BUY/SELL, real market price,
+market value, unrealized PnL, base position, sniper pool, SQLite access,
+DataService actions, snapshot writes, TradeLog writes, or QML behavior.
+
+The multi-instrument BUY test is `accounting_replay_engine_multi_instrument_buy`.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

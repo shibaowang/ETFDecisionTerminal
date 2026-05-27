@@ -243,3 +243,24 @@ Multi-transaction replay, multi-account replay, multi-instrument replay,
 market valuation, unrealized PnL, base-position, sniper-pool, DataAccess,
 DataService actions, snapshots, and TradeLog writes remain out of scope unless
 separately authorized.
+
+## TASK-078 Multi-instrument BUY Scenario
+
+The skeleton now includes same-account, same-portfolio, CNY multi-instrument
+BUY replay. This is a production-side incremental replay skeleton for the
+FX007-equivalent boundary, not a complete replay engine.
+
+The entry accepts one `INITIAL_CASH` fact and two or more CNY `BUY` trade facts
+for the same account and portfolio. Positions are grouped by `instrumentCode`;
+`159509` and `518880` remain independent positions, with independent quantities,
+cost amounts, and cost prices. Cash balance deducts the sum of all BUY amount
+plus fee.
+
+Market valuation remains outside this skeleton. Position market value,
+position unrealized PnL, portfolio total assets, and portfolio unrealized PnL
+stay `UNAVAILABLE` rather than being fabricated.
+
+Multi-account replay, multi-currency replay, multi-instrument SELL, mixed
+multi-instrument BUY/SELL, base-position, sniper-pool, DataAccess, DataService
+actions, snapshots, and TradeLog writes remain out of scope unless separately
+authorized.

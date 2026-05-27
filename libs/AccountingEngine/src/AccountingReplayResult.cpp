@@ -191,6 +191,30 @@ AccountingReplayResult makeMultiInstrumentBuyReplayResult(
     return result;
 }
 
+AccountingReplayResult makeMultiAccountBuyReplayResult(
+    const std::string& portfolioId,
+    std::vector<PositionSummaryDto> positions,
+    std::vector<CashSummaryDto> accountCashSummaries)
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Ok;
+    result.message = "Multi-account buy replay completed.";
+    result.positionList.dataQualityStatus = "OK";
+    result.positionList.positions = std::move(positions);
+    result.accountCashSummaries = std::move(accountCashSummaries);
+    result.hasPortfolioPnl = true;
+    result.portfolioPnl.portfolioId = portfolioId;
+    result.portfolioPnl.currency = "CNY";
+    result.portfolioPnl.realizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.unrealizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
+    result.portfolioPnl.totalPnlText = "UNAVAILABLE";
+    result.portfolioPnl.dataQualityStatus = "UNAVAILABLE";
+    return result;
+}
+
 AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues)
 {
     AccountingReplayResult result;

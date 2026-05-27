@@ -425,6 +425,45 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-079 Multi-account BUY Scenario Status
+
+TASK-079 adds a production-side read-only multi-account BUY scenario to
+`libs/AccountingEngine`.
+
+Scope:
+
+- Two or more `INITIAL_CASH` cash facts.
+- Two or more `BUY` trade facts.
+- At least two distinct `accountId` values.
+- One portfolio for the scenario.
+- One CNY instrument, currently exercised with `159509`.
+- CNY only.
+- Valid, present `feeText` on every BUY.
+- Positions are grouped by `accountId + portfolioId + instrumentCode`.
+- Different accounts are not merged or confused.
+- Cash summaries are emitted per account and are not combined into one total.
+- Cash balances deduct only that account's BUY amount plus fee.
+- Returns `OK` with successful position DTO shells and per-account cash DTO
+  shells.
+- Does not calculate real market value or unrealized PnL.
+- Does not output base-position or sniper-pool data.
+
+The scenario keeps valuation fields `UNAVAILABLE` when market price facts are
+absent. It does not connect to real market data and does not fabricate
+portfolio total assets, market value, or unrealized PnL.
+
+The implementation does not calculate multi-currency replay, multi-account SELL,
+cross-portfolio aggregation, base position, sniper pool, or production
+DataService actions.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-076 Missing Fee Detection Status
 
 TASK-076 adds a production-side read-only `MISSING_FEE` controlled warning

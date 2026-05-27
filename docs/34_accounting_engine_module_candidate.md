@@ -264,3 +264,23 @@ Multi-account replay, multi-currency replay, multi-instrument SELL, mixed
 multi-instrument BUY/SELL, base-position, sniper-pool, DataAccess, DataService
 actions, snapshots, and TradeLog writes remain out of scope unless separately
 authorized.
+
+## TASK-079 Multi-account BUY Scenario
+
+The skeleton now includes CNY BUY-only multi-account replay isolation. This is a
+production-side incremental replay skeleton for the FX008-equivalent account
+boundary, not a complete replay engine.
+
+The entry accepts two or more `INITIAL_CASH` facts and two or more CNY `BUY`
+trade facts for one portfolio. Positions are grouped by
+`accountId + portfolioId + instrumentCode`, so different accounts remain
+independent even when they hold the same instrument. Account cash summaries are
+also emitted per account and are not merged into a portfolio-wide cash number.
+
+Market valuation remains outside this skeleton. Position market value,
+position unrealized PnL, portfolio total assets, and portfolio unrealized PnL
+stay `UNAVAILABLE` rather than being fabricated.
+
+Multi-currency replay, multi-account SELL, cross-portfolio aggregation,
+base-position, sniper-pool, DataAccess, DataService actions, snapshots, and
+TradeLog writes remain out of scope unless separately authorized.

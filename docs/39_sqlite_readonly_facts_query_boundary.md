@@ -273,3 +273,33 @@ guard.
 
 Any future SQLite facts query implementation must pass the no-write harness,
 must keep SQL `SELECT`-only, and must remain separately authorized.
+
+## TASK-087 trade_log Read-only Facts Query Skeleton
+
+TASK-087 adds the first SQLite facts query skeleton: a DataAccess-side
+`trade_log` read-only facts query skeleton and trade facts reader.
+In plain terms, this is the trade_log read-only facts query skeleton.
+
+Current scope:
+
+- only trade facts from `trade_log`;
+- only `SELECT` SQL;
+- optional `accountId`, `portfolioId`, `sourceFromTime`, `sourceToTime`,
+  `limit`, and `offset` filters;
+- stable ordering by `created_at_utc` and `id`;
+- DataAccess-side `TradeFactRow` output, not AccountingEngine DTO output;
+- no replay calculation;
+- no snapshot reads as facts;
+- no writes.
+
+Still not implemented:
+
+- cash facts query;
+- market price facts query;
+- FX rate facts query;
+- DataService action integration;
+- AccountingEngine integration;
+- real `position.list`.
+
+The reader must remain covered by the TASK-086 no-write harness and forbidden
+SQL scanner before any future DataService integration.

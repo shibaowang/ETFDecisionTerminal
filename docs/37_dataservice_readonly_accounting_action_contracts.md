@@ -441,3 +441,13 @@ DTOs.
 
 The harness is not a DataService action, does not call AccountingEngine, and
 does not change any guard payload.
+
+## TASK-087 Trade Facts Reader Boundary
+
+TASK-087 adds a DataAccess-side `trade_log` read-only facts reader, but
+`position.list` still does not use it. The `position.list` DataService action
+remains a guard with `implemented=false`.
+
+Real `position.list` implementation, DataService-to-DataAccess wiring, and
+AccountingEngine DTO mapping still require separate authorization and no-write
+tests.

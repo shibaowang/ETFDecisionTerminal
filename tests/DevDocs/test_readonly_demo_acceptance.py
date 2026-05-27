@@ -149,6 +149,14 @@ def main() -> int:
     dataservice_test_cmake_path = root / "tests" / "DataService" / "CMakeLists.txt"
     dataservice_client_test_path = root / "tests" / "DataServiceClient" / "test_dataservice_client.cpp"
     dataservice_client_test_cmake_path = root / "tests" / "DataServiceClient" / "CMakeLists.txt"
+    dataaccess_cmake_path = root / "libs" / "DataAccess" / "CMakeLists.txt"
+    dataaccess_repositories_header_path = root / "libs" / "DataAccess" / "include" / "DataAccess" / "Repositories.h"
+    accounting_trade_fact_reader_header_path = (
+        root / "libs" / "DataAccess" / "include" / "DataAccess" / "AccountingTradeFactReader.h"
+    )
+    accounting_trade_fact_reader_source_path = root / "libs" / "DataAccess" / "src" / "AccountingTradeFactReader.cpp"
+    dataaccess_test_cmake_path = root / "tests" / "DataAccess" / "CMakeLists.txt"
+    accounting_trade_fact_reader_test_path = root / "tests" / "DataAccess" / "test_accounting_trade_fact_reader.cpp"
     accounting_no_write_dir = root / "tests" / "AccountingNoWrite"
     accounting_no_write_cmake_path = accounting_no_write_dir / "CMakeLists.txt"
     accounting_no_write_utils_header_path = accounting_no_write_dir / "AccountingNoWriteTestUtils.h"
@@ -267,6 +275,12 @@ def main() -> int:
     require(dataservice_test_cmake_path.exists(), "DataService test CMake exists")
     require(dataservice_client_test_path.exists(), "DataServiceClient test exists")
     require(dataservice_client_test_cmake_path.exists(), "DataServiceClient test CMake exists")
+    require(dataaccess_cmake_path.exists(), "DataAccess CMake exists")
+    require(dataaccess_repositories_header_path.exists(), "DataAccess repositories header exists")
+    require(accounting_trade_fact_reader_header_path.exists(), "Accounting trade fact reader header exists")
+    require(accounting_trade_fact_reader_source_path.exists(), "Accounting trade fact reader source exists")
+    require(dataaccess_test_cmake_path.exists(), "DataAccess test CMake exists")
+    require(accounting_trade_fact_reader_test_path.exists(), "Accounting trade fact reader test exists")
     require(accounting_no_write_dir.exists(), "Accounting no-write test-only directory exists")
     require(accounting_no_write_cmake_path.exists(), "Accounting no-write CMake exists")
     require(accounting_no_write_utils_header_path.exists(), "Accounting no-write helper header exists")
@@ -383,6 +397,12 @@ def main() -> int:
     dataservice_test_cmake = dataservice_test_cmake_path.read_text(encoding="utf-8")
     dataservice_client_test = dataservice_client_test_path.read_text(encoding="utf-8")
     dataservice_client_test_cmake = dataservice_client_test_cmake_path.read_text(encoding="utf-8")
+    dataaccess_cmake = dataaccess_cmake_path.read_text(encoding="utf-8")
+    dataaccess_repositories_header = dataaccess_repositories_header_path.read_text(encoding="utf-8")
+    accounting_trade_fact_reader_header = accounting_trade_fact_reader_header_path.read_text(encoding="utf-8")
+    accounting_trade_fact_reader_source = accounting_trade_fact_reader_source_path.read_text(encoding="utf-8")
+    dataaccess_test_cmake = dataaccess_test_cmake_path.read_text(encoding="utf-8")
+    accounting_trade_fact_reader_test = accounting_trade_fact_reader_test_path.read_text(encoding="utf-8")
     accounting_no_write_cmake = accounting_no_write_cmake_path.read_text(encoding="utf-8")
     accounting_no_write_utils_header = accounting_no_write_utils_header_path.read_text(encoding="utf-8")
     accounting_no_write_utils_source = accounting_no_write_utils_source_path.read_text(encoding="utf-8")
@@ -1097,6 +1117,50 @@ def main() -> int:
     require("AccountingFactsReadOnlyRepository" not in accounting_no_write_utils_source, "no-write helper does not add production facts repository")
     require("AccountingEngine" not in forbidden_sql_scanner_source, "SQL scanner does not call AccountingEngine")
     require("DataService" not in forbidden_sql_scanner_source, "SQL scanner does not call DataService")
+
+    require("SQLite read-only trade facts query skeleton" in readme, "README documents trade facts query skeleton")
+    require("dataaccess_accounting_trade_facts_readonly_query" in readme, "README documents trade facts query CTest")
+    require("dataaccess_accounting_trade_facts_no_write" in readme, "README documents trade facts no-write CTest")
+    require("dataaccess_accounting_trade_facts_sql_scan" in readme, "README documents trade facts SQL scan CTest")
+    require("TASK-087" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-087")
+    require("trade_log read-only facts query skeleton" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc documents trade_log skeleton")
+    require("cash facts query" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc keeps cash facts out of scope")
+    require("market price facts query" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc keeps market price out of scope")
+    require("FX rate facts query" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc keeps FX rate out of scope")
+    require("TASK-087" in accounting_facts_source_mapping, "facts source mapping records TASK-087")
+    require("trade_log to TradeFactRow" in accounting_facts_source_mapping, "facts source mapping documents trade_log mapping")
+    require("fee_cents` is `NOT NULL DEFAULT 0" in accounting_facts_source_mapping, "facts source mapping records fee gap")
+    require("TASK-087" in dataservice_accounting_no_write_plan, "no-write plan records TASK-087")
+    require("Trade Facts Reader No-write Coverage" in dataservice_accounting_no_write_plan, "no-write plan documents trade facts reader")
+    require("TASK-087" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-087")
+    require("position.list` still does not use it" in dataservice_readonly_accounting_contracts, "DataService doc says position.list does not use reader")
+    require("DataAccess read-only query skeletons do not equal replay" in codex_prompt_template, "prompt template says DataAccess query is not replay")
+    require("Query layer must not call AccountingEngine" in codex_prompt_template, "prompt template forbids query calling AccountingEngine")
+    require("AccountingTradeFactReader.cpp" in dataaccess_cmake, "DataAccess CMake includes trade fact reader source")
+    require("AccountingEngine" not in dataaccess_cmake, "DataAccess CMake does not link AccountingEngine")
+    require("DataServiceApi" not in dataaccess_cmake, "DataAccess CMake does not link DataServiceApi")
+    require("TradeFactQueryRequest" in accounting_trade_fact_reader_header, "trade fact reader header declares query request")
+    require("TradeFactRow" in accounting_trade_fact_reader_header, "trade fact reader header declares row")
+    require("TradeFactQueryResult" in accounting_trade_fact_reader_header, "trade fact reader header declares result")
+    require("AccountingTradeFactReader" in accounting_trade_fact_reader_header, "trade fact reader header declares reader")
+    require("AccountingEngine" not in accounting_trade_fact_reader_header, "trade fact reader header does not include AccountingEngine")
+    require("DataServiceApi" not in accounting_trade_fact_reader_header, "trade fact reader header does not include DataServiceApi")
+    require("AccountingReplayMinimalEngine" not in accounting_trade_fact_reader_header, "trade fact reader header does not reference minimal engine")
+    require("SELECT" in accounting_trade_fact_reader_source, "trade fact reader source contains SELECT")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
+        require(forbidden_sql not in accounting_trade_fact_reader_source, f"trade fact reader source does not contain {forbidden_sql}")
+    require("AccountingEngine" not in accounting_trade_fact_reader_source, "trade fact reader source does not call AccountingEngine")
+    require("DataServiceApi" not in accounting_trade_fact_reader_source, "trade fact reader source does not include DataServiceApi")
+    require("QtQuick" not in accounting_trade_fact_reader_source, "trade fact reader source does not include QtQuick")
+    require("AccountingReplayEngine" not in accounting_trade_fact_reader_source, "trade fact reader source does not call AccountingReplayEngine")
+    require("AccountingReplayMinimalEngine" not in accounting_trade_fact_reader_source, "trade fact reader source does not call minimal engine")
+    require("dataaccess_accounting_trade_facts_readonly_query" in dataaccess_test_cmake, "DataAccess CMake registers trade facts query test")
+    require("dataaccess_accounting_trade_facts_no_write" in dataaccess_test_cmake, "DataAccess CMake registers trade facts no-write test")
+    require("dataaccess_accounting_trade_facts_sql_scan" in dataaccess_test_cmake, "DataAccess CMake registers trade facts SQL scan test")
+    require("AccountingNoWriteTestUtils" in dataaccess_test_cmake, "DataAccess trade facts test links no-write harness")
+    require("accountingTradeFactsReadOnlySql" in accounting_trade_fact_reader_test, "trade facts test scans reader SQL")
+    require("assertNoWritesAround" in accounting_trade_fact_reader_test, "trade facts test uses no-write harness")
+    require("containsForbiddenWriteSql" in accounting_trade_fact_reader_test, "trade facts test uses ForbiddenSqlScanner")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -1513,6 +1513,30 @@ New harness tests:
 - `accounting_forbidden_sql_scanner`
 - `accounting_no_write_harness`
 
+## TASK-087 SQLite read-only trade facts query skeleton
+
+DataAccess now has a read-only `trade_log` facts query skeleton for future
+accounting replay integration. It only reads `trade_log` with a `SELECT` query,
+returns DataAccess-side `TradeFactRow` records, and does not expose
+AccountingEngine DTOs.
+
+The reader supports optional `accountId`, `portfolioId`, `sourceFromTime`,
+`sourceToTime`, `limit`, and `offset` filters. It maps current schema fields
+such as `uid`, `created_at_utc` / `local_time`, `account_id`, `portfolio_id`,
+`actual_code`, `action_type`, `quantity_1e6`, `price_1e6`, `amount_cents`,
+`fee_cents`, `net_cash_impact_cents`, `trade_source`, and `memo`.
+
+This is not replay and does not implement real `position.list`. DataService
+still does not call this reader, AccountingEngine is not called, snapshots are
+not read as facts, and no database tables are written. Tests use the TASK-086
+no-write harness and forbidden SQL scanner to validate the boundary.
+
+New reader tests:
+
+- `dataaccess_accounting_trade_facts_readonly_query`
+- `dataaccess_accounting_trade_facts_no_write`
+- `dataaccess_accounting_trade_facts_sql_scan`
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

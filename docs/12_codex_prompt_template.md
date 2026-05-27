@@ -406,3 +406,8 @@ v0.1 草案。
 - Do not write from the SQLite query layer.
 - Do not bypass the forbidden SQL scanner.
 - Do not place the no-write harness in production libs.
+- DataAccess read-only query skeletons do not equal replay.
+- Query layer must not compute accounting.
+- Query layer must not call AccountingEngine.
+- Query layer must not write.
+- Future facts query tasks must use the no-write harness and SQL scanner.

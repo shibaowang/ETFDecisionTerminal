@@ -44,6 +44,9 @@
 - SQLite read-only no-write harness skeleton: test-only helpers under
   `tests/AccountingNoWrite`; real facts query, DataAccess repository, new
   DataService actions, and writes remain unimplemented.
+- SQLite read-only trade facts query skeleton: DataAccess `trade_log` reader
+  for DataAccess-side rows only; no replay, no `position.list` implementation,
+  no AccountingEngine call, and no writes.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

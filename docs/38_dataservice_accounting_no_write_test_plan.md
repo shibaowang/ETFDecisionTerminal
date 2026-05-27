@@ -193,3 +193,14 @@ Future DataService accounting actions and SQLite facts query tasks must reuse
 or explicitly mirror this skeleton before any real read-only implementation is
 accepted. The skeleton does not read facts, does not call AccountingEngine, and
 does not change `position.list` guard behavior.
+
+## TASK-087 Trade Facts Reader No-write Coverage
+
+The DataAccess trade facts reader is covered by the TASK-086 no-write harness.
+Tests capture protected table row counts before and after reader calls and
+verify that `trade_log`, `trade_execution_group`, `trade_draft`,
+`cash_snapshot`, `position_snapshot`, `portfolio_summary`, and `audit_log`
+remain unchanged.
+
+The reader SQL is also scanned with the forbidden SQL scanner. The scanner must
+continue to reject write keywords before future facts query expansion.

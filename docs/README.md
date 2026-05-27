@@ -57,6 +57,9 @@
 - DataService `portfolio.pnl.summary` guard: registered read-only guard with
   `implemented=false`; real PnL summary, trade/cash/market facts integration,
   snapshot reads, and writes remain unimplemented.
+- DataService `base_position.summary` guard: registered read-only guard with
+  `implemented=false`; real base position calculation, trade suggestions,
+  TradeDraft generation, snapshot reads, and writes remain unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

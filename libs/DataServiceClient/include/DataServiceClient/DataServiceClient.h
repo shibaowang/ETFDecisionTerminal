@@ -62,6 +62,9 @@ public:
     [[nodiscard]] DataServiceClientResult<etfdt::protocol::ProtocolResponse> portfolioPnlSummary(
         const std::string& payloadJson = "{}",
         int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<etfdt::protocol::ProtocolResponse> basePositionSummary(
+        const std::string& payloadJson = "{}",
+        int timeoutMs = 2000);
     [[nodiscard]] DataServiceClientResult<etfdt::protocol::ProtocolResponse> appendAuditDemo(
         const AuditAppendRequest& request,
         int timeoutMs = 2000);

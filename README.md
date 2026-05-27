@@ -1601,6 +1601,30 @@ New guard tests:
 - `dataservice_portfolio_pnl_summary_no_write`
 - `dataservice_client_portfolio_pnl_summary_guard`
 
+## TASK-091 base_position.summary DataService action guard
+
+`base_position.summary` is now registered as a DataService read-only action
+guard. The guard returns `implemented=false`, `readOnly=true`,
+`writeEnabled=false`, and `status=BASE_POSITION_SUMMARY_NOT_AVAILABLE`.
+
+The guard does not implement real `base_position.summary`, does not return real
+`targetBaseRatioText`, `lockedBaseAmountText`, or
+`sellableAboveBaseAmountText`, does not read `trade_log`, `position_snapshot`,
+`cash_snapshot`, or `portfolio_summary`, does not access SQLite facts queries,
+does not call AccountingEngine, does not add a DataAccess repository, does not
+generate trade suggestions, does not generate TradeDraft rows, does not write
+database tables, and does not expose a QML entry point.
+
+No-write coverage verifies that calling the guard does not change `trade_log`,
+`trade_execution_group`, `trade_draft`, `cash_snapshot`, `position_snapshot`,
+`portfolio_summary`, or `audit_log`.
+
+New guard tests:
+
+- `dataservice_base_position_summary_guard`
+- `dataservice_base_position_summary_no_write`
+- `dataservice_client_base_position_summary_guard`
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

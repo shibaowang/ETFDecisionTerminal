@@ -999,6 +999,26 @@ portfolio summary writes.
 
 The next phase is architecture boundary review and module placement, not direct code migration from `tests/AccountingFixtures` into production libraries.
 
+## TASK-070 AccountingEngine skeleton
+
+`libs/AccountingEngine` now exists as a production module skeleton. It currently
+contains only module info, capability declarations, and boundary declarations.
+
+Current declared state:
+
+- `productionReady=false`.
+- `replayImplemented=false`.
+- `writeEnabled=false`.
+- `snapshotWriteEnabled=false`.
+- `tradeLogWriteEnabled=false`.
+- No SQLite access.
+- No DataService action.
+- No database writes.
+- No copied test-only replay implementation from `tests/AccountingFixtures`.
+
+The boundary test is `accounting_engine_boundary`. This skeleton is not a replay
+implementation and does not change the production accounting behavior.
+
 Run tests:
 
 ```powershell

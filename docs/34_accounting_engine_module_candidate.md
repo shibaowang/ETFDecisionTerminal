@@ -87,3 +87,34 @@ boundary.
 
 Each fixture implementation must remain incremental and must preserve previous
 fixture tests.
+
+## TASK-070 Candidate Skeleton Created
+
+TASK-070 creates the `libs/AccountingEngine` skeleton as a production module
+candidate, but it does not implement replay.
+
+Current capability declarations:
+
+- `productionReady=false`.
+- `replayImplemented=false`.
+- `readOnlyReplaySupported=false`.
+- `snapshotWriteEnabled=false`.
+- `tradeLogWriteEnabled=false`.
+- `dataServiceActionImplemented=false`.
+- `fixtureReplayAvailableInProduction=false`.
+
+Current forbidden boundaries include:
+
+- No DataAccess dependency.
+- No DataServiceApi dependency.
+- No DataServiceClient dependency.
+- No ServiceHost dependency.
+- No Watchdog dependency.
+- No Qt Quick / QML dependency.
+- No test-only AccountingFixtures dependency.
+- No TradeLog writes.
+- No snapshot writes.
+- No portfolio summary writes.
+
+Any future replay logic, DataAccess dependency, DataService action, or write
+capability must be authorized by a separate task.

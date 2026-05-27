@@ -326,3 +326,7 @@ v0.1 草案。
 - DataService action implementation requires architecture boundary approval.
 - AccountingEngine dependency on DataAccess requires explicit authorization.
 - The default production replay phase is read-only and has no snapshot writes.
+- AccountingEngine skeleton does not mean replay is implemented.
+- Future AccountingEngine tasks must not introduce DataAccess unless explicitly authorized.
+- Future AccountingEngine tasks must not copy `tests/AccountingFixtures` into production.
+- Future replay implementation must keep AccountingEngine dependency boundary tests.

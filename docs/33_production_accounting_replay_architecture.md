@@ -313,3 +313,26 @@ UI. Warnings must not be disguised as OK.
 - Do not place orders.
 - Do not connect broker APIs.
 - Do not perform network market data or FX rate queries.
+
+## TASK-070 AccountingEngine Skeleton Status
+
+TASK-070 adds the `libs/AccountingEngine` production module skeleton.
+
+The module currently contains only:
+
+- `AccountingEngineInfo`.
+- `AccountingEngineCapabilities`.
+- `AccountingEngineBoundary`.
+- `accounting_engine_boundary` tests.
+
+Current declared state remains:
+
+- No replay algorithm.
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No write capability.
+- No copied code from `tests/AccountingFixtures`.
+
+Future replay implementation requires separate authorization and must preserve
+the dependency boundary tests.

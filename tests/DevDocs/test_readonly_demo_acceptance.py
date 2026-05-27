@@ -30,6 +30,12 @@ def main() -> int:
     accounting_replay_readiness_path = root / "docs" / "32_production_accounting_replay_readiness_review.md"
     accounting_replay_architecture_path = root / "docs" / "33_production_accounting_replay_architecture.md"
     accounting_engine_candidate_path = root / "docs" / "34_accounting_engine_module_candidate.md"
+    root_cmake_path = root / "CMakeLists.txt"
+    tests_cmake_path = root / "tests" / "CMakeLists.txt"
+    accounting_engine_dir = root / "libs" / "AccountingEngine"
+    accounting_engine_cmake_path = accounting_engine_dir / "CMakeLists.txt"
+    accounting_engine_boundary_test_path = root / "tests" / "AccountingEngine" / "test_accounting_engine_boundary.cpp"
+    accounting_engine_test_cmake_path = root / "tests" / "AccountingEngine" / "CMakeLists.txt"
     accounting_fixture_dir = root / "tests" / "fixtures" / "accounting_replay"
     accounting_fixture_index_path = accounting_fixture_dir / "fixtures_index.json"
     accounting_fixture_validator_path = (
@@ -97,6 +103,12 @@ def main() -> int:
     require(accounting_replay_readiness_path.exists(), "production accounting replay readiness review doc exists")
     require(accounting_replay_architecture_path.exists(), "production accounting replay architecture doc exists")
     require(accounting_engine_candidate_path.exists(), "AccountingEngine module candidate doc exists")
+    require(root_cmake_path.exists(), "root CMakeLists exists")
+    require(tests_cmake_path.exists(), "tests CMakeLists exists")
+    require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
+    require(accounting_engine_cmake_path.exists(), "AccountingEngine CMake exists")
+    require(accounting_engine_boundary_test_path.exists(), "AccountingEngine boundary test exists")
+    require(accounting_engine_test_cmake_path.exists(), "AccountingEngine test CMake exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
     require(accounting_fixture_index_path.exists(), "accounting replay fixture index exists")
     require(accounting_fixture_validator_path.exists(), "accounting replay fixture validator exists")
@@ -150,6 +162,16 @@ def main() -> int:
     accounting_replay_readiness = accounting_replay_readiness_path.read_text(encoding="utf-8")
     accounting_replay_architecture = accounting_replay_architecture_path.read_text(encoding="utf-8")
     accounting_engine_candidate = accounting_engine_candidate_path.read_text(encoding="utf-8")
+    root_cmake = root_cmake_path.read_text(encoding="utf-8")
+    tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
+    accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
+    accounting_engine_boundary_test = accounting_engine_boundary_test_path.read_text(encoding="utf-8")
+    accounting_engine_test_cmake = accounting_engine_test_cmake_path.read_text(encoding="utf-8")
+    accounting_engine_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted(accounting_engine_dir.rglob("*"))
+        if path.is_file() and path.suffix in {".h", ".hpp", ".cpp", ".cmake", ".txt"}
+    )
     accounting_fixture_index = accounting_fixture_index_path.read_text(encoding="utf-8")
     accounting_fixture_validator = accounting_fixture_validator_path.read_text(encoding="utf-8")
     accounting_fixture_loader_header = accounting_fixture_loader_header_path.read_text(encoding="utf-8")
@@ -413,6 +435,7 @@ def main() -> int:
     require("32_production_accounting_replay_readiness_review.md" in docs_index, "docs index links production accounting replay readiness review")
     require("33_production_accounting_replay_architecture.md" in docs_index, "docs index links production accounting replay architecture")
     require("34_accounting_engine_module_candidate.md" in docs_index, "docs index links AccountingEngine module candidate")
+    require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
@@ -489,6 +512,10 @@ def main() -> int:
     require("SELL_EXCEEDS_POSITION" in accounting_replay_architecture, "architecture doc lists oversell error")
     require("DATA_VERSION_MISMATCH" in accounting_replay_architecture, "architecture doc lists data version issue")
     require("UNSUPPORTED_ACCOUNTING_MODE" in accounting_replay_architecture, "architecture doc lists unsupported mode issue")
+    require("TASK-070" in accounting_replay_architecture, "architecture doc records TASK-070 skeleton")
+    require("No replay algorithm" in accounting_replay_architecture, "architecture doc states skeleton has no replay")
+    require("No DataAccess dependency" in accounting_replay_architecture, "architecture doc states skeleton has no DataAccess")
+    require("No DataService action" in accounting_replay_architecture, "architecture doc states skeleton has no DataService action")
 
     require("AccountingEngine Module Candidate" in accounting_engine_candidate, "AccountingEngine candidate doc title exists")
     require("libs/AccountingEngine" in accounting_engine_candidate, "AccountingEngine candidate doc names module")
@@ -505,6 +532,45 @@ def main() -> int:
     require("does not directly depend on SQLite" in accounting_engine_candidate, "AccountingEngine candidate doc avoids direct SQLite dependency")
     require("FX001-FX013" in accounting_engine_candidate, "AccountingEngine candidate doc keeps fixture coverage")
     require("must not be directly migrated to" in accounting_engine_candidate, "AccountingEngine candidate doc blocks direct minimal engine migration")
+    require("TASK-070" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-070 skeleton")
+    require("Candidate Skeleton Created" in accounting_engine_candidate, "AccountingEngine candidate doc records skeleton creation")
+    require("replayImplemented=false" in accounting_engine_candidate, "AccountingEngine candidate doc records replay false")
+    require("snapshotWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records snapshot write false")
+    require("tradeLogWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records trade log write false")
+    require("No DataAccess dependency" in accounting_engine_candidate, "AccountingEngine candidate doc keeps DataAccess forbidden")
+
+    require("AccountingEngine skeleton" in readme, "README documents AccountingEngine skeleton")
+    require("replayImplemented=false" in readme, "README records AccountingEngine replay false")
+    require("productionReady=false" in readme, "README records AccountingEngine productionReady false")
+    require("writeEnabled=false" in readme, "README records AccountingEngine write false")
+    require("accounting_engine_boundary" in readme, "README documents AccountingEngine boundary test")
+
+    require("add_subdirectory(libs/AccountingEngine)" in root_cmake, "root CMake adds AccountingEngine")
+    require("add_subdirectory(AccountingEngine)" in tests_cmake, "tests CMake adds AccountingEngine tests")
+    require("add_library(ETFAccountingEngine" in accounting_engine_cmake, "AccountingEngine CMake defines library")
+    require("ETFDecisionTerminal::AccountingEngine" in accounting_engine_cmake, "AccountingEngine CMake defines alias")
+    require("add_test(NAME accounting_engine_boundary" in accounting_engine_test_cmake, "AccountingEngine CMake registers boundary test")
+    require("AccountingEngineBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine boundary test target exists")
+    require("accountingEngineBoundary" in accounting_engine_boundary_test, "AccountingEngine boundary test source exists")
+
+    for forbidden in ["DataAccess/", "DataServiceApi/", "DataServiceClient/", "ServiceHost/", "Watchdog/"]:
+        require(forbidden not in accounting_engine_sources, f"AccountingEngine sources do not include {forbidden}")
+    require("AccountingReplayMinimalEngine" not in accounting_engine_sources, "AccountingEngine sources do not copy minimal replay engine")
+    require("SQLiteConnection" not in accounting_engine_sources, "AccountingEngine sources do not reference SQLiteConnection directly")
+    require("sqlite" not in accounting_engine_sources.lower(), "AccountingEngine sources do not reference sqlite")
+
+    forbidden_cmake_links = [
+        "DataAccess",
+        "DataServiceApi",
+        "DataServiceClient",
+        "ServiceHost",
+        "Watchdog",
+        "Qt::Quick",
+        "Qt6::Quick",
+        "Qml",
+    ]
+    for forbidden in forbidden_cmake_links:
+        require(forbidden not in accounting_engine_cmake, f"AccountingEngine CMake does not link {forbidden}")
 
     require("accounting.health" in accounting_rules, "accounting rules documents accounting.health")
     require("replayImplemented=false" in accounting_rules, "accounting rules state replay is not implemented")

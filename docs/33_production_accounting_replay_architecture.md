@@ -413,6 +413,19 @@ The boundary remains read-only by default:
 - No TradeDraft generation.
 - No QML accounting calculation.
 
+## TASK-084 SQLite Read-only Facts Query Boundary Docs
+
+The SQLite read-only facts query boundary is documented in
+`docs/39_sqlite_readonly_facts_query_boundary.md`.
+
+Accounting facts source mapping is documented in
+`docs/40_accounting_facts_source_mapping.md`.
+
+AccountingEngine remains DTO-based and must not directly access SQLite.
+DataAccess query implementation remains unimplemented. DataService accounting
+actions remain unimplemented and still must not write snapshots, TradeLog rows,
+TradeDraft rows, or portfolio summary data.
+
 ## TASK-078 Multi-instrument BUY Scenario Status
 
 TASK-078 adds a production-side read-only multi-instrument BUY scenario to

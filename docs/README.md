@@ -37,6 +37,8 @@
 - [36 AccountingEngine Next Phase Boundary Review](36_accounting_engine_next_phase_boundary_review.md)
 - [37 DataService Read-only Accounting Action Contracts](37_dataservice_readonly_accounting_action_contracts.md)
 - [38 DataService Accounting No-write Test Plan](38_dataservice_accounting_no_write_test_plan.md)
+- [39 SQLite Read-only Facts Query Boundary](39_sqlite_readonly_facts_query_boundary.md)
+- [40 Accounting Facts Source Mapping](40_accounting_facts_source_mapping.md)
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

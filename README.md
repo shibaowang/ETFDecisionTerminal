@@ -1450,6 +1450,24 @@ snapshot writes, TradeLog writes, TradeDraft generation, direct QML
 `DataServiceClient` calls, SQLite access from QML, and QML accounting
 calculation.
 
+## TASK-084 SQLite read-only facts query boundary
+
+SQLite read-only facts query boundary docs are now defined for future
+production accounting replay review:
+
+- [SQLite read-only facts query boundary](docs/39_sqlite_readonly_facts_query_boundary.md)
+- [Accounting facts source mapping](docs/40_accounting_facts_source_mapping.md)
+
+These documents define how future production replay facts should be sourced and
+mapped without implementing SQLite queries. `trade_log` is documented as the
+fact ledger. Snapshots are documented as derived data, not facts sources.
+
+This task does not implement SQLite query code, does not add a DataAccess
+repository, does not add DataService actions, does not call AccountingEngine,
+does not access SQLite, and does not write any database table. The next
+implementation step still requires a separate authorization and no-write table
+count tests.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

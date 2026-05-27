@@ -139,3 +139,18 @@ Every future accounting action must cover the same no-write matrix.
 ```powershell
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
+
+## TASK-084 SQLite Facts Query Extension
+
+SQLite read-only facts query implementation must use the same no-write row
+count tests before it can be accepted.
+
+Future facts query implementation must include SQL forbidden keyword scans for
+`INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`, `ALTER`, `REPLACE`, `UPSERT`,
+and `VACUUM`.
+
+The SQLite facts query boundary is documented in
+`docs/39_sqlite_readonly_facts_query_boundary.md`.
+
+Accounting facts source mapping is documented in
+`docs/40_accounting_facts_source_mapping.md`.

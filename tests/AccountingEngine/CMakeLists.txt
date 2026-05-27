@@ -114,3 +114,16 @@ target_link_libraries(AccountingReplayEngineMultiInstrumentBuyTests
 target_compile_features(AccountingReplayEngineMultiInstrumentBuyTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_multi_instrument_buy COMMAND AccountingReplayEngineMultiInstrumentBuyTests)
+
+add_executable(AccountingReplayEngineMultiAccountBuyTests
+    test_accounting_replay_engine_multi_account_buy.cpp
+)
+
+target_link_libraries(AccountingReplayEngineMultiAccountBuyTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineMultiAccountBuyTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_multi_account_buy COMMAND AccountingReplayEngineMultiAccountBuyTests)

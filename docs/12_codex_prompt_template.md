@@ -362,3 +362,9 @@ v0.1 草案。
 - Multi-instrument BUY must not fabricate market value or unrealized PnL.
 - Future production replay tasks after multi-instrument BUY must still remain one scenario at a time.
 - Multi-account replay, multi-currency replay, multi-instrument SELL, mixed multi-instrument BUY/SELL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine multi-account BUY scenario does not mean complete replay is implemented.
+- Multi-account BUY must group by `accountId + portfolioId + instrumentCode`; different accounts must not be merged or confused.
+- Multi-account BUY must keep account cash summaries separate and must not hide account boundaries behind one combined cash number.
+- Multi-account BUY must not fabricate market value or unrealized PnL.
+- Future production replay tasks after multi-account BUY must still remain one scenario at a time.
+- Multi-currency replay, multi-account SELL, cross-portfolio aggregation, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

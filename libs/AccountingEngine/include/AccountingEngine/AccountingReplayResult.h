@@ -69,6 +69,7 @@ struct AccountingReplayResult {
     PositionListResponseDto positionList;
     bool hasCashSummary = false;
     CashSummaryDto cashSummary;
+    std::vector<CashSummaryDto> accountCashSummaries;
     bool hasPortfolioPnl = false;
     PortfolioPnlDto portfolioPnl;
     bool hasBasePosition = false;
@@ -103,6 +104,11 @@ struct AccountingReplayResult {
     const std::string& portfolioId,
     std::vector<PositionSummaryDto> positions,
     long long cashBalanceCents);
+
+[[nodiscard]] AccountingReplayResult makeMultiAccountBuyReplayResult(
+    const std::string& portfolioId,
+    std::vector<PositionSummaryDto> positions,
+    std::vector<CashSummaryDto> accountCashSummaries);
 
 [[nodiscard]] AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues);
 [[nodiscard]] AccountingReplayResult makeUnsupportedReplayScenarioResult();

@@ -517,6 +517,23 @@ struct InstrumentBuyAggregate {
     long long costCents = 0;
 };
 
+struct AccountInstrumentKey {
+    std::string accountId;
+    std::string portfolioId;
+    std::string instrumentCode;
+
+    bool operator<(const AccountInstrumentKey& other) const
+    {
+        if (accountId != other.accountId) {
+            return accountId < other.accountId;
+        }
+        if (portfolioId != other.portfolioId) {
+            return portfolioId < other.portfolioId;
+        }
+        return instrumentCode < other.instrumentCode;
+    }
+};
+
 AccountingReplayResult tryReplayMultiInstrumentBuy(
     const ReplayRequestDto& request,
     const std::vector<TradeFactDto>& tradeFacts,
@@ -684,6 +701,202 @@ AccountingReplayResult tryReplayMultiInstrumentBuy(
     return makeMultiInstrumentBuyReplayResult(firstTrade.accountId, firstTrade.portfolioId, std::move(positions), cashBalanceCents);
 }
 
+AccountingReplayResult tryReplayMultiAccountBuy(
+    const ReplayRequestDto& request,
+    const std::vector<TradeFactDto>& tradeFacts,
+    const std::vector<CashFactDto>& cashFacts,
+    const std::vector<MarketPriceFactDto>& marketPriceFacts,
+    const std::vector<FxRateFactDto>& fxRateFacts)
+{
+    if (!marketPriceFacts.empty() || !fxRateFacts.empty() || tradeFacts.size() < 2 || cashFacts.size() < 2) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    std::vector<AccountingIssueDto> validationIssues;
+    for (const auto& cashFact : cashFacts) {
+        const auto cashValidation = validateCashFact(cashFact);
+        appendIssues(validationIssues, cashValidation.issues);
+    }
+
+    for (const auto& tradeFact : tradeFacts) {
+        auto tradeFactForValidation = tradeFact;
+        if (isMissingFeeText(tradeFactForValidation.feeText)) {
+            tradeFactForValidation.feeText.clear();
+        }
+        const auto tradeValidation = validateTradeFact(tradeFactForValidation);
+        appendIssues(validationIssues, tradeValidation.issues);
+
+        if (!hasNonZeroQuantity(tradeFact.quantityText)) {
+            validationIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidQuantityText,
+                "BUY quantityText must be greater than zero.",
+                true,
+                "quantityText",
+                tradeFact.factId));
+        }
+    }
+
+    if (!validationIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(validationIssues));
+    }
+
+    const auto& firstCash = cashFacts.front();
+    const auto commonPortfolioId = firstCash.portfolioId;
+    if (!request.accountId.empty() || (!request.portfolioId.empty() && request.portfolioId != commonPortfolioId)) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (firstCash.action != CashAction::InitialCash || firstCash.currency != "CNY") {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    std::map<std::string, long long> initialCashByAccount;
+    std::set<std::string> accountIds;
+    std::vector<AccountingIssueDto> parseIssues;
+    for (const auto& cashFact : cashFacts) {
+        if (cashFact.action != CashAction::InitialCash || cashFact.currency != "CNY" ||
+            cashFact.portfolioId != commonPortfolioId) {
+            return makeUnsupportedReplayScenarioResult();
+        }
+        if (initialCashByAccount.find(cashFact.accountId) != initialCashByAccount.end()) {
+            return makeUnsupportedReplayScenarioResult();
+        }
+
+        const auto initialCash = parseMoneyToCents(cashFact.amountText);
+        if (!initialCash.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "initial cash amount is not valid for multi-account buy replay.",
+                true,
+                "amountText",
+                cashFact.factId));
+            continue;
+        }
+
+        initialCashByAccount[cashFact.accountId] = initialCash.cents;
+        accountIds.insert(cashFact.accountId);
+    }
+
+    if (!parseIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(parseIssues));
+    }
+    if (accountIds.size() < 2) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    const auto& firstTrade = tradeFacts.front();
+    if (firstTrade.action != TradeAction::Buy || firstTrade.currency != "CNY" ||
+        firstTrade.portfolioId != commonPortfolioId) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+    const auto commonInstrumentCode = firstTrade.instrumentCode;
+
+    for (const auto& tradeFact : tradeFacts) {
+        if (tradeFact.action != TradeAction::Buy || tradeFact.currency != "CNY" ||
+            tradeFact.portfolioId != commonPortfolioId || tradeFact.instrumentCode != commonInstrumentCode ||
+            initialCashByAccount.find(tradeFact.accountId) == initialCashByAccount.end()) {
+            return makeUnsupportedReplayScenarioResult();
+        }
+    }
+
+    for (const auto& tradeFact : tradeFacts) {
+        if (isMissingFeeText(tradeFact.feeText)) {
+            return makeMissingFeeReplayResult();
+        }
+    }
+
+    std::map<AccountInstrumentKey, InstrumentBuyAggregate> aggregates;
+    std::map<std::string, long long> costByAccount;
+    for (const auto& tradeFact : tradeFacts) {
+        const auto amount = parseMoneyToCents(tradeFact.amountText);
+        const auto fee = parseMoneyToCents(tradeFact.feeText);
+        const auto quantity = parseQuantityToMicroUnits(tradeFact.quantityText);
+        if (!amount.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "BUY amount is not valid for multi-account buy replay.",
+                true,
+                "amountText",
+                tradeFact.factId));
+        }
+        if (!fee.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "BUY fee is not valid for multi-account buy replay.",
+                true,
+                "feeText",
+                tradeFact.factId));
+        }
+        if (!quantity.valid) {
+            parseIssues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidQuantityText,
+                "BUY quantity is not valid for multi-account buy replay.",
+                true,
+                "quantityText",
+                tradeFact.factId));
+        }
+        if (!amount.valid || !fee.valid || !quantity.valid) {
+            continue;
+        }
+
+        const auto costCents = amount.cents + fee.cents;
+        costByAccount[tradeFact.accountId] += costCents;
+        auto& aggregate = aggregates[AccountInstrumentKey{
+            tradeFact.accountId,
+            tradeFact.portfolioId,
+            tradeFact.instrumentCode,
+        }];
+        aggregate.quantityMicroUnits += quantity.microUnits;
+        aggregate.costCents += costCents;
+    }
+
+    if (!parseIssues.empty()) {
+        return makeInvalidReplayRequestResult(std::move(parseIssues));
+    }
+
+    for (const auto& [accountId, costCents] : costByAccount) {
+        if (initialCashByAccount[accountId] - costCents < 0) {
+            return makeNegativeCashReplayResult();
+        }
+    }
+
+    std::vector<PositionSummaryDto> positions;
+    for (const auto& [key, aggregate] : aggregates) {
+        const auto quantityText = formatQuantityFromMicroUnits(aggregate.quantityMicroUnits);
+        positions.push_back(PositionSummaryDto{
+            key.accountId,
+            key.portfolioId,
+            key.instrumentCode,
+            quantityText,
+            formatCentsForReplay(aggregate.costCents),
+            formatCostPriceForReplay(aggregate.costCents, quantityText),
+            "UNAVAILABLE",
+            "UNAVAILABLE",
+            "CNY",
+            "OK",
+        });
+    }
+
+    std::vector<CashSummaryDto> accountCashSummaries;
+    for (const auto& [accountId, initialCashCents] : initialCashByAccount) {
+        const auto cashBalanceCents = initialCashCents - costByAccount[accountId];
+        accountCashSummaries.push_back(CashSummaryDto{
+            accountId,
+            commonPortfolioId,
+            "CNY",
+            formatCentsForReplay(cashBalanceCents),
+            "OK",
+        });
+    }
+
+    return makeMultiAccountBuyReplayResult(commonPortfolioId, std::move(positions), std::move(accountCashSummaries));
+}
+
 } // namespace
 
 AccountingReplayResult AccountingReplayEngine::replayReadOnly(
@@ -704,6 +917,10 @@ AccountingReplayResult AccountingReplayEngine::replayReadOnly(
 
     if (tradeFacts.size() == 1) {
         return tryReplaySingleBuy(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+    }
+
+    if (tradeFacts.size() >= 2 && cashFacts.size() >= 2) {
+        return tryReplayMultiAccountBuy(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
     }
 
     if (tradeFacts.size() == 2) {

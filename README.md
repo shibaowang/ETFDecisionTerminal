@@ -1284,6 +1284,47 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-079 AccountingEngine multi-account BUY scenario
+
+`libs/AccountingEngine` now includes a production-side read-only multi-account
+BUY scenario. It accepts multiple `INITIAL_CASH` facts and multiple CNY `BUY`
+trade facts for one portfolio, then groups positions by
+`accountId + portfolioId + instrumentCode`.
+
+The scenario returns `implemented=true`, `replayExecuted=true`, and
+`status=OK`. Different accounts are not merged: `ACC-DEMO-001` and
+`ACC-DEMO-002` keep independent positions, independent cost amounts, and
+independent account cash summaries. Account cash is not combined into a single
+summary, and `portfolioId` is preserved on positions and cash rows.
+
+Market valuation remains unavailable. Position `marketValueText` and
+`unrealizedPnlText`, plus portfolio valuation fields, use `UNAVAILABLE`; this
+does not fabricate market value or unrealized PnL. The scenario does not output
+base-position or sniper-pool data.
+
+Current production-side replay skeleton coverage is limited to empty ledger,
+single BUY, one BUY + one partial SELL, one BUY + one SELL oversell detection,
+single BUY missing fee detection, single BUY negative cash detection,
+same-account same-portfolio CNY multi-instrument BUY, and CNY BUY-only
+multi-account isolation. `replayImplemented=false` still means complete
+production replay is not implemented.
+
+This task does not implement multi-currency replay, multi-account SELL,
+cross-portfolio aggregation, real market price, market value, unrealized PnL,
+base position, sniper pool, SQLite access, DataService actions, snapshot writes,
+TradeLog writes, or QML behavior.
+
+The multi-account BUY test is `accounting_replay_engine_multi_account_buy`.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

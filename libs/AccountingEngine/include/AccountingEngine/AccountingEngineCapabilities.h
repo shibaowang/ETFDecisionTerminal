@@ -11,6 +11,7 @@ struct AccountingEngineCapabilities {
     bool missingFeeDetectionSupported = true;
     bool negativeCashDetectionSupported = true;
     bool multiInstrumentBuyReplaySupported = true;
+    bool multiAccountBuyReplaySupported = true;
     bool readOnlyReplaySupported = false;
     bool writeEnabled = false;
     bool snapshotWriteEnabled = false;

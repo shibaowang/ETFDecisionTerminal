@@ -66,6 +66,9 @@ def main() -> int:
     accounting_replay_engine_multi_instrument_buy_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_multi_instrument_buy.cpp"
     )
+    accounting_replay_engine_multi_account_buy_test_path = (
+        root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_multi_account_buy.cpp"
+    )
     accounting_replay_dto_parser_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_dto_parser.cpp"
     )
@@ -161,6 +164,7 @@ def main() -> int:
         accounting_replay_engine_multi_instrument_buy_test_path.exists(),
         "Accounting replay multi-instrument buy test exists",
     )
+    require(accounting_replay_engine_multi_account_buy_test_path.exists(), "Accounting replay multi-account buy test exists")
     require(accounting_replay_dto_parser_test_path.exists(), "Accounting replay DTO parser test exists")
     require(accounting_engine_test_cmake_path.exists(), "AccountingEngine test CMake exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
@@ -236,6 +240,9 @@ def main() -> int:
     accounting_replay_engine_missing_fee_test = accounting_replay_engine_missing_fee_test_path.read_text(encoding="utf-8")
     accounting_replay_engine_negative_cash_test = accounting_replay_engine_negative_cash_test_path.read_text(encoding="utf-8")
     accounting_replay_engine_multi_instrument_buy_test = accounting_replay_engine_multi_instrument_buy_test_path.read_text(
+        encoding="utf-8"
+    )
+    accounting_replay_engine_multi_account_buy_test = accounting_replay_engine_multi_account_buy_test_path.read_text(
         encoding="utf-8"
     )
     accounting_replay_dto_parser_test = accounting_replay_dto_parser_test_path.read_text(encoding="utf-8")
@@ -603,6 +610,8 @@ def main() -> int:
     require("NEGATIVE_CASH" in accounting_replay_architecture, "architecture doc documents negative cash issue")
     require("TASK-078" in accounting_replay_architecture, "architecture doc records TASK-078 multi-instrument scenario")
     require("instrumentCode" in accounting_replay_architecture, "architecture doc documents instrumentCode grouping")
+    require("TASK-079" in accounting_replay_architecture, "architecture doc records TASK-079 multi-account scenario")
+    require("accountId + portfolioId + instrumentCode" in accounting_replay_architecture, "architecture doc documents multi-account grouping")
     require("Only empty ledger input is supported" in accounting_replay_architecture, "architecture doc states only empty ledger is supported")
     require("DTO validation is not replay" in accounting_replay_architecture, "architecture doc states DTO validation is not replay")
     require("No replay algorithm" in accounting_replay_architecture, "architecture doc states skeleton has no replay")
@@ -642,6 +651,8 @@ def main() -> int:
     require("Negative Cash Detection" in accounting_engine_candidate, "AccountingEngine candidate doc records negative cash detection")
     require("TASK-078" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-078")
     require("Multi-instrument BUY Scenario" in accounting_engine_candidate, "AccountingEngine candidate doc records multi-instrument buy")
+    require("TASK-079" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-079")
+    require("Multi-account BUY Scenario" in accounting_engine_candidate, "AccountingEngine candidate doc records multi-account buy")
     require("replayImplemented=false" in accounting_engine_candidate, "AccountingEngine candidate doc records replay false")
     require("snapshotWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records snapshot write false")
     require("tradeLogWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records trade log write false")
@@ -666,6 +677,7 @@ def main() -> int:
     require("accounting_replay_engine_missing_fee" in readme, "README documents missing fee test")
     require("accounting_replay_engine_negative_cash" in readme, "README documents negative cash test")
     require("accounting_replay_engine_multi_instrument_buy" in readme, "README documents multi-instrument buy test")
+    require("accounting_replay_engine_multi_account_buy" in readme, "README documents multi-account buy test")
     require("replayImplemented=false" in readme, "README records AccountingEngine replay false")
     require("productionReady=false" in readme, "README records AccountingEngine productionReady false")
     require("writeEnabled=false" in readme, "README records AccountingEngine write false")
@@ -708,6 +720,10 @@ def main() -> int:
         "add_test(NAME accounting_replay_engine_multi_instrument_buy" in accounting_engine_test_cmake,
         "AccountingEngine CMake registers multi-instrument buy test",
     )
+    require(
+        "add_test(NAME accounting_replay_engine_multi_account_buy" in accounting_engine_test_cmake,
+        "AccountingEngine CMake registers multi-account buy test",
+    )
     require("AccountingEngineBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine boundary test target exists")
     require("accountingEngineBoundary" in accounting_engine_boundary_test, "AccountingEngine boundary test source exists")
     require("AccountingReplayDtoParserBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine DTO parser test target exists")
@@ -732,6 +748,10 @@ def main() -> int:
     require(
         "AccountingReplayEngineMultiInstrumentBuyTests" in accounting_engine_test_cmake,
         "AccountingEngine multi-instrument buy test target exists",
+    )
+    require(
+        "AccountingReplayEngineMultiAccountBuyTests" in accounting_engine_test_cmake,
+        "AccountingEngine multi-account buy test target exists",
     )
     require("AccountingReplayEngine" in accounting_replay_engine_header, "AccountingReplayEngine exists")
     require("replayReadOnly" in accounting_replay_engine_header, "AccountingReplayEngine exposes replayReadOnly")
@@ -803,6 +823,29 @@ def main() -> int:
     require(
         "unrealizedPnlText == \"UNAVAILABLE\"" in accounting_replay_engine_multi_instrument_buy_test,
         "multi-instrument buy test asserts no fabricated unrealized pnl",
+    )
+    require(
+        "multiAccountBuyReplaySupported" in accounting_replay_engine_multi_account_buy_test,
+        "multi-account buy test asserts capability flag",
+    )
+    require("ACC-DEMO-001" in accounting_replay_engine_multi_account_buy_test, "multi-account buy test asserts account one")
+    require("ACC-DEMO-002" in accounting_replay_engine_multi_account_buy_test, "multi-account buy test asserts account two")
+    require(
+        "48999.00 CNY" in accounting_replay_engine_multi_account_buy_test,
+        "multi-account buy test asserts account one cash balance",
+    )
+    require(
+        "47999.00 CNY" in accounting_replay_engine_multi_account_buy_test,
+        "multi-account buy test asserts account two cash balance",
+    )
+    require("accountCashSummaries" in accounting_replay_engine_multi_account_buy_test, "multi-account buy test asserts per-account cash summaries")
+    require(
+        "marketValueText == \"UNAVAILABLE\"" in accounting_replay_engine_multi_account_buy_test,
+        "multi-account buy test asserts no fabricated market value",
+    )
+    require(
+        "unrealizedPnlText == \"UNAVAILABLE\"" in accounting_replay_engine_multi_account_buy_test,
+        "multi-account buy test asserts no fabricated unrealized pnl",
     )
     require("validateTradeFact" in accounting_replay_dto_parser_test, "DTO parser test validates trade facts")
     require("ReplayRequestDto" in accounting_replay_dtos_header, "ReplayRequestDto exists")

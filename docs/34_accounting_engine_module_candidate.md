@@ -190,3 +190,19 @@ of scope.
 Multi-transaction replay, multi-account replay, multi-instrument replay,
 DataAccess, DataService actions, snapshots, and TradeLog writes remain out of
 scope unless separately authorized.
+
+## TASK-075 Sell Exceeds Position Detection
+
+The skeleton now includes one BUY + one SELL oversell detection. This is a
+production-side incremental error handling skeleton for the FX004-equivalent
+scenario, not a complete replay engine.
+
+The entry accepts one `INITIAL_CASH` fact, one CNY `BUY` trade fact, and one
+CNY `SELL` trade fact for the same account, portfolio, and instrument. When the
+SELL quantity is greater than the bought quantity, it returns `ERROR` with a
+blocking `SELL_EXCEEDS_POSITION` issue and no successful output DTOs.
+
+Full missing-fee handling, full negative-cash fixture handling,
+multi-transaction replay, multi-account replay, multi-instrument replay,
+DataAccess, DataService actions, snapshots, and TradeLog writes remain out of
+scope unless separately authorized.

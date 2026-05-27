@@ -345,3 +345,6 @@ v0.1 草案。
 - AccountingEngine partial sell skeleton does not mean complete replay is implemented.
 - Future production replay tasks after one BUY + one SELL must still remain one scenario at a time.
 - Multi-transaction, multi-account, multi-instrument, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine sell-exceeds-position scenario does not mean complete replay is implemented.
+- Future production replay tasks after `SELL_EXCEEDS_POSITION` must still remain one scenario at a time.
+- Full missing-fee handling, full negative-cash fixture handling, multi-transaction replay, multi-account replay, multi-instrument replay, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

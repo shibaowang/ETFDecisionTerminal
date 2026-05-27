@@ -389,6 +389,36 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-075 Sell Exceeds Position Detection Status
+
+TASK-075 adds a production-side read-only `SELL_EXCEEDS_POSITION` controlled
+error scenario to `libs/AccountingEngine`.
+
+Scope:
+
+- One `INITIAL_CASH` cash fact.
+- One `BUY` trade fact and one `SELL` trade fact.
+- Single account and portfolio.
+- Single instrument.
+- CNY only.
+- `SELL` quantity greater than bought quantity.
+- Returns `ERROR` with a blocking `SELL_EXCEEDS_POSITION` issue.
+- Does not output successful positions, cash summary, portfolio PnL,
+  base-position, or sniper-pool data.
+
+The implementation does not calculate full missing-fee handling, full
+negative-cash fixture handling, multi-transaction replay, multi-instrument
+replay, multi-account replay, market value, unrealized PnL, base position,
+sniper pool, multi-currency replay, or production DataService actions.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-074 Buy-Sell Partial Replay Skeleton Status
 
 TASK-074 adds a production-side read-only BUY + SELL partial sell replay

@@ -36,6 +36,8 @@ def main() -> int:
         root / "docs" / "37_dataservice_readonly_accounting_action_contracts.md"
     )
     dataservice_accounting_no_write_plan_path = root / "docs" / "38_dataservice_accounting_no_write_test_plan.md"
+    sqlite_readonly_facts_query_boundary_path = root / "docs" / "39_sqlite_readonly_facts_query_boundary.md"
+    accounting_facts_source_mapping_path = root / "docs" / "40_accounting_facts_source_mapping.md"
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -163,6 +165,8 @@ def main() -> int:
         dataservice_accounting_no_write_plan_path.exists(),
         "DataService accounting no-write test plan doc exists",
     )
+    require(sqlite_readonly_facts_query_boundary_path.exists(), "SQLite read-only facts query boundary doc exists")
+    require(accounting_facts_source_mapping_path.exists(), "Accounting facts source mapping doc exists")
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -256,6 +260,8 @@ def main() -> int:
     accounting_engine_next_phase_review = accounting_engine_next_phase_review_path.read_text(encoding="utf-8")
     dataservice_readonly_accounting_contracts = dataservice_readonly_accounting_contracts_path.read_text(encoding="utf-8")
     dataservice_accounting_no_write_plan = dataservice_accounting_no_write_plan_path.read_text(encoding="utf-8")
+    sqlite_readonly_facts_query_boundary = sqlite_readonly_facts_query_boundary_path.read_text(encoding="utf-8")
+    accounting_facts_source_mapping = accounting_facts_source_mapping_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -429,6 +435,14 @@ def main() -> int:
         "README links DataService accounting no-write test plan",
     )
     require(
+        "39_sqlite_readonly_facts_query_boundary" in readme,
+        "README links SQLite read-only facts query boundary",
+    )
+    require(
+        "40_accounting_facts_source_mapping" in readme,
+        "README links accounting facts source mapping",
+    )
+    require(
         "v0_4_accounting_engine_replay_skeleton" in readme,
         "README links v0.4 AccountingEngine replay skeleton release notes",
     )
@@ -587,6 +601,14 @@ def main() -> int:
     require(
         "38_dataservice_accounting_no_write_test_plan.md" in docs_index,
         "docs index links DataService accounting no-write test plan",
+    )
+    require(
+        "39_sqlite_readonly_facts_query_boundary.md" in docs_index,
+        "docs index links SQLite read-only facts query boundary",
+    )
+    require(
+        "40_accounting_facts_source_mapping.md" in docs_index,
+        "docs index links accounting facts source mapping",
     )
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
@@ -811,6 +833,14 @@ def main() -> int:
         "docs/38_dataservice_accounting_no_write_test_plan.md" in accounting_engine_next_phase_review,
         "next phase review links DataService accounting no-write test plan",
     )
+    require(
+        "docs/39_sqlite_readonly_facts_query_boundary.md" in accounting_engine_next_phase_review,
+        "next phase review links SQLite read-only facts query boundary",
+    )
+    require(
+        "docs/40_accounting_facts_source_mapping.md" in accounting_engine_next_phase_review,
+        "next phase review links accounting facts source mapping",
+    )
 
     require("position.list" in dataservice_readonly_accounting_contracts, "DataService contract doc defines position.list")
     require("cash.summary" in dataservice_readonly_accounting_contracts, "DataService contract doc defines cash.summary")
@@ -840,6 +870,10 @@ def main() -> int:
         "QML does not calculate accounting" in dataservice_readonly_accounting_contracts,
         "DataService contract doc keeps QML out of accounting calculation",
     )
+    require(
+        "docs/39_sqlite_readonly_facts_query_boundary.md" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc references SQLite read-only facts query boundary",
+    )
     require("trade_log" in dataservice_accounting_no_write_plan, "no-write plan protects trade_log")
     require("cash_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects cash_snapshot")
     require("position_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects position_snapshot")
@@ -848,12 +882,41 @@ def main() -> int:
     require("UPDATE" in dataservice_accounting_no_write_plan, "no-write plan scans UPDATE")
     require("DELETE" in dataservice_accounting_no_write_plan, "no-write plan scans DELETE")
     require(
+        "docs/39_sqlite_readonly_facts_query_boundary.md" in dataservice_accounting_no_write_plan,
+        "no-write plan references SQLite read-only facts query boundary",
+    )
+    require("trade_log" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc covers trade_log")
+    require("read-only" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc states read-only")
+    require("SELECT" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc allows SELECT")
+    require("INSERT" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc forbids INSERT")
+    require("UPDATE" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc forbids UPDATE")
+    require("DELETE" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc forbids DELETE")
+    require("snapshot 是派生数据" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc states snapshot is derived data")
+    require(
+        "AccountingFactsReadOnlyRepository" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc drafts read-only repository boundary",
+    )
+    require("no-write table count" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc requires no-write table count")
+    require("TradeFactDto" in accounting_facts_source_mapping, "facts source mapping covers TradeFactDto")
+    require("CashFactDto" in accounting_facts_source_mapping, "facts source mapping covers CashFactDto")
+    require("MarketPriceFactDto" in accounting_facts_source_mapping, "facts source mapping covers MarketPriceFactDto")
+    require("FxRateFactDto" in accounting_facts_source_mapping, "facts source mapping covers FxRateFactDto")
+    require("cash_snapshot 是派生数据" in accounting_facts_source_mapping, "facts source mapping states cash_snapshot is derived data")
+    require(
         "docs/37_dataservice_readonly_accounting_action_contracts.md" in codex_prompt_template,
         "prompt template references DataService action contracts",
     )
     require(
         "docs/38_dataservice_accounting_no_write_test_plan.md" in codex_prompt_template,
         "prompt template references DataService no-write plan",
+    )
+    require(
+        "docs/39_sqlite_readonly_facts_query_boundary.md" in codex_prompt_template,
+        "prompt template references SQLite read-only facts query boundary",
+    )
+    require(
+        "docs/40_accounting_facts_source_mapping.md" in codex_prompt_template,
+        "prompt template references accounting facts source mapping",
     )
 
     require(

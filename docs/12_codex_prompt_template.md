@@ -390,3 +390,9 @@ v0.1 草案。
 - Default is no action implementation unless the task explicitly requests one.
 - DataService accounting actions cannot write snapshots or TradeLog rows.
 - QML must not call DataServiceClient directly.
+- Any SQLite accounting facts query task must reference `docs/39_sqlite_readonly_facts_query_boundary.md` and `docs/40_accounting_facts_source_mapping.md`.
+- No SQLite query implementation is allowed unless the task explicitly requests it.
+- Default remains no write for SQLite facts query tasks.
+- Query layer must not calculate replay.
+- Query layer must not use snapshot as facts source.
+- Query layer must not call external market or FX services.

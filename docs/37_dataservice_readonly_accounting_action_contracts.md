@@ -392,3 +392,16 @@ Each future accounting action needs no-write proof:
 - Do not generate trading advice.
 - Do not execute strategies.
 - Do not place broker orders.
+
+## TASK-084 SQLite Facts Query Boundary References
+
+Future DataService accounting actions must source replay facts through the
+read-only query boundary defined in
+`docs/39_sqlite_readonly_facts_query_boundary.md`.
+
+AccountingEngine DTO and facts source mapping is defined in
+`docs/40_accounting_facts_source_mapping.md`.
+
+This document still does not implement any action. DataService still does not
+call AccountingEngine, SQLite facts queries are still unimplemented, and writes
+remain forbidden.

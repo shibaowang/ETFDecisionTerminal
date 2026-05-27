@@ -107,3 +107,15 @@ The future no-write proof plan is in
 Implementation still requires separate authorization. The contracts do not
 implement DataService actions, do not connect SQLite, do not call
 AccountingEngine, and do not enable writes.
+
+## TASK-084 Route C Boundary Documents
+
+Route C now has SQLite read-only facts query boundary docs in
+`docs/39_sqlite_readonly_facts_query_boundary.md`.
+
+Accounting facts source mapping is documented in
+`docs/40_accounting_facts_source_mapping.md`.
+
+Implementation still requires separate authorization. The boundary documents do
+not add DataAccess repositories, do not implement SQLite queries, do not add
+DataService actions, and do not enable writes.

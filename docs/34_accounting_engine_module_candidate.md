@@ -304,3 +304,23 @@ market value, or unrealized PnL.
 Real FX rate support, real multi-currency valuation, market data integration,
 DataAccess, DataService actions, snapshots, and TradeLog writes remain out of
 scope unless separately authorized.
+
+## TASK-081 Missing Market Price Detection
+
+The skeleton now includes missing market price detection. This is a
+production-side incremental warning handling skeleton for the FX012-equivalent
+boundary, not a complete market valuation engine.
+
+The entry detects a single CNY BUY request that asks for `pnl` output while no
+valid matching market price fact is available. It returns `WARNING` with a
+non-blocking `MARKET_PRICE_MISSING` issue. Quantity, cost, and cash can be
+returned, but market value, unrealized PnL, and total assets remain
+`UNAVAILABLE`.
+
+AccountingEngine still has `supportsMarketPrice=false`. It does not call a
+market data service, does not use network access, does not fabricate market
+prices, and does not calculate real market value or unrealized PnL.
+
+Real market price support, valuation, DataAccess, DataService actions,
+snapshots, and TradeLog writes remain out of scope unless separately
+authorized.

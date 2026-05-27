@@ -215,6 +215,56 @@ AccountingReplayResult makeMultiAccountBuyReplayResult(
     return result;
 }
 
+AccountingReplayResult makeMissingMarketPriceReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    const std::string& instrumentCode,
+    const std::string& quantityText,
+    long long costCents,
+    long long cashBalanceCents)
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Warning;
+    result.message = "Market price is missing for requested valuation output.";
+    result.issues.push_back(makeAccountingIssue(
+        AccountingIssueLevel::Warning,
+        AccountingIssueCode::MarketPriceMissing,
+        "Market price is missing; valuation fields are unavailable.",
+        false,
+        "marketPriceFacts",
+        instrumentCode));
+    result.positionList.dataQualityStatus = "WARNING";
+    result.positionList.positions.push_back(PositionSummaryDto{
+        accountId,
+        portfolioId,
+        instrumentCode,
+        quantityText,
+        formatCents(costCents),
+        formatCostPrice(costCents, quantityText),
+        "UNAVAILABLE",
+        "UNAVAILABLE",
+        "CNY",
+        "WARNING",
+    });
+    result.hasCashSummary = true;
+    result.cashSummary.accountId = accountId;
+    result.cashSummary.portfolioId = portfolioId;
+    result.cashSummary.currency = "CNY";
+    result.cashSummary.cashBalanceText = formatCents(cashBalanceCents);
+    result.cashSummary.dataQualityStatus = "OK";
+    result.hasPortfolioPnl = true;
+    result.portfolioPnl.portfolioId = portfolioId;
+    result.portfolioPnl.currency = "CNY";
+    result.portfolioPnl.realizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.unrealizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
+    result.portfolioPnl.totalPnlText = "UNAVAILABLE";
+    result.portfolioPnl.dataQualityStatus = "UNAVAILABLE";
+    return result;
+}
+
 AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues)
 {
     AccountingReplayResult result;

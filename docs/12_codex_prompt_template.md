@@ -375,3 +375,9 @@ v0.1 草案。
 - Multi-currency unsupported results must not fabricate `totalAssetsText`, `marketValueText`, or `unrealizedPnlText`.
 - Future production replay tasks after multi-currency unsupported detection must still remain one scenario at a time.
 - Real FX rate support, successful multi-currency valuation, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine missing market price scenario does not mean market valuation is supported.
+- Missing market price handling must return a visible warning when valuation / `pnl` output is requested and no valid price exists.
+- Missing market price handling may return quantity, cost, and cash, but must not fabricate `marketValueText`, `unrealizedPnlText`, or `totalAssetsText`.
+- Missing market price handling must not query market services or use network access.
+- Future production replay tasks after missing market price detection must still remain one scenario at a time.
+- Real market price support, valuation, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

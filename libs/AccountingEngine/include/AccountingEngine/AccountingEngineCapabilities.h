@@ -13,6 +13,7 @@ struct AccountingEngineCapabilities {
     bool multiInstrumentBuyReplaySupported = true;
     bool multiAccountBuyReplaySupported = true;
     bool multiCurrencyUnsupportedDetectionSupported = true;
+    bool missingMarketPriceDetectionSupported = true;
     bool readOnlyReplaySupported = false;
     bool writeEnabled = false;
     bool snapshotWriteEnabled = false;

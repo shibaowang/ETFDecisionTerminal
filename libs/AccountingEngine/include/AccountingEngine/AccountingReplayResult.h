@@ -110,6 +110,14 @@ struct AccountingReplayResult {
     std::vector<PositionSummaryDto> positions,
     std::vector<CashSummaryDto> accountCashSummaries);
 
+[[nodiscard]] AccountingReplayResult makeMissingMarketPriceReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    const std::string& instrumentCode,
+    const std::string& quantityText,
+    long long costCents,
+    long long cashBalanceCents);
+
 [[nodiscard]] AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues);
 [[nodiscard]] AccountingReplayResult makeUnsupportedReplayScenarioResult();
 [[nodiscard]] AccountingReplayResult makeNegativeCashReplayResult();

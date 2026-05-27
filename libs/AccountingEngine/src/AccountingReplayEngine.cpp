@@ -188,9 +188,140 @@ void appendIssues(std::vector<AccountingIssueDto>& target, const std::vector<Acc
     target.insert(target.end(), source.begin(), source.end());
 }
 
+bool requestNeedsValuation(const ReplayRequestDto& request)
+{
+    return std::find(request.requestedOutputs.begin(), request.requestedOutputs.end(), RequestedReplayOutput::Pnl) !=
+           request.requestedOutputs.end();
+}
+
+bool hasValidMarketPriceForInstrument(
+    const std::vector<MarketPriceFactDto>& marketPriceFacts,
+    const std::string& instrumentCode)
+{
+    for (const auto& marketPriceFact : marketPriceFacts) {
+        if (marketPriceFact.instrumentCode == instrumentCode && marketPriceFact.currency == "CNY" &&
+            parseMoneyToCents(marketPriceFact.priceText).valid) {
+            return true;
+        }
+    }
+    return false;
+}
+
 AccountingReplayResult makeSingleBuyInvalidRequest(std::vector<AccountingIssueDto> issues)
 {
     return makeInvalidReplayRequestResult(std::move(issues));
+}
+
+AccountingReplayResult tryReplayMissingMarketPrice(
+    const ReplayRequestDto& request,
+    const std::vector<TradeFactDto>& tradeFacts,
+    const std::vector<CashFactDto>& cashFacts,
+    const std::vector<MarketPriceFactDto>& marketPriceFacts,
+    const std::vector<FxRateFactDto>& fxRateFacts)
+{
+    if (!requestNeedsValuation(request) || !fxRateFacts.empty() || tradeFacts.size() != 1 || cashFacts.size() != 1) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    const auto& tradeFact = tradeFacts.front();
+    const auto& cashFact = cashFacts.front();
+    if (hasValidMarketPriceForInstrument(marketPriceFacts, tradeFact.instrumentCode)) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    std::vector<AccountingIssueDto> validationIssues;
+    auto tradeFactForValidation = tradeFact;
+    if (isMissingFeeText(tradeFactForValidation.feeText)) {
+        tradeFactForValidation.feeText.clear();
+    }
+    const auto tradeValidation = validateTradeFact(tradeFactForValidation);
+    const auto cashValidation = validateCashFact(cashFact);
+    appendIssues(validationIssues, tradeValidation.issues);
+    appendIssues(validationIssues, cashValidation.issues);
+
+    if (!hasNonZeroQuantity(tradeFact.quantityText)) {
+        validationIssues.push_back(makeAccountingIssue(
+            AccountingIssueLevel::Error,
+            AccountingIssueCode::InvalidQuantityText,
+            "quantityText must be greater than zero.",
+            true,
+            "quantityText",
+            tradeFact.factId));
+    }
+
+    if (!validationIssues.empty()) {
+        return makeSingleBuyInvalidRequest(std::move(validationIssues));
+    }
+
+    if (tradeFact.action != TradeAction::Buy || cashFact.action != CashAction::InitialCash) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (tradeFact.accountId != cashFact.accountId || tradeFact.portfolioId != cashFact.portfolioId) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if ((!request.accountId.empty() && request.accountId != tradeFact.accountId) ||
+        (!request.portfolioId.empty() && request.portfolioId != tradeFact.portfolioId)) {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (tradeFact.currency != "CNY" || cashFact.currency != "CNY") {
+        return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (isMissingFeeText(tradeFact.feeText)) {
+        return makeMissingFeeReplayResult();
+    }
+
+    const auto initialCash = parseMoneyToCents(cashFact.amountText);
+    const auto amount = parseMoneyToCents(tradeFact.amountText);
+    const auto fee = parseMoneyToCents(tradeFact.feeText);
+    if (!initialCash.valid || !amount.valid || !fee.valid) {
+        std::vector<AccountingIssueDto> issues;
+        if (!initialCash.valid) {
+            issues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "initial cash amount is not valid for missing market price replay.",
+                true,
+                "amountText",
+                cashFact.factId));
+        }
+        if (!amount.valid) {
+            issues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "trade amount is not valid for missing market price replay.",
+                true,
+                "amountText",
+                tradeFact.factId));
+        }
+        if (!fee.valid) {
+            issues.push_back(makeAccountingIssue(
+                AccountingIssueLevel::Error,
+                AccountingIssueCode::InvalidMoneyText,
+                "trade fee is not valid for missing market price replay.",
+                true,
+                "feeText",
+                tradeFact.factId));
+        }
+        return makeSingleBuyInvalidRequest(std::move(issues));
+    }
+
+    const auto costCents = amount.cents + fee.cents;
+    const auto cashBalanceCents = initialCash.cents - costCents;
+    if (cashBalanceCents < 0) {
+        return makeNegativeCashReplayResult();
+    }
+
+    return makeMissingMarketPriceReplayResult(
+        tradeFact.accountId,
+        tradeFact.portfolioId,
+        tradeFact.instrumentCode,
+        tradeFact.quantityText,
+        costCents,
+        cashBalanceCents);
 }
 
 AccountingReplayResult tryReplaySingleBuy(
@@ -1040,6 +1171,11 @@ AccountingReplayResult AccountingReplayEngine::replayReadOnly(
     }
 
     if (tradeFacts.size() == 1) {
+        const auto missingMarketPriceResult =
+            tryReplayMissingMarketPrice(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
+        if (missingMarketPriceResult.status != AccountingReplayStatus::UnsupportedScenario) {
+            return missingMarketPriceResult;
+        }
         return tryReplaySingleBuy(request, tradeFacts, cashFacts, marketPriceFacts, fxRateFacts);
     }
 

@@ -1367,6 +1367,44 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-081 AccountingEngine missing market price scenario
+
+`libs/AccountingEngine` now includes a production-side read-only missing market
+price warning scenario. It detects a single CNY BUY replay request that asks for
+`pnl` output while no valid matching `MarketPriceFactDto` is supplied.
+
+The scenario returns `implemented=true`, `replayExecuted=true`,
+`status=WARNING`, and a non-blocking `MARKET_PRICE_MISSING` issue. It may
+return deterministic quantity, cost, and cash fields, but valuation fields stay
+`UNAVAILABLE`.
+
+This task does not fabricate `marketValueText`, `unrealizedPnlText`, or
+`totalAssetsText`; it does not query market data, call a market service, use
+network access, access SQLite, add DataService actions, write snapshots, write
+TradeLog rows, modify QML, or modify schema. If a valid market price fact is
+present, the skeleton still does not unlock successful market valuation.
+
+Current production-side replay skeleton coverage is limited to empty ledger,
+single BUY, one BUY + one partial SELL, one BUY + one SELL oversell detection,
+single BUY missing fee detection, single BUY negative cash detection,
+same-account same-portfolio CNY multi-instrument BUY, CNY BUY-only
+multi-account isolation, multi-currency unsupported detection, and missing
+market price detection. `supportsMarketPrice=false` and
+`replayImplemented=false` still mean real market valuation and complete
+production replay are not implemented.
+
+The missing market price test is
+`accounting_replay_engine_missing_market_price`.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

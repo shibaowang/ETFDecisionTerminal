@@ -499,6 +499,37 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-081 Missing Market Price Detection Status
+
+TASK-081 adds production-side read-only missing market price detection to
+`libs/AccountingEngine`.
+
+Scope:
+
+- One `INITIAL_CASH` cash fact.
+- One CNY `BUY` trade fact.
+- Requested outputs include `pnl`.
+- Missing or non-matching `MarketPriceFactDto`.
+- Returns `WARNING` with a non-blocking `MARKET_PRICE_MISSING` issue.
+- May emit quantity, cost, and cash output.
+- Keeps market value, unrealized PnL, and portfolio total assets unavailable.
+
+This is detection and warning only. AccountingEngine still does not support real
+market price lookup, network market queries, market value calculation, or
+unrealized PnL calculation. A supplied market price fact does not unlock
+successful valuation in this phase.
+
+Current boundaries remain:
+
+- `supportsMarketPrice=false`.
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No network access.
+- No market service calls.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-076 Missing Fee Detection Status
 
 TASK-076 adds a production-side read-only `MISSING_FEE` controlled warning

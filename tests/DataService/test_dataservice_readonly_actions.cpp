@@ -20,6 +20,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -143,6 +144,33 @@ int countRows(etfdt::data_access::SQLiteConnection& connection, const std::strin
     auto count = connection.querySingleInt("SELECT COUNT(*) FROM " + tableName + ";");
     expectTrue(count.hasValue(), "count query succeeds for " + tableName);
     return count.hasValue() ? count.value() : -1;
+}
+
+std::vector<std::pair<std::string, int>> protectedTableCounts(
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    return {
+        {"trade_log", countRows(connection, "trade_log")},
+        {"trade_execution_group", countRows(connection, "trade_execution_group")},
+        {"trade_draft", countRows(connection, "trade_draft")},
+        {"cash_snapshot", countRows(connection, "cash_snapshot")},
+        {"position_snapshot", countRows(connection, "position_snapshot")},
+        {"portfolio_summary", countRows(connection, "portfolio_summary")},
+        {"audit_log", countRows(connection, "audit_log")},
+    };
+}
+
+void expectProtectedTableCountsUnchanged(
+    etfdt::data_access::SQLiteConnection& connection,
+    const std::vector<std::pair<std::string, int>>& before,
+    std::string_view label)
+{
+    for (const auto& [tableName, beforeCount] : before) {
+        expectEqual(
+            countRows(connection, tableName),
+            beforeCount,
+            std::string(label) + " keeps " + tableName + " row count unchanged");
+    }
 }
 
 void expectSuccess(const QJsonObject& response, std::string_view label)
@@ -409,6 +437,97 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
             return value.toString().contains("does not replay accounting");
         });
     expectTrue(statesNoReplay, "replay preview boundaries state no replay");
+
+    const auto positionListCountsBefore = protectedTableCounts(connection);
+    auto positionList = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionPositionList),
+        responses,
+        "position.list");
+    expectSuccess(positionList, "position.list guard");
+    const auto positionPayload = positionList.value("payload").toObject();
+    expectEqual(
+        positionPayload.value("action").toString().toStdString(),
+        "position.list",
+        "position.list payload action");
+    expectEqual(
+        positionPayload.value("module").toString().toStdString(),
+        "accounting",
+        "position.list module");
+    expectTrue(!positionPayload.value("implemented").toBool(true), "position.list implemented=false");
+    expectTrue(positionPayload.value("readOnly").toBool(false), "position.list readOnly=true");
+    expectTrue(!positionPayload.value("writeEnabled").toBool(true), "position.list writeEnabled=false");
+    expectTrue(!positionPayload.value("replayExecuted").toBool(true), "position.list replayExecuted=false");
+    expectTrue(!positionPayload.value("dataSourceAccessed").toBool(true), "position.list dataSourceAccessed=false");
+    expectTrue(!positionPayload.value("sqliteAccessed").toBool(true), "position.list sqliteAccessed=false");
+    expectTrue(
+        !positionPayload.value("accountingEngineCalled").toBool(true),
+        "position.list accountingEngineCalled=false");
+    expectEqual(
+        positionPayload.value("status").toString().toStdString(),
+        "POSITION_LIST_NOT_AVAILABLE",
+        "position.list status");
+    const auto positionIssues = positionPayload.value("issues").toArray();
+    const bool hasPositionUnavailableIssue =
+        std::any_of(positionIssues.begin(), positionIssues.end(), [](const auto& value) {
+            const auto issue = value.toObject();
+            return issue.value("code").toString() == "POSITION_LIST_NOT_AVAILABLE"
+                && issue.value("blocking").toBool(false);
+        });
+    expectTrue(
+        hasPositionUnavailableIssue,
+        "position.list issues contains blocking POSITION_LIST_NOT_AVAILABLE");
+    const auto positionForbiddenWrites = positionPayload.value("forbiddenWrites").toArray();
+    const bool positionForbidsTradeLog =
+        std::any_of(positionForbiddenWrites.begin(), positionForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_log";
+        });
+    const bool positionForbidsPositionSnapshot =
+        std::any_of(positionForbiddenWrites.begin(), positionForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "position_snapshot";
+        });
+    const bool positionForbidsPortfolioSummary =
+        std::any_of(positionForbiddenWrites.begin(), positionForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(positionForbidsTradeLog, "position.list forbiddenWrites contains trade_log");
+    expectTrue(positionForbidsPositionSnapshot, "position.list forbiddenWrites contains position_snapshot");
+    expectTrue(positionForbidsPortfolioSummary, "position.list forbiddenWrites contains portfolio_summary");
+    const auto futureOutput = positionPayload.value("futureOutput").toObject();
+    expectEqual(
+        futureOutput.value("type").toString().toStdString(),
+        "PositionListResponse",
+        "position.list futureOutput type");
+    expectTrue(
+        futureOutput.value("positions").toArray().isEmpty(),
+        "position.list does not return real positions");
+    expectProtectedTableCountsUnchanged(connection, positionListCountsBefore, "position.list guard");
+
+    auto positionListInvalidPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionPositionList, "[]"),
+        responses,
+        "position.list invalid payload");
+    expectTrue(
+        !positionListInvalidPayload.value("success").toBool(true),
+        "position.list invalid payload success=false");
+    expectEqual(
+        positionListInvalidPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "position.list invalid payload returns E1001");
+
+    auto positionListMalformedPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionPositionList, "{ invalid }"),
+        responses,
+        "position.list malformed payload");
+    expectTrue(
+        !positionListMalformedPayload.value("success").toBool(true),
+        "position.list malformed payload success=false");
+    expectEqual(
+        positionListMalformedPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "position.list malformed payload returns E1001");
 
     auto replayPreviewMissingPayload = sendEnvelope(
         client,

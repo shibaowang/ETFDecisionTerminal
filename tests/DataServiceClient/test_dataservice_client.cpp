@@ -263,6 +263,33 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
         auditCountBefore,
         "accountingReplayPreview does not insert audit_log row");
 
+    auto positionList = client.positionList();
+    expectSuccessfulResponse(positionList, "client.positionList");
+    if (positionList) {
+        const auto payload = payloadObject(positionList.value());
+        expectEqual(payload.value("action").toString().toStdString(), "position.list", "positionList action");
+        expectEqual(payload.value("module").toString().toStdString(), "accounting", "positionList module");
+        expectTrue(!payload.value("implemented").toBool(true), "positionList implemented=false");
+        expectTrue(payload.value("readOnly").toBool(false), "positionList readOnly=true");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "positionList writeEnabled=false");
+        expectTrue(!payload.value("replayExecuted").toBool(true), "positionList replayExecuted=false");
+        expectTrue(!payload.value("sqliteAccessed").toBool(true), "positionList sqliteAccessed=false");
+        expectTrue(
+            !payload.value("accountingEngineCalled").toBool(true),
+            "positionList accountingEngineCalled=false");
+        expectEqual(
+            payload.value("status").toString().toStdString(),
+            "POSITION_LIST_NOT_AVAILABLE",
+            "positionList status");
+        expectTrue(
+            payload.value("futureOutput").toObject().value("positions").toArray().isEmpty(),
+            "positionList wrapper returns no real positions");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "positionList does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";

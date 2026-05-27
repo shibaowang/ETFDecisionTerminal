@@ -6,6 +6,14 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def extract_between(text: str, start: str, end: str) -> str:
+    start_index = text.find(start)
+    require(start_index >= 0, f"source contains {start}")
+    end_index = text.find(end, start_index)
+    require(end_index >= 0, f"source contains {end} after {start}")
+    return text[start_index:end_index]
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[2]
     script_path = root / "tools" / "dev" / "run_readonly_demo.ps1"
@@ -132,6 +140,15 @@ def main() -> int:
     accounting_rules_path = root / "docs" / "06_accounting_rules.md"
     readme_path = root / "README.md"
     gitignore_path = root / ".gitignore"
+    dataservice_actions_header_path = root / "libs" / "DataServiceApi" / "include" / "DataServiceApi" / "DataServiceActions.h"
+    dataservice_actions_source_path = root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"
+    dataservice_action_registrar_path = root / "libs" / "DataServiceApi" / "src" / "DataServiceActionRegistrar.cpp"
+    dataservice_client_header_path = root / "libs" / "DataServiceClient" / "include" / "DataServiceClient" / "DataServiceClient.h"
+    dataservice_client_source_path = root / "libs" / "DataServiceClient" / "src" / "DataServiceClient.cpp"
+    dataservice_readonly_test_path = root / "tests" / "DataService" / "test_dataservice_readonly_actions.cpp"
+    dataservice_test_cmake_path = root / "tests" / "DataService" / "CMakeLists.txt"
+    dataservice_client_test_path = root / "tests" / "DataServiceClient" / "test_dataservice_client.cpp"
+    dataservice_client_test_cmake_path = root / "tests" / "DataServiceClient" / "CMakeLists.txt"
 
     require(script_path.exists(), "run_readonly_demo.ps1 exists")
     require(stop_script_path.exists(), "stop_readonly_demo.ps1 exists")
@@ -233,6 +250,15 @@ def main() -> int:
     require(docs_index_path.exists(), "docs index exists")
     require(protocol_path.exists(), "protocol doc exists")
     require(accounting_rules_path.exists(), "accounting rules doc exists")
+    require(dataservice_actions_header_path.exists(), "DataServiceActions header exists")
+    require(dataservice_actions_source_path.exists(), "DataServiceActions source exists")
+    require(dataservice_action_registrar_path.exists(), "DataService action registrar source exists")
+    require(dataservice_client_header_path.exists(), "DataServiceClient header exists")
+    require(dataservice_client_source_path.exists(), "DataServiceClient source exists")
+    require(dataservice_readonly_test_path.exists(), "DataService read-only action test exists")
+    require(dataservice_test_cmake_path.exists(), "DataService test CMake exists")
+    require(dataservice_client_test_path.exists(), "DataServiceClient test exists")
+    require(dataservice_client_test_cmake_path.exists(), "DataServiceClient test CMake exists")
 
     script = script_path.read_text(encoding="utf-8")
     stop_script = stop_script_path.read_text(encoding="utf-8")
@@ -332,6 +358,20 @@ def main() -> int:
     accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
     readme = readme_path.read_text(encoding="utf-8")
     gitignore = gitignore_path.read_text(encoding="utf-8")
+    dataservice_actions_header = dataservice_actions_header_path.read_text(encoding="utf-8")
+    dataservice_actions_source = dataservice_actions_source_path.read_text(encoding="utf-8")
+    dataservice_action_registrar = dataservice_action_registrar_path.read_text(encoding="utf-8")
+    dataservice_client_header = dataservice_client_header_path.read_text(encoding="utf-8")
+    dataservice_client_source = dataservice_client_source_path.read_text(encoding="utf-8")
+    dataservice_readonly_test = dataservice_readonly_test_path.read_text(encoding="utf-8")
+    dataservice_test_cmake = dataservice_test_cmake_path.read_text(encoding="utf-8")
+    dataservice_client_test = dataservice_client_test_path.read_text(encoding="utf-8")
+    dataservice_client_test_cmake = dataservice_client_test_cmake_path.read_text(encoding="utf-8")
+    position_list_guard_source = extract_between(
+        dataservice_actions_source,
+        "etfdt::protocol::ProtocolResponse handlePositionList",
+        "}  // namespace etfdt::data_service_api",
+    )
     gitignore_lines = {line.strip() for line in gitignore.splitlines()}
 
     require("runtime/" in gitignore_lines, ".gitignore ignores runtime/")
@@ -772,6 +812,10 @@ def main() -> int:
     require("AccountingEngine multi-currency unsupported scenario" in readme, "README documents multi-currency unsupported scenario")
     require("AccountingEngine missing market price scenario" in readme, "README documents missing market price scenario")
     require("v0.4 AccountingEngine Replay Skeleton" in readme, "README documents v0.4 AccountingEngine Replay Skeleton")
+    require("position.list DataService action guard" in readme, "README documents position.list guard")
+    require("POSITION_LIST_NOT_AVAILABLE" in readme, "README documents position.list guard status")
+    require("dataservice_position_list_guard" in readme, "README documents position.list guard test")
+    require("dataservice_position_list_no_write" in readme, "README documents position.list no-write test")
     require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
     require("TradeFactDto" in readme, "README documents TradeFactDto")
     require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
@@ -874,6 +918,16 @@ def main() -> int:
         "docs/39_sqlite_readonly_facts_query_boundary.md" in dataservice_readonly_accounting_contracts,
         "DataService contract doc references SQLite read-only facts query boundary",
     )
+    require("TASK-085" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-085")
+    require("position.list" in dataservice_readonly_accounting_contracts, "DataService contract doc covers position.list")
+    require(
+        "implemented=false" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc states position.list guard implemented=false",
+    )
+    require(
+        "POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents position.list not available status",
+    )
     require("trade_log" in dataservice_accounting_no_write_plan, "no-write plan protects trade_log")
     require("cash_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects cash_snapshot")
     require("position_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects position_snapshot")
@@ -884,6 +938,15 @@ def main() -> int:
     require(
         "docs/39_sqlite_readonly_facts_query_boundary.md" in dataservice_accounting_no_write_plan,
         "no-write plan references SQLite read-only facts query boundary",
+    )
+    require(
+        "position.list` guard has no-write table count coverage" in dataservice_accounting_no_write_plan,
+        "no-write plan documents position.list guard no-write coverage",
+    )
+    require("position.list` guard" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc documents position.list guard")
+    require(
+        "does not use SQLite facts query" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc states position.list guard avoids SQLite facts query",
     )
     require("trade_log" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc covers trade_log")
     require("read-only" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc states read-only")
@@ -902,6 +965,11 @@ def main() -> int:
     require("MarketPriceFactDto" in accounting_facts_source_mapping, "facts source mapping covers MarketPriceFactDto")
     require("FxRateFactDto" in accounting_facts_source_mapping, "facts source mapping covers FxRateFactDto")
     require("cash_snapshot 是派生数据" in accounting_facts_source_mapping, "facts source mapping states cash_snapshot is derived data")
+    require("position.list` guard" in accounting_facts_source_mapping, "facts source mapping documents position.list guard")
+    require(
+        "does not use this facts mapping" in accounting_facts_source_mapping,
+        "facts source mapping states position.list guard does not use facts mapping",
+    )
     require(
         "docs/37_dataservice_readonly_accounting_action_contracts.md" in codex_prompt_template,
         "prompt template references DataService action contracts",
@@ -918,6 +986,42 @@ def main() -> int:
         "docs/40_accounting_facts_source_mapping.md" in codex_prompt_template,
         "prompt template references accounting facts source mapping",
     )
+    require(
+        "`position.list` guard does not equal a real position query" in codex_prompt_template,
+        "prompt template states position.list guard is not real query",
+    )
+    require("kActionPositionList" in dataservice_actions_header, "DataServiceActions exposes position.list action constant")
+    require("handlePositionList" in dataservice_actions_header, "DataServiceActions declares position.list handler")
+    require("kActionPositionList" in dataservice_action_registrar, "DataService registrar registers position.list")
+    require("handlePositionList" in dataservice_action_registrar, "DataService registrar wires position.list handler")
+    require("positionList(" in dataservice_client_header, "DataServiceClient exposes positionList wrapper")
+    require("kActionPositionList" in dataservice_client_source, "DataServiceClient has position.list action constant")
+    require("sendAction(kActionPositionList" in dataservice_client_source, "DataServiceClient wrapper sends position.list")
+    require("POSITION_LIST_NOT_AVAILABLE" in position_list_guard_source, "position.list guard source returns not available status")
+    require('"implemented":false' in position_list_guard_source, "position.list guard source sets implemented=false")
+    require('"readOnly":true' in position_list_guard_source, "position.list guard source sets readOnly=true")
+    require('"writeEnabled":false' in position_list_guard_source, "position.list guard source sets writeEnabled=false")
+    require('"sqliteAccessed":false' in position_list_guard_source, "position.list guard source sets sqliteAccessed=false")
+    require(
+        '"accountingEngineCalled":false' in position_list_guard_source,
+        "position.list guard source sets accountingEngineCalled=false",
+    )
+    require("AccountingEngine/" not in position_list_guard_source, "position.list guard source does not include AccountingEngine")
+    require("DataAccess" not in position_list_guard_source, "position.list guard source does not reference DataAccess repository")
+    require("data.audit.append" not in position_list_guard_source, "position.list guard source does not call data.audit.append")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
+        require(forbidden_sql not in position_list_guard_source, f"position.list guard source does not contain {forbidden_sql}")
+    require("dataservice_position_list_guard" in dataservice_test_cmake, "DataService CMake registers position.list guard test")
+    require("dataservice_position_list_no_write" in dataservice_test_cmake, "DataService CMake registers position.list no-write test")
+    require(
+        "dataservice_client_position_list_guard" in dataservice_client_test_cmake,
+        "DataServiceClient CMake registers position.list client guard test",
+    )
+    require("kActionPositionList" in dataservice_readonly_test, "DataService test calls position.list action")
+    require("POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks position.list status")
+    require("position.list does not return real positions" in dataservice_readonly_test, "DataService test checks no real positions")
+    require("expectProtectedTableCountsUnchanged" in dataservice_readonly_test, "DataService test checks position.list no-write")
+    require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

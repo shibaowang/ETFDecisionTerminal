@@ -238,6 +238,20 @@ std::optional<std::int64_t> parseOptionalInt64(const std::string& value)
     }
 }
 
+bool isJsonObjectPayloadShape(const std::string& payloadJson)
+{
+    const std::string trimmedPayload = trimCopy(payloadJson);
+    if (!etfdt::protocol::isLikelyJsonObjectOrArray(payloadJson) || trimmedPayload.empty()
+        || trimmedPayload.front() != '{') {
+        return false;
+    }
+    if (trimmedPayload == "{}") {
+        return true;
+    }
+    return trimmedPayload.find('"') != std::string::npos
+        && trimmedPayload.find(':') != std::string::npos;
+}
+
 struct AuditPayloadParseResult final {
     bool ok = false;
     etfdt::protocol::ErrorCode errorCode = etfdt::protocol::ErrorCode::E1001_INVALID_JSON;
@@ -657,6 +671,70 @@ etfdt::protocol::ProtocolResponse handleAccountingReplayPreview(
             << "}";
 
     return successResponse(context, payload.str());
+}
+
+etfdt::protocol::ProtocolResponse handlePositionList(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "position.list payload must be a JSON object");
+    }
+
+    const std::string payload = R"json({
+"module":"accounting",
+"action":"position.list",
+"implemented":false,
+"readOnly":true,
+"writeEnabled":false,
+"replayExecuted":false,
+"dataSourceAccessed":false,
+"sqliteAccessed":false,
+"accountingEngineCalled":false,
+"contractVersion":"0.4-draft",
+"calculationVersion":"not-implemented",
+"status":"POSITION_LIST_NOT_AVAILABLE",
+"message":"position.list is a read-only contract guard and is not implemented yet.",
+"futureOutput":{
+"type":"PositionListResponse",
+"positions":[]
+},
+"forbiddenWrites":[
+"trade_log",
+"trade_execution_group",
+"trade_draft",
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary",
+"audit_log"
+],
+"requiredNextTasks":[
+"SQLite read-only facts query implementation",
+"AccountingEngine integration boundary",
+"position.list no-write integration test",
+"real PositionListResponse mapping"
+],
+"issues":[
+{
+"level":"ERROR",
+"code":"POSITION_LIST_NOT_AVAILABLE",
+"message":"position.list is not implemented.",
+"blocking":true
+}
+],
+"warnings":[
+"POSITION_LIST_NOT_IMPLEMENTED",
+"NO_SQLITE_FACTS_QUERY",
+"NO_ACCOUNTING_ENGINE_CALL"
+]
+})json";
+
+    return successResponse(context, payload);
 }
 
 }  // namespace etfdt::data_service_api

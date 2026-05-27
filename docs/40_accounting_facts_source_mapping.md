@@ -87,3 +87,12 @@ Draft metadata fields:
 - What filtering rules should apply to multiple accounts and portfolios?
 - What pagination and performance boundaries are needed?
 - How should timezone and timestamp normalization work?
+
+## TASK-085 position.list Guard Boundary
+
+The `position.list` guard does not use this facts mapping. It returns a
+`PositionListResponse` future output shape with an empty `positions` array only
+to describe the contract.
+
+Future real `position.list` implementation is the first point where this
+mapping may be used, and that work requires a separate task.

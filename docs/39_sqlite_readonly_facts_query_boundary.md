@@ -250,3 +250,12 @@ failures must not write. Replay unavailable results must not write.
 - Do not call external market or FX services in the query layer.
 - Do not access SQLite from QML.
 - Do not use the test-only fixture loader as production DataAccess.
+
+## TASK-085 position.list Guard Boundary
+
+The `position.list` guard does not use SQLite facts query. It returns
+`POSITION_LIST_NOT_AVAILABLE` without reading `trade_log`, cash facts, market
+price facts, FX rate facts, or snapshots.
+
+Future SQLite query integration for real `position.list` requires a separate
+task and must keep the read-only and no-write boundaries in this document.

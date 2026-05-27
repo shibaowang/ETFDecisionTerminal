@@ -405,3 +405,28 @@ AccountingEngine DTO and facts source mapping is defined in
 This document still does not implement any action. DataService still does not
 call AccountingEngine, SQLite facts queries are still unimplemented, and writes
 remain forbidden.
+
+## TASK-085 position.list Guard
+
+TASK-085 registers `position.list` as a DataService read-only action guard.
+Current guard payload fields include:
+
+- `module="accounting"`
+- `action="position.list"`
+- `implemented=false`
+- `readOnly=true`
+- `writeEnabled=false`
+- `replayExecuted=false`
+- `dataSourceAccessed=false`
+- `sqliteAccessed=false`
+- `accountingEngineCalled=false`
+- `status="POSITION_LIST_NOT_AVAILABLE"`
+- `futureOutput.type="PositionListResponse"`
+- `futureOutput.positions=[]`
+- `issues[]` with blocking `POSITION_LIST_NOT_AVAILABLE`
+- `forbiddenWrites[]`
+- `requiredNextTasks[]`
+
+This does not implement the real `PositionListResponse`. SQLite facts query
+integration remains unimplemented. DataService still does not call
+AccountingEngine for `position.list`.

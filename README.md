@@ -1468,6 +1468,27 @@ does not access SQLite, and does not write any database table. The next
 implementation step still requires a separate authorization and no-write table
 count tests.
 
+## TASK-085 position.list DataService action guard
+
+`position.list` is now registered as a DataService read-only action guard. The
+guard returns `implemented=false`, `readOnly=true`, `writeEnabled=false`, and
+`status=POSITION_LIST_NOT_AVAILABLE`.
+
+The guard does not implement real `position.list`, does not return real
+positions, does not access SQLite facts queries, does not call AccountingEngine,
+does not add a DataAccess repository, does not write database tables, and does
+not expose a QML entry point.
+
+No-write coverage verifies that calling the guard does not change
+`trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+`position_snapshot`, `portfolio_summary`, or `audit_log`.
+
+New guard tests:
+
+- `dataservice_position_list_guard`
+- `dataservice_position_list_no_write`
+- `dataservice_client_position_list_guard`
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

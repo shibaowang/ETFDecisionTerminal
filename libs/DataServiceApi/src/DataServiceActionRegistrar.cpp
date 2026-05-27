@@ -36,6 +36,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionAccountingReplayPreview, [&connection](const auto& context) {
         return handleAccountingReplayPreview(context, connection);
     });
+    (void)dispatcher.registerAction(kActionPositionList, [&connection](const auto& context) {
+        return handlePositionList(context, connection);
+    });
 }
 
 void registerDataServiceWriteActions(

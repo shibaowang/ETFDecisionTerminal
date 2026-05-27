@@ -204,3 +204,17 @@ remain unchanged.
 
 The reader SQL is also scanned with the forbidden SQL scanner. The scanner must
 continue to reject write keywords before future facts query expansion.
+
+## TASK-088 Cash Facts Query No-write Boundary
+
+Future cash facts query work must pass the no-write harness before it can be
+used by any DataService accounting action. It must protect at least
+`trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+`position_snapshot`, `portfolio_summary`, and `audit_log`.
+
+The cash facts source boundary is documented in
+`docs/41_cash_facts_source_boundary.md`, and the decision checklist is in
+`docs/42_cash_facts_query_decision.md`. Source unavailable paths, invalid
+request paths, and schema gap paths must also be no-write. A future query must
+not write `cash_snapshot` or `portfolio_summary`, and must not derive cash facts
+from either table.

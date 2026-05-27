@@ -451,3 +451,15 @@ remains a guard with `implemented=false`.
 Real `position.list` implementation, DataService-to-DataAccess wiring, and
 AccountingEngine DTO mapping still require separate authorization and no-write
 tests.
+
+## TASK-088 Cash Facts Source Boundary
+
+Future `cash.summary` work must wait until the cash facts source is explicit and
+auditable. The boundary is documented in
+`docs/41_cash_facts_source_boundary.md`, and the implementation decision is
+documented in `docs/42_cash_facts_query_decision.md`.
+
+The real `cash.summary` action is still not implemented. A future
+`cash.summary` guard or implementation must reference those documents, must not
+infer cash facts from `cash_snapshot` or `portfolio_summary`, and must keep the
+first implementation read-only with no-write tests.

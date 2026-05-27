@@ -57,6 +57,9 @@ def main() -> int:
     accounting_replay_engine_sell_exceeds_position_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_sell_exceeds_position.cpp"
     )
+    accounting_replay_engine_missing_fee_test_path = (
+        root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_missing_fee.cpp"
+    )
     accounting_replay_dto_parser_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_dto_parser.cpp"
     )
@@ -146,6 +149,7 @@ def main() -> int:
         accounting_replay_engine_sell_exceeds_position_test_path.exists(),
         "Accounting replay sell exceeds position test exists",
     )
+    require(accounting_replay_engine_missing_fee_test_path.exists(), "Accounting replay missing fee test exists")
     require(accounting_replay_dto_parser_test_path.exists(), "Accounting replay DTO parser test exists")
     require(accounting_engine_test_cmake_path.exists(), "AccountingEngine test CMake exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
@@ -218,6 +222,7 @@ def main() -> int:
     accounting_replay_engine_sell_exceeds_position_test = (
         accounting_replay_engine_sell_exceeds_position_test_path.read_text(encoding="utf-8")
     )
+    accounting_replay_engine_missing_fee_test = accounting_replay_engine_missing_fee_test_path.read_text(encoding="utf-8")
     accounting_replay_dto_parser_test = accounting_replay_dto_parser_test_path.read_text(encoding="utf-8")
     accounting_engine_test_cmake = accounting_engine_test_cmake_path.read_text(encoding="utf-8")
     accounting_engine_sources = "\n".join(
@@ -577,6 +582,8 @@ def main() -> int:
     require("partial sell replay" in accounting_replay_architecture, "architecture doc documents partial sell skeleton")
     require("TASK-075" in accounting_replay_architecture, "architecture doc records TASK-075 sell exceeds scenario")
     require("SELL_EXCEEDS_POSITION" in accounting_replay_architecture, "architecture doc documents sell exceeds issue")
+    require("TASK-076" in accounting_replay_architecture, "architecture doc records TASK-076 missing fee scenario")
+    require("MISSING_FEE" in accounting_replay_architecture, "architecture doc documents missing fee issue")
     require("Only empty ledger input is supported" in accounting_replay_architecture, "architecture doc states only empty ledger is supported")
     require("DTO validation is not replay" in accounting_replay_architecture, "architecture doc states DTO validation is not replay")
     require("No replay algorithm" in accounting_replay_architecture, "architecture doc states skeleton has no replay")
@@ -610,6 +617,8 @@ def main() -> int:
     require("Partial Sell Replay Entry" in accounting_engine_candidate, "AccountingEngine candidate doc records partial sell entry")
     require("TASK-075" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-075")
     require("Sell Exceeds Position Detection" in accounting_engine_candidate, "AccountingEngine candidate doc records sell exceeds detection")
+    require("TASK-076" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-076")
+    require("Missing Fee Detection" in accounting_engine_candidate, "AccountingEngine candidate doc records missing fee detection")
     require("replayImplemented=false" in accounting_engine_candidate, "AccountingEngine candidate doc records replay false")
     require("snapshotWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records snapshot write false")
     require("tradeLogWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records trade log write false")
@@ -621,6 +630,7 @@ def main() -> int:
     require("AccountingEngine single buy replay skeleton" in readme, "README documents single buy replay skeleton")
     require("AccountingEngine partial sell replay skeleton" in readme, "README documents partial sell replay skeleton")
     require("AccountingEngine sell exceeds position scenario" in readme, "README documents sell exceeds scenario")
+    require("AccountingEngine missing fee scenario" in readme, "README documents missing fee scenario")
     require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
     require("TradeFactDto" in readme, "README documents TradeFactDto")
     require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
@@ -628,6 +638,7 @@ def main() -> int:
     require("accounting_replay_engine_single_buy" in readme, "README documents single buy replay test")
     require("accounting_replay_engine_buy_sell_partial" in readme, "README documents partial sell replay test")
     require("accounting_replay_engine_sell_exceeds_position" in readme, "README documents sell exceeds position test")
+    require("accounting_replay_engine_missing_fee" in readme, "README documents missing fee test")
     require("replayImplemented=false" in readme, "README records AccountingEngine replay false")
     require("productionReady=false" in readme, "README records AccountingEngine productionReady false")
     require("writeEnabled=false" in readme, "README records AccountingEngine write false")
@@ -658,6 +669,10 @@ def main() -> int:
         "add_test(NAME accounting_replay_engine_sell_exceeds_position" in accounting_engine_test_cmake,
         "AccountingEngine CMake registers sell exceeds position test",
     )
+    require(
+        "add_test(NAME accounting_replay_engine_missing_fee" in accounting_engine_test_cmake,
+        "AccountingEngine CMake registers missing fee test",
+    )
     require("AccountingEngineBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine boundary test target exists")
     require("accountingEngineBoundary" in accounting_engine_boundary_test, "AccountingEngine boundary test source exists")
     require("AccountingReplayDtoParserBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine DTO parser test target exists")
@@ -670,6 +685,10 @@ def main() -> int:
     require(
         "AccountingReplayEngineSellExceedsPositionTests" in accounting_engine_test_cmake,
         "AccountingEngine sell exceeds position test target exists",
+    )
+    require(
+        "AccountingReplayEngineMissingFeeTests" in accounting_engine_test_cmake,
+        "AccountingEngine missing fee test target exists",
     )
     require("AccountingReplayEngine" in accounting_replay_engine_header, "AccountingReplayEngine exists")
     require("replayReadOnly" in accounting_replay_engine_header, "AccountingReplayEngine exposes replayReadOnly")
@@ -699,6 +718,16 @@ def main() -> int:
     require(
         "positionList.positions.empty" in accounting_replay_engine_sell_exceeds_position_test,
         "sell exceeds test asserts no success positions",
+    )
+    require("MISSING_FEE" in accounting_replay_engine_missing_fee_test, "missing fee test asserts issue code")
+    require(
+        "missingFeeDetectionSupported" in accounting_replay_engine_missing_fee_test,
+        "missing fee test asserts capability flag",
+    )
+    require("0.00" in accounting_replay_engine_missing_fee_test, "missing fee test verifies explicit zero fee")
+    require(
+        "positionList.positions.empty" in accounting_replay_engine_missing_fee_test,
+        "missing fee test asserts no success positions",
     )
     require("validateTradeFact" in accounting_replay_dto_parser_test, "DTO parser test validates trade facts")
     require("ReplayRequestDto" in accounting_replay_dtos_header, "ReplayRequestDto exists")

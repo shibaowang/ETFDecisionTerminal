@@ -23,6 +23,11 @@ bool hasNonZeroQuantity(const std::string& text)
     return text.find_first_not_of("0.") != std::string::npos;
 }
 
+bool isMissingFeeText(const std::string& text)
+{
+    return text.empty() || text == "UNAVAILABLE" || text == "N/A" || text == "NA" || text == "null";
+}
+
 MoneyParseResult parseMoneyToCents(const std::string& text)
 {
     if (text.empty()) {
@@ -156,20 +161,14 @@ AccountingReplayResult tryReplaySingleBuy(
     const auto& cashFact = cashFacts.front();
 
     std::vector<AccountingIssueDto> validationIssues;
-    const auto tradeValidation = validateTradeFact(tradeFact);
+    auto tradeFactForValidation = tradeFact;
+    if (isMissingFeeText(tradeFactForValidation.feeText)) {
+        tradeFactForValidation.feeText.clear();
+    }
+    const auto tradeValidation = validateTradeFact(tradeFactForValidation);
     const auto cashValidation = validateCashFact(cashFact);
     appendIssues(validationIssues, tradeValidation.issues);
     appendIssues(validationIssues, cashValidation.issues);
-
-    if (tradeFact.feeText.empty()) {
-        validationIssues.push_back(makeAccountingIssue(
-            AccountingIssueLevel::Error,
-            AccountingIssueCode::MissingRequiredField,
-            "feeText is required for single buy replay.",
-            true,
-            "feeText",
-            tradeFact.factId));
-    }
 
     if (!hasNonZeroQuantity(tradeFact.quantityText)) {
         validationIssues.push_back(makeAccountingIssue(
@@ -200,6 +199,10 @@ AccountingReplayResult tryReplaySingleBuy(
 
     if (tradeFact.currency != "CNY" || cashFact.currency != "CNY") {
         return makeUnsupportedReplayScenarioResult();
+    }
+
+    if (isMissingFeeText(tradeFact.feeText)) {
+        return makeMissingFeeReplayResult();
     }
 
     const auto initialCash = parseMoneyToCents(cashFact.amountText);

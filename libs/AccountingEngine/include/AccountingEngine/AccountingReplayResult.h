@@ -9,6 +9,7 @@ namespace etfdt::accounting {
 
 namespace AccountingReplayStatus {
 inline constexpr const char* Ok = "OK";
+inline constexpr const char* Warning = "WARNING";
 inline constexpr const char* NotImplemented = "NOT_IMPLEMENTED";
 inline constexpr const char* InvalidRequest = "INVALID_REQUEST";
 inline constexpr const char* UnsupportedScenario = "UNSUPPORTED_SCENARIO";
@@ -99,5 +100,6 @@ struct AccountingReplayResult {
 [[nodiscard]] AccountingReplayResult makeUnsupportedReplayScenarioResult();
 [[nodiscard]] AccountingReplayResult makeNegativeCashReplayResult();
 [[nodiscard]] AccountingReplayResult makeSellExceedsPositionReplayResult();
+[[nodiscard]] AccountingReplayResult makeMissingFeeReplayResult();
 
 } // namespace etfdt::accounting

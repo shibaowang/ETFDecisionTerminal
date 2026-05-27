@@ -21,6 +21,7 @@ inline constexpr const char* UnsupportedCurrency = "UNSUPPORTED_CURRENCY";
 inline constexpr const char* ReplayNotImplemented = "REPLAY_NOT_IMPLEMENTED";
 inline constexpr const char* NegativeCash = "NEGATIVE_CASH";
 inline constexpr const char* SellExceedsPosition = "SELL_EXCEEDS_POSITION";
+inline constexpr const char* MissingFee = "MISSING_FEE";
 } // namespace AccountingIssueCode
 
 struct AccountingIssueDto {

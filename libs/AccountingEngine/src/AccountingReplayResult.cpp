@@ -216,4 +216,20 @@ AccountingReplayResult makeSellExceedsPositionReplayResult()
     return result;
 }
 
+AccountingReplayResult makeMissingFeeReplayResult()
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Warning;
+    result.message = "Trade fee is missing.";
+    result.issues.push_back(makeAccountingIssue(
+        AccountingIssueLevel::Warning,
+        AccountingIssueCode::MissingFee,
+        "Trade fee is missing.",
+        false,
+        "feeText"));
+    return result;
+}
+
 } // namespace etfdt::accounting

@@ -206,3 +206,19 @@ Full missing-fee handling, full negative-cash fixture handling,
 multi-transaction replay, multi-account replay, multi-instrument replay,
 DataAccess, DataService actions, snapshots, and TradeLog writes remain out of
 scope unless separately authorized.
+
+## TASK-076 Missing Fee Detection
+
+The skeleton now includes single BUY missing-fee detection. This is a
+production-side incremental warning handling skeleton for the FX005-equivalent
+scenario, not a complete replay engine.
+
+The entry accepts one `INITIAL_CASH` fact and one CNY `BUY` trade fact for the
+same account and portfolio. When `feeText` is missing, empty, or explicitly
+unavailable, it returns `WARNING` with a non-blocking `MISSING_FEE` issue and
+no successful output DTOs.
+
+Explicit zero fee is not considered missing. Full negative-cash fixture
+handling, multi-transaction replay, multi-account replay, multi-instrument
+replay, DataAccess, DataService actions, snapshots, and TradeLog writes remain
+out of scope unless separately authorized.

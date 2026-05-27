@@ -47,6 +47,7 @@ int main()
     failures += expect(capabilities.buySellPartialReplaySupported, "buySellPartialReplaySupported should be true");
     failures += expect(capabilities.sellExceedsPositionDetectionSupported,
                        "sellExceedsPositionDetectionSupported should be true");
+    failures += expect(capabilities.missingFeeDetectionSupported, "missingFeeDetectionSupported should be true");
     failures += expect(!capabilities.readOnlyReplaySupported, "readOnlyReplaySupported should be false");
     failures += expect(!capabilities.writeEnabled, "writeEnabled should be false");
     failures += expect(!capabilities.snapshotWriteEnabled, "snapshotWriteEnabled should be false");

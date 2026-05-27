@@ -348,3 +348,7 @@ v0.1 草案。
 - AccountingEngine sell-exceeds-position scenario does not mean complete replay is implemented.
 - Future production replay tasks after `SELL_EXCEEDS_POSITION` must still remain one scenario at a time.
 - Full missing-fee handling, full negative-cash fixture handling, multi-transaction replay, multi-account replay, multi-instrument replay, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine missing-fee scenario does not mean complete replay is implemented.
+- Missing fee must not be defaulted to zero.
+- Future production replay tasks after `MISSING_FEE` must still remain one scenario at a time.
+- Full negative-cash fixture handling, multi-transaction replay, multi-account replay, multi-instrument replay, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

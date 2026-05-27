@@ -95,6 +95,8 @@ AccountingReplayResult makeSingleBuyReplayResult(
         quantityText,
         formatCents(costCents),
         formatCostPrice(costCents, quantityText),
+        "UNAVAILABLE",
+        "UNAVAILABLE",
         "CNY",
         "OK",
     });
@@ -137,6 +139,8 @@ AccountingReplayResult makeBuySellPartialReplayResult(
         remainingQuantityText,
         formatCents(remainingCostCents),
         formatCostPrice(remainingCostCents, remainingQuantityText),
+        "UNAVAILABLE",
+        "UNAVAILABLE",
         "CNY",
         "OK",
     });
@@ -150,6 +154,36 @@ AccountingReplayResult makeBuySellPartialReplayResult(
     result.portfolioPnl.portfolioId = portfolioId;
     result.portfolioPnl.currency = "CNY";
     result.portfolioPnl.realizedPnlText = formatCents(realizedPnlCents);
+    result.portfolioPnl.unrealizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
+    result.portfolioPnl.totalPnlText = "UNAVAILABLE";
+    result.portfolioPnl.dataQualityStatus = "UNAVAILABLE";
+    return result;
+}
+
+AccountingReplayResult makeMultiInstrumentBuyReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    std::vector<PositionSummaryDto> positions,
+    long long cashBalanceCents)
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Ok;
+    result.message = "Multi-instrument buy replay completed.";
+    result.positionList.dataQualityStatus = "OK";
+    result.positionList.positions = std::move(positions);
+    result.hasCashSummary = true;
+    result.cashSummary.accountId = accountId;
+    result.cashSummary.portfolioId = portfolioId;
+    result.cashSummary.currency = "CNY";
+    result.cashSummary.cashBalanceText = formatCents(cashBalanceCents);
+    result.cashSummary.dataQualityStatus = "OK";
+    result.hasPortfolioPnl = true;
+    result.portfolioPnl.portfolioId = portfolioId;
+    result.portfolioPnl.currency = "CNY";
+    result.portfolioPnl.realizedPnlText = "UNAVAILABLE";
     result.portfolioPnl.unrealizedPnlText = "UNAVAILABLE";
     result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
     result.portfolioPnl.totalPnlText = "UNAVAILABLE";

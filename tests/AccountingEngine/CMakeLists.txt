@@ -101,3 +101,16 @@ target_link_libraries(AccountingReplayEngineNegativeCashTests
 target_compile_features(AccountingReplayEngineNegativeCashTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_negative_cash COMMAND AccountingReplayEngineNegativeCashTests)
+
+add_executable(AccountingReplayEngineMultiInstrumentBuyTests
+    test_accounting_replay_engine_multi_instrument_buy.cpp
+)
+
+target_link_libraries(AccountingReplayEngineMultiInstrumentBuyTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineMultiInstrumentBuyTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_multi_instrument_buy COMMAND AccountingReplayEngineMultiInstrumentBuyTests)

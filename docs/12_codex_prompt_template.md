@@ -357,3 +357,8 @@ v0.1 草案。
 - Missing fee must keep returning `MISSING_FEE` and must not be overwritten by `NEGATIVE_CASH`.
 - Future production replay tasks after `NEGATIVE_CASH` must still remain one scenario at a time.
 - Multi-transaction replay, multi-account replay, multi-instrument replay, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine multi-instrument BUY scenario does not mean complete replay is implemented.
+- Multi-instrument BUY must group by `instrumentCode`; different instruments must not be merged or confused.
+- Multi-instrument BUY must not fabricate market value or unrealized PnL.
+- Future production replay tasks after multi-instrument BUY must still remain one scenario at a time.
+- Multi-account replay, multi-currency replay, multi-instrument SELL, mixed multi-instrument BUY/SELL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

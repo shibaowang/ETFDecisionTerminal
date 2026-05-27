@@ -140,3 +140,16 @@ target_link_libraries(AccountingReplayEngineMultiCurrencyUnsupportedTests
 target_compile_features(AccountingReplayEngineMultiCurrencyUnsupportedTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_multi_currency_unsupported COMMAND AccountingReplayEngineMultiCurrencyUnsupportedTests)
+
+add_executable(AccountingReplayEngineMissingMarketPriceTests
+    test_accounting_replay_engine_missing_market_price.cpp
+)
+
+target_link_libraries(AccountingReplayEngineMissingMarketPriceTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineMissingMarketPriceTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_missing_market_price COMMAND AccountingReplayEngineMissingMarketPriceTests)

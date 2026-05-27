@@ -72,6 +72,9 @@ def main() -> int:
     accounting_replay_engine_multi_currency_unsupported_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_multi_currency_unsupported.cpp"
     )
+    accounting_replay_engine_missing_market_price_test_path = (
+        root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_missing_market_price.cpp"
+    )
     accounting_replay_dto_parser_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_dto_parser.cpp"
     )
@@ -172,6 +175,10 @@ def main() -> int:
         accounting_replay_engine_multi_currency_unsupported_test_path.exists(),
         "Accounting replay multi-currency unsupported test exists",
     )
+    require(
+        accounting_replay_engine_missing_market_price_test_path.exists(),
+        "Accounting replay missing market price test exists",
+    )
     require(accounting_replay_dto_parser_test_path.exists(), "Accounting replay DTO parser test exists")
     require(accounting_engine_test_cmake_path.exists(), "AccountingEngine test CMake exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
@@ -254,6 +261,9 @@ def main() -> int:
     )
     accounting_replay_engine_multi_currency_unsupported_test = (
         accounting_replay_engine_multi_currency_unsupported_test_path.read_text(encoding="utf-8")
+    )
+    accounting_replay_engine_missing_market_price_test = (
+        accounting_replay_engine_missing_market_price_test_path.read_text(encoding="utf-8")
     )
     accounting_replay_dto_parser_test = accounting_replay_dto_parser_test_path.read_text(encoding="utf-8")
     accounting_engine_test_cmake = accounting_engine_test_cmake_path.read_text(encoding="utf-8")
@@ -682,6 +692,9 @@ def main() -> int:
     require("AccountingEngine missing fee scenario" in readme, "README documents missing fee scenario")
     require("AccountingEngine negative cash scenario" in readme, "README documents negative cash scenario")
     require("AccountingEngine multi-instrument BUY scenario" in readme, "README documents multi-instrument buy scenario")
+    require("AccountingEngine multi-account BUY scenario" in readme, "README documents multi-account buy scenario")
+    require("AccountingEngine multi-currency unsupported scenario" in readme, "README documents multi-currency unsupported scenario")
+    require("AccountingEngine missing market price scenario" in readme, "README documents missing market price scenario")
     require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
     require("TradeFactDto" in readme, "README documents TradeFactDto")
     require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
@@ -694,6 +707,8 @@ def main() -> int:
     require("accounting_replay_engine_multi_instrument_buy" in readme, "README documents multi-instrument buy test")
     require("accounting_replay_engine_multi_account_buy" in readme, "README documents multi-account buy test")
     require("accounting_replay_engine_multi_currency_unsupported" in readme, "README documents multi-currency unsupported test")
+    require("accounting_replay_engine_missing_market_price" in readme, "README documents missing market price test")
+    require("supportsMarketPrice=false" in readme, "README records market price unsupported")
     require("supportsMultiCurrency=false" in readme, "README records multi-currency unsupported")
     require("supportsFxRate=false" in readme, "README records FX rate unsupported")
     require("replayImplemented=false" in readme, "README records AccountingEngine replay false")
@@ -746,6 +761,10 @@ def main() -> int:
         "add_test(NAME accounting_replay_engine_multi_currency_unsupported" in accounting_engine_test_cmake,
         "AccountingEngine CMake registers multi-currency unsupported test",
     )
+    require(
+        "add_test(NAME accounting_replay_engine_missing_market_price" in accounting_engine_test_cmake,
+        "AccountingEngine CMake registers missing market price test",
+    )
     require("AccountingEngineBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine boundary test target exists")
     require("accountingEngineBoundary" in accounting_engine_boundary_test, "AccountingEngine boundary test source exists")
     require("AccountingReplayDtoParserBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine DTO parser test target exists")
@@ -778,6 +797,10 @@ def main() -> int:
     require(
         "AccountingReplayEngineMultiCurrencyUnsupportedTests" in accounting_engine_test_cmake,
         "AccountingEngine multi-currency unsupported test target exists",
+    )
+    require(
+        "AccountingReplayEngineMissingMarketPriceTests" in accounting_engine_test_cmake,
+        "AccountingEngine missing market price test target exists",
     )
     require("AccountingReplayEngine" in accounting_replay_engine_header, "AccountingReplayEngine exists")
     require("replayReadOnly" in accounting_replay_engine_header, "AccountingReplayEngine exposes replayReadOnly")
@@ -902,6 +925,42 @@ def main() -> int:
     require(
         "unrealizedPnlText.empty()" in accounting_replay_engine_multi_currency_unsupported_test,
         "multi-currency unsupported test asserts no fabricated unrealized pnl",
+    )
+    require(
+        "missingMarketPriceDetectionSupported" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts capability flag",
+    )
+    require(
+        "MARKET_PRICE_MISSING" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts issue code",
+    )
+    require(
+        "AccountingReplayStatus::Warning" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts warning status",
+    )
+    require(
+        "1001.00 CNY" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts position cost",
+    )
+    require(
+        "98999.00 CNY" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts cash balance",
+    )
+    require(
+        "marketValueText == \"UNAVAILABLE\"" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts no fabricated market value",
+    )
+    require(
+        "unrealizedPnlText == \"UNAVAILABLE\"" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts no fabricated unrealized pnl",
+    )
+    require(
+        "totalAssetsText == \"UNAVAILABLE\"" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts no fabricated total assets",
+    )
+    require(
+        "supportsMarketPrice" in accounting_replay_engine_missing_market_price_test,
+        "missing market price test asserts supportsMarketPrice false",
     )
     require("http://" not in accounting_engine_sources, "AccountingEngine sources do not contain http URL")
     require("https://" not in accounting_engine_sources, "AccountingEngine sources do not contain https URL")

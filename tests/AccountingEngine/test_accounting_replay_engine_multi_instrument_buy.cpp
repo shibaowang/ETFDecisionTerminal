@@ -49,7 +49,6 @@ etfdt::accounting::ReplayRequestDto makeRequest()
     request.requestedOutputs = {
         etfdt::accounting::RequestedReplayOutput::Positions,
         etfdt::accounting::RequestedReplayOutput::Cash,
-        etfdt::accounting::RequestedReplayOutput::Pnl,
         etfdt::accounting::RequestedReplayOutput::Issues,
     };
     return request;

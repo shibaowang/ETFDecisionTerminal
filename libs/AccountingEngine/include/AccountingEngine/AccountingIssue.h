@@ -19,6 +19,7 @@ inline constexpr const char* InvalidQuantityText = "INVALID_QUANTITY_TEXT";
 inline constexpr const char* UnsupportedAction = "UNSUPPORTED_ACTION";
 inline constexpr const char* UnsupportedCurrency = "UNSUPPORTED_CURRENCY";
 inline constexpr const char* ReplayNotImplemented = "REPLAY_NOT_IMPLEMENTED";
+inline constexpr const char* NegativeCash = "NEGATIVE_CASH";
 } // namespace AccountingIssueCode
 
 struct AccountingIssueDto {

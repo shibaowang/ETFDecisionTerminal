@@ -1,8 +1,55 @@
 #include "AccountingEngine/AccountingReplayResult.h"
 
+#include <iomanip>
+#include <sstream>
 #include <utility>
 
 namespace etfdt::accounting {
+namespace {
+
+std::string formatCents(long long cents)
+{
+    const bool negative = cents < 0;
+    const auto absolute = negative ? -cents : cents;
+    std::ostringstream stream;
+    if (negative) {
+        stream << '-';
+    }
+    stream << (absolute / 100) << '.' << std::setw(2) << std::setfill('0') << (absolute % 100) << " CNY";
+    return stream.str();
+}
+
+std::string formatCostPrice(long long costCents, const std::string& quantityText)
+{
+    std::string whole;
+    std::string fraction;
+    const auto dot = quantityText.find('.');
+    if (dot == std::string::npos) {
+        whole = quantityText;
+    } else {
+        whole = quantityText.substr(0, dot);
+        fraction = quantityText.substr(dot + 1);
+    }
+
+    long long quantityUnits = 0;
+    for (const auto ch : whole) {
+        quantityUnits = quantityUnits * 10 + (ch - '0');
+    }
+
+    long long scale = 1;
+    for (const auto ch : fraction) {
+        quantityUnits = quantityUnits * 10 + (ch - '0');
+        scale *= 10;
+    }
+
+    const auto numerator = costCents * scale * 10;
+    const auto roundedMilli = (numerator + quantityUnits / 2) / quantityUnits;
+    std::ostringstream stream;
+    stream << (roundedMilli / 1000) << '.' << std::setw(3) << std::setfill('0') << (roundedMilli % 1000) << " CNY";
+    return stream.str();
+}
+
+} // namespace
 
 AccountingReplayResult makeEmptyLedgerReplayResult(const std::string& accountId, const std::string& portfolioId)
 {
@@ -24,6 +71,45 @@ AccountingReplayResult makeEmptyLedgerReplayResult(const std::string& accountId,
     result.portfolioPnl.totalAssetsText = "0.00 CNY";
     result.portfolioPnl.totalPnlText = "0.00 CNY";
     result.portfolioPnl.dataQualityStatus = "OK";
+    return result;
+}
+
+AccountingReplayResult makeSingleBuyReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    const std::string& instrumentCode,
+    const std::string& quantityText,
+    long long costCents,
+    long long cashBalanceCents)
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Ok;
+    result.message = "Single buy replay completed.";
+    result.positionList.dataQualityStatus = "OK";
+    result.positionList.positions.push_back(PositionSummaryDto{
+        accountId,
+        portfolioId,
+        instrumentCode,
+        quantityText,
+        formatCents(costCents),
+        formatCostPrice(costCents, quantityText),
+        "CNY",
+        "OK",
+    });
+    result.hasCashSummary = true;
+    result.cashSummary.accountId = accountId;
+    result.cashSummary.portfolioId = portfolioId;
+    result.cashSummary.currency = "CNY";
+    result.cashSummary.cashBalanceText = formatCents(cashBalanceCents);
+    result.cashSummary.dataQualityStatus = "OK";
+    result.hasPortfolioPnl = true;
+    result.portfolioPnl.portfolioId = portfolioId;
+    result.portfolioPnl.currency = "CNY";
+    result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
+    result.portfolioPnl.totalPnlText = "UNAVAILABLE";
+    result.portfolioPnl.dataQualityStatus = "UNAVAILABLE";
     return result;
 }
 
@@ -51,6 +137,22 @@ AccountingReplayResult makeUnsupportedReplayScenarioResult()
         "Non-empty replay scenarios are not implemented.",
         false,
         "facts"));
+    return result;
+}
+
+AccountingReplayResult makeNegativeCashReplayResult()
+{
+    AccountingReplayResult result;
+    result.implemented = false;
+    result.replayExecuted = false;
+    result.status = AccountingReplayStatus::Error;
+    result.message = "Single buy cash requirement exceeds available cash.";
+    result.issues.push_back(makeAccountingIssue(
+        AccountingIssueLevel::Error,
+        AccountingIssueCode::NegativeCash,
+        "Buy cash requirement exceeds initial cash.",
+        true,
+        "cashFacts"));
     return result;
 }
 

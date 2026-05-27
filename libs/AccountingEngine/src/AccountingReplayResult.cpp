@@ -107,6 +107,50 @@ AccountingReplayResult makeSingleBuyReplayResult(
     result.hasPortfolioPnl = true;
     result.portfolioPnl.portfolioId = portfolioId;
     result.portfolioPnl.currency = "CNY";
+    result.portfolioPnl.realizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.unrealizedPnlText = "UNAVAILABLE";
+    result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
+    result.portfolioPnl.totalPnlText = "UNAVAILABLE";
+    result.portfolioPnl.dataQualityStatus = "UNAVAILABLE";
+    return result;
+}
+
+AccountingReplayResult makeBuySellPartialReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    const std::string& instrumentCode,
+    const std::string& remainingQuantityText,
+    long long remainingCostCents,
+    long long cashBalanceCents,
+    long long realizedPnlCents)
+{
+    AccountingReplayResult result;
+    result.implemented = true;
+    result.replayExecuted = true;
+    result.status = AccountingReplayStatus::Ok;
+    result.message = "Buy-sell partial replay completed.";
+    result.positionList.dataQualityStatus = "OK";
+    result.positionList.positions.push_back(PositionSummaryDto{
+        accountId,
+        portfolioId,
+        instrumentCode,
+        remainingQuantityText,
+        formatCents(remainingCostCents),
+        formatCostPrice(remainingCostCents, remainingQuantityText),
+        "CNY",
+        "OK",
+    });
+    result.hasCashSummary = true;
+    result.cashSummary.accountId = accountId;
+    result.cashSummary.portfolioId = portfolioId;
+    result.cashSummary.currency = "CNY";
+    result.cashSummary.cashBalanceText = formatCents(cashBalanceCents);
+    result.cashSummary.dataQualityStatus = "OK";
+    result.hasPortfolioPnl = true;
+    result.portfolioPnl.portfolioId = portfolioId;
+    result.portfolioPnl.currency = "CNY";
+    result.portfolioPnl.realizedPnlText = formatCents(realizedPnlCents);
+    result.portfolioPnl.unrealizedPnlText = "UNAVAILABLE";
     result.portfolioPnl.totalAssetsText = "UNAVAILABLE";
     result.portfolioPnl.totalPnlText = "UNAVAILABLE";
     result.portfolioPnl.dataQualityStatus = "UNAVAILABLE";
@@ -130,7 +174,7 @@ AccountingReplayResult makeUnsupportedReplayScenarioResult()
     result.implemented = false;
     result.replayExecuted = false;
     result.status = AccountingReplayStatus::UnsupportedScenario;
-    result.message = "Only empty ledger replay is supported by this skeleton.";
+    result.message = "The requested replay scenario is not supported by this skeleton.";
     result.issues.push_back(makeAccountingIssue(
         AccountingIssueLevel::Warning,
         AccountingIssueCode::ReplayNotImplemented,
@@ -153,6 +197,22 @@ AccountingReplayResult makeNegativeCashReplayResult()
         "Buy cash requirement exceeds initial cash.",
         true,
         "cashFacts"));
+    return result;
+}
+
+AccountingReplayResult makeSellExceedsPositionReplayResult()
+{
+    AccountingReplayResult result;
+    result.implemented = false;
+    result.replayExecuted = false;
+    result.status = AccountingReplayStatus::Error;
+    result.message = "Sell quantity exceeds available position.";
+    result.issues.push_back(makeAccountingIssue(
+        AccountingIssueLevel::Error,
+        AccountingIssueCode::SellExceedsPosition,
+        "Sell quantity exceeds bought quantity.",
+        true,
+        "tradeFacts"));
     return result;
 }
 

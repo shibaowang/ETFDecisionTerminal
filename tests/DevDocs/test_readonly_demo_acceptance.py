@@ -51,6 +51,9 @@ def main() -> int:
     accounting_replay_engine_single_buy_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_single_buy.cpp"
     )
+    accounting_replay_engine_buy_sell_partial_test_path = (
+        root / "tests" / "AccountingEngine" / "test_accounting_replay_engine_buy_sell_partial.cpp"
+    )
     accounting_replay_dto_parser_test_path = (
         root / "tests" / "AccountingEngine" / "test_accounting_replay_dto_parser.cpp"
     )
@@ -135,6 +138,7 @@ def main() -> int:
     require(accounting_engine_boundary_test_path.exists(), "AccountingEngine boundary test exists")
     require(accounting_replay_engine_empty_ledger_test_path.exists(), "Accounting replay empty ledger test exists")
     require(accounting_replay_engine_single_buy_test_path.exists(), "Accounting replay single buy test exists")
+    require(accounting_replay_engine_buy_sell_partial_test_path.exists(), "Accounting replay buy-sell partial test exists")
     require(accounting_replay_dto_parser_test_path.exists(), "Accounting replay DTO parser test exists")
     require(accounting_engine_test_cmake_path.exists(), "AccountingEngine test CMake exists")
     require(accounting_fixture_dir.exists(), "accounting replay fixture directory exists")
@@ -201,6 +205,9 @@ def main() -> int:
     accounting_engine_boundary_test = accounting_engine_boundary_test_path.read_text(encoding="utf-8")
     accounting_replay_engine_empty_ledger_test = accounting_replay_engine_empty_ledger_test_path.read_text(encoding="utf-8")
     accounting_replay_engine_single_buy_test = accounting_replay_engine_single_buy_test_path.read_text(encoding="utf-8")
+    accounting_replay_engine_buy_sell_partial_test = accounting_replay_engine_buy_sell_partial_test_path.read_text(
+        encoding="utf-8"
+    )
     accounting_replay_dto_parser_test = accounting_replay_dto_parser_test_path.read_text(encoding="utf-8")
     accounting_engine_test_cmake = accounting_engine_test_cmake_path.read_text(encoding="utf-8")
     accounting_engine_sources = "\n".join(
@@ -556,6 +563,8 @@ def main() -> int:
     require("TASK-072" in accounting_replay_architecture, "architecture doc records TASK-072 empty ledger skeleton")
     require("TASK-073" in accounting_replay_architecture, "architecture doc records TASK-073 single buy skeleton")
     require("single BUY replay skeleton" in accounting_replay_architecture, "architecture doc documents single BUY skeleton")
+    require("TASK-074" in accounting_replay_architecture, "architecture doc records TASK-074 partial sell skeleton")
+    require("partial sell replay" in accounting_replay_architecture, "architecture doc documents partial sell skeleton")
     require("Only empty ledger input is supported" in accounting_replay_architecture, "architecture doc states only empty ledger is supported")
     require("DTO validation is not replay" in accounting_replay_architecture, "architecture doc states DTO validation is not replay")
     require("No replay algorithm" in accounting_replay_architecture, "architecture doc states skeleton has no replay")
@@ -585,6 +594,8 @@ def main() -> int:
     require("Empty Ledger Replay Entry" in accounting_engine_candidate, "AccountingEngine candidate doc records empty ledger entry")
     require("TASK-073" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-073")
     require("Single Buy Replay Entry" in accounting_engine_candidate, "AccountingEngine candidate doc records single buy entry")
+    require("TASK-074" in accounting_engine_candidate, "AccountingEngine candidate doc records TASK-074")
+    require("Partial Sell Replay Entry" in accounting_engine_candidate, "AccountingEngine candidate doc records partial sell entry")
     require("replayImplemented=false" in accounting_engine_candidate, "AccountingEngine candidate doc records replay false")
     require("snapshotWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records snapshot write false")
     require("tradeLogWriteEnabled=false" in accounting_engine_candidate, "AccountingEngine candidate doc records trade log write false")
@@ -594,11 +605,13 @@ def main() -> int:
     require("AccountingEngine replay DTO parser boundary" in readme, "README documents DTO parser boundary")
     require("AccountingEngine empty ledger replay skeleton" in readme, "README documents empty ledger replay skeleton")
     require("AccountingEngine single buy replay skeleton" in readme, "README documents single buy replay skeleton")
+    require("AccountingEngine partial sell replay skeleton" in readme, "README documents partial sell replay skeleton")
     require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
     require("TradeFactDto" in readme, "README documents TradeFactDto")
     require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
     require("accounting_replay_engine_empty_ledger" in readme, "README documents empty ledger replay test")
     require("accounting_replay_engine_single_buy" in readme, "README documents single buy replay test")
+    require("accounting_replay_engine_buy_sell_partial" in readme, "README documents partial sell replay test")
     require("replayImplemented=false" in readme, "README records AccountingEngine replay false")
     require("productionReady=false" in readme, "README records AccountingEngine productionReady false")
     require("writeEnabled=false" in readme, "README records AccountingEngine write false")
@@ -621,11 +634,19 @@ def main() -> int:
         "add_test(NAME accounting_replay_engine_single_buy" in accounting_engine_test_cmake,
         "AccountingEngine CMake registers single buy replay test",
     )
+    require(
+        "add_test(NAME accounting_replay_engine_buy_sell_partial" in accounting_engine_test_cmake,
+        "AccountingEngine CMake registers buy-sell partial replay test",
+    )
     require("AccountingEngineBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine boundary test target exists")
     require("accountingEngineBoundary" in accounting_engine_boundary_test, "AccountingEngine boundary test source exists")
     require("AccountingReplayDtoParserBoundaryTests" in accounting_engine_test_cmake, "AccountingEngine DTO parser test target exists")
     require("AccountingReplayEngineEmptyLedgerTests" in accounting_engine_test_cmake, "AccountingEngine empty ledger test target exists")
     require("AccountingReplayEngineSingleBuyTests" in accounting_engine_test_cmake, "AccountingEngine single buy test target exists")
+    require(
+        "AccountingReplayEngineBuySellPartialTests" in accounting_engine_test_cmake,
+        "AccountingEngine buy-sell partial test target exists",
+    )
     require("AccountingReplayEngine" in accounting_replay_engine_header, "AccountingReplayEngine exists")
     require("replayReadOnly" in accounting_replay_engine_header, "AccountingReplayEngine exposes replayReadOnly")
     require("AccountingReplayResult" in accounting_replay_result_header_prod, "production AccountingReplayResult exists")
@@ -638,6 +659,11 @@ def main() -> int:
     require("1001.00 CNY" in accounting_replay_engine_single_buy_test, "single buy test asserts cost amount")
     require("98999.00 CNY" in accounting_replay_engine_single_buy_test, "single buy test asserts cash balance")
     require("UNAVAILABLE" in accounting_replay_engine_single_buy_test, "single buy test keeps PnL unavailable")
+    require("600.60 CNY" in accounting_replay_engine_buy_sell_partial_test, "partial sell test asserts remaining cost")
+    require("99478.00 CNY" in accounting_replay_engine_buy_sell_partial_test, "partial sell test asserts cash balance")
+    require("78.60 CNY" in accounting_replay_engine_buy_sell_partial_test, "partial sell test asserts realized PnL")
+    require("SELL_EXCEEDS_POSITION" in accounting_replay_engine_buy_sell_partial_test, "partial sell test asserts oversell issue")
+    require("UNAVAILABLE" in accounting_replay_engine_buy_sell_partial_test, "partial sell test keeps valuation unavailable")
     require("validateTradeFact" in accounting_replay_dto_parser_test, "DTO parser test validates trade facts")
     require("ReplayRequestDto" in accounting_replay_dtos_header, "ReplayRequestDto exists")
     require("TradeFactDto" in accounting_replay_dtos_header, "TradeFactDto exists")

@@ -389,6 +389,35 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-074 Buy-Sell Partial Replay Skeleton Status
+
+TASK-074 adds a production-side read-only BUY + SELL partial sell replay
+skeleton to `libs/AccountingEngine`.
+
+Scope:
+
+- One `INITIAL_CASH` cash fact.
+- One `BUY` trade fact and one `SELL` trade fact.
+- Single account and portfolio.
+- Single instrument.
+- CNY only.
+- Remaining position cost derived from allocated average cost.
+- Cash balance derived from initial cash, buy cost, and net sell inflow.
+- Realized PnL derived from net sell inflow minus allocated sold cost.
+
+The implementation does not calculate multi-transaction replay,
+multi-instrument replay, multi-account replay, market value, unrealized PnL,
+base position, sniper pool, multi-currency replay, or production DataService
+actions.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-073 Single Buy Replay Skeleton Status
 
 TASK-073 adds a production-side read-only single BUY replay skeleton to

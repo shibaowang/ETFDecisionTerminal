@@ -6,6 +6,7 @@ struct AccountingEngineCapabilities {
     bool replayImplemented = false;
     bool emptyLedgerReplaySupported = true;
     bool singleBuyReplaySupported = true;
+    bool buySellPartialReplaySupported = true;
     bool readOnlyReplaySupported = false;
     bool writeEnabled = false;
     bool snapshotWriteEnabled = false;

@@ -222,3 +222,24 @@ Explicit zero fee is not considered missing. Full negative-cash fixture
 handling, multi-transaction replay, multi-account replay, multi-instrument
 replay, DataAccess, DataService actions, snapshots, and TradeLog writes remain
 out of scope unless separately authorized.
+
+## TASK-077 Negative Cash Detection
+
+The skeleton now includes single BUY negative-cash detection. This is a
+production-side incremental error handling skeleton for the FX006-equivalent
+scenario, not a complete replay engine.
+
+The entry accepts one `INITIAL_CASH` fact and one CNY `BUY` trade fact for the
+same account and portfolio. When `amount + fee` exceeds initial cash, it
+returns `ERROR` with a blocking `NEGATIVE_CASH` issue and no successful output
+DTOs.
+
+`amount + fee == initialCash` is not negative cash and remains a successful
+single BUY with zero cash balance. Missing `feeText` still returns
+`MISSING_FEE`; it is not treated as zero and is not overwritten by
+`NEGATIVE_CASH`.
+
+Multi-transaction replay, multi-account replay, multi-instrument replay,
+market valuation, unrealized PnL, base-position, sniper-pool, DataAccess,
+DataService actions, snapshots, and TradeLog writes remain out of scope unless
+separately authorized.

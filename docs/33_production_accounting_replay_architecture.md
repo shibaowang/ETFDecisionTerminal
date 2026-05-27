@@ -362,3 +362,29 @@ Current state remains:
 - No DataService action.
 - No SQLite access.
 - No write capability.
+
+## TASK-072 Empty Ledger Replay Skeleton Status
+
+TASK-072 adds the first production-side read-only replay skeleton entry in
+`libs/AccountingEngine`.
+
+Scope:
+
+- Only empty ledger input is supported.
+- Empty ledger means no trade facts, no cash facts, no market price facts, and
+  no FX rate facts.
+- Empty ledger returns an OK result with empty positions and zero CNY cash / PnL
+  summary fields.
+- Non-empty facts return `UNSUPPORTED_SCENARIO` / `REPLAY_NOT_IMPLEMENTED`.
+
+This is not full production replay. It does not implement FX002 or any buy,
+sell, cash-flow, cost, PnL, base-position, sniper-pool, market-price, or FX
+calculation.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.

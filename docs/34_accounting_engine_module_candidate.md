@@ -147,3 +147,16 @@ It still does not own:
 - Snapshot writes.
 - TradeDraft generation.
 - Position, cash, cost, PnL, base-position, or sniper-pool calculation.
+
+## TASK-072 Empty Ledger Replay Entry
+
+The skeleton now includes an `AccountingReplayEngine::replayReadOnly` entry for
+empty ledger only. This establishes the minimum production-side interface shape
+for future incremental replay work.
+
+The entry supports only the FX001-equivalent empty-ledger scenario. It returns
+empty positions and zero CNY cash / PnL summary fields. Any non-empty fact input
+returns unsupported / not implemented and does not produce successful outputs.
+
+This is not a complete replay engine. FX002 and every non-empty replay scenario
+must be authorized in separate tasks.

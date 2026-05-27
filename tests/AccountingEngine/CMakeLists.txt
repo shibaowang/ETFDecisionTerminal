@@ -75,3 +75,16 @@ target_link_libraries(AccountingReplayEngineSellExceedsPositionTests
 target_compile_features(AccountingReplayEngineSellExceedsPositionTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_sell_exceeds_position COMMAND AccountingReplayEngineSellExceedsPositionTests)
+
+add_executable(AccountingReplayEngineMissingFeeTests
+    test_accounting_replay_engine_missing_fee.cpp
+)
+
+target_link_libraries(AccountingReplayEngineMissingFeeTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineMissingFeeTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_missing_fee COMMAND AccountingReplayEngineMissingFeeTests)

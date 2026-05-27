@@ -128,9 +128,9 @@ int main()
     auto missingFee = makeBuy();
     missingFee.feeText.clear();
     const auto missingFeeResult = engine.replayReadOnly(request, {missingFee}, {makeInitialCash()}, {}, {});
-    failures += expect(missingFeeResult.status == AccountingReplayStatus::InvalidRequest,
-                       "missing fee should return INVALID_REQUEST");
-    failures += expect(missingFeeResult.issues.front().code == AccountingIssueCode::MissingRequiredField,
+    failures += expect(missingFeeResult.status == AccountingReplayStatus::Warning,
+                       "missing fee should return WARNING");
+    failures += expect(missingFeeResult.issues.front().code == AccountingIssueCode::MissingFee,
                        "missing fee should not default to zero");
 
     auto sellFact = makeBuy();

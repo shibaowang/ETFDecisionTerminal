@@ -389,6 +389,37 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-076 Missing Fee Detection Status
+
+TASK-076 adds a production-side read-only `MISSING_FEE` controlled warning
+scenario to `libs/AccountingEngine`.
+
+Scope:
+
+- One `INITIAL_CASH` cash fact.
+- One `BUY` trade fact.
+- Single account and portfolio.
+- Single instrument.
+- CNY only.
+- Missing, empty, or explicitly unavailable `feeText`.
+- Returns `WARNING` with a non-blocking `MISSING_FEE` issue.
+- Does not default the fee to zero.
+- Does not output successful positions, cash summary, portfolio PnL,
+  base-position, or sniper-pool data.
+
+The implementation does not calculate the full negative-cash fixture scenario,
+multi-transaction replay, multi-instrument replay, multi-account replay, market
+value, unrealized PnL, base position, sniper pool, multi-currency replay, or
+production DataService actions.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-075 Sell Exceeds Position Detection Status
 
 TASK-075 adds a production-side read-only `SELL_EXCEEDS_POSITION` controlled

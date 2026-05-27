@@ -381,3 +381,7 @@ v0.1 草案。
 - Missing market price handling must not query market services or use network access.
 - Future production replay tasks after missing market price detection must still remain one scenario at a time.
 - Real market price support, valuation, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- After TASK-082, do not start DataService or SQLite work without an explicit task boundary.
+- A scenario coverage milestone does not imply productionReady=true.
+- Future tasks must state whether they are DTO-only, DataService action, SQLite read-only, write-enabled, or QML-facing.
+- Default remains no writes, no DataService action, and no SQLite unless explicitly authorized.

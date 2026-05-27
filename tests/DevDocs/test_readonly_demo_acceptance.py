@@ -30,6 +30,8 @@ def main() -> int:
     accounting_replay_readiness_path = root / "docs" / "32_production_accounting_replay_readiness_review.md"
     accounting_replay_architecture_path = root / "docs" / "33_production_accounting_replay_architecture.md"
     accounting_engine_candidate_path = root / "docs" / "34_accounting_engine_module_candidate.md"
+    accounting_engine_replay_milestone_path = root / "docs" / "35_accounting_engine_replay_skeleton_milestone.md"
+    accounting_engine_next_phase_review_path = root / "docs" / "36_accounting_engine_next_phase_boundary_review.md"
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -118,6 +120,7 @@ def main() -> int:
     release_notes_path = root / "docs" / "release_notes" / "v0_1_readonly_shell_demo.md"
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     release_notes_v03_path = root / "docs" / "release_notes" / "v0_3_accounting_replay_testonly_coverage.md"
+    release_notes_v04_path = root / "docs" / "release_notes" / "v0_4_accounting_engine_replay_skeleton.md"
     docs_index_path = root / "docs" / "README.md"
     protocol_path = root / "docs" / "04_protocol.md"
     accounting_rules_path = root / "docs" / "06_accounting_rules.md"
@@ -146,6 +149,8 @@ def main() -> int:
     require(accounting_replay_readiness_path.exists(), "production accounting replay readiness review doc exists")
     require(accounting_replay_architecture_path.exists(), "production accounting replay architecture doc exists")
     require(accounting_engine_candidate_path.exists(), "AccountingEngine module candidate doc exists")
+    require(accounting_engine_replay_milestone_path.exists(), "AccountingEngine replay skeleton milestone doc exists")
+    require(accounting_engine_next_phase_review_path.exists(), "AccountingEngine next phase boundary review doc exists")
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -208,6 +213,7 @@ def main() -> int:
     require(release_notes_path.exists(), "release notes doc exists")
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(release_notes_v03_path.exists(), "v0.3 accounting replay release notes doc exists")
+    require(release_notes_v04_path.exists(), "v0.4 AccountingEngine replay skeleton release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
     require(protocol_path.exists(), "protocol doc exists")
     require(accounting_rules_path.exists(), "accounting rules doc exists")
@@ -234,6 +240,8 @@ def main() -> int:
     accounting_replay_readiness = accounting_replay_readiness_path.read_text(encoding="utf-8")
     accounting_replay_architecture = accounting_replay_architecture_path.read_text(encoding="utf-8")
     accounting_engine_candidate = accounting_engine_candidate_path.read_text(encoding="utf-8")
+    accounting_engine_replay_milestone = accounting_engine_replay_milestone_path.read_text(encoding="utf-8")
+    accounting_engine_next_phase_review = accounting_engine_next_phase_review_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -298,6 +306,7 @@ def main() -> int:
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     release_notes_v03 = release_notes_v03_path.read_text(encoding="utf-8")
+    release_notes_v04 = release_notes_v04_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
     protocol_doc = protocol_path.read_text(encoding="utf-8")
     accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
@@ -388,6 +397,18 @@ def main() -> int:
     require(
         "34_accounting_engine_module_candidate.md" in readme,
         "README links AccountingEngine module candidate",
+    )
+    require(
+        "35_accounting_engine_replay_skeleton_milestone" in readme,
+        "README links AccountingEngine replay skeleton milestone",
+    )
+    require(
+        "36_accounting_engine_next_phase_boundary_review" in readme,
+        "README links AccountingEngine next phase boundary review",
+    )
+    require(
+        "v0_4_accounting_engine_replay_skeleton" in readme,
+        "README links v0.4 AccountingEngine replay skeleton release notes",
     )
     require("FX001-FX013 test-only coverage is complete" in readme, "README states FX001-FX013 test-only coverage complete")
     require("not production accounting replay" in readme, "README states test-only coverage is not production replay")
@@ -535,9 +556,12 @@ def main() -> int:
     require("32_production_accounting_replay_readiness_review.md" in docs_index, "docs index links production accounting replay readiness review")
     require("33_production_accounting_replay_architecture.md" in docs_index, "docs index links production accounting replay architecture")
     require("34_accounting_engine_module_candidate.md" in docs_index, "docs index links AccountingEngine module candidate")
+    require("35_accounting_engine_replay_skeleton_milestone.md" in docs_index, "docs index links AccountingEngine replay skeleton milestone")
+    require("36_accounting_engine_next_phase_boundary_review.md" in docs_index, "docs index links AccountingEngine next phase boundary review")
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
     require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
+    require("release_notes/v0_4_accounting_engine_replay_skeleton.md" in docs_index, "docs index links v0.4 AccountingEngine release notes")
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
     require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
@@ -695,6 +719,7 @@ def main() -> int:
     require("AccountingEngine multi-account BUY scenario" in readme, "README documents multi-account buy scenario")
     require("AccountingEngine multi-currency unsupported scenario" in readme, "README documents multi-currency unsupported scenario")
     require("AccountingEngine missing market price scenario" in readme, "README documents missing market price scenario")
+    require("v0.4 AccountingEngine Replay Skeleton" in readme, "README documents v0.4 AccountingEngine Replay Skeleton")
     require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
     require("TradeFactDto" in readme, "README documents TradeFactDto")
     require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
@@ -715,6 +740,51 @@ def main() -> int:
     require("productionReady=false" in readme, "README records AccountingEngine productionReady false")
     require("writeEnabled=false" in readme, "README records AccountingEngine write false")
     require("accounting_engine_boundary" in readme, "README documents AccountingEngine boundary test")
+
+    require("empty ledger" in accounting_engine_replay_milestone, "milestone doc covers empty ledger")
+    require("single BUY" in accounting_engine_replay_milestone, "milestone doc covers single BUY")
+    require("BUY + SELL partial sell" in accounting_engine_replay_milestone, "milestone doc covers partial sell")
+    require("SELL_EXCEEDS_POSITION" in accounting_engine_replay_milestone, "milestone doc covers sell exceeds position")
+    require("MISSING_FEE" in accounting_engine_replay_milestone, "milestone doc covers missing fee")
+    require("NEGATIVE_CASH" in accounting_engine_replay_milestone, "milestone doc covers negative cash")
+    require("Multi-instrument BUY" in accounting_engine_replay_milestone, "milestone doc covers multi-instrument BUY")
+    require("Multi-account BUY" in accounting_engine_replay_milestone, "milestone doc covers multi-account BUY")
+    require("Multi-currency unsupported" in accounting_engine_replay_milestone, "milestone doc covers multi-currency unsupported")
+    require("Missing market price" in accounting_engine_replay_milestone, "milestone doc covers missing market price")
+    require("replayImplemented=false" in accounting_engine_replay_milestone, "milestone doc records replayImplemented false")
+    require("productionReady=false" in accounting_engine_replay_milestone, "milestone doc records productionReady false")
+    require("no SQLite" in accounting_engine_replay_milestone, "milestone doc records no SQLite")
+    require("no DataService action" in accounting_engine_replay_milestone, "milestone doc records no DataService action")
+    require("no snapshot writes" in accounting_engine_replay_milestone, "milestone doc records no snapshot writes")
+    require("no TradeLog writes" in accounting_engine_replay_milestone, "milestone doc records no TradeLog writes")
+    require(
+        "v0.4.0-accounting-engine-replay-skeleton" in accounting_engine_replay_milestone,
+        "milestone doc includes suggested v0.4 tag",
+    )
+
+    require(
+        "DataService read-only action contract" in accounting_engine_next_phase_review,
+        "next phase review covers DataService read-only action contract",
+    )
+    require(
+        "SQLite read-only facts query" in accounting_engine_next_phase_review,
+        "next phase review covers SQLite read-only facts query",
+    )
+    require("no-write" in accounting_engine_next_phase_review, "next phase review covers no-write boundary")
+    require("no DataAccess dependency unless authorized" in accounting_engine_next_phase_review, "next phase review keeps DataAccess authorization boundary")
+    require("no DataService action unless authorized" in accounting_engine_next_phase_review, "next phase review keeps DataService authorization boundary")
+
+    require(
+        "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,
+        "v0.4 release notes include suggested tag",
+    )
+    require("AccountingEngine production-side DTO-only replay skeleton" in release_notes_v04, "v0.4 release notes summarize skeleton")
+    require("DataService action" in release_notes_v04, "v0.4 release notes list DataService action as not included")
+    require("SQLite integration" in release_notes_v04, "v0.4 release notes list SQLite integration as not included")
+    require(
+        "scenario coverage milestone does not imply productionReady=true" in codex_prompt_template,
+        "prompt template states scenario coverage milestone does not imply productionReady true",
+    )
 
     require("add_subdirectory(libs/AccountingEngine)" in root_cmake, "root CMake adds AccountingEngine")
     require("add_subdirectory(AccountingEngine)" in tests_cmake, "tests CMake adds AccountingEngine tests")

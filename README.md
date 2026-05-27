@@ -1405,6 +1405,31 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-082 AccountingEngine replay skeleton milestone
+
+The current milestone is v0.4 AccountingEngine Replay Skeleton. It documents
+the production-side DTO-only skeleton scenario coverage and the next phase
+boundary review:
+
+- [AccountingEngine replay skeleton milestone](docs/35_accounting_engine_replay_skeleton_milestone.md)
+- [AccountingEngine next phase boundary review](docs/36_accounting_engine_next_phase_boundary_review.md)
+- [Release Notes - v0.4 AccountingEngine Replay Skeleton](docs/release_notes/v0_4_accounting_engine_replay_skeleton.md)
+
+The production-side DTO-only skeleton scenarios completed so far are empty
+ledger, single BUY, BUY + SELL partial sell, SELL_EXCEEDS_POSITION,
+MISSING_FEE, NEGATIVE_CASH, multi-instrument BUY, multi-account BUY,
+multi-currency unsupported, and missing market price.
+
+This milestone does not mean full production replay is implemented.
+`replayImplemented=false`, `productionReady=false`, and `writeEnabled=false`
+remain correct. DataService actions are still not implemented, SQLite
+integration is still not implemented, and no write path is enabled.
+
+No snapshot writes, TradeLog writes, TradeDraft generation, QML accounting
+calculation, real market feed, or FX rate service is included. The suggested
+`v0.4.0-accounting-engine-replay-skeleton` tag is documented for manual use
+after merge; this task does not create a tag.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

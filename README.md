@@ -1430,6 +1430,26 @@ calculation, real market feed, or FX rate service is included. The suggested
 `v0.4.0-accounting-engine-replay-skeleton` tag is documented for manual use
 after merge; this task does not create a tag.
 
+## TASK-083 DataService read-only accounting action contracts
+
+DataService accounting action contracts are now documented for future
+read-only implementation review:
+
+- [DataService read-only accounting action contracts](docs/37_dataservice_readonly_accounting_action_contracts.md)
+- [DataService accounting no-write test plan](docs/38_dataservice_accounting_no_write_test_plan.md)
+
+These documents define future contracts for `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
+They do not implement any action. DataService accounting replay is still not
+implemented, DataService still does not call AccountingEngine, SQLite
+integration is still not implemented, and no write path is enabled.
+
+The contracts keep all future accounting actions read-only in their first
+phase. They require no-write tests before implementation and explicitly forbid
+snapshot writes, TradeLog writes, TradeDraft generation, direct QML
+`DataServiceClient` calls, SQLite access from QML, and QML accounting
+calculation.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

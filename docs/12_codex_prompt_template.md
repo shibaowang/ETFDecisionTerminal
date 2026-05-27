@@ -385,3 +385,8 @@ v0.1 草案。
 - A scenario coverage milestone does not imply productionReady=true.
 - Future tasks must state whether they are DTO-only, DataService action, SQLite read-only, write-enabled, or QML-facing.
 - Default remains no writes, no DataService action, and no SQLite unless explicitly authorized.
+- Any DataService accounting action task must reference `docs/37_dataservice_readonly_accounting_action_contracts.md` and `docs/38_dataservice_accounting_no_write_test_plan.md`.
+- No-write tests are required before implementing a DataService accounting action.
+- Default is no action implementation unless the task explicitly requests one.
+- DataService accounting actions cannot write snapshots or TradeLog rows.
+- QML must not call DataServiceClient directly.

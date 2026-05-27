@@ -1537,6 +1537,24 @@ New reader tests:
 - `dataaccess_accounting_trade_facts_no_write`
 - `dataaccess_accounting_trade_facts_sql_scan`
 
+## TASK-088 Cash facts source boundary docs
+
+Cash facts source boundary and readiness docs are now defined for future
+read-only cash facts query review:
+
+- [Cash facts source boundary](docs/41_cash_facts_source_boundary.md)
+- [Cash facts query decision](docs/42_cash_facts_query_decision.md)
+
+These documents define the future `CashFactDto` source boundary and recommend
+not implementing cash facts query until an auditable schema source is confirmed.
+`cash_snapshot`, `portfolio_summary`, and `position_snapshot` remain derived
+data and must not be used to reverse-engineer cash facts.
+
+This task does not implement a cash facts query, does not add a DataAccess cash
+facts repository, does not add a DataService action, does not access SQLite,
+does not call AccountingEngine, does not modify schema, does not change QML,
+and does not write database tables.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

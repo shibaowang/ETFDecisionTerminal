@@ -143,3 +143,19 @@ Mapping gaps:
 
 SELL quantity exceeding position is still a replay-layer issue, not a query
 layer issue. The query layer preserves facts only.
+
+## TASK-088 CashFactDto Source Boundary
+
+`CashFactDto` mapping remains in boundary and decision status. The source
+boundary is defined in `docs/41_cash_facts_source_boundary.md`, and the
+readiness decision is defined in `docs/42_cash_facts_query_decision.md`.
+
+Future code must not reverse-engineer cash facts from `cash_snapshot` or
+`portfolio_summary`. `cash_snapshot` is derived data. `portfolio_summary` is
+derived data. Snapshot values are not facts sources.
+
+`trade_log.net_cash_impact_cents` is a transaction cash impact field. It is not
+an initial cash source, not a deposit source, and not a withdraw source. Schema
+gaps around initial cash, deposit, withdraw, adjustment, fee distinction,
+currency, account, and portfolio sources need later review before any cash facts
+query implementation.

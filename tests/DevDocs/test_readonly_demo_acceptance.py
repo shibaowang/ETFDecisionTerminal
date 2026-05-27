@@ -46,6 +46,8 @@ def main() -> int:
     dataservice_accounting_no_write_plan_path = root / "docs" / "38_dataservice_accounting_no_write_test_plan.md"
     sqlite_readonly_facts_query_boundary_path = root / "docs" / "39_sqlite_readonly_facts_query_boundary.md"
     accounting_facts_source_mapping_path = root / "docs" / "40_accounting_facts_source_mapping.md"
+    cash_facts_source_boundary_path = root / "docs" / "41_cash_facts_source_boundary.md"
+    cash_facts_query_decision_path = root / "docs" / "42_cash_facts_query_decision.md"
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -200,6 +202,8 @@ def main() -> int:
     )
     require(sqlite_readonly_facts_query_boundary_path.exists(), "SQLite read-only facts query boundary doc exists")
     require(accounting_facts_source_mapping_path.exists(), "Accounting facts source mapping doc exists")
+    require(cash_facts_source_boundary_path.exists(), "Cash facts source boundary doc exists")
+    require(cash_facts_query_decision_path.exists(), "Cash facts query decision doc exists")
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -318,6 +322,8 @@ def main() -> int:
     dataservice_accounting_no_write_plan = dataservice_accounting_no_write_plan_path.read_text(encoding="utf-8")
     sqlite_readonly_facts_query_boundary = sqlite_readonly_facts_query_boundary_path.read_text(encoding="utf-8")
     accounting_facts_source_mapping = accounting_facts_source_mapping_path.read_text(encoding="utf-8")
+    cash_facts_source_boundary = cash_facts_source_boundary_path.read_text(encoding="utf-8")
+    cash_facts_query_decision = cash_facts_query_decision_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -526,6 +532,14 @@ def main() -> int:
         "README links accounting facts source mapping",
     )
     require(
+        "41_cash_facts_source_boundary" in readme,
+        "README links cash facts source boundary",
+    )
+    require(
+        "42_cash_facts_query_decision" in readme,
+        "README links cash facts query decision",
+    )
+    require(
         "v0_4_accounting_engine_replay_skeleton" in readme,
         "README links v0.4 AccountingEngine replay skeleton release notes",
     )
@@ -692,6 +706,14 @@ def main() -> int:
     require(
         "40_accounting_facts_source_mapping.md" in docs_index,
         "docs index links accounting facts source mapping",
+    )
+    require(
+        "41_cash_facts_source_boundary.md" in docs_index,
+        "docs index links cash facts source boundary",
+    )
+    require(
+        "42_cash_facts_query_decision.md" in docs_index,
+        "docs index links cash facts query decision",
     )
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
@@ -1161,6 +1183,70 @@ def main() -> int:
     require("accountingTradeFactsReadOnlySql" in accounting_trade_fact_reader_test, "trade facts test scans reader SQL")
     require("assertNoWritesAround" in accounting_trade_fact_reader_test, "trade facts test uses no-write harness")
     require("containsForbiddenWriteSql" in accounting_trade_fact_reader_test, "trade facts test uses ForbiddenSqlScanner")
+
+    require("Cash facts source boundary" in readme, "README documents cash facts source boundary")
+    require("Cash facts query decision" in readme, "README documents cash facts query decision")
+    require("TASK-088" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-088")
+    require(
+        "docs/41_cash_facts_source_boundary.md" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc references cash facts source boundary",
+    )
+    require(
+        "cash_snapshot" in sqlite_readonly_facts_query_boundary and "portfolio_summary" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc rejects derived cash sources",
+    )
+    require("TASK-088" in accounting_facts_source_mapping, "facts source mapping records TASK-088")
+    require(
+        "docs/41_cash_facts_source_boundary.md" in accounting_facts_source_mapping,
+        "facts source mapping references cash facts source boundary",
+    )
+    require(
+        "trade_log.net_cash_impact_cents" in accounting_facts_source_mapping,
+        "facts source mapping distinguishes trade cash impact",
+    )
+    require("TASK-088" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-088")
+    require(
+        "docs/41_cash_facts_source_boundary.md" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc references cash facts source boundary",
+    )
+    require("TASK-088" in dataservice_accounting_no_write_plan, "no-write plan records TASK-088")
+    require(
+        "docs/41_cash_facts_source_boundary.md" in dataservice_accounting_no_write_plan,
+        "no-write plan references cash facts source boundary",
+    )
+    require("CashFactDto" in cash_facts_source_boundary, "cash facts source boundary documents CashFactDto")
+    require("INITIAL_CASH" in cash_facts_source_boundary, "cash facts source boundary documents INITIAL_CASH")
+    require("DEPOSIT" in cash_facts_source_boundary, "cash facts source boundary documents DEPOSIT")
+    require("WITHDRAW" in cash_facts_source_boundary, "cash facts source boundary documents WITHDRAW")
+    require("ADJUSTMENT" in cash_facts_source_boundary, "cash facts source boundary documents ADJUSTMENT")
+    require("cash_snapshot is derived data" in cash_facts_source_boundary, "cash facts source boundary says cash_snapshot is derived")
+    require(
+        "portfolio_summary` is derived data" in cash_facts_source_boundary
+        or "portfolio_summary is derived data" in cash_facts_source_boundary,
+        "cash facts source boundary says portfolio_summary is derived",
+    )
+    require(
+        "must not reverse-engineer cash facts from snapshot" in cash_facts_source_boundary,
+        "cash facts source boundary forbids snapshot reverse inference",
+    )
+    require("Go / No-Go Checklist" in cash_facts_query_decision, "cash facts decision includes Go / No-Go Checklist")
+    require(
+        "schema is insufficient" in cash_facts_query_decision or "schema gap" in cash_facts_query_decision,
+        "cash facts decision documents schema insufficiency",
+    )
+    require(
+        "docs/41_cash_facts_source_boundary.md" in codex_prompt_template,
+        "prompt template references cash facts source boundary",
+    )
+    require(
+        "docs/42_cash_facts_query_decision.md" in codex_prompt_template,
+        "prompt template references cash facts query decision",
+    )
+    require(
+        "Never derive `CashFactDto` from `cash_snapshot` or `portfolio_summary`" in codex_prompt_template,
+        "prompt template forbids deriving CashFactDto from snapshots",
+    )
+    require("Query layer must not compute cash balance" in codex_prompt_template, "prompt template forbids cash balance calculation in query layer")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

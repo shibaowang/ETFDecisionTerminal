@@ -411,3 +411,10 @@ v0.1 草案。
 - Query layer must not call AccountingEngine.
 - Query layer must not write.
 - Future facts query tasks must use the no-write harness and SQL scanner.
+- Cash facts query tasks must reference
+  `docs/41_cash_facts_source_boundary.md` and
+  `docs/42_cash_facts_query_decision.md`.
+- Never derive `CashFactDto` from `cash_snapshot` or `portfolio_summary`.
+- Query layer must not compute cash balance.
+- If schema does not contain a cash fact source, stop and report the schema gap;
+  do not fake facts.

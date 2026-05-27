@@ -303,3 +303,20 @@ Still not implemented:
 
 The reader must remain covered by the TASK-086 no-write harness and forbidden
 SQL scanner before any future DataService integration.
+
+## TASK-088 Cash Facts Source Boundary
+
+TASK-088 defines the cash facts source boundary in
+`docs/41_cash_facts_source_boundary.md` and the implementation decision in
+`docs/42_cash_facts_query_decision.md`.
+
+The cash facts query remains unimplemented. `cash_snapshot`,
+`portfolio_summary`, and `position_snapshot` are derived data and must not be
+used as cash facts sources. `trade_log.net_cash_impact_cents` can describe
+transaction cash impact, but it is not an initial cash, deposit, or withdraw
+facts source.
+
+Any future cash facts query must reference `docs/41_cash_facts_source_boundary.md`
+and `docs/42_cash_facts_query_decision.md`, must stay read-only, must use
+`SELECT`-only SQL, and must pass the no-write harness before DataService
+integration.

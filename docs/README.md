@@ -39,6 +39,8 @@
 - [38 DataService Accounting No-write Test Plan](38_dataservice_accounting_no_write_test_plan.md)
 - [39 SQLite Read-only Facts Query Boundary](39_sqlite_readonly_facts_query_boundary.md)
 - [40 Accounting Facts Source Mapping](40_accounting_facts_source_mapping.md)
+- [41 Cash Facts Source Boundary](41_cash_facts_source_boundary.md)
+- [42 Cash Facts Query Decision](42_cash_facts_query_decision.md)
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under
@@ -47,6 +49,8 @@
 - SQLite read-only trade facts query skeleton: DataAccess `trade_log` reader
   for DataAccess-side rows only; no replay, no `position.list` implementation,
   no AccountingEngine call, and no writes.
+- Cash facts source boundary: `CashFactDto` source decision docs only; no cash
+  facts query, no cash facts repository, no SQLite access, and no writes.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

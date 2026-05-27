@@ -96,3 +96,13 @@ to describe the contract.
 
 Future real `position.list` implementation is the first point where this
 mapping may be used, and that work requires a separate task.
+
+## TASK-086 No-write Harness Boundary
+
+The no-write harness skeleton does not read facts and does not implement this
+mapping. It only verifies that future callbacks and SQL snippets can be tested
+against protected table row counts and forbidden write keywords.
+
+Future mapping implementation must use the read-only boundary in
+`docs/39_sqlite_readonly_facts_query_boundary.md`, must not use snapshots as
+facts, and must pass no-write harness checks before DataService integration.

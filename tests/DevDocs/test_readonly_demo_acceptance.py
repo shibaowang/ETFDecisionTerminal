@@ -149,6 +149,14 @@ def main() -> int:
     dataservice_test_cmake_path = root / "tests" / "DataService" / "CMakeLists.txt"
     dataservice_client_test_path = root / "tests" / "DataServiceClient" / "test_dataservice_client.cpp"
     dataservice_client_test_cmake_path = root / "tests" / "DataServiceClient" / "CMakeLists.txt"
+    accounting_no_write_dir = root / "tests" / "AccountingNoWrite"
+    accounting_no_write_cmake_path = accounting_no_write_dir / "CMakeLists.txt"
+    accounting_no_write_utils_header_path = accounting_no_write_dir / "AccountingNoWriteTestUtils.h"
+    accounting_no_write_utils_source_path = accounting_no_write_dir / "AccountingNoWriteTestUtils.cpp"
+    forbidden_sql_scanner_header_path = accounting_no_write_dir / "ForbiddenSqlScanner.h"
+    forbidden_sql_scanner_source_path = accounting_no_write_dir / "ForbiddenSqlScanner.cpp"
+    accounting_no_write_harness_test_path = accounting_no_write_dir / "test_accounting_no_write_harness.cpp"
+    forbidden_sql_scanner_test_path = accounting_no_write_dir / "test_forbidden_sql_scanner.cpp"
 
     require(script_path.exists(), "run_readonly_demo.ps1 exists")
     require(stop_script_path.exists(), "stop_readonly_demo.ps1 exists")
@@ -259,6 +267,14 @@ def main() -> int:
     require(dataservice_test_cmake_path.exists(), "DataService test CMake exists")
     require(dataservice_client_test_path.exists(), "DataServiceClient test exists")
     require(dataservice_client_test_cmake_path.exists(), "DataServiceClient test CMake exists")
+    require(accounting_no_write_dir.exists(), "Accounting no-write test-only directory exists")
+    require(accounting_no_write_cmake_path.exists(), "Accounting no-write CMake exists")
+    require(accounting_no_write_utils_header_path.exists(), "Accounting no-write helper header exists")
+    require(accounting_no_write_utils_source_path.exists(), "Accounting no-write helper source exists")
+    require(forbidden_sql_scanner_header_path.exists(), "Forbidden SQL scanner header exists")
+    require(forbidden_sql_scanner_source_path.exists(), "Forbidden SQL scanner source exists")
+    require(accounting_no_write_harness_test_path.exists(), "Accounting no-write harness test exists")
+    require(forbidden_sql_scanner_test_path.exists(), "Forbidden SQL scanner test exists")
 
     script = script_path.read_text(encoding="utf-8")
     stop_script = stop_script_path.read_text(encoding="utf-8")
@@ -367,6 +383,13 @@ def main() -> int:
     dataservice_test_cmake = dataservice_test_cmake_path.read_text(encoding="utf-8")
     dataservice_client_test = dataservice_client_test_path.read_text(encoding="utf-8")
     dataservice_client_test_cmake = dataservice_client_test_cmake_path.read_text(encoding="utf-8")
+    accounting_no_write_cmake = accounting_no_write_cmake_path.read_text(encoding="utf-8")
+    accounting_no_write_utils_header = accounting_no_write_utils_header_path.read_text(encoding="utf-8")
+    accounting_no_write_utils_source = accounting_no_write_utils_source_path.read_text(encoding="utf-8")
+    forbidden_sql_scanner_header = forbidden_sql_scanner_header_path.read_text(encoding="utf-8")
+    forbidden_sql_scanner_source = forbidden_sql_scanner_source_path.read_text(encoding="utf-8")
+    accounting_no_write_harness_test = accounting_no_write_harness_test_path.read_text(encoding="utf-8")
+    forbidden_sql_scanner_test = forbidden_sql_scanner_test_path.read_text(encoding="utf-8")
     position_list_guard_source = extract_between(
         dataservice_actions_source,
         "etfdt::protocol::ProtocolResponse handlePositionList",
@@ -816,6 +839,10 @@ def main() -> int:
     require("POSITION_LIST_NOT_AVAILABLE" in readme, "README documents position.list guard status")
     require("dataservice_position_list_guard" in readme, "README documents position.list guard test")
     require("dataservice_position_list_no_write" in readme, "README documents position.list no-write test")
+    require("SQLite read-only no-write harness skeleton" in readme, "README documents TASK-086 no-write harness")
+    require("tests/AccountingNoWrite" in readme, "README documents no-write harness test-only location")
+    require("accounting_forbidden_sql_scanner" in readme, "README documents forbidden SQL scanner test")
+    require("accounting_no_write_harness" in readme, "README documents no-write harness test")
     require("ReplayRequestDto" in readme, "README documents ReplayRequestDto")
     require("TradeFactDto" in readme, "README documents TradeFactDto")
     require("accounting_replay_dto_parser_boundary" in readme, "README documents DTO parser boundary test")
@@ -943,11 +970,20 @@ def main() -> int:
         "position.list` guard has no-write table count coverage" in dataservice_accounting_no_write_plan,
         "no-write plan documents position.list guard no-write coverage",
     )
+    require("TASK-086" in dataservice_accounting_no_write_plan, "no-write plan records TASK-086")
+    require("tests/AccountingNoWrite" in dataservice_accounting_no_write_plan, "no-write plan documents test-only harness directory")
+    require("protected table row-count helper" in dataservice_accounting_no_write_plan, "no-write plan documents row-count helper")
+    require("forbidden SQL scanner" in dataservice_accounting_no_write_plan, "no-write plan documents forbidden SQL scanner")
+    require("accounting_forbidden_sql_scanner" in dataservice_accounting_no_write_plan, "no-write plan documents scanner CTest")
+    require("accounting_no_write_harness" in dataservice_accounting_no_write_plan, "no-write plan documents harness CTest")
     require("position.list` guard" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc documents position.list guard")
     require(
         "does not use SQLite facts query" in sqlite_readonly_facts_query_boundary,
         "SQLite facts query doc states position.list guard avoids SQLite facts query",
     )
+    require("TASK-086" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-086")
+    require("no-write harness skeleton" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc documents no-write harness")
+    require("does not implement a SQLite facts query" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc says harness is not facts query")
     require("trade_log" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc covers trade_log")
     require("read-only" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc states read-only")
     require("SELECT" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc allows SELECT")
@@ -970,6 +1006,8 @@ def main() -> int:
         "does not use this facts mapping" in accounting_facts_source_mapping,
         "facts source mapping states position.list guard does not use facts mapping",
     )
+    require("TASK-086" in accounting_facts_source_mapping, "facts source mapping records TASK-086")
+    require("does not read facts" in accounting_facts_source_mapping, "facts source mapping says no-write harness does not read facts")
     require(
         "docs/37_dataservice_readonly_accounting_action_contracts.md" in codex_prompt_template,
         "prompt template references DataService action contracts",
@@ -990,6 +1028,10 @@ def main() -> int:
         "`position.list` guard does not equal a real position query" in codex_prompt_template,
         "prompt template states position.list guard is not real query",
     )
+    require("SQLite facts query tasks must use the test-only no-write harness skeleton" in codex_prompt_template, "prompt template requires no-write harness for SQLite query tasks")
+    require("Do not calculate replay in the SQLite query layer" in codex_prompt_template, "prompt template forbids query-layer replay")
+    require("Do not bypass the forbidden SQL scanner" in codex_prompt_template, "prompt template forbids bypassing SQL scanner")
+    require("Do not place the no-write harness in production libs" in codex_prompt_template, "prompt template keeps harness out of production libs")
     require("kActionPositionList" in dataservice_actions_header, "DataServiceActions exposes position.list action constant")
     require("handlePositionList" in dataservice_actions_header, "DataServiceActions declares position.list handler")
     require("kActionPositionList" in dataservice_action_registrar, "DataService registrar registers position.list")
@@ -1022,6 +1064,39 @@ def main() -> int:
     require("position.list does not return real positions" in dataservice_readonly_test, "DataService test checks no real positions")
     require("expectProtectedTableCountsUnchanged" in dataservice_readonly_test, "DataService test checks position.list no-write")
     require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
+
+    require("add_subdirectory(AccountingNoWrite)" in tests_cmake, "tests CMake adds AccountingNoWrite tests")
+    require("accounting_forbidden_sql_scanner" in accounting_no_write_cmake, "AccountingNoWrite CMake registers scanner CTest")
+    require("accounting_no_write_harness" in accounting_no_write_cmake, "AccountingNoWrite CMake registers no-write harness CTest")
+    require("ETFDecisionTerminal::DataAccess" in accounting_no_write_cmake, "AccountingNoWrite test utils link DataAccess for test DB only")
+    require("protectedAccountingTables" in accounting_no_write_utils_header, "no-write helper exposes protected tables")
+    require("captureProtectedTableRowCounts" in accounting_no_write_utils_header, "no-write helper exposes row-count capture")
+    require("assertNoWritesAround" in accounting_no_write_utils_header, "no-write helper exposes no-write assertion")
+    require("trade_log" in accounting_no_write_utils_source, "no-write helper protects trade_log")
+    require("trade_draft" in accounting_no_write_utils_source, "no-write helper protects trade_draft")
+    require("cash_snapshot" in accounting_no_write_utils_source, "no-write helper protects cash_snapshot")
+    require("position_snapshot" in accounting_no_write_utils_source, "no-write helper protects position_snapshot")
+    require("portfolio_summary" in accounting_no_write_utils_source, "no-write helper protects portfolio_summary")
+    require("audit_log" in accounting_no_write_utils_source, "no-write helper protects audit_log")
+    require("findForbiddenWriteKeywords" in forbidden_sql_scanner_header, "forbidden SQL scanner exposes keyword scan")
+    require("containsForbiddenWriteSql" in forbidden_sql_scanner_header, "forbidden SQL scanner exposes boolean scan")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "UPSERT", "VACUUM"]:
+        require(forbidden_sql in forbidden_sql_scanner_source, f"forbidden SQL scanner detects {forbidden_sql}")
+        require(forbidden_sql in forbidden_sql_scanner_test, f"forbidden SQL scanner test covers {forbidden_sql}")
+    require("PRAGMA writable_schema" in forbidden_sql_scanner_source, "forbidden SQL scanner detects writable_schema")
+    require("BEGIN IMMEDIATE" in forbidden_sql_scanner_source, "forbidden SQL scanner detects BEGIN IMMEDIATE")
+    require("BEGIN EXCLUSIVE" in forbidden_sql_scanner_source, "forbidden SQL scanner detects BEGIN EXCLUSIVE")
+    require("SELECT * FROM trade_log" in forbidden_sql_scanner_test, "forbidden SQL scanner test allows SELECT")
+    require("WITH x AS" in forbidden_sql_scanner_test, "forbidden SQL scanner test allows WITH SELECT")
+    require("assertNoWritesAround" in accounting_no_write_harness_test, "no-write harness test exercises no-write assertion")
+    require("SELECT COUNT(*) FROM trade_log" in accounting_no_write_harness_test, "no-write harness test exercises SELECT-only callback")
+    require("compareProtectedTableRowCounts" in accounting_no_write_harness_test, "no-write harness test checks row-count change reporting")
+    require("AccountingEngine" not in accounting_no_write_utils_source, "no-write helper does not call AccountingEngine")
+    require("DataService" not in accounting_no_write_utils_source, "no-write helper does not call DataService")
+    require("AccountingReplayMinimalEngine" not in accounting_no_write_utils_source, "no-write helper does not reference test-only replay engine")
+    require("AccountingFactsReadOnlyRepository" not in accounting_no_write_utils_source, "no-write helper does not add production facts repository")
+    require("AccountingEngine" not in forbidden_sql_scanner_source, "SQL scanner does not call AccountingEngine")
+    require("DataService" not in forbidden_sql_scanner_source, "SQL scanner does not call DataService")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

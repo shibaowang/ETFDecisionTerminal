@@ -170,3 +170,26 @@ checks that calling `position.list` leaves these protected tables unchanged:
 
 The real `position.list` implementation must extend these no-write tests before
 it can read facts or map real positions.
+
+## TASK-086 SQLite Read-only No-write Harness Skeleton
+
+TASK-086 adds a test-only no-write harness skeleton under
+`tests/AccountingNoWrite`. It is not production code and does not implement a
+real SQLite facts query.
+
+The harness includes:
+
+- a protected table row-count helper for `trade_log`,
+  `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+  `position_snapshot`, `portfolio_summary`, and `audit_log`;
+- a no-write assertion helper that captures counts before and after a callback;
+- a forbidden SQL scanner for `INSERT`, `UPDATE`, `DELETE`, `CREATE`, `DROP`,
+  `ALTER`, `REPLACE`, `UPSERT`, `VACUUM`, `PRAGMA writable_schema`,
+  `BEGIN IMMEDIATE`, and `BEGIN EXCLUSIVE`;
+- CTest coverage for `accounting_forbidden_sql_scanner` and
+  `accounting_no_write_harness`.
+
+Future DataService accounting actions and SQLite facts query tasks must reuse
+or explicitly mirror this skeleton before any real read-only implementation is
+accepted. The skeleton does not read facts, does not call AccountingEngine, and
+does not change `position.list` guard behavior.

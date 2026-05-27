@@ -389,6 +389,30 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-083 DataService Read-only Action Contract Docs
+
+Future DataService accounting action contracts are documented in
+`docs/37_dataservice_readonly_accounting_action_contracts.md`.
+
+The no-write test plan for those future actions is documented in
+`docs/38_dataservice_accounting_no_write_test_plan.md`.
+
+This milestone does not implement `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, or `sniper_pool.summary`.
+DataService action integration remains unimplemented. SQLite production facts
+query integration remains unimplemented. DataService still does not call
+AccountingEngine for production replay.
+
+The boundary remains read-only by default:
+
+- No DataService accounting action implementation.
+- No DataAccess query implementation.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.
+- No TradeDraft generation.
+- No QML accounting calculation.
+
 ## TASK-078 Multi-instrument BUY Scenario Status
 
 TASK-078 adds a production-side read-only multi-instrument BUY scenario to

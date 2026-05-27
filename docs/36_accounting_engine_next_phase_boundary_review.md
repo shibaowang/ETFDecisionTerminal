@@ -95,3 +95,15 @@ another explicitly authorized DTO-only scenario.
 - [ ] TradeLog has not been written.
 - [ ] QML does not calculate accounting.
 - [ ] Next task boundary has been separately authorized.
+
+## TASK-083 Route B Contract Documents
+
+Route B now has DataService read-only accounting action contract docs in
+`docs/37_dataservice_readonly_accounting_action_contracts.md`.
+
+The future no-write proof plan is in
+`docs/38_dataservice_accounting_no_write_test_plan.md`.
+
+Implementation still requires separate authorization. The contracts do not
+implement DataService actions, do not connect SQLite, do not call
+AccountingEngine, and do not enable writes.

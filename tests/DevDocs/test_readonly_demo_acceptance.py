@@ -32,6 +32,10 @@ def main() -> int:
     accounting_engine_candidate_path = root / "docs" / "34_accounting_engine_module_candidate.md"
     accounting_engine_replay_milestone_path = root / "docs" / "35_accounting_engine_replay_skeleton_milestone.md"
     accounting_engine_next_phase_review_path = root / "docs" / "36_accounting_engine_next_phase_boundary_review.md"
+    dataservice_readonly_accounting_contracts_path = (
+        root / "docs" / "37_dataservice_readonly_accounting_action_contracts.md"
+    )
+    dataservice_accounting_no_write_plan_path = root / "docs" / "38_dataservice_accounting_no_write_test_plan.md"
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -151,6 +155,14 @@ def main() -> int:
     require(accounting_engine_candidate_path.exists(), "AccountingEngine module candidate doc exists")
     require(accounting_engine_replay_milestone_path.exists(), "AccountingEngine replay skeleton milestone doc exists")
     require(accounting_engine_next_phase_review_path.exists(), "AccountingEngine next phase boundary review doc exists")
+    require(
+        dataservice_readonly_accounting_contracts_path.exists(),
+        "DataService read-only accounting action contracts doc exists",
+    )
+    require(
+        dataservice_accounting_no_write_plan_path.exists(),
+        "DataService accounting no-write test plan doc exists",
+    )
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -242,6 +254,8 @@ def main() -> int:
     accounting_engine_candidate = accounting_engine_candidate_path.read_text(encoding="utf-8")
     accounting_engine_replay_milestone = accounting_engine_replay_milestone_path.read_text(encoding="utf-8")
     accounting_engine_next_phase_review = accounting_engine_next_phase_review_path.read_text(encoding="utf-8")
+    dataservice_readonly_accounting_contracts = dataservice_readonly_accounting_contracts_path.read_text(encoding="utf-8")
+    dataservice_accounting_no_write_plan = dataservice_accounting_no_write_plan_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -407,6 +421,14 @@ def main() -> int:
         "README links AccountingEngine next phase boundary review",
     )
     require(
+        "37_dataservice_readonly_accounting_action_contracts" in readme,
+        "README links DataService read-only accounting action contracts",
+    )
+    require(
+        "38_dataservice_accounting_no_write_test_plan" in readme,
+        "README links DataService accounting no-write test plan",
+    )
+    require(
         "v0_4_accounting_engine_replay_skeleton" in readme,
         "README links v0.4 AccountingEngine replay skeleton release notes",
     )
@@ -558,6 +580,14 @@ def main() -> int:
     require("34_accounting_engine_module_candidate.md" in docs_index, "docs index links AccountingEngine module candidate")
     require("35_accounting_engine_replay_skeleton_milestone.md" in docs_index, "docs index links AccountingEngine replay skeleton milestone")
     require("36_accounting_engine_next_phase_boundary_review.md" in docs_index, "docs index links AccountingEngine next phase boundary review")
+    require(
+        "37_dataservice_readonly_accounting_action_contracts.md" in docs_index,
+        "docs index links DataService read-only accounting action contracts",
+    )
+    require(
+        "38_dataservice_accounting_no_write_test_plan.md" in docs_index,
+        "docs index links DataService accounting no-write test plan",
+    )
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
     require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
@@ -773,6 +803,58 @@ def main() -> int:
     require("no-write" in accounting_engine_next_phase_review, "next phase review covers no-write boundary")
     require("no DataAccess dependency unless authorized" in accounting_engine_next_phase_review, "next phase review keeps DataAccess authorization boundary")
     require("no DataService action unless authorized" in accounting_engine_next_phase_review, "next phase review keeps DataService authorization boundary")
+    require(
+        "docs/37_dataservice_readonly_accounting_action_contracts.md" in accounting_engine_next_phase_review,
+        "next phase review links DataService accounting action contracts",
+    )
+    require(
+        "docs/38_dataservice_accounting_no_write_test_plan.md" in accounting_engine_next_phase_review,
+        "next phase review links DataService accounting no-write test plan",
+    )
+
+    require("position.list" in dataservice_readonly_accounting_contracts, "DataService contract doc defines position.list")
+    require("cash.summary" in dataservice_readonly_accounting_contracts, "DataService contract doc defines cash.summary")
+    require(
+        "portfolio.pnl.summary" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc defines portfolio.pnl.summary",
+    )
+    require(
+        "base_position.summary" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc defines base_position.summary",
+    )
+    require(
+        "sniper_pool.summary" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc defines sniper_pool.summary",
+    )
+    require("read-only" in dataservice_readonly_accounting_contracts, "DataService contract doc states read-only")
+    require(
+        "Forbidden writes" in dataservice_readonly_accounting_contracts
+        or "forbidden writes" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc lists forbidden writes",
+    )
+    require(
+        "ProtocolResponse" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc defines ProtocolResponse semantics",
+    )
+    require(
+        "QML does not calculate accounting" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc keeps QML out of accounting calculation",
+    )
+    require("trade_log" in dataservice_accounting_no_write_plan, "no-write plan protects trade_log")
+    require("cash_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects cash_snapshot")
+    require("position_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects position_snapshot")
+    require("portfolio_summary" in dataservice_accounting_no_write_plan, "no-write plan protects portfolio_summary")
+    require("INSERT" in dataservice_accounting_no_write_plan, "no-write plan scans INSERT")
+    require("UPDATE" in dataservice_accounting_no_write_plan, "no-write plan scans UPDATE")
+    require("DELETE" in dataservice_accounting_no_write_plan, "no-write plan scans DELETE")
+    require(
+        "docs/37_dataservice_readonly_accounting_action_contracts.md" in codex_prompt_template,
+        "prompt template references DataService action contracts",
+    )
+    require(
+        "docs/38_dataservice_accounting_no_write_test_plan.md" in codex_prompt_template,
+        "prompt template references DataService no-write plan",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

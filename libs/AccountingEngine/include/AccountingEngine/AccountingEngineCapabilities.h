@@ -9,6 +9,7 @@ struct AccountingEngineCapabilities {
     bool buySellPartialReplaySupported = true;
     bool sellExceedsPositionDetectionSupported = true;
     bool missingFeeDetectionSupported = true;
+    bool negativeCashDetectionSupported = true;
     bool readOnlyReplaySupported = false;
     bool writeEnabled = false;
     bool snapshotWriteEnabled = false;

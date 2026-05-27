@@ -420,6 +420,42 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-077 Negative Cash Detection Status
+
+TASK-077 adds a production-side read-only `NEGATIVE_CASH` controlled error
+scenario to `libs/AccountingEngine`.
+
+Scope:
+
+- One `INITIAL_CASH` cash fact.
+- One `BUY` trade fact.
+- Single account and portfolio.
+- Single instrument.
+- CNY only.
+- Valid, present `feeText`.
+- `BUY amount + fee` greater than initial cash.
+- Returns `ERROR` with a blocking `NEGATIVE_CASH` issue.
+- Does not allow an implicit overdraft.
+- Does not output successful positions, cash summary, portfolio PnL,
+  base-position, or sniper-pool data.
+
+`BUY amount + fee == initialCash` remains a successful single BUY with zero
+cash balance. Missing `feeText` keeps returning `MISSING_FEE` and is not
+overwritten by `NEGATIVE_CASH`.
+
+The implementation does not calculate multi-transaction replay,
+multi-instrument replay, multi-account replay, market value, unrealized PnL,
+base position, sniper pool, multi-currency replay, or production DataService
+actions.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.
+
 ## TASK-075 Sell Exceeds Position Detection Status
 
 TASK-075 adds a production-side read-only `SELL_EXCEEDS_POSITION` controlled

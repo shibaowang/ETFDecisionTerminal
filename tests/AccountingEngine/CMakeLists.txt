@@ -88,3 +88,16 @@ target_link_libraries(AccountingReplayEngineMissingFeeTests
 target_compile_features(AccountingReplayEngineMissingFeeTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_missing_fee COMMAND AccountingReplayEngineMissingFeeTests)
+
+add_executable(AccountingReplayEngineNegativeCashTests
+    test_accounting_replay_engine_negative_cash.cpp
+)
+
+target_link_libraries(AccountingReplayEngineNegativeCashTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineNegativeCashTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_negative_cash COMMAND AccountingReplayEngineNegativeCashTests)

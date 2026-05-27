@@ -187,8 +187,8 @@ AccountingReplayResult makeUnsupportedReplayScenarioResult()
 AccountingReplayResult makeNegativeCashReplayResult()
 {
     AccountingReplayResult result;
-    result.implemented = false;
-    result.replayExecuted = false;
+    result.implemented = true;
+    result.replayExecuted = true;
     result.status = AccountingReplayStatus::Error;
     result.message = "Single buy cash requirement exceeds available cash.";
     result.issues.push_back(makeAccountingIssue(

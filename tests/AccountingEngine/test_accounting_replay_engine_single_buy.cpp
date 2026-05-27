@@ -164,6 +164,8 @@ int main()
                        "USD single buy should remain unsupported");
 
     const auto negativeCashResult = engine.replayReadOnly(request, {makeBuy()}, {makeInitialCash("100.00")}, {}, {});
+    failures += expect(negativeCashResult.implemented, "negative cash should be implemented");
+    failures += expect(negativeCashResult.replayExecuted, "negative cash should execute replay");
     failures += expect(negativeCashResult.status == AccountingReplayStatus::Error,
                        "negative cash should not succeed as overdraft");
     failures += expect(!negativeCashResult.issues.empty() &&

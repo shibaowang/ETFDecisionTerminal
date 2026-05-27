@@ -352,3 +352,8 @@ v0.1 草案。
 - Missing fee must not be defaulted to zero.
 - Future production replay tasks after `MISSING_FEE` must still remain one scenario at a time.
 - Full negative-cash fixture handling, multi-transaction replay, multi-account replay, multi-instrument replay, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.
+- AccountingEngine negative-cash scenario does not mean complete replay is implemented.
+- Negative cash must not pass as an implicit overdraft.
+- Missing fee must keep returning `MISSING_FEE` and must not be overwritten by `NEGATIVE_CASH`.
+- Future production replay tasks after `NEGATIVE_CASH` must still remain one scenario at a time.
+- Multi-transaction replay, multi-account replay, multi-instrument replay, market value, unrealized PnL, base-position, sniper-pool, DataService action, SQLite, snapshot write, and TradeLog write work requires separate authorization.

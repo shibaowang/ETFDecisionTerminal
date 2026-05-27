@@ -203,3 +203,13 @@ The query layer must not:
 - reverse-engineer facts from snapshots;
 - expose cash facts directly to QML;
 - use the test-only fixture loader as production DataAccess.
+
+## TASK-089 cash.summary Guard
+
+TASK-089 adds a `cash.summary` DataService read-only action guard. The guard is
+not a cash facts query and does not read cash facts.
+
+The guard returns `CASH_SUMMARY_NOT_AVAILABLE`, does not read `cash_snapshot` or
+`portfolio_summary`, does not call AccountingEngine, and does not write database
+tables. The cash facts source still requires schema review before any real
+`cash.summary` implementation.

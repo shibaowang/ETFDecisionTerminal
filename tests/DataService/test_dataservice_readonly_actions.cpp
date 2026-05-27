@@ -350,6 +350,11 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
             return value.toString() == "position.list";
         });
     expectTrue(hasPositionList, "accounting.health futureActions contains position.list");
+    const bool hasCashSummary =
+        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
+            return value.toString() == "cash.summary";
+        });
+    expectTrue(hasCashSummary, "accounting.health futureActions contains cash.summary");
 
     const auto warnings = accountingPayload.value("warnings").toArray();
     const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
@@ -528,6 +533,115 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         positionListMalformedPayload.value("errorCode").toString().toStdString(),
         "E1001_INVALID_JSON",
         "position.list malformed payload returns E1001");
+
+    const auto cashSummaryCountsBefore = protectedTableCounts(connection);
+    auto cashSummary = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionCashSummary),
+        responses,
+        "cash.summary");
+    expectSuccess(cashSummary, "cash.summary guard");
+    const auto cashPayload = cashSummary.value("payload").toObject();
+    expectEqual(
+        cashPayload.value("action").toString().toStdString(),
+        "cash.summary",
+        "cash.summary payload action");
+    expectEqual(
+        cashPayload.value("module").toString().toStdString(),
+        "accounting",
+        "cash.summary module");
+    expectTrue(!cashPayload.value("implemented").toBool(true), "cash.summary implemented=false");
+    expectTrue(cashPayload.value("readOnly").toBool(false), "cash.summary readOnly=true");
+    expectTrue(!cashPayload.value("writeEnabled").toBool(true), "cash.summary writeEnabled=false");
+    expectTrue(!cashPayload.value("replayExecuted").toBool(true), "cash.summary replayExecuted=false");
+    expectTrue(!cashPayload.value("dataSourceAccessed").toBool(true), "cash.summary dataSourceAccessed=false");
+    expectTrue(!cashPayload.value("sqliteAccessed").toBool(true), "cash.summary sqliteAccessed=false");
+    expectTrue(!cashPayload.value("cashFactsAccessed").toBool(true), "cash.summary cashFactsAccessed=false");
+    expectTrue(!cashPayload.value("snapshotAccessed").toBool(true), "cash.summary snapshotAccessed=false");
+    expectTrue(
+        !cashPayload.value("portfolioSummaryAccessed").toBool(true),
+        "cash.summary portfolioSummaryAccessed=false");
+    expectTrue(
+        !cashPayload.value("accountingEngineCalled").toBool(true),
+        "cash.summary accountingEngineCalled=false");
+    expectEqual(
+        cashPayload.value("status").toString().toStdString(),
+        "CASH_SUMMARY_NOT_AVAILABLE",
+        "cash.summary status");
+    const auto cashIssues = cashPayload.value("issues").toArray();
+    const bool hasCashUnavailableIssue =
+        std::any_of(cashIssues.begin(), cashIssues.end(), [](const auto& value) {
+            const auto issue = value.toObject();
+            return issue.value("code").toString() == "CASH_SUMMARY_NOT_AVAILABLE"
+                && issue.value("blocking").toBool(false);
+        });
+    expectTrue(
+        hasCashUnavailableIssue,
+        "cash.summary issues contains blocking CASH_SUMMARY_NOT_AVAILABLE");
+    const auto forbiddenSources = cashPayload.value("forbiddenSources").toArray();
+    const bool forbidsCashSnapshotSource =
+        std::any_of(forbiddenSources.begin(), forbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "cash_snapshot";
+        });
+    const bool forbidsPortfolioSummarySource =
+        std::any_of(forbiddenSources.begin(), forbiddenSources.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(forbidsCashSnapshotSource, "cash.summary forbiddenSources contains cash_snapshot");
+    expectTrue(forbidsPortfolioSummarySource, "cash.summary forbiddenSources contains portfolio_summary");
+    const auto cashForbiddenWrites = cashPayload.value("forbiddenWrites").toArray();
+    const bool cashForbidsTradeLog =
+        std::any_of(cashForbiddenWrites.begin(), cashForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "trade_log";
+        });
+    const bool cashForbidsCashSnapshot =
+        std::any_of(cashForbiddenWrites.begin(), cashForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "cash_snapshot";
+        });
+    const bool cashForbidsPortfolioSummary =
+        std::any_of(cashForbiddenWrites.begin(), cashForbiddenWrites.end(), [](const auto& value) {
+            return value.toString() == "portfolio_summary";
+        });
+    expectTrue(cashForbidsTradeLog, "cash.summary forbiddenWrites contains trade_log");
+    expectTrue(cashForbidsCashSnapshot, "cash.summary forbiddenWrites contains cash_snapshot");
+    expectTrue(cashForbidsPortfolioSummary, "cash.summary forbiddenWrites contains portfolio_summary");
+    const auto cashFutureOutput = cashPayload.value("futureOutput").toObject();
+    expectEqual(
+        cashFutureOutput.value("type").toString().toStdString(),
+        "CashSummaryResponse",
+        "cash.summary futureOutput type");
+    expectTrue(cashFutureOutput.value("cashSummary").isNull(), "cash.summary futureOutput cashSummary is null");
+    expectTrue(
+        cashFutureOutput.value("accountCashSummaries").toArray().isEmpty(),
+        "cash.summary futureOutput accountCashSummaries is empty");
+    expectTrue(!cashPayload.contains("cashBalance"), "cash.summary does not return real cashBalance");
+    expectProtectedTableCountsUnchanged(connection, cashSummaryCountsBefore, "cash.summary guard");
+
+    auto cashSummaryInvalidPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionCashSummary, "[]"),
+        responses,
+        "cash.summary invalid payload");
+    expectTrue(
+        !cashSummaryInvalidPayload.value("success").toBool(true),
+        "cash.summary invalid payload success=false");
+    expectEqual(
+        cashSummaryInvalidPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "cash.summary invalid payload returns E1001");
+
+    auto cashSummaryMalformedPayload = sendEnvelope(
+        client,
+        envelope(etfdt::data_service_api::kActionCashSummary, "{ invalid }"),
+        responses,
+        "cash.summary malformed payload");
+    expectTrue(
+        !cashSummaryMalformedPayload.value("success").toBool(true),
+        "cash.summary malformed payload success=false");
+    expectEqual(
+        cashSummaryMalformedPayload.value("errorCode").toString().toStdString(),
+        "E1001_INVALID_JSON",
+        "cash.summary malformed payload returns E1001");
 
     auto replayPreviewMissingPayload = sendEnvelope(
         client,

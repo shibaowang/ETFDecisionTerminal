@@ -419,6 +419,11 @@ def main() -> int:
     position_list_guard_source = extract_between(
         dataservice_actions_source,
         "etfdt::protocol::ProtocolResponse handlePositionList",
+        "etfdt::protocol::ProtocolResponse handleCashSummary",
+    )
+    cash_summary_guard_source = extract_between(
+        dataservice_actions_source,
+        "etfdt::protocol::ProtocolResponse handleCashSummary",
         "}  // namespace etfdt::data_service_api",
     )
     gitignore_lines = {line.strip() for line in gitignore.splitlines()}
@@ -1076,11 +1081,18 @@ def main() -> int:
     require("Do not place the no-write harness in production libs" in codex_prompt_template, "prompt template keeps harness out of production libs")
     require("kActionPositionList" in dataservice_actions_header, "DataServiceActions exposes position.list action constant")
     require("handlePositionList" in dataservice_actions_header, "DataServiceActions declares position.list handler")
+    require("kActionCashSummary" in dataservice_actions_header, "DataServiceActions exposes cash.summary action constant")
+    require("handleCashSummary" in dataservice_actions_header, "DataServiceActions declares cash.summary handler")
     require("kActionPositionList" in dataservice_action_registrar, "DataService registrar registers position.list")
     require("handlePositionList" in dataservice_action_registrar, "DataService registrar wires position.list handler")
+    require("kActionCashSummary" in dataservice_action_registrar, "DataService registrar registers cash.summary")
+    require("handleCashSummary" in dataservice_action_registrar, "DataService registrar wires cash.summary handler")
     require("positionList(" in dataservice_client_header, "DataServiceClient exposes positionList wrapper")
+    require("cashSummary(" in dataservice_client_header, "DataServiceClient exposes cashSummary wrapper")
     require("kActionPositionList" in dataservice_client_source, "DataServiceClient has position.list action constant")
     require("sendAction(kActionPositionList" in dataservice_client_source, "DataServiceClient wrapper sends position.list")
+    require("kActionCashSummary" in dataservice_client_source, "DataServiceClient has cash.summary action constant")
+    require("sendAction(kActionCashSummary" in dataservice_client_source, "DataServiceClient wrapper sends cash.summary")
     require("POSITION_LIST_NOT_AVAILABLE" in position_list_guard_source, "position.list guard source returns not available status")
     require('"implemented":false' in position_list_guard_source, "position.list guard source sets implemented=false")
     require('"readOnly":true' in position_list_guard_source, "position.list guard source sets readOnly=true")
@@ -1095,17 +1107,53 @@ def main() -> int:
     require("data.audit.append" not in position_list_guard_source, "position.list guard source does not call data.audit.append")
     for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
         require(forbidden_sql not in position_list_guard_source, f"position.list guard source does not contain {forbidden_sql}")
+    require("CASH_SUMMARY_NOT_AVAILABLE" in cash_summary_guard_source, "cash.summary guard source returns not available status")
+    require('"implemented":false' in cash_summary_guard_source, "cash.summary guard source sets implemented=false")
+    require('"readOnly":true' in cash_summary_guard_source, "cash.summary guard source sets readOnly=true")
+    require('"writeEnabled":false' in cash_summary_guard_source, "cash.summary guard source sets writeEnabled=false")
+    require('"sqliteAccessed":false' in cash_summary_guard_source, "cash.summary guard source sets sqliteAccessed=false")
+    require('"cashFactsAccessed":false' in cash_summary_guard_source, "cash.summary guard source sets cashFactsAccessed=false")
+    require('"snapshotAccessed":false' in cash_summary_guard_source, "cash.summary guard source sets snapshotAccessed=false")
+    require(
+        '"portfolioSummaryAccessed":false' in cash_summary_guard_source,
+        "cash.summary guard source sets portfolioSummaryAccessed=false",
+    )
+    require('"accountingEngineCalled":false' in cash_summary_guard_source, "cash.summary guard source sets accountingEngineCalled=false")
+    require("CashSummaryResponse" in cash_summary_guard_source, "cash.summary guard source declares future CashSummaryResponse")
+    require("cash_snapshot" in cash_summary_guard_source, "cash.summary guard source forbids cash_snapshot source/write")
+    require("portfolio_summary" in cash_summary_guard_source, "cash.summary guard source forbids portfolio_summary source/write")
+    require("AccountingEngine/" not in cash_summary_guard_source, "cash.summary guard source does not include AccountingEngine")
+    require("DataAccess" not in cash_summary_guard_source, "cash.summary guard source does not reference DataAccess repository")
+    require("data.audit.append" not in cash_summary_guard_source, "cash.summary guard source does not call data.audit.append")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
+        require(forbidden_sql not in cash_summary_guard_source, f"cash.summary guard source does not contain {forbidden_sql}")
     require("dataservice_position_list_guard" in dataservice_test_cmake, "DataService CMake registers position.list guard test")
     require("dataservice_position_list_no_write" in dataservice_test_cmake, "DataService CMake registers position.list no-write test")
+    require("dataservice_cash_summary_guard" in dataservice_test_cmake, "DataService CMake registers cash.summary guard test")
+    require("dataservice_cash_summary_no_write" in dataservice_test_cmake, "DataService CMake registers cash.summary no-write test")
     require(
         "dataservice_client_position_list_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers position.list client guard test",
+    )
+    require(
+        "dataservice_client_cash_summary_guard" in dataservice_client_test_cmake,
+        "DataServiceClient CMake registers cash.summary client guard test",
     )
     require("kActionPositionList" in dataservice_readonly_test, "DataService test calls position.list action")
     require("POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks position.list status")
     require("position.list does not return real positions" in dataservice_readonly_test, "DataService test checks no real positions")
     require("expectProtectedTableCountsUnchanged" in dataservice_readonly_test, "DataService test checks position.list no-write")
+    require("kActionCashSummary" in dataservice_readonly_test, "DataService test calls cash.summary action")
+    require("CASH_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks cash.summary status")
+    require("cash.summary does not return real cashBalance" in dataservice_readonly_test, "DataService test checks no real cashBalance")
+    require("cash.summary cashFactsAccessed=false" in dataservice_readonly_test, "DataService test checks cash facts not accessed")
+    require("cash.summary snapshotAccessed=false" in dataservice_readonly_test, "DataService test checks snapshot not accessed")
+    require(
+        "cash.summary portfolioSummaryAccessed=false" in dataservice_readonly_test,
+        "DataService test checks portfolio summary not accessed",
+    )
     require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
+    require("client.cashSummary" in dataservice_client_test, "DataServiceClient test calls cashSummary wrapper")
 
     require("add_subdirectory(AccountingNoWrite)" in tests_cmake, "tests CMake adds AccountingNoWrite tests")
     require("accounting_forbidden_sql_scanner" in accounting_no_write_cmake, "AccountingNoWrite CMake registers scanner CTest")
@@ -1247,6 +1295,39 @@ def main() -> int:
         "prompt template forbids deriving CashFactDto from snapshots",
     )
     require("Query layer must not compute cash balance" in codex_prompt_template, "prompt template forbids cash balance calculation in query layer")
+    require("cash.summary DataService action guard" in readme, "README documents cash.summary guard")
+    require("CASH_SUMMARY_NOT_AVAILABLE" in readme, "README documents cash.summary guard status")
+    require("dataservice_cash_summary_guard" in readme, "README documents cash.summary guard test")
+    require("dataservice_cash_summary_no_write" in readme, "README documents cash.summary no-write test")
+    require("TASK-089" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-089")
+    require("cash.summary` as a DataService read-only action guard" in dataservice_readonly_accounting_contracts, "DataService contract doc documents cash.summary guard")
+    require("implemented=false" in dataservice_readonly_accounting_contracts, "DataService contract doc states cash.summary guard implemented=false")
+    require("CASH_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_accounting_contracts, "DataService contract doc documents cash.summary status")
+    require("CashSummaryResponse" in dataservice_readonly_accounting_contracts, "DataService contract doc documents CashSummaryResponse")
+    require("docs/41_cash_facts_source_boundary.md" in dataservice_readonly_accounting_contracts, "DataService contract doc references cash facts boundary")
+    require("TASK-089" in dataservice_accounting_no_write_plan, "no-write plan records TASK-089")
+    require(
+        "cash.summary` guard has no-write table count coverage" in dataservice_accounting_no_write_plan,
+        "no-write plan documents cash.summary guard no-write coverage",
+    )
+    require("cash_snapshot" in dataservice_accounting_no_write_plan, "no-write plan protects cash_snapshot for cash.summary")
+    require("portfolio_summary" in dataservice_accounting_no_write_plan, "no-write plan protects portfolio_summary for cash.summary")
+    require("TASK-089" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-089")
+    require("cash.summary` guard does not use SQLite facts query" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc says cash.summary guard avoids SQLite")
+    require("TASK-089" in accounting_facts_source_mapping, "facts source mapping records TASK-089")
+    require("cash.summary` guard does not use this facts mapping" in accounting_facts_source_mapping, "facts source mapping says cash.summary guard avoids mapping")
+    require("TASK-089" in cash_facts_source_boundary, "cash facts boundary records TASK-089")
+    require("not a cash facts query" in cash_facts_source_boundary, "cash facts boundary says guard is not query")
+    require("TASK-089" in cash_facts_query_decision, "cash facts decision records TASK-089")
+    require("keeps `cash.summary` as a guard" in cash_facts_query_decision, "cash facts decision says cash.summary remains guard")
+    require(
+        "DataService `cash.summary` guard tasks must not pretend to be real" in codex_prompt_template,
+        "prompt template says cash.summary guard is not real implementation",
+    )
+    require(
+        "must not return real cash" in codex_prompt_template,
+        "prompt template forbids real cash balance from guard",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

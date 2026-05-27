@@ -463,3 +463,36 @@ The real `cash.summary` action is still not implemented. A future
 `cash.summary` guard or implementation must reference those documents, must not
 infer cash facts from `cash_snapshot` or `portfolio_summary`, and must keep the
 first implementation read-only with no-write tests.
+
+## TASK-089 cash.summary Guard
+
+TASK-089 registers `cash.summary` as a DataService read-only action guard.
+Current guard payload fields include:
+
+- `module="accounting"`
+- `action="cash.summary"`
+- `implemented=false`
+- `readOnly=true`
+- `writeEnabled=false`
+- `replayExecuted=false`
+- `dataSourceAccessed=false`
+- `sqliteAccessed=false`
+- `cashFactsAccessed=false`
+- `snapshotAccessed=false`
+- `portfolioSummaryAccessed=false`
+- `accountingEngineCalled=false`
+- `status="CASH_SUMMARY_NOT_AVAILABLE"`
+- `futureOutput.type="CashSummaryResponse"`
+- `futureOutput.cashSummary=null`
+- `futureOutput.accountCashSummaries=[]`
+- `forbiddenSources[]` with `cash_snapshot`, `position_snapshot`, and
+  `portfolio_summary`
+- `issues[]` with blocking `CASH_SUMMARY_NOT_AVAILABLE`
+- `forbiddenWrites[]`
+- `requiredNextTasks[]`
+
+This does not implement the real `CashSummaryResponse`. Cash facts source
+review still depends on `docs/41_cash_facts_source_boundary.md` and
+`docs/42_cash_facts_query_decision.md`. SQLite facts query integration remains
+unimplemented, and DataService still does not call AccountingEngine for
+`cash.summary`.

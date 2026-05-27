@@ -51,6 +51,9 @@
   no AccountingEngine call, and no writes.
 - Cash facts source boundary: `CashFactDto` source decision docs only; no cash
   facts query, no cash facts repository, no SQLite access, and no writes.
+- DataService `cash.summary` guard: registered read-only guard with
+  `implemented=false`; real cash summary, cash facts query, snapshot reads, and
+  writes remain unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

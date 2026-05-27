@@ -737,4 +737,79 @@ etfdt::protocol::ProtocolResponse handlePositionList(
     return successResponse(context, payload);
 }
 
+etfdt::protocol::ProtocolResponse handleCashSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "cash.summary payload must be a JSON object");
+    }
+
+    const std::string payload = R"json({
+"module":"accounting",
+"action":"cash.summary",
+"implemented":false,
+"readOnly":true,
+"writeEnabled":false,
+"replayExecuted":false,
+"dataSourceAccessed":false,
+"sqliteAccessed":false,
+"cashFactsAccessed":false,
+"snapshotAccessed":false,
+"portfolioSummaryAccessed":false,
+"accountingEngineCalled":false,
+"contractVersion":"0.4-draft",
+"calculationVersion":"not-implemented",
+"status":"CASH_SUMMARY_NOT_AVAILABLE",
+"message":"cash.summary is a read-only contract guard and is not implemented yet.",
+"futureOutput":{
+"type":"CashSummaryResponse",
+"cashSummary":null,
+"accountCashSummaries":[]
+},
+"forbiddenSources":[
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary"
+],
+"forbiddenWrites":[
+"trade_log",
+"trade_execution_group",
+"trade_draft",
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary",
+"audit_log"
+],
+"requiredNextTasks":[
+"Cash facts source schema review",
+"Cash facts read-only query implementation",
+"AccountingEngine integration boundary",
+"cash.summary no-write integration test",
+"real CashSummaryResponse mapping"
+],
+"issues":[
+{
+"level":"ERROR",
+"code":"CASH_SUMMARY_NOT_AVAILABLE",
+"message":"cash.summary is not implemented.",
+"blocking":true
+}
+],
+"warnings":[
+"CASH_SUMMARY_NOT_IMPLEMENTED",
+"NO_CASH_FACTS_SOURCE",
+"NO_SQLITE_FACTS_QUERY",
+"NO_ACCOUNTING_ENGINE_CALL"
+]
+})json";
+
+    return successResponse(context, payload);
+}
+
 }  // namespace etfdt::data_service_api

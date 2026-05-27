@@ -39,6 +39,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionPositionList, [&connection](const auto& context) {
         return handlePositionList(context, connection);
     });
+    (void)dispatcher.registerAction(kActionCashSummary, [&connection](const auto& context) {
+        return handleCashSummary(context, connection);
+    });
 }
 
 void registerDataServiceWriteActions(

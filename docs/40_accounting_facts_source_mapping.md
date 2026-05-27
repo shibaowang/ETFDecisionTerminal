@@ -159,3 +159,13 @@ an initial cash source, not a deposit source, and not a withdraw source. Schema
 gaps around initial cash, deposit, withdraw, adjustment, fee distinction,
 currency, account, and portfolio sources need later review before any cash facts
 query implementation.
+
+## TASK-089 cash.summary Guard Mapping Boundary
+
+The `cash.summary` guard does not use this facts mapping. It returns a
+`CashSummaryResponse` future output shape with `cashSummary=null` and an empty
+`accountCashSummaries` array only to describe the contract.
+
+Future real `cash.summary` implementation is the point where `CashFactDto`
+mapping may be used, after `docs/41_cash_facts_source_boundary.md` and
+`docs/42_cash_facts_query_decision.md` confirm the facts source.

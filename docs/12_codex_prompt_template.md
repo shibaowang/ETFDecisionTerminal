@@ -418,3 +418,14 @@ v0.1 草案。
 - Query layer must not compute cash balance.
 - If schema does not contain a cash fact source, stop and report the schema gap;
   do not fake facts.
+- DataService `cash.summary` guard tasks must not pretend to be real
+  implementations.
+- `implemented=false` cash guards may exist, but they must not return real cash
+  balance data.
+- Future real `cash.summary` tasks must reference
+  `docs/37_dataservice_readonly_accounting_action_contracts.md`,
+  `docs/38_dataservice_accounting_no_write_test_plan.md`,
+  `docs/39_sqlite_readonly_facts_query_boundary.md`,
+  `docs/40_accounting_facts_source_mapping.md`,
+  `docs/41_cash_facts_source_boundary.md`, and
+  `docs/42_cash_facts_query_decision.md`, and must include no-write tests.

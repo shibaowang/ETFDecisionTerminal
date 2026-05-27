@@ -218,3 +218,22 @@ The cash facts source boundary is documented in
 request paths, and schema gap paths must also be no-write. A future query must
 not write `cash_snapshot` or `portfolio_summary`, and must not derive cash facts
 from either table.
+
+## TASK-089 cash.summary Guard No-write Coverage
+
+The `cash.summary` guard has no-write table count coverage. The guard test
+checks that calling `cash.summary` leaves these protected tables unchanged:
+
+- `trade_log`
+- `trade_execution_group`
+- `trade_draft`
+- `cash_snapshot`
+- `position_snapshot`
+- `portfolio_summary`
+- `audit_log`
+
+The guard also confirms that `cash.summary` does not read cash facts, does not
+read `cash_snapshot` or `portfolio_summary`, does not access SQLite facts
+queries, and does not call AccountingEngine. The real `cash.summary`
+implementation must extend these no-write tests before it can read facts or map
+real cash DTOs.

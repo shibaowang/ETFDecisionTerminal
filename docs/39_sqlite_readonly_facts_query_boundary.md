@@ -320,3 +320,14 @@ Any future cash facts query must reference `docs/41_cash_facts_source_boundary.m
 and `docs/42_cash_facts_query_decision.md`, must stay read-only, must use
 `SELECT`-only SQL, and must pass the no-write harness before DataService
 integration.
+
+## TASK-089 cash.summary Guard Boundary
+
+The `cash.summary` guard does not use SQLite facts query. It returns
+`CASH_SUMMARY_NOT_AVAILABLE` without reading cash facts, `cash_snapshot`,
+`portfolio_summary`, `trade_log`, market price facts, FX rate facts, or
+snapshots.
+
+Future SQLite cash facts query integration for real `cash.summary` requires a
+separate task and must keep the read-only and no-write boundaries in this
+document.

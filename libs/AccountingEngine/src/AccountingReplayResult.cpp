@@ -203,8 +203,8 @@ AccountingReplayResult makeNegativeCashReplayResult()
 AccountingReplayResult makeSellExceedsPositionReplayResult()
 {
     AccountingReplayResult result;
-    result.implemented = false;
-    result.replayExecuted = false;
+    result.implemented = true;
+    result.replayExecuted = true;
     result.status = AccountingReplayStatus::Error;
     result.message = "Sell quantity exceeds available position.";
     result.issues.push_back(makeAccountingIssue(

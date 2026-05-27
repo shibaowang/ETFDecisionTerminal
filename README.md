@@ -1136,6 +1136,42 @@ ctest --test-dir build --output-on-failure
 ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
 ```
 
+## TASK-075 AccountingEngine sell exceeds position scenario
+
+`libs/AccountingEngine` now includes a production-side read-only
+`SELL_EXCEEDS_POSITION` controlled error scenario. It accepts exactly one CNY
+`BUY` and one CNY `SELL` for the same account, portfolio, and instrument, and
+returns a blocking error when `SELL` quantity is greater than the bought
+quantity.
+
+The controlled error returns `implemented=true`, `replayExecuted=true`,
+`status=ERROR`, and one blocking `SELL_EXCEEDS_POSITION` issue. It does not
+produce successful positions, cash summary, portfolio PnL, base-position, or
+sniper-pool outputs, and it never emits a negative holding as a success result.
+
+Current production-side replay skeleton coverage is limited to empty ledger,
+single BUY, one BUY + one partial SELL, and one BUY + one SELL oversell
+detection. `replayImplemented=false` still means complete production replay is
+not implemented.
+
+This task does not implement full missing-fee handling, full negative-cash
+fixture handling, multi-transaction replay, multi-instrument replay,
+multi-account replay, market value, unrealized PnL, base position, sniper pool,
+SQLite access, DataService actions, snapshot writes, TradeLog writes, or QML
+behavior.
+
+The sell-exceeds-position test is
+`accounting_replay_engine_sell_exceeds_position`.
+
+Run tests:
+
+```powershell
+cmake -S . -B build -DETFDT_QT6_ROOT=C:\Qt\6.9.3\msvc2022_64
+cmake --build build
+ctest --test-dir build --output-on-failure
+ctest --test-dir build -R transport_local_socket_echo --repeat until-fail:50 --output-on-failure
+```
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

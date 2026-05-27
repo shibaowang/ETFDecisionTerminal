@@ -62,3 +62,16 @@ target_link_libraries(AccountingReplayEngineBuySellPartialTests
 target_compile_features(AccountingReplayEngineBuySellPartialTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_buy_sell_partial COMMAND AccountingReplayEngineBuySellPartialTests)
+
+add_executable(AccountingReplayEngineSellExceedsPositionTests
+    test_accounting_replay_engine_sell_exceeds_position.cpp
+)
+
+target_link_libraries(AccountingReplayEngineSellExceedsPositionTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineSellExceedsPositionTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_sell_exceeds_position COMMAND AccountingReplayEngineSellExceedsPositionTests)

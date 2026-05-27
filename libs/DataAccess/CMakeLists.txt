@@ -47,6 +47,7 @@ if(NOT SQLite3_FOUND)
 endif()
 
 add_library(ETFDataAccess STATIC
+    src/AccountingTradeFactReader.cpp
     src/AuditLogRepository.cpp
     src/DataAccess.cpp
     src/MigrationRunner.cpp

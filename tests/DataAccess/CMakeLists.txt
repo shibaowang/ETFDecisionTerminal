@@ -16,6 +16,10 @@ add_executable(TransactionAuditTests
     test_transaction_audit.cpp
 )
 
+add_executable(AccountingTradeFactReaderTests
+    test_accounting_trade_fact_reader.cpp
+)
+
 target_link_libraries(DataAccessTests
     PRIVATE
         ETFDecisionTerminal::DataAccess
@@ -31,9 +35,16 @@ target_link_libraries(TransactionAuditTests
         ETFDecisionTerminal::DataAccess
 )
 
+target_link_libraries(AccountingTradeFactReaderTests
+    PRIVATE
+        ETFDecisionTerminal::DataAccess
+        AccountingNoWriteTestUtils
+)
+
 target_compile_features(DataAccessTests PRIVATE cxx_std_17)
 target_compile_features(ReadOnlyRepositoryTests PRIVATE cxx_std_17)
 target_compile_features(TransactionAuditTests PRIVATE cxx_std_17)
+target_compile_features(AccountingTradeFactReaderTests PRIVATE cxx_std_17)
 
 add_test(
     NAME dataaccess_database_init
@@ -55,6 +66,30 @@ add_test(
     NAME dataaccess_transaction_audit
     COMMAND
         TransactionAuditTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
+add_test(
+    NAME dataaccess_accounting_trade_facts_readonly_query
+    COMMAND
+        AccountingTradeFactReaderTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
+add_test(
+    NAME dataaccess_accounting_trade_facts_no_write
+    COMMAND
+        AccountingTradeFactReaderTests
+        --migration
+        ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+)
+
+add_test(
+    NAME dataaccess_accounting_trade_facts_sql_scan
+    COMMAND
+        AccountingTradeFactReaderTests
         --migration
         ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
 )

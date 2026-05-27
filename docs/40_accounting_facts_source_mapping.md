@@ -106,3 +106,40 @@ against protected table row counts and forbidden write keywords.
 Future mapping implementation must use the read-only boundary in
 `docs/39_sqlite_readonly_facts_query_boundary.md`, must not use snapshots as
 facts, and must pass no-write harness checks before DataService integration.
+
+## TASK-087 trade_log to TradeFactRow Skeleton Mapping
+
+TASK-087 adds a DataAccess-side trade facts reader that maps current
+`trade_log` rows to `TradeFactRow`. This is a skeleton mapping and not an
+AccountingEngine DTO mapping.
+
+Current mapping:
+
+- `factId` <- `trade_log.uid`
+- `tradeTime` <- `COALESCE(local_time, created_at_utc)`
+- `accountId` <- `CAST(account_id AS TEXT)`
+- `portfolioId` <- `CAST(portfolio_id AS TEXT)`
+- `instrumentCode` <- `actual_code`
+- `action` <- `action_type`
+- `quantityText` <- `quantity_1e6` formatted as decimal quantity
+- `priceText` <- `price_1e6` formatted as decimal price plus currency when
+  present
+- `amountText` <- `amount_cents` formatted as money text
+- `feeText` <- `fee_cents` formatted as money text
+- `cashFlowText` <- `net_cash_impact_cents` formatted as money text
+- `currency` <- `instrument.currency`
+- `source` <- `trade_source`
+- `note` <- `memo`
+
+Mapping gaps:
+
+- current `trade_log.fee_cents` is `NOT NULL DEFAULT 0`, so a missing fee cannot
+  be distinguished from an explicit zero fee at this layer;
+- account and portfolio are currently exposed as numeric id text, not external
+  account or portfolio DTO ids;
+- cash facts, market price facts, and FX facts remain unmapped;
+- DataServiceApi or a future mapper must decide how to convert this
+  DataAccess-side row into AccountingEngine DTOs.
+
+SELL quantity exceeding position is still a replay-layer issue, not a query
+layer issue. The query layer preserves facts only.

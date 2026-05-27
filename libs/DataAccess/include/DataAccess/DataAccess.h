@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DataAccess/AuditLogRepository.h"
+#include "DataAccess/AccountingTradeFactReader.h"
 #include "DataAccess/DatabaseTypes.h"
 #include "DataAccess/MigrationRunner.h"
 #include "DataAccess/ReadOnlyRepositoryBase.h"

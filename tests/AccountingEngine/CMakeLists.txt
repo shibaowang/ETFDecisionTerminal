@@ -36,3 +36,16 @@ target_link_libraries(AccountingReplayEngineEmptyLedgerTests
 target_compile_features(AccountingReplayEngineEmptyLedgerTests PRIVATE cxx_std_17)
 
 add_test(NAME accounting_replay_engine_empty_ledger COMMAND AccountingReplayEngineEmptyLedgerTests)
+
+add_executable(AccountingReplayEngineSingleBuyTests
+    test_accounting_replay_engine_single_buy.cpp
+)
+
+target_link_libraries(AccountingReplayEngineSingleBuyTests
+    PRIVATE
+        ETFDecisionTerminal::AccountingEngine
+)
+
+target_compile_features(AccountingReplayEngineSingleBuyTests PRIVATE cxx_std_17)
+
+add_test(NAME accounting_replay_engine_single_buy COMMAND AccountingReplayEngineSingleBuyTests)

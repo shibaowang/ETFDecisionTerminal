@@ -388,3 +388,30 @@ Current boundaries remain:
 - No SQLite access.
 - No snapshot writes.
 - No TradeLog writes.
+
+## TASK-073 Single Buy Replay Skeleton Status
+
+TASK-073 adds a production-side read-only single BUY replay skeleton to
+`libs/AccountingEngine`.
+
+Scope:
+
+- One `INITIAL_CASH` cash fact.
+- One `BUY` trade fact.
+- Single account and portfolio.
+- Single instrument.
+- CNY only.
+- Cost amount from `amount + fee`.
+- Cash balance from `initialCash - amount - fee`.
+
+The implementation does not calculate SELL, realized PnL, unrealized PnL,
+market value, base position, sniper pool, multi-account, multi-instrument, or
+multi-currency replay.
+
+Current boundaries remain:
+
+- No DataAccess dependency.
+- No DataService action.
+- No SQLite access.
+- No snapshot writes.
+- No TradeLog writes.

@@ -5,6 +5,7 @@ namespace etfdt::accounting {
 struct AccountingEngineCapabilities {
     bool replayImplemented = false;
     bool emptyLedgerReplaySupported = true;
+    bool singleBuyReplaySupported = true;
     bool readOnlyReplaySupported = false;
     bool writeEnabled = false;
     bool snapshotWriteEnabled = false;

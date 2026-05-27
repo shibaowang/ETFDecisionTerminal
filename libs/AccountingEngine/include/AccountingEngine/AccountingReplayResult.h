@@ -21,6 +21,8 @@ struct PositionSummaryDto {
     std::string instrumentCode;
     std::string quantityText;
     std::string costAmountText;
+    std::string costPriceText;
+    std::string currency;
     std::string dataQualityStatus;
 };
 
@@ -74,7 +76,16 @@ struct AccountingReplayResult {
     const std::string& accountId,
     const std::string& portfolioId);
 
+[[nodiscard]] AccountingReplayResult makeSingleBuyReplayResult(
+    const std::string& accountId,
+    const std::string& portfolioId,
+    const std::string& instrumentCode,
+    const std::string& quantityText,
+    long long costCents,
+    long long cashBalanceCents);
+
 [[nodiscard]] AccountingReplayResult makeInvalidReplayRequestResult(std::vector<AccountingIssueDto> issues);
 [[nodiscard]] AccountingReplayResult makeUnsupportedReplayScenarioResult();
+[[nodiscard]] AccountingReplayResult makeNegativeCashReplayResult();
 
 } // namespace etfdt::accounting

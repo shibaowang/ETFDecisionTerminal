@@ -339,3 +339,6 @@ v0.1 草案。
 - Future replay tasks must not introduce DataAccess or DataService actions unless explicitly authorized.
 - Future replay tasks must not write snapshots, TradeLog, TradeDraft, or business summary tables by default.
 - Future replay tasks must not copy `tests/AccountingFixtures` implementations.
+- AccountingEngine single buy skeleton does not mean complete replay is implemented.
+- Future production replay tasks after single BUY must remain one scenario at a time.
+- Future SELL, PnL, market value, base-position, sniper-pool, multi-account, and multi-instrument work requires separate authorization.

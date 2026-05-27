@@ -1069,6 +1069,32 @@ snapshot writes, TradeLog writes, or QML behavior.
 
 The empty-ledger skeleton test is `accounting_replay_engine_empty_ledger`.
 
+## TASK-073 AccountingEngine single buy replay skeleton
+
+`libs/AccountingEngine` now supports a production-side read-only single BUY
+replay skeleton in addition to empty ledger.
+
+Supported shape:
+
+- one `INITIAL_CASH` fact
+- one `BUY` trade fact
+- one account
+- one portfolio
+- one instrument
+- CNY only
+
+The single BUY skeleton returns one position with input quantity, `costAmount`
+as `amount + fee`, `costPrice` as `costAmount / quantity`, and cash balance as
+`initialCash - amount - fee`. Portfolio PnL remains an unavailable shell and
+does not fabricate market value or unrealized PnL.
+
+`replayImplemented=false` still means complete production replay is not
+implemented. This task does not implement SELL, multi-BUY, multi-instrument,
+multi-account, PnL, market value, base position, sniper pool, SQLite access,
+DataService actions, snapshot writes, TradeLog writes, or QML behavior.
+
+The single BUY skeleton test is `accounting_replay_engine_single_buy`.
+
 Run tests:
 
 ```powershell

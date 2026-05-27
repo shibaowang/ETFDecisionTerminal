@@ -160,3 +160,17 @@ returns unsupported / not implemented and does not produce successful outputs.
 
 This is not a complete replay engine. FX002 and every non-empty replay scenario
 must be authorized in separate tasks.
+
+## TASK-073 Single Buy Replay Entry
+
+The skeleton now includes a single BUY read-only replay entry. This is a
+production-side incremental replay skeleton for the FX002-equivalent scenario,
+not a complete replay engine.
+
+The entry accepts one `INITIAL_CASH` fact and one CNY `BUY` trade fact. It
+derives one position, a cash summary, and an unavailable PnL shell. It does not
+derive market value or unrealized PnL.
+
+SELL, PnL, market valuation, multi-account, multi-instrument, base-position,
+sniper-pool, DataAccess, DataService actions, snapshots, and TradeLog writes
+remain out of scope unless separately authorized.

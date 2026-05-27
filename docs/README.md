@@ -33,6 +33,8 @@
 - [32 Production Accounting Replay Readiness Review](32_production_accounting_replay_readiness_review.md)
 - [33 Production Accounting Replay Architecture Boundary](33_production_accounting_replay_architecture.md)
 - [34 AccountingEngine Module Candidate](34_accounting_engine_module_candidate.md)
+- [35 AccountingEngine Replay Skeleton Milestone](35_accounting_engine_replay_skeleton_milestone.md)
+- [36 AccountingEngine Next Phase Boundary Review](36_accounting_engine_next_phase_boundary_review.md)
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)
@@ -48,3 +50,4 @@
 - [Release Notes - v0.1 ReadOnly Shell Demo](release_notes/v0_1_readonly_shell_demo.md)
 - [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)
 - [Release Notes - v0.3 Accounting Replay Test-only Coverage](release_notes/v0_3_accounting_replay_testonly_coverage.md)
+- [Release Notes - v0.4 AccountingEngine Replay Skeleton](release_notes/v0_4_accounting_engine_replay_skeleton.md)

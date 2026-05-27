@@ -324,3 +324,20 @@ prices, and does not calculate real market value or unrealized PnL.
 Real market price support, valuation, DataAccess, DataService actions,
 snapshots, and TradeLog writes remain out of scope unless separately
 authorized.
+
+## TASK-082 Replay Skeleton Milestone Boundary
+
+AccountingEngine skeleton scenario coverage is complete for the current
+DTO-only milestone. The covered skeleton scenarios are documented in
+[docs/35_accounting_engine_replay_skeleton_milestone.md](35_accounting_engine_replay_skeleton_milestone.md).
+
+This does not make the module production ready. `replayImplemented=false`
+remains correct because complete production replay is not implemented.
+`productionReady=false` remains correct because DataService actions, SQLite
+facts query integration, write policy, snapshot writes, TradeLog writes, real
+market valuation, FX rate support, and QML-facing production flows remain out
+of scope.
+
+The next phase requires an explicit boundary choice. The available routes and
+Go / No-Go checklist are documented in
+[docs/36_accounting_engine_next_phase_boundary_review.md](36_accounting_engine_next_phase_boundary_review.md).

@@ -530,6 +530,25 @@ Current boundaries remain:
 - No snapshot writes.
 - No TradeLog writes.
 
+## TASK-082 Replay Skeleton Milestone Docs
+
+TASK-082 adds milestone and next-phase boundary review documentation for the
+current AccountingEngine production-side DTO-only replay skeleton.
+
+- Current skeleton coverage is summarized in
+  [docs/35_accounting_engine_replay_skeleton_milestone.md](35_accounting_engine_replay_skeleton_milestone.md).
+- Next phase route choices are documented in
+  [docs/36_accounting_engine_next_phase_boundary_review.md](36_accounting_engine_next_phase_boundary_review.md).
+
+The milestone confirms that the skeleton includes controlled DTO-only scenarios
+but still is not complete production accounting replay. No DataService action
+exists yet. No SQLite integration exists yet. No snapshot writes exist. No
+TradeLog writes are authorized.
+
+`AccountingEngineInfo.replayImplemented=false`,
+`AccountingEngineInfo.productionReady=false`, and
+`AccountingEngineCapabilities.writeEnabled=false` remain correct.
+
 ## TASK-076 Missing Fee Detection Status
 
 TASK-076 adds a production-side read-only `MISSING_FEE` controlled warning

@@ -28,6 +28,7 @@ struct ShellAccountingServiceResult final {
     bool writeEnabled = false;
     std::string payloadStatus;
     std::string dataQualityStatus = "UNAVAILABLE";
+    bool hasRows = false;
     std::vector<ShellAccountingIssue> issues;
     std::vector<ShellAccountingIssue> warnings;
     std::vector<ShellAccountingIssue> errors;

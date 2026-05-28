@@ -54,6 +54,67 @@ target_link_libraries(ShellAccountingControllerAdapterInjectionTests
 
 target_compile_features(ShellAccountingControllerAdapterInjectionTests PRIVATE cxx_std_17)
 
+add_executable(ShellAccountingControllerFakeAdapterRefreshSuccessTests
+    test_shell_accounting_controller_fake_adapter_refresh_success.cpp
+)
+
+target_link_libraries(ShellAccountingControllerFakeAdapterRefreshSuccessTests
+    PRIVATE
+        ShellAccountingServiceAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingControllerFakeAdapterRefreshSuccessTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerFakeAdapterUnavailableTests
+    test_shell_accounting_controller_fake_adapter_unavailable.cpp
+)
+
+target_link_libraries(ShellAccountingControllerFakeAdapterUnavailableTests
+    PRIVATE
+        ShellAccountingServiceAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingControllerFakeAdapterUnavailableTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerFakeAdapterProtocolErrorTests
+    test_shell_accounting_controller_fake_adapter_protocol_error.cpp
+)
+
+target_link_libraries(ShellAccountingControllerFakeAdapterProtocolErrorTests
+    PRIVATE
+        ShellAccountingServiceAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingControllerFakeAdapterProtocolErrorTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerFakeAdapterIssueMappingTests
+    test_shell_accounting_controller_fake_adapter_issue_mapping.cpp
+)
+
+target_link_libraries(ShellAccountingControllerFakeAdapterIssueMappingTests
+    PRIVATE
+        ShellAccountingServiceAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingControllerFakeAdapterIssueMappingTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerFakeAdapterPrivacyNoTradeTests
+    test_shell_accounting_controller_fake_adapter_privacy_no_trade.cpp
+)
+
+target_link_libraries(ShellAccountingControllerFakeAdapterPrivacyNoTradeTests
+    PRIVATE
+        ShellAccountingServiceAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingControllerFakeAdapterPrivacyNoTradeTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerFakeAdapterNoRealDependencyTests
+    test_shell_accounting_controller_fake_adapter_no_real_dependency.cpp
+)
+
+target_compile_features(ShellAccountingControllerFakeAdapterNoRealDependencyTests PRIVATE cxx_std_17)
+
 add_test(
     NAME shell_accounting_service_adapter_interface
     COMMAND ShellAccountingServiceAdapterInterfaceTests
@@ -75,4 +136,37 @@ add_test(
 add_test(
     NAME shell_accounting_controller_adapter_injection
     COMMAND ShellAccountingControllerAdapterInjectionTests
+)
+
+add_test(
+    NAME shell_accounting_controller_fake_adapter_refresh_success
+    COMMAND ShellAccountingControllerFakeAdapterRefreshSuccessTests
+)
+
+add_test(
+    NAME shell_accounting_controller_fake_adapter_unavailable
+    COMMAND ShellAccountingControllerFakeAdapterUnavailableTests
+)
+
+add_test(
+    NAME shell_accounting_controller_fake_adapter_protocol_error
+    COMMAND ShellAccountingControllerFakeAdapterProtocolErrorTests
+)
+
+add_test(
+    NAME shell_accounting_controller_fake_adapter_issue_mapping
+    COMMAND ShellAccountingControllerFakeAdapterIssueMappingTests
+)
+
+add_test(
+    NAME shell_accounting_controller_fake_adapter_privacy_no_trade
+    COMMAND ShellAccountingControllerFakeAdapterPrivacyNoTradeTests
+)
+
+add_test(
+    NAME shell_accounting_controller_fake_adapter_no_real_dependency
+    COMMAND
+        ShellAccountingControllerFakeAdapterNoRealDependencyTests
+        --source-root
+        ${PROJECT_SOURCE_DIR}
 )

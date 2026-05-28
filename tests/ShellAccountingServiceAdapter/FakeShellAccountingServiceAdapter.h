@@ -2,6 +2,7 @@
 
 #include "ShellServices/ShellAccountingServiceAdapter.h"
 
+#include <functional>
 #include <string>
 
 namespace etfdt::tests::shell_accounting_service_adapter {
@@ -25,6 +26,8 @@ public:
 
     [[nodiscard]] int callCount() const noexcept;
     [[nodiscard]] const std::string& lastActionName() const noexcept;
+    void setNextResult(etfdt::shell_services::ShellAccountingServiceResult result);
+    void setOnFetch(std::function<void()> onFetch);
 
 private:
     etfdt::shell_services::ShellAccountingServiceResult makeResult(
@@ -34,6 +37,7 @@ private:
     etfdt::shell_services::ShellAccountingServiceResult result_;
     int callCount_ = 0;
     std::string lastActionName_;
+    std::function<void()> onFetch_;
 };
 
 [[nodiscard]] etfdt::shell_services::ShellAccountingServiceRequest

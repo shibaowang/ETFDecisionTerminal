@@ -48,9 +48,17 @@ public:
     void setServiceAdapter(std::shared_ptr<ShellAccountingServiceAdapter> adapter) noexcept;
     [[nodiscard]] bool hasServiceAdapter() const noexcept;
     void clearServiceAdapter() noexcept;
+    void refreshPositionList(const ShellAccountingServiceRequest& request);
+    void refreshCashSummary(const ShellAccountingServiceRequest& request);
+    void refreshPortfolioPnlSummary(const ShellAccountingServiceRequest& request);
+    void refreshBasePositionSummary(const ShellAccountingServiceRequest& request);
+    void refreshSniperPoolSummary(const ShellAccountingServiceRequest& request);
     void reset();
 
 private:
+    void applyServiceResult(ShellAccountingServiceResult result);
+    void markServiceAdapterNotConfigured(std::string actionName);
+
     std::string actionName_;
     ShellAccountingViewState state_ = ShellAccountingViewState::Idle;
     std::vector<ShellAccountingIssue> issues_;

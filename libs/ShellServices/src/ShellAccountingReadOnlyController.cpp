@@ -4,6 +4,31 @@
 
 namespace etfdt::shell_services {
 
+namespace {
+
+ShellAccountingIssue makeControllerIssue(
+    std::string code,
+    std::string message,
+    bool blocking = true)
+{
+    return {
+        std::move(code),
+        blocking ? "ERROR" : "WARNING",
+        std::move(message),
+        blocking,
+        "ShellAccountingReadOnlyController",
+    };
+}
+
+void appendIssues(
+    std::vector<ShellAccountingIssue>& target,
+    const std::vector<ShellAccountingIssue>& source)
+{
+    target.insert(target.end(), source.begin(), source.end());
+}
+
+}  // namespace
+
 bool ShellAccountingReadOnlyController::readOnly() const noexcept
 {
     return true;
@@ -120,6 +145,61 @@ void ShellAccountingReadOnlyController::clearServiceAdapter() noexcept
     serviceAdapter_.reset();
 }
 
+void ShellAccountingReadOnlyController::refreshPositionList(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("position.list");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("position.list");
+        return;
+    }
+    applyServiceResult(serviceAdapter_->fetchPositionList(request));
+}
+
+void ShellAccountingReadOnlyController::refreshCashSummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("cash.summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("cash.summary");
+        return;
+    }
+    applyServiceResult(serviceAdapter_->fetchCashSummary(request));
+}
+
+void ShellAccountingReadOnlyController::refreshPortfolioPnlSummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("portfolio.pnl.summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("portfolio.pnl.summary");
+        return;
+    }
+    applyServiceResult(serviceAdapter_->fetchPortfolioPnlSummary(request));
+}
+
+void ShellAccountingReadOnlyController::refreshBasePositionSummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("base_position.summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("base_position.summary");
+        return;
+    }
+    applyServiceResult(serviceAdapter_->fetchBasePositionSummary(request));
+}
+
+void ShellAccountingReadOnlyController::refreshSniperPoolSummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("sniper_pool.summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("sniper_pool.summary");
+        return;
+    }
+    applyServiceResult(serviceAdapter_->fetchSniperPoolSummary(request));
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();
@@ -127,6 +207,63 @@ void ShellAccountingReadOnlyController::reset()
     issues_.clear();
     privacyMode_ = false;
     serviceAdapter_.reset();
+}
+
+void ShellAccountingReadOnlyController::applyServiceResult(
+    ShellAccountingServiceResult result)
+{
+    if (!result.actionName.empty()) {
+        actionName_ = std::move(result.actionName);
+    }
+
+    issues_.clear();
+    appendIssues(issues_, result.issues);
+    appendIssues(issues_, result.warnings);
+    appendIssues(issues_, result.errors);
+
+    if (!result.protocolSuccess || result.protocolError) {
+        issues_.push_back(makeControllerIssue(
+            "PROTOCOL_ERROR",
+            "Shell accounting service adapter returned a protocol error."));
+        state_ = ShellAccountingViewState::Error;
+        return;
+    }
+
+    if (result.timeout) {
+        issues_.push_back(makeControllerIssue(
+            "TIMEOUT",
+            "Shell accounting service adapter timed out."));
+        state_ = ShellAccountingViewState::Error;
+        return;
+    }
+
+    if (result.transportError) {
+        issues_.push_back(makeControllerIssue(
+            "TRANSPORT_ERROR",
+            "Shell accounting service adapter returned a transport error."));
+        state_ = ShellAccountingViewState::Error;
+        return;
+    }
+
+    if (!result.implemented ||
+        isShellAccountingGuardUnavailableStatus(result.payloadStatus)) {
+        state_ = ShellAccountingViewState::Unavailable;
+        return;
+    }
+
+    state_ = shellAccountingViewStateFromDataQuality(
+        result.dataQualityStatus,
+        result.hasRows);
+}
+
+void ShellAccountingReadOnlyController::markServiceAdapterNotConfigured(
+    std::string actionName)
+{
+    markUnavailable(
+        std::move(actionName),
+        makeControllerIssue(
+            "SERVICE_ADAPTER_NOT_CONFIGURED",
+            "Shell accounting service adapter is not configured."));
 }
 
 }  // namespace etfdt::shell_services

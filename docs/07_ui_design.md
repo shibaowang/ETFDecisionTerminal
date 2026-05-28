@@ -285,3 +285,13 @@ v0.1 草案。
   SQLite, DataAccess, or AccountingEngine directly.
 - Adapter integration remains a ShellServices boundary concern, not a QML page
   shortcut.
+
+## TASK-105 Shell Accounting Fake Adapter Injection
+
+- Fake adapter injection tests do not imply QML integration.
+- Future UI must still bind through ShellServices ViewModel / Model objects
+  only.
+- Controller refresh state mapping is a ShellServices boundary; QML must not
+  call DataServiceClient or calculate accounting values.
+- Read-only accounting UI must still avoid TradeDraft, trade suggestion,
+  strategy, and broker-order controls.

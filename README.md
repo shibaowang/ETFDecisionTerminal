@@ -1789,6 +1789,23 @@ New skeleton CTests:
 - `shell_accounting_readonly_controller_skeleton_no_trade_action`
 - `shell_accounting_readonly_controller_skeleton_no_service_dependency`
 
+## TASK-102 ShellAccountingReadOnlyController fake/client boundary tests
+
+ShellAccountingReadOnlyController fake/client boundary tests have been added
+under `tests/ShellAccountingFakeClientBoundary`:
+
+- `shell_accounting_fake_client_guard_payloads`
+- `shell_accounting_fake_client_state_transitions`
+- `shell_accounting_fake_client_issue_mapping`
+- `shell_accounting_fake_client_privacy_and_no_trade`
+- `shell_accounting_fake_client_no_real_dependency`
+
+The tests use test-only fake payloads to verify guard payload mapping, state
+transitions, issue preservation, privacy display, and no-trade-action
+boundaries. They do not call real DataServiceClient, do not connect QML, do
+not access SQLite, do not call AccountingEngine, do not write database tables,
+and do not generate TradeDraft or trade suggestions.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

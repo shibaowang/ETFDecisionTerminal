@@ -55,6 +55,9 @@
 - ShellAccountingReadOnlyController production skeleton: state / issue /
   privacy / no-trade-action boundary only; no service calls and no QML
   integration.
+- ShellAccountingReadOnlyController fake/client boundary tests:
+  `tests/ShellAccountingFakeClientBoundary`; fake payloads remain test-only,
+  real DataServiceClient integration and QML integration remain unimplemented.
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under

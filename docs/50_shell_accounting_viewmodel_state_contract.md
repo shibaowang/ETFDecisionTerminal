@@ -126,3 +126,22 @@ production ShellServices skeleton:
 QML integration has not started. Shell models are still not implemented. The
 skeleton accepts only in-memory state snapshots and does not call real
 DataServiceClient, SQLite, or AccountingEngine.
+
+## TASK-102 Fake Payload Boundary Tests
+
+TASK-102 adds fake/client boundary tests for
+`ShellAccountingReadOnlyController`.
+
+The fake payload coverage locks these ViewModel state rules:
+
+- guard payloads with `implemented=false` continue to map to `Unavailable`
+- `Empty vs Unavailable` remains distinct
+- fake warning, error, and stale payloads cannot be swallowed
+- issue lists remain visible, including blocking issues
+- `privacyMode` selects masked display text without mutating raw text
+- privacy mode does not hide warnings or issues
+- fake no-trade payloads do not enable TradeDraft, trade suggestion, strategy,
+  or broker order behavior
+
+The fake payload tests are not real DataServiceClient integration and do not
+authorize QML integration.

@@ -132,6 +132,36 @@ def main() -> int:
     shell_accounting_controller_no_dependency_test_path = (
         root / "tests" / "ShellServices" / "test_shell_accounting_readonly_controller_skeleton_no_service_dependency.cpp"
     )
+    shell_accounting_fake_client_cmake_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "CMakeLists.txt"
+    )
+    fake_accounting_client_payload_header_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "FakeAccountingClientPayload.h"
+    )
+    fake_accounting_client_payload_source_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "FakeAccountingClientPayload.cpp"
+    )
+    fake_accounting_client_scenario_header_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "FakeAccountingClientScenario.h"
+    )
+    fake_accounting_client_scenario_source_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "FakeAccountingClientScenario.cpp"
+    )
+    shell_accounting_fake_guard_payload_test_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "test_shell_accounting_fake_client_guard_payloads.cpp"
+    )
+    shell_accounting_fake_state_transition_test_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "test_shell_accounting_fake_client_state_transitions.cpp"
+    )
+    shell_accounting_fake_issue_mapping_test_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "test_shell_accounting_fake_client_issue_mapping.cpp"
+    )
+    shell_accounting_fake_privacy_no_trade_test_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "test_shell_accounting_fake_client_privacy_and_no_trade.cpp"
+    )
+    shell_accounting_fake_no_real_dependency_test_path = (
+        root / "tests" / "ShellAccountingFakeClientBoundary" / "test_shell_accounting_fake_client_no_real_dependency.cpp"
+    )
     shellservices_cmake_path = root / "libs" / "ShellServices" / "CMakeLists.txt"
     shellservices_public_header_path = root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellServices.h"
     shellservices_tests_cmake_path = root / "tests" / "ShellServices" / "CMakeLists.txt"
@@ -394,6 +424,25 @@ def main() -> int:
     require(
         shell_accounting_controller_no_dependency_test_path.exists(),
         "Shell accounting controller skeleton no dependency test exists",
+    )
+    require(shell_accounting_fake_client_cmake_path.exists(), "Shell accounting fake client CMake exists")
+    require(fake_accounting_client_payload_header_path.exists(), "Fake accounting client payload header exists")
+    require(fake_accounting_client_payload_source_path.exists(), "Fake accounting client payload source exists")
+    require(fake_accounting_client_scenario_header_path.exists(), "Fake accounting client scenario header exists")
+    require(fake_accounting_client_scenario_source_path.exists(), "Fake accounting client scenario source exists")
+    require(shell_accounting_fake_guard_payload_test_path.exists(), "Shell accounting fake guard payload test exists")
+    require(
+        shell_accounting_fake_state_transition_test_path.exists(),
+        "Shell accounting fake state transition test exists",
+    )
+    require(shell_accounting_fake_issue_mapping_test_path.exists(), "Shell accounting fake issue mapping test exists")
+    require(
+        shell_accounting_fake_privacy_no_trade_test_path.exists(),
+        "Shell accounting fake privacy and no trade test exists",
+    )
+    require(
+        shell_accounting_fake_no_real_dependency_test_path.exists(),
+        "Shell accounting fake no real dependency test exists",
     )
     require(shellservices_cmake_path.exists(), "ShellServices CMake exists")
     require(shellservices_public_header_path.exists(), "ShellServices public header exists")
@@ -708,6 +757,20 @@ def main() -> int:
     forbidden_sql_scanner_source = forbidden_sql_scanner_source_path.read_text(encoding="utf-8")
     accounting_no_write_harness_test = accounting_no_write_harness_test_path.read_text(encoding="utf-8")
     forbidden_sql_scanner_test = forbidden_sql_scanner_test_path.read_text(encoding="utf-8")
+    shell_accounting_fake_client_cmake = shell_accounting_fake_client_cmake_path.read_text(encoding="utf-8")
+    fake_accounting_client_payload_header = fake_accounting_client_payload_header_path.read_text(encoding="utf-8")
+    fake_accounting_client_payload_source = fake_accounting_client_payload_source_path.read_text(encoding="utf-8")
+    fake_accounting_client_scenario_header = fake_accounting_client_scenario_header_path.read_text(encoding="utf-8")
+    fake_accounting_client_scenario_source = fake_accounting_client_scenario_source_path.read_text(encoding="utf-8")
+    shell_accounting_fake_guard_payload_test = shell_accounting_fake_guard_payload_test_path.read_text(encoding="utf-8")
+    shell_accounting_fake_state_transition_test = shell_accounting_fake_state_transition_test_path.read_text(encoding="utf-8")
+    shell_accounting_fake_issue_mapping_test = shell_accounting_fake_issue_mapping_test_path.read_text(encoding="utf-8")
+    shell_accounting_fake_privacy_no_trade_test = shell_accounting_fake_privacy_no_trade_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_fake_no_real_dependency_test = shell_accounting_fake_no_real_dependency_test_path.read_text(
+        encoding="utf-8"
+    )
     position_list_guard_source = extract_between(
         dataservice_actions_source,
         "etfdt::protocol::ProtocolResponse handlePositionList",
@@ -2693,6 +2756,112 @@ def main() -> int:
     require("ShellAccountingReadOnlyController" not in qml_sources, "QML does not reference ShellAccountingReadOnlyController")
     require("position.list" not in qml_sources, "QML does not call accounting action names directly")
     require("cash.summary" not in qml_sources, "QML does not call cash accounting action names directly")
+    require(
+        "ShellAccountingReadOnlyController fake/client boundary tests" in readme,
+        "README mentions ShellAccountingReadOnlyController fake client boundary tests",
+    )
+    require(
+        "shell_accounting_fake_client_guard_payloads" in shell_accounting_fake_client_cmake,
+        "Shell accounting fake client CMake registers guard payload test",
+    )
+    require(
+        "shell_accounting_fake_client_state_transitions" in shell_accounting_fake_client_cmake,
+        "Shell accounting fake client CMake registers state transitions test",
+    )
+    require(
+        "shell_accounting_fake_client_issue_mapping" in shell_accounting_fake_client_cmake,
+        "Shell accounting fake client CMake registers issue mapping test",
+    )
+    require(
+        "shell_accounting_fake_client_privacy_and_no_trade" in shell_accounting_fake_client_cmake,
+        "Shell accounting fake client CMake registers privacy and no trade test",
+    )
+    require(
+        "shell_accounting_fake_client_no_real_dependency" in shell_accounting_fake_client_cmake,
+        "Shell accounting fake client CMake registers no real dependency test",
+    )
+    require(
+        "TASK-102" in shellservices_accounting_controller_contract
+        and "fake/client boundary" in shellservices_accounting_controller_contract,
+        "docs/49 mentions TASK-102 fake/client boundary",
+    )
+    require(
+        "fake payload" in shell_accounting_viewmodel_state_contract
+        or "fake/client" in shell_accounting_viewmodel_state_contract,
+        "docs/50 mentions fake payload boundary",
+    )
+    require("TASK-102" in codex_prompt_template, "prompt template mentions TASK-102")
+    require(
+        "Fake client must remain test-only" in codex_prompt_template
+        or "fake client must remain test-only" in codex_prompt_template,
+        "prompt template keeps fake client test-only",
+    )
+    require(
+        "Do not call real DataServiceClient unless explicitly authorized" in codex_prompt_template,
+        "prompt template forbids real DataServiceClient without authorization",
+    )
+    require(
+        "fake/client tests do not imply QML integration" in ui_design,
+        "UI design states fake/client tests do not imply QML integration",
+    )
+    require(
+        "add_subdirectory(ShellAccountingFakeClientBoundary)" in tests_cmake,
+        "tests CMake adds Shell accounting fake client boundary tests",
+    )
+    require(
+        "ShellAccountingFakeClientBoundary" not in root_cmake,
+        "fake client helper is not added as production root target",
+    )
+    fake_accounting_client_helper_sources = "\n".join(
+        [
+            fake_accounting_client_payload_header,
+            fake_accounting_client_payload_source,
+            fake_accounting_client_scenario_header,
+            fake_accounting_client_scenario_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite"]:
+        require(
+            forbidden not in fake_accounting_client_helper_sources,
+            f"fake accounting client helper does not include {forbidden}",
+        )
+    for forbidden in ["socket", "ipc"]:
+        require(
+            forbidden not in fake_accounting_client_helper_sources.lower(),
+            f"fake accounting client helper does not mention {forbidden}",
+        )
+    require(
+        "position.list" in shell_accounting_fake_guard_payload_test
+        and "cash.summary" in shell_accounting_fake_guard_payload_test
+        and "portfolio.pnl.summary" in shell_accounting_fake_guard_payload_test
+        and "base_position.summary" in shell_accounting_fake_guard_payload_test
+        and "sniper_pool.summary" in shell_accounting_fake_guard_payload_test,
+        "fake guard payload test covers all accounting guard actions",
+    )
+    require(
+        "Idle" in shell_accounting_fake_state_transition_test
+        and "Loading" in shell_accounting_fake_state_transition_test,
+        "fake state transition test covers Idle to Loading",
+    )
+    require(
+        "MARKET_PRICE_MISSING" in shell_accounting_fake_issue_mapping_test
+        and "NEGATIVE_CASH" in shell_accounting_fake_issue_mapping_test
+        and "MULTI_CURRENCY_UNSUPPORTED" in shell_accounting_fake_issue_mapping_test,
+        "fake issue mapping test covers accounting issues",
+    )
+    require(
+        "privacyMode" in shell_accounting_fake_privacy_no_trade_test
+        and (
+            "TradeDraft" in shell_accounting_fake_privacy_no_trade_test
+            or "tradeDraftGenerationEnabled" in shell_accounting_fake_privacy_no_trade_test
+        ),
+        "fake privacy and no trade test covers privacy and TradeDraft boundary",
+    )
+    require(
+        "DataServiceClient" in shell_accounting_fake_no_real_dependency_test
+        and "AccountingEngine" in shell_accounting_fake_no_real_dependency_test,
+        "fake no real dependency test scans service and engine dependencies",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

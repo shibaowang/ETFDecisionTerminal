@@ -545,3 +545,9 @@ v0.1 草案。
   authorized.
 - QML integration requires a separate task.
 - No TradeDraft / no trade suggestion remains mandatory.
+- TASK-102 ShellServices fake/client boundary tests do not equal real
+  DataServiceClient integration.
+- Fake client must remain test-only.
+- Do not call real DataServiceClient unless explicitly authorized.
+- QML integration requires a separate task.
+- No TradeDraft / no trade suggestion remains mandatory.

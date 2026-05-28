@@ -609,3 +609,22 @@ This does not implement the real `SniperPoolSummaryResponse`.
 does not generate trade suggestions, and does not generate TradeDraft rows.
 SQLite facts query integration remains unimplemented, and DataService still
 does not call AccountingEngine for `sniper_pool.summary`.
+
+## TASK-093 Guard Suite Milestone
+
+TASK-093 adds milestone and readiness documentation for the DataService
+accounting guard suite. See
+`docs/43_dataservice_accounting_guard_suite_milestone.md` and
+`docs/44_dataservice_accounting_guard_no_write_readiness_review.md`.
+
+The guard suite now covers `accounting.health`, `accounting.replay.preview`,
+`position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. The true accounting actions
+are still not implemented. `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`
+remain `implemented=false`, `readOnly=true`, and `writeEnabled=false`.
+
+DataService still does not call AccountingEngine, SQLite facts query remains
+unconnected to DataService, QML remains disconnected from these actions, and
+real implementation tasks require separate authorization plus expanded
+no-write tests.

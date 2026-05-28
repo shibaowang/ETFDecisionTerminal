@@ -1649,6 +1649,28 @@ New guard tests:
 - `dataservice_sniper_pool_summary_no_write`
 - `dataservice_client_sniper_pool_summary_guard`
 
+## v0.5 DataService Accounting Guard Suite
+
+The v0.5 DataService Accounting Guard Suite milestone documents the completed
+read-only accounting guard layer:
+
+- [DataService accounting guard suite milestone](docs/43_dataservice_accounting_guard_suite_milestone.md)
+- [DataService accounting guard no-write readiness review](docs/44_dataservice_accounting_guard_no_write_readiness_review.md)
+- [Release notes - v0.5 DataService Accounting Guard Suite](docs/release_notes/v0_5_dataservice_accounting_guard_suite.md)
+
+The guard suite covers `accounting.health`, `accounting.replay.preview`,
+`position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. The suite is complete as a
+guard milestone only. Real accounting actions are still not implemented,
+DataService still does not call AccountingEngine, SQLite facts query is still
+not integrated into DataService, QML is not connected to these actions, and no
+database writes are enabled.
+
+Every unavailable accounting guard remains `implemented=false`,
+`readOnly=true`, and `writeEnabled=false`. The no-write tests protect
+`trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+`position_snapshot`, `portfolio_summary`, and `audit_log`.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

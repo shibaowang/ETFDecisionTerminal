@@ -119,3 +119,16 @@ Accounting facts source mapping is documented in
 Implementation still requires separate authorization. The boundary documents do
 not add DataAccess repositories, do not implement SQLite queries, do not add
 DataService actions, and do not enable writes.
+
+## TASK-093 DataService Guard Suite Milestone
+
+The DataService accounting guard suite milestone is documented in
+`docs/43_dataservice_accounting_guard_suite_milestone.md`, with no-write
+readiness in
+`docs/44_dataservice_accounting_guard_no_write_readiness_review.md`.
+
+The DataService guard suite is complete for the current milestone, but
+DataService and AccountingEngine integration has not started. SQLite facts
+query is not connected to DataService, QML is not connected to accounting
+actions, and the next stage must be separately authorized one boundary at a
+time.

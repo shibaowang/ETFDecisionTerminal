@@ -470,3 +470,16 @@ v0.1 草案。
   `docs/39_sqlite_readonly_facts_query_boundary.md`, and
   `docs/40_accounting_facts_source_mapping.md`, and must include no-write
   tests.
+- The DataService accounting guard suite milestone does not equal real action
+  implementation.
+- DataService accounting guard suite milestone does not equal real action implementation.
+- Future tasks must state whether they modify an existing guard payload or
+  implement a real action.
+- Real action tasks must include no-write expansion for real success, domain
+  failure, invalid request, and exception paths.
+- Real action tasks must explicitly authorize SQLite facts query integration
+  and AccountingEngine integration before using either.
+- QML must not directly call DataServiceClient.
+- Guard suite readiness does not authorize snapshot writes, TradeLog writes,
+  TradeDraft generation, trade suggestions, strategy execution, or broker
+  orders.

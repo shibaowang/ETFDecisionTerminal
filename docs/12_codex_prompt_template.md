@@ -708,3 +708,15 @@ v0.1 草案。
   show trading buttons, generate TradeDraft, generate trade suggestions,
   execute strategies, submit broker orders, access SQLite, or write database
   tables.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+- Future ShellAccounting QML tasks must reference
+  `docs/61_shell_accounting_readonly_ui_readiness_milestone.md` and
+  `docs/62_shell_accounting_next_phase_review.md`.
+- v0.6 readiness milestone is not QML binding.
+- QML binding requires explicit authorization.
+- Real accounting action implementation requires separate authorization.
+- no-write, no-trade, and the TASK-119 QML static gate remain mandatory.
+- Do not create the suggested v0.6 Git tag from an implementation task unless
+  the user explicitly requests it after merge.

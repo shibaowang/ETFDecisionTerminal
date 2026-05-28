@@ -1,5 +1,21 @@
 # 跨境 ETF 智能投资决策终端
 
+## v0.6 ShellAccounting Read-only UI Readiness
+
+ShellAccounting read-only UI readiness is now documented as a milestone:
+
+- [docs/61_shell_accounting_readonly_ui_readiness_milestone.md](docs/61_shell_accounting_readonly_ui_readiness_milestone.md)
+- [docs/62_shell_accounting_next_phase_review.md](docs/62_shell_accounting_next_phase_review.md)
+- [docs/release_notes/v0_6_shell_accounting_readonly_ui_readiness.md](docs/release_notes/v0_6_shell_accounting_readonly_ui_readiness.md)
+
+The milestone closes the current ShellServices / Presenter / ViewModel / QML
+static gate readiness loop. It is not QML binding and it is not real accounting
+action implementation. QML is still not wired, no ShellAccounting QML type is
+registered, real accounting actions remain unimplemented, SQLite facts query is
+not connected to DataService, DataService still does not call AccountingEngine,
+and no database writes, TradeDraft, trade suggestion, strategy execution, or
+broker order behavior is enabled.
+
 ## TASK-115 ShellAccountingPresenter skeleton
 
 ShellServices now includes a production-side `ShellAccountingPresenter`

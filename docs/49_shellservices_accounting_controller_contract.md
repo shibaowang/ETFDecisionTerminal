@@ -499,3 +499,14 @@ no-trade scans.
 Controller integration still flows through ShellServices abstractions; QML must
 not bypass the presenter / model boundary or call controller internals directly
 to reach services.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+ShellAccounting read-only UI readiness milestone is
+`docs/61_shell_accounting_readonly_ui_readiness_milestone.md`. Next phase review
+is `docs/62_shell_accounting_next_phase_review.md`.
+
+The milestone confirms the controller can participate in the read-only
+Presenter -> Controller -> Adapter -> Concrete Port -> DataServiceClient guard
+wrapper path while QML remains unwired and real accounting actions remain
+unimplemented.

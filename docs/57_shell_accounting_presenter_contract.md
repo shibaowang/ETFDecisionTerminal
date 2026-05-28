@@ -266,3 +266,10 @@ The gate rejects direct QML references to DataServiceClient, DataServiceApi,
 SQLite, DataAccess, AccountingEngine, ShellAccountingDataServiceAdapter,
 ShellAccountingDataServiceClientPortAdapter, write actions, premature
 ShellAccounting bindings, and accounting-scoped trading controls.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 readiness milestone is documented in docs/61 and the next phase review
+is documented in docs/62. The presenter is ready as a read-only boundary for a
+future QML task, but QML binding is still not implemented and must not bypass
+the presenter / model boundary or the TASK-119 static gate.

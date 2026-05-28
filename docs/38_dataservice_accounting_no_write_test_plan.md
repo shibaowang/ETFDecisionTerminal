@@ -504,3 +504,12 @@ TradeDraft, broker order, and strategy execution in the appropriate scopes.
 Existing DataService guard no-write tests remain the backend authority. TASK-119
 adds only test-only QML static scanning and does not modify QML or service
 behavior.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 readiness milestone keeps no-write / no-trade as hard gates. Future
+QML binding or real accounting action tasks must continue to prove no
+`trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+`position_snapshot`, `portfolio_summary`, or `audit_log` writes, and must not
+generate TradeDraft, trade suggestions, strategy execution, broker orders, or
+write-enabled actions.

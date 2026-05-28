@@ -1894,6 +1894,32 @@ DataServiceClient calls are still not wired, QML is still not wired, and no
 writes, TradeDraft, trade suggestions, strategies, or broker orders are
 enabled.
 
+## TASK-108 ShellAccountingDataServiceAdapter production skeleton
+
+`ShellAccountingDataServiceAdapter` production skeleton has been added under
+`libs/ShellServices`.
+
+New skeleton files:
+
+- `libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h`
+- `libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp`
+
+New tests:
+
+- `shell_accounting_dataservice_adapter_skeleton_interface`
+- `shell_accounting_dataservice_adapter_skeleton_not_connected`
+- `shell_accounting_dataservice_adapter_skeleton_no_live_calls`
+- `shell_accounting_dataservice_adapter_skeleton_no_write_no_trade`
+- `shell_accounting_dataservice_adapter_skeleton_controller_integration`
+
+The skeleton implements `ShellAccountingServiceAdapter`, but it does not include
+or call DataServiceClient, DataServiceApi, DataAccess, AccountingEngine, SQLite,
+QtQuick, or QML. Every fetch method returns a controlled
+`SHELL_ACCOUNTING_DATASERVICE_ADAPTER_NOT_CONNECTED` / `UNAVAILABLE` result with
+`implemented=false`, `readOnly=true`, and `writeEnabled=false`. QML is still not
+wired, no live service calls are made, and no writes, TradeDraft, trade
+suggestions, strategies, or broker orders are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

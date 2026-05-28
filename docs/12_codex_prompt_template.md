@@ -588,3 +588,12 @@ v0.1 草案。
 - No write action invocation is allowed.
 - Fake/spy wrapper must remain test-only.
 - QML integration requires a separate task.
+- TASK-108 ShellAccountingDataServiceAdapter skeleton is not real
+  DataServiceClient integration.
+- Do not add live DataServiceClient calls without explicit authorization.
+- Current ShellAccountingDataServiceAdapter skeleton must return not connected /
+  unavailable.
+- ShellAccountingDataServiceAdapter must not include DataServiceClient,
+  DataServiceApi, DataAccess, AccountingEngine, SQLite, QtQuick, or QML until a
+  separately authorized real adapter task changes that boundary.
+- QML integration requires a separate task.

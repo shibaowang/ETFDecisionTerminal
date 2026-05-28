@@ -1,6 +1,7 @@
 find_package(Qt6 COMPONENTS Core REQUIRED)
 
 add_library(ETFShellServices STATIC
+    include/ShellServices/ShellAccountingDataServiceAdapter.h
     include/ShellServices/ShellAccountingDisplayText.h
     include/ShellServices/ShellAccountingIssue.h
     include/ShellServices/ShellAccountingReadOnlyController.h
@@ -16,6 +17,7 @@ add_library(ETFShellServices STATIC
     include/ShellServices/ShellReadOnlyListModels.h
     include/ShellServices/ShellReadOnlyTableProxyModel.h
     include/ShellServices/ShellServices.h
+    src/ShellAccountingDataServiceAdapter.cpp
     src/ShellAccountingDisplayText.cpp
     src/ShellAccountingIssue.cpp
     src/ShellAccountingReadOnlyController.cpp

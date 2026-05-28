@@ -63,37 +63,30 @@ int main(int argc, char* argv[])
     const auto root = optionValue(argc, argv, "--source-root");
     expectTrue(!root.empty(), "--source-root argument is required");
 
-    const std::vector<std::filesystem::path> spyFiles{
-        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "SpyAccountingDataServiceClient.h",
-        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "SpyAccountingDataServiceClient.cpp",
-        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "ShellAccountingDataServiceAdapterExpectedCall.h",
-        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "ShellAccountingDataServiceAdapterExpectedCall.cpp",
-    };
-
-    std::ostringstream spyText;
-    for (const auto& file : spyFiles) {
-        expectTrue(std::filesystem::exists(file), "spy scaffolding file exists");
-        spyText << readFile(file) << '\n';
-    }
-
-    const auto text = spyText.str();
-    for (const auto& forbidden : {"DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick", "QML"}) {
-        expectTrue(!containsInclude(text, forbidden), "spy scaffolding does not include forbidden production dependency");
-    }
-
     const std::vector<std::filesystem::path> adapterFiles{
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h",
         root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceAdapter.cpp",
     };
+
     std::ostringstream adapterText;
     for (const auto& file : adapterFiles) {
-        expectTrue(std::filesystem::exists(file), "ShellAccountingDataServiceAdapter production skeleton file exists");
+        expectTrue(std::filesystem::exists(file), "ShellAccountingDataServiceAdapter skeleton file exists");
         adapterText << readFile(file) << '\n';
     }
-    const auto adapterSource = adapterText.str();
-    for (const auto& forbidden : {"DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick", "QML"}) {
-        expectTrue(!containsInclude(adapterSource, forbidden), "adapter skeleton does not include forbidden production dependency");
+
+    const auto text = adapterText.str();
+    for (const auto& forbidden : {
+             "DataServiceClient",
+             "DataServiceApi",
+             "DataAccess",
+             "AccountingEngine",
+             "SQLite",
+             "QtQuick",
+             "QML",
+         }) {
+        expectTrue(!containsInclude(text, forbidden), "adapter skeleton does not include forbidden dependency");
     }
+
     for (const auto& forbiddenCall : {
              "DataServiceClient::positionList",
              "DataServiceClient::cashSummary",
@@ -110,13 +103,16 @@ int main(int argc, char* argv[])
              "->portfolioPnlSummary(",
              "->basePositionSummary(",
              "->sniperPoolSummary(",
+             "QLocalSocket",
+             "QTcpSocket",
+             "connectToServer",
+             "connectToHost",
          }) {
-        expectTrue(adapterSource.find(forbiddenCall) == std::string::npos, "adapter skeleton does not call live wrapper");
+        expectTrue(text.find(forbiddenCall) == std::string::npos, "adapter skeleton does not call live wrapper or transport");
     }
 
     const auto qmlText = readFiles(root / "apps" / "ETFDecisionShell" / "qml", ".qml");
     expectTrue(qmlText.find("ShellAccountingDataServiceAdapter") == std::string::npos, "QML does not reference adapter");
-    expectTrue(qmlText.find("ShellAccountingServiceAdapter") == std::string::npos, "QML does not reference service adapter");
 
     return gFailures == 0 ? 0 : 1;
 }

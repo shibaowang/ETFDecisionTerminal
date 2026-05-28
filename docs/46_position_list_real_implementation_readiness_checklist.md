@@ -65,3 +65,14 @@ Possible next tasks:
 - TASK-095: ShellServices accounting controller contract docs
 
 Any real implementation requires separate explicit authorization.
+
+## TASK-095 Mapping Contract Test Status
+
+Mapping contract tests are now a Go / No-Go precondition for future real
+`position.list` implementation. They cover request mapping, trade fact mapping,
+and response mapping, but they do not authorize changing the guard to a real
+action.
+
+The guard -> real action transition still requires separate user
+authorization, expanded no-write tests, and explicit DataAccess /
+AccountingEngine integration scope.

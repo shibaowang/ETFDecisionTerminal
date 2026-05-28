@@ -641,3 +641,14 @@ not change the guard payload and does not implement the real
 `PositionListResponse`. Real implementation requires separate authorization,
 DataAccess trade facts reader integration, AccountingEngine DTO mapping, and
 expanded no-write tests.
+
+## TASK-095 position.list Mapping Contract Tests
+
+TASK-095 adds test-only mapping contract tests for future `position.list`
+implementation. The DataService action is still not a real implementation, and
+the `position.list` guard remains `implemented=false`.
+
+The contract tests cover request -> `ReplayRequestDto`, `TradeFactRow` ->
+`TradeFactDto`, and `AccountingReplayResult` -> future `PositionListResponse`
+mapping. DataService still does not call AccountingEngine or DataAccess for
+`position.list`.

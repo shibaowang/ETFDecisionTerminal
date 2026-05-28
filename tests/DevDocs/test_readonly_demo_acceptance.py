@@ -58,6 +58,22 @@ def main() -> int:
     position_list_readiness_checklist_path = (
         root / "docs" / "46_position_list_real_implementation_readiness_checklist.md"
     )
+    position_list_mapping_cmake_path = root / "tests" / "PositionListMapping" / "CMakeLists.txt"
+    position_list_mapping_utils_header_path = (
+        root / "tests" / "PositionListMapping" / "PositionListMappingContractTestUtils.h"
+    )
+    position_list_mapping_utils_source_path = (
+        root / "tests" / "PositionListMapping" / "PositionListMappingContractTestUtils.cpp"
+    )
+    position_list_request_mapping_test_path = (
+        root / "tests" / "PositionListMapping" / "test_position_list_request_mapping.cpp"
+    )
+    position_list_trade_fact_mapping_test_path = (
+        root / "tests" / "PositionListMapping" / "test_position_list_trade_fact_mapping.cpp"
+    )
+    position_list_response_mapping_test_path = (
+        root / "tests" / "PositionListMapping" / "test_position_list_response_mapping.cpp"
+    )
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -225,6 +241,12 @@ def main() -> int:
         position_list_readiness_checklist_path.exists(),
         "position.list real implementation readiness checklist doc exists",
     )
+    require(position_list_mapping_cmake_path.exists(), "position.list mapping contract CMake exists")
+    require(position_list_mapping_utils_header_path.exists(), "position.list mapping contract helper header exists")
+    require(position_list_mapping_utils_source_path.exists(), "position.list mapping contract helper source exists")
+    require(position_list_request_mapping_test_path.exists(), "position.list request mapping contract test exists")
+    require(position_list_trade_fact_mapping_test_path.exists(), "position.list trade fact mapping contract test exists")
+    require(position_list_response_mapping_test_path.exists(), "position.list response mapping contract test exists")
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -350,6 +372,12 @@ def main() -> int:
     dataservice_guard_no_write_readiness = dataservice_guard_no_write_readiness_path.read_text(encoding="utf-8")
     position_list_real_boundary = position_list_real_boundary_path.read_text(encoding="utf-8")
     position_list_readiness_checklist = position_list_readiness_checklist_path.read_text(encoding="utf-8")
+    position_list_mapping_cmake = position_list_mapping_cmake_path.read_text(encoding="utf-8")
+    position_list_mapping_utils_header = position_list_mapping_utils_header_path.read_text(encoding="utf-8")
+    position_list_mapping_utils_source = position_list_mapping_utils_source_path.read_text(encoding="utf-8")
+    position_list_request_mapping_test = position_list_request_mapping_test_path.read_text(encoding="utf-8")
+    position_list_trade_fact_mapping_test = position_list_trade_fact_mapping_test_path.read_text(encoding="utf-8")
+    position_list_response_mapping_test = position_list_response_mapping_test_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -1898,6 +1926,61 @@ def main() -> int:
     require("docs/45_position_list_real_implementation_boundary.md" in accounting_facts_source_mapping, "facts mapping links docs/45")
     require("docs/45_position_list_real_implementation_boundary.md" in codex_prompt_template, "prompt template links docs/45")
     require("docs/46_position_list_real_implementation_readiness_checklist.md" in codex_prompt_template, "prompt template links docs/46")
+    require("TASK-095" in position_list_real_boundary, "docs/45 records TASK-095 mapping contract tests")
+    require("mapping contract tests" in position_list_real_boundary, "docs/45 documents mapping contract tests")
+    require("mapping contract tests" in position_list_readiness_checklist, "docs/46 documents mapping contract tests")
+    require(
+        "TradeFactRow` -> `TradeFactDto` mapping contract" in accounting_facts_source_mapping,
+        "docs/40 documents TradeFactRow to TradeFactDto mapping contract tests",
+    )
+    require(
+        "position.list` mapping contract tests do not equal real action" in codex_prompt_template,
+        "prompt template says mapping contract tests are not real action",
+    )
+    require(
+        "add_subdirectory(PositionListMapping)" in tests_cmake,
+        "tests CMake adds PositionListMapping tests",
+    )
+    require(
+        "position_list_request_mapping_contract" in position_list_mapping_cmake,
+        "PositionListMapping CMake registers request mapping contract test",
+    )
+    require(
+        "position_list_trade_fact_mapping_contract" in position_list_mapping_cmake,
+        "PositionListMapping CMake registers trade fact mapping contract test",
+    )
+    require(
+        "position_list_response_mapping_contract" in position_list_mapping_cmake,
+        "PositionListMapping CMake registers response mapping contract test",
+    )
+    require(
+        "mapPositionListRequestToReplayRequestForTest" in position_list_mapping_utils_header,
+        "mapping helper exposes request mapping",
+    )
+    require(
+        "mapTradeFactRowToTradeFactDtoForTest" in position_list_mapping_utils_header,
+        "mapping helper exposes trade fact mapping",
+    )
+    require(
+        "mapReplayResultToPositionListResponseForTest" in position_list_mapping_utils_header,
+        "mapping helper exposes response mapping",
+    )
+    require("SQLite" not in position_list_mapping_utils_source, "mapping helper source does not access SQLite")
+    require("DataServiceActions" not in position_list_mapping_utils_source, "mapping helper source does not call DataService action")
+    require("AccountingReplayEngine" not in position_list_mapping_utils_source, "mapping helper does not call AccountingReplayEngine")
+    require(
+        "position.list guard remains `implemented=false`" in position_list_readiness_checklist
+        or "do not authorize changing the guard to a real" in position_list_readiness_checklist,
+        "readiness checklist keeps position.list guard as guard",
+    )
+    require("validateReplayRequest" in position_list_request_mapping_test, "request mapping test validates replay request")
+    require("validateTradeFact" in position_list_trade_fact_mapping_test, "trade fact mapping test validates trade facts")
+    require("makeSingleBuyReplayResult" in position_list_response_mapping_test, "response mapping test covers single BUY")
+    require("makeMissingMarketPriceReplayResult" in position_list_response_mapping_test, "response mapping test covers missing market price")
+    require(
+        "makeMultiCurrencyUnsupportedReplayResult" in position_list_response_mapping_test,
+        "response mapping test covers multi-currency unsupported",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -1,0 +1,160 @@
+# ShellAccounting QML Binding Smoke Plan
+
+## Document Purpose
+
+This document defines the future ShellAccounting QML read-only binding smoke
+plan. It is a review artifact before QML integration.
+
+This document does not modify QML, does not register QML types, does not
+implement QML pages, and does not add production behavior.
+
+## Current Status
+
+- `ShellAccountingPresenter` exists.
+- `ShellAccountingStatusObject` exists.
+- `ShellAccountingIssueListModel` exists.
+- `ShellPositionListModel` exists.
+- The presenter supports five guard refresh methods.
+- The five guard payloads currently map to `Unavailable`.
+- QML has not been wired to accounting actions.
+- Real accounting actions are not implemented.
+- no TradeDraft / no trade suggestion behavior remains active.
+
+## Future Read-only QML Binding Targets
+
+Future QML may bind only ShellServices read-only objects:
+
+- `ShellAccountingPresenter`
+- `ShellAccountingStatusObject`
+- `ShellAccountingIssueListModel`
+- `ShellPositionListModel`
+- future `ShellCashSummaryObject`
+- future `ShellPortfolioPnlObject`
+- future `ShellBasePositionObject`
+- future `ShellSniperPoolObject`
+- future `ShellSniperTierListModel`
+
+The binding is read-only. QML must not calculate accounting values, directly
+bind DataService payloads, directly call DataServiceClient, access SQLite, or
+bypass ShellServices.
+
+## QML Binding Smoke Matrix
+
+### A. Object Availability
+
+- Presenter object can be injected.
+- Status object is readable.
+- Issue model is readable.
+- Position model is readable.
+
+### B. State Display
+
+- `Idle` can be displayed.
+- `Loading` can be displayed.
+- `Loaded` can be displayed.
+- `Empty` can be displayed.
+- `Unavailable` can be displayed.
+- `Warning` can be displayed.
+- `Error` can be displayed.
+- `Stale` can be displayed.
+
+### C. Guard Payload Display
+
+- `POSITION_LIST_NOT_AVAILABLE -> Unavailable`.
+- `CASH_SUMMARY_NOT_AVAILABLE -> Unavailable`.
+- `PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE -> Unavailable`.
+- `BASE_POSITION_SUMMARY_NOT_AVAILABLE -> Unavailable`.
+- `SNIPER_POOL_SUMMARY_NOT_AVAILABLE -> Unavailable`.
+
+### D. Issue Display
+
+- issue code is visible.
+- issue level is visible.
+- issue message is visible.
+- blocking flag is visible.
+- warning is not hidden.
+
+### E. Privacy Display
+
+- `privacyMode=false` displays `displayText`.
+- `privacyMode=true` displays masked text supplied by ShellServices.
+- `rawText` is not calculated by QML.
+- issue / warning display is not hidden by privacy mode.
+
+### F. No-trade UI
+
+- no buy button.
+- no sell button.
+- no generate TradeDraft button.
+- no strategy execution button.
+- no broker order button.
+
+## QML State Display Rules
+
+- Empty is a successful response with no data.
+- Unavailable means the feature is not implemented or the data source is not
+  available.
+- Empty is not Unavailable.
+- Warning can be displayed with data.
+- Error must be visible.
+- Stale must be marked as stale.
+- `implemented=false` must display as Unavailable.
+- `readOnly=true` / `writeEnabled=false` must remain preserved.
+
+## QML Privacy Rules
+
+- QML displays only `displayText`.
+- QML does not calculate `maskedText`.
+- QML does not mutate `rawText`.
+- `privacyMode` is controlled by ShellServices.
+- Hiding amounts does not hide issue / warning display.
+- Unavailable / Empty states do not fake amount text.
+
+## QML No-trade Rules
+
+- Read-only accounting pages do not display trading buttons.
+- Do not display buy.
+- Do not display sell.
+- Do not display `createTradeDraft`.
+- Do not display `brokerOrder`.
+- Do not display `strategyExecute`.
+- `sellableAboveBaseAmountText` is not a sell suggestion.
+- `remainingAmountText` is not a buy suggestion.
+- `completed` is not calculated by QML.
+- QML does not trigger any write operation.
+
+## QML Smoke Test Technical Plan
+
+Future tasks may add:
+
+- QML smoke tests.
+- static scans.
+- `QQmlEngine` component load checks.
+- object property binding smoke checks.
+- role existence smoke checks.
+- no direct DataServiceClient string scans.
+- no trading button string scans.
+- no write action string scans.
+
+This task does not implement these QML tests. QML smoke tests require a
+separate task.
+
+## First QML Integration Recommended Scope
+
+The first QML accounting integration should only include:
+
+- read-only status banner.
+- read-only issue panel.
+- position unavailable placeholder.
+- privacy amount display smoke.
+- no trading buttons static check.
+
+Explicitly excluded:
+
+- real position data.
+- real cash / PnL / base / sniper data.
+- trading buttons.
+- TradeDraft.
+- strategy execution.
+- broker order.
+- write action.

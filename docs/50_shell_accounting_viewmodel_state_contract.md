@@ -378,3 +378,16 @@ guard actions remain unimplemented. The aggregate status remains
 `Unavailable`, `readOnly=true` and `writeEnabled=false` are preserved, Empty is
 not used as a substitute for Unavailable, and no TradeDraft, trade suggestion,
 strategy, broker, QML, SQLite, or AccountingEngine path is enabled.
+
+## TASK-118 QML Smoke State Rules
+
+The QML binding smoke plan in
+[docs/59_shell_accounting_qml_binding_smoke_plan.md](59_shell_accounting_qml_binding_smoke_plan.md)
+must preserve this state contract. The static gate in
+[docs/60_shell_accounting_qml_static_gate.md](60_shell_accounting_qml_static_gate.md)
+must keep QML from bypassing ShellServices.
+
+Future QML must display Empty as successful no-data, Unavailable as
+unimplemented or unavailable data source, Warning / Error / Stale as explicit
+states, and privacy display only through ShellServices-provided display text.
+Issue visibility and no-trade behavior remain mandatory.

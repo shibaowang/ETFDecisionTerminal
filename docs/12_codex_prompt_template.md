@@ -679,3 +679,17 @@ v0.1 草案。
 - `refreshAllReadOnly` must stay read-only and must not write tables, generate
   TradeDraft, generate trade suggestions, execute strategies, or submit broker
   orders.
+
+## TASK-118 ShellAccounting QML Binding Smoke Readiness
+
+- QML binding tasks must reference
+  `docs/59_shell_accounting_qml_binding_smoke_plan.md` and
+  `docs/60_shell_accounting_qml_static_gate.md`.
+- Do not modify QML without explicit authorization.
+- QML must not call DataServiceClient, access SQLite / DataAccess, or call
+  AccountingEngine.
+- QML must not calculate accounting values.
+- QML must not expose TradeDraft, trade suggestion, broker order, strategy
+  execution, write action, buy, or sell controls.
+- Empty vs Unavailable must remain distinct.
+- QML smoke tests and static gates require a separate implementation task.

@@ -18,6 +18,24 @@ no QML type is registered, the presenter does not call DataServiceClient, does
 not access SQLite, does not call AccountingEngine, and writes no database
 tables.
 
+## TASK-118 ShellAccounting QML binding smoke plan
+
+ShellAccounting QML binding readiness smoke docs are now defined:
+
+- [docs/59_shell_accounting_qml_binding_smoke_plan.md](docs/59_shell_accounting_qml_binding_smoke_plan.md)
+- [docs/60_shell_accounting_qml_static_gate.md](docs/60_shell_accounting_qml_static_gate.md)
+
+These documents define future read-only QML binding targets, the QML binding
+smoke matrix, Empty vs Unavailable display rules, privacy display rules,
+no-trade UI rules, and static gates that forbid direct DataServiceClient,
+SQLite, DataAccess, AccountingEngine, write action, TradeDraft, trade
+suggestion, strategy, and broker order access from QML.
+
+QML remains unwired, no QML type is registered, no QML page is implemented, no
+real accounting action is added, no SQLite or AccountingEngine access is
+enabled, no database table is written, and no TradeDraft or trade suggestion is
+generated.
+
 ## TASK-117 ShellAccountingPresenter all guard actions refresh
 
 ShellAccountingPresenter now exposes read-only refresh methods for all five

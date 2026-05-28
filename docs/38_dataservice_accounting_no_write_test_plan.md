@@ -485,3 +485,12 @@ any database table write.
 
 The presenter still keeps TradeDraft generation, trade suggestions, strategy
 execution, and broker submission disabled.
+
+## TASK-118 QML Static No-write Boundary
+
+TASK-118 defines future QML static gates for no write / no trade behavior. QML
+must not contain direct `data.audit.append`, write action, TradeDraft, broker,
+strategy, SQLite, DataAccess, AccountingEngine, or DataServiceClient access.
+
+This task does not modify QML and does not add QML tests yet. Future QML
+binding tasks must add the static checks before enabling UI binding.

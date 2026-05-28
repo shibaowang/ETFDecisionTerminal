@@ -91,6 +91,12 @@ def main() -> int:
     shell_accounting_qml_binding_readiness_path = (
         root / "docs" / "58_shell_accounting_qml_binding_readiness_plan.md"
     )
+    shell_accounting_qml_binding_smoke_plan_path = (
+        root / "docs" / "59_shell_accounting_qml_binding_smoke_plan.md"
+    )
+    shell_accounting_qml_static_gate_path = (
+        root / "docs" / "60_shell_accounting_qml_static_gate.md"
+    )
     shell_accounting_presenter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
     )
@@ -1014,6 +1020,8 @@ def main() -> int:
     )
     shell_accounting_presenter_contract = shell_accounting_presenter_contract_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_readiness = shell_accounting_qml_binding_readiness_path.read_text(encoding="utf-8")
+    shell_accounting_qml_binding_smoke_plan = shell_accounting_qml_binding_smoke_plan_path.read_text(encoding="utf-8")
+    shell_accounting_qml_static_gate = shell_accounting_qml_static_gate_path.read_text(encoding="utf-8")
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
     shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
     shell_accounting_presenter_cmake = shell_accounting_presenter_cmake_path.read_text(encoding="utf-8")
@@ -4304,6 +4312,44 @@ def main() -> int:
         "Presenter still avoids data service adapter after TASK-117",
     )
     require("ShellAccountingPresenter" not in qml_sources, "QML has not added presenter binding after TASK-117")
+
+    require(shell_accounting_qml_binding_smoke_plan_path.exists(), "docs/59 QML binding smoke plan exists")
+    require(shell_accounting_qml_static_gate_path.exists(), "docs/60 QML static gate exists")
+    require("59_shell_accounting_qml_binding_smoke_plan" in readme, "README references docs/59")
+    require("60_shell_accounting_qml_static_gate" in readme, "README references docs/60")
+    require("59_shell_accounting_qml_binding_smoke_plan" in docs_index, "docs/README references docs/59")
+    require("60_shell_accounting_qml_static_gate" in docs_index, "docs/README references docs/60")
+    require(
+        "QML Binding Smoke Matrix" in shell_accounting_qml_binding_smoke_plan,
+        "docs/59 contains QML binding smoke matrix",
+    )
+    require(
+        "Empty is not Unavailable" in shell_accounting_qml_binding_smoke_plan,
+        "docs/59 distinguishes Empty and Unavailable",
+    )
+    require(
+        "no trading buttons" in shell_accounting_qml_binding_smoke_plan,
+        "docs/59 includes no trading buttons rule",
+    )
+    require("privacyMode" in shell_accounting_qml_binding_smoke_plan, "docs/59 includes privacyMode")
+    for forbidden_qml_token in [
+        "DataServiceClient",
+        "TradeDraft",
+        "brokerOrder",
+        "strategyExecute",
+    ]:
+        require(forbidden_qml_token in shell_accounting_qml_static_gate, f"docs/60 forbids {forbidden_qml_token}")
+    require("Go / No-Go Checklist" in shell_accounting_qml_static_gate, "docs/60 contains Go / No-Go Checklist")
+    require(
+        "59_shell_accounting_qml_binding_smoke_plan" in ui_design
+        or "QML binding smoke plan" in ui_design,
+        "docs/07 references docs/59 or QML binding smoke plan",
+    )
+    require("59_shell_accounting_qml_binding_smoke_plan" in codex_prompt_template, "docs/12 references docs/59")
+    require("60_shell_accounting_qml_static_gate" in codex_prompt_template, "docs/12 references docs/60")
+    require("59_shell_accounting_qml_binding_smoke_plan" in shell_accounting_presenter_contract, "docs/57 references docs/59")
+    require("60_shell_accounting_qml_static_gate" in shell_accounting_qml_binding_readiness, "docs/58 references docs/60")
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-118")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

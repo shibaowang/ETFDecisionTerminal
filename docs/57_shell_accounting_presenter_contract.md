@@ -243,3 +243,16 @@ visible. The aggregate state remains `Unavailable` for current guard payloads,
 Empty is not treated as Unavailable, and no TradeDraft, trade suggestion,
 strategy execution, broker order, QML binding, or database write path is
 enabled.
+
+## TASK-118 QML Binding Smoke Readiness
+
+Presenter QML binding readiness now references:
+
+- [docs/59_shell_accounting_qml_binding_smoke_plan.md](59_shell_accounting_qml_binding_smoke_plan.md)
+- [docs/60_shell_accounting_qml_static_gate.md](60_shell_accounting_qml_static_gate.md)
+
+The presenter remains read-only and is not registered with QML by this task.
+Future QML can only bind ShellServices read-only objects and must not call
+DataServiceClient, SQLite, DataAccess, AccountingEngine, adapters, concrete
+ports, write actions, TradeDraft, trade suggestions, strategies, or broker
+orders.

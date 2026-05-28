@@ -97,6 +97,12 @@ def main() -> int:
     shell_accounting_qml_static_gate_path = (
         root / "docs" / "60_shell_accounting_qml_static_gate.md"
     )
+    shell_accounting_readonly_ui_milestone_path = (
+        root / "docs" / "61_shell_accounting_readonly_ui_readiness_milestone.md"
+    )
+    shell_accounting_next_phase_review_path = (
+        root / "docs" / "62_shell_accounting_next_phase_review.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -466,6 +472,9 @@ def main() -> int:
     release_notes_v03_path = root / "docs" / "release_notes" / "v0_3_accounting_replay_testonly_coverage.md"
     release_notes_v04_path = root / "docs" / "release_notes" / "v0_4_accounting_engine_replay_skeleton.md"
     release_notes_v05_path = root / "docs" / "release_notes" / "v0_5_dataservice_accounting_guard_suite.md"
+    release_notes_v06_path = (
+        root / "docs" / "release_notes" / "v0_6_shell_accounting_readonly_ui_readiness.md"
+    )
     docs_index_path = root / "docs" / "README.md"
     protocol_path = root / "docs" / "04_protocol.md"
     accounting_rules_path = root / "docs" / "06_accounting_rules.md"
@@ -827,6 +836,9 @@ def main() -> int:
     require(release_notes_v03_path.exists(), "v0.3 accounting replay release notes doc exists")
     require(release_notes_v04_path.exists(), "v0.4 AccountingEngine replay skeleton release notes doc exists")
     require(release_notes_v05_path.exists(), "v0.5 DataService accounting guard suite release notes doc exists")
+    require(shell_accounting_readonly_ui_milestone_path.exists(), "docs/61 ShellAccounting readiness milestone exists")
+    require(shell_accounting_next_phase_review_path.exists(), "docs/62 ShellAccounting next phase review exists")
+    require(release_notes_v06_path.exists(), "v0.6 ShellAccounting readiness release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
     require(protocol_path.exists(), "protocol doc exists")
     require(accounting_rules_path.exists(), "accounting rules doc exists")
@@ -1025,6 +1037,8 @@ def main() -> int:
     shell_accounting_qml_binding_readiness = shell_accounting_qml_binding_readiness_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_plan = shell_accounting_qml_binding_smoke_plan_path.read_text(encoding="utf-8")
     shell_accounting_qml_static_gate = shell_accounting_qml_static_gate_path.read_text(encoding="utf-8")
+    shell_accounting_readonly_ui_milestone = shell_accounting_readonly_ui_milestone_path.read_text(encoding="utf-8")
+    shell_accounting_next_phase_review = shell_accounting_next_phase_review_path.read_text(encoding="utf-8")
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
     shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
@@ -1115,6 +1129,7 @@ def main() -> int:
     release_notes_v03 = release_notes_v03_path.read_text(encoding="utf-8")
     release_notes_v04 = release_notes_v04_path.read_text(encoding="utf-8")
     release_notes_v05 = release_notes_v05_path.read_text(encoding="utf-8")
+    release_notes_v06 = release_notes_v06_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
     protocol_doc = protocol_path.read_text(encoding="utf-8")
     accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
@@ -4383,6 +4398,57 @@ def main() -> int:
     require("TASK-119" in codex_prompt_template, "docs/12 mentions TASK-119")
     require("ShellAccounting QML static gate CTest" in readme, "README mentions ShellAccounting QML static gate CTest")
     require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-119")
+
+    require(
+        "v0.6 ShellAccounting Read-only UI Readiness" in readme,
+        "README mentions v0.6 ShellAccounting Read-only UI Readiness",
+    )
+    require(
+        "61_shell_accounting_readonly_ui_readiness_milestone" in readme,
+        "README references docs/61",
+    )
+    require("62_shell_accounting_next_phase_review" in readme, "README references docs/62")
+    require(
+        "61_shell_accounting_readonly_ui_readiness_milestone" in docs_index,
+        "docs/README references docs/61",
+    )
+    require("62_shell_accounting_next_phase_review" in docs_index, "docs/README references docs/62")
+    require(
+        "v0_6_shell_accounting_readonly_ui_readiness" in docs_index,
+        "docs/README references v0.6 release notes",
+    )
+    require(
+        "ShellAccountingPresenter" in shell_accounting_readonly_ui_milestone,
+        "docs/61 lists ShellAccountingPresenter",
+    )
+    require("QML 尚未接入" in shell_accounting_readonly_ui_milestone, "docs/61 states QML not wired")
+    require(
+        "Real accounting action 仍未实现" in shell_accounting_readonly_ui_milestone,
+        "docs/61 states real accounting action not implemented",
+    )
+    require("no TradeDraft" in shell_accounting_readonly_ui_milestone, "docs/61 states no TradeDraft")
+    require("no trade suggestion" in shell_accounting_readonly_ui_milestone, "docs/61 states no trade suggestion")
+    require("Go / No-Go Checklist" in shell_accounting_next_phase_review, "docs/62 contains Go / No-Go Checklist")
+    require(
+        "用户明确授权 QML binding" in shell_accounting_next_phase_review,
+        "docs/62 requires explicit QML binding authorization",
+    )
+    require(
+        "v0.6.0-shell-accounting-readonly-ui-readiness" in release_notes_v06,
+        "v0.6 release notes include suggested tag",
+    )
+    require("docs/61_shell_accounting_readonly_ui_readiness_milestone.md" in codex_prompt_template, "docs/12 references docs/61")
+    require("docs/62_shell_accounting_next_phase_review.md" in codex_prompt_template, "docs/12 references docs/62")
+    require(
+        "docs/61_shell_accounting_readonly_ui_readiness_milestone.md" in shell_accounting_qml_binding_smoke_plan
+        or "v0.6 readiness" in shell_accounting_qml_binding_smoke_plan,
+        "docs/59 references docs/61 or v0.6 readiness",
+    )
+    require(
+        "docs/61_shell_accounting_readonly_ui_readiness_milestone.md" in shell_accounting_qml_static_gate
+        or "v0.6 readiness" in shell_accounting_qml_static_gate,
+        "docs/60 references docs/61 or v0.6 readiness",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

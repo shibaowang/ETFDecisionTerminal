@@ -377,3 +377,14 @@ TradeDraft, strategy, or broker-order controls.
 
 TASK-119 does not modify QML, register QML types, or implement accounting QML
 pages.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 ShellAccounting read-only UI readiness milestone is documented in
+`docs/61_shell_accounting_readonly_ui_readiness_milestone.md`, with next phase
+review in `docs/62_shell_accounting_next_phase_review.md`.
+
+This milestone does not wire QML. Future accounting UI binding must remain
+read-only, must pass the TASK-119 QML static gate, must keep Empty distinct from
+Unavailable, and must not display trading buttons, TradeDraft, strategy, or
+broker-order controls.

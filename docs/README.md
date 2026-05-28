@@ -195,6 +195,14 @@
   automates docs/60 with no direct service, no write token, no premature
   accounting binding, accounting-scope no-trade, and docs sync tests. QML
   remains unwired.
+- ShellAccounting read-only UI readiness milestone:
+  [61_shell_accounting_readonly_ui_readiness_milestone.md](61_shell_accounting_readonly_ui_readiness_milestone.md)
+  closes the current ShellAccounting readiness loop without QML binding or real
+  accounting action implementation.
+- ShellAccounting next phase review:
+  [62_shell_accounting_next_phase_review.md](62_shell_accounting_next_phase_review.md)
+  defines the Go / No-Go checklist for a future read-only QML binding task.
+- [Release Notes - v0.6 ShellAccounting Read-only UI Readiness](release_notes/v0_6_shell_accounting_readonly_ui_readiness.md)
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

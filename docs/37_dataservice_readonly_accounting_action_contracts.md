@@ -799,3 +799,11 @@ AccountingEngine, adapter internals, write actions, or trade controls.
 
 This task does not add QML binding and does not change any DataService guard
 payload or action behavior.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The ShellAccounting read-only UI readiness milestone still consumes only the
+DataService accounting guard / read-only path. DataService accounting wrappers
+remain guards, real accounting actions are not implemented, and QML readiness
+does not authorize SQLite facts query integration or AccountingEngine calls from
+DataService.

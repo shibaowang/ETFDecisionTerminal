@@ -118,3 +118,10 @@ as soon as their filename or content identifies them as accounting UI.
 Empty is not Unavailable. Future QML binding tasks must keep this display rule,
 must pass TASK-119 static gates, and must still wait for User explicitly
 authorized QML integration before modifying QML.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 readiness milestone in
+`docs/61_shell_accounting_readonly_ui_readiness_milestone.md` treats this static
+gate as a required precondition for any future QML binding. The milestone does
+not modify QML and does not loosen this gate.

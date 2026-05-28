@@ -170,3 +170,10 @@ The automated static checks cover the smoke plan's no direct DataServiceClient,
 no SQLite, no AccountingEngine, no write action, and no-trade UI gates. QML
 smoke UI tests, QML component load tests, and actual QML binding remain
 unimplemented and require a separate authorized task.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 readiness milestone is documented in
+`docs/61_shell_accounting_readonly_ui_readiness_milestone.md`. The milestone
+confirms the smoke plan is ready as a pre-QML input, but it does not implement
+QML binding, QML smoke UI tests, or real accounting actions.

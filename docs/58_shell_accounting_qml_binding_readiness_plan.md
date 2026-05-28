@@ -184,3 +184,11 @@ ShellAccounting binding, and no accounting-scope trade controls.
 
 QML binding still requires separate authorization. TASK-119 does not register
 QML types, create QML components, or bind ShellAccountingPresenter.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 readiness milestone references this plan as one readiness input.
+ShellAccountingPresenter, status object, issue model, position model, presenter
+all guard refresh, QML smoke plan, and QML static gate are in place, but QML
+binding is still not implemented and still requires explicit user
+authorization.

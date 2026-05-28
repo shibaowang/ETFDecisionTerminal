@@ -401,3 +401,10 @@ ShellServices, and no-trade UI behavior.
 The gate currently verifies that QML has no ShellAccounting binding yet and no
 direct DataServiceClient, SQLite / DataAccess, AccountingEngine, write action,
 TradeDraft, broker, or strategy tokens.
+
+## TASK-120 ShellAccounting Read-only UI Readiness
+
+The v0.6 readiness milestone preserves ViewModel state mapping and no-trade
+rules. Five guard payloads still map to Unavailable, Empty remains distinct from
+Unavailable, issues remain visible, privacy display remains owned by
+ShellServices, and no TradeDraft or trade suggestion behavior is exposed.

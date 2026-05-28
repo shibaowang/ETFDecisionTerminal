@@ -67,6 +67,36 @@ def main() -> int:
     shell_accounting_viewmodel_state_contract_path = (
         root / "docs" / "50_shell_accounting_viewmodel_state_contract.md"
     )
+    shell_accounting_scaffolding_cmake_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "CMakeLists.txt"
+    )
+    shell_accounting_scenario_header_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "ShellAccountingControllerScenario.h"
+    )
+    shell_accounting_scenario_source_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "ShellAccountingControllerScenario.cpp"
+    )
+    shell_accounting_state_utils_header_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "ShellAccountingStateMappingTestUtils.h"
+    )
+    shell_accounting_state_utils_source_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "ShellAccountingStateMappingTestUtils.cpp"
+    )
+    shell_accounting_state_test_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "test_shell_accounting_controller_state_contract.cpp"
+    )
+    shell_accounting_issue_test_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "test_shell_accounting_controller_issue_contract.cpp"
+    )
+    shell_accounting_privacy_test_path = (
+        root / "tests" / "ShellAccountingControllerScaffolding" / "test_shell_accounting_controller_privacy_contract.cpp"
+    )
+    shell_accounting_no_trade_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingControllerScaffolding"
+        / "test_shell_accounting_controller_no_trade_action_contract.cpp"
+    )
     position_list_first_stage_cmake_path = (
         root / "tests" / "PositionListFirstStageScaffolding" / "CMakeLists.txt"
     )
@@ -301,6 +331,15 @@ def main() -> int:
         shell_accounting_viewmodel_state_contract_path.exists(),
         "Shell accounting ViewModel state contract doc exists",
     )
+    require(shell_accounting_scaffolding_cmake_path.exists(), "Shell accounting scaffolding CMake exists")
+    require(shell_accounting_scenario_header_path.exists(), "Shell accounting scenario header exists")
+    require(shell_accounting_scenario_source_path.exists(), "Shell accounting scenario source exists")
+    require(shell_accounting_state_utils_header_path.exists(), "Shell accounting state utils header exists")
+    require(shell_accounting_state_utils_source_path.exists(), "Shell accounting state utils source exists")
+    require(shell_accounting_state_test_path.exists(), "Shell accounting state contract test exists")
+    require(shell_accounting_issue_test_path.exists(), "Shell accounting issue contract test exists")
+    require(shell_accounting_privacy_test_path.exists(), "Shell accounting privacy contract test exists")
+    require(shell_accounting_no_trade_test_path.exists(), "Shell accounting no trade action contract test exists")
     require(position_list_first_stage_cmake_path.exists(), "position.list first-stage scaffolding CMake exists")
     require(position_list_first_stage_scenario_header_path.exists(), "position.list first-stage scenario header exists")
     require(position_list_first_stage_scenario_source_path.exists(), "position.list first-stage scenario source exists")
@@ -470,6 +509,15 @@ def main() -> int:
     shell_accounting_viewmodel_state_contract = shell_accounting_viewmodel_state_contract_path.read_text(
         encoding="utf-8"
     )
+    shell_accounting_scaffolding_cmake = shell_accounting_scaffolding_cmake_path.read_text(encoding="utf-8")
+    shell_accounting_scenario_header = shell_accounting_scenario_header_path.read_text(encoding="utf-8")
+    shell_accounting_scenario_source = shell_accounting_scenario_source_path.read_text(encoding="utf-8")
+    shell_accounting_state_utils_header = shell_accounting_state_utils_header_path.read_text(encoding="utf-8")
+    shell_accounting_state_utils_source = shell_accounting_state_utils_source_path.read_text(encoding="utf-8")
+    shell_accounting_state_test = shell_accounting_state_test_path.read_text(encoding="utf-8")
+    shell_accounting_issue_test = shell_accounting_issue_test_path.read_text(encoding="utf-8")
+    shell_accounting_privacy_test = shell_accounting_privacy_test_path.read_text(encoding="utf-8")
+    shell_accounting_no_trade_test = shell_accounting_no_trade_test_path.read_text(encoding="utf-8")
     position_list_first_stage_cmake = position_list_first_stage_cmake_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_header = position_list_first_stage_scenario_header_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_source = position_list_first_stage_scenario_source_path.read_text(encoding="utf-8")
@@ -2360,6 +2408,89 @@ def main() -> int:
     require(
         "docs/50_shell_accounting_viewmodel_state_contract.md" in position_mapping,
         "position DTO ViewModel mapping links docs/50",
+    )
+    require(
+        "shell_accounting_controller_state_contract" in shell_accounting_scaffolding_cmake,
+        "Shell accounting scaffolding registers state contract test",
+    )
+    require(
+        "shell_accounting_controller_issue_contract" in shell_accounting_scaffolding_cmake,
+        "Shell accounting scaffolding registers issue contract test",
+    )
+    require(
+        "shell_accounting_controller_privacy_contract" in shell_accounting_scaffolding_cmake,
+        "Shell accounting scaffolding registers privacy contract test",
+    )
+    require(
+        "shell_accounting_controller_no_trade_action_contract" in shell_accounting_scaffolding_cmake,
+        "Shell accounting scaffolding registers no trade action contract test",
+    )
+    require(
+        "ShellAccountingControllerScenario" in shell_accounting_scenario_header,
+        "Shell accounting scenario helper exists",
+    )
+    require(
+        "ShellAccountingControllerScenario" in shell_accounting_scenario_source,
+        "Shell accounting scenario source implements helper",
+    )
+    require(
+        "mapScenarioToViewState" in shell_accounting_state_utils_header,
+        "Shell accounting state utils expose state mapping",
+    )
+    require(
+        "implemented=false -> Unavailable" in shell_accounting_viewmodel_state_contract,
+        "docs/50 still states implemented=false maps to Unavailable",
+    )
+    require(
+        "TASK-100" in shellservices_accounting_controller_contract
+        and "test scaffolding" in shellservices_accounting_controller_contract,
+        "docs/49 mentions TASK-100 test scaffolding",
+    )
+    require("TASK-100" in shell_accounting_viewmodel_state_contract, "docs/50 mentions TASK-100")
+    require(
+        "ShellServices accounting implementation tasks must pass TASK-100 scaffolding" in codex_prompt_template,
+        "prompt template requires TASK-100 scaffolding",
+    )
+    require(
+        "QML must not directly call DataServiceClient" in codex_prompt_template,
+        "prompt template forbids direct QML DataServiceClient calls",
+    )
+    require(
+        "Accounting UI states must distinguish Empty / Unavailable / Warning / Error /" in ui_design,
+        "UI design defines accounting UI states",
+    )
+    require(
+        "shell_accounting_controller_state_contract" in shell_accounting_state_test,
+        "state contract test name is present",
+    )
+    require("implemented=false" in shell_accounting_state_test, "state test checks implemented=false")
+    require("Unavailable" in shell_accounting_state_test, "state test checks Unavailable")
+    require("Empty" in shell_accounting_state_test, "state test checks Empty")
+    require("Warning" in shell_accounting_state_test, "state test checks Warning")
+    require("Error" in shell_accounting_state_test, "state test checks Error")
+    require("Stale" in shell_accounting_state_test, "state test checks Stale")
+    require("Loading" in shell_accounting_state_test, "state test checks Loading")
+    require("MARKET_PRICE_MISSING" in shell_accounting_issue_test, "issue test checks MARKET_PRICE_MISSING")
+    require("NEGATIVE_CASH" in shell_accounting_issue_test, "issue test checks NEGATIVE_CASH")
+    require(
+        "MULTI_CURRENCY_UNSUPPORTED" in shell_accounting_issue_test,
+        "issue test checks MULTI_CURRENCY_UNSUPPORTED",
+    )
+    require("privacyMode=true" in shell_accounting_privacy_test, "privacy test checks privacyMode")
+    require("display text" in shell_accounting_privacy_test, "privacy test checks display text")
+    require("Unavailable does not fabricate masked amount" in shell_accounting_privacy_test, "privacy test checks unavailable amount")
+    require("Empty does not fabricate amount" in shell_accounting_privacy_test, "privacy test checks empty amount")
+    require("TradeDraft" in shell_accounting_no_trade_test, "no trade test checks TradeDraft")
+    require("trade suggestion" in shell_accounting_no_trade_test, "no trade test checks trade suggestion")
+    require("broker order" in shell_accounting_no_trade_test, "no trade test checks broker order")
+    require("strategy" in shell_accounting_no_trade_test, "no trade test checks strategy execution")
+    require("DataServiceClient" not in shell_accounting_scenario_source, "scaffolding helper does not call real DataServiceClient")
+    require("SQLite" not in shell_accounting_scenario_source, "scaffolding helper does not access SQLite")
+    require("AccountingEngine" not in shell_accounting_scenario_source, "scaffolding helper does not call AccountingEngine")
+    require("ShellAccountingControllerScaffolding" not in root_cmake, "scaffolding is not added as production root target")
+    require(
+        "add_subdirectory(ShellAccountingControllerScaffolding)" in tests_cmake,
+        "tests CMake adds Shell accounting scaffolding",
     )
 
     require(

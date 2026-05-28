@@ -118,3 +118,8 @@ The first-stage real action is still not QML-facing unless a separate
 ShellServices controller task is authorized. Future QML integration must follow
 `docs/49_shellservices_accounting_controller_contract.md` and
 `docs/50_shell_accounting_viewmodel_state_contract.md`.
+
+TASK-100 adds test-only Shell accounting controller scaffolding. The first-stage
+real action remains non-QML-facing until a production ShellServices controller
+implementation task is separately authorized and passes the TASK-100 state,
+issue, privacy, and no trade action contract tests.

@@ -97,3 +97,18 @@ Future implementation must include:
 - unavailable vs empty tests
 - stale display tests
 - no trade suggestion tests
+
+## TASK-100 Test Scaffolding
+
+TASK-100 adds test scaffolding that locks the ViewModel state contract before
+production controller implementation:
+
+- `implemented=false -> Unavailable` is tested.
+- `Empty vs Unavailable` is tested and must not be confused.
+- `privacyMode` display mapping is tested.
+- `no trade suggestion` behavior is tested.
+- Warning, Error, Stale, and Loading states are preserved by test-only
+  scenarios.
+
+The scaffolding is not a production controller and does not call real
+DataServiceClient, SQLite, or AccountingEngine.

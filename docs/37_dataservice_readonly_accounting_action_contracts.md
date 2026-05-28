@@ -672,3 +672,13 @@ ShellServices consumer boundaries are documented in
 DataService guard payloads must not be consumed directly by QML. Future QML
 must bind ShellServices read-only ViewModel / Model objects, and ShellServices
 must preserve unavailable, warning, error, implemented, and readOnly states.
+
+## TASK-100 ShellServices Scaffolding Consumer Tests
+
+TASK-100 adds test-only Shell accounting controller scaffolding. Future
+ShellServices code may consume DataService guard payloads through a controller,
+but QML must not consume DataService payloads directly.
+
+The scaffolding verifies guard payload state mapping, issue visibility, privacy
+display, and no TradeDraft / no trade suggestion boundaries without calling
+real DataServiceClient or modifying DataService guard behavior.

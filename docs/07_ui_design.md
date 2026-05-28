@@ -251,3 +251,13 @@ v0.1 草案。
   generation, strategy execution, or write actions.
 - Privacy mode masks display text only; it must not mutate source data or make
   QML calculate accounting values.
+
+## TASK-100 Shell Accounting State Scaffolding
+
+- Accounting UI states must distinguish Empty / Unavailable / Warning / Error /
+  Stale.
+- Privacy mode masks display text only; QML must not calculate masked text.
+- Read-only accounting pages must not show trading buttons, TradeDraft actions,
+  broker order actions, or strategy execution controls.
+- TASK-100 scaffolding is test-only and does not connect QML to accounting
+  actions.

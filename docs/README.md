@@ -75,6 +75,9 @@
 - `position.list` real implementation boundary: design docs only; guard
   behavior, SQLite integration, AccountingEngine integration, QML integration,
   and writes remain unchanged.
+- `position.list` mapping contract tests: test-only request, trade fact, and
+  response mapping coverage; real `position.list` remains unimplemented and
+  guard behavior remains unchanged.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

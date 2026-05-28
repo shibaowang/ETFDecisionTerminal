@@ -494,3 +494,11 @@ v0.1 草案。
 - DataService must not compute replay directly; it should coordinate
   DataAccess facts and AccountingEngine mapping only when explicitly
   authorized.
+- `position.list` mapping contract tests do not equal real action
+  implementation.
+- Mapping helpers must stay in `tests/` or another test-only directory, not in
+  production libs.
+- Do not bypass the no-write plan or readiness checklist when moving from
+  mapping contracts to a real action.
+- Changing `position.list` to `implemented=true` requires separate explicit
+  authorization.

@@ -1684,6 +1684,22 @@ connected to DataService, DataService still does not call AccountingEngine,
 SQLite integration is still not connected to `position.list`, and no database
 writes are enabled.
 
+## TASK-095 position.list mapping contract tests
+
+Test-only `position.list` mapping contract coverage has been added for the
+future real implementation boundary:
+
+- `position_list_request_mapping_contract`
+- `position_list_trade_fact_mapping_contract`
+- `position_list_response_mapping_contract`
+
+The tests cover request payload -> AccountingEngine `ReplayRequestDto`,
+DataAccess `TradeFactRow` -> AccountingEngine `TradeFactDto`, and
+AccountingEngine `AccountingReplayResult` -> future `PositionListResponse`
+payload mapping. Real `position.list` remains unimplemented, the guard behavior
+is unchanged, the tests do not call DataService actions, do not access SQLite,
+and do not write database tables.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

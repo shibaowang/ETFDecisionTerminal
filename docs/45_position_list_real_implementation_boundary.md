@@ -229,3 +229,16 @@ All conditions must be met before switching from guard to real action:
 - Do not place broker orders.
 - Do not fetch market data or FX rates from the network.
 - Do not call this action directly from QML.
+
+## TASK-095 Mapping Contract Tests
+
+TASK-095 adds test-only mapping contract tests for future real
+`position.list` implementation:
+
+- request payload -> AccountingEngine `ReplayRequestDto`
+- DataAccess `TradeFactRow` -> AccountingEngine `TradeFactDto`
+- AccountingEngine `AccountingReplayResult` -> future `PositionListResponse`
+
+These tests do not implement the real action, do not modify the
+`position.list` guard, do not call DataService action replay paths, do not
+access SQLite, and do not write database tables.

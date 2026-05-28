@@ -229,3 +229,14 @@ Readiness is tracked in
 Cash facts, market price, and FX gaps affect `position.list`
 `dataQualityStatus` and issues. Missing market price must not fabricate
 valuation, and multi-currency input without FX facts must not fabricate rates.
+
+## TASK-095 position.list Mapping Contract Tests
+
+TASK-095 adds test-only `TradeFactRow` -> `TradeFactDto` mapping contract
+tests. The mapping preserves `feeText` as-is and does not correct the known
+`trade_log.fee_cents NOT NULL DEFAULT 0` schema gap. That gap still requires a
+future design decision before real missing-fee semantics can be trusted from
+production query data.
+
+The tests are contract tests only; they do not connect DataAccess to
+DataService and do not implement real `position.list`.

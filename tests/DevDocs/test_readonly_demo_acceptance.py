@@ -91,6 +91,13 @@ def main() -> int:
     shell_accounting_qml_binding_readiness_path = (
         root / "docs" / "58_shell_accounting_qml_binding_readiness_plan.md"
     )
+    shell_accounting_presenter_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
+    )
+    shell_accounting_presenter_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingPresenter.cpp"
+    )
+    shell_accounting_presenter_cmake_path = root / "tests" / "ShellAccountingPresenter" / "CMakeLists.txt"
     shell_accounting_dataservice_adapter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h"
     )
@@ -564,6 +571,9 @@ def main() -> int:
     )
     require(shell_accounting_presenter_contract_path.exists(), "Shell accounting presenter contract doc exists")
     require(shell_accounting_qml_binding_readiness_path.exists(), "Shell accounting QML binding readiness plan exists")
+    require(shell_accounting_presenter_header_path.exists(), "ShellAccountingPresenter header exists")
+    require(shell_accounting_presenter_source_path.exists(), "ShellAccountingPresenter source exists")
+    require(shell_accounting_presenter_cmake_path.exists(), "ShellAccountingPresenter tests CMake exists")
     require(
         shell_accounting_dataservice_adapter_header_path.exists(),
         "ShellAccountingDataServiceAdapter production skeleton header exists",
@@ -1004,6 +1014,9 @@ def main() -> int:
     )
     shell_accounting_presenter_contract = shell_accounting_presenter_contract_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_readiness = shell_accounting_qml_binding_readiness_path.read_text(encoding="utf-8")
+    shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
+    shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
+    shell_accounting_presenter_cmake = shell_accounting_presenter_cmake_path.read_text(encoding="utf-8")
     shell_accounting_dataservice_adapter_header = shell_accounting_dataservice_adapter_header_path.read_text(
         encoding="utf-8"
     )
@@ -4151,6 +4164,45 @@ def main() -> int:
         "PositionListReadOnlyTable",
     ]:
         require(qml_binding not in qml_sources, f"QML has not added accounting binding {qml_binding}")
+
+    require("ShellAccountingPresenter skeleton" in readme, "README mentions ShellAccountingPresenter skeleton")
+    require("TASK-115" in shell_accounting_presenter_contract, "docs/57 mentions TASK-115")
+    require("TASK-115" in shell_accounting_qml_binding_readiness, "docs/58 mentions TASK-115")
+    require("TASK-115" in shellservices_accounting_controller_contract, "docs/49 mentions TASK-115")
+    require("TASK-115" in shell_accounting_viewmodel_state_contract, "docs/50 mentions TASK-115")
+    require("TASK-115" in codex_prompt_template, "docs/12 mentions TASK-115")
+    require("ShellAccountingPresenter" in shellservices_cmake, "ShellServices CMake includes ShellAccountingPresenter")
+    require("ShellAccountingPresenter" in shellservices_public_header, "ShellServices umbrella header exports ShellAccountingPresenter")
+    require("add_subdirectory(ShellAccountingPresenter)" in tests_cmake, "tests CMake adds ShellAccountingPresenter")
+    for test_name in [
+        "shell_accounting_presenter_skeleton_construction",
+        "shell_accounting_presenter_skeleton_status_issue_models",
+        "shell_accounting_presenter_skeleton_refresh_boundary",
+        "shell_accounting_presenter_skeleton_privacy_boundary",
+        "shell_accounting_presenter_skeleton_no_trade_action",
+        "shell_accounting_presenter_skeleton_no_service_dependency",
+    ]:
+        require(test_name in shell_accounting_presenter_cmake, f"Presenter CMake registers {test_name}")
+    presenter_sources = "\n".join([shell_accounting_presenter_header, shell_accounting_presenter_source])
+    for forbidden_dependency in [
+        "DataServiceClient",
+        "DataServiceApi",
+        "DataAccess",
+        "AccountingEngine",
+        "SQLite",
+        "QtQuick",
+    ]:
+        require(forbidden_dependency not in presenter_sources, f"Presenter avoids {forbidden_dependency}")
+    for forbidden_interface in [
+        "createTradeDraft",
+        "brokerOrder",
+        "strategyExecute",
+    ]:
+        require(forbidden_interface not in presenter_sources, f"Presenter avoids {forbidden_interface}")
+    require("ShellAccountingDataServiceClientPortAdapter" not in presenter_sources, "Presenter avoids concrete port adapter")
+    require("ShellAccountingDataServiceAdapter" not in presenter_sources, "Presenter avoids data service adapter")
+    require("qmlRegisterType" not in presenter_sources, "Presenter does not register QML type")
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting presenter binding")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -322,3 +322,17 @@ v0.1 草案。
   trade suggestion actions, strategy execution controls, or broker order
   controls.
 - TASK-114 does not modify QML.
+
+## TASK-115 ShellAccountingPresenter Skeleton
+
+- The ShellAccountingPresenter skeleton exists, but QML is still not wired to
+  it and no QML type is registered.
+- Future UI must continue to bind only ShellServices read-only presentation
+  objects.
+- Future UI must preserve Empty vs Unavailable and visible Warning / Error /
+  Stale states.
+- Future UI must use ShellServices display text for privacy and must not
+  calculate masks or accounting values in QML.
+- Future UI must avoid TradeDraft, trade suggestion, strategy execution, and
+  broker order controls unless a separate task explicitly authorizes a new
+  boundary.

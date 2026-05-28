@@ -646,3 +646,13 @@ v0.1 草案。
 - QML must not call DataServiceClient and must not calculate accounting.
 - No TradeDraft / no trade suggestion remains mandatory for read-only
   accounting UI.
+
+## TASK-115 ShellAccountingPresenter Skeleton
+
+- ShellAccountingPresenter skeleton is not QML integration.
+- Do not register QML types without an explicit task.
+- Do not call DataServiceClient from the presenter.
+- Presenter code must only use ShellServices read-only state, issue, position
+  model, and controller boundaries.
+- Presenter must not expose TradeDraft, trade suggestion, strategy execution,
+  or broker submission actions.

@@ -164,6 +164,11 @@
   [58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md)
   defines future read-only QML binding rules, no-trade UI rules, and the
   explicit QML authorization checklist.
+- ShellAccountingPresenter skeleton: production ShellServices presenter
+  skeleton now holds the read-only status object, issue model, position list
+  model, and optional controller boundary. QML remains unwired and the
+  presenter does not call DataServiceClient, SQLite, AccountingEngine, writes,
+  TradeDraft, or trade suggestions.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

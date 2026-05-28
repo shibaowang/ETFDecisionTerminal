@@ -604,3 +604,11 @@ v0.1 草案。
 - A live adapter may only call allowlisted read-only wrappers.
 - Live-call tasks must keep no QML, no SQLite, no AccountingEngine, no writes,
   no TradeDraft, and no trade suggestion unless separately authorized.
+- TASK-110 live-call skeleton is not real DataServiceClient integration.
+- Do not include DataServiceClient in `ShellAccountingDataServiceAdapter` unless
+  explicitly authorized.
+- Future concrete DataServiceClient port implementation requires a separate
+  task.
+- Keep no QML, no SQLite, no AccountingEngine, no writes, no TradeDraft, and no
+  trade suggestion for Shell accounting adapter work unless separately
+  authorized.

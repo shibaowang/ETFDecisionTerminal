@@ -1,5 +1,20 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-110 ShellAccountingDataServiceAdapter live-call skeleton
+
+`ShellAccountingDataServiceAdapter` now has a test-first live-call skeleton
+through an internal `ShellAccountingDataServiceClientPort` abstraction. The
+adapter can call test-only spy port methods shaped like the five read-only
+accounting wrappers and map request / response / error fields into
+`ShellAccountingServiceResult`.
+
+This is not real DataServiceClient integration. Production code still does not
+include or call DataServiceClient, DataServiceApi, DataAccess, AccountingEngine,
+SQLite, QtQuick, or QML. With no port configured the adapter still returns
+`SHELL_ACCOUNTING_DATASERVICE_ADAPTER_NOT_CONNECTED`; with a test spy port it
+only exercises allowlisted read-only paths. QML remains disconnected, no
+database tables are written, and no TradeDraft or trade suggestion is generated.
+
 ## TASK-018 ETFDiag diagnostic report consumer
 
 `ETFDiag` is a local diagnostic command line tool that consumes the JSON report

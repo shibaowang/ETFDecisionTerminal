@@ -1,6 +1,7 @@
 find_package(Qt6 COMPONENTS Core REQUIRED)
 
 add_library(ETFShellServices STATIC
+    include/ShellServices/ShellAccountingDataServiceClientPort.h
     include/ShellServices/ShellAccountingDataServiceAdapter.h
     include/ShellServices/ShellAccountingDisplayText.h
     include/ShellServices/ShellAccountingIssue.h

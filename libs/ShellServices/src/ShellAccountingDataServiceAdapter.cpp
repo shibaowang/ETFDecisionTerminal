@@ -1,5 +1,8 @@
 #include "ShellServices/ShellAccountingDataServiceAdapter.h"
 
+#include <sstream>
+#include <utility>
+
 namespace etfdt::shell_services {
 
 namespace {
@@ -42,41 +45,233 @@ ShellAccountingServiceResult makeNotConnectedResult(
     return result;
 }
 
+std::string escapeJsonString(const std::string& value)
+{
+    std::string escaped;
+    escaped.reserve(value.size());
+    for (const auto ch : value) {
+        if (ch == '\\' || ch == '"') {
+            escaped.push_back('\\');
+        }
+        escaped.push_back(ch);
+    }
+    return escaped;
+}
+
+void appendJsonStringField(
+    std::ostringstream& stream,
+    const char* name,
+    const std::string& value,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":\"" << escapeJsonString(value) << '"';
+    needsComma = true;
+}
+
+void appendJsonBoolField(
+    std::ostringstream& stream,
+    const char* name,
+    bool value,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":" << (value ? "true" : "false");
+    needsComma = true;
+}
+
+void appendJsonIntField(
+    std::ostringstream& stream,
+    const char* name,
+    int value,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":" << value;
+    needsComma = true;
+}
+
+void appendRequestedOutputs(
+    std::ostringstream& stream,
+    const std::vector<std::string>& requestedOutputs,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << "\"requestedOutputs\":[";
+    for (std::size_t index = 0; index < requestedOutputs.size(); ++index) {
+        if (index > 0) {
+            stream << ',';
+        }
+        stream << '"' << escapeJsonString(requestedOutputs[index]) << '"';
+    }
+    stream << ']';
+    needsComma = true;
+}
+
+std::string makePayloadJson(
+    const ShellAccountingServiceRequest& request,
+    const char* fallbackActionName)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(
+        stream,
+        "actionName",
+        request.actionName.empty() ? fallbackActionName : request.actionName,
+        needsComma);
+    appendJsonStringField(stream, "accountId", request.accountId, needsComma);
+    appendJsonStringField(stream, "portfolioId", request.portfolioId, needsComma);
+    appendJsonStringField(stream, "sourceFromTime", request.sourceFromTime, needsComma);
+    appendJsonStringField(stream, "sourceToTime", request.sourceToTime, needsComma);
+    appendJsonBoolField(stream, "includeIssues", request.includeIssues, needsComma);
+    appendJsonBoolField(stream, "includeDebugMetadata", request.includeDebugMetadata, needsComma);
+    appendJsonStringField(stream, "calculationVersion", request.calculationVersion, needsComma);
+    appendRequestedOutputs(stream, request.requestedOutputs, needsComma);
+    appendJsonIntField(stream, "timeoutMs", request.timeoutMs, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
+ShellAccountingDataServiceClientRequest makeClientRequest(
+    const ShellAccountingServiceRequest& request,
+    const char* fallbackActionName)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = request.actionName.empty() ? fallbackActionName : request.actionName;
+    clientRequest.payloadJson = makePayloadJson(request, fallbackActionName);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingServiceResult mapClientResponse(
+    ShellAccountingDataServiceClientResponse response,
+    const ShellAccountingServiceRequest& request,
+    const char* fallbackActionName)
+{
+    ShellAccountingServiceResult result;
+    result.actionName = response.actionName.empty()
+        ? (request.actionName.empty() ? fallbackActionName : request.actionName)
+        : std::move(response.actionName);
+    result.protocolSuccess = response.protocolSuccess;
+    result.implemented = response.implemented;
+    result.readOnly = response.readOnly;
+    result.writeEnabled = response.writeEnabled;
+    result.payloadStatus = std::move(response.payloadStatus);
+    result.dataQualityStatus = std::move(response.dataQualityStatus);
+    result.hasRows = response.hasRows;
+    result.issues = std::move(response.issues);
+    result.warnings = std::move(response.warnings);
+    result.errors = std::move(response.errors);
+    result.rawPayload = std::move(response.rawPayload);
+    result.timeout = response.timeout;
+    result.transportError = response.transportError;
+    result.protocolError = response.protocolError;
+    result.domainError = response.domainError;
+    result.generatedTradeDraft = false;
+    result.generatedTradeSuggestion = false;
+    result.strategyExecuted = false;
+    result.brokerOrderSubmitted = false;
+    return result;
+}
+
 }  // namespace
+
+ShellAccountingDataServiceAdapter::ShellAccountingDataServiceAdapter(
+    std::shared_ptr<ShellAccountingDataServiceClientPort> clientPort)
+    : clientPort_(std::move(clientPort))
+{
+}
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchPositionList(
     const ShellAccountingServiceRequest& request)
 {
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callPositionList(makeClientRequest(request, "position.list")),
+            request,
+            "position.list");
+    }
     return makeNotConnectedResult(request, "position.list");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchCashSummary(
     const ShellAccountingServiceRequest& request)
 {
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callCashSummary(makeClientRequest(request, "cash.summary")),
+            request,
+            "cash.summary");
+    }
     return makeNotConnectedResult(request, "cash.summary");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchPortfolioPnlSummary(
     const ShellAccountingServiceRequest& request)
 {
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callPortfolioPnlSummary(
+                makeClientRequest(request, "portfolio.pnl.summary")),
+            request,
+            "portfolio.pnl.summary");
+    }
     return makeNotConnectedResult(request, "portfolio.pnl.summary");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchBasePositionSummary(
     const ShellAccountingServiceRequest& request)
 {
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callBasePositionSummary(
+                makeClientRequest(request, "base_position.summary")),
+            request,
+            "base_position.summary");
+    }
     return makeNotConnectedResult(request, "base_position.summary");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchSniperPoolSummary(
     const ShellAccountingServiceRequest& request)
 {
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callSniperPoolSummary(makeClientRequest(request, "sniper_pool.summary")),
+            request,
+            "sniper_pool.summary");
+    }
     return makeNotConnectedResult(request, "sniper_pool.summary");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept
 {
     return false;
+}
+
+bool ShellAccountingDataServiceAdapter::hasClientPort() const noexcept
+{
+    return static_cast<bool>(clientPort_);
+}
+
+void ShellAccountingDataServiceAdapter::setClientPort(
+    std::shared_ptr<ShellAccountingDataServiceClientPort> clientPort) noexcept
+{
+    clientPort_ = std::move(clientPort);
+}
+
+void ShellAccountingDataServiceAdapter::clearClientPort() noexcept
+{
+    clientPort_.reset();
 }
 
 bool ShellAccountingDataServiceAdapter::readOnly() const noexcept

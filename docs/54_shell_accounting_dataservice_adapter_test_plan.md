@@ -167,3 +167,23 @@ TASK-109 adds test-only gate tests for future live-call work:
 Future live implementation must pass these gates or their real-adapter
 equivalents. TASK-109 does not implement live calls and does not change the
 current skeleton not-connected behavior.
+
+## TASK-110 Live-call Skeleton Tests
+
+TASK-110 adds live-call skeleton tests against an abstract test port:
+
+- `shell_accounting_dataservice_adapter_live_call_skeleton_default_not_connected`
+- `shell_accounting_dataservice_adapter_live_call_skeleton_method_mapping`
+- `shell_accounting_dataservice_adapter_live_call_skeleton_request_mapping`
+- `shell_accounting_dataservice_adapter_live_call_skeleton_response_mapping`
+- `shell_accounting_dataservice_adapter_live_call_skeleton_error_mapping`
+- `shell_accounting_dataservice_adapter_live_call_skeleton_no_write_no_trade`
+- `shell_accounting_dataservice_adapter_live_call_skeleton_no_real_dependency`
+- `shell_accounting_controller_with_dataservice_adapter_spy_port`
+
+These tests prove the default not-connected fallback, action-specific method
+mapping through the abstract port, request field preservation, response field
+mapping, protocol / timeout / transport / domain issue mapping, no-write /
+no-trade flags, no real dependency, and controller refresh through the adapter
+and spy port. Future real adapter work must replace only the concrete port
+implementation and keep these contracts passing.

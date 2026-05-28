@@ -6,6 +6,13 @@ This document defines a no-write test plan for future DataService accounting
 read-only actions. It does not implement tests, actions, SQLite integration, or
 AccountingEngine integration.
 
+## TASK-110 No-write Update
+
+The live-call skeleton adds tests proving the adapter request payload does not
+carry write intent, TradeDraft fields, trade suggestion fields, strategy fields,
+or broker order fields. The test-only spy port verifies that adapter refresh
+paths do not call forbidden write, draft, snapshot, strategy, or broker actions.
+
 ## Protected Tables
 
 Future accounting read-only action tests must protect:

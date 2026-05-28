@@ -152,3 +152,15 @@
 - [Release Notes - v0.3 Accounting Replay Test-only Coverage](release_notes/v0_3_accounting_replay_testonly_coverage.md)
 - [Release Notes - v0.4 AccountingEngine Replay Skeleton](release_notes/v0_4_accounting_engine_replay_skeleton.md)
 - [Release Notes - v0.5 DataService Accounting Guard Suite](release_notes/v0_5_dataservice_accounting_guard_suite.md)
+
+## TASK-110 ShellAccountingDataServiceAdapter Live-call Skeleton
+
+TASK-110 adds `ShellAccountingDataServiceClientPort` as a ShellServices-owned
+abstract client port plus test-only spy port coverage for
+`ShellAccountingDataServiceAdapter`. The adapter can map requests, responses,
+protocol errors, timeout, transport errors, domain issues, no-write, no-trade,
+and controller refresh behavior through the abstract port.
+
+This remains a skeleton: real DataServiceClient integration, QML integration,
+SQLite access, AccountingEngine calls, database writes, TradeDraft generation,
+and trade suggestions remain unimplemented.

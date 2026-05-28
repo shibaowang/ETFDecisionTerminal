@@ -9,6 +9,13 @@ It does not implement a controller, does not modify QML, does not call
 DataServiceClient, and is intended for review before a future ShellServices
 implementation task.
 
+## TASK-110 Adapter Port Boundary
+
+The controller can continue to consume `ShellAccountingServiceAdapter` while a
+`ShellAccountingDataServiceAdapter` uses an abstract client port underneath in
+tests. This still does not wire QML and still does not call the real
+DataServiceClient. Controller behavior remains read-only and no-trade.
+
 ## Current State
 
 - DataService accounting guard suite exists.

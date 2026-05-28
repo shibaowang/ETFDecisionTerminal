@@ -173,3 +173,23 @@ the abstract client port exists, spy-port method mapping is tested, request /
 response / error mapping is tested, and no-write / no-trade / no-real-dependency
 checks are in place. Real DataServiceClient integration and QML integration
 still require separate explicit authorization.
+
+## TASK-111 Readiness Update
+
+The concrete `ShellAccountingDataServiceClientPortAdapter` now wraps the real
+`DataServiceClient` guard wrappers under the ShellServices port boundary.
+
+Readiness status:
+
+- concrete port exists and is tested;
+- only `positionList`, `cashSummary`, `portfolioPnlSummary`,
+  `basePositionSummary`, and `sniperPoolSummary` are called;
+- `ShellAccountingDataServiceAdapter` still consumes the abstract port;
+- `ShellAccountingReadOnlyController` still has no direct DataServiceClient
+  dependency;
+- QML integration has not started;
+- SQLite access, AccountingEngine calls, DataAccess calls, writes, TradeDraft
+  generation, and trade suggestions remain forbidden.
+
+Real accounting action implementation and QML ViewModel wiring still require
+separate explicit authorization.

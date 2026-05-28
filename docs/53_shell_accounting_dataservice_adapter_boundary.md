@@ -291,3 +291,35 @@ not include or call DataServiceClient, DataServiceApi, DataAccess,
 AccountingEngine, SQLite, QtQuick, or QML. The port abstraction is the only new
 production boundary, and a concrete DataServiceClient port implementation
 requires a separate authorization.
+
+## TASK-111 Concrete DataServiceClient Port
+
+TASK-111 adds `ShellAccountingDataServiceClientPortAdapter` as the concrete
+production implementation of `ShellAccountingDataServiceClientPort`.
+
+The concrete port is the only ShellServices production class that may include
+and hold the real `DataServiceClient`. The existing
+`ShellAccountingDataServiceAdapter` continues to depend only on the abstract
+port, and `ShellAccountingReadOnlyController` continues to depend only on the
+service adapter boundary.
+
+Allowed wrapper calls remain limited to:
+
+- `DataServiceClient::positionList`
+- `DataServiceClient::cashSummary`
+- `DataServiceClient::portfolioPnlSummary`
+- `DataServiceClient::basePositionSummary`
+- `DataServiceClient::sniperPoolSummary`
+
+The concrete port maps `ShellAccountingDataServiceClientRequest` payload text
+and timeout into the corresponding guard wrapper call, then maps
+`ProtocolResponse` and transport failures back into
+`ShellAccountingDataServiceClientResponse`. It preserves `protocolSuccess`,
+`implemented`, `readOnly`, `writeEnabled`, `payloadStatus`,
+`dataQualityStatus`, issues, warnings, errors, raw payload, timeout,
+transportError, protocolError, and domainError.
+
+This task does not implement real accounting actions and does not change guard
+payload behavior. QML remains disconnected. The port does not access SQLite,
+does not call AccountingEngine or DataAccess, does not write any database table,
+does not generate TradeDraft, and does not generate trade suggestions.

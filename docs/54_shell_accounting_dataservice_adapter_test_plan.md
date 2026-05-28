@@ -187,3 +187,27 @@ mapping, protocol / timeout / transport / domain issue mapping, no-write /
 no-trade flags, no real dependency, and controller refresh through the adapter
 and spy port. Future real adapter work must replace only the concrete port
 implementation and keep these contracts passing.
+
+## TASK-111 Concrete Port Tests
+
+TASK-111 adds concrete port tests for
+`ShellAccountingDataServiceClientPortAdapter`:
+
+- `shell_accounting_dataservice_client_port_adapter_construction`
+- `shell_accounting_dataservice_client_port_adapter_method_mapping`
+- `shell_accounting_dataservice_client_port_adapter_request_mapping`
+- `shell_accounting_dataservice_client_port_adapter_response_mapping`
+- `shell_accounting_dataservice_client_port_adapter_error_mapping`
+- `shell_accounting_dataservice_client_port_adapter_no_write_no_trade`
+- `shell_accounting_dataservice_client_port_adapter_no_forbidden_dependency`
+- `shell_accounting_dataservice_adapter_with_client_port_adapter_guard_payload`
+
+These tests cover null-client fallback, one-to-one wrapper method mapping,
+payload and timeout forwarding, guard payload response mapping, protocol
+failure, malformed response, timeout, transport error, domain issues,
+no-write / no-trade flags, and forbidden dependency boundaries.
+
+The tests use a test-only local fake wrapper server so the concrete port can
+exercise real `DataServiceClient` wrapper methods without changing DataService
+guard behavior. QML, SQLite, AccountingEngine, DataAccess, write actions,
+TradeDraft generation, and trade suggestions remain outside this test scope.

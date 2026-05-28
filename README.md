@@ -1,5 +1,24 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-111 ShellAccounting DataServiceClient port for guard wrappers
+
+`ShellAccountingDataServiceClientPortAdapter` is the production concrete port for guard wrappers and the concrete implementation of the ShellServices
+`ShellAccountingDataServiceClientPort` boundary. It is the only ShellServices
+class allowed to include and hold the real `DataServiceClient`, and it only
+wraps the five read-only accounting guard wrappers:
+
+- `DataServiceClient::positionList`
+- `DataServiceClient::cashSummary`
+- `DataServiceClient::portfolioPnlSummary`
+- `DataServiceClient::basePositionSummary`
+- `DataServiceClient::sniperPoolSummary`
+
+`ShellAccountingDataServiceAdapter` and `ShellAccountingReadOnlyController`
+still do not directly include `DataServiceClient`. QML remains disconnected.
+No real accounting action is implemented, no SQLite or AccountingEngine access
+is added, no database tables are written, and no TradeDraft or trade suggestion
+is generated.
+
 ## TASK-110 ShellAccountingDataServiceAdapter live-call skeleton
 
 `ShellAccountingDataServiceAdapter` now has a test-first live-call skeleton

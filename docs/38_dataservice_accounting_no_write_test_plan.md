@@ -436,3 +436,14 @@ The adapter must not call write actions, `data.audit.append`, trade write
 actions, draft actions, snapshot write actions, strategy execution actions, or
 broker order actions. The live-call no-write gate also requires rollback to a
 not-connected / unavailable result without writing database tables.
+
+## TASK-111 Shell Concrete Port No-write Boundary
+
+`ShellAccountingDataServiceClientPortAdapter` now wraps only the five read-only
+accounting guard wrappers. It does not directly write database tables and must
+not call `data.audit.append`, trade write actions, draft actions, snapshot
+writes, strategy execution, or broker orders.
+
+The server-side no-write guarantee remains covered by DataService guard tests.
+The Shell concrete port adds consumer-side checks that only allowlisted wrapper
+methods are called and that TradeDraft / trade suggestion flags remain false.

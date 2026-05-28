@@ -734,3 +734,14 @@ action contracts. It includes only:
 Any future `ShellAccountingDataServiceAdapter` live-call implementation must
 only call these read-only wrappers and must preserve `readOnly=true` and
 `writeEnabled=false`.
+
+## TASK-111 Shell Concrete Port Wrapper Boundary
+
+`ShellAccountingDataServiceClientPortAdapter` now wraps the real
+`DataServiceClient` guard wrappers for the same five read-only accounting
+actions. This does not change any DataService guard payload or action behavior.
+
+The concrete port is a ShellServices consumer boundary only. It does not
+implement real accounting calculations, does not access SQLite, does not call
+AccountingEngine, does not write tables, and does not make QML consume
+DataService payloads directly.

@@ -53,6 +53,8 @@
 - [52 Shell Accounting Service Integration Readiness](52_shell_accounting_service_integration_readiness.md)
 - [53 Shell Accounting DataService Adapter Boundary](53_shell_accounting_dataservice_adapter_boundary.md)
 - [54 Shell Accounting DataService Adapter Test Plan](54_shell_accounting_dataservice_adapter_test_plan.md)
+- [55 Shell Accounting DataService Adapter Live-call Gate](55_shell_accounting_dataservice_adapter_live_call_gate.md)
+- [56 Shell Accounting DataService Adapter Live-call Acceptance Checklist](56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md)
 - ShellServices accounting controller test scaffolding:
   `tests/ShellAccountingControllerScaffolding`; production controller and QML
   integration remain unimplemented.
@@ -135,6 +137,14 @@
   [55_shell_accounting_dataservice_adapter_live_call_gate.md](55_shell_accounting_dataservice_adapter_live_call_gate.md)
   and
   [56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md](56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md).
+- ShellAccountingDataServiceClientPort concrete implementation:
+  `ShellAccountingDataServiceClientPortAdapter` is the only production
+  ShellServices class that includes and holds the real DataServiceClient. It
+  wraps only `positionList`, `cashSummary`, `portfolioPnlSummary`,
+  `basePositionSummary`, and `sniperPoolSummary` guard wrappers. The controller,
+  `ShellAccountingDataServiceAdapter` body, and QML still do not directly
+  depend on DataServiceClient; no SQLite, AccountingEngine, writes, TradeDraft,
+  or trade suggestion behavior is added.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -305,3 +305,18 @@ ShellServices-owned `ShellAccountingDataServiceClientPort` abstraction. The
 adapter can call wrapper-like methods on a test-only spy port, but it still does
 not depend on or call the real DataServiceClient. A concrete DataServiceClient
 port remains a separate future task.
+
+## TASK-111 Concrete Client Port
+
+TASK-111 adds `ShellAccountingDataServiceClientPortAdapter` as the concrete
+implementation of `ShellAccountingDataServiceClientPort`.
+
+The service-adapter boundary remains unchanged: `ShellAccountingReadOnlyController`
+continues to consume `ShellAccountingServiceAdapter`, and
+`ShellAccountingDataServiceAdapter` continues to consume the abstract client
+port. Only the concrete port includes and holds the real `DataServiceClient`.
+
+The concrete port is limited to the five read-only accounting guard wrappers
+and does not add QML integration, SQLite access, AccountingEngine calls,
+database writes, TradeDraft generation, trade suggestions, strategy execution,
+or broker orders.

@@ -73,6 +73,24 @@ The first live-call implementation should only allow:
 - controller integration tests
 - transport repeat tests
 
+## TASK-111 Acceptance Update
+
+TASK-111 completes the concrete port for guard wrappers:
+
+- [x] `ShellAccountingDataServiceClientPortAdapter` exists.
+- [x] Only the concrete port includes / holds `DataServiceClient`.
+- [x] The concrete port calls only the five read-only accounting guard wrappers.
+- [x] `ShellAccountingDataServiceAdapter` still uses the abstract port.
+- [x] `ShellAccountingReadOnlyController` still has no direct DataServiceClient
+  dependency.
+- [x] QML remains unwired.
+- [x] SQLite access remains forbidden.
+- [x] AccountingEngine calls remain forbidden.
+- [x] no-write / no-trade behavior remains required.
+
+Future work that wires QML or implements real accounting action payloads still
+requires a separate authorization.
+
 ## TASK-110 Status
 
 - [x] Live-call skeleton with abstract client port has been added.

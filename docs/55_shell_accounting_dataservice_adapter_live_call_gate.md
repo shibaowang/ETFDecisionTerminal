@@ -194,3 +194,27 @@ This does not enable real DataServiceClient calls. The concrete DataServiceClien
 port is still absent, QML remains unwired, SQLite remains unaccessed, and
 AccountingEngine remains uncalled. The default no-port behavior remains the safe
 not-connected / unavailable fallback.
+
+## TASK-111 Concrete Guard Wrapper Port Status
+
+TASK-111 adds the concrete `ShellAccountingDataServiceClientPortAdapter`. This
+is the only ShellServices production class that may include and hold the real
+`DataServiceClient`.
+
+The concrete port is limited to the first live-call scope:
+
+- `DataServiceClient::positionList`
+- `DataServiceClient::cashSummary`
+- `DataServiceClient::portfolioPnlSummary`
+- `DataServiceClient::basePositionSummary`
+- `DataServiceClient::sniperPoolSummary`
+
+`ShellAccountingDataServiceAdapter` and `ShellAccountingReadOnlyController`
+still do not directly include `DataServiceClient`. The concrete port preserves
+request payload / timeout forwarding, `ProtocolResponse` mapping, guard
+`implemented=false` payloads, protocol failure, timeout, transport error,
+malformed response, domain issues, no-write flags, and no-trade flags.
+
+QML remains unwired. SQLite, AccountingEngine, DataAccess, write actions,
+TradeDraft generation, trade suggestions, strategy execution, and broker orders
+remain forbidden.

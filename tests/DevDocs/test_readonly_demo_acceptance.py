@@ -94,6 +94,17 @@ def main() -> int:
     shell_accounting_dataservice_client_port_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceClientPort.h"
     )
+    shell_accounting_dataservice_client_port_adapter_header_path = (
+        root
+        / "libs"
+        / "ShellServices"
+        / "include"
+        / "ShellServices"
+        / "ShellAccountingDataServiceClientPortAdapter.h"
+    )
+    shell_accounting_dataservice_client_port_adapter_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceClientPortAdapter.cpp"
+    )
     shell_accounting_dataservice_adapter_skeleton_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapter" / "CMakeLists.txt"
     )
@@ -539,6 +550,14 @@ def main() -> int:
         "ShellAccountingDataServiceClientPort live-call skeleton header exists",
     )
     require(
+        shell_accounting_dataservice_client_port_adapter_header_path.exists(),
+        "ShellAccountingDataServiceClientPortAdapter concrete port header exists",
+    )
+    require(
+        shell_accounting_dataservice_client_port_adapter_source_path.exists(),
+        "ShellAccountingDataServiceClientPortAdapter concrete port source exists",
+    )
+    require(
         shell_accounting_dataservice_adapter_skeleton_cmake_path.exists(),
         "Shell accounting DataService adapter skeleton CMake exists",
     )
@@ -957,6 +976,12 @@ def main() -> int:
     )
     shell_accounting_dataservice_client_port_header = shell_accounting_dataservice_client_port_header_path.read_text(
         encoding="utf-8"
+    )
+    shell_accounting_dataservice_client_port_adapter_header = (
+        shell_accounting_dataservice_client_port_adapter_header_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_dataservice_client_port_adapter_source = (
+        shell_accounting_dataservice_client_port_adapter_source_path.read_text(encoding="utf-8")
     )
     shell_accounting_dataservice_adapter_skeleton_cmake = (
         shell_accounting_dataservice_adapter_skeleton_cmake_path.read_text(encoding="utf-8")
@@ -3840,6 +3865,97 @@ def main() -> int:
             forbidden_call not in live_call_skeleton_sources,
             f"TASK-110 live-call skeleton does not call {forbidden_call}",
         )
+
+    require(
+        "TASK-111" in codex_prompt_template,
+        "prompt template mentions TASK-111",
+    )
+    require(
+        "concrete port for guard wrappers" in readme,
+        "README mentions concrete port for guard wrappers",
+    )
+    for doc_text, doc_name in [
+        (shell_accounting_dataservice_adapter_boundary, "docs/53"),
+        (shell_accounting_dataservice_adapter_test_plan, "docs/54"),
+        (shell_accounting_dataservice_adapter_live_call_gate, "docs/55"),
+        (shell_accounting_dataservice_adapter_live_call_checklist, "docs/56"),
+    ]:
+        require("TASK-111" in doc_text, f"{doc_name} mentions TASK-111")
+    for test_name in [
+        "shell_accounting_dataservice_client_port_adapter_construction",
+        "shell_accounting_dataservice_client_port_adapter_method_mapping",
+        "shell_accounting_dataservice_client_port_adapter_request_mapping",
+        "shell_accounting_dataservice_client_port_adapter_response_mapping",
+        "shell_accounting_dataservice_client_port_adapter_error_mapping",
+        "shell_accounting_dataservice_client_port_adapter_no_write_no_trade",
+        "shell_accounting_dataservice_client_port_adapter_no_forbidden_dependency",
+        "shell_accounting_dataservice_adapter_with_client_port_adapter_guard_payload",
+    ]:
+        require(
+            test_name in shell_accounting_dataservice_adapter_skeleton_cmake,
+            f"DataService client concrete port registers {test_name}",
+        )
+    require(
+        "ShellAccountingDataServiceClientPortAdapter" in shellservices_cmake,
+        "ShellServices CMake adds ShellAccountingDataServiceClientPortAdapter",
+    )
+    require(
+        "ShellAccountingDataServiceClientPortAdapter" in shellservices_public_header,
+        "ShellServices umbrella header exports ShellAccountingDataServiceClientPortAdapter",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" in shell_accounting_dataservice_client_port_adapter_source,
+        "concrete port source includes DataServiceClient",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_client_port_adapter_header,
+        "concrete port header does not include DataServiceClient",
+    )
+    for allowed_call in [
+        "client_->positionList(",
+        "client_->cashSummary(",
+        "client_->portfolioPnlSummary(",
+        "client_->basePositionSummary(",
+        "client_->sniperPoolSummary(",
+    ]:
+        require(
+            allowed_call in shell_accounting_dataservice_client_port_adapter_source,
+            f"concrete port calls allowlisted wrapper {allowed_call}",
+        )
+    for forbidden_include in ["DataAccess", "AccountingEngine", "SQLite", "QtQuick"]:
+        require(
+            f'#include "{forbidden_include}' not in shell_accounting_dataservice_client_port_adapter_source
+            and f"#include <{forbidden_include}" not in shell_accounting_dataservice_client_port_adapter_source
+            and f'#include "{forbidden_include}' not in shell_accounting_dataservice_client_port_adapter_header
+            and f"#include <{forbidden_include}" not in shell_accounting_dataservice_client_port_adapter_header,
+            f"concrete port avoids forbidden include {forbidden_include}",
+        )
+    for forbidden_call in [
+        "appendAuditDemo",
+        "data.audit.append",
+        "tradeDraft",
+        "snapshotWrite",
+        "strategyExecute",
+        "brokerOrder",
+    ]:
+        require(
+            forbidden_call not in shell_accounting_dataservice_client_port_adapter_source,
+            f"concrete port avoids forbidden call {forbidden_call}",
+        )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_adapter_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_adapter_source,
+        "ShellAccountingDataServiceAdapter still does not include DataServiceClient",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_source,
+        "ShellAccountingReadOnlyController still does not include DataServiceClient",
+    )
+    require(
+        "ShellAccountingDataServiceClientPortAdapter" not in qml_sources,
+        "QML does not reference ShellAccountingDataServiceClientPortAdapter",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -360,3 +360,26 @@ The skeleton reuses the protected table row-count harness and protects
 coverage remains necessary but is not sufficient for a real implementation;
 future real `position.list` work must extend these tests against the actual
 DataAccess, AccountingEngine mapping, and failure paths.
+
+## TASK-097 position.list Readiness Hardening No-write Gate
+
+TASK-097 hardens the future real `position.list` no-write gate in
+`docs/47_position_list_readiness_hardening.md`. Any real implementation must
+satisfy the docs/47 no-write matrix before merge:
+
+- guard no-write regression
+- real action no-write skeleton
+- valid request no-write
+- invalid request no-write
+- replay unavailable no-write
+- facts query unavailable no-write
+- mapping failure no-write
+- missing market price no-write
+- multi-currency unsupported no-write
+- DataAccess trade facts reader no-write
+- ForbiddenSqlScanner
+- protected table row count unchanged
+
+The protected tables remain `trade_log`, `trade_execution_group`,
+`trade_draft`, `cash_snapshot`, `position_snapshot`, `portfolio_summary`, and
+`audit_log`.

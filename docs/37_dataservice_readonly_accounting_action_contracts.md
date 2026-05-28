@@ -652,3 +652,13 @@ The contract tests cover request -> `ReplayRequestDto`, `TradeFactRow` ->
 `TradeFactDto`, and `AccountingReplayResult` -> future `PositionListResponse`
 mapping. DataService still does not call AccountingEngine or DataAccess for
 `position.list`.
+
+## TASK-097 position.list Readiness Hardening
+
+The first-stage real `position.list` action scope is documented in
+`docs/48_position_list_first_stage_real_action_scope.md`, with hardening gates
+in `docs/47_position_list_readiness_hardening.md`.
+
+The `position.list` guard remains `implemented=false`. Real implementation
+still requires separate authorization, expanded no-write tests, DataAccess
+facts query orchestration, AccountingEngine DTO mapping, and guard fallback.

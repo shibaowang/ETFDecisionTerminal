@@ -45,6 +45,8 @@
 - [44 DataService Accounting Guard No-write Readiness Review](44_dataservice_accounting_guard_no_write_readiness_review.md)
 - [45 position.list Real Implementation Boundary](45_position_list_real_implementation_boundary.md)
 - [46 position.list Real Implementation Readiness Checklist](46_position_list_real_implementation_readiness_checklist.md)
+- [47 position.list Readiness Hardening](47_position_list_readiness_hardening.md)
+- [48 position.list First-stage Real Action Scope](48_position_list_first_stage_real_action_scope.md)
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under
@@ -82,6 +84,9 @@
   for valid, invalid, replay unavailable, facts unavailable, mapping failure,
   missing market, multi-currency, FX, and SQLite failure paths; real
   `position.list` remains unimplemented.
+- `position.list` readiness hardening: final Go / No-Go, failure matrix,
+  no-write gate, degraded output policy, guard fallback, and first-stage scope
+  docs; real `position.list` remains unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

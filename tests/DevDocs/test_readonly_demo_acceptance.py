@@ -58,6 +58,8 @@ def main() -> int:
     position_list_readiness_checklist_path = (
         root / "docs" / "46_position_list_real_implementation_readiness_checklist.md"
     )
+    position_list_readiness_hardening_path = root / "docs" / "47_position_list_readiness_hardening.md"
+    position_list_first_stage_scope_path = root / "docs" / "48_position_list_first_stage_real_action_scope.md"
     position_list_mapping_cmake_path = root / "tests" / "PositionListMapping" / "CMakeLists.txt"
     position_list_mapping_utils_header_path = (
         root / "tests" / "PositionListMapping" / "PositionListMappingContractTestUtils.h"
@@ -257,6 +259,8 @@ def main() -> int:
         position_list_readiness_checklist_path.exists(),
         "position.list real implementation readiness checklist doc exists",
     )
+    require(position_list_readiness_hardening_path.exists(), "position.list readiness hardening doc exists")
+    require(position_list_first_stage_scope_path.exists(), "position.list first-stage real action scope doc exists")
     require(position_list_mapping_cmake_path.exists(), "position.list mapping contract CMake exists")
     require(position_list_mapping_utils_header_path.exists(), "position.list mapping contract helper header exists")
     require(position_list_mapping_utils_source_path.exists(), "position.list mapping contract helper source exists")
@@ -405,6 +409,8 @@ def main() -> int:
     dataservice_guard_no_write_readiness = dataservice_guard_no_write_readiness_path.read_text(encoding="utf-8")
     position_list_real_boundary = position_list_real_boundary_path.read_text(encoding="utf-8")
     position_list_readiness_checklist = position_list_readiness_checklist_path.read_text(encoding="utf-8")
+    position_list_readiness_hardening = position_list_readiness_hardening_path.read_text(encoding="utf-8")
+    position_list_first_stage_scope = position_list_first_stage_scope_path.read_text(encoding="utf-8")
     position_list_mapping_cmake = position_list_mapping_cmake_path.read_text(encoding="utf-8")
     position_list_mapping_utils_header = position_list_mapping_utils_header_path.read_text(encoding="utf-8")
     position_list_mapping_utils_source = position_list_mapping_utils_source_path.read_text(encoding="utf-8")
@@ -2098,6 +2104,63 @@ def main() -> int:
         "implemented=false" in position_list_real_boundary
         or "implemented=false" in position_list_readiness_checklist,
         "docs keep position.list guard implemented=false",
+    )
+    require(
+        "47_position_list_readiness_hardening" in readme,
+        "README links position.list readiness hardening doc",
+    )
+    require(
+        "48_position_list_first_stage_real_action_scope" in readme,
+        "README links position.list first-stage scope doc",
+    )
+    require(
+        "47_position_list_readiness_hardening" in docs_index,
+        "docs index links position.list readiness hardening doc",
+    )
+    require(
+        "48_position_list_first_stage_real_action_scope" in docs_index,
+        "docs index links position.list first-stage scope doc",
+    )
+    require("cash facts gap" in position_list_readiness_hardening, "docs/47 documents cash facts gap")
+    require("MARKET_PRICE_MISSING" in position_list_readiness_hardening, "docs/47 documents missing market price")
+    require(
+        "MULTI_CURRENCY_UNSUPPORTED" in position_list_readiness_hardening,
+        "docs/47 documents multi-currency unsupported",
+    )
+    require("Guard Fallback" in position_list_readiness_hardening, "docs/47 documents Guard fallback")
+    require(
+        "Failure Behavior Matrix" in position_list_readiness_hardening,
+        "docs/47 documents Failure behavior matrix",
+    )
+    require(
+        "Allowed First-stage Scope" in position_list_first_stage_scope,
+        "docs/48 documents Allowed first-stage scope",
+    )
+    require("Explicitly Excluded" in position_list_first_stage_scope, "docs/48 documents explicitly excluded scope")
+    require("QML integration" in position_list_first_stage_scope, "docs/48 excludes QML integration")
+    require(
+        "docs/47_position_list_readiness_hardening.md" in position_list_real_boundary,
+        "docs/45 links docs/47",
+    )
+    require(
+        "docs/48_position_list_first_stage_real_action_scope.md" in position_list_readiness_checklist,
+        "docs/46 links docs/48",
+    )
+    require(
+        "docs/47_position_list_readiness_hardening.md" in codex_prompt_template,
+        "prompt template links docs/47",
+    )
+    require(
+        "docs/48_position_list_first_stage_real_action_scope.md" in codex_prompt_template,
+        "prompt template links docs/48",
+    )
+    require(
+        "docs/47_position_list_readiness_hardening.md" in dataservice_accounting_no_write_plan,
+        "no-write plan links docs/47",
+    )
+    require(
+        "docs/48_position_list_first_stage_real_action_scope.md" in dataservice_readonly_accounting_contracts,
+        "DataService contracts link docs/48",
     )
 
     require(

@@ -379,3 +379,14 @@ call the SQLite trade facts reader skeleton, does not query cash facts, does
 not query market price facts, and does not query FX facts. Any future SQLite
 facts query connection to DataService requires a separate authorized task and
 must pass no-write table count tests.
+
+## TASK-094 position.list Real Implementation Boundary
+
+`docs/45_position_list_real_implementation_boundary.md` defines how a future
+real `position.list` action would use the read-only trade facts reader. The
+readiness checklist is in
+`docs/46_position_list_real_implementation_readiness_checklist.md`.
+
+SQLite facts query must remain read-only. This task does not connect SQLite
+facts query to DataService and does not read `trade_log` through
+`position.list`.

@@ -213,3 +213,10 @@ The guard returns `CASH_SUMMARY_NOT_AVAILABLE`, does not read `cash_snapshot` or
 `portfolio_summary`, does not call AccountingEngine, and does not write database
 tables. The cash facts source still requires schema review before any real
 `cash.summary` implementation.
+
+## TASK-094 position.list Cash Facts Boundary
+
+`docs/45_position_list_real_implementation_boundary.md` records how the cash
+facts gap affects future real `position.list`. If cash facts are unavailable,
+`position.list` must return a data source issue or degrade explicitly; it must
+not fabricate cash facts from `cash_snapshot` or `portfolio_summary`.

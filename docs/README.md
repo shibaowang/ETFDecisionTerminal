@@ -43,6 +43,8 @@
 - [42 Cash Facts Query Decision](42_cash_facts_query_decision.md)
 - [43 DataService Accounting Guard Suite Milestone](43_dataservice_accounting_guard_suite_milestone.md)
 - [44 DataService Accounting Guard No-write Readiness Review](44_dataservice_accounting_guard_no_write_readiness_review.md)
+- [45 position.list Real Implementation Boundary](45_position_list_real_implementation_boundary.md)
+- [46 position.list Real Implementation Readiness Checklist](46_position_list_real_implementation_readiness_checklist.md)
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under
@@ -70,6 +72,9 @@
   complete for the current read-only milestone; real accounting actions,
   SQLite integration, AccountingEngine integration, QML integration, and writes
   remain unimplemented.
+- `position.list` real implementation boundary: design docs only; guard
+  behavior, SQLite integration, AccountingEngine integration, QML integration,
+  and writes remain unchanged.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

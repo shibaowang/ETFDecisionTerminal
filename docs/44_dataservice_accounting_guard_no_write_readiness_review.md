@@ -106,3 +106,14 @@ Recommended candidates:
 Do not directly change a guard into a real implementation without a dedicated
 task. Do not directly connect QML. Do not write snapshots. Do not directly call
 AccountingEngine unless that boundary is explicitly authorized.
+
+## TASK-094 position.list Readiness Link
+
+The `position.list` implementation boundary is documented in
+`docs/45_position_list_real_implementation_boundary.md`. The concrete readiness
+checklist is in
+`docs/46_position_list_real_implementation_readiness_checklist.md`.
+
+No-write remains the gate. A real `position.list` task must expand no-write
+coverage before or with implementation and must explicitly authorize any
+DataAccess or AccountingEngine integration.

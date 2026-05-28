@@ -179,3 +179,12 @@ create a Git tag.
 
 The next phase must choose one boundary at a time. It must not bypass guard,
 no-write, or facts query boundaries.
+
+## TASK-094 position.list Boundary Follow-up
+
+TASK-094 adds `docs/45_position_list_real_implementation_boundary.md` and
+`docs/46_position_list_real_implementation_readiness_checklist.md`.
+
+The guard suite remains a guard suite. `position.list` is still not a real
+implementation, the guard remains `implemented=false`, and DataService still
+does not call DataAccess or AccountingEngine for real position output.

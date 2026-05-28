@@ -36,11 +36,19 @@ public:
 
     void syncFromController();
     void refreshPositionList();
+    void refreshCashSummary();
+    void refreshPortfolioPnlSummary();
+    void refreshBasePositionSummary();
+    void refreshSniperPoolSummary();
     void refreshAllReadOnly();
     void reset();
 
 private:
     void markControllerNotConfigured(const char* actionName);
+    void refreshAccountingAction(
+        const char* actionName,
+        void (ShellAccountingReadOnlyController::*refresh)(
+            const ShellAccountingServiceRequest&));
     void applyControllerState(
         const std::string& actionName,
         ShellAccountingViewState state,

@@ -145,3 +145,16 @@ Future QML work must remain separately authorized and must treat the presenter
 integration result as read-only state only: `Unavailable` is not `Empty`,
 `POSITION_LIST_NOT_AVAILABLE` remains visible, and no trading buttons,
 TradeDraft, trade suggestion, strategy, or broker controls are allowed.
+
+## TASK-117 Presenter All Guard Refresh Status
+
+TASK-117 wires the presenter to expose all five read-only guard refresh
+methods plus `refreshAllReadOnly`. This does not start QML binding. No QML file
+is modified and no QML type is registered.
+
+Future QML must still bind only ShellServices read-only presentation objects.
+The five guard actions currently surface as `Unavailable` with visible
+`*_NOT_AVAILABLE` issues. Empty must remain distinct from Unavailable, warning
+and error issues must not be hidden, and accounting UI must still avoid
+trading buttons, TradeDraft, trade suggestion, strategy, broker, SQLite,
+AccountingEngine, and DataServiceClient access.

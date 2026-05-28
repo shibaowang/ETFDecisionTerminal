@@ -77,6 +77,53 @@ ShellAccountingStateSnapshot snapshotFromControllerState(
     return snapshot;
 }
 
+ShellAccountingServiceRequest makePresenterRefreshRequest(std::string actionName)
+{
+    ShellAccountingServiceRequest request;
+    request.actionName = std::move(actionName);
+    request.includeIssues = true;
+    request.includeDebugMetadata = false;
+    request.requestedOutputs = {"guard"};
+    request.timeoutMs = 200;
+    return request;
+}
+
+int refreshStateRank(ShellAccountingViewState state) noexcept
+{
+    switch (state) {
+    case ShellAccountingViewState::Error:
+        return 6;
+    case ShellAccountingViewState::Unavailable:
+        return 5;
+    case ShellAccountingViewState::Stale:
+        return 4;
+    case ShellAccountingViewState::Warning:
+        return 3;
+    case ShellAccountingViewState::Loaded:
+        return 2;
+    case ShellAccountingViewState::Empty:
+        return 1;
+    case ShellAccountingViewState::Idle:
+    case ShellAccountingViewState::Loading:
+        return 0;
+    }
+    return 0;
+}
+
+ShellAccountingViewState moreSevereRefreshState(
+    ShellAccountingViewState current,
+    ShellAccountingViewState next) noexcept
+{
+    return refreshStateRank(next) > refreshStateRank(current) ? next : current;
+}
+
+void appendIssues(
+    std::vector<ShellAccountingIssue>& target,
+    const std::vector<ShellAccountingIssue>& source)
+{
+    target.insert(target.end(), source.begin(), source.end());
+}
+
 }  // namespace
 
 ShellAccountingPresenter::ShellAccountingPresenter() = default;
@@ -189,20 +236,71 @@ void ShellAccountingPresenter::syncFromController()
 
 void ShellAccountingPresenter::refreshPositionList()
 {
-    if (!controller_) {
-        markControllerNotConfigured("position.list");
-        return;
-    }
+    refreshAccountingAction(
+        "position.list",
+        &ShellAccountingReadOnlyController::refreshPositionList);
+}
 
-    ShellAccountingServiceRequest request;
-    request.actionName = "position.list";
-    controller_->refreshPositionList(request);
-    syncFromController();
+void ShellAccountingPresenter::refreshCashSummary()
+{
+    refreshAccountingAction(
+        "cash.summary",
+        &ShellAccountingReadOnlyController::refreshCashSummary);
+}
+
+void ShellAccountingPresenter::refreshPortfolioPnlSummary()
+{
+    refreshAccountingAction(
+        "portfolio.pnl.summary",
+        &ShellAccountingReadOnlyController::refreshPortfolioPnlSummary);
+}
+
+void ShellAccountingPresenter::refreshBasePositionSummary()
+{
+    refreshAccountingAction(
+        "base_position.summary",
+        &ShellAccountingReadOnlyController::refreshBasePositionSummary);
+}
+
+void ShellAccountingPresenter::refreshSniperPoolSummary()
+{
+    refreshAccountingAction(
+        "sniper_pool.summary",
+        &ShellAccountingReadOnlyController::refreshSniperPoolSummary);
 }
 
 void ShellAccountingPresenter::refreshAllReadOnly()
 {
-    refreshPositionList();
+    if (!controller_) {
+        markControllerNotConfigured("accounting.refresh_all");
+        return;
+    }
+
+    struct RefreshStep final {
+        const char* actionName;
+        void (ShellAccountingReadOnlyController::*refresh)(
+            const ShellAccountingServiceRequest&);
+    };
+
+    const RefreshStep steps[] = {
+        {"position.list", &ShellAccountingReadOnlyController::refreshPositionList},
+        {"cash.summary", &ShellAccountingReadOnlyController::refreshCashSummary},
+        {"portfolio.pnl.summary", &ShellAccountingReadOnlyController::refreshPortfolioPnlSummary},
+        {"base_position.summary", &ShellAccountingReadOnlyController::refreshBasePositionSummary},
+        {"sniper_pool.summary", &ShellAccountingReadOnlyController::refreshSniperPoolSummary},
+    };
+
+    ShellAccountingViewState aggregateState = ShellAccountingViewState::Idle;
+    std::vector<ShellAccountingIssue> aggregateIssues;
+
+    for (const auto& step : steps) {
+        auto request = makePresenterRefreshRequest(step.actionName);
+        (controller_.get()->*step.refresh)(request);
+        aggregateState = moreSevereRefreshState(aggregateState, controller_->currentState());
+        appendIssues(aggregateIssues, controller_->issues());
+    }
+
+    applyControllerState("accounting.refresh_all", aggregateState, std::move(aggregateIssues));
 }
 
 void ShellAccountingPresenter::reset()
@@ -224,6 +322,21 @@ void ShellAccountingPresenter::markControllerNotConfigured(const char* actionNam
     };
     applyControllerState(actionName, ShellAccountingViewState::Unavailable, std::move(issues));
     positions_.clearRows();
+}
+
+void ShellAccountingPresenter::refreshAccountingAction(
+    const char* actionName,
+    void (ShellAccountingReadOnlyController::*refresh)(
+        const ShellAccountingServiceRequest&))
+{
+    if (!controller_) {
+        markControllerNotConfigured(actionName);
+        return;
+    }
+
+    auto request = makePresenterRefreshRequest(actionName);
+    (controller_.get()->*refresh)(request);
+    syncFromController();
 }
 
 void ShellAccountingPresenter::applyControllerState(

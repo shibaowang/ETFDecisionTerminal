@@ -768,3 +768,15 @@ ShellAccountingPresenter concrete-port integration still consumes only
 DataService read-only guard actions through ShellServices boundaries. The
 presenter does not call DataServiceClient directly, does not access SQLite, and
 does not implement real accounting actions.
+
+## TASK-117 Presenter All Guard Consumption
+
+TASK-117 keeps the same DataService contract while expanding presenter refresh
+coverage to all five read-only guard actions. The presenter still consumes
+`position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary` only through
+ShellServices controller / adapter / concrete port boundaries.
+
+No DataService guard payload changes, no real accounting action
+implementation, no QML direct payload consumption, no SQLite facts query, no
+AccountingEngine call, and no write action are introduced.

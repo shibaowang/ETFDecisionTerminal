@@ -358,3 +358,17 @@ TASK-116 uses the existing adapter + concrete port path from the presenter via
 `ShellAccountingReadOnlyController`. This does not change adapter behavior and
 does not implement real accounting actions. The adapter remains limited to the
 read-only guard-wrapper path and QML remains disconnected.
+
+## TASK-117 Presenter All Guard Refresh
+
+TASK-117 expands presenter consumption of the same adapter + concrete port path
+to all five allowlisted read-only guard wrappers. The presenter still reaches
+the adapter only through `ShellAccountingReadOnlyController`; it does not call
+the adapter or concrete port directly.
+
+The covered actions are `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
+Each remains guard-only and maps to `Unavailable` with its visible
+`*_NOT_AVAILABLE` issue. Real accounting action implementation, QML, SQLite,
+AccountingEngine, DataAccess, writes, TradeDraft, and trade suggestions remain
+out of scope.

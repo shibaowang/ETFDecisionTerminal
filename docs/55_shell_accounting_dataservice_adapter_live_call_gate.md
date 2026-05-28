@@ -243,3 +243,15 @@ TASK-116 confirms that the live-call guard-wrapper chain can be consumed through
 the presenter without changing the gate. The chain remains read-only and does
 not permit QML, SQLite facts query access, AccountingEngine calls, writes,
 TradeDraft, trade suggestions, strategy execution, or broker orders.
+
+## TASK-117 Presenter All Guard Refresh Gate Status
+
+TASK-117 confirms presenter consumption of all five allowlisted guard-wrapper
+paths. The live-call gate still only allows the read-only accounting wrappers:
+`position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`.
+
+The presenter reaches these paths only through the controller boundary. This
+does not authorize QML binding, SQLite facts query access, AccountingEngine
+calls, real accounting action implementation, database writes, TradeDraft,
+trade suggestions, strategy execution, or broker orders.

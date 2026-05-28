@@ -666,3 +666,16 @@ v0.1 草案。
   through controller -> adapter -> concrete port.
 - Keep no SQLite, no AccountingEngine, no writes, no TradeDraft, no trade
   suggestion, no strategy execution, and no broker order.
+
+## TASK-117 ShellAccountingPresenter All Guard Refresh
+
+- Presenter all guard refresh does not imply QML binding.
+- Do not wire QML or register QML types without an explicit task.
+- Do not implement real accounting actions in presenter tasks.
+- Presenter refresh methods may only call ShellAccountingReadOnlyController.
+- Presenter must not directly include or call DataServiceClient,
+  DataServiceApi, DataAccess, AccountingEngine, SQLite, QML, adapters, or
+  concrete ports.
+- `refreshAllReadOnly` must stay read-only and must not write tables, generate
+  TradeDraft, generate trade suggestions, execute strategies, or submit broker
+  orders.

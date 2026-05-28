@@ -473,3 +473,15 @@ Presenter concrete-port integration relies on the existing guard action
 no-write and forbidden-action checks. The presenter path must not call
 `data.audit.append`, trade write actions, draft actions, snapshot writes,
 strategy actions, broker actions, SQLite facts queries, or AccountingEngine.
+
+## TASK-117 Presenter All Guard No-write Boundary
+
+Presenter all-guard refresh continues to rely on DataService guard no-write
+regression and ShellServices forbidden-action checks. `refreshAllReadOnly`
+calls only the five read-only accounting guard actions and must not call
+`data.audit.append`, trade write actions, draft actions, snapshot writes,
+strategy actions, broker actions, SQLite facts queries, AccountingEngine, or
+any database table write.
+
+The presenter still keeps TradeDraft generation, trade suggestions, strategy
+execution, and broker submission disabled.

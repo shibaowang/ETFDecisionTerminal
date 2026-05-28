@@ -242,3 +242,21 @@ TASK-095 adds test-only mapping contract tests for future real
 These tests do not implement the real action, do not modify the
 `position.list` guard, do not call DataService action replay paths, do not
 access SQLite, and do not write database tables.
+
+## TASK-096 real action no-write skeleton
+
+TASK-096 adds test-only no-write skeleton tests for future real `position.list`
+action paths. The real action is still not implemented, the current
+`position.list` guard remains `implemented=false`, and DataService still does
+not call DataAccess or AccountingEngine.
+
+The skeleton covers valid request, invalid request, replay unavailable, facts
+query unavailable, mapping failure, missing market price, multi-currency
+unsupported, missing FX rate, SQLite read-only open failure, and SQLite query
+failure no-write paths. It uses fake callbacks and the protected table
+row-count harness only; it does not access real SQLite facts queries and does
+not write tables.
+
+Before the guard -> real action switch, these skeleton tests must be replaced
+or extended with real action no-write coverage while preserving the same
+protected table guarantees.

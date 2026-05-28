@@ -74,6 +74,22 @@ def main() -> int:
     position_list_response_mapping_test_path = (
         root / "tests" / "PositionListMapping" / "test_position_list_response_mapping.cpp"
     )
+    position_list_no_write_cmake_path = root / "tests" / "PositionListRealActionNoWrite" / "CMakeLists.txt"
+    position_list_no_write_skeleton_header_path = (
+        root / "tests" / "PositionListRealActionNoWrite" / "PositionListRealActionNoWriteSkeleton.h"
+    )
+    position_list_no_write_skeleton_source_path = (
+        root / "tests" / "PositionListRealActionNoWrite" / "PositionListRealActionNoWriteSkeleton.cpp"
+    )
+    position_list_no_write_skeleton_test_path = (
+        root / "tests" / "PositionListRealActionNoWrite" / "test_position_list_real_action_no_write_skeleton.cpp"
+    )
+    position_list_failure_no_write_skeleton_test_path = (
+        root
+        / "tests"
+        / "PositionListRealActionNoWrite"
+        / "test_position_list_real_action_failure_no_write_skeleton.cpp"
+    )
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -247,6 +263,23 @@ def main() -> int:
     require(position_list_request_mapping_test_path.exists(), "position.list request mapping contract test exists")
     require(position_list_trade_fact_mapping_test_path.exists(), "position.list trade fact mapping contract test exists")
     require(position_list_response_mapping_test_path.exists(), "position.list response mapping contract test exists")
+    require(position_list_no_write_cmake_path.exists(), "position.list real action no-write CMake exists")
+    require(
+        position_list_no_write_skeleton_header_path.exists(),
+        "position.list real action no-write skeleton header exists",
+    )
+    require(
+        position_list_no_write_skeleton_source_path.exists(),
+        "position.list real action no-write skeleton source exists",
+    )
+    require(
+        position_list_no_write_skeleton_test_path.exists(),
+        "position.list real action no-write skeleton test exists",
+    )
+    require(
+        position_list_failure_no_write_skeleton_test_path.exists(),
+        "position.list real action failure no-write skeleton test exists",
+    )
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -378,6 +411,13 @@ def main() -> int:
     position_list_request_mapping_test = position_list_request_mapping_test_path.read_text(encoding="utf-8")
     position_list_trade_fact_mapping_test = position_list_trade_fact_mapping_test_path.read_text(encoding="utf-8")
     position_list_response_mapping_test = position_list_response_mapping_test_path.read_text(encoding="utf-8")
+    position_list_no_write_cmake = position_list_no_write_cmake_path.read_text(encoding="utf-8")
+    position_list_no_write_skeleton_header = position_list_no_write_skeleton_header_path.read_text(encoding="utf-8")
+    position_list_no_write_skeleton_source = position_list_no_write_skeleton_source_path.read_text(encoding="utf-8")
+    position_list_no_write_skeleton_test = position_list_no_write_skeleton_test_path.read_text(encoding="utf-8")
+    position_list_failure_no_write_skeleton_test = position_list_failure_no_write_skeleton_test_path.read_text(
+        encoding="utf-8"
+    )
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -1980,6 +2020,84 @@ def main() -> int:
     require(
         "makeMultiCurrencyUnsupportedReplayResult" in position_list_response_mapping_test,
         "response mapping test covers multi-currency unsupported",
+    )
+    require("TASK-096" in position_list_real_boundary, "docs/45 records TASK-096 no-write skeleton")
+    require(
+        "real action no-write skeleton" in position_list_real_boundary,
+        "docs/45 documents real action no-write skeleton",
+    )
+    require(
+        "no-write skeleton" in position_list_readiness_checklist,
+        "docs/46 documents no-write skeleton",
+    )
+    require(
+        "position.list Real Action No-write Skeleton" in dataservice_accounting_no_write_plan,
+        "docs/38 documents position.list real action no-write skeleton",
+    )
+    require(
+        "no-write skeleton does not equal real action implementation" in codex_prompt_template,
+        "prompt template says no-write skeleton is not real action",
+    )
+    require(
+        "add_subdirectory(PositionListRealActionNoWrite)" in tests_cmake,
+        "tests CMake adds PositionListRealActionNoWrite tests",
+    )
+    require(
+        "position_list_real_action_no_write_skeleton" in position_list_no_write_cmake,
+        "PositionListRealActionNoWrite CMake registers valid-path skeleton test",
+    )
+    require(
+        "position_list_real_action_failure_no_write_skeleton" in position_list_no_write_cmake,
+        "PositionListRealActionNoWrite CMake registers failure-path skeleton test",
+    )
+    require(
+        "PositionListRealActionNoWriteScenario" in position_list_no_write_skeleton_header,
+        "position.list no-write skeleton helper declares scenario model",
+    )
+    require(
+        "runFakePositionListRealActionCallbackForTest" in position_list_no_write_skeleton_header,
+        "position.list no-write skeleton helper exposes fake callback",
+    )
+    require("valid_request_guard_path" in position_list_no_write_skeleton_source, "skeleton covers valid request path")
+    require(
+        "invalid_request_protocol_error_path" in position_list_no_write_skeleton_source,
+        "skeleton covers invalid request path",
+    )
+    require("replay_unavailable_path" in position_list_no_write_skeleton_source, "skeleton covers replay unavailable")
+    require(
+        "facts_query_unavailable_path" in position_list_no_write_skeleton_source,
+        "skeleton covers facts query unavailable",
+    )
+    require("mapping_failure_path" in position_list_no_write_skeleton_source, "skeleton covers mapping failure")
+    require(
+        "missing_market_price_path" in position_list_no_write_skeleton_source,
+        "skeleton covers missing market price",
+    )
+    require(
+        "multi_currency_unsupported_path" in position_list_no_write_skeleton_source,
+        "skeleton covers multi-currency unsupported",
+    )
+    require("FX_RATE_MISSING" in position_list_no_write_skeleton_source, "skeleton covers missing FX rate")
+    require(
+        "SQLITE_READONLY_OPEN_FAILED" in position_list_no_write_skeleton_source,
+        "skeleton covers SQLite read-only open failure",
+    )
+    require("SQLITE_QUERY_FAILED" in position_list_no_write_skeleton_source, "skeleton covers SQLite query failure")
+    require(
+        "assertNoWritesAround" in position_list_no_write_skeleton_test,
+        "no-write skeleton test uses no-write harness",
+    )
+    require(
+        "assertNoWritesAround" in position_list_failure_no_write_skeleton_test,
+        "failure no-write skeleton test uses no-write harness",
+    )
+    require("AccountingReplayEngine" not in position_list_no_write_skeleton_source, "skeleton helper does not call AccountingEngine replay")
+    require("DataServiceActions" not in position_list_no_write_skeleton_source, "skeleton helper does not call DataService action")
+    require("AccountingTradeFactReader" not in position_list_no_write_skeleton_source, "skeleton helper does not call DataAccess trade facts reader")
+    require(
+        "implemented=false" in position_list_real_boundary
+        or "implemented=false" in position_list_readiness_checklist,
+        "docs keep position.list guard implemented=false",
     )
 
     require(

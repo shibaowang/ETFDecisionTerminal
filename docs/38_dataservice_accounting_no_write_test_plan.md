@@ -334,3 +334,29 @@ The current guard no-write test is not enough for real implementation. A real
 validation, DataAccess facts query use, AccountingEngine mapping, domain
 failure, invalid request, and replay unavailable paths before the guard can be
 changed.
+
+## TASK-096 position.list Real Action No-write Skeleton
+
+TASK-096 adds a test-only `position.list` real action no-write skeleton. The
+new skeleton is not a real action and does not modify the current
+`implemented=false` guard.
+
+The skeleton locks the future no-write matrix for:
+
+- valid request guard-path no-write
+- invalid request / `INVALID_REQUEST` no-write
+- replay unavailable / `REPLAY_NOT_AVAILABLE` no-write
+- facts query unavailable / `DATA_SOURCE_MISSING` no-write
+- mapping failure / `POSITION_LIST_MAPPING_FAILED` no-write
+- missing market price / `MARKET_PRICE_MISSING` no-write
+- multi-currency unsupported / `MULTI_CURRENCY_UNSUPPORTED` no-write
+- missing FX rate / `FX_RATE_MISSING` no-write
+- SQLite read-only open failure / `SQLITE_READONLY_OPEN_FAILED` no-write
+- SQLite query failure / `SQLITE_QUERY_FAILED` no-write
+
+The skeleton reuses the protected table row-count harness and protects
+`trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
+`position_snapshot`, `portfolio_summary`, and `audit_log`. Guard no-write
+coverage remains necessary but is not sufficient for a real implementation;
+future real `position.list` work must extend these tests against the actual
+DataAccess, AccountingEngine mapping, and failure paths.

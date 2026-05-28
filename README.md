@@ -1806,6 +1806,18 @@ boundaries. They do not call real DataServiceClient, do not connect QML, do
 not access SQLite, do not call AccountingEngine, do not write database tables,
 and do not generate TradeDraft or trade suggestions.
 
+## TASK-103 Shell accounting service adapter boundary docs
+
+Shell accounting service adapter boundary docs have been defined:
+
+- [docs/51_shell_accounting_service_adapter_boundary.md](docs/51_shell_accounting_service_adapter_boundary.md)
+- [docs/52_shell_accounting_service_integration_readiness.md](docs/52_shell_accounting_service_integration_readiness.md)
+
+The future controller should depend on a `ShellAccountingServiceAdapter`
+contract instead of directly hard-depending on `DataServiceClient`. The real
+DataServiceClient adapter is still unimplemented, QML is still not wired, and
+no writes are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

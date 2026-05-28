@@ -263,6 +263,22 @@ These tests only exercise fake payload -> controller state mapping. They do not
 start real DataServiceClient integration, do not wire QML, do not access
 SQLite, do not call AccountingEngine, and do not write database tables.
 
+## TASK-103 Service Adapter Boundary
+
+TASK-103 adds the service adapter boundary docs:
+
+- [Shell Accounting Service Adapter Boundary](51_shell_accounting_service_adapter_boundary.md)
+- [Shell Accounting Service Integration Readiness](52_shell_accounting_service_integration_readiness.md)
+
+Future service integration should flow through a
+`ShellAccountingServiceAdapter` abstraction. `ShellAccountingReadOnlyController`
+should not directly hard-depend on `DataServiceClient`.
+
+The real adapter remains unimplemented. Fake adapter behavior must stay
+test-only. Real DataServiceClient integration, QML integration, SQLite access,
+AccountingEngine calls, writes, TradeDraft generation, and trade suggestions
+remain out of scope until separately authorized.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

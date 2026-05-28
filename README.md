@@ -1,5 +1,17 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-114 ShellAccounting presenter / QML binding plan
+
+ShellAccounting presenter and QML binding plan docs are now defined:
+
+- [docs/57_shell_accounting_presenter_contract.md](docs/57_shell_accounting_presenter_contract.md)
+- [docs/58_shell_accounting_qml_binding_readiness_plan.md](docs/58_shell_accounting_qml_binding_readiness_plan.md)
+
+The presenter is still not implemented. QML is still not wired, no QML type is
+registered, no DataServiceClient call is made, no SQLite or AccountingEngine
+access is added, no database tables are written, and no TradeDraft or trade
+suggestion is generated.
+
 ## TASK-113 ShellAccounting ViewModel / Model read-only boundary
 
 ShellServices now includes read-only Shell accounting ViewModel / Model

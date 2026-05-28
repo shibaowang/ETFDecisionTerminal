@@ -637,3 +637,12 @@ v0.1 草案。
   AccountingEngine, or calculate accounting.
 - ViewModel / Model code must not expose TradeDraft, trade suggestion,
   strategy execution, broker order, or write action interfaces.
+- ShellAccounting presenter tasks must reference
+  `docs/57_shell_accounting_presenter_contract.md` and
+  `docs/58_shell_accounting_qml_binding_readiness_plan.md`.
+- QML binding tasks must reference
+  `docs/58_shell_accounting_qml_binding_readiness_plan.md`.
+- Do not modify QML without explicit authorization.
+- QML must not call DataServiceClient and must not calculate accounting.
+- No TradeDraft / no trade suggestion remains mandatory for read-only
+  accounting UI.

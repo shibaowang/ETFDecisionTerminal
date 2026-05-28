@@ -406,6 +406,17 @@ display-text data. They do not call services, write tables, generate TradeDraft,
 generate trade suggestions, execute strategies, submit broker orders, or
 register QML types. QML integration remains a separate task.
 
+## TASK-114 Presenter / QML Binding Plan
+
+TASK-114 defines the future presenter and QML binding plan in
+[docs/57_shell_accounting_presenter_contract.md](57_shell_accounting_presenter_contract.md)
+and
+[docs/58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md).
+
+The controller is consumed by the presenter / facade boundary, not by QML
+calling DataServiceClient directly. QML integration remains separately
+authorized and is not implemented in this task.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

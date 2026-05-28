@@ -459,3 +459,10 @@ This controller integration still relies on the existing DataService guard
 no-write tests for server-side table row guarantees. It does not access SQLite
 facts queries, does not call AccountingEngine, and does not write database
 tables from ShellServices.
+
+## TASK-114 Presenter / QML No-write Boundary
+
+The presenter / QML binding plan does not authorize write behavior. Future
+presenter or QML tasks must keep no database writes, no `data.audit.append`, no
+write actions, no TradeDraft generation, no trade suggestion generation, no
+strategy execution, and no broker orders.

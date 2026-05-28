@@ -308,3 +308,17 @@ v0.1 草案。
 - Read-only accounting UI must not show buy / sell buttons, TradeDraft actions,
   broker order actions, strategy execution controls, or write-enabled flows.
 - TASK-113 does not wire QML and does not register QML types.
+
+## TASK-114 Shell Accounting QML Binding Readiness
+
+- The QML binding readiness plan is defined in
+  [Shell Accounting QML Binding Readiness Plan](58_shell_accounting_qml_binding_readiness_plan.md).
+- Future accounting UI must bind ShellServices ViewModel / Model objects only.
+- QML must not directly call DataServiceClient, access SQLite, call
+  AccountingEngine, or calculate accounting values.
+- Read-only accounting UI must explicitly distinguish Empty, Unavailable,
+  Warning, Error, and Stale.
+- Read-only accounting UI must not display trading buttons, TradeDraft actions,
+  trade suggestion actions, strategy execution controls, or broker order
+  controls.
+- TASK-114 does not modify QML.

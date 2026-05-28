@@ -97,6 +97,45 @@ def main() -> int:
         / "ShellAccountingControllerScaffolding"
         / "test_shell_accounting_controller_no_trade_action_contract.cpp"
     )
+    shell_accounting_state_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingState.h"
+    )
+    shell_accounting_state_source_path = root / "libs" / "ShellServices" / "src" / "ShellAccountingState.cpp"
+    shell_accounting_issue_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingIssue.h"
+    )
+    shell_accounting_issue_source_path = root / "libs" / "ShellServices" / "src" / "ShellAccountingIssue.cpp"
+    shell_accounting_display_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDisplayText.h"
+    )
+    shell_accounting_display_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingDisplayText.cpp"
+    )
+    shell_accounting_controller_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingReadOnlyController.h"
+    )
+    shell_accounting_controller_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingReadOnlyController.cpp"
+    )
+    shell_accounting_controller_state_test_path = (
+        root / "tests" / "ShellServices" / "test_shell_accounting_readonly_controller_skeleton_state.cpp"
+    )
+    shell_accounting_controller_issue_test_path = (
+        root / "tests" / "ShellServices" / "test_shell_accounting_readonly_controller_skeleton_issue.cpp"
+    )
+    shell_accounting_controller_privacy_test_path = (
+        root / "tests" / "ShellServices" / "test_shell_accounting_readonly_controller_skeleton_privacy.cpp"
+    )
+    shell_accounting_controller_no_trade_test_path = (
+        root / "tests" / "ShellServices" / "test_shell_accounting_readonly_controller_skeleton_no_trade_action.cpp"
+    )
+    shell_accounting_controller_no_dependency_test_path = (
+        root / "tests" / "ShellServices" / "test_shell_accounting_readonly_controller_skeleton_no_service_dependency.cpp"
+    )
+    shellservices_cmake_path = root / "libs" / "ShellServices" / "CMakeLists.txt"
+    shellservices_public_header_path = root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellServices.h"
+    shellservices_tests_cmake_path = root / "tests" / "ShellServices" / "CMakeLists.txt"
+    qml_dir = root / "apps" / "ETFDecisionShell" / "qml"
     position_list_first_stage_cmake_path = (
         root / "tests" / "PositionListFirstStageScaffolding" / "CMakeLists.txt"
     )
@@ -340,6 +379,26 @@ def main() -> int:
     require(shell_accounting_issue_test_path.exists(), "Shell accounting issue contract test exists")
     require(shell_accounting_privacy_test_path.exists(), "Shell accounting privacy contract test exists")
     require(shell_accounting_no_trade_test_path.exists(), "Shell accounting no trade action contract test exists")
+    require(shell_accounting_state_header_path.exists(), "Shell accounting state header exists")
+    require(shell_accounting_state_source_path.exists(), "Shell accounting state source exists")
+    require(shell_accounting_issue_header_path.exists(), "Shell accounting issue header exists")
+    require(shell_accounting_issue_source_path.exists(), "Shell accounting issue source exists")
+    require(shell_accounting_display_header_path.exists(), "Shell accounting display header exists")
+    require(shell_accounting_display_source_path.exists(), "Shell accounting display source exists")
+    require(shell_accounting_controller_header_path.exists(), "ShellAccountingReadOnlyController header exists")
+    require(shell_accounting_controller_source_path.exists(), "ShellAccountingReadOnlyController source exists")
+    require(shell_accounting_controller_state_test_path.exists(), "Shell accounting controller skeleton state test exists")
+    require(shell_accounting_controller_issue_test_path.exists(), "Shell accounting controller skeleton issue test exists")
+    require(shell_accounting_controller_privacy_test_path.exists(), "Shell accounting controller skeleton privacy test exists")
+    require(shell_accounting_controller_no_trade_test_path.exists(), "Shell accounting controller skeleton no trade test exists")
+    require(
+        shell_accounting_controller_no_dependency_test_path.exists(),
+        "Shell accounting controller skeleton no dependency test exists",
+    )
+    require(shellservices_cmake_path.exists(), "ShellServices CMake exists")
+    require(shellservices_public_header_path.exists(), "ShellServices public header exists")
+    require(shellservices_tests_cmake_path.exists(), "ShellServices tests CMake exists")
+    require(qml_dir.exists(), "ETFDecisionShell QML directory exists")
     require(position_list_first_stage_cmake_path.exists(), "position.list first-stage scaffolding CMake exists")
     require(position_list_first_stage_scenario_header_path.exists(), "position.list first-stage scenario header exists")
     require(position_list_first_stage_scenario_source_path.exists(), "position.list first-stage scenario source exists")
@@ -518,6 +577,25 @@ def main() -> int:
     shell_accounting_issue_test = shell_accounting_issue_test_path.read_text(encoding="utf-8")
     shell_accounting_privacy_test = shell_accounting_privacy_test_path.read_text(encoding="utf-8")
     shell_accounting_no_trade_test = shell_accounting_no_trade_test_path.read_text(encoding="utf-8")
+    shell_accounting_state_header = shell_accounting_state_header_path.read_text(encoding="utf-8")
+    shell_accounting_state_source = shell_accounting_state_source_path.read_text(encoding="utf-8")
+    shell_accounting_issue_header = shell_accounting_issue_header_path.read_text(encoding="utf-8")
+    shell_accounting_issue_source = shell_accounting_issue_source_path.read_text(encoding="utf-8")
+    shell_accounting_display_header = shell_accounting_display_header_path.read_text(encoding="utf-8")
+    shell_accounting_display_source = shell_accounting_display_source_path.read_text(encoding="utf-8")
+    shell_accounting_controller_header = shell_accounting_controller_header_path.read_text(encoding="utf-8")
+    shell_accounting_controller_source = shell_accounting_controller_source_path.read_text(encoding="utf-8")
+    shell_accounting_controller_state_test = shell_accounting_controller_state_test_path.read_text(encoding="utf-8")
+    shell_accounting_controller_issue_test = shell_accounting_controller_issue_test_path.read_text(encoding="utf-8")
+    shell_accounting_controller_privacy_test = shell_accounting_controller_privacy_test_path.read_text(encoding="utf-8")
+    shell_accounting_controller_no_trade_test = shell_accounting_controller_no_trade_test_path.read_text(encoding="utf-8")
+    shell_accounting_controller_no_dependency_test = shell_accounting_controller_no_dependency_test_path.read_text(
+        encoding="utf-8"
+    )
+    shellservices_cmake = shellservices_cmake_path.read_text(encoding="utf-8")
+    shellservices_public_header = shellservices_public_header_path.read_text(encoding="utf-8")
+    shellservices_tests_cmake = shellservices_tests_cmake_path.read_text(encoding="utf-8")
+    qml_sources = "\n".join(path.read_text(encoding="utf-8") for path in qml_dir.rglob("*.qml"))
     position_list_first_stage_cmake = position_list_first_stage_cmake_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_header = position_list_first_stage_scenario_header_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_source = position_list_first_stage_scenario_source_path.read_text(encoding="utf-8")
@@ -2492,6 +2570,129 @@ def main() -> int:
         "add_subdirectory(ShellAccountingControllerScaffolding)" in tests_cmake,
         "tests CMake adds Shell accounting scaffolding",
     )
+    require(
+        "ShellAccountingReadOnlyController production skeleton" in readme,
+        "README mentions ShellAccountingReadOnlyController skeleton",
+    )
+    require(
+        "TASK-101" in shellservices_accounting_controller_contract
+        and "Production Skeleton" in shellservices_accounting_controller_contract,
+        "docs/49 mentions TASK-101 production skeleton",
+    )
+    require(
+        "TASK-101" in shell_accounting_viewmodel_state_contract
+        and "Production Skeleton" in shell_accounting_viewmodel_state_contract,
+        "docs/50 mentions TASK-101 production skeleton",
+    )
+    require("TASK-101 ShellAccountingReadOnlyController skeleton" in codex_prompt_template, "prompt template mentions TASK-101")
+    require(
+        "ShellAccountingReadOnlyController Skeleton" in ui_design,
+        "UI design mentions ShellAccountingReadOnlyController skeleton",
+    )
+    require(
+        "ShellAccountingReadOnlyController" in shellservices_public_header,
+        "ShellServices public header includes ShellAccountingReadOnlyController",
+    )
+    require(
+        "ShellAccountingReadOnlyController" in shellservices_cmake,
+        "ShellServices CMake includes ShellAccountingReadOnlyController",
+    )
+    require(
+        "ShellAccountingViewState" in shell_accounting_state_header,
+        "Shell accounting state header declares ShellAccountingViewState",
+    )
+    require("Idle" in shell_accounting_state_header, "Shell accounting state includes Idle")
+    require("Loading" in shell_accounting_state_header, "Shell accounting state includes Loading")
+    require("Loaded" in shell_accounting_state_header, "Shell accounting state includes Loaded")
+    require("Empty" in shell_accounting_state_header, "Shell accounting state includes Empty")
+    require("Unavailable" in shell_accounting_state_header, "Shell accounting state includes Unavailable")
+    require("Warning" in shell_accounting_state_header, "Shell accounting state includes Warning")
+    require("Error" in shell_accounting_state_header, "Shell accounting state includes Error")
+    require("Stale" in shell_accounting_state_header, "Shell accounting state includes Stale")
+    require("implemented = false" in shell_accounting_controller_header, "state snapshot defaults implemented false")
+    require("readOnly = true" in shell_accounting_controller_header, "state snapshot defaults readOnly true")
+    require("writeEnabled = false" in shell_accounting_controller_header, "state snapshot defaults writeEnabled false")
+    require("tradeDraftGenerationEnabled" in shell_accounting_controller_header, "controller exposes TradeDraft boundary")
+    require("tradeSuggestionEnabled" in shell_accounting_controller_header, "controller exposes trade suggestion boundary")
+    require("strategyExecutionEnabled" in shell_accounting_controller_header, "controller exposes strategy execution boundary")
+    require("brokerOrderEnabled" in shell_accounting_controller_header, "controller exposes broker order boundary")
+    require("applyStateSnapshot" in shell_accounting_controller_header, "controller accepts in-memory state snapshot")
+    require("beginRefresh" in shell_accounting_controller_header, "controller exposes beginRefresh skeleton")
+    require("markUnavailable" in shell_accounting_controller_header, "controller exposes unavailable marker")
+    require("shellAccountingDisplayText" in shell_accounting_display_header, "display helper is declared")
+    require("privacyMode" in shell_accounting_display_source, "display helper handles privacyMode")
+    require("MARKET_PRICE_MISSING" in shell_accounting_issue_source, "issue source maps MARKET_PRICE_MISSING")
+    require("MISSING_FEE" in shell_accounting_issue_source, "issue source maps MISSING_FEE")
+    require("NEGATIVE_CASH" in shell_accounting_issue_source, "issue source maps NEGATIVE_CASH")
+    require("SELL_EXCEEDS_POSITION" in shell_accounting_issue_source, "issue source maps SELL_EXCEEDS_POSITION")
+    require("MULTI_CURRENCY_UNSUPPORTED" in shell_accounting_issue_source, "issue source maps MULTI_CURRENCY_UNSUPPORTED")
+    require("FX_RATE_MISSING" in shell_accounting_issue_source, "issue source maps FX_RATE_MISSING")
+    require("REPLAY_NOT_AVAILABLE" in shell_accounting_issue_source, "issue source maps REPLAY_NOT_AVAILABLE")
+    require(
+        "shell_accounting_readonly_controller_skeleton_state" in shellservices_tests_cmake,
+        "ShellServices tests register skeleton state test",
+    )
+    require(
+        "shell_accounting_readonly_controller_skeleton_issue" in shellservices_tests_cmake,
+        "ShellServices tests register skeleton issue test",
+    )
+    require(
+        "shell_accounting_readonly_controller_skeleton_privacy" in shellservices_tests_cmake,
+        "ShellServices tests register skeleton privacy test",
+    )
+    require(
+        "shell_accounting_readonly_controller_skeleton_no_trade_action" in shellservices_tests_cmake,
+        "ShellServices tests register skeleton no trade action test",
+    )
+    require(
+        "shell_accounting_readonly_controller_skeleton_no_service_dependency" in shellservices_tests_cmake,
+        "ShellServices tests register skeleton no service dependency test",
+    )
+    require("implemented=false maps to Unavailable" in shell_accounting_controller_state_test, "skeleton state test checks implemented false")
+    require("Empty and Unavailable are distinct" in shell_accounting_controller_state_test, "skeleton state test checks Empty vs Unavailable")
+    require("MARKET_PRICE_MISSING" in shell_accounting_controller_issue_test, "skeleton issue test checks MARKET_PRICE_MISSING")
+    require("MISSING_FEE" in shell_accounting_controller_issue_test, "skeleton issue test checks MISSING_FEE")
+    require("NEGATIVE_CASH" in shell_accounting_controller_issue_test, "skeleton issue test checks NEGATIVE_CASH")
+    require("SELL_EXCEEDS_POSITION" in shell_accounting_controller_issue_test, "skeleton issue test checks SELL_EXCEEDS_POSITION")
+    require(
+        "MULTI_CURRENCY_UNSUPPORTED" in shell_accounting_controller_issue_test,
+        "skeleton issue test checks MULTI_CURRENCY_UNSUPPORTED",
+    )
+    require("FX_RATE_MISSING" in shell_accounting_controller_issue_test, "skeleton issue test checks FX_RATE_MISSING")
+    require("privacyMode=false" in shell_accounting_controller_privacy_test, "skeleton privacy test checks privacyMode false")
+    require("privacyMode=true" in shell_accounting_controller_privacy_test, "skeleton privacy test checks privacyMode true")
+    require("Empty state does not fabricate amount" in shell_accounting_controller_privacy_test, "skeleton privacy test checks Empty")
+    require("Unavailable state does not fabricate amount" in shell_accounting_controller_privacy_test, "skeleton privacy test checks Unavailable")
+    require("TradeDraft" in shell_accounting_controller_no_trade_test, "skeleton no trade test checks TradeDraft")
+    require("trade suggestions" in shell_accounting_controller_no_trade_test, "skeleton no trade test checks trade suggestions")
+    require("strategy" in shell_accounting_controller_no_trade_test, "skeleton no trade test checks strategy")
+    require("broker order" in shell_accounting_controller_no_trade_test, "skeleton no trade test checks broker order")
+    require("DataServiceClient" in shell_accounting_controller_no_dependency_test, "no dependency test scans DataServiceClient")
+    require("DataServiceApi" in shell_accounting_controller_no_dependency_test, "no dependency test scans DataServiceApi")
+    require("DataAccess" in shell_accounting_controller_no_dependency_test, "no dependency test scans DataAccess")
+    require("AccountingEngine" in shell_accounting_controller_no_dependency_test, "no dependency test scans AccountingEngine")
+    require("SQLite" in shell_accounting_controller_no_dependency_test, "no dependency test scans SQLite")
+    require("QtQuick" in shell_accounting_controller_no_dependency_test, "no dependency test scans QtQuick")
+    shell_accounting_controller_sources = "\n".join(
+        [
+            shell_accounting_controller_header,
+            shell_accounting_controller_source,
+            shell_accounting_state_header,
+            shell_accounting_state_source,
+            shell_accounting_issue_header,
+            shell_accounting_issue_source,
+            shell_accounting_display_header,
+            shell_accounting_display_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick"]:
+        require(
+            forbidden not in shell_accounting_controller_sources,
+            f"ShellAccountingReadOnlyController skeleton does not include {forbidden}",
+        )
+    require("ShellAccountingReadOnlyController" not in qml_sources, "QML does not reference ShellAccountingReadOnlyController")
+    require("position.list" not in qml_sources, "QML does not call accounting action names directly")
+    require("cash.summary" not in qml_sources, "QML does not call cash accounting action names directly")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

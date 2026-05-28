@@ -261,3 +261,11 @@ v0.1 草案。
   broker order actions, or strategy execution controls.
 - TASK-100 scaffolding is test-only and does not connect QML to accounting
   actions.
+
+## TASK-101 ShellAccountingReadOnlyController Skeleton
+
+- Accounting controller skeleton exists, but QML is still not wired.
+- Future UI must still bind through ShellServices only in a separately
+  authorized task.
+- Skeleton state / issue / privacy behavior does not permit QML accounting
+  calculation.

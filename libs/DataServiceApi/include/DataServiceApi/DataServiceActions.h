@@ -19,6 +19,7 @@ constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
 constexpr const char* kActionBasePositionSummary = "base_position.summary";
+constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleDataHealth(
     const etfdt::service_runtime::ActionContext& context,
@@ -73,6 +74,10 @@ constexpr const char* kActionBasePositionSummary = "base_position.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleBasePositionSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleSniperPoolSummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

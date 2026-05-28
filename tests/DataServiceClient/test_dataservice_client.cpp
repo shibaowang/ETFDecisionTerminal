@@ -428,6 +428,71 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
         auditCountBefore,
         "basePositionSummary does not insert audit_log row");
 
+    auto sniperPoolSummary = client.sniperPoolSummary();
+    expectSuccessfulResponse(sniperPoolSummary, "client.sniperPoolSummary");
+    if (sniperPoolSummary) {
+        const auto payload = payloadObject(sniperPoolSummary.value());
+        expectEqual(
+            payload.value("action").toString().toStdString(),
+            "sniper_pool.summary",
+            "sniperPoolSummary action");
+        expectEqual(
+            payload.value("module").toString().toStdString(),
+            "accounting",
+            "sniperPoolSummary module");
+        expectTrue(!payload.value("implemented").toBool(true), "sniperPoolSummary implemented=false");
+        expectTrue(payload.value("readOnly").toBool(false), "sniperPoolSummary readOnly=true");
+        expectTrue(!payload.value("writeEnabled").toBool(true), "sniperPoolSummary writeEnabled=false");
+        expectTrue(!payload.value("replayExecuted").toBool(true), "sniperPoolSummary replayExecuted=false");
+        expectTrue(!payload.value("sqliteAccessed").toBool(true), "sniperPoolSummary sqliteAccessed=false");
+        expectTrue(!payload.value("tradeFactsAccessed").toBool(true), "sniperPoolSummary tradeFactsAccessed=false");
+        expectTrue(!payload.value("snapshotAccessed").toBool(true), "sniperPoolSummary snapshotAccessed=false");
+        expectTrue(
+            !payload.value("positionSnapshotAccessed").toBool(true),
+            "sniperPoolSummary positionSnapshotAccessed=false");
+        expectTrue(
+            !payload.value("cashSnapshotAccessed").toBool(true),
+            "sniperPoolSummary cashSnapshotAccessed=false");
+        expectTrue(
+            !payload.value("portfolioSummaryAccessed").toBool(true),
+            "sniperPoolSummary portfolioSummaryAccessed=false");
+        expectTrue(
+            !payload.value("accountingEngineCalled").toBool(true),
+            "sniperPoolSummary accountingEngineCalled=false");
+        expectTrue(
+            !payload.value("sniperPoolCalculated").toBool(true),
+            "sniperPoolSummary sniperPoolCalculated=false");
+        expectTrue(
+            !payload.value("tierSummaryCalculated").toBool(true),
+            "sniperPoolSummary tierSummaryCalculated=false");
+        expectTrue(
+            !payload.value("tradeDraftGenerated").toBool(true),
+            "sniperPoolSummary tradeDraftGenerated=false");
+        expectTrue(
+            !payload.value("tradeSuggestionGenerated").toBool(true),
+            "sniperPoolSummary tradeSuggestionGenerated=false");
+        expectTrue(!payload.value("strategyExecuted").toBool(true), "sniperPoolSummary strategyExecuted=false");
+        expectEqual(
+            payload.value("status").toString().toStdString(),
+            "SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
+            "sniperPoolSummary status");
+        const auto futureOutput = payload.value("futureOutput").toObject();
+        expectTrue(
+            futureOutput.value("sniperPool").isNull(),
+            "sniperPoolSummary wrapper returns no real sniper pool");
+        expectTrue(
+            futureOutput.value("tierSummary").toArray().isEmpty(),
+            "sniperPoolSummary wrapper returns no real tier summary");
+        expectTrue(!payload.contains("poolAmountText"), "sniperPoolSummary wrapper returns no pool amount");
+        expectTrue(!payload.contains("remainingAmountText"), "sniperPoolSummary wrapper returns no remaining amount");
+        expectTrue(!payload.contains("T1"), "sniperPoolSummary wrapper returns no T1 tier");
+        expectTrue(!payload.contains("T6"), "sniperPoolSummary wrapper returns no T6 tier");
+    }
+    expectEqual(
+        countRows(connection, "audit_log"),
+        auditCountBefore,
+        "sniperPoolSummary does not insert audit_log row");
+
     etfdt::data_service_client::AuditAppendRequest auditRequest;
     auditRequest.entityType = "SYSTEM";
     auditRequest.entityId = "1";

@@ -434,6 +434,11 @@ def main() -> int:
     base_position_summary_guard_source = extract_between(
         dataservice_actions_source,
         "etfdt::protocol::ProtocolResponse handleBasePositionSummary",
+        "etfdt::protocol::ProtocolResponse handleSniperPoolSummary",
+    )
+    sniper_pool_summary_guard_source = extract_between(
+        dataservice_actions_source,
+        "etfdt::protocol::ProtocolResponse handleSniperPoolSummary",
         "}  // namespace etfdt::data_service_api",
     )
     gitignore_lines = {line.strip() for line in gitignore.splitlines()}
@@ -1097,6 +1102,8 @@ def main() -> int:
     require("handlePortfolioPnlSummary" in dataservice_actions_header, "DataServiceActions declares portfolio.pnl.summary handler")
     require("kActionBasePositionSummary" in dataservice_actions_header, "DataServiceActions exposes base_position.summary action constant")
     require("handleBasePositionSummary" in dataservice_actions_header, "DataServiceActions declares base_position.summary handler")
+    require("kActionSniperPoolSummary" in dataservice_actions_header, "DataServiceActions exposes sniper_pool.summary action constant")
+    require("handleSniperPoolSummary" in dataservice_actions_header, "DataServiceActions declares sniper_pool.summary handler")
     require("kActionPositionList" in dataservice_action_registrar, "DataService registrar registers position.list")
     require("handlePositionList" in dataservice_action_registrar, "DataService registrar wires position.list handler")
     require("kActionCashSummary" in dataservice_action_registrar, "DataService registrar registers cash.summary")
@@ -1105,10 +1112,13 @@ def main() -> int:
     require("handlePortfolioPnlSummary" in dataservice_action_registrar, "DataService registrar wires portfolio.pnl.summary handler")
     require("kActionBasePositionSummary" in dataservice_action_registrar, "DataService registrar registers base_position.summary")
     require("handleBasePositionSummary" in dataservice_action_registrar, "DataService registrar wires base_position.summary handler")
+    require("kActionSniperPoolSummary" in dataservice_action_registrar, "DataService registrar registers sniper_pool.summary")
+    require("handleSniperPoolSummary" in dataservice_action_registrar, "DataService registrar wires sniper_pool.summary handler")
     require("positionList(" in dataservice_client_header, "DataServiceClient exposes positionList wrapper")
     require("cashSummary(" in dataservice_client_header, "DataServiceClient exposes cashSummary wrapper")
     require("portfolioPnlSummary(" in dataservice_client_header, "DataServiceClient exposes portfolioPnlSummary wrapper")
     require("basePositionSummary(" in dataservice_client_header, "DataServiceClient exposes basePositionSummary wrapper")
+    require("sniperPoolSummary(" in dataservice_client_header, "DataServiceClient exposes sniperPoolSummary wrapper")
     require("kActionPositionList" in dataservice_client_source, "DataServiceClient has position.list action constant")
     require("sendAction(kActionPositionList" in dataservice_client_source, "DataServiceClient wrapper sends position.list")
     require("kActionCashSummary" in dataservice_client_source, "DataServiceClient has cash.summary action constant")
@@ -1117,6 +1127,8 @@ def main() -> int:
     require("sendAction(kActionPortfolioPnlSummary" in dataservice_client_source, "DataServiceClient wrapper sends portfolio.pnl.summary")
     require("kActionBasePositionSummary" in dataservice_client_source, "DataServiceClient has base_position.summary action constant")
     require("sendAction(kActionBasePositionSummary" in dataservice_client_source, "DataServiceClient wrapper sends base_position.summary")
+    require("kActionSniperPoolSummary" in dataservice_client_source, "DataServiceClient has sniper_pool.summary action constant")
+    require("sendAction(kActionSniperPoolSummary" in dataservice_client_source, "DataServiceClient wrapper sends sniper_pool.summary")
     require("POSITION_LIST_NOT_AVAILABLE" in position_list_guard_source, "position.list guard source returns not available status")
     require('"implemented":false' in position_list_guard_source, "position.list guard source sets implemented=false")
     require('"readOnly":true' in position_list_guard_source, "position.list guard source sets readOnly=true")
@@ -1230,6 +1242,64 @@ def main() -> int:
     require("data.audit.append" not in base_position_summary_guard_source, "base_position.summary guard source does not call data.audit.append")
     for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
         require(forbidden_sql not in base_position_summary_guard_source, f"base_position.summary guard source does not contain {forbidden_sql}")
+    require(
+        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source returns not available status",
+    )
+    require('"implemented":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets implemented=false")
+    require('"readOnly":true' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets readOnly=true")
+    require('"writeEnabled":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets writeEnabled=false")
+    require('"sqliteAccessed":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets sqliteAccessed=false")
+    require('"tradeFactsAccessed":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets tradeFactsAccessed=false")
+    require('"snapshotAccessed":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets snapshotAccessed=false")
+    require(
+        '"positionSnapshotAccessed":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets positionSnapshotAccessed=false",
+    )
+    require(
+        '"cashSnapshotAccessed":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets cashSnapshotAccessed=false",
+    )
+    require(
+        '"portfolioSummaryAccessed":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets portfolioSummaryAccessed=false",
+    )
+    require(
+        '"accountingEngineCalled":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets accountingEngineCalled=false",
+    )
+    require(
+        '"sniperPoolCalculated":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets sniperPoolCalculated=false",
+    )
+    require(
+        '"tierSummaryCalculated":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets tierSummaryCalculated=false",
+    )
+    require(
+        '"tradeDraftGenerated":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets tradeDraftGenerated=false",
+    )
+    require(
+        '"tradeSuggestionGenerated":false' in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source sets tradeSuggestionGenerated=false",
+    )
+    require('"strategyExecuted":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets strategyExecuted=false")
+    require(
+        "SniperPoolSummaryResponse" in sniper_pool_summary_guard_source,
+        "sniper_pool.summary guard source declares future SniperPoolSummaryResponse",
+    )
+    require("tierSummary" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source declares empty tierSummary")
+    require("position_snapshot" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids position_snapshot")
+    require("cash_snapshot" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids cash_snapshot")
+    require("portfolio_summary" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids portfolio_summary")
+    require("trade_draft_generation" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids trade draft generation")
+    require("trade_suggestion_generation" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids trade suggestion generation")
+    require("AccountingEngine/" not in sniper_pool_summary_guard_source, "sniper_pool.summary guard source does not include AccountingEngine")
+    require("DataAccess" not in sniper_pool_summary_guard_source, "sniper_pool.summary guard source does not reference DataAccess repository")
+    require("data.audit.append" not in sniper_pool_summary_guard_source, "sniper_pool.summary guard source does not call data.audit.append")
+    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
+        require(forbidden_sql not in sniper_pool_summary_guard_source, f"sniper_pool.summary guard source does not contain {forbidden_sql}")
     require("dataservice_position_list_guard" in dataservice_test_cmake, "DataService CMake registers position.list guard test")
     require("dataservice_position_list_no_write" in dataservice_test_cmake, "DataService CMake registers position.list no-write test")
     require("dataservice_cash_summary_guard" in dataservice_test_cmake, "DataService CMake registers cash.summary guard test")
@@ -1251,6 +1321,14 @@ def main() -> int:
         "DataService CMake registers base_position.summary no-write test",
     )
     require(
+        "dataservice_sniper_pool_summary_guard" in dataservice_test_cmake,
+        "DataService CMake registers sniper_pool.summary guard test",
+    )
+    require(
+        "dataservice_sniper_pool_summary_no_write" in dataservice_test_cmake,
+        "DataService CMake registers sniper_pool.summary no-write test",
+    )
+    require(
         "dataservice_client_position_list_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers position.list client guard test",
     )
@@ -1265,6 +1343,10 @@ def main() -> int:
     require(
         "dataservice_client_base_position_summary_guard" in dataservice_client_test_cmake,
         "DataServiceClient CMake registers base_position.summary client guard test",
+    )
+    require(
+        "dataservice_client_sniper_pool_summary_guard" in dataservice_client_test_cmake,
+        "DataServiceClient CMake registers sniper_pool.summary client guard test",
     )
     require("kActionPositionList" in dataservice_readonly_test, "DataService test calls position.list action")
     require("POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks position.list status")
@@ -1325,10 +1407,32 @@ def main() -> int:
         "base_position.summary does not return real sellableAboveBaseAmountText" in dataservice_readonly_test,
         "DataService test checks no real sellable amount",
     )
+    require("kActionSniperPoolSummary" in dataservice_readonly_test, "DataService test calls sniper_pool.summary action")
+    require(
+        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test,
+        "DataService test checks sniper_pool.summary status",
+    )
+    require(
+        "sniper_pool.summary tradeFactsAccessed=false" in dataservice_readonly_test,
+        "DataService test checks trade facts not accessed for sniper pool",
+    )
+    require(
+        "sniper_pool.summary cashSnapshotAccessed=false" in dataservice_readonly_test,
+        "DataService test checks cash snapshot not accessed for sniper pool",
+    )
+    require(
+        "sniper_pool.summary tierSummaryCalculated=false" in dataservice_readonly_test,
+        "DataService test checks tier summary not calculated",
+    )
+    require(
+        "sniper_pool.summary does not return real remainingAmountText" in dataservice_readonly_test,
+        "DataService test checks no real remaining amount",
+    )
     require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
     require("client.cashSummary" in dataservice_client_test, "DataServiceClient test calls cashSummary wrapper")
     require("client.portfolioPnlSummary" in dataservice_client_test, "DataServiceClient test calls portfolioPnlSummary wrapper")
     require("client.basePositionSummary" in dataservice_client_test, "DataServiceClient test calls basePositionSummary wrapper")
+    require("client.sniperPoolSummary" in dataservice_client_test, "DataServiceClient test calls sniperPoolSummary wrapper")
 
     require("add_subdirectory(AccountingNoWrite)" in tests_cmake, "tests CMake adds AccountingNoWrite tests")
     require("accounting_forbidden_sql_scanner" in accounting_no_write_cmake, "AccountingNoWrite CMake registers scanner CTest")
@@ -1608,6 +1712,67 @@ def main() -> int:
     require(
         "must not generate TradeDraft" in codex_prompt_template,
         "prompt template forbids TradeDraft from base position guard",
+    )
+    require("sniper_pool.summary DataService action guard" in readme, "README documents sniper_pool.summary guard")
+    require(
+        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in readme,
+        "README documents sniper_pool.summary guard status",
+    )
+    require(
+        "dataservice_sniper_pool_summary_guard" in readme,
+        "README documents sniper_pool.summary guard test",
+    )
+    require(
+        "dataservice_sniper_pool_summary_no_write" in readme,
+        "README documents sniper_pool.summary no-write test",
+    )
+    require("TASK-092" in dataservice_readonly_accounting_contracts, "DataService contract doc records TASK-092")
+    require(
+        "sniper_pool.summary` as a DataService read-only action" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents sniper_pool.summary guard",
+    )
+    require(
+        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents sniper_pool.summary status",
+    )
+    require(
+        "SniperPoolSummaryResponse" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc documents SniperPoolSummaryResponse",
+    )
+    require(
+        "remainingAmountText` is not a trade suggestion" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc says remainingAmountText is not trade suggestion",
+    )
+    require(
+        "completed` is not derived from current market value" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc says completed is not market-value derived",
+    )
+    require("TASK-092" in dataservice_accounting_no_write_plan, "no-write plan records TASK-092")
+    require(
+        "sniper_pool.summary` guard has no-write table count coverage" in dataservice_accounting_no_write_plan,
+        "no-write plan documents sniper_pool.summary guard no-write coverage",
+    )
+    require("TASK-092" in sqlite_readonly_facts_query_boundary, "SQLite facts query doc records TASK-092")
+    require(
+        "sniper_pool.summary` guard does not use SQLite facts query" in sqlite_readonly_facts_query_boundary,
+        "SQLite facts query doc says sniper_pool.summary guard avoids SQLite",
+    )
+    require("TASK-092" in accounting_facts_source_mapping, "facts source mapping records TASK-092")
+    require(
+        "sniper_pool.summary` guard does not use this facts mapping" in accounting_facts_source_mapping,
+        "facts source mapping says sniper_pool.summary guard avoids mapping",
+    )
+    require(
+        "DataService `sniper_pool.summary` guard tasks must not pretend to be real" in codex_prompt_template,
+        "prompt template says sniper_pool.summary guard is not real implementation",
+    )
+    require(
+        "remainingAmountText` is not a trade suggestion" in codex_prompt_template,
+        "prompt template says remainingAmountText is not trade suggestion",
+    )
+    require(
+        "completed` is not derived from current market value" in codex_prompt_template,
+        "prompt template says completed is not derived from market value",
     )
 
     require(

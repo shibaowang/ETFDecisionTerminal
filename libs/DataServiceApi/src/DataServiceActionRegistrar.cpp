@@ -48,6 +48,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionBasePositionSummary, [&connection](const auto& context) {
         return handleBasePositionSummary(context, connection);
     });
+    (void)dispatcher.registerAction(kActionSniperPoolSummary, [&connection](const auto& context) {
+        return handleSniperPoolSummary(context, connection);
+    });
 }
 
 void registerDataServiceWriteActions(

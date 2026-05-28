@@ -192,3 +192,16 @@ Future real `base_position.summary` implementation is the point where
 composed for base position calculation. That work still requires separate
 read-only query, AccountingEngine integration, and no-write test authorization.
 `sellableAboveBaseAmountText` is not a trade suggestion.
+
+## TASK-092 sniper_pool.summary Guard Mapping Boundary
+
+The `sniper_pool.summary` guard does not use this facts mapping. It returns a
+`SniperPoolSummaryResponse` future output shape with `sniperPool=null` and an
+empty `tierSummary` array only to describe the contract.
+
+Future real `sniper_pool.summary` implementation is the point where
+`TradeFactDto`, cash facts, tier derivation, and sniper-pool-derived DTO mapping
+may be composed for sniper pool calculation. That work still requires separate
+read-only query, AccountingEngine integration, and no-write test authorization.
+`remainingAmountText` is not a trade suggestion, and `completed` is not derived
+from current market value by the guard.

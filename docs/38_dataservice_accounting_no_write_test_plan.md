@@ -279,3 +279,26 @@ suggestions, and does not generate TradeDraft rows. The real
 `base_position.summary` implementation must extend these no-write tests before
 it can read facts or map real base position DTOs, and it must continue to
 protect `trade_draft`, `position_snapshot`, and `portfolio_summary` from writes.
+
+## TASK-092 sniper_pool.summary Guard No-write Coverage
+
+The `sniper_pool.summary` guard has no-write table count coverage. The guard
+test checks that calling `sniper_pool.summary` leaves these protected tables
+unchanged:
+
+- `trade_log`
+- `trade_execution_group`
+- `trade_draft`
+- `cash_snapshot`
+- `position_snapshot`
+- `portfolio_summary`
+- `audit_log`
+
+The guard also confirms that `sniper_pool.summary` does not read `trade_log`,
+`position_snapshot`, `cash_snapshot`, or `portfolio_summary`, does not access
+SQLite facts queries, does not call AccountingEngine, does not calculate T1-T6
+tiers, does not generate trade suggestions, and does not generate TradeDraft
+rows. The real `sniper_pool.summary` implementation must extend these no-write
+tests before it can read facts or map real sniper pool DTOs, and it must
+continue to protect `trade_draft`, `position_snapshot`, and `portfolio_summary`
+from writes.

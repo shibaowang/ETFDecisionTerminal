@@ -976,4 +976,94 @@ etfdt::protocol::ProtocolResponse handleBasePositionSummary(
     return successResponse(context, payload);
 }
 
+etfdt::protocol::ProtocolResponse handleSniperPoolSummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "sniper_pool.summary payload must be a JSON object");
+    }
+
+    const std::string payload = R"json({
+"module":"accounting",
+"action":"sniper_pool.summary",
+"implemented":false,
+"readOnly":true,
+"writeEnabled":false,
+"replayExecuted":false,
+"dataSourceAccessed":false,
+"sqliteAccessed":false,
+"tradeFactsAccessed":false,
+"snapshotAccessed":false,
+"positionSnapshotAccessed":false,
+"cashSnapshotAccessed":false,
+"portfolioSummaryAccessed":false,
+"accountingEngineCalled":false,
+"sniperPoolCalculated":false,
+"tierSummaryCalculated":false,
+"tradeDraftGenerated":false,
+"tradeSuggestionGenerated":false,
+"strategyExecuted":false,
+"contractVersion":"0.4-draft",
+"calculationVersion":"not-implemented",
+"status":"SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
+"message":"sniper_pool.summary is a read-only contract guard and is not implemented yet.",
+"futureOutput":{
+"type":"SniperPoolSummaryResponse",
+"sniperPool":null,
+"tierSummary":[]
+},
+"forbiddenSources":[
+"position_snapshot",
+"cash_snapshot",
+"portfolio_summary"
+],
+"forbiddenWrites":[
+"trade_log",
+"trade_execution_group",
+"trade_draft",
+"cash_snapshot",
+"position_snapshot",
+"portfolio_summary",
+"audit_log"
+],
+"forbiddenActions":[
+"trade_draft_generation",
+"trade_suggestion_generation",
+"strategy_execution",
+"broker_order"
+],
+"requiredNextTasks":[
+"Sniper pool production calculation boundary review",
+"AccountingEngine integration boundary",
+"sniper_pool.summary no-write integration test",
+"real SniperPoolSummaryResponse mapping"
+],
+"issues":[
+{
+"level":"ERROR",
+"code":"SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
+"message":"sniper_pool.summary is not implemented.",
+"blocking":true
+}
+],
+"warnings":[
+"SNIPER_POOL_SUMMARY_NOT_IMPLEMENTED",
+"NO_TRADE_FACTS_QUERY_IN_ACTION",
+"NO_POSITION_SNAPSHOT_SOURCE",
+"NO_SQLITE_FACTS_QUERY",
+"NO_ACCOUNTING_ENGINE_CALL",
+"NO_TRADE_DRAFT_GENERATION",
+"NO_TRADE_SUGGESTION_GENERATION"
+]
+})json";
+
+    return successResponse(context, payload);
+}
+
 }  // namespace etfdt::data_service_api

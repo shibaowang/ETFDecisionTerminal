@@ -269,3 +269,10 @@ v0.1 草案。
   authorized task.
 - Skeleton state / issue / privacy behavior does not permit QML accounting
   calculation.
+
+## TASK-102 Shell Accounting Fake Client Boundary Tests
+
+- Shell accounting fake/client tests do not imply QML integration.
+- Future UI must still bind through ShellServices only.
+- Fake payload state, warning, error, stale, privacy, and no-trade coverage is
+  a controller boundary test, not a page implementation.

@@ -240,6 +240,29 @@ The skeleton still does not call real `DataServiceClient`, does not access
 SQLite, does not call AccountingEngine, and is not wired to QML. It is a
 production boundary object only, not service integration.
 
+## TASK-102 Fake/Client Boundary Tests
+
+TASK-102 adds fake/client boundary integration tests under
+`tests/ShellAccountingFakeClientBoundary`.
+
+Current coverage:
+
+- fake guard payloads for `position.list`, `cash.summary`,
+  `portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`
+  map to `Unavailable`
+- fake loading transitions into `Unavailable`, `Loaded`, `Empty`, `Warning`,
+  `Error`, and `Stale`
+- fake issue payloads preserve code, level, message, blocking flag, and
+  sourceId
+- fake privacy payloads preserve raw amount text while selecting masked display
+  text in privacy mode
+- fake no-trade payloads keep TradeDraft generation, trade suggestion,
+  strategy execution, and broker order disabled
+
+These tests only exercise fake payload -> controller state mapping. They do not
+start real DataServiceClient integration, do not wire QML, do not access
+SQLite, do not call AccountingEngine, and do not write database tables.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

@@ -136,3 +136,21 @@ TASK-116 completes a presenter-level checkpoint for the concrete port guard
 wrapper path. The presenter can consume `position.list` through the controller
 and adapter boundaries, but QML integration and real accounting action
 implementation still require separate authorization.
+
+## TASK-117 Presenter All Guard Refresh Checkpoint
+
+- [x] Presenter refresh methods exist for all five read-only accounting guard
+  actions.
+- [x] `refreshAllReadOnly` invokes `position.list`, `cash.summary`,
+  `portfolio.pnl.summary`, `base_position.summary`, and
+  `sniper_pool.summary` in fixed order.
+- [x] Current guard payloads map to `Unavailable`.
+- [x] All five `*_NOT_AVAILABLE` issues remain visible in the all-refresh
+  aggregate result.
+- [x] Presenter still does not directly call DataServiceClient, adapters, or
+  concrete ports.
+- [x] No QML / SQLite / AccountingEngine / write / TradeDraft / trade
+  suggestion behavior is enabled.
+
+QML integration and real accounting action implementation remain separate
+No-Go items until explicitly authorized.

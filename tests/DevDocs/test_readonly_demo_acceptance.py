@@ -4252,6 +4252,60 @@ def main() -> int:
     require("ShellAccountingPresenter" not in qml_sources, "QML has not added presenter binding after TASK-116")
 
     require(
+        "presenter all guard actions refresh" in readme
+        or "ShellAccountingPresenter all guard actions refresh" in readme,
+        "README mentions presenter all guard actions refresh",
+    )
+    for method_name in [
+        "refreshPositionList",
+        "refreshCashSummary",
+        "refreshPortfolioPnlSummary",
+        "refreshBasePositionSummary",
+        "refreshSniperPoolSummary",
+        "refreshAllReadOnly",
+    ]:
+        require(method_name in shell_accounting_presenter_header, f"Presenter exposes {method_name}")
+    for test_name in [
+        "shell_accounting_presenter_all_guard_actions_position_list",
+        "shell_accounting_presenter_all_guard_actions_cash_summary",
+        "shell_accounting_presenter_all_guard_actions_portfolio_pnl",
+        "shell_accounting_presenter_all_guard_actions_base_position",
+        "shell_accounting_presenter_all_guard_actions_sniper_pool",
+        "shell_accounting_presenter_all_guard_actions_refresh_all",
+        "shell_accounting_presenter_all_guard_actions_no_write_no_trade",
+        "shell_accounting_presenter_all_guard_actions_no_qml_or_forbidden_dependency",
+    ]:
+        require(test_name in shell_accounting_presenter_cmake, f"Presenter CMake registers {test_name}")
+    for doc_text, doc_name in [
+        (shell_accounting_presenter_contract, "docs/57"),
+        (shell_accounting_qml_binding_readiness, "docs/58"),
+        (shellservices_accounting_controller_contract, "docs/49"),
+        (shell_accounting_viewmodel_state_contract, "docs/50"),
+        (shell_accounting_dataservice_adapter_boundary, "docs/53"),
+        (shell_accounting_dataservice_adapter_test_plan, "docs/54"),
+        (shell_accounting_dataservice_adapter_live_call_gate, "docs/55"),
+        (shell_accounting_dataservice_adapter_live_call_checklist, "docs/56"),
+        (dataservice_readonly_accounting_contracts, "docs/37"),
+        (dataservice_accounting_no_write_plan, "docs/38"),
+        (codex_prompt_template, "docs/12"),
+    ]:
+        require("TASK-117" in doc_text, f"{doc_name} mentions TASK-117")
+    require("TASK-117" in ui_design, "docs/07 mentions TASK-117")
+    require(
+        "DataServiceClient/DataServiceClient.h" not in presenter_sources,
+        "Presenter still does not include DataServiceClient header after TASK-117",
+    )
+    require(
+        "ShellAccountingDataServiceClientPortAdapter" not in presenter_sources,
+        "Presenter still avoids concrete port adapter after TASK-117",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter" not in presenter_sources,
+        "Presenter still avoids data service adapter after TASK-117",
+    )
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added presenter binding after TASK-117")
+
+    require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,
         "v0.4 release notes include suggested tag",
     )

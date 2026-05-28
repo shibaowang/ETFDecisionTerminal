@@ -175,6 +175,13 @@
   -> DataServiceClient guard wrapper` for `position.list`. Guard payloads stay
   Unavailable with visible issues and no write / no trade behavior. QML remains
   unwired.
+- ShellAccountingPresenter all guard refresh: presenter-level tests now cover
+  `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+  `base_position.summary`, and `sniper_pool.summary` through the controller /
+  adapter / concrete port guard-wrapper path. `refreshAllReadOnly` uses that
+  fixed order and aggregates the visible `*_NOT_AVAILABLE` issues. QML remains
+  unwired and no real accounting action, SQLite, AccountingEngine, write,
+  TradeDraft, or trade suggestion path is enabled.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -361,3 +361,20 @@ presenter path still maps to `Unavailable`. The issue list keeps
 `POSITION_LIST_NOT_AVAILABLE` visible, `readOnly=true` and `writeEnabled=false`
 remain intact, the position list model does not fabricate rows, and Empty is
 still distinct from Unavailable.
+
+## TASK-117 Presenter All Guard State
+
+TASK-117 verifies the same presenter state mapping for all five read-only
+guard actions:
+
+- `POSITION_LIST_NOT_AVAILABLE -> Unavailable`
+- `CASH_SUMMARY_NOT_AVAILABLE -> Unavailable`
+- `PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE -> Unavailable`
+- `BASE_POSITION_SUMMARY_NOT_AVAILABLE -> Unavailable`
+- `SNIPER_POOL_SUMMARY_NOT_AVAILABLE -> Unavailable`
+
+`refreshAllReadOnly` aggregates the five visible guard issues while current
+guard actions remain unimplemented. The aggregate status remains
+`Unavailable`, `readOnly=true` and `writeEnabled=false` are preserved, Empty is
+not used as a substitute for Unavailable, and no TradeDraft, trade suggestion,
+strategy, broker, QML, SQLite, or AccountingEngine path is enabled.

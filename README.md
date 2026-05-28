@@ -18,6 +18,33 @@ no QML type is registered, the presenter does not call DataServiceClient, does
 not access SQLite, does not call AccountingEngine, and writes no database
 tables.
 
+## TASK-117 ShellAccountingPresenter all guard actions refresh
+
+ShellAccountingPresenter now exposes read-only refresh methods for all five
+accounting guard actions:
+
+- `refreshPositionList`
+- `refreshCashSummary`
+- `refreshPortfolioPnlSummary`
+- `refreshBasePositionSummary`
+- `refreshSniperPoolSummary`
+- `refreshAllReadOnly`
+
+Each method routes only through `ShellAccountingReadOnlyController`, then the
+adapter / concrete port chain, before reaching the DataServiceClient read-only
+guard wrappers. `refreshAllReadOnly` calls the five guard actions in fixed
+order: `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`, and aggregates the visible
+guard issues.
+
+All five guard payloads still map to `Unavailable`, keep their
+`*_NOT_AVAILABLE` issues visible, preserve `readOnly=true` and
+`writeEnabled=false`, and keep Empty distinct from Unavailable. QML remains
+unwired, no QML type is registered, no real accounting action is implemented,
+SQLite facts queries and AccountingEngine are not accessed, and no database
+tables, TradeDraft, trade suggestion, strategy, or broker order path is
+enabled.
+
 ## TASK-116 ShellAccountingPresenter concrete port integration
 
 ShellAccountingPresenter concrete-port integration hardening is now covered by

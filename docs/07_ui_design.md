@@ -336,3 +336,16 @@ v0.1 草案。
 - Future UI must avoid TradeDraft, trade suggestion, strategy execution, and
   broker order controls unless a separate task explicitly authorizes a new
   boundary.
+
+## TASK-117 Presenter All Guard Refresh
+
+- The presenter now has read-only refresh wiring for all five accounting guard
+  actions, but QML remains unwired.
+- Future UI must still bind only ShellServices presenter / ViewModel / Model
+  objects and must not call DataServiceClient, SQLite, AccountingEngine, or
+  adapter classes directly.
+- The five current guard states are `Unavailable`; UI must not present them as
+  normal Empty data.
+- Read-only accounting UI still must not display buy / sell buttons,
+  TradeDraft actions, trade suggestion actions, strategy execution controls,
+  or broker order controls.

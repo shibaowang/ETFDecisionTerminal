@@ -99,3 +99,51 @@ add_shell_accounting_presenter_concrete_port_test(
     test_shell_accounting_presenter_concrete_port_no_qml_or_forbidden_dependency.cpp
     shell_accounting_presenter_concrete_port_no_qml_or_forbidden_dependency
 )
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsPositionListTests
+    test_shell_accounting_presenter_all_guard_actions_position_list.cpp
+    shell_accounting_presenter_all_guard_actions_position_list
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsCashSummaryTests
+    test_shell_accounting_presenter_all_guard_actions_cash_summary.cpp
+    shell_accounting_presenter_all_guard_actions_cash_summary
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsPortfolioPnlTests
+    test_shell_accounting_presenter_all_guard_actions_portfolio_pnl.cpp
+    shell_accounting_presenter_all_guard_actions_portfolio_pnl
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsBasePositionTests
+    test_shell_accounting_presenter_all_guard_actions_base_position.cpp
+    shell_accounting_presenter_all_guard_actions_base_position
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsSniperPoolTests
+    test_shell_accounting_presenter_all_guard_actions_sniper_pool.cpp
+    shell_accounting_presenter_all_guard_actions_sniper_pool
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsRefreshAllTests
+    test_shell_accounting_presenter_all_guard_actions_refresh_all.cpp
+    shell_accounting_presenter_all_guard_actions_refresh_all
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsNoWriteNoTradeTests
+    test_shell_accounting_presenter_all_guard_actions_no_write_no_trade.cpp
+    shell_accounting_presenter_all_guard_actions_no_write_no_trade
+)
+
+add_shell_accounting_presenter_concrete_port_test(
+    ShellAccountingPresenterAllGuardActionsNoQmlOrForbiddenDependencyTests
+    test_shell_accounting_presenter_all_guard_actions_no_qml_or_forbidden_dependency.cpp
+    shell_accounting_presenter_all_guard_actions_no_qml_or_forbidden_dependency
+)

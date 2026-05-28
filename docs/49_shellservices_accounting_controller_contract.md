@@ -440,6 +440,28 @@ from `ShellAccountingPresenter`. The presenter path remains:
 The controller still does not directly depend on DataServiceClient, and the
 presenter still does not bypass the controller.
 
+## TASK-117 Presenter All Guard Refresh
+
+TASK-117 extends presenter refresh wiring to all five controller read-only
+guard actions:
+
+- `refreshPositionList`
+- `refreshCashSummary`
+- `refreshPortfolioPnlSummary`
+- `refreshBasePositionSummary`
+- `refreshSniperPoolSummary`
+
+`refreshAllReadOnly` invokes the five controller refreshes in the fixed guard
+order: `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. The controller remains the
+only presenter refresh boundary; Presenter still does not directly depend on
+DataServiceClient, adapters, concrete ports, SQLite, DataAccess,
+AccountingEngine, or QML.
+
+All current guard payloads map to `Unavailable`, keep their visible
+`*_NOT_AVAILABLE` issues, preserve `readOnly=true` and `writeEnabled=false`,
+and keep Empty distinct from Unavailable.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

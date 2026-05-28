@@ -9,10 +9,33 @@
 
 namespace etfdt::shell_services::tests {
 
-PresenterConcretePortGuardResult refreshPresenterPositionListThroughConcretePort(
+namespace {
+
+void refreshPresenterAction(ShellAccountingPresenter& presenter, const std::string& actionName)
+{
+    if (actionName == "position.list") {
+        presenter.refreshPositionList();
+    }
+    else if (actionName == "cash.summary") {
+        presenter.refreshCashSummary();
+    }
+    else if (actionName == "portfolio.pnl.summary") {
+        presenter.refreshPortfolioPnlSummary();
+    }
+    else if (actionName == "base_position.summary") {
+        presenter.refreshBasePositionSummary();
+    }
+    else if (actionName == "sniper_pool.summary") {
+        presenter.refreshSniperPoolSummary();
+    }
+}
+
+PresenterConcretePortGuardResult refreshPresenterThroughConcretePort(
     FakeAccountingWrapperServer& server,
+    const std::string& actionName,
     bool useRefreshAllReadOnly,
-    bool privacyMode)
+    bool privacyMode,
+    std::size_t expectedActionCount)
 {
     PresenterConcretePortGuardResult result;
     auto client = makeConnectedClient(server);
@@ -34,11 +57,12 @@ PresenterConcretePortGuardResult refreshPresenterPositionListThroughConcretePort
         presenter.refreshAllReadOnly();
     }
     else {
-        presenter.refreshPositionList();
+        refreshPresenterAction(presenter, actionName);
     }
 
-    result.refreshed = server.waitForActionCount(1);
+    result.refreshed = server.waitForActionCount(expectedActionCount);
     result.observedAction = server.actions().empty() ? std::string{} : server.actions().front();
+    result.observedActions = server.actions();
     result.state = presenter.statusObject().state();
     result.issues = presenter.issueListModel().issues();
     result.presenterReadOnly = presenter.readOnly();
@@ -50,6 +74,46 @@ PresenterConcretePortGuardResult refreshPresenterPositionListThroughConcretePort
     result.presenterHasController = presenter.hasController();
     result.positionRowCount = presenter.positionListModel().rowCount();
     return result;
+}
+
+}  // namespace
+
+PresenterConcretePortGuardResult refreshPresenterPositionListThroughConcretePort(
+    FakeAccountingWrapperServer& server,
+    bool useRefreshAllReadOnly,
+    bool privacyMode)
+{
+    return refreshPresenterThroughConcretePort(
+        server,
+        "position.list",
+        useRefreshAllReadOnly,
+        privacyMode,
+        useRefreshAllReadOnly ? 5U : 1U);
+}
+
+PresenterConcretePortGuardResult refreshPresenterActionThroughConcretePort(
+    FakeAccountingWrapperServer& server,
+    const std::string& actionName,
+    bool privacyMode)
+{
+    return refreshPresenterThroughConcretePort(
+        server,
+        actionName,
+        false,
+        privacyMode,
+        1U);
+}
+
+PresenterConcretePortGuardResult refreshPresenterAllReadOnlyThroughConcretePort(
+    FakeAccountingWrapperServer& server,
+    bool privacyMode)
+{
+    return refreshPresenterThroughConcretePort(
+        server,
+        "accounting.refresh_all",
+        true,
+        privacyMode,
+        5U);
 }
 
 bool presenterIssuesContainCode(

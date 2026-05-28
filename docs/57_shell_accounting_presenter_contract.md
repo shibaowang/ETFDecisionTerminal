@@ -217,3 +217,29 @@ The position-list guard payload must map to `Unavailable`, keep
 `writeEnabled=false`, keep the position model empty, and avoid TradeDraft,
 trade suggestion, strategy execution, and broker submission paths. QML remains
 unwired.
+
+## TASK-117 All Guard Refresh Wiring
+
+TASK-117 extends the production presenter skeleton so every read-only
+accounting guard action has a presenter refresh boundary:
+
+- `refreshPositionList`
+- `refreshCashSummary`
+- `refreshPortfolioPnlSummary`
+- `refreshBasePositionSummary`
+- `refreshSniperPoolSummary`
+- `refreshAllReadOnly`
+
+The presenter still only talks to `ShellAccountingReadOnlyController`; it does
+not include or call DataServiceClient, ShellAccountingDataServiceAdapter,
+ShellAccountingDataServiceClientPortAdapter, SQLite, DataAccess, or
+AccountingEngine. The concrete port guard wrappers remain reachable only
+through the existing controller / adapter / port chain.
+
+`refreshAllReadOnly` has a fixed order: `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
+It aggregates the guard issues so all five `*_NOT_AVAILABLE` codes remain
+visible. The aggregate state remains `Unavailable` for current guard payloads,
+Empty is not treated as Unavailable, and no TradeDraft, trade suggestion,
+strategy execution, broker order, QML binding, or database write path is
+enabled.

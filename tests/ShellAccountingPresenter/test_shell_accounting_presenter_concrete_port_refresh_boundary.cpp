@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string_view>
+#include <vector>
 
 namespace {
 
@@ -42,7 +43,15 @@ int main(int argc, char* argv[])
             true);
 
     expectTrue(result.refreshed, "refreshAllReadOnly reaches concrete port");
-    expectTrue(result.observedAction == "position.list", "refreshAllReadOnly currently delegates to position.list");
+    expectTrue(
+        result.observedActions == std::vector<std::string>{
+            "position.list",
+            "cash.summary",
+            "portfolio.pnl.summary",
+            "base_position.summary",
+            "sniper_pool.summary",
+        },
+        "refreshAllReadOnly delegates to all read-only guard actions in fixed order");
     expectTrue(
         result.state == etfdt::shell_services::ShellAccountingViewState::Unavailable,
         "refreshAllReadOnly maps guard payload to Unavailable");

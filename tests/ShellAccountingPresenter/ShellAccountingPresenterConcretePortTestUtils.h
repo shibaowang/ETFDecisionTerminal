@@ -14,6 +14,7 @@ struct PresenterConcretePortGuardResult final {
     bool connected = false;
     bool refreshed = false;
     std::string observedAction;
+    std::vector<std::string> observedActions;
     ShellAccountingViewState state = ShellAccountingViewState::Idle;
     std::vector<ShellAccountingIssue> issues;
     bool presenterReadOnly = false;
@@ -29,6 +30,15 @@ struct PresenterConcretePortGuardResult final {
 [[nodiscard]] PresenterConcretePortGuardResult refreshPresenterPositionListThroughConcretePort(
     FakeAccountingWrapperServer& server,
     bool useRefreshAllReadOnly = false,
+    bool privacyMode = false);
+
+[[nodiscard]] PresenterConcretePortGuardResult refreshPresenterActionThroughConcretePort(
+    FakeAccountingWrapperServer& server,
+    const std::string& actionName,
+    bool privacyMode = false);
+
+[[nodiscard]] PresenterConcretePortGuardResult refreshPresenterAllReadOnlyThroughConcretePort(
+    FakeAccountingWrapperServer& server,
     bool privacyMode = false);
 
 [[nodiscard]] bool presenterIssuesContainCode(

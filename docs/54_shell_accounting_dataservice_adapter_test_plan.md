@@ -246,3 +246,21 @@ Unavailable with visible guard issues and no write / no trade behavior.
 
 Future presenter action expansion for cash, portfolio PnL, base position, and
 sniper pool requires separate task authorization.
+
+## TASK-117 Presenter All Guard Refresh Tests
+
+TASK-117 adds presenter-level tests for all five read-only guard actions:
+
+- `shell_accounting_presenter_all_guard_actions_position_list`
+- `shell_accounting_presenter_all_guard_actions_cash_summary`
+- `shell_accounting_presenter_all_guard_actions_portfolio_pnl`
+- `shell_accounting_presenter_all_guard_actions_base_position`
+- `shell_accounting_presenter_all_guard_actions_sniper_pool`
+- `shell_accounting_presenter_all_guard_actions_refresh_all`
+- `shell_accounting_presenter_all_guard_actions_no_write_no_trade`
+- `shell_accounting_presenter_all_guard_actions_no_qml_or_forbidden_dependency`
+
+These tests verify that presenter refresh methods route through the controller
+and concrete port guard-wrapper path, map current guard payloads to
+`Unavailable`, keep all five `*_NOT_AVAILABLE` issues visible for
+`refreshAllReadOnly`, and preserve no-write / no-trade / no-QML boundaries.

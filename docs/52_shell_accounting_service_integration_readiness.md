@@ -101,6 +101,21 @@ Updated readiness:
 - Adapter implementation must preserve protocol error vs domain issue mapping,
   no-write boundaries, no TradeDraft, and no trade suggestion behavior.
 
+## TASK-107 Spy / Wrapper Readiness Gate
+
+TASK-107 adds spy/wrapper scaffolding as a Go / No-Go prerequisite for the real
+adapter.
+
+Updated readiness:
+
+- read-only wrapper allowlist tests exist
+- forbidden action denylist tests exist
+- method mapping descriptor tests exist
+- request / response / error mapping scaffolding exists
+- no-write / no-trade scaffolding exists
+- real DataServiceClient integration has not started
+- QML integration has not started
+
 ## TASK-105 Fake Adapter Injection Status
 
 TASK-105 completes fake adapter injection behavior for controller refresh

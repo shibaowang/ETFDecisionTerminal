@@ -79,6 +79,21 @@ def main() -> int:
     shell_accounting_dataservice_adapter_test_plan_path = (
         root / "docs" / "54_shell_accounting_dataservice_adapter_test_plan.md"
     )
+    shell_accounting_dataservice_adapter_scaffolding_cmake_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "CMakeLists.txt"
+    )
+    spy_accounting_dataservice_client_header_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "SpyAccountingDataServiceClient.h"
+    )
+    spy_accounting_dataservice_client_source_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "SpyAccountingDataServiceClient.cpp"
+    )
+    shell_accounting_dataservice_expected_call_header_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "ShellAccountingDataServiceAdapterExpectedCall.h"
+    )
+    shell_accounting_dataservice_expected_call_source_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "ShellAccountingDataServiceAdapterExpectedCall.cpp"
+    )
     shell_accounting_service_adapter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingServiceAdapter.h"
     )
@@ -476,6 +491,20 @@ def main() -> int:
         shell_accounting_dataservice_adapter_test_plan_path.exists(),
         "Shell accounting DataService adapter test plan doc exists",
     )
+    require(
+        shell_accounting_dataservice_adapter_scaffolding_cmake_path.exists(),
+        "Shell accounting DataService adapter scaffolding CMake exists",
+    )
+    require(spy_accounting_dataservice_client_header_path.exists(), "spy DataService client wrapper header exists")
+    require(spy_accounting_dataservice_client_source_path.exists(), "spy DataService client wrapper source exists")
+    require(
+        shell_accounting_dataservice_expected_call_header_path.exists(),
+        "DataService adapter expected call header exists",
+    )
+    require(
+        shell_accounting_dataservice_expected_call_source_path.exists(),
+        "DataService adapter expected call source exists",
+    )
     require(shell_accounting_service_adapter_header_path.exists(), "ShellAccountingServiceAdapter header exists")
     require(shell_accounting_service_types_header_path.exists(), "ShellAccountingServiceTypes header exists")
     require(shell_accounting_service_types_source_path.exists(), "ShellAccountingServiceTypes source exists")
@@ -849,6 +878,17 @@ def main() -> int:
         encoding="utf-8"
     )
     shell_accounting_dataservice_adapter_test_plan = shell_accounting_dataservice_adapter_test_plan_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_adapter_scaffolding_cmake = (
+        shell_accounting_dataservice_adapter_scaffolding_cmake_path.read_text(encoding="utf-8")
+    )
+    spy_accounting_dataservice_client_header = spy_accounting_dataservice_client_header_path.read_text(encoding="utf-8")
+    spy_accounting_dataservice_client_source = spy_accounting_dataservice_client_source_path.read_text(encoding="utf-8")
+    shell_accounting_dataservice_expected_call_header = shell_accounting_dataservice_expected_call_header_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_expected_call_source = shell_accounting_dataservice_expected_call_source_path.read_text(
         encoding="utf-8"
     )
     shell_accounting_service_adapter_header = shell_accounting_service_adapter_header_path.read_text(encoding="utf-8")
@@ -3355,6 +3395,75 @@ def main() -> int:
     require(
         "docs/54_shell_accounting_dataservice_adapter_test_plan.md" in codex_prompt_template,
         "prompt template links docs/54",
+    )
+    for test_name in [
+        "shell_accounting_dataservice_adapter_spy_allowlist",
+        "shell_accounting_dataservice_adapter_spy_method_mapping",
+        "shell_accounting_dataservice_adapter_spy_request_mapping",
+        "shell_accounting_dataservice_adapter_spy_response_mapping",
+        "shell_accounting_dataservice_adapter_spy_error_mapping",
+        "shell_accounting_dataservice_adapter_spy_no_write_no_trade",
+    ]:
+        require(
+            test_name in shell_accounting_dataservice_adapter_scaffolding_cmake,
+            f"DataService adapter spy scaffolding registers {test_name}",
+        )
+    require(
+        "shell_accounting_dataservice_adapter_spy_no_real_dependency"
+        in shell_accounting_dataservice_adapter_scaffolding_cmake,
+        "DataService adapter spy scaffolding registers no real dependency test",
+    )
+    require(
+        "add_subdirectory(ShellAccountingDataServiceAdapterScaffolding)" in tests_cmake,
+        "tests CMake adds Shell accounting DataService adapter scaffolding",
+    )
+    require(
+        "TASK-107" in shell_accounting_dataservice_adapter_boundary
+        or "spy/wrapper scaffolding" in shell_accounting_dataservice_adapter_boundary,
+        "docs/53 mentions TASK-107 spy/wrapper scaffolding",
+    )
+    require(
+        "spy wrapper" in shell_accounting_dataservice_adapter_test_plan,
+        "docs/54 mentions spy wrapper",
+    )
+    require("TASK-107" in codex_prompt_template, "prompt template mentions TASK-107")
+    require(
+        "Real adapter may only call read-only accounting wrappers" in codex_prompt_template,
+        "prompt template restricts real adapter to read-only accounting wrappers",
+    )
+    require(
+        "SpyAccountingDataServiceClient" in spy_accounting_dataservice_client_header,
+        "spy wrapper helper exists in tests",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter" not in shellservices_cmake,
+        "ShellServices CMake does not add ShellAccountingDataServiceAdapter production target",
+    )
+    require(
+        not (root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h").exists(),
+        "ShellAccountingDataServiceAdapter production header was not added",
+    )
+    require(
+        not (root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceAdapter.cpp").exists(),
+        "ShellAccountingDataServiceAdapter production source was not added",
+    )
+    spy_scaffolding_sources = "\n".join(
+        [
+            spy_accounting_dataservice_client_header,
+            spy_accounting_dataservice_client_source,
+            shell_accounting_dataservice_expected_call_header,
+            shell_accounting_dataservice_expected_call_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick", "QML"]:
+        require(
+            f'#include "{forbidden}' not in spy_scaffolding_sources
+            and f"#include <{forbidden}" not in spy_scaffolding_sources,
+            f"spy scaffolding does not include {forbidden}",
+        )
+    require(
+        "ShellAccountingDataServiceAdapter" not in qml_sources,
+        "QML does not reference ShellAccountingDataServiceAdapter",
     )
     controller_adapter_sources = "\n".join([shell_accounting_controller_header, shell_accounting_controller_source])
     for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite"]:

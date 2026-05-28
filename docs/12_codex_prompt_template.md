@@ -582,3 +582,9 @@ v0.1 草案。
 - The adapter may only call read-only accounting wrappers.
 - No write action invocation is allowed.
 - QML integration requires a separate task.
+- ShellAccountingDataServiceAdapter real implementation must not bypass
+  TASK-107 spy/wrapper tests.
+- Real adapter may only call read-only accounting wrappers.
+- No write action invocation is allowed.
+- Fake/spy wrapper must remain test-only.
+- QML integration requires a separate task.

@@ -322,6 +322,13 @@ The controller may consume DataServiceClient only indirectly through
 controller must not directly hard-depend on DataServiceClient, must not access
 SQLite, and must not call AccountingEngine.
 
+## TASK-107 Adapter Spy Scaffolding Boundary
+
+TASK-107 adds test-only spy/wrapper scaffolding for the future real adapter.
+The controller contract remains unchanged: it may consume service results only
+through `ShellAccountingServiceAdapter`, never through a direct DataServiceClient
+hard dependency, and QML remains disconnected.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

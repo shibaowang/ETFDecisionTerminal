@@ -1874,6 +1874,26 @@ calls are still not wired, QML is still not wired, SQLite is not accessed,
 AccountingEngine is not called, and no writes, TradeDraft, trade suggestions,
 strategies, or broker orders are enabled.
 
+## TASK-107 ShellAccountingDataServiceAdapter spy/wrapper scaffolding
+
+ShellAccountingDataServiceAdapter spy/wrapper test scaffolding has been added
+under `tests/ShellAccountingDataServiceAdapterScaffolding`.
+
+New tests:
+
+- `shell_accounting_dataservice_adapter_spy_allowlist`
+- `shell_accounting_dataservice_adapter_spy_method_mapping`
+- `shell_accounting_dataservice_adapter_spy_request_mapping`
+- `shell_accounting_dataservice_adapter_spy_response_mapping`
+- `shell_accounting_dataservice_adapter_spy_error_mapping`
+- `shell_accounting_dataservice_adapter_spy_no_write_no_trade`
+- `shell_accounting_dataservice_adapter_spy_no_real_dependency`
+
+The scaffolding is test-only. The real adapter is still unimplemented, real
+DataServiceClient calls are still not wired, QML is still not wired, and no
+writes, TradeDraft, trade suggestions, strategies, or broker orders are
+enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

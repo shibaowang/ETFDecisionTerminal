@@ -196,3 +196,29 @@ Future implementation must include:
 - The adapter must not execute strategy.
 - QML must not use the adapter directly.
 - The adapter must not bypass DataServiceClient wrapper methods.
+
+## TASK-107 Spy / Wrapper Scaffolding
+
+TASK-107 adds test-only spy/wrapper scaffolding under
+`tests/ShellAccountingDataServiceAdapterScaffolding`.
+
+The scaffolding locks:
+
+- read-only action allowlist
+- method mapping descriptors
+- request payload mapping contract
+- response mapping contract
+- protocol error / timeout / transport error / domain issue contract
+- no-write / no-trade / no-TradeDraft contract
+- no real dependency checks
+
+The read-only action allowlist is covered by tests and contains only:
+
+- `position.list`
+- `cash.summary`
+- `portfolio.pnl.summary`
+- `base_position.summary`
+- `sniper_pool.summary`
+
+Forbidden write, trade, draft, snapshot, strategy, and broker actions are
+covered by denylist tests. The real adapter is still not implemented.

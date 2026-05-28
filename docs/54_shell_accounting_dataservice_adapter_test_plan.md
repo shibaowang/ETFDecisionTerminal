@@ -112,3 +112,23 @@ It must not call:
 - [ ] No TradeDraft has been confirmed.
 - [ ] No trade suggestion has been confirmed.
 - [ ] User explicitly authorized real adapter implementation.
+
+## TASK-107 Spy / Wrapper Scaffolding Status
+
+TASK-107 adds spy wrapper and mapping scaffolding tests for the future real
+adapter.
+
+Added scaffolding:
+
+- spy DataServiceClient wrapper that is not the real DataServiceClient
+- read-only accounting action allowlist
+- forbidden action denylist
+- future method mapping descriptors
+- request mapping descriptor / payload builder
+- fake ProtocolResponse -> ShellAccountingServiceResult mapper
+- protocol / timeout / transport / domain issue mapping checks
+- no-write / no-trade / no-TradeDraft checks
+- no-real-dependency checks
+
+The real `ShellAccountingDataServiceAdapter` implementation must pass these
+tests or their real-adapter equivalents before it can merge.

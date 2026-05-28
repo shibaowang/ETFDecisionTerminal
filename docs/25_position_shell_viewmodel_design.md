@@ -386,3 +386,14 @@ position, stale snapshot, missing market price, and unsupported currency.
 - 不下单.
 - 不接券商接口.
 - Do not implement automatic trading.
+
+## TASK-099 ShellServices Accounting Controller Alignment
+
+This design remains conceptual until a ShellServices accounting controller
+implementation task is authorized. Future implementation must align with
+`docs/49_shellservices_accounting_controller_contract.md` and
+`docs/50_shell_accounting_viewmodel_state_contract.md`.
+
+QML must bind ShellServices ViewModel / Model objects only. QML must not call
+DataServiceClient, access SQLite, calculate accounting, generate TradeDraft,
+or generate trading suggestions.

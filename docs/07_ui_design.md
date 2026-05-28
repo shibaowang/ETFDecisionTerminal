@@ -239,3 +239,15 @@ v0.1 草案。
 - QML must not directly access SQLite or call `DataServiceClient`.
 - The current task does not implement a position page, position replay, cash replay, PnL calculation, snapshot generation, or TradeLog writes.
 - Position and accounting UI work must follow [Position Accounting Boundary](20_position_accounting_boundary.md) and the [Position Read-Only Data Contract Draft](21_position_readonly_data_contract_draft.md).
+
+## TASK-099 ShellServices Accounting Controller Contract
+
+- Accounting UI must bind ShellServices ViewModel / Model objects documented in
+  [ShellServices Accounting Controller Contract](49_shellservices_accounting_controller_contract.md)
+  and [Shell Accounting ViewModel State Contract](50_shell_accounting_viewmodel_state_contract.md).
+- Unavailable / warning / error states must remain visible; QML must not hide
+  guard or domain issues.
+- Read-only accounting pages must not expose trading buttons, TradeDraft
+  generation, strategy execution, or write actions.
+- Privacy mode masks display text only; it must not mutate source data or make
+  QML calculate accounting values.

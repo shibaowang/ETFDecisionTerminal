@@ -662,3 +662,13 @@ in `docs/47_position_list_readiness_hardening.md`.
 The `position.list` guard remains `implemented=false`. Real implementation
 still requires separate authorization, expanded no-write tests, DataAccess
 facts query orchestration, AccountingEngine DTO mapping, and guard fallback.
+
+## TASK-099 ShellServices Consumer Boundary
+
+ShellServices consumer boundaries are documented in
+`docs/49_shellservices_accounting_controller_contract.md` and
+`docs/50_shell_accounting_viewmodel_state_contract.md`.
+
+DataService guard payloads must not be consumed directly by QML. Future QML
+must bind ShellServices read-only ViewModel / Model objects, and ShellServices
+must preserve unavailable, warning, error, implemented, and readOnly states.

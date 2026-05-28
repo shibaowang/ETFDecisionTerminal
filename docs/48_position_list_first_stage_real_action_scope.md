@@ -111,3 +111,10 @@ The scope contract tests confirm that QML integration, snapshot writes,
 TradeLog writes, TradeDraft, trading suggestions, strategy execution, market
 data service, FX service, multi-currency valuation, basePosition calculation,
 and sniperPool calculation remain excluded from the first implementation PR.
+
+## TASK-099 ShellServices Boundary
+
+The first-stage real action is still not QML-facing unless a separate
+ShellServices controller task is authorized. Future QML integration must follow
+`docs/49_shellservices_accounting_controller_contract.md` and
+`docs/50_shell_accounting_viewmodel_state_contract.md`.

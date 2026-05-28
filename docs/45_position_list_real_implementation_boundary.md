@@ -282,3 +282,12 @@ The real `position.list` action is still not implemented. The scaffolding only
 describes the future DataService request -> `ReplayRequestDto` ->
 AccountingEngine -> `PositionListResponse` path and locks no-write, guard
 fallback, excluded scope, and failure status expectations.
+
+## TASK-099 ShellServices Controller Boundary
+
+Future `position.list` output must flow through a ShellServices controller
+before QML can bind it. The controller boundary is documented in
+`docs/49_shellservices_accounting_controller_contract.md`.
+
+There must be no direct QML -> DataServiceClient path. QML must not calculate
+positions, valuation, or accounting issues from raw DataService payloads.

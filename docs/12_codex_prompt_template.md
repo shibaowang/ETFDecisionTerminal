@@ -502,3 +502,10 @@ v0.1 草案。
   mapping contracts to a real action.
 - Changing `position.list` to `implemented=true` requires separate explicit
   authorization.
+- Real `position.list` tasks must not bypass the TASK-096 no-write skeleton.
+- The no-write skeleton does not equal real action implementation.
+- Test-only fake callbacks used by the no-write skeleton must not move into
+  production libs.
+- Real `position.list` implementation must keep the skeleton no-write matrix
+  passing and add real action no-write tests before changing
+  `implemented=false`.

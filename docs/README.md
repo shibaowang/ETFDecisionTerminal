@@ -78,6 +78,10 @@
 - `position.list` mapping contract tests: test-only request, trade fact, and
   response mapping coverage; real `position.list` remains unimplemented and
   guard behavior remains unchanged.
+- `position.list` real action no-write skeleton: test-only future path matrix
+  for valid, invalid, replay unavailable, facts unavailable, mapping failure,
+  missing market, multi-currency, FX, and SQLite failure paths; real
+  `position.list` remains unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

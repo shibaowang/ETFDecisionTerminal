@@ -76,3 +76,18 @@ action.
 The guard -> real action transition still requires separate user
 authorization, expanded no-write tests, and explicit DataAccess /
 AccountingEngine integration scope.
+
+## TASK-096 No-write Skeleton Status
+
+The `position.list` real action no-write skeleton is now a Go / No-Go
+precondition. It covers the future valid request, invalid request, replay
+unavailable, facts unavailable, mapping failure, missing market price,
+multi-currency unsupported, missing FX rate, SQLite read-only open failure, and
+SQLite query failure no-write paths.
+
+The no-write skeleton does not equal a real action. It uses test-only fake
+callbacks, leaves the guard `implemented=false`, and does not authorize
+DataAccess, AccountingEngine, SQLite facts query, QML, snapshot, TradeDraft, or
+TradeLog integration. Future real implementation must keep this skeleton
+passing and then extend it against the real action before any
+`implemented=true` transition.

@@ -1700,6 +1700,22 @@ payload mapping. Real `position.list` remains unimplemented, the guard behavior
 is unchanged, the tests do not call DataService actions, do not access SQLite,
 and do not write database tables.
 
+## TASK-096 position.list real action no-write skeleton
+
+Test-only no-write skeleton coverage has been added for future real
+`position.list` action paths:
+
+- `position_list_real_action_no_write_skeleton`
+- `position_list_real_action_failure_no_write_skeleton`
+
+The skeleton covers valid request guard-path, invalid request, replay
+unavailable, facts query unavailable, mapping failure, missing market price,
+multi-currency unsupported, missing FX rate, SQLite read-only open failure, and
+SQLite query failure no-write paths. Real `position.list` remains
+unimplemented, the guard behavior is unchanged, DataAccess is not connected to
+DataService, AccountingEngine is not called, no real SQLite facts query is
+accessed, and no database tables are written.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

@@ -488,3 +488,14 @@ broker orders.
 - ShellServices 不生成 TradeDraft。
 - ShellServices 不生成交易建议。
 - ShellServices 不执行策略。
+## TASK-119 QML Static Gate CTest
+
+The ShellAccounting QML static gate CTest now protects the future controller /
+presenter UI boundary. QML remains unwired, but any later accounting QML task
+must pass the no direct DataServiceClient, no SQLite / DataAccess, no
+AccountingEngine, no write-token, no premature binding, and accounting-scoped
+no-trade scans.
+
+Controller integration still flows through ShellServices abstractions; QML must
+not bypass the presenter / model boundary or call controller internals directly
+to reach services.

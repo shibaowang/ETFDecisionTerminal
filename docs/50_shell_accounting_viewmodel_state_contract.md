@@ -391,3 +391,13 @@ Future QML must display Empty as successful no-data, Unavailable as
 unimplemented or unavailable data source, Warning / Error / Stale as explicit
 states, and privacy display only through ShellServices-provided display text.
 Issue visibility and no-trade behavior remain mandatory.
+## TASK-119 QML Static Gate CTest
+
+The QML static gate CTest enforces the ViewModel state boundary before QML is
+connected. Future accounting QML must preserve Empty vs Unavailable, visible
+warning / error / stale states, issue visibility, privacy display ownership in
+ShellServices, and no-trade UI behavior.
+
+The gate currently verifies that QML has no ShellAccounting binding yet and no
+direct DataServiceClient, SQLite / DataAccess, AccountingEngine, write action,
+TradeDraft, broker, or strategy tokens.

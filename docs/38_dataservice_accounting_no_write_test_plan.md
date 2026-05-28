@@ -494,3 +494,13 @@ strategy, SQLite, DataAccess, AccountingEngine, or DataServiceClient access.
 
 This task does not modify QML and does not add QML tests yet. Future QML
 binding tasks must add the static checks before enabling UI binding.
+## TASK-119 QML Static Gate CTest
+
+The no-write plan now includes QML static gate coverage for future accounting
+UI. The gate rejects QML write tokens such as `data.audit.append`,
+`writeEnabled: true`, SQL write statements, protected accounting table names,
+TradeDraft, broker order, and strategy execution in the appropriate scopes.
+
+Existing DataService guard no-write tests remain the backend authority. TASK-119
+adds only test-only QML static scanning and does not modify QML or service
+behavior.

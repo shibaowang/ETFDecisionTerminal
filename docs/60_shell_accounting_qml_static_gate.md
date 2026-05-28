@@ -79,3 +79,42 @@ Future static scans must:
 - [ ] no write action scan has been prepared.
 - [ ] privacy display plan has been prepared.
 - [ ] User explicitly authorized QML integration.
+
+## TASK-119 Automated CTest Gate
+
+TASK-119 implements this static gate as CTest coverage under
+`tests/ShellAccountingQmlStaticGate`.
+
+Automated CTests:
+
+- `shell_accounting_qml_static_gate_no_direct_service`
+- `shell_accounting_qml_static_gate_no_accounting_binding_yet`
+- `shell_accounting_qml_static_gate_no_write_tokens`
+- `shell_accounting_qml_static_gate_accounting_scope_no_trade`
+- `shell_accounting_qml_static_gate_docs_sync`
+
+The global hard deny scans all QML / QML JavaScript content for direct service,
+database, accounting-engine, adapter, concrete-port, write, SQL write, and
+protected table tokens. Existing explanatory text that says QML does not
+directly call DataServiceClient or access SQLite is allowed only as a negative
+read-only statement.
+
+The accounting-scoped no-trade gate is narrower. It scans files whose filename
+or content indicates future accounting binding, such as Accounting,
+PositionReadOnly, PositionList, CashSummary, PortfolioPnl, BasePosition,
+SniperPool, ShellAccounting, accountingPresenter, or ShellPositionListModel.
+Inside that scope it rejects buy / sell buttons, TradeDraft, brokerOrder,
+strategyExecute, write action, and Chinese trading-button phrases.
+
+This distinction prevents false positives from existing non-accounting
+placeholder pages such as `TradeDraftPlaceholderPage` and
+`TradeConfirmPlaceholderPage`. Those names are not treated as accounting QML
+scope by themselves, and the gate scans file content rather than path names for
+the global write-token checks.
+
+Future accounting QML files will be covered by the accounting-scoped denylist
+as soon as their filename or content identifies them as accounting UI.
+
+Empty is not Unavailable. Future QML binding tasks must keep this display rule,
+must pass TASK-119 static gates, and must still wait for User explicitly
+authorized QML integration before modifying QML.

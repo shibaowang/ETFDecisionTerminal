@@ -191,6 +191,10 @@
   defines future QML denylist checks for direct DataServiceClient, SQLite,
   DataAccess, AccountingEngine, write action, TradeDraft, strategy, and broker
   references.
+- ShellAccounting QML static gate CTest: `tests/ShellAccountingQmlStaticGate`
+  automates docs/60 with no direct service, no write token, no premature
+  accounting binding, accounting-scope no-trade, and docs sync tests. QML
+  remains unwired.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

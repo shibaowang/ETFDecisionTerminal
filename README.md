@@ -36,6 +36,29 @@ real accounting action is added, no SQLite or AccountingEngine access is
 enabled, no database table is written, and no TradeDraft or trade suggestion is
 generated.
 
+## TASK-119 ShellAccounting QML static gate CTest
+
+ShellAccounting QML static gate CTests are now added under
+`tests/ShellAccountingQmlStaticGate`.
+
+The gate scans `apps/ETFDecisionShell/qml` without modifying QML and verifies:
+
+- no direct DataServiceClient / DataServiceApi / SQLite / DataAccess /
+  AccountingEngine references.
+- no write tokens such as `data.audit.append`, `writeEnabled: true`, SQL write
+  statements, or snapshot / portfolio / trade table names.
+- no ShellAccounting QML binding yet.
+- no trading, TradeDraft, broker, strategy, or write-action tokens inside
+  accounting-scoped QML files.
+- docs/59, docs/60, docs/12, and README remain synchronized with the gate.
+
+The accounting-scoped no-trade scan is content and scope based so existing
+non-accounting placeholder pages such as `TradeDraftPlaceholderPage` and
+`TradeConfirmPlaceholderPage` are not false positives. QML remains unwired, no
+QML type is registered, no QML page is implemented, no DataServiceClient call is
+made from QML, no SQLite or AccountingEngine access is added, no database table
+is written, and no TradeDraft or trade suggestion is generated.
+
 ## TASK-117 ShellAccountingPresenter all guard actions refresh
 
 ShellAccountingPresenter now exposes read-only refresh methods for all five

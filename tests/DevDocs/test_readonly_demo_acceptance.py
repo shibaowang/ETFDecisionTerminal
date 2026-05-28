@@ -97,6 +97,9 @@ def main() -> int:
     shell_accounting_qml_static_gate_path = (
         root / "docs" / "60_shell_accounting_qml_static_gate.md"
     )
+    shell_accounting_qml_static_gate_cmake_path = (
+        root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
+    )
     shell_accounting_presenter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
     )
@@ -1022,6 +1025,7 @@ def main() -> int:
     shell_accounting_qml_binding_readiness = shell_accounting_qml_binding_readiness_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_plan = shell_accounting_qml_binding_smoke_plan_path.read_text(encoding="utf-8")
     shell_accounting_qml_static_gate = shell_accounting_qml_static_gate_path.read_text(encoding="utf-8")
+    shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
     shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
     shell_accounting_presenter_cmake = shell_accounting_presenter_cmake_path.read_text(encoding="utf-8")
@@ -4350,6 +4354,35 @@ def main() -> int:
     require("59_shell_accounting_qml_binding_smoke_plan" in shell_accounting_presenter_contract, "docs/57 references docs/59")
     require("60_shell_accounting_qml_static_gate" in shell_accounting_qml_binding_readiness, "docs/58 references docs/60")
     require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-118")
+
+    require(
+        "add_subdirectory(ShellAccountingQmlStaticGate)" in tests_cmake,
+        "tests/CMakeLists includes ShellAccountingQmlStaticGate",
+    )
+    for qml_static_gate_test_name in [
+        "shell_accounting_qml_static_gate_no_direct_service",
+        "shell_accounting_qml_static_gate_no_accounting_binding_yet",
+        "shell_accounting_qml_static_gate_no_write_tokens",
+        "shell_accounting_qml_static_gate_accounting_scope_no_trade",
+        "shell_accounting_qml_static_gate_docs_sync",
+    ]:
+        require(
+            qml_static_gate_test_name in shell_accounting_qml_static_gate_cmake,
+            f"TASK-119 CTest exists: {qml_static_gate_test_name}",
+        )
+    require("TASK-119" in shell_accounting_qml_binding_smoke_plan, "docs/59 mentions TASK-119")
+    require(
+        "QML static gate CTest" in shell_accounting_qml_binding_smoke_plan,
+        "docs/59 says QML static gate CTest is automated",
+    )
+    require("TASK-119" in shell_accounting_qml_static_gate, "docs/60 mentions TASK-119")
+    require(
+        "CTest" in shell_accounting_qml_static_gate or "automated" in shell_accounting_qml_static_gate,
+        "docs/60 describes automated static gate",
+    )
+    require("TASK-119" in codex_prompt_template, "docs/12 mentions TASK-119")
+    require("ShellAccounting QML static gate CTest" in readme, "README mentions ShellAccounting QML static gate CTest")
+    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-119")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

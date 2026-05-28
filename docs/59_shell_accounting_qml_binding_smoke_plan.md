@@ -158,3 +158,15 @@ Explicitly excluded:
 - strategy execution.
 - broker order.
 - write action.
+
+## TASK-119 Static Gate Automation
+
+TASK-119 adds QML static gate CTests for the static portion of this smoke plan.
+The tests scan `apps/ETFDecisionShell/qml` for direct service / database /
+engine references, write tokens, premature ShellAccounting bindings, and
+trading tokens in accounting-scoped files.
+
+The automated static checks cover the smoke plan's no direct DataServiceClient,
+no SQLite, no AccountingEngine, no write action, and no-trade UI gates. QML
+smoke UI tests, QML component load tests, and actual QML binding remain
+unimplemented and require a separate authorized task.

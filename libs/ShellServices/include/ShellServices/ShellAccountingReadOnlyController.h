@@ -3,7 +3,9 @@
 #include "ShellServices/ShellAccountingDisplayText.h"
 #include "ShellServices/ShellAccountingIssue.h"
 #include "ShellServices/ShellAccountingState.h"
+#include "ShellServices/ShellAccountingServiceAdapter.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -43,12 +45,16 @@ public:
     void applyStateSnapshot(ShellAccountingStateSnapshot snapshot);
     void beginRefresh(std::string actionName);
     void markUnavailable(std::string actionName, ShellAccountingIssue issue);
+    void setServiceAdapter(std::shared_ptr<ShellAccountingServiceAdapter> adapter) noexcept;
+    [[nodiscard]] bool hasServiceAdapter() const noexcept;
+    void clearServiceAdapter() noexcept;
     void reset();
 
 private:
     std::string actionName_;
     ShellAccountingViewState state_ = ShellAccountingViewState::Idle;
     std::vector<ShellAccountingIssue> issues_;
+    std::shared_ptr<ShellAccountingServiceAdapter> serviceAdapter_;
     bool privacyMode_ = false;
 };
 

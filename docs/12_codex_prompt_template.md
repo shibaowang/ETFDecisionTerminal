@@ -560,3 +560,10 @@ v0.1 草案。
 - Fake adapter must remain test-only.
 - Real adapter requires a separate task.
 - QML integration requires a separate task.
+- TASK-104 ShellAccountingServiceAdapter interface skeleton does not equal a
+  real adapter.
+- Do not implement ShellAccountingDataServiceAdapter without explicit
+  authorization.
+- Do not call real DataServiceClient without explicit authorization.
+- Fake adapter must remain test-only.
+- QML integration requires a separate task.

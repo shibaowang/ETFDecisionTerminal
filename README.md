@@ -1818,6 +1818,23 @@ contract instead of directly hard-depending on `DataServiceClient`. The real
 DataServiceClient adapter is still unimplemented, QML is still not wired, and
 no writes are enabled.
 
+## TASK-104 ShellAccountingServiceAdapter interface skeleton
+
+`ShellAccountingServiceAdapter` interface skeleton has been added in
+`libs/ShellServices` with service request/result contract types.
+
+New tests:
+
+- `shell_accounting_service_adapter_interface`
+- `shell_accounting_service_result_contract`
+- `shell_accounting_service_adapter_no_real_dependency`
+- `shell_accounting_controller_adapter_injection`
+
+The real DataServiceClient adapter is still unimplemented. The controller has
+only an optional adapter pointer skeleton; it does not call real services. QML
+is still not wired, SQLite is not accessed, AccountingEngine is not called, and
+no writes, TradeDraft, or trade suggestions are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

@@ -63,6 +63,9 @@
 - Shell accounting service adapter boundary: docs only; real adapter,
   controller service calls, DataServiceClient integration, and QML integration
   remain unimplemented.
+- ShellAccountingServiceAdapter interface skeleton: production interface and
+  request/result types only; real DataServiceClient adapter and QML integration
+  remain unimplemented.
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under

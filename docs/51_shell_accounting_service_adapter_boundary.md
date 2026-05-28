@@ -191,3 +191,31 @@ Future implementation must include:
 - The adapter must not generate trade suggestions.
 - The adapter must not execute strategy.
 - The adapter must not place broker orders.
+
+## TASK-104 Interface Skeleton
+
+TASK-104 adds the production-side `ShellAccountingServiceAdapter` interface
+skeleton and `ShellAccountingServiceRequest` / `ShellAccountingServiceResult`
+types in `libs/ShellServices`.
+
+Current scope:
+
+- interface skeleton only
+- request / result data contract only
+- optional controller adapter pointer injection only
+- test-only fake adapter under `tests/ShellAccountingServiceAdapter`
+
+Still not implemented:
+
+- real `ShellAccountingDataServiceAdapter`
+- real `DataServiceClient` calls
+- QML integration
+- SQLite access
+- AccountingEngine calls
+- database writes
+- TradeDraft generation
+- trade suggestions
+
+The interface skeleton does not depend on DataServiceClient, DataServiceApi,
+DataAccess, AccountingEngine, SQLite, QtQuick, or QML. The fake adapter is only
+for tests and must not move into production libs.

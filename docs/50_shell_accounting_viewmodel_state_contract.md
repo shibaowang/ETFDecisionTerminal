@@ -164,3 +164,20 @@ contract.
 
 See [Shell Accounting Service Adapter Boundary](51_shell_accounting_service_adapter_boundary.md)
 and [Shell Accounting Service Integration Readiness](52_shell_accounting_service_integration_readiness.md).
+
+## TASK-104 Service Result Input
+
+`ShellAccountingServiceResult` is the future service adapter result input for
+ViewModel state mapping.
+
+It must keep:
+
+- protocol error separate from domain issue
+- `implemented=false -> Unavailable`
+- `readOnly=true`
+- `writeEnabled=false`
+- issue code / level / message / blocking visibility
+- no TradeDraft / no trade suggestion / no strategy / no broker order flags
+
+The interface skeleton does not change QML behavior and does not perform real
+service calls.

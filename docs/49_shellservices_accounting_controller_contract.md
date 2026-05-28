@@ -279,6 +279,16 @@ test-only. Real DataServiceClient integration, QML integration, SQLite access,
 AccountingEngine calls, writes, TradeDraft generation, and trade suggestions
 remain out of scope until separately authorized.
 
+## TASK-104 Service Adapter Interface Skeleton
+
+TASK-104 adds a production-side `ShellAccountingServiceAdapter` abstraction and
+service request/result types. `ShellAccountingReadOnlyController` may hold an
+optional adapter pointer, but it still does not call real services.
+
+The controller remains read-only, write-disabled, and non-QML-facing. Real
+DataServiceClient integration remains unimplemented and requires a separate
+task.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

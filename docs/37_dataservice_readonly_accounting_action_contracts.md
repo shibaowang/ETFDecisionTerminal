@@ -780,3 +780,13 @@ ShellServices controller / adapter / concrete port boundaries.
 No DataService guard payload changes, no real accounting action
 implementation, no QML direct payload consumption, no SQLite facts query, no
 AccountingEngine call, and no write action are introduced.
+
+## TASK-118 QML Binding Smoke Boundary
+
+TASK-118 does not change DataService contracts. The QML binding smoke plan and
+static gate require future QML to consume accounting only through ShellServices
+read-only presentation objects, not direct DataService payloads or
+DataServiceClient calls.
+
+DataService accounting actions remain read-only guards until separate real
+action implementation is authorized.

@@ -462,6 +462,19 @@ All current guard payloads map to `Unavailable`, keep their visible
 `*_NOT_AVAILABLE` issues, preserve `readOnly=true` and `writeEnabled=false`,
 and keep Empty distinct from Unavailable.
 
+## TASK-118 QML Smoke Readiness
+
+The future QML binding smoke plan is
+[docs/59_shell_accounting_qml_binding_smoke_plan.md](59_shell_accounting_qml_binding_smoke_plan.md).
+The QML no-trade / no-direct-service static gate is
+[docs/60_shell_accounting_qml_static_gate.md](60_shell_accounting_qml_static_gate.md).
+
+QML is still not wired to the controller, presenter, adapter, or
+DataServiceClient. Future QML must bind only ShellServices read-only
+presentation objects and must not call DataServiceClient, SQLite, DataAccess,
+AccountingEngine, write actions, TradeDraft, trade suggestions, strategies, or
+broker orders.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

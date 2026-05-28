@@ -158,3 +158,20 @@ The five guard actions currently surface as `Unavailable` with visible
 and error issues must not be hidden, and accounting UI must still avoid
 trading buttons, TradeDraft, trade suggestion, strategy, broker, SQLite,
 AccountingEngine, and DataServiceClient access.
+
+## TASK-118 Smoke Plan and Static Gate
+
+TASK-118 adds the QML smoke readiness plan and static gate:
+
+- [docs/59_shell_accounting_qml_binding_smoke_plan.md](59_shell_accounting_qml_binding_smoke_plan.md)
+- [docs/60_shell_accounting_qml_static_gate.md](60_shell_accounting_qml_static_gate.md)
+
+These documents define the future QML object availability smoke matrix, state
+display checks, guard payload display checks, privacy display checks,
+no-trading-button checks, and denylist scans for direct service / write /
+TradeDraft / strategy / broker references.
+
+QML binding still requires separate explicit authorization. This task does not
+modify QML, register QML types, create QML pages, call DataServiceClient, access
+SQLite, call AccountingEngine, write database tables, generate TradeDraft, or
+generate trade suggestions.

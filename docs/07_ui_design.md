@@ -349,3 +349,17 @@ v0.1 草案。
 - Read-only accounting UI still must not display buy / sell buttons,
   TradeDraft actions, trade suggestion actions, strategy execution controls,
   or broker order controls.
+
+## TASK-118 ShellAccounting QML Smoke Readiness
+
+- The QML binding smoke plan is defined in
+  [ShellAccounting QML Binding Smoke Plan](59_shell_accounting_qml_binding_smoke_plan.md).
+- The QML static gate is defined in
+  [ShellAccounting QML Static Gate](60_shell_accounting_qml_static_gate.md).
+- Future accounting UI must distinguish Empty, Unavailable, Warning, Error,
+  and Stale.
+- Future accounting UI must remain read-only and must not display buy / sell,
+  TradeDraft, strategy execution, broker order, or write-enabled controls.
+- QML still must not directly call DataServiceClient, access SQLite or
+  DataAccess, call AccountingEngine, or calculate accounting values.
+- TASK-118 does not modify QML.

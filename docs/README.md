@@ -182,6 +182,15 @@
   fixed order and aggregates the visible `*_NOT_AVAILABLE` issues. QML remains
   unwired and no real accounting action, SQLite, AccountingEngine, write,
   TradeDraft, or trade suggestion path is enabled.
+- ShellAccounting QML binding smoke plan:
+  [59_shell_accounting_qml_binding_smoke_plan.md](59_shell_accounting_qml_binding_smoke_plan.md)
+  defines the future read-only QML smoke matrix, state display rules, privacy
+  rules, and no-trade UI scope before any QML files are modified.
+- ShellAccounting QML static gate:
+  [60_shell_accounting_qml_static_gate.md](60_shell_accounting_qml_static_gate.md)
+  defines future QML denylist checks for direct DataServiceClient, SQLite,
+  DataAccess, AccountingEngine, write action, TradeDraft, strategy, and broker
+  references.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

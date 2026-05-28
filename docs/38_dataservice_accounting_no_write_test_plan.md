@@ -322,3 +322,15 @@ These tests protect `trade_log`, `trade_execution_group`, `trade_draft`,
 Future real action implementations must extend no-write tests for their real
 SQLite, DataAccess, AccountingEngine mapping, and failure paths before the
 guard payload can be replaced.
+
+## TASK-094 position.list Real Implementation No-write Gate
+
+The future real `position.list` implementation boundary is documented in
+`docs/45_position_list_real_implementation_boundary.md`, with readiness checks
+in `docs/46_position_list_real_implementation_readiness_checklist.md`.
+
+The current guard no-write test is not enough for real implementation. A real
+`position.list` action must extend no-write table count tests for request
+validation, DataAccess facts query use, AccountingEngine mapping, domain
+failure, invalid request, and replay unavailable paths before the guard can be
+changed.

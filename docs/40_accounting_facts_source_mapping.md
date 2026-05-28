@@ -218,3 +218,14 @@ outputs. `position.list`, `cash.summary`, `portfolio.pnl.summary`,
 `base_position.summary`, and `sniper_pool.summary` still return guard payloads.
 Future real actions must explicitly authorize DTO mapping from read-only facts
 to AccountingEngine request / response structures.
+
+## TASK-094 position.list Mapping Boundary
+
+Future real `position.list` requires `TradeFactRow` -> `TradeFactDto` mapping,
+as documented in `docs/45_position_list_real_implementation_boundary.md`.
+Readiness is tracked in
+`docs/46_position_list_real_implementation_readiness_checklist.md`.
+
+Cash facts, market price, and FX gaps affect `position.list`
+`dataQualityStatus` and issues. Missing market price must not fabricate
+valuation, and multi-currency input without FX facts must not fabricate rates.

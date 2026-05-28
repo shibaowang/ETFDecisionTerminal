@@ -74,3 +74,10 @@ returns `CASH_SUMMARY_NOT_AVAILABLE` with `implemented=false`.
 Until a cash facts source is confirmed, future work must not implement real
 `cash.summary`, must not return real cash balances, and must not infer cash
 facts from `cash_snapshot` or `portfolio_summary`.
+
+## TASK-094 position.list Cash Facts Decision Impact
+
+The `position.list` real implementation boundary in
+`docs/45_position_list_real_implementation_boundary.md` depends on this cash
+facts decision. If the source remains unclear, future `position.list` work must
+use a documented degrade strategy and keep no-write guarantees.

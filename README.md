@@ -1671,6 +1671,19 @@ Every unavailable accounting guard remains `implemented=false`,
 `trade_log`, `trade_execution_group`, `trade_draft`, `cash_snapshot`,
 `position_snapshot`, `portfolio_summary`, and `audit_log`.
 
+## TASK-094 position.list real implementation boundary
+
+The real `position.list` implementation boundary is now documented:
+
+- [position.list real implementation boundary](docs/45_position_list_real_implementation_boundary.md)
+- [position.list real implementation readiness checklist](docs/46_position_list_real_implementation_readiness_checklist.md)
+
+This is documentation only. Real `position.list` is still not implemented, the
+`position.list` guard remains unchanged, DataAccess trade facts reader is not
+connected to DataService, DataService still does not call AccountingEngine,
+SQLite integration is still not connected to `position.list`, and no database
+writes are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

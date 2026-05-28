@@ -54,6 +54,10 @@ def main() -> int:
     dataservice_guard_no_write_readiness_path = (
         root / "docs" / "44_dataservice_accounting_guard_no_write_readiness_review.md"
     )
+    position_list_real_boundary_path = root / "docs" / "45_position_list_real_implementation_boundary.md"
+    position_list_readiness_checklist_path = (
+        root / "docs" / "46_position_list_real_implementation_readiness_checklist.md"
+    )
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -216,6 +220,11 @@ def main() -> int:
         dataservice_guard_no_write_readiness_path.exists(),
         "DataService accounting guard no-write readiness review doc exists",
     )
+    require(position_list_real_boundary_path.exists(), "position.list real implementation boundary doc exists")
+    require(
+        position_list_readiness_checklist_path.exists(),
+        "position.list real implementation readiness checklist doc exists",
+    )
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -339,6 +348,8 @@ def main() -> int:
     cash_facts_query_decision = cash_facts_query_decision_path.read_text(encoding="utf-8")
     dataservice_guard_suite_milestone = dataservice_guard_suite_milestone_path.read_text(encoding="utf-8")
     dataservice_guard_no_write_readiness = dataservice_guard_no_write_readiness_path.read_text(encoding="utf-8")
+    position_list_real_boundary = position_list_real_boundary_path.read_text(encoding="utf-8")
+    position_list_readiness_checklist = position_list_readiness_checklist_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -588,6 +599,14 @@ def main() -> int:
         "README links DataService accounting guard no-write readiness review",
     )
     require(
+        "45_position_list_real_implementation_boundary" in readme,
+        "README links position.list real implementation boundary",
+    )
+    require(
+        "46_position_list_real_implementation_readiness_checklist" in readme,
+        "README links position.list real implementation readiness checklist",
+    )
+    require(
         "v0_5_dataservice_accounting_guard_suite" in readme,
         "README links v0.5 DataService accounting guard suite release notes",
     )
@@ -774,6 +793,14 @@ def main() -> int:
     require(
         "44_dataservice_accounting_guard_no_write_readiness_review.md" in docs_index,
         "docs index links DataService accounting guard no-write readiness review",
+    )
+    require(
+        "45_position_list_real_implementation_boundary.md" in docs_index,
+        "docs index links position.list real implementation boundary",
+    )
+    require(
+        "46_position_list_real_implementation_readiness_checklist.md" in docs_index,
+        "docs index links position.list real implementation readiness checklist",
     )
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
@@ -1856,6 +1883,21 @@ def main() -> int:
         in codex_prompt_template,
         "prompt template says guard suite milestone is not real action implementation",
     )
+    require("DataAccess `TradeFactRow`" in position_list_real_boundary, "position.list boundary mentions DataAccess TradeFactRow")
+    require("AccountingEngine `TradeFactDto`" in position_list_real_boundary, "position.list boundary mentions AccountingEngine TradeFactDto")
+    require("no-write" in position_list_real_boundary, "position.list boundary documents no-write")
+    require("cash facts" in position_list_real_boundary, "position.list boundary documents cash facts source")
+    require("MARKET_PRICE_MISSING" in position_list_real_boundary, "position.list boundary documents missing market price")
+    require("MULTI_CURRENCY_UNSUPPORTED" in position_list_real_boundary, "position.list boundary documents multi-currency unsupported")
+    require("Guard -> Real Action" in position_list_real_boundary, "position.list boundary documents guard to real action switch")
+    require("Go / No-Go Checklist" in position_list_readiness_checklist, "position.list readiness has Go / No-Go Checklist")
+    require("User explicitly authorized" in position_list_readiness_checklist, "position.list readiness requires user authorization")
+    require("docs/45_position_list_real_implementation_boundary.md" in dataservice_readonly_accounting_contracts, "DataService contract doc links docs/45")
+    require("docs/45_position_list_real_implementation_boundary.md" in dataservice_accounting_no_write_plan, "no-write plan links docs/45")
+    require("docs/45_position_list_real_implementation_boundary.md" in sqlite_readonly_facts_query_boundary, "SQLite boundary links docs/45")
+    require("docs/45_position_list_real_implementation_boundary.md" in accounting_facts_source_mapping, "facts mapping links docs/45")
+    require("docs/45_position_list_real_implementation_boundary.md" in codex_prompt_template, "prompt template links docs/45")
+    require("docs/46_position_list_real_implementation_readiness_checklist.md" in codex_prompt_template, "prompt template links docs/46")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

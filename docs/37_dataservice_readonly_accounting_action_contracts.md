@@ -628,3 +628,16 @@ DataService still does not call AccountingEngine, SQLite facts query remains
 unconnected to DataService, QML remains disconnected from these actions, and
 real implementation tasks require separate authorization plus expanded
 no-write tests.
+
+## TASK-094 position.list Real Implementation Boundary
+
+The real `position.list` implementation boundary is documented in
+`docs/45_position_list_real_implementation_boundary.md`. The readiness
+checklist is documented in
+`docs/46_position_list_real_implementation_readiness_checklist.md`.
+
+The current `position.list` guard remains `implemented=false`. This task does
+not change the guard payload and does not implement the real
+`PositionListResponse`. Real implementation requires separate authorization,
+DataAccess trade facts reader integration, AccountingEngine DTO mapping, and
+expanded no-write tests.

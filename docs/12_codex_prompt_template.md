@@ -483,3 +483,14 @@ v0.1 草案。
 - Guard suite readiness does not authorize snapshot writes, TradeLog writes,
   TradeDraft generation, trade suggestions, strategy execution, or broker
   orders.
+- Real `position.list` tasks must reference
+  `docs/45_position_list_real_implementation_boundary.md` and
+  `docs/46_position_list_real_implementation_readiness_checklist.md`.
+- Do not change the `position.list` guard from `implemented=false` to
+  `implemented=true` without explicit task authorization.
+- Real `position.list` tasks must declare the exact first-stage scope.
+- No-write tests must be written before or with real `position.list`
+  implementation.
+- DataService must not compute replay directly; it should coordinate
+  DataAccess facts and AccountingEngine mapping only when explicitly
+  authorized.

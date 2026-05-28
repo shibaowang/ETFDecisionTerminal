@@ -228,3 +228,11 @@ These tests verify `Unavailable` state mapping for all guard wrappers, visible
 issues, read-only flags, no-write / no-trade behavior, no direct controller
 DataServiceClient dependency, no direct adapter DataServiceClient dependency,
 and no QML accounting action wiring.
+
+## TASK-114 Presenter / QML Binding Plan
+
+Adapter tests do not authorize QML integration. Future presenter and QML tasks
+must reference [docs/57_shell_accounting_presenter_contract.md](57_shell_accounting_presenter_contract.md)
+and [docs/58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md).
+
+The adapter remains below ShellServices presenter / ViewModel boundaries.

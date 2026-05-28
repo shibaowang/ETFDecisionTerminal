@@ -754,3 +754,10 @@ contracts remain unchanged: each accounting action is still a read-only guard,
 and real action implementation is not included.
 
 DataService payloads are still not consumed directly by QML.
+
+## TASK-114 Presenter / QML Boundary
+
+The presenter / QML binding plan does not change DataService contracts. QML
+must not consume DataService payloads directly and must not call
+DataServiceClient. Accounting payloads must flow through ShellServices
+presenter / ViewModel / Model boundaries.

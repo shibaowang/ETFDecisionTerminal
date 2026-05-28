@@ -324,3 +324,16 @@ The state contract remains unchanged:
 `displayText`; it does not mutate `rawText`. The models do not expose
 TradeDraft, trade suggestion, strategy execution, broker order, or write action
 interfaces. QML integration remains separate.
+
+## TASK-114 QML Binding Readiness State Rules
+
+The QML binding readiness plan in
+[docs/58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md)
+must preserve this state contract:
+
+- Empty is not Unavailable.
+- Unavailable must not be displayed as normal empty data.
+- Warning, Error, and Stale must remain visible.
+- Privacy mode affects `displayText` only.
+- Read-only accounting UI must not expose trading buttons, TradeDraft actions,
+  trade suggestions, strategy execution, or broker order controls.

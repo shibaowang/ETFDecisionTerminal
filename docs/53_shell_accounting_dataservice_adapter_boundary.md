@@ -341,3 +341,13 @@ The integration remains guard-only. No real accounting action is implemented,
 the DataService guard payloads are not changed, QML is still not wired, SQLite
 facts queries are not accessed, AccountingEngine is not called, and no write /
 TradeDraft / trade suggestion path is introduced.
+
+## TASK-114 Presenter / QML Boundary
+
+Adapter and controller integration does not imply QML integration. Future QML
+must bind the presenter / ShellServices ViewModel boundary described in
+[docs/57_shell_accounting_presenter_contract.md](57_shell_accounting_presenter_contract.md)
+and
+[docs/58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md).
+
+QML must not call DataServiceClient or the adapter directly.

@@ -157,6 +157,13 @@
   `ShellPositionListModel` skeletons for future QML binding. They consume only
   in-memory state / issue / display data and do not call DataServiceClient,
   SQLite, AccountingEngine, QML, writes, TradeDraft, or trade suggestions.
+- ShellAccounting presenter contract:
+  [57_shell_accounting_presenter_contract.md](57_shell_accounting_presenter_contract.md)
+  defines the future presenter / facade boundary before any QML integration.
+- ShellAccounting QML binding readiness plan:
+  [58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md)
+  defines future read-only QML binding rules, no-trade UI rules, and the
+  explicit QML authorization checklist.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

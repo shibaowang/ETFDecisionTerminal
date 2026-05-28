@@ -85,6 +85,12 @@ def main() -> int:
     shell_accounting_dataservice_adapter_live_call_checklist_path = (
         root / "docs" / "56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md"
     )
+    shell_accounting_presenter_contract_path = (
+        root / "docs" / "57_shell_accounting_presenter_contract.md"
+    )
+    shell_accounting_qml_binding_readiness_path = (
+        root / "docs" / "58_shell_accounting_qml_binding_readiness_plan.md"
+    )
     shell_accounting_dataservice_adapter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h"
     )
@@ -556,6 +562,8 @@ def main() -> int:
         shell_accounting_dataservice_adapter_live_call_checklist_path.exists(),
         "Shell accounting DataService adapter live-call acceptance checklist exists",
     )
+    require(shell_accounting_presenter_contract_path.exists(), "Shell accounting presenter contract doc exists")
+    require(shell_accounting_qml_binding_readiness_path.exists(), "Shell accounting QML binding readiness plan exists")
     require(
         shell_accounting_dataservice_adapter_header_path.exists(),
         "ShellAccountingDataServiceAdapter production skeleton header exists",
@@ -994,6 +1002,8 @@ def main() -> int:
     shell_accounting_dataservice_adapter_live_call_checklist = (
         shell_accounting_dataservice_adapter_live_call_checklist_path.read_text(encoding="utf-8")
     )
+    shell_accounting_presenter_contract = shell_accounting_presenter_contract_path.read_text(encoding="utf-8")
+    shell_accounting_qml_binding_readiness = shell_accounting_qml_binding_readiness_path.read_text(encoding="utf-8")
     shell_accounting_dataservice_adapter_header = shell_accounting_dataservice_adapter_header_path.read_text(
         encoding="utf-8"
     )
@@ -4098,6 +4108,49 @@ def main() -> int:
     require("ShellAccountingStatusObject" not in qml_sources, "QML does not bind ShellAccountingStatusObject")
     require("ShellAccountingIssueListModel" not in qml_sources, "QML does not bind ShellAccountingIssueListModel")
     require("ShellPositionListModel" not in qml_sources, "QML does not bind ShellPositionListModel")
+
+    require("57_shell_accounting_presenter_contract" in readme, "README links docs/57")
+    require("58_shell_accounting_qml_binding_readiness_plan" in readme, "README links docs/58")
+    require("57_shell_accounting_presenter_contract" in docs_index, "docs README links docs/57")
+    require("58_shell_accounting_qml_binding_readiness_plan" in docs_index, "docs README links docs/58")
+    require("ShellAccountingPresenter" in shell_accounting_presenter_contract, "docs/57 names ShellAccountingPresenter")
+    require(
+        "QML -> DataServiceClient" in shell_accounting_presenter_contract
+        or "QML must not call DataServiceClient" in shell_accounting_presenter_contract
+        or "QML 不得直接调用 DataServiceClient" in shell_accounting_presenter_contract,
+        "docs/57 forbids direct QML DataServiceClient calls",
+    )
+    require("TradeDraft" in shell_accounting_presenter_contract, "docs/57 mentions TradeDraft boundary")
+    require(
+        "trade suggestion" in shell_accounting_presenter_contract
+        or "交易建议" in shell_accounting_presenter_contract,
+        "docs/57 mentions trade suggestion boundary",
+    )
+    require(
+        "Empty is not Unavailable" in shell_accounting_qml_binding_readiness
+        or "Empty 不等于 Unavailable" in shell_accounting_qml_binding_readiness,
+        "docs/58 distinguishes Empty and Unavailable",
+    )
+    require("no trading buttons" in shell_accounting_qml_binding_readiness, "docs/58 forbids trading buttons")
+    require("用户明确授权 QML 接入" in shell_accounting_qml_binding_readiness, "docs/58 requires user authorization for QML integration")
+    require(
+        "58_shell_accounting_qml_binding_readiness_plan" in ui_design
+        or "QML binding readiness" in ui_design,
+        "docs/07 references QML binding readiness",
+    )
+    require("57_shell_accounting_presenter_contract" in codex_prompt_template, "docs/12 references docs/57")
+    require("58_shell_accounting_qml_binding_readiness_plan" in codex_prompt_template, "docs/12 references docs/58")
+    require("57_shell_accounting_presenter_contract" in shellservices_accounting_controller_contract, "docs/49 references docs/57")
+    require("58_shell_accounting_qml_binding_readiness_plan" in shell_accounting_viewmodel_state_contract, "docs/50 references docs/58")
+    for qml_binding in [
+        "ShellAccountingPresenter",
+        "ShellAccountingStatusObject",
+        "ShellAccountingIssueListModel",
+        "ShellPositionListModel",
+        "AccountingStatusBanner",
+        "PositionListReadOnlyTable",
+    ]:
+        require(qml_binding not in qml_sources, f"QML has not added accounting binding {qml_binding}")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

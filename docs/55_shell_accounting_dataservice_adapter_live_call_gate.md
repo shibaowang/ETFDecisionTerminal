@@ -229,3 +229,10 @@ The gate remains closed for broader behavior: no QML wiring, no SQLite facts
 query, no AccountingEngine call, no write action, no real `position.list`
 implementation, no TradeDraft, and no trade suggestion are allowed by this
 task.
+
+## TASK-114 Presenter / QML Binding Boundary
+
+Live-call adapter readiness is not QML readiness. Future QML binding must pass
+the presenter contract and QML readiness plan in docs/57 and docs/58. QML must
+not call DataServiceClient, SQLite, AccountingEngine, or adapter classes
+directly.

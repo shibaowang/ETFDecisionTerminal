@@ -109,6 +109,14 @@ QML integration, SQLite facts access, AccountingEngine integration, and real
 accounting action implementation remain separate No-Go items until explicitly
 authorized.
 
+## TASK-114 Presenter / QML Binding Update
+
+- [x] Presenter / QML binding plan docs are defined.
+- [x] QML integration remains not implemented.
+- [ ] QML integration requires explicit separate authorization.
+- [ ] Future QML tasks must reference docs/57 and docs/58.
+- [ ] Read-only UI smoke tests must be defined before QML binding.
+
 ## TASK-110 Status
 
 - [x] Live-call skeleton with abstract client port has been added.

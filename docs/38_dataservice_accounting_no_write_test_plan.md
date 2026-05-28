@@ -416,3 +416,16 @@ broker order actions.
 
 The scaffolding does not replace DataService action no-write tests; it prevents
 the Shell adapter layer from selecting write-capable paths.
+
+## TASK-109 Shell Adapter Live-call No-write Gate
+
+The live-call gate in
+`docs/55_shell_accounting_dataservice_adapter_live_call_gate.md` and
+`docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md`
+requires the future adapter to call only allowlisted read-only accounting
+wrappers.
+
+The adapter must not call write actions, `data.audit.append`, trade write
+actions, draft actions, snapshot write actions, strategy execution actions, or
+broker order actions. The live-call no-write gate also requires rollback to a
+not-connected / unavailable result without writing database tables.

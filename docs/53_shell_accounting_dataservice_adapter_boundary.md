@@ -250,3 +250,17 @@ Each method returns a controlled
 `dataQualityStatus=UNAVAILABLE`, `domainError=true`, and a blocking visible
 issue. This skeleton is not the live adapter. Replacing not-connected behavior
 with real DataServiceClient wrapper calls requires a separate authorized task.
+
+## TASK-109 Live-call Gate
+
+TASK-109 adds the live-call implementation gate:
+
+- [ShellAccountingDataServiceAdapter Live-call Gate](55_shell_accounting_dataservice_adapter_live_call_gate.md)
+  (`docs/55_shell_accounting_dataservice_adapter_live_call_gate.md`)
+- [ShellAccountingDataServiceAdapter Live-call Acceptance Checklist](56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md)
+  (`docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md`)
+
+The skeleton still returns not connected / unavailable. No live DataServiceClient
+wrapper calls are implemented in TASK-109. Future live-call work must satisfy
+the docs/55 and docs/56 gates before replacing the current not-connected
+behavior.

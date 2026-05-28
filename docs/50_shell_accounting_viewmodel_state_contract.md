@@ -244,3 +244,18 @@ Controller refresh with the skeleton maps this to `Unavailable`. The blocking
 adapter-not-connected issue remains visible. This does not represent `Empty`,
 does not hide the unavailable state, and does not imply real DataServiceClient
 or QML integration.
+
+## TASK-109 Live-call State Mapping Gate
+
+Future live-call adapter results must continue to map protocol errors and
+domain issues into Shell state / issue models without hiding them.
+
+The live-call gate requires:
+
+- protocol error remains distinct from domain issue
+- `implemented=false` remains `Unavailable`
+- `*_NOT_AVAILABLE` remains unavailable
+- warnings remain visible
+- blocking errors remain visible
+- timeout and transport errors become visible Error / Unavailable states
+- QML integration remains separate

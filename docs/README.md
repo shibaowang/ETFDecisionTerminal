@@ -128,6 +128,13 @@
   `ShellAccountingServiceAdapter` boundary but only returns not connected /
   unavailable; live DataServiceClient calls, QML integration, SQLite access, and
   writes remain unimplemented.
+- ShellAccountingDataServiceAdapter live-call gate: docs 55 / 56 and test-only
+  gate descriptors define the future live-call allowlist, mapping, error,
+  no-write, rollback, and readiness requirements; live calls remain
+  unimplemented. See
+  [55_shell_accounting_dataservice_adapter_live_call_gate.md](55_shell_accounting_dataservice_adapter_live_call_gate.md)
+  and
+  [56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md](56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md).
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

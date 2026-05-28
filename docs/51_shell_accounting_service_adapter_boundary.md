@@ -286,3 +286,14 @@ Current boundary:
 All fetch methods currently return a controlled adapter-not-connected /
 `UNAVAILABLE` result. Real DataServiceClient integration still requires a
 separate task and explicit authorization.
+
+## TASK-109 Live-call Gate Protection
+
+TASK-109 adds a live-call gate for future real adapter implementation. The gate
+protects `ShellAccountingServiceAdapter` consumers by requiring the real adapter
+to stay behind the abstraction, use only read-only accounting wrappers, preserve
+protocol/domain issue mapping, keep no-write / no-trade behavior, and provide a
+rollback path to not-connected / unavailable.
+
+The controller still consumes only `ShellAccountingServiceAdapter`. QML remains
+unwired.

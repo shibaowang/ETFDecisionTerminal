@@ -60,6 +60,30 @@ def main() -> int:
     )
     position_list_readiness_hardening_path = root / "docs" / "47_position_list_readiness_hardening.md"
     position_list_first_stage_scope_path = root / "docs" / "48_position_list_first_stage_real_action_scope.md"
+    position_list_first_stage_cmake_path = (
+        root / "tests" / "PositionListFirstStageScaffolding" / "CMakeLists.txt"
+    )
+    position_list_first_stage_scenario_header_path = (
+        root / "tests" / "PositionListFirstStageScaffolding" / "PositionListFirstStageScenario.h"
+    )
+    position_list_first_stage_scenario_source_path = (
+        root / "tests" / "PositionListFirstStageScaffolding" / "PositionListFirstStageScenario.cpp"
+    )
+    position_list_first_stage_scope_test_path = (
+        root / "tests" / "PositionListFirstStageScaffolding" / "test_position_list_first_stage_scope_contract.cpp"
+    )
+    position_list_first_stage_transition_test_path = (
+        root
+        / "tests"
+        / "PositionListFirstStageScaffolding"
+        / "test_position_list_first_stage_guard_transition_contract.cpp"
+    )
+    position_list_first_stage_failure_test_path = (
+        root
+        / "tests"
+        / "PositionListFirstStageScaffolding"
+        / "test_position_list_first_stage_failure_matrix_contract.cpp"
+    )
     position_list_mapping_cmake_path = root / "tests" / "PositionListMapping" / "CMakeLists.txt"
     position_list_mapping_utils_header_path = (
         root / "tests" / "PositionListMapping" / "PositionListMappingContractTestUtils.h"
@@ -261,6 +285,18 @@ def main() -> int:
     )
     require(position_list_readiness_hardening_path.exists(), "position.list readiness hardening doc exists")
     require(position_list_first_stage_scope_path.exists(), "position.list first-stage real action scope doc exists")
+    require(position_list_first_stage_cmake_path.exists(), "position.list first-stage scaffolding CMake exists")
+    require(position_list_first_stage_scenario_header_path.exists(), "position.list first-stage scenario header exists")
+    require(position_list_first_stage_scenario_source_path.exists(), "position.list first-stage scenario source exists")
+    require(position_list_first_stage_scope_test_path.exists(), "position.list first-stage scope contract test exists")
+    require(
+        position_list_first_stage_transition_test_path.exists(),
+        "position.list first-stage guard transition contract test exists",
+    )
+    require(
+        position_list_first_stage_failure_test_path.exists(),
+        "position.list first-stage failure matrix contract test exists",
+    )
     require(position_list_mapping_cmake_path.exists(), "position.list mapping contract CMake exists")
     require(position_list_mapping_utils_header_path.exists(), "position.list mapping contract helper header exists")
     require(position_list_mapping_utils_source_path.exists(), "position.list mapping contract helper source exists")
@@ -411,6 +447,12 @@ def main() -> int:
     position_list_readiness_checklist = position_list_readiness_checklist_path.read_text(encoding="utf-8")
     position_list_readiness_hardening = position_list_readiness_hardening_path.read_text(encoding="utf-8")
     position_list_first_stage_scope = position_list_first_stage_scope_path.read_text(encoding="utf-8")
+    position_list_first_stage_cmake = position_list_first_stage_cmake_path.read_text(encoding="utf-8")
+    position_list_first_stage_scenario_header = position_list_first_stage_scenario_header_path.read_text(encoding="utf-8")
+    position_list_first_stage_scenario_source = position_list_first_stage_scenario_source_path.read_text(encoding="utf-8")
+    position_list_first_stage_scope_test = position_list_first_stage_scope_test_path.read_text(encoding="utf-8")
+    position_list_first_stage_transition_test = position_list_first_stage_transition_test_path.read_text(encoding="utf-8")
+    position_list_first_stage_failure_test = position_list_first_stage_failure_test_path.read_text(encoding="utf-8")
     position_list_mapping_cmake = position_list_mapping_cmake_path.read_text(encoding="utf-8")
     position_list_mapping_utils_header = position_list_mapping_utils_header_path.read_text(encoding="utf-8")
     position_list_mapping_utils_source = position_list_mapping_utils_source_path.read_text(encoding="utf-8")
@@ -2162,6 +2204,70 @@ def main() -> int:
         "docs/48_position_list_first_stage_real_action_scope.md" in dataservice_readonly_accounting_contracts,
         "DataService contracts link docs/48",
     )
+    require(
+        "add_subdirectory(PositionListFirstStageScaffolding)" in tests_cmake,
+        "tests CMake adds PositionListFirstStageScaffolding tests",
+    )
+    require(
+        "position_list_first_stage_scope_contract" in position_list_first_stage_cmake,
+        "first-stage CMake registers scope contract test",
+    )
+    require(
+        "position_list_first_stage_guard_transition_contract" in position_list_first_stage_cmake,
+        "first-stage CMake registers guard transition contract test",
+    )
+    require(
+        "position_list_first_stage_failure_matrix_contract" in position_list_first_stage_cmake,
+        "first-stage CMake registers failure matrix contract test",
+    )
+    require(
+        "PositionListFirstStageScenario" in position_list_first_stage_scenario_header,
+        "first-stage scenario helper declares scenario model",
+    )
+    require("empty_ledger_ok" in position_list_first_stage_scenario_source, "first-stage scenarios include empty ledger")
+    require("single_buy_ok" in position_list_first_stage_scenario_source, "first-stage scenarios include single BUY")
+    require(
+        "missing_market_price_warning" in position_list_first_stage_scenario_source,
+        "first-stage scenarios include missing market price",
+    )
+    require(
+        "multi_currency_unsupported_error" in position_list_first_stage_scenario_source,
+        "first-stage scenarios include multi-currency unsupported",
+    )
+    require(
+        "cash_facts_missing_degraded_or_unavailable" in position_list_first_stage_scenario_source,
+        "first-stage scenarios include cash facts missing",
+    )
+    require("mapping_failure_error" in position_list_first_stage_scenario_source, "first-stage scenarios include mapping failure")
+    require("replay_unavailable_error" in position_list_first_stage_scenario_source, "first-stage scenarios include replay unavailable")
+    require("invalid_request_protocol_error" in position_list_first_stage_scenario_source, "first-stage scenarios include invalid request")
+    require("facts_query_unavailable_error" in position_list_first_stage_scenario_source, "first-stage scenarios include facts query unavailable")
+    require("unsupported_scenario_error" in position_list_first_stage_scenario_source, "first-stage scenarios include unsupported scenario")
+    require("position_list_first_stage_scope_contract" in position_list_first_stage_cmake, "CTest name for scope contract exists")
+    require("TradeDraft excluded" in position_list_first_stage_scope_test, "scope contract excludes TradeDraft")
+    require("QML integration excluded" in position_list_first_stage_scope_test, "scope contract excludes QML")
+    require("implemented=false" in position_list_first_stage_transition_test, "guard transition contract keeps guard implemented false")
+    require("protected tables include trade_log" in position_list_first_stage_transition_test, "guard transition contract checks protected table list")
+    require("INVALID_REQUEST" in position_list_first_stage_failure_test, "failure matrix test checks INVALID_REQUEST")
+    require("REPLAY_NOT_AVAILABLE" in position_list_first_stage_failure_test, "failure matrix test checks REPLAY_NOT_AVAILABLE")
+    require("DATA_SOURCE_MISSING" in position_list_first_stage_failure_test, "failure matrix test checks DATA_SOURCE_MISSING")
+    require("POSITION_LIST_MAPPING_FAILED" in position_list_first_stage_failure_test, "failure matrix test checks mapping failure")
+    require("MARKET_PRICE_MISSING" in position_list_first_stage_failure_test, "failure matrix test checks market price missing")
+    require("MULTI_CURRENCY_UNSUPPORTED" in position_list_first_stage_failure_test, "failure matrix test checks multi-currency unsupported")
+    require("UNSUPPORTED_SCENARIO" in position_list_first_stage_failure_test, "failure matrix test checks unsupported scenario")
+    require("TASK-098" in position_list_real_boundary, "docs/45 records TASK-098 first-stage scaffolding")
+    require("first-stage implementation scaffolding" in position_list_real_boundary, "docs/45 documents first-stage scaffolding")
+    require("first-stage scaffolding" in position_list_readiness_checklist, "docs/46 documents first-stage scaffolding")
+    require("failure matrix" in position_list_readiness_hardening, "docs/47 documents failure matrix")
+    require("scope contract tests" in position_list_first_stage_scope, "docs/48 documents scope contract tests")
+    require("TASK-098" in codex_prompt_template, "prompt template mentions TASK-098")
+    require(
+        "Scaffolding does not equal real action implementation" in codex_prompt_template,
+        "prompt template says scaffolding is not real action",
+    )
+    require("DataServiceActions" not in position_list_first_stage_scenario_source, "scaffolding helper does not call DataService action")
+    require("AccountingReplayEngine" not in position_list_first_stage_scenario_source, "scaffolding helper does not call AccountingReplayEngine")
+    require("AccountingTradeFactReader" not in position_list_first_stage_scenario_source, "scaffolding helper does not call DataAccess trade facts reader")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

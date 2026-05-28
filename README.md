@@ -1730,6 +1730,21 @@ requirements. Real `position.list` is still not implemented, the
 `position.list` guard behavior is unchanged, and no DataAccess / DataService /
 AccountingEngine / SQLite integration or writes are enabled.
 
+## TASK-098 position.list first-stage implementation test scaffolding
+
+Test-only scaffolding has been added for the future first-stage real
+`position.list` implementation:
+
+- `position_list_first_stage_scope_contract`
+- `position_list_first_stage_guard_transition_contract`
+- `position_list_first_stage_failure_matrix_contract`
+
+The scaffolding locks the allowed first-stage scope, explicitly excluded
+scope, guard -> real action transition expectations, and failure matrix. Real
+`position.list` remains unimplemented, the guard behavior is unchanged, the
+scaffolding does not access SQLite, does not call real DataService replay
+paths, and does not write database tables.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

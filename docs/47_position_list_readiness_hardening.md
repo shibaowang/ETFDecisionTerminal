@@ -192,3 +192,13 @@ Before real `position.list` is complete, do not connect QML.
 - [ ] No-write protected table list has been confirmed.
 - [ ] QML not connected has been confirmed.
 - [ ] User explicitly authorized real implementation.
+
+## TASK-098 First-stage Scaffolding
+
+TASK-098 fixes the first-stage scope, guard transition, and failure matrix in
+test-only scaffolding. The tests cover success, degraded, error, unavailable,
+mapping failure, and no-write expectations as descriptors only.
+
+The guard -> real action transition still requires separate authorization.
+The scaffolding must pass before any future implementation PR changes
+`implemented=false`.

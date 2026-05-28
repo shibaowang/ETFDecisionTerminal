@@ -383,3 +383,13 @@ satisfy the docs/47 no-write matrix before merge:
 The protected tables remain `trade_log`, `trade_execution_group`,
 `trade_draft`, `cash_snapshot`, `position_snapshot`, `portfolio_summary`, and
 `audit_log`.
+
+## TASK-098 position.list First-stage Scaffolding Link
+
+TASK-098 links the TASK-096 no-write skeleton to a first-stage scenario
+scaffolding matrix. A future first-stage implementation must pass both the
+real action no-write skeleton and the first-stage scenario scaffolding before
+the guard can switch to `implemented=true`.
+
+The scaffolding is descriptor-only. It does not access SQLite, does not call
+real DataService replay paths, and does not write database tables.

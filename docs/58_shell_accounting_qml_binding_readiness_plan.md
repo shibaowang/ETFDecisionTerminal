@@ -175,3 +175,12 @@ QML binding still requires separate explicit authorization. This task does not
 modify QML, register QML types, create QML pages, call DataServiceClient, access
 SQLite, call AccountingEngine, write database tables, generate TradeDraft, or
 generate trade suggestions.
+## TASK-119 QML Static Gate CTest
+
+The QML static gate from docs/60 is now automated as CTests. This completes the
+static denylist portion of the readiness plan: no direct service dependencies,
+no database / AccountingEngine access, no write tokens, no premature
+ShellAccounting binding, and no accounting-scope trade controls.
+
+QML binding still requires separate authorization. TASK-119 does not register
+QML types, create QML components, or bind ShellAccountingPresenter.

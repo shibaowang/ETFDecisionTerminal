@@ -790,3 +790,12 @@ DataServiceClient calls.
 
 DataService accounting actions remain read-only guards until separate real
 action implementation is authorized.
+## TASK-119 QML Static Gate CTest
+
+The ShellAccounting QML static gate CTest reinforces that DataService
+accounting actions remain behind ShellServices read-only boundaries. QML must
+not directly reference DataServiceClient, DataServiceApi, SQLite, DataAccess,
+AccountingEngine, adapter internals, write actions, or trade controls.
+
+This task does not add QML binding and does not change any DataService guard
+payload or action behavior.

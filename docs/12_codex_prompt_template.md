@@ -693,3 +693,18 @@ v0.1 草案。
   execution, write action, buy, or sell controls.
 - Empty vs Unavailable must remain distinct.
 - QML smoke tests and static gates require a separate implementation task.
+
+## TASK-119 ShellAccounting QML Static Gate CTest
+
+- QML binding tasks must pass the TASK-119 static gate CTests.
+- New accounting QML must not include DataServiceClient, DataServiceApi,
+  SQLite, DataAccess, AccountingEngine, ShellAccountingDataServiceAdapter,
+  ShellAccountingDataServiceClientPortAdapter, write action, TradeDraft,
+  brokerOrder, or strategyExecute tokens.
+- Do not modify QML without explicit authorization.
+- Existing placeholder trade pages are not accounting binding pages and must not
+  be used to justify accounting trade controls.
+- Future accounting QML must keep Empty vs Unavailable distinct and must not
+  show trading buttons, generate TradeDraft, generate trade suggestions,
+  execute strategies, submit broker orders, access SQLite, or write database
+  tables.

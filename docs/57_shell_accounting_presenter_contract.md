@@ -256,3 +256,13 @@ Future QML can only bind ShellServices read-only objects and must not call
 DataServiceClient, SQLite, DataAccess, AccountingEngine, adapters, concrete
 ports, write actions, TradeDraft, trade suggestions, strategies, or broker
 orders.
+## TASK-119 QML Static Gate CTest
+
+TASK-119 adds automated static gates for future presenter QML binding. The
+presenter remains the only allowed future QML-facing accounting boundary, but
+QML is still not wired in this task.
+
+The gate rejects direct QML references to DataServiceClient, DataServiceApi,
+SQLite, DataAccess, AccountingEngine, ShellAccountingDataServiceAdapter,
+ShellAccountingDataServiceClientPortAdapter, write actions, premature
+ShellAccounting bindings, and accounting-scoped trading controls.

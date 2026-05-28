@@ -363,3 +363,17 @@ v0.1 草案。
 - QML still must not directly call DataServiceClient, access SQLite or
   DataAccess, call AccountingEngine, or calculate accounting values.
 - TASK-118 does not modify QML.
+## TASK-119 ShellAccounting QML Static Gate CTest
+
+The ShellAccounting QML static gate is now automated by CTest. Future read-only
+accounting UI must pass the gate before merge: QML must not directly call
+DataServiceClient, access SQLite / DataAccess, call AccountingEngine, expose
+write actions, or show accounting-scope trading buttons.
+
+The gate preserves the UI contract that Empty is not Unavailable, warning /
+error / stale states remain visible, privacy display is controlled by
+ShellServices, and read-only accounting UI does not display buy, sell,
+TradeDraft, strategy, or broker-order controls.
+
+TASK-119 does not modify QML, register QML types, or implement accounting QML
+pages.

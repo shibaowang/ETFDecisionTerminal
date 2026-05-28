@@ -165,3 +165,11 @@ Updated readiness:
 - Live-call gate CTests exist.
 - Real DataServiceClient integration still requires explicit authorization.
 - QML integration has not started.
+
+## TASK-110 Readiness Update
+
+The live-call skeleton is complete as a prerequisite for a future real adapter:
+the abstract client port exists, spy-port method mapping is tested, request /
+response / error mapping is tested, and no-write / no-trade / no-real-dependency
+checks are in place. Real DataServiceClient integration and QML integration
+still require separate explicit authorization.

@@ -5,6 +5,14 @@
 This document defines accounting ViewModel / Model state expression. It does
 not implement code and does not modify QML.
 
+## TASK-110 Mapping Input
+
+`ShellAccountingDataServiceClientPort` responses now feed
+`ShellAccountingServiceResult` in tests. The state contract is unchanged:
+`implemented=false` maps to `Unavailable`, protocol errors map to visible error
+state, timeout / transport flags remain visible, warnings are not swallowed, and
+no trade action state is exposed to QML.
+
 ## State Enum Draft
 
 - `Idle`: no refresh has started. QML can show neutral placeholders. Data may

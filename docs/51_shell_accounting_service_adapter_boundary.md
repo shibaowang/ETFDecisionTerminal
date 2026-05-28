@@ -297,3 +297,11 @@ rollback path to not-connected / unavailable.
 
 The controller still consumes only `ShellAccountingServiceAdapter`. QML remains
 unwired.
+
+## TASK-110 Abstract Client Port
+
+`ShellAccountingDataServiceAdapter` now has a live-call skeleton that consumes a
+ShellServices-owned `ShellAccountingDataServiceClientPort` abstraction. The
+adapter can call wrapper-like methods on a test-only spy port, but it still does
+not depend on or call the real DataServiceClient. A concrete DataServiceClient
+port remains a separate future task.

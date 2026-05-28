@@ -10,6 +10,13 @@ The document exists so future action implementation can be reviewed before any
 server action, repository query, replay integration, or UI-facing controller is
 added.
 
+## TASK-110 Shell Adapter Port Note
+
+The Shell adapter live-call skeleton maps only to abstract port methods that
+mirror the read-only accounting wrapper names. It still does not call
+DataServiceClient directly, does not change guard payloads, and does not expose
+DataService payloads directly to QML.
+
 ## Current Status
 
 - `accounting.health` exists.

@@ -264,3 +264,30 @@ The skeleton still returns not connected / unavailable. No live DataServiceClien
 wrapper calls are implemented in TASK-109. Future live-call work must satisfy
 the docs/55 and docs/56 gates before replacing the current not-connected
 behavior.
+
+## TASK-110 Live-call Skeleton with Test Port
+
+TASK-110 adds an internal `ShellAccountingDataServiceClientPort` abstraction and
+lightweight request / response types for test-first adapter wiring. The
+production `ShellAccountingDataServiceAdapter` can optionally hold this abstract
+port and route:
+
+- `fetchPositionList` -> `callPositionList`
+- `fetchCashSummary` -> `callCashSummary`
+- `fetchPortfolioPnlSummary` -> `callPortfolioPnlSummary`
+- `fetchBasePositionSummary` -> `callBasePositionSummary`
+- `fetchSniperPoolSummary` -> `callSniperPoolSummary`
+
+The default no-port path still returns
+`SHELL_ACCOUNTING_DATASERVICE_ADAPTER_NOT_CONNECTED`. With a test-only spy port,
+the adapter maps `ShellAccountingServiceRequest` into object-like payload text
+and maps the port response into `ShellAccountingServiceResult`, preserving
+`protocolSuccess`, `implemented`, `readOnly`, `writeEnabled`, `payloadStatus`,
+`dataQualityStatus`, issues, warnings, errors, raw payload, timeout,
+transportError, protocolError, and domainError.
+
+This is still not real DataServiceClient integration. The adapter still does
+not include or call DataServiceClient, DataServiceApi, DataAccess,
+AccountingEngine, SQLite, QtQuick, or QML. The port abstraction is the only new
+production boundary, and a concrete DataServiceClient port implementation
+requires a separate authorization.

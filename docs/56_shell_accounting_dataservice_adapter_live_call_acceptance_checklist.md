@@ -72,3 +72,16 @@ The first live-call implementation should only allow:
 - no AccountingEngine dependency tests
 - controller integration tests
 - transport repeat tests
+
+## TASK-110 Status
+
+- [x] Live-call skeleton with abstract client port has been added.
+- [x] Test-only spy port covers method mapping.
+- [x] Request mapping is covered by tests.
+- [x] Response mapping is covered by tests.
+- [x] Protocol / timeout / transport / domain issue mapping is covered by tests.
+- [x] No-write / no-trade behavior is covered by tests.
+- [x] No-real-dependency checks are covered by tests.
+- [ ] Concrete DataServiceClient port implementation is still not authorized.
+- [ ] Real DataServiceClient integration is still not started.
+- [ ] QML integration is still not started.

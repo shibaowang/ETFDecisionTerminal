@@ -182,3 +182,15 @@ A future live-call PR must state:
 - rollback behavior
 - full `ctest` result
 - `transport_local_socket_echo` 50-repeat result
+
+## TASK-110 Live-call Skeleton Status
+
+TASK-110 satisfies part of this gate with a test-first skeleton. The adapter now
+has an internal abstract client port and can exercise method mapping, request
+mapping, response mapping, error mapping, and no-write / no-trade behavior with
+a test-only spy port.
+
+This does not enable real DataServiceClient calls. The concrete DataServiceClient
+port is still absent, QML remains unwired, SQLite remains unaccessed, and
+AccountingEngine remains uncalled. The default no-port behavior remains the safe
+not-connected / unavailable fallback.

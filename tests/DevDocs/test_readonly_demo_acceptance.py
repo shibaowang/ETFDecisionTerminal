@@ -91,8 +91,17 @@ def main() -> int:
     shell_accounting_dataservice_adapter_source_path = (
         root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceAdapter.cpp"
     )
+    shell_accounting_dataservice_client_port_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceClientPort.h"
+    )
     shell_accounting_dataservice_adapter_skeleton_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapter" / "CMakeLists.txt"
+    )
+    spy_shell_accounting_dataservice_client_port_header_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapter" / "SpyShellAccountingDataServiceClientPort.h"
+    )
+    spy_shell_accounting_dataservice_client_port_source_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapter" / "SpyShellAccountingDataServiceClientPort.cpp"
     )
     shell_accounting_dataservice_adapter_live_call_gate_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapterLiveCallGate" / "CMakeLists.txt"
@@ -526,8 +535,20 @@ def main() -> int:
         "ShellAccountingDataServiceAdapter production skeleton source exists",
     )
     require(
+        shell_accounting_dataservice_client_port_header_path.exists(),
+        "ShellAccountingDataServiceClientPort live-call skeleton header exists",
+    )
+    require(
         shell_accounting_dataservice_adapter_skeleton_cmake_path.exists(),
         "Shell accounting DataService adapter skeleton CMake exists",
+    )
+    require(
+        spy_shell_accounting_dataservice_client_port_header_path.exists(),
+        "Shell accounting DataService adapter spy port header exists",
+    )
+    require(
+        spy_shell_accounting_dataservice_client_port_source_path.exists(),
+        "Shell accounting DataService adapter spy port source exists",
     )
     require(
         shell_accounting_dataservice_adapter_live_call_gate_cmake_path.exists(),
@@ -934,8 +955,17 @@ def main() -> int:
     shell_accounting_dataservice_adapter_source = shell_accounting_dataservice_adapter_source_path.read_text(
         encoding="utf-8"
     )
+    shell_accounting_dataservice_client_port_header = shell_accounting_dataservice_client_port_header_path.read_text(
+        encoding="utf-8"
+    )
     shell_accounting_dataservice_adapter_skeleton_cmake = (
         shell_accounting_dataservice_adapter_skeleton_cmake_path.read_text(encoding="utf-8")
+    )
+    spy_shell_accounting_dataservice_client_port_header = (
+        spy_shell_accounting_dataservice_client_port_header_path.read_text(encoding="utf-8")
+    )
+    spy_shell_accounting_dataservice_client_port_source = (
+        spy_shell_accounting_dataservice_client_port_source_path.read_text(encoding="utf-8")
     )
     shell_accounting_dataservice_adapter_live_call_gate_cmake = (
         shell_accounting_dataservice_adapter_live_call_gate_cmake_path.read_text(encoding="utf-8")
@@ -3705,6 +3735,111 @@ def main() -> int:
         "ShellAccountingDataServiceAdapter" not in qml_sources,
         "QML does not reference ShellAccountingDataServiceAdapter",
     )
+
+    require(
+        "ShellAccountingDataServiceClientPort" in shell_accounting_dataservice_client_port_header,
+        "ShellAccountingDataServiceClientPort interface exists",
+    )
+    require(
+        "ShellAccountingDataServiceClientRequest" in shell_accounting_dataservice_client_port_header,
+        "ShellAccountingDataServiceClientRequest exists",
+    )
+    require(
+        "ShellAccountingDataServiceClientResponse" in shell_accounting_dataservice_client_port_header,
+        "ShellAccountingDataServiceClientResponse exists",
+    )
+    require(
+        "TASK-110" in codex_prompt_template,
+        "prompt template mentions TASK-110",
+    )
+    require(
+        "live-call skeleton" in readme,
+        "README mentions live-call skeleton",
+    )
+    for doc_text, doc_name in [
+        (shell_accounting_dataservice_adapter_boundary, "docs/53"),
+        (shell_accounting_dataservice_adapter_test_plan, "docs/54"),
+        (shell_accounting_dataservice_adapter_live_call_gate, "docs/55"),
+        (shell_accounting_dataservice_adapter_live_call_checklist, "docs/56"),
+    ]:
+        require(
+            "TASK-110" in doc_text or "live-call skeleton" in doc_text,
+            f"{doc_name} mentions TASK-110 live-call skeleton",
+        )
+    for test_name in [
+        "shell_accounting_dataservice_adapter_live_call_skeleton_default_not_connected",
+        "shell_accounting_dataservice_adapter_live_call_skeleton_method_mapping",
+        "shell_accounting_dataservice_adapter_live_call_skeleton_request_mapping",
+        "shell_accounting_dataservice_adapter_live_call_skeleton_response_mapping",
+        "shell_accounting_dataservice_adapter_live_call_skeleton_error_mapping",
+        "shell_accounting_dataservice_adapter_live_call_skeleton_no_write_no_trade",
+        "shell_accounting_dataservice_adapter_live_call_skeleton_no_real_dependency",
+        "shell_accounting_controller_with_dataservice_adapter_spy_port",
+    ]:
+        require(
+            test_name in shell_accounting_dataservice_adapter_skeleton_cmake,
+            f"DataService adapter live-call skeleton registers {test_name}",
+        )
+    require(
+        "ShellAccountingDataServiceClientPort" in shellservices_cmake,
+        "ShellServices CMake adds ShellAccountingDataServiceClientPort",
+    )
+    require(
+        "callPositionList" in shell_accounting_dataservice_adapter_source,
+        "adapter calls abstract port position method",
+    )
+    require(
+        "callCashSummary" in shell_accounting_dataservice_adapter_source,
+        "adapter calls abstract port cash method",
+    )
+    require(
+        "callPortfolioPnlSummary" in shell_accounting_dataservice_adapter_source,
+        "adapter calls abstract port portfolio pnl method",
+    )
+    require(
+        "callBasePositionSummary" in shell_accounting_dataservice_adapter_source,
+        "adapter calls abstract port base position method",
+    )
+    require(
+        "callSniperPoolSummary" in shell_accounting_dataservice_adapter_source,
+        "adapter calls abstract port sniper pool method",
+    )
+    live_call_skeleton_sources = "\n".join(
+        [
+            shell_accounting_dataservice_adapter_header,
+            shell_accounting_dataservice_adapter_source,
+            shell_accounting_dataservice_client_port_header,
+            spy_shell_accounting_dataservice_client_port_header,
+            spy_shell_accounting_dataservice_client_port_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick", "QML"]:
+        require(
+            f'#include "{forbidden}' not in live_call_skeleton_sources
+            and f"#include <{forbidden}" not in live_call_skeleton_sources,
+            f"TASK-110 live-call skeleton does not include {forbidden}",
+        )
+    for forbidden_call in [
+        "DataServiceClient::positionList",
+        "DataServiceClient::cashSummary",
+        "DataServiceClient::portfolioPnlSummary",
+        "DataServiceClient::basePositionSummary",
+        "DataServiceClient::sniperPoolSummary",
+        ".positionList(",
+        ".cashSummary(",
+        ".portfolioPnlSummary(",
+        ".basePositionSummary(",
+        ".sniperPoolSummary(",
+        "->positionList(",
+        "->cashSummary(",
+        "->portfolioPnlSummary(",
+        "->basePositionSummary(",
+        "->sniperPoolSummary(",
+    ]:
+        require(
+            forbidden_call not in live_call_skeleton_sources,
+            f"TASK-110 live-call skeleton does not call {forbidden_call}",
+        )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

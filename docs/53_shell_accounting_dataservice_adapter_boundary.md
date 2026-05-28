@@ -222,3 +222,31 @@ The read-only action allowlist is covered by tests and contains only:
 
 Forbidden write, trade, draft, snapshot, strategy, and broker actions are
 covered by denylist tests. The real adapter is still not implemented.
+
+## TASK-108 Production Skeleton Boundary
+
+TASK-108 adds a production-side `ShellAccountingDataServiceAdapter` skeleton:
+
+- `libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h`
+- `libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp`
+
+The skeleton implements `ShellAccountingServiceAdapter`, but it does not include
+or call DataServiceClient, DataServiceApi, DataAccess, AccountingEngine, SQLite,
+QtQuick, or QML. It does not hold a live client, open sockets, use IPC, access a
+database, write files, generate TradeDraft, generate trade suggestions, execute
+strategy, or submit broker orders.
+
+Current fetch behavior is intentionally not connected:
+
+- `fetchPositionList`
+- `fetchCashSummary`
+- `fetchPortfolioPnlSummary`
+- `fetchBasePositionSummary`
+- `fetchSniperPoolSummary`
+
+Each method returns a controlled
+`SHELL_ACCOUNTING_DATASERVICE_ADAPTER_NOT_CONNECTED` result with
+`implemented=false`, `readOnly=true`, `writeEnabled=false`,
+`dataQualityStatus=UNAVAILABLE`, `domainError=true`, and a blocking visible
+issue. This skeleton is not the live adapter. Replacing not-connected behavior
+with real DataServiceClient wrapper calls requires a separate authorized task.

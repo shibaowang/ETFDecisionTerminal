@@ -79,6 +79,15 @@ def main() -> int:
     shell_accounting_dataservice_adapter_test_plan_path = (
         root / "docs" / "54_shell_accounting_dataservice_adapter_test_plan.md"
     )
+    shell_accounting_dataservice_adapter_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h"
+    )
+    shell_accounting_dataservice_adapter_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceAdapter.cpp"
+    )
+    shell_accounting_dataservice_adapter_skeleton_cmake_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapter" / "CMakeLists.txt"
+    )
     shell_accounting_dataservice_adapter_scaffolding_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "CMakeLists.txt"
     )
@@ -492,6 +501,18 @@ def main() -> int:
         "Shell accounting DataService adapter test plan doc exists",
     )
     require(
+        shell_accounting_dataservice_adapter_header_path.exists(),
+        "ShellAccountingDataServiceAdapter production skeleton header exists",
+    )
+    require(
+        shell_accounting_dataservice_adapter_source_path.exists(),
+        "ShellAccountingDataServiceAdapter production skeleton source exists",
+    )
+    require(
+        shell_accounting_dataservice_adapter_skeleton_cmake_path.exists(),
+        "Shell accounting DataService adapter skeleton CMake exists",
+    )
+    require(
         shell_accounting_dataservice_adapter_scaffolding_cmake_path.exists(),
         "Shell accounting DataService adapter scaffolding CMake exists",
     )
@@ -879,6 +900,15 @@ def main() -> int:
     )
     shell_accounting_dataservice_adapter_test_plan = shell_accounting_dataservice_adapter_test_plan_path.read_text(
         encoding="utf-8"
+    )
+    shell_accounting_dataservice_adapter_header = shell_accounting_dataservice_adapter_header_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_adapter_source = shell_accounting_dataservice_adapter_source_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_adapter_skeleton_cmake = (
+        shell_accounting_dataservice_adapter_skeleton_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_dataservice_adapter_scaffolding_cmake = (
         shell_accounting_dataservice_adapter_scaffolding_cmake_path.read_text(encoding="utf-8")
@@ -3427,25 +3457,62 @@ def main() -> int:
         "docs/54 mentions spy wrapper",
     )
     require("TASK-107" in codex_prompt_template, "prompt template mentions TASK-107")
+    require("TASK-108" in codex_prompt_template, "prompt template mentions TASK-108")
     require(
         "Real adapter may only call read-only accounting wrappers" in codex_prompt_template,
         "prompt template restricts real adapter to read-only accounting wrappers",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter skeleton is not real" in codex_prompt_template,
+        "prompt template states skeleton is not real DataServiceClient integration",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter production skeleton" in readme,
+        "README mentions ShellAccountingDataServiceAdapter production skeleton",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter production skeleton" in docs_index,
+        "docs index mentions ShellAccountingDataServiceAdapter production skeleton",
+    )
+    require(
+        "TASK-108" in shell_accounting_dataservice_adapter_boundary
+        or "Production Skeleton Boundary" in shell_accounting_dataservice_adapter_boundary,
+        "docs/53 mentions TASK-108 production skeleton",
+    )
+    require(
+        "TASK-108" in shell_accounting_dataservice_adapter_test_plan,
+        "docs/54 mentions TASK-108 skeleton tests",
     )
     require(
         "SpyAccountingDataServiceClient" in spy_accounting_dataservice_client_header,
         "spy wrapper helper exists in tests",
     )
     require(
-        "ShellAccountingDataServiceAdapter" not in shellservices_cmake,
-        "ShellServices CMake does not add ShellAccountingDataServiceAdapter production target",
+        "ShellAccountingDataServiceAdapter" in shellservices_cmake,
+        "ShellServices CMake adds ShellAccountingDataServiceAdapter production skeleton",
     )
     require(
-        not (root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h").exists(),
-        "ShellAccountingDataServiceAdapter production header was not added",
+        "ShellAccountingDataServiceAdapter final" in shell_accounting_dataservice_adapter_header,
+        "ShellAccountingDataServiceAdapter production skeleton class exists",
     )
     require(
-        not (root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceAdapter.cpp").exists(),
-        "ShellAccountingDataServiceAdapter production source was not added",
+        "SHELL_ACCOUNTING_DATASERVICE_ADAPTER_NOT_CONNECTED" in shell_accounting_dataservice_adapter_source,
+        "ShellAccountingDataServiceAdapter skeleton returns not connected status",
+    )
+    for test_name in [
+        "shell_accounting_dataservice_adapter_skeleton_interface",
+        "shell_accounting_dataservice_adapter_skeleton_not_connected",
+        "shell_accounting_dataservice_adapter_skeleton_no_live_calls",
+        "shell_accounting_dataservice_adapter_skeleton_no_write_no_trade",
+        "shell_accounting_dataservice_adapter_skeleton_controller_integration",
+    ]:
+        require(
+            test_name in shell_accounting_dataservice_adapter_skeleton_cmake,
+            f"DataService adapter skeleton registers {test_name}",
+        )
+    require(
+        "add_subdirectory(ShellAccountingDataServiceAdapter)" in tests_cmake,
+        "tests CMake adds Shell accounting DataService adapter skeleton tests",
     )
     spy_scaffolding_sources = "\n".join(
         [
@@ -3465,6 +3532,39 @@ def main() -> int:
         "ShellAccountingDataServiceAdapter" not in qml_sources,
         "QML does not reference ShellAccountingDataServiceAdapter",
     )
+    adapter_skeleton_sources = "\n".join(
+        [
+            shell_accounting_dataservice_adapter_header,
+            shell_accounting_dataservice_adapter_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick", "QML"]:
+        require(
+            f'#include "{forbidden}' not in adapter_skeleton_sources
+            and f"#include <{forbidden}" not in adapter_skeleton_sources,
+            f"ShellAccountingDataServiceAdapter skeleton does not include {forbidden}",
+        )
+    for forbidden_call in [
+        "DataServiceClient::positionList",
+        "DataServiceClient::cashSummary",
+        "DataServiceClient::portfolioPnlSummary",
+        "DataServiceClient::basePositionSummary",
+        "DataServiceClient::sniperPoolSummary",
+        ".positionList(",
+        ".cashSummary(",
+        ".portfolioPnlSummary(",
+        ".basePositionSummary(",
+        ".sniperPoolSummary(",
+        "->positionList(",
+        "->cashSummary(",
+        "->portfolioPnlSummary(",
+        "->basePositionSummary(",
+        "->sniperPoolSummary(",
+    ]:
+        require(
+            forbidden_call not in adapter_skeleton_sources,
+            f"ShellAccountingDataServiceAdapter skeleton does not call {forbidden_call}",
+        )
     controller_adapter_sources = "\n".join([shell_accounting_controller_header, shell_accounting_controller_source])
     for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite"]:
         require(

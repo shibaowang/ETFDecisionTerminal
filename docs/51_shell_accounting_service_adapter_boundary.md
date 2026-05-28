@@ -262,3 +262,27 @@ The scaffolding proves the future real adapter must stay inside the read-only
 accounting wrapper allowlist and must reject write, draft, snapshot, strategy,
 and broker action paths. The real adapter still requires separate
 authorization.
+
+## TASK-108 DataService Adapter Skeleton
+
+TASK-108 adds a production skeleton named `ShellAccountingDataServiceAdapter`.
+It implements `ShellAccountingServiceAdapter`, but it is not a real live
+DataServiceClient adapter.
+
+Current boundary:
+
+- no DataServiceClient include or call
+- no DataServiceApi include
+- no DataAccess include
+- no AccountingEngine include
+- no SQLite include or access
+- no QtQuick / QML include
+- no live client
+- no socket / IPC / network call
+- no writes
+- no TradeDraft
+- no trade suggestion
+
+All fetch methods currently return a controlled adapter-not-connected /
+`UNAVAILABLE` result. Real DataServiceClient integration still requires a
+separate task and explicit authorization.

@@ -124,6 +124,10 @@
 - ShellServices accounting controller contract: documentation only for future
   read-only ShellServices controller / ViewModel boundaries; QML remains
   disconnected from accounting actions.
+- ShellAccountingDataServiceAdapter production skeleton: implements the
+  `ShellAccountingServiceAdapter` boundary but only returns not connected /
+  unavailable; live DataServiceClient calls, QML integration, SQLite access, and
+  writes remain unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

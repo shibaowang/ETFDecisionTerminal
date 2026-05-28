@@ -132,3 +132,19 @@ Updated readiness:
 - Real adapter still requires separate authorization.
 - DataServiceClient integration has not started.
 - QML integration has not started.
+
+## TASK-108 Skeleton Readiness Status
+
+TASK-108 adds the `ShellAccountingDataServiceAdapter` production skeleton.
+
+Updated readiness:
+
+- Skeleton implements `ShellAccountingServiceAdapter`.
+- Skeleton has no live client and returns adapter-not-connected /
+  `UNAVAILABLE`.
+- Skeleton tests cover interface, not-connected results, no live calls,
+  no-write / no-trade, and controller integration.
+- Real DataServiceClient integration has not started.
+- QML integration has not started.
+- Replacing not-connected behavior with real wrapper calls still requires
+  explicit authorization and must pass the TASK-107 spy/wrapper gate.

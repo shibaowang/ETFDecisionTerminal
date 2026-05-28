@@ -132,3 +132,24 @@ Added scaffolding:
 
 The real `ShellAccountingDataServiceAdapter` implementation must pass these
 tests or their real-adapter equivalents before it can merge.
+
+## TASK-108 Skeleton Tests
+
+TASK-108 adds production skeleton tests for the not-connected adapter boundary:
+
+- `shell_accounting_dataservice_adapter_skeleton_interface`
+- `shell_accounting_dataservice_adapter_skeleton_not_connected`
+- `shell_accounting_dataservice_adapter_skeleton_no_live_calls`
+- `shell_accounting_dataservice_adapter_skeleton_no_write_no_trade`
+- `shell_accounting_dataservice_adapter_skeleton_controller_integration`
+
+These tests verify construction through `ShellAccountingServiceAdapter`,
+`hasLiveClient=false`, `readOnly=true`, `writeEnabled=false`, controlled
+not-connected / unavailable fetch results, visible blocking issue propagation,
+no DataServiceClient / DataServiceApi / DataAccess / AccountingEngine / SQLite /
+QtQuick / QML include or call path, no TradeDraft, no trade suggestion, no
+strategy, no broker order, and controller refresh mapping to `Unavailable`.
+
+Future real adapter work must replace the not-connected behavior with
+DataServiceClient wrapper calls only after explicit authorization, while still
+passing the TASK-107 spy/wrapper checks or their real equivalents.

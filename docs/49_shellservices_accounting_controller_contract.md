@@ -329,6 +329,18 @@ The controller contract remains unchanged: it may consume service results only
 through `ShellAccountingServiceAdapter`, never through a direct DataServiceClient
 hard dependency, and QML remains disconnected.
 
+## TASK-108 DataService Adapter Skeleton Consumer Boundary
+
+TASK-108 adds a production `ShellAccountingDataServiceAdapter` skeleton. The
+controller can inject it through the existing `ShellAccountingServiceAdapter`
+abstraction, but the skeleton only returns adapter-not-connected /
+`UNAVAILABLE` results.
+
+This does not start real DataServiceClient integration. The controller still
+does not directly hard-depend on DataServiceClient, QML is still disconnected,
+and no write, TradeDraft, trade suggestion, strategy, or broker order path is
+enabled.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

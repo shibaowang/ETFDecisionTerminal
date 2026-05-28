@@ -232,3 +232,15 @@ The scaffolding keeps protocol error, timeout, transport error, domain issue,
 `implemented=false`, `*_NOT_AVAILABLE`, warning, blocking issue, raw payload,
 `readOnly`, and `writeEnabled` semantics visible for future ViewModel state
 mapping.
+
+## TASK-108 Adapter Not Connected State
+
+The `ShellAccountingDataServiceAdapter` production skeleton returns
+`SHELL_ACCOUNTING_DATASERVICE_ADAPTER_NOT_CONNECTED` with
+`dataQualityStatus=UNAVAILABLE`, `implemented=false`, `readOnly=true`, and
+`writeEnabled=false`.
+
+Controller refresh with the skeleton maps this to `Unavailable`. The blocking
+adapter-not-connected issue remains visible. This does not represent `Empty`,
+does not hide the unavailable state, and does not imply real DataServiceClient
+or QML integration.

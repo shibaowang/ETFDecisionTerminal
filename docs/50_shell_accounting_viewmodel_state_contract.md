@@ -181,3 +181,28 @@ It must keep:
 
 The interface skeleton does not change QML behavior and does not perform real
 service calls.
+
+## TASK-105 Fake Adapter Refresh Mapping
+
+This fake adapter refresh coverage remains test-only.
+
+TASK-105 covers the ViewModel state contract through controller refresh methods
+fed by a test-only fake `ShellAccountingServiceAdapter`.
+
+The tests cover:
+
+- guard payloads with `implemented=false -> Unavailable`
+- `*_NOT_AVAILABLE -> Unavailable`
+- protocol error / timeout / transport error visibility
+- warning and blocking domain issue preservation
+- `OK + rows -> Loaded`
+- `OK + no rows -> Empty`
+- `WARNING` / `DEGRADED -> Warning`
+- `ERROR -> Error`
+- `STALE -> Stale`
+- privacy display selection after refresh
+- no TradeDraft, no trade suggestion, no strategy execution, and no broker
+  order after refresh
+
+Empty and Unavailable remain distinct. Fake adapter refresh does not imply real
+DataServiceClient or QML integration.

@@ -55,6 +55,17 @@ const std::string& FakeShellAccountingServiceAdapter::lastActionName() const noe
     return lastActionName_;
 }
 
+void FakeShellAccountingServiceAdapter::setNextResult(
+    etfdt::shell_services::ShellAccountingServiceResult result)
+{
+    result_ = std::move(result);
+}
+
+void FakeShellAccountingServiceAdapter::setOnFetch(std::function<void()> onFetch)
+{
+    onFetch_ = std::move(onFetch);
+}
+
 etfdt::shell_services::ShellAccountingServiceResult
 FakeShellAccountingServiceAdapter::makeResult(
     const etfdt::shell_services::ShellAccountingServiceRequest& request,
@@ -62,6 +73,9 @@ FakeShellAccountingServiceAdapter::makeResult(
 {
     ++callCount_;
     lastActionName_ = std::move(actionName);
+    if (onFetch_) {
+        onFetch_();
+    }
     auto result = result_;
     result.actionName = lastActionName_;
     if (!request.actionName.empty()) {

@@ -289,6 +289,27 @@ The controller remains read-only, write-disabled, and non-QML-facing. Real
 DataServiceClient integration remains unimplemented and requires a separate
 task.
 
+## TASK-105 Fake Adapter Injection Behavior
+
+TASK-105 adds controller refresh behavior through the abstract
+`ShellAccountingServiceAdapter` only. Tests inject a test-only fake adapter and
+drive:
+
+- `refreshPositionList`
+- `refreshCashSummary`
+- `refreshPortfolioPnlSummary`
+- `refreshBasePositionSummary`
+- `refreshSniperPoolSummary`
+
+The controller maps fake adapter results into loading, unavailable, loaded,
+empty, warning, error, and stale states. It preserves visible issues, keeps
+`readOnly=true`, keeps `writeEnabled=false`, and keeps TradeDraft generation,
+trade suggestion generation, strategy execution, and broker order submission
+disabled.
+
+Real DataServiceClient integration has not started. QML integration has not
+started. The fake adapter remains test-only.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

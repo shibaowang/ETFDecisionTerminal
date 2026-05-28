@@ -219,3 +219,22 @@ Still not implemented:
 The interface skeleton does not depend on DataServiceClient, DataServiceApi,
 DataAccess, AccountingEngine, SQLite, QtQuick, or QML. The fake adapter is only
 for tests and must not move into production libs.
+
+## TASK-105 Fake Adapter Consumption
+
+TASK-105 validates that `ShellAccountingReadOnlyController` can consume the
+abstract `ShellAccountingServiceAdapter` using a test-only fake adapter.
+
+Covered behavior:
+
+- action-specific refresh methods call the corresponding adapter method
+- refresh enters `Loading` before the adapter returns
+- fake guard payloads map to `Unavailable`
+- fake protocol / timeout / transport errors map to visible error state
+- fake domain issues remain visible
+- fake stale, warning, loaded, and empty states map through the controller
+- privacy display and no-trade boundaries remain intact
+
+The real `ShellAccountingDataServiceAdapter` is still not implemented. The fake
+adapter remains under tests. The controller still does not include or call real
+DataServiceClient.

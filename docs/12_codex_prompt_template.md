@@ -567,3 +567,10 @@ v0.1 草案。
 - Do not call real DataServiceClient without explicit authorization.
 - Fake adapter must remain test-only.
 - QML integration requires a separate task.
+- TASK-105 ShellAccounting fake adapter injection behavior does not equal real
+  DataServiceClient integration.
+- Fake adapter must remain test-only and must not move into production libs.
+- Do not call real DataServiceClient unless explicitly authorized.
+- QML integration requires a separate task.
+- No TradeDraft / no trade suggestion / no strategy execution remains
+  mandatory for Shell accounting refresh paths.

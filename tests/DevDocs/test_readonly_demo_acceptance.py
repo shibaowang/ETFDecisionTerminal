@@ -103,6 +103,24 @@ def main() -> int:
     shell_accounting_controller_adapter_injection_test_path = (
         root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_adapter_injection.cpp"
     )
+    shell_accounting_fake_adapter_refresh_success_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_fake_adapter_refresh_success.cpp"
+    )
+    shell_accounting_fake_adapter_unavailable_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_fake_adapter_unavailable.cpp"
+    )
+    shell_accounting_fake_adapter_protocol_error_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_fake_adapter_protocol_error.cpp"
+    )
+    shell_accounting_fake_adapter_issue_mapping_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_fake_adapter_issue_mapping.cpp"
+    )
+    shell_accounting_fake_adapter_privacy_no_trade_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_fake_adapter_privacy_no_trade.cpp"
+    )
+    shell_accounting_fake_adapter_no_dependency_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_fake_adapter_no_real_dependency.cpp"
+    )
     shell_accounting_scaffolding_cmake_path = (
         root / "tests" / "ShellAccountingControllerScaffolding" / "CMakeLists.txt"
     )
@@ -460,6 +478,30 @@ def main() -> int:
         shell_accounting_controller_adapter_injection_test_path.exists(),
         "Shell accounting controller adapter injection test exists",
     )
+    require(
+        shell_accounting_fake_adapter_refresh_success_test_path.exists(),
+        "Shell accounting fake adapter refresh success test exists",
+    )
+    require(
+        shell_accounting_fake_adapter_unavailable_test_path.exists(),
+        "Shell accounting fake adapter unavailable test exists",
+    )
+    require(
+        shell_accounting_fake_adapter_protocol_error_test_path.exists(),
+        "Shell accounting fake adapter protocol error test exists",
+    )
+    require(
+        shell_accounting_fake_adapter_issue_mapping_test_path.exists(),
+        "Shell accounting fake adapter issue mapping test exists",
+    )
+    require(
+        shell_accounting_fake_adapter_privacy_no_trade_test_path.exists(),
+        "Shell accounting fake adapter privacy no trade test exists",
+    )
+    require(
+        shell_accounting_fake_adapter_no_dependency_test_path.exists(),
+        "Shell accounting fake adapter no real dependency test exists",
+    )
     require(shell_accounting_scaffolding_cmake_path.exists(), "Shell accounting scaffolding CMake exists")
     require(shell_accounting_scenario_header_path.exists(), "Shell accounting scenario header exists")
     require(shell_accounting_scenario_source_path.exists(), "Shell accounting scenario source exists")
@@ -805,6 +847,24 @@ def main() -> int:
         encoding="utf-8"
     )
     shell_accounting_controller_adapter_injection_test = shell_accounting_controller_adapter_injection_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_fake_adapter_refresh_success_test = (
+        shell_accounting_fake_adapter_refresh_success_test_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_fake_adapter_unavailable_test = shell_accounting_fake_adapter_unavailable_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_fake_adapter_protocol_error_test = shell_accounting_fake_adapter_protocol_error_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_fake_adapter_issue_mapping_test = shell_accounting_fake_adapter_issue_mapping_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_fake_adapter_privacy_no_trade_test = (
+        shell_accounting_fake_adapter_privacy_no_trade_test_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_fake_adapter_no_dependency_test = shell_accounting_fake_adapter_no_dependency_test_path.read_text(
         encoding="utf-8"
     )
     release_notes = release_notes_path.read_text(encoding="utf-8")
@@ -3081,6 +3141,24 @@ def main() -> int:
         "serviceAdapter_" in shell_accounting_controller_header,
         "controller stores optional service adapter",
     )
+    require("refreshPositionList" in shell_accounting_controller_header, "controller exposes refreshPositionList")
+    require("refreshCashSummary" in shell_accounting_controller_header, "controller exposes refreshCashSummary")
+    require(
+        "refreshPortfolioPnlSummary" in shell_accounting_controller_header,
+        "controller exposes refreshPortfolioPnlSummary",
+    )
+    require(
+        "refreshBasePositionSummary" in shell_accounting_controller_header,
+        "controller exposes refreshBasePositionSummary",
+    )
+    require(
+        "refreshSniperPoolSummary" in shell_accounting_controller_header,
+        "controller exposes refreshSniperPoolSummary",
+    )
+    require(
+        "SERVICE_ADAPTER_NOT_CONFIGURED" in shell_accounting_controller_source,
+        "controller handles missing adapter without real service calls",
+    )
     require(
         "shell_accounting_service_adapter_interface" in shell_accounting_service_adapter_cmake,
         "adapter tests register interface test",
@@ -3096,6 +3174,30 @@ def main() -> int:
     require(
         "shell_accounting_controller_adapter_injection" in shell_accounting_service_adapter_cmake,
         "adapter tests register controller injection test",
+    )
+    require(
+        "shell_accounting_controller_fake_adapter_refresh_success" in shell_accounting_service_adapter_cmake,
+        "adapter tests register fake adapter refresh success test",
+    )
+    require(
+        "shell_accounting_controller_fake_adapter_unavailable" in shell_accounting_service_adapter_cmake,
+        "adapter tests register fake adapter unavailable test",
+    )
+    require(
+        "shell_accounting_controller_fake_adapter_protocol_error" in shell_accounting_service_adapter_cmake,
+        "adapter tests register fake adapter protocol error test",
+    )
+    require(
+        "shell_accounting_controller_fake_adapter_issue_mapping" in shell_accounting_service_adapter_cmake,
+        "adapter tests register fake adapter issue mapping test",
+    )
+    require(
+        "shell_accounting_controller_fake_adapter_privacy_no_trade" in shell_accounting_service_adapter_cmake,
+        "adapter tests register fake adapter privacy no trade test",
+    )
+    require(
+        "shell_accounting_controller_fake_adapter_no_real_dependency" in shell_accounting_service_adapter_cmake,
+        "adapter tests register fake adapter no real dependency test",
     )
     require(
         "add_subdirectory(ShellAccountingServiceAdapter)" in tests_cmake,
@@ -3131,6 +3233,57 @@ def main() -> int:
         "setting adapter does not trigger fetch call" in shell_accounting_controller_adapter_injection_test,
         "controller injection test verifies no automatic service call",
     )
+    require(
+        "refreshPositionList" in shell_accounting_fake_adapter_refresh_success_test
+        and "refreshCashSummary" in shell_accounting_fake_adapter_refresh_success_test
+        and "refreshPortfolioPnlSummary" in shell_accounting_fake_adapter_refresh_success_test
+        and "refreshBasePositionSummary" in shell_accounting_fake_adapter_refresh_success_test
+        and "refreshSniperPoolSummary" in shell_accounting_fake_adapter_refresh_success_test,
+        "fake adapter refresh success test covers all action refresh methods",
+    )
+    require(
+        "SERVICE_ADAPTER_NOT_CONFIGURED" in shell_accounting_fake_adapter_unavailable_test,
+        "fake adapter unavailable test covers missing adapter",
+    )
+    require(
+        "POSITION_LIST_NOT_AVAILABLE" in shell_accounting_fake_adapter_unavailable_test
+        and "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in shell_accounting_fake_adapter_unavailable_test,
+        "fake adapter unavailable test covers guard payloads",
+    )
+    require(
+        "protocolSuccess = false" in shell_accounting_fake_adapter_protocol_error_test
+        and "timeout" in shell_accounting_fake_adapter_protocol_error_test
+        and "transportError" in shell_accounting_fake_adapter_protocol_error_test,
+        "fake adapter protocol test covers protocol, timeout, and transport errors",
+    )
+    require(
+        "MARKET_PRICE_MISSING" in shell_accounting_fake_adapter_issue_mapping_test
+        and "MULTI_CURRENCY_UNSUPPORTED" in shell_accounting_fake_adapter_issue_mapping_test
+        and "FX_RATE_MISSING" in shell_accounting_fake_adapter_issue_mapping_test,
+        "fake adapter issue mapping test covers warning and blocking issues",
+    )
+    require(
+        "privacyMode=true" in shell_accounting_fake_adapter_privacy_no_trade_test
+        and "tradeDraftGenerationEnabled" in shell_accounting_fake_adapter_privacy_no_trade_test,
+        "fake adapter privacy/no-trade test covers privacy and TradeDraft boundary",
+    )
+    require(
+        "DataServiceClient" in shell_accounting_fake_adapter_no_dependency_test
+        and "AccountingEngine" in shell_accounting_fake_adapter_no_dependency_test,
+        "fake adapter no dependency test scans real service dependencies",
+    )
+    require("TASK-105" in shellservices_accounting_controller_contract, "docs/49 mentions TASK-105")
+    require("fake adapter refresh" in shell_accounting_viewmodel_state_contract, "docs/50 mentions fake adapter refresh")
+    require("TASK-105" in shell_accounting_service_adapter_boundary, "docs/51 mentions TASK-105")
+    require("TASK-105" in shell_accounting_service_integration_readiness, "docs/52 mentions TASK-105")
+    require("TASK-105" in codex_prompt_template, "prompt template mentions TASK-105")
+    require("fake adapter injection behavior" in readme, "README mentions fake adapter injection behavior")
+    controller_adapter_sources = "\n".join([shell_accounting_controller_header, shell_accounting_controller_source])
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite"]:
+        require(
+            forbidden not in controller_adapter_sources,
+            f"ShellAccountingReadOnlyController fake adapter path does not include {forbidden}",
+        )
     adapter_production_sources = "\n".join(
         [
             shell_accounting_service_adapter_header,

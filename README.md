@@ -1835,6 +1835,32 @@ only an optional adapter pointer skeleton; it does not call real services. QML
 is still not wired, SQLite is not accessed, AccountingEngine is not called, and
 no writes, TradeDraft, or trade suggestions are enabled.
 
+## TASK-105 ShellAccountingReadOnlyController fake adapter injection behavior
+
+`ShellAccountingReadOnlyController` now consumes the abstract
+`ShellAccountingServiceAdapter` in refresh methods when a test-only fake adapter
+is injected:
+
+- `refreshPositionList`
+- `refreshCashSummary`
+- `refreshPortfolioPnlSummary`
+- `refreshBasePositionSummary`
+- `refreshSniperPoolSummary`
+
+New fake adapter injection tests:
+
+- `shell_accounting_controller_fake_adapter_refresh_success`
+- `shell_accounting_controller_fake_adapter_unavailable`
+- `shell_accounting_controller_fake_adapter_protocol_error`
+- `shell_accounting_controller_fake_adapter_issue_mapping`
+- `shell_accounting_controller_fake_adapter_privacy_no_trade`
+- `shell_accounting_controller_fake_adapter_no_real_dependency`
+
+This is still not a real DataServiceClient adapter. The fake adapter remains
+test-only, QML is still not wired, SQLite is not accessed, AccountingEngine is
+not called, and no database writes, TradeDraft, trade suggestions, strategies,
+or broker orders are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

@@ -66,6 +66,10 @@
 - ShellAccountingServiceAdapter interface skeleton: production interface and
   request/result types only; real DataServiceClient adapter and QML integration
   remain unimplemented.
+- ShellAccountingReadOnlyController fake adapter injection behavior:
+  controller refresh methods can consume the abstract adapter with a test-only
+  fake adapter; real DataServiceClient adapter and QML integration remain
+  unimplemented.
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under

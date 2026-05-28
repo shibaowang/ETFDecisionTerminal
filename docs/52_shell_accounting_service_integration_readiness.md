@@ -84,3 +84,20 @@ Updated readiness:
 - Real adapter still requires separate authorization.
 - DataServiceClient integration has not started.
 - QML integration has not started.
+
+## TASK-105 Fake Adapter Injection Status
+
+TASK-105 completes fake adapter injection behavior for controller refresh
+paths.
+
+Updated readiness:
+
+- Controller refresh can consume the abstract adapter contract.
+- Fake adapter refresh tests cover all five accounting actions.
+- Guard unavailable payloads still map to `Unavailable`.
+- Protocol error, timeout, transport error, warning, blocking issue, stale,
+  loaded, and empty mappings are covered.
+- Privacy and no-trade boundaries remain covered after refresh.
+- Real adapter still requires separate authorization.
+- DataServiceClient integration has not started.
+- QML integration has not started.

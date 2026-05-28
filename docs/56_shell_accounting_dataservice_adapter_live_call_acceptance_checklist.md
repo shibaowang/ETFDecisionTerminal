@@ -129,3 +129,10 @@ authorized.
 - [ ] Concrete DataServiceClient port implementation is still not authorized.
 - [ ] Real DataServiceClient integration is still not started.
 - [ ] QML integration is still not started.
+
+## TASK-116 Presenter Integration Checkpoint
+
+TASK-116 completes a presenter-level checkpoint for the concrete port guard
+wrapper path. The presenter can consume `position.list` through the controller
+and adapter boundaries, but QML integration and real accounting action
+implementation still require separate authorization.

@@ -4205,6 +4205,53 @@ def main() -> int:
     require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting presenter binding")
 
     require(
+        "presenter concrete-port integration" in readme
+        or "ShellAccountingPresenter concrete port integration" in readme,
+        "README mentions presenter concrete port integration",
+    )
+    for test_name in [
+        "shell_accounting_presenter_concrete_port_position_list_guard",
+        "shell_accounting_presenter_concrete_port_refresh_boundary",
+        "shell_accounting_presenter_concrete_port_no_write_no_trade",
+        "shell_accounting_presenter_concrete_port_no_qml_or_forbidden_dependency",
+    ]:
+        require(test_name in shell_accounting_presenter_cmake, f"Presenter CMake registers {test_name}")
+    for doc_text, doc_name in [
+        (shell_accounting_presenter_contract, "docs/57"),
+        (shell_accounting_qml_binding_readiness, "docs/58"),
+        (shellservices_accounting_controller_contract, "docs/49"),
+        (shell_accounting_viewmodel_state_contract, "docs/50"),
+        (shell_accounting_dataservice_adapter_boundary, "docs/53"),
+        (shell_accounting_dataservice_adapter_test_plan, "docs/54"),
+        (shell_accounting_dataservice_adapter_live_call_gate, "docs/55"),
+        (shell_accounting_dataservice_adapter_live_call_checklist, "docs/56"),
+        (dataservice_readonly_accounting_contracts, "docs/37"),
+        (dataservice_accounting_no_write_plan, "docs/38"),
+        (codex_prompt_template, "docs/12"),
+    ]:
+        require("TASK-116" in doc_text, f"{doc_name} mentions TASK-116")
+    require(
+        "DataServiceClient/DataServiceClient.h" not in presenter_sources,
+        "Presenter still does not include DataServiceClient header",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_source,
+        "Controller still avoids direct DataServiceClient include",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_adapter_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_adapter_source,
+        "Adapter body still avoids direct DataServiceClient include",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" in shell_accounting_dataservice_client_port_adapter_header
+        or "DataServiceClient/DataServiceClient.h" in shell_accounting_dataservice_client_port_adapter_source,
+        "only concrete port adapter may include DataServiceClient",
+    )
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added presenter binding after TASK-116")
+
+    require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,
         "v0.4 release notes include suggested tag",
     )

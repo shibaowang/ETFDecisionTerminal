@@ -429,6 +429,17 @@ The presenter still routes refresh only through the controller boundary. QML
 still does not directly consume the controller, adapters, concrete port, or
 DataServiceClient.
 
+## TASK-116 Presenter Concrete Port Integration
+
+TASK-116 verifies that the controller concrete-port integration can be consumed
+from `ShellAccountingPresenter`. The presenter path remains:
+
+`Presenter -> ShellAccountingReadOnlyController -> ShellAccountingDataServiceAdapter
+-> ShellAccountingDataServiceClientPortAdapter -> DataServiceClient guard wrapper`.
+
+The controller still does not directly depend on DataServiceClient, and the
+presenter still does not bypass the controller.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

@@ -353,3 +353,11 @@ the same state contract:
 Without a controller, presenter refresh produces a controlled Unavailable
 state with a visible `CONTROLLER_NOT_CONFIGURED` issue. With a controller,
 refresh remains routed only through `ShellAccountingReadOnlyController`.
+
+## TASK-116 Presenter Guard Wrapper State
+
+TASK-116 verifies that a `position.list` guard payload flowing through the full
+presenter path still maps to `Unavailable`. The issue list keeps
+`POSITION_LIST_NOT_AVAILABLE` visible, `readOnly=true` and `writeEnabled=false`
+remain intact, the position list model does not fabricate rows, and Empty is
+still distinct from Unavailable.

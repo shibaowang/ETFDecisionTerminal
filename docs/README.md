@@ -169,6 +169,12 @@
   model, and optional controller boundary. QML remains unwired and the
   presenter does not call DataServiceClient, SQLite, AccountingEngine, writes,
   TradeDraft, or trade suggestions.
+- ShellAccountingPresenter concrete port integration: presenter-level tests now
+  verify `ShellAccountingPresenter -> ShellAccountingReadOnlyController ->
+  ShellAccountingDataServiceAdapter -> ShellAccountingDataServiceClientPortAdapter
+  -> DataServiceClient guard wrapper` for `position.list`. Guard payloads stay
+  Unavailable with visible issues and no write / no trade behavior. QML remains
+  unwired.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

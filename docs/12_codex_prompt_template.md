@@ -656,3 +656,13 @@ v0.1 草案。
   model, and controller boundaries.
 - Presenter must not expose TradeDraft, trade suggestion, strategy execution,
   or broker submission actions.
+
+## TASK-116 ShellAccountingPresenter Concrete Port Integration
+
+- Presenter concrete port integration does not imply QML binding.
+- Do not wire QML or register QML types without an explicit task.
+- Do not implement real accounting actions in presenter tasks.
+- Presenter integration may consume DataServiceClient guard wrappers only
+  through controller -> adapter -> concrete port.
+- Keep no SQLite, no AccountingEngine, no writes, no TradeDraft, no trade
+  suggestion, no strategy execution, and no broker order.

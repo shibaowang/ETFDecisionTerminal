@@ -133,3 +133,15 @@ Future QML work still requires a separate task and explicit authorization. QML
 must continue to bind only ShellServices read-only objects, must preserve Empty
 vs Unavailable, and must not add trading buttons, TradeDraft, trade suggestion,
 strategy, broker, SQLite, AccountingEngine, or DataServiceClient access.
+
+## TASK-116 Presenter Integration Status
+
+TASK-116 verifies that the presenter can consume the concrete-port guard wrapper
+path through the controller boundary. This is not QML binding. No QML file is
+modified, no QML type is registered, and the UI still has no accounting
+binding.
+
+Future QML work must remain separately authorized and must treat the presenter
+integration result as read-only state only: `Unavailable` is not `Empty`,
+`POSITION_LIST_NOT_AVAILABLE` remains visible, and no trading buttons,
+TradeDraft, trade suggestion, strategy, or broker controls are allowed.

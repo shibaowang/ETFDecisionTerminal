@@ -351,3 +351,10 @@ and
 [docs/58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md).
 
 QML must not call DataServiceClient or the adapter directly.
+
+## TASK-116 Presenter Integration
+
+TASK-116 uses the existing adapter + concrete port path from the presenter via
+`ShellAccountingReadOnlyController`. This does not change adapter behavior and
+does not implement real accounting actions. The adapter remains limited to the
+read-only guard-wrapper path and QML remains disconnected.

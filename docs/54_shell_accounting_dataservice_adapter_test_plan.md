@@ -236,3 +236,13 @@ must reference [docs/57_shell_accounting_presenter_contract.md](57_shell_account
 and [docs/58_shell_accounting_qml_binding_readiness_plan.md](58_shell_accounting_qml_binding_readiness_plan.md).
 
 The adapter remains below ShellServices presenter / ViewModel boundaries.
+
+## TASK-116 Presenter Concrete Port Integration Tests
+
+TASK-116 adds presenter-level concrete port integration tests. They verify that
+the presenter can consume `position.list` through controller -> adapter ->
+concrete port -> DataServiceClient guard wrapper, and that the result remains
+Unavailable with visible guard issues and no write / no trade behavior.
+
+Future presenter action expansion for cash, portfolio PnL, base position, and
+sniper pool requires separate task authorization.

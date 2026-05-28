@@ -236,3 +236,10 @@ Live-call adapter readiness is not QML readiness. Future QML binding must pass
 the presenter contract and QML readiness plan in docs/57 and docs/58. QML must
 not call DataServiceClient, SQLite, AccountingEngine, or adapter classes
 directly.
+
+## TASK-116 Presenter Consumption Gate
+
+TASK-116 confirms that the live-call guard-wrapper chain can be consumed through
+the presenter without changing the gate. The chain remains read-only and does
+not permit QML, SQLite facts query access, AccountingEngine calls, writes,
+TradeDraft, trade suggestions, strategy execution, or broker orders.

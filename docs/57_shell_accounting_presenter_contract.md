@@ -198,3 +198,22 @@ QML integration remains a separate authorization step. The presenter skeleton
 does not implement accounting calculations, does not access SQLite, does not
 call AccountingEngine, does not write database tables, and does not generate
 TradeDraft or trade suggestions.
+
+## TASK-116 Concrete Port Integration
+
+TASK-116 hardens the presenter integration path:
+
+`ShellAccountingPresenter -> ShellAccountingReadOnlyController ->
+ShellAccountingDataServiceAdapter -> ShellAccountingDataServiceClientPortAdapter
+-> DataServiceClient guard wrapper`.
+
+The presenter still does not directly call or include DataServiceClient. It
+uses only the controller boundary. The current skeleton exposes
+`refreshPositionList`, and `refreshAllReadOnly` delegates to position list until
+additional presenter actions are separately authorized.
+
+The position-list guard payload must map to `Unavailable`, keep
+`POSITION_LIST_NOT_AVAILABLE` visible, preserve `readOnly=true` and
+`writeEnabled=false`, keep the position model empty, and avoid TradeDraft,
+trade suggestion, strategy execution, and broker submission paths. QML remains
+unwired.

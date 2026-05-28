@@ -49,6 +49,9 @@
 - [48 position.list First-stage Real Action Scope](48_position_list_first_stage_real_action_scope.md)
 - [49 ShellServices Accounting Controller Contract](49_shellservices_accounting_controller_contract.md)
 - [50 Shell Accounting ViewModel State Contract](50_shell_accounting_viewmodel_state_contract.md)
+- ShellServices accounting controller test scaffolding:
+  `tests/ShellAccountingControllerScaffolding`; production controller and QML
+  integration remain unimplemented.
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under

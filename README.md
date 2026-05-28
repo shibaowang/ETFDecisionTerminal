@@ -1755,6 +1755,22 @@ ShellServices accounting controller contract docs have been defined:
 No ShellServices controller is implemented, QML is not modified, QML still must
 not call DataServiceClient directly, and no writes are enabled.
 
+## TASK-100 ShellServices accounting controller test scaffolding
+
+ShellServices accounting controller test scaffolding has been added under
+`tests/ShellAccountingControllerScaffolding`:
+
+- `shell_accounting_controller_state_contract`
+- `shell_accounting_controller_issue_contract`
+- `shell_accounting_controller_privacy_contract`
+- `shell_accounting_controller_no_trade_action_contract`
+
+The scaffolding locks state, issue, privacy, and no trade action boundaries for
+the future Shell accounting controller. Production ShellServices controller code
+is still not implemented, QML is still not connected, the scaffolding does not
+call real DataServiceClient, does not access SQLite, and does not write
+database tables.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

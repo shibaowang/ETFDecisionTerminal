@@ -530,3 +530,12 @@ v0.1 草案。
 - QML must not calculate accounting.
 - ShellServices must not generate TradeDraft or trade suggestions.
 - Guard payload `implemented=false` maps to `Unavailable`, not `Empty`.
+- ShellServices accounting implementation tasks must pass TASK-100 scaffolding:
+  `shell_accounting_controller_state_contract`,
+  `shell_accounting_controller_issue_contract`,
+  `shell_accounting_controller_privacy_contract`, and
+  `shell_accounting_controller_no_trade_action_contract`.
+- Test scaffolding is not a production controller.
+- QML must not directly call DataServiceClient.
+- Do not generate TradeDraft or trade suggestion from Shell accounting
+  ViewModels.

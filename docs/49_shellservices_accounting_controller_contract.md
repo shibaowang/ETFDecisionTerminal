@@ -201,6 +201,25 @@ Future implementation must include:
 - refresh does not write database
 - QML smoke test only after controller exists
 
+## TASK-100 Test Scaffolding
+
+TASK-100 adds Shell accounting controller test scaffolding under
+`tests/ShellAccountingControllerScaffolding`.
+
+Covered contract tests:
+
+- `shell_accounting_controller_state_contract`
+- `shell_accounting_controller_issue_contract`
+- `shell_accounting_controller_privacy_contract`
+- `shell_accounting_controller_no_trade_action_contract`
+
+These tests use test-only scenario descriptors and fake payload state. They do
+not implement `ShellAccountingReadOnlyController`, do not call real
+`DataServiceClient`, do not access SQLite, and do not write database tables.
+
+The scaffolding locks the future state, issue, privacy, and no trade action
+boundaries before production ShellServices controller code is authorized.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

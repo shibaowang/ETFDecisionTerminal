@@ -291,3 +291,13 @@ before QML can bind it. The controller boundary is documented in
 
 There must be no direct QML -> DataServiceClient path. QML must not calculate
 positions, valuation, or accounting issues from raw DataService payloads.
+
+## TASK-100 ShellServices Test Scaffolding Link
+
+TASK-100 adds Shell accounting controller scaffolding that reinforces this
+boundary. First-stage `position.list` output must still flow through
+ShellServices controller before QML, and there must be no direct QML ->
+DataServiceClient path.
+
+The scaffolding does not implement production controller code and does not make
+`position.list` QML-facing.

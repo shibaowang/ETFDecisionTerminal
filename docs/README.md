@@ -47,6 +47,8 @@
 - [46 position.list Real Implementation Readiness Checklist](46_position_list_real_implementation_readiness_checklist.md)
 - [47 position.list Readiness Hardening](47_position_list_readiness_hardening.md)
 - [48 position.list First-stage Real Action Scope](48_position_list_first_stage_real_action_scope.md)
+- [49 ShellServices Accounting Controller Contract](49_shellservices_accounting_controller_contract.md)
+- [50 Shell Accounting ViewModel State Contract](50_shell_accounting_viewmodel_state_contract.md)
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under
@@ -90,6 +92,9 @@
 - `position.list` first-stage implementation scaffolding: test-only scope,
   guard transition, and failure matrix contract tests; real `position.list`
   remains unimplemented.
+- ShellServices accounting controller contract: documentation only for future
+  read-only ShellServices controller / ViewModel boundaries; QML remains
+  disconnected from accounting actions.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -523,3 +523,10 @@ v0.1 草案。
 - Test-only scenario descriptors must not move into production libs.
 - Switching `position.list` to `implemented=true` still requires separate
   explicit authorization.
+- ShellServices accounting tasks must reference
+  `docs/49_shellservices_accounting_controller_contract.md` and
+  `docs/50_shell_accounting_viewmodel_state_contract.md`.
+- QML must not call DataServiceClient directly.
+- QML must not calculate accounting.
+- ShellServices must not generate TradeDraft or trade suggestions.
+- Guard payload `implemented=false` maps to `Unavailable`, not `Empty`.

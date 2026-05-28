@@ -1745,6 +1745,16 @@ scope, guard -> real action transition expectations, and failure matrix. Real
 scaffolding does not access SQLite, does not call real DataService replay
 paths, and does not write database tables.
 
+## TASK-099 ShellServices accounting controller contract docs
+
+ShellServices accounting controller contract docs have been defined:
+
+- [docs/49_shellservices_accounting_controller_contract.md](docs/49_shellservices_accounting_controller_contract.md)
+- [docs/50_shell_accounting_viewmodel_state_contract.md](docs/50_shell_accounting_viewmodel_state_contract.md)
+
+No ShellServices controller is implemented, QML is not modified, QML still must
+not call DataServiceClient directly, and no writes are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

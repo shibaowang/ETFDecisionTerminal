@@ -23,6 +23,7 @@ def main() -> int:
     quick_start_path = root / "docs" / "15_quick_start_readonly_shell_demo.md"
     business_acceptance_path = root / "docs" / "16_manual_acceptance_readonly_business_pages.md"
     ui_readability_path = root / "docs" / "17_ui_readability_checklist.md"
+    ui_design_path = root / "docs" / "07_ui_design.md"
     milestone_v02_path = root / "docs" / "18_milestone_v0_2_readonly_business_pages.md"
     business_summary_path = root / "docs" / "19_readonly_business_pages_summary.md"
     position_boundary_path = root / "docs" / "20_position_accounting_boundary.md"
@@ -60,6 +61,12 @@ def main() -> int:
     )
     position_list_readiness_hardening_path = root / "docs" / "47_position_list_readiness_hardening.md"
     position_list_first_stage_scope_path = root / "docs" / "48_position_list_first_stage_real_action_scope.md"
+    shellservices_accounting_controller_contract_path = (
+        root / "docs" / "49_shellservices_accounting_controller_contract.md"
+    )
+    shell_accounting_viewmodel_state_contract_path = (
+        root / "docs" / "50_shell_accounting_viewmodel_state_contract.md"
+    )
     position_list_first_stage_cmake_path = (
         root / "tests" / "PositionListFirstStageScaffolding" / "CMakeLists.txt"
     )
@@ -244,6 +251,7 @@ def main() -> int:
     require(quick_start_path.exists(), "quick start doc exists")
     require(business_acceptance_path.exists(), "read-only business pages acceptance doc exists")
     require(ui_readability_path.exists(), "UI readability checklist exists")
+    require(ui_design_path.exists(), "UI design doc exists")
     require(milestone_v02_path.exists(), "v0.2 milestone doc exists")
     require(business_summary_path.exists(), "read-only business pages summary exists")
     require(position_boundary_path.exists(), "position accounting boundary doc exists")
@@ -285,6 +293,14 @@ def main() -> int:
     )
     require(position_list_readiness_hardening_path.exists(), "position.list readiness hardening doc exists")
     require(position_list_first_stage_scope_path.exists(), "position.list first-stage real action scope doc exists")
+    require(
+        shellservices_accounting_controller_contract_path.exists(),
+        "ShellServices accounting controller contract doc exists",
+    )
+    require(
+        shell_accounting_viewmodel_state_contract_path.exists(),
+        "Shell accounting ViewModel state contract doc exists",
+    )
     require(position_list_first_stage_cmake_path.exists(), "position.list first-stage scaffolding CMake exists")
     require(position_list_first_stage_scenario_header_path.exists(), "position.list first-stage scenario header exists")
     require(position_list_first_stage_scenario_source_path.exists(), "position.list first-stage scenario source exists")
@@ -418,6 +434,7 @@ def main() -> int:
     quick_start = quick_start_path.read_text(encoding="utf-8")
     business_acceptance = business_acceptance_path.read_text(encoding="utf-8")
     ui_readability = ui_readability_path.read_text(encoding="utf-8")
+    ui_design = ui_design_path.read_text(encoding="utf-8")
     milestone_v02 = milestone_v02_path.read_text(encoding="utf-8")
     business_summary = business_summary_path.read_text(encoding="utf-8")
     position_boundary = position_boundary_path.read_text(encoding="utf-8")
@@ -447,6 +464,12 @@ def main() -> int:
     position_list_readiness_checklist = position_list_readiness_checklist_path.read_text(encoding="utf-8")
     position_list_readiness_hardening = position_list_readiness_hardening_path.read_text(encoding="utf-8")
     position_list_first_stage_scope = position_list_first_stage_scope_path.read_text(encoding="utf-8")
+    shellservices_accounting_controller_contract = shellservices_accounting_controller_contract_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_viewmodel_state_contract = shell_accounting_viewmodel_state_contract_path.read_text(
+        encoding="utf-8"
+    )
     position_list_first_stage_cmake = position_list_first_stage_cmake_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_header = position_list_first_stage_scenario_header_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_source = position_list_first_stage_scenario_source_path.read_text(encoding="utf-8")
@@ -2268,6 +2291,76 @@ def main() -> int:
     require("DataServiceActions" not in position_list_first_stage_scenario_source, "scaffolding helper does not call DataService action")
     require("AccountingReplayEngine" not in position_list_first_stage_scenario_source, "scaffolding helper does not call AccountingReplayEngine")
     require("AccountingTradeFactReader" not in position_list_first_stage_scenario_source, "scaffolding helper does not call DataAccess trade facts reader")
+    require(
+        "49_shellservices_accounting_controller_contract" in readme,
+        "README links ShellServices accounting controller contract",
+    )
+    require(
+        "50_shell_accounting_viewmodel_state_contract" in readme,
+        "README links Shell accounting ViewModel state contract",
+    )
+    require(
+        "49_shellservices_accounting_controller_contract" in docs_index,
+        "docs index links ShellServices accounting controller contract",
+    )
+    require(
+        "50_shell_accounting_viewmodel_state_contract" in docs_index,
+        "docs index links Shell accounting ViewModel state contract",
+    )
+    require(
+        "QML 不得直接调用 DataServiceClient" in shellservices_accounting_controller_contract,
+        "docs/49 forbids direct QML DataServiceClient calls",
+    )
+    require(
+        "ShellAccountingReadOnlyController" in shellservices_accounting_controller_contract,
+        "docs/49 defines ShellAccountingReadOnlyController",
+    )
+    require(
+        "ShellPositionListModel" in shellservices_accounting_controller_contract,
+        "docs/49 defines ShellPositionListModel",
+    )
+    require(
+        "ShellAccountingIssueListModel" in shellservices_accounting_controller_contract,
+        "docs/49 defines ShellAccountingIssueListModel",
+    )
+    require("不生成 TradeDraft" in shellservices_accounting_controller_contract, "docs/49 forbids TradeDraft generation")
+    require("不生成交易建议" in shellservices_accounting_controller_contract, "docs/49 forbids trade suggestions")
+    require(
+        "Empty vs Unavailable" in shell_accounting_viewmodel_state_contract,
+        "docs/50 defines Empty vs Unavailable",
+    )
+    require(
+        "implemented=false -> Unavailable" in shell_accounting_viewmodel_state_contract,
+        "docs/50 maps implemented false to unavailable",
+    )
+    require("privacyMode" in shell_accounting_viewmodel_state_contract, "docs/50 defines privacyMode")
+    require("no trade suggestion" in shell_accounting_viewmodel_state_contract, "docs/50 defines no trade suggestion")
+    require(
+        "docs/49_shellservices_accounting_controller_contract.md" in codex_prompt_template,
+        "prompt template links docs/49",
+    )
+    require(
+        "docs/50_shell_accounting_viewmodel_state_contract.md" in codex_prompt_template,
+        "prompt template links docs/50",
+    )
+    require(
+        "docs/49_shellservices_accounting_controller_contract.md" in dataservice_readonly_accounting_contracts,
+        "DataService contracts link docs/49",
+    )
+    require("ShellServices controller" in position_list_real_boundary, "docs/45 mentions ShellServices controller")
+    require(
+        "49_shellservices_accounting_controller_contract.md" in ui_design
+        or "ShellServices Accounting Controller Contract" in ui_design,
+        "UI design links ShellServices accounting controller contract",
+    )
+    require(
+        "docs/49_shellservices_accounting_controller_contract.md" in position_viewmodel_design,
+        "position ViewModel design links docs/49",
+    )
+    require(
+        "docs/50_shell_accounting_viewmodel_state_contract.md" in position_mapping,
+        "position DTO ViewModel mapping links docs/50",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

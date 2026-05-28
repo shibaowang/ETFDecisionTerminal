@@ -153,3 +153,14 @@ database writes.
 - QML does not calculate position, cost, base damage, or sniper tier completion.
 - ViewModels are not fact sources.
 - ViewModels must not write `trade_log`, snapshots, or audit rows.
+
+## TASK-099 Shell Accounting State Alignment
+
+This mapping aligns with
+`docs/49_shellservices_accounting_controller_contract.md` and
+`docs/50_shell_accounting_viewmodel_state_contract.md`.
+
+Existing DTO -> ViewModel mapping remains conceptual until a controller
+implementation task. Guard payloads with `implemented=false` must map to
+Unavailable rather than Empty, and QML must not directly consume raw
+DataService JSON or calculate accounting values.

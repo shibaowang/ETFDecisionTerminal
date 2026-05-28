@@ -103,3 +103,12 @@ allowed scope, and explicitly excluded scope.
 Switching `position.list` from `implemented=false` to `implemented=true` still
 requires separate explicit authorization. The first implementation PR must not
 exceed `docs/48_position_list_first_stage_real_action_scope.md`.
+
+## TASK-098 First-stage Scaffolding Status
+
+The first-stage scaffolding is now a Go / No-Go precondition. The scaffolding locks
+the scope contract, guard transition contract, and failure matrix contract.
+
+Do not switch `position.list` to `implemented=true` unless the scaffolding
+passes, the real no-write tests pass, and the task explicitly authorizes the
+first-stage implementation.

@@ -100,3 +100,14 @@ The first implementation PR must state:
 - QML is not connected
 - full CTest result
 - `transport_local_socket_echo` 50-run result
+
+## TASK-098 Scope Contract Tests
+
+TASK-098 adds first-stage scope contract tests and locks the explicitly
+excluded scope in CTest. These tests are scaffolding only and do not implement
+the real action.
+
+The scope contract tests confirm that QML integration, snapshot writes,
+TradeLog writes, TradeDraft, trading suggestions, strategy execution, market
+data service, FX service, multi-currency valuation, basePosition calculation,
+and sniperPool calculation remain excluded from the first implementation PR.

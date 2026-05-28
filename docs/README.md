@@ -87,6 +87,9 @@
 - `position.list` readiness hardening: final Go / No-Go, failure matrix,
   no-write gate, degraded output policy, guard fallback, and first-stage scope
   docs; real `position.list` remains unimplemented.
+- `position.list` first-stage implementation scaffolding: test-only scope,
+  guard transition, and failure matrix contract tests; real `position.list`
+  remains unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -271,3 +271,14 @@ Those documents are prerequisites before a real implementation task can switch
 the guard. The `position.list` guard remains `implemented=false`; this task
 does not connect DataAccess to DataService, does not call AccountingEngine,
 does not access SQLite, and does not write database tables.
+
+## TASK-098 First-stage Implementation Scaffolding
+
+TASK-098 adds test-only first-stage implementation scaffolding. It covers the
+future first-stage scenarios, the guard transition contract, and the failure
+matrix without implementing the real action.
+
+The real `position.list` action is still not implemented. The scaffolding only
+describes the future DataService request -> `ReplayRequestDto` ->
+AccountingEngine -> `PositionListResponse` path and locks no-write, guard
+fallback, excluded scope, and failure status expectations.

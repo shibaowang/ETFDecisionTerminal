@@ -518,3 +518,8 @@ v0.1 草案。
 - The no-write hardening matrix in docs/47 must pass before merge.
 - Guard fallback must remain documented and available during first real
   `position.list` implementation.
+- Real `position.list` tasks must not bypass TASK-098 first-stage scaffolding.
+- Scaffolding does not equal real action implementation.
+- Test-only scenario descriptors must not move into production libs.
+- Switching `position.list` to `implemented=true` still requires separate
+  explicit authorization.

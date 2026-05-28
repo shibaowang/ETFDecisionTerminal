@@ -1,5 +1,9 @@
 #pragma once
 
+#include "ShellServices/ShellAccountingDisplayText.h"
+#include "ShellServices/ShellAccountingIssue.h"
+#include "ShellServices/ShellAccountingReadOnlyController.h"
+#include "ShellServices/ShellAccountingState.h"
 #include "ShellServices/ShellDataConnectionObject.h"
 #include "ShellServices/ShellDataTypes.h"
 #include "ShellServices/ShellReadOnlyConnectionPresets.h"

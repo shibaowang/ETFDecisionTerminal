@@ -112,3 +112,17 @@ production controller implementation:
 
 The scaffolding is not a production controller and does not call real
 DataServiceClient, SQLite, or AccountingEngine.
+
+## TASK-101 Production Skeleton
+
+TASK-101 moves the state / issue / privacy / no-trade-action boundary into the
+production ShellServices skeleton:
+
+- `ShellAccountingViewState`
+- `ShellAccountingIssue`
+- `ShellAccountingDisplayText`
+- `ShellAccountingReadOnlyController`
+
+QML integration has not started. Shell models are still not implemented. The
+skeleton accepts only in-memory state snapshots and does not call real
+DataServiceClient, SQLite, or AccountingEngine.

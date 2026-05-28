@@ -539,3 +539,9 @@ v0.1 草案。
 - QML must not directly call DataServiceClient.
 - Do not generate TradeDraft or trade suggestion from Shell accounting
   ViewModels.
+- TASK-101 ShellAccountingReadOnlyController skeleton is not real service
+  integration.
+- Future ShellServices tasks must not call DataServiceClient unless explicitly
+  authorized.
+- QML integration requires a separate task.
+- No TradeDraft / no trade suggestion remains mandatory.

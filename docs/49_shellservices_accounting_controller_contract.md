@@ -220,6 +220,26 @@ not implement `ShellAccountingReadOnlyController`, do not call real
 The scaffolding locks the future state, issue, privacy, and no trade action
 boundaries before production ShellServices controller code is authorized.
 
+## TASK-101 Production Skeleton
+
+TASK-101 adds a production-side `ShellAccountingReadOnlyController` skeleton in
+`libs/ShellServices`.
+
+Current skeleton scope:
+
+- state mapping
+- issue storage / exposure
+- privacy display text selection
+- read-only / no-write flags
+- no TradeDraft generation
+- no trade suggestion generation
+- no strategy execution
+- no broker order
+
+The skeleton still does not call real `DataServiceClient`, does not access
+SQLite, does not call AccountingEngine, and is not wired to QML. It is a
+production boundary object only, not service integration.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

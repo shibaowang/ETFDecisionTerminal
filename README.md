@@ -1771,6 +1771,24 @@ is still not implemented, QML is still not connected, the scaffolding does not
 call real DataServiceClient, does not access SQLite, and does not write
 database tables.
 
+## TASK-101 ShellAccountingReadOnlyController production skeleton
+
+`ShellAccountingReadOnlyController` production skeleton has been added in
+`libs/ShellServices`.
+
+The skeleton exposes read-only state, issue, privacy display, and no-trade
+action boundaries. It does not connect to real services, does not connect QML,
+does not access SQLite, does not call AccountingEngine, and does not generate
+TradeDraft or trade suggestions.
+
+New skeleton CTests:
+
+- `shell_accounting_readonly_controller_skeleton_state`
+- `shell_accounting_readonly_controller_skeleton_issue`
+- `shell_accounting_readonly_controller_skeleton_privacy`
+- `shell_accounting_readonly_controller_skeleton_no_trade_action`
+- `shell_accounting_readonly_controller_skeleton_no_service_dependency`
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

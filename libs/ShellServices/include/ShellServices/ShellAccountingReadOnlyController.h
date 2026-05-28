@@ -1,0 +1,55 @@
+#pragma once
+
+#include "ShellServices/ShellAccountingDisplayText.h"
+#include "ShellServices/ShellAccountingIssue.h"
+#include "ShellServices/ShellAccountingState.h"
+
+#include <string>
+#include <vector>
+
+namespace etfdt::shell_services {
+
+struct ShellAccountingStateSnapshot final {
+    std::string actionName;
+    bool implemented = false;
+    bool readOnly = true;
+    bool writeEnabled = false;
+    std::string dataQualityStatus = "UNAVAILABLE";
+    std::string payloadStatus;
+    bool hasRows = false;
+    bool stale = false;
+    std::vector<ShellAccountingIssue> issues;
+};
+
+class ShellAccountingReadOnlyController final {
+public:
+    ShellAccountingReadOnlyController() = default;
+
+    [[nodiscard]] bool readOnly() const noexcept;
+    [[nodiscard]] bool writeEnabled() const noexcept;
+    [[nodiscard]] bool tradeDraftGenerationEnabled() const noexcept;
+    [[nodiscard]] bool tradeSuggestionEnabled() const noexcept;
+    [[nodiscard]] bool strategyExecutionEnabled() const noexcept;
+    [[nodiscard]] bool brokerOrderEnabled() const noexcept;
+
+    [[nodiscard]] ShellAccountingViewState currentState() const noexcept;
+    [[nodiscard]] const std::vector<ShellAccountingIssue>& issues() const noexcept;
+    [[nodiscard]] const std::string& currentActionName() const noexcept;
+
+    void setPrivacyMode(bool enabled) noexcept;
+    [[nodiscard]] bool privacyMode() const noexcept;
+    [[nodiscard]] std::string displayText(const ShellAccountingDisplayText& text) const;
+
+    void applyStateSnapshot(ShellAccountingStateSnapshot snapshot);
+    void beginRefresh(std::string actionName);
+    void markUnavailable(std::string actionName, ShellAccountingIssue issue);
+    void reset();
+
+private:
+    std::string actionName_;
+    ShellAccountingViewState state_ = ShellAccountingViewState::Idle;
+    std::vector<ShellAccountingIssue> issues_;
+    bool privacyMode_ = false;
+};
+
+}  // namespace etfdt::shell_services

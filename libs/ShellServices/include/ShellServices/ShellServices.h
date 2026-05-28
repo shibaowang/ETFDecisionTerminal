@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ShellServices/ShellAccountingDataServiceClientPort.h"
+#include "ShellServices/ShellAccountingDataServiceClientPortAdapter.h"
 #include "ShellServices/ShellAccountingDataServiceAdapter.h"
 #include "ShellServices/ShellAccountingDisplayText.h"
 #include "ShellServices/ShellAccountingIssue.h"

@@ -359,6 +359,19 @@ TASK-109 keeps the controller boundary unchanged for future live-call work:
 - warning, error, and stale states must remain visible
 - controller must not generate TradeDraft or trade suggestions
 
+## TASK-111 Concrete Port Controller Boundary
+
+TASK-111 adds the concrete DataServiceClient port below the adapter boundary.
+The controller boundary remains unchanged:
+
+- `ShellAccountingReadOnlyController` still does not include DataServiceClient;
+- the controller still consumes `ShellAccountingServiceAdapter`;
+- real DataServiceClient access is isolated to
+  `ShellAccountingDataServiceClientPortAdapter`;
+- QML remains disconnected from accounting actions;
+- no TradeDraft, trade suggestion, strategy execution, broker order, SQLite
+  access, AccountingEngine call, or database write is added.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

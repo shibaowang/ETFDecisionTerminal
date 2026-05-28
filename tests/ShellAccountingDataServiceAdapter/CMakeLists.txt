@@ -65,6 +65,23 @@ target_include_directories(ShellAccountingDataServiceAdapterSpyPortTests
 
 target_compile_features(ShellAccountingDataServiceAdapterSpyPortTests PUBLIC cxx_std_17)
 
+add_library(ShellAccountingDataServiceClientPortAdapterTestUtils STATIC
+    ShellAccountingDataServiceClientPortAdapterTestUtils.cpp
+    ShellAccountingDataServiceClientPortAdapterTestUtils.h
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterTestUtils
+    PUBLIC
+        ETFDecisionTerminal::ShellServices
+)
+
+target_include_directories(ShellAccountingDataServiceClientPortAdapterTestUtils
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterTestUtils PUBLIC cxx_std_17)
+
 add_executable(ShellAccountingDataServiceAdapterLiveCallSkeletonDefaultNotConnectedTests
     test_shell_accounting_dataservice_adapter_live_call_skeleton_default_not_connected.cpp
 )
@@ -152,6 +169,89 @@ target_link_libraries(ShellAccountingControllerWithDataServiceAdapterSpyPortTest
 
 target_compile_features(ShellAccountingControllerWithDataServiceAdapterSpyPortTests PRIVATE cxx_std_17)
 
+add_executable(ShellAccountingDataServiceClientPortAdapterConstructionTests
+    test_shell_accounting_dataservice_client_port_adapter_construction.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterConstructionTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterConstructionTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceClientPortAdapterMethodMappingTests
+    test_shell_accounting_dataservice_client_port_adapter_method_mapping.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterMethodMappingTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterMethodMappingTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceClientPortAdapterRequestMappingTests
+    test_shell_accounting_dataservice_client_port_adapter_request_mapping.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterRequestMappingTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterRequestMappingTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceClientPortAdapterResponseMappingTests
+    test_shell_accounting_dataservice_client_port_adapter_response_mapping.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterResponseMappingTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterResponseMappingTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceClientPortAdapterErrorMappingTests
+    test_shell_accounting_dataservice_client_port_adapter_error_mapping.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterErrorMappingTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterErrorMappingTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceClientPortAdapterNoWriteNoTradeTests
+    test_shell_accounting_dataservice_client_port_adapter_no_write_no_trade.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceClientPortAdapterNoWriteNoTradeTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterNoWriteNoTradeTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceClientPortAdapterNoForbiddenDependencyTests
+    test_shell_accounting_dataservice_client_port_adapter_no_forbidden_dependency.cpp
+)
+
+target_compile_features(ShellAccountingDataServiceClientPortAdapterNoForbiddenDependencyTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingDataServiceAdapterWithClientPortAdapterGuardPayloadTests
+    test_shell_accounting_dataservice_adapter_with_client_port_adapter_guard_payload.cpp
+)
+
+target_link_libraries(ShellAccountingDataServiceAdapterWithClientPortAdapterGuardPayloadTests
+    PRIVATE
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_compile_features(ShellAccountingDataServiceAdapterWithClientPortAdapterGuardPayloadTests PRIVATE cxx_std_17)
+
 add_test(
     NAME shell_accounting_dataservice_adapter_skeleton_interface
     COMMAND ShellAccountingDataServiceAdapterSkeletonInterfaceTests
@@ -221,4 +321,47 @@ add_test(
 add_test(
     NAME shell_accounting_controller_with_dataservice_adapter_spy_port
     COMMAND ShellAccountingControllerWithDataServiceAdapterSpyPortTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_construction
+    COMMAND ShellAccountingDataServiceClientPortAdapterConstructionTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_method_mapping
+    COMMAND ShellAccountingDataServiceClientPortAdapterMethodMappingTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_request_mapping
+    COMMAND ShellAccountingDataServiceClientPortAdapterRequestMappingTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_response_mapping
+    COMMAND ShellAccountingDataServiceClientPortAdapterResponseMappingTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_error_mapping
+    COMMAND ShellAccountingDataServiceClientPortAdapterErrorMappingTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_no_write_no_trade
+    COMMAND ShellAccountingDataServiceClientPortAdapterNoWriteNoTradeTests
+)
+
+add_test(
+    NAME shell_accounting_dataservice_client_port_adapter_no_forbidden_dependency
+    COMMAND
+        ShellAccountingDataServiceClientPortAdapterNoForbiddenDependencyTests
+        --source-root
+        ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+    NAME shell_accounting_dataservice_adapter_with_client_port_adapter_guard_payload
+    COMMAND ShellAccountingDataServiceAdapterWithClientPortAdapterGuardPayloadTests
 )

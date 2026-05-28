@@ -267,3 +267,20 @@ The live-call gate requires:
 - blocking errors remain visible
 - timeout and transport errors become visible Error / Unavailable states
 - QML integration remains separate
+
+## TASK-110 / TASK-111 Port State Mapping
+
+TASK-110 introduced the abstract client port as a state input source for the
+adapter. TASK-111 adds the concrete DataServiceClient port for guard wrappers.
+
+The concrete port must preserve the same state semantics:
+
+- `implemented=false` maps to `Unavailable`, not `Empty`;
+- `*_NOT_AVAILABLE` remains visible as unavailable;
+- protocol failure, malformed payload, timeout, and transport error remain
+  visible error inputs;
+- warning and blocking domain issues are preserved;
+- `readOnly=true` and `writeEnabled=false` are retained.
+
+This does not change privacy display rules and does not add TradeDraft or trade
+suggestion state.

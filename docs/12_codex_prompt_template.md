@@ -612,3 +612,13 @@ v0.1 草案。
 - Keep no QML, no SQLite, no AccountingEngine, no writes, no TradeDraft, and no
   trade suggestion for Shell accounting adapter work unless separately
   authorized.
+- TASK-111 ShellAccountingDataServiceClientPort concrete implementation may
+  include the real DataServiceClient only inside the concrete port class.
+- The concrete port may call only `positionList`, `cashSummary`,
+  `portfolioPnlSummary`, `basePositionSummary`, and `sniperPoolSummary` guard
+  wrappers.
+- Do not expand the concrete port to write actions, `data.audit.append`,
+  TradeDraft, strategy execution, broker orders, SQLite, or AccountingEngine.
+- Do not wire QML without an explicit separate task.
+- Do not implement real `position.list` or any other real accounting action in
+  a Shell adapter / port task.

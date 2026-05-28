@@ -388,6 +388,24 @@ no broker order.
 The controller still does not directly depend on DataServiceClient, DataServiceApi,
 DataAccess, AccountingEngine, SQLite, QtQuick, or QML. QML remains unwired.
 
+## TASK-113 ViewModel / Model Read-only Boundary
+
+TASK-113 adds ShellServices-side read-only accounting ViewModel / Model
+skeletons for future QML binding:
+
+- `ShellAccountingStatusObject`
+- `ShellAccountingIssueListModel`
+- `ShellPositionListModel`
+
+The controller remains the service refresh boundary. Future QML must bind these
+ShellServices objects / models instead of calling DataServiceClient, SQLite,
+DataAccess, AccountingEngine, or adapter classes directly.
+
+The new ViewModel / Model skeletons consume only in-memory state, issue, and
+display-text data. They do not call services, write tables, generate TradeDraft,
+generate trade suggestions, execute strategies, submit broker orders, or
+register QML types. QML integration remains a separate task.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

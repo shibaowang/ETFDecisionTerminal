@@ -298,3 +298,29 @@ wrappers. Each guard payload remains a state input that maps to `Unavailable`:
 
 `implemented=false` continues to mean `Unavailable`, not `Empty`. Visible issues
 are retained, and `readOnly=true` / `writeEnabled=false` stay intact.
+
+## TASK-113 ShellServices ViewModel / Model Boundary
+
+TASK-113 moves the read-only ViewModel state contract into ShellServices
+skeleton objects:
+
+- `ShellAccountingStatusObject` maps in-memory snapshots to state flags.
+- `ShellAccountingIssueListModel` exposes issue code / level / message /
+  blocking / sourceId roles.
+- `ShellPositionListModel` exposes test-loadable position display rows without
+  real positions.
+
+The state contract remains unchanged:
+
+- `implemented=false -> Unavailable`
+- `*_NOT_AVAILABLE -> Unavailable`
+- `OK + rows -> Loaded`
+- `OK + no rows -> Empty`
+- `WARNING` / `DEGRADED -> Warning`
+- `ERROR -> Error`
+- stale snapshots -> `Stale`
+
+`Empty` and `Unavailable` remain distinct. Privacy mode changes only
+`displayText`; it does not mutate `rawText`. The models do not expose
+TradeDraft, trade suggestion, strategy execution, broker order, or write action
+interfaces. QML integration remains separate.

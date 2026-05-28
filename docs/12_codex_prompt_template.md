@@ -629,3 +629,11 @@ v0.1 草案。
 - Controller concrete port integration must keep no SQLite, no AccountingEngine,
   no writes, no TradeDraft, and no trade suggestion unless separately
   authorized.
+- TASK-113 ShellAccounting ViewModel / Model read-only boundary does not imply
+  QML integration.
+- Shell accounting ViewModel / Model tasks must not wire QML unless explicitly
+  authorized.
+- ViewModel / Model code must not call DataServiceClient, access SQLite, call
+  AccountingEngine, or calculate accounting.
+- ViewModel / Model code must not expose TradeDraft, trade suggestion,
+  strategy execution, broker order, or write action interfaces.

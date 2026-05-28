@@ -1,5 +1,20 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-113 ShellAccounting ViewModel / Model read-only boundary
+
+ShellServices now includes read-only Shell accounting ViewModel / Model
+skeletons:
+
+- `ShellAccountingStatusObject`
+- `ShellAccountingIssueListModel`
+- `ShellPositionListModel`
+
+These objects consume only in-memory accounting state, issue, and display-text
+data. They do not call DataServiceClient, access SQLite, call AccountingEngine,
+write database tables, generate TradeDraft, generate trade suggestions, execute
+strategies, or submit broker orders. QML remains unwired and no QML type is
+registered in this task.
+
 ## TASK-112 ShellAccounting controller concrete port integration hardening
 
 `ShellAccountingReadOnlyController` now has concrete-port integration tests that

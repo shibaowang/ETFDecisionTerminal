@@ -105,6 +105,25 @@ def main() -> int:
     shell_accounting_dataservice_client_port_adapter_source_path = (
         root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceClientPortAdapter.cpp"
     )
+    shell_accounting_status_object_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingStatusObject.h"
+    )
+    shell_accounting_status_object_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingStatusObject.cpp"
+    )
+    shell_accounting_issue_list_model_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingIssueListModel.h"
+    )
+    shell_accounting_issue_list_model_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingIssueListModel.cpp"
+    )
+    shell_position_list_model_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellPositionListModel.h"
+    )
+    shell_position_list_model_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellPositionListModel.cpp"
+    )
+    shell_accounting_viewmodel_cmake_path = root / "tests" / "ShellAccountingViewModel" / "CMakeLists.txt"
     shell_accounting_dataservice_adapter_skeleton_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapter" / "CMakeLists.txt"
     )
@@ -557,6 +576,13 @@ def main() -> int:
         shell_accounting_dataservice_client_port_adapter_source_path.exists(),
         "ShellAccountingDataServiceClientPortAdapter concrete port source exists",
     )
+    require(shell_accounting_status_object_header_path.exists(), "ShellAccountingStatusObject header exists")
+    require(shell_accounting_status_object_source_path.exists(), "ShellAccountingStatusObject source exists")
+    require(shell_accounting_issue_list_model_header_path.exists(), "ShellAccountingIssueListModel header exists")
+    require(shell_accounting_issue_list_model_source_path.exists(), "ShellAccountingIssueListModel source exists")
+    require(shell_position_list_model_header_path.exists(), "ShellPositionListModel header exists")
+    require(shell_position_list_model_source_path.exists(), "ShellPositionListModel source exists")
+    require(shell_accounting_viewmodel_cmake_path.exists(), "ShellAccounting ViewModel tests CMake exists")
     require(
         shell_accounting_dataservice_adapter_skeleton_cmake_path.exists(),
         "Shell accounting DataService adapter skeleton CMake exists",
@@ -983,6 +1009,13 @@ def main() -> int:
     shell_accounting_dataservice_client_port_adapter_source = (
         shell_accounting_dataservice_client_port_adapter_source_path.read_text(encoding="utf-8")
     )
+    shell_accounting_status_object_header = shell_accounting_status_object_header_path.read_text(encoding="utf-8")
+    shell_accounting_status_object_source = shell_accounting_status_object_source_path.read_text(encoding="utf-8")
+    shell_accounting_issue_list_model_header = shell_accounting_issue_list_model_header_path.read_text(encoding="utf-8")
+    shell_accounting_issue_list_model_source = shell_accounting_issue_list_model_source_path.read_text(encoding="utf-8")
+    shell_position_list_model_header = shell_position_list_model_header_path.read_text(encoding="utf-8")
+    shell_position_list_model_source = shell_position_list_model_source_path.read_text(encoding="utf-8")
+    shell_accounting_viewmodel_cmake = shell_accounting_viewmodel_cmake_path.read_text(encoding="utf-8")
     shell_accounting_dataservice_adapter_skeleton_cmake = (
         shell_accounting_dataservice_adapter_skeleton_cmake_path.read_text(encoding="utf-8")
     )
@@ -4006,6 +4039,65 @@ def main() -> int:
         "sniper_pool.summary",
     ]:
         require(accounting_action not in qml_sources, f"QML does not call {accounting_action}")
+
+    require("TASK-113" in codex_prompt_template, "prompt template mentions TASK-113")
+    require(
+        "ShellAccounting ViewModel / Model read-only boundary" in readme,
+        "README mentions ShellAccounting ViewModel / Model read-only boundary",
+    )
+    for doc_text, doc_name in [
+        (shellservices_accounting_controller_contract, "docs/49"),
+        (shell_accounting_viewmodel_state_contract, "docs/50"),
+        (ui_design, "docs/07"),
+        (codex_prompt_template, "docs/12"),
+    ]:
+        require("TASK-113" in doc_text, f"{doc_name} mentions TASK-113")
+    require("ShellAccountingStatusObject" in shellservices_cmake, "ShellServices CMake includes ShellAccountingStatusObject")
+    require("ShellAccountingIssueListModel" in shellservices_cmake, "ShellServices CMake includes ShellAccountingIssueListModel")
+    require("ShellPositionListModel" in shellservices_cmake, "ShellServices CMake includes ShellPositionListModel")
+    require("ShellAccountingStatusObject" in shellservices_public_header, "ShellServices umbrella header exports ShellAccountingStatusObject")
+    require("ShellAccountingIssueListModel" in shellservices_public_header, "ShellServices umbrella header exports ShellAccountingIssueListModel")
+    require("ShellPositionListModel" in shellservices_public_header, "ShellServices umbrella header exports ShellPositionListModel")
+    require("add_subdirectory(ShellAccountingViewModel)" in tests_cmake, "tests CMake adds ShellAccountingViewModel")
+    for test_name in [
+        "shell_accounting_status_object_readonly_boundary",
+        "shell_accounting_issue_list_model_readonly_boundary",
+        "shell_position_list_model_readonly_boundary",
+        "shell_accounting_viewmodel_privacy_boundary",
+        "shell_accounting_viewmodel_no_trade_action_boundary",
+        "shell_accounting_viewmodel_no_service_dependency",
+    ]:
+        require(test_name in shell_accounting_viewmodel_cmake, f"ViewModel CMake registers {test_name}")
+    viewmodel_sources = "\n".join(
+        [
+            shell_accounting_status_object_header,
+            shell_accounting_status_object_source,
+            shell_accounting_issue_list_model_header,
+            shell_accounting_issue_list_model_source,
+            shell_position_list_model_header,
+            shell_position_list_model_source,
+        ]
+    )
+    for forbidden_dependency in [
+        "DataServiceClient",
+        "DataServiceApi",
+        "DataAccess",
+        "AccountingEngine",
+        "SQLite",
+        "QtQuick",
+    ]:
+        require(forbidden_dependency not in viewmodel_sources, f"ViewModel / Model avoids {forbidden_dependency}")
+    for forbidden_interface in [
+        "createTradeDraft",
+        "brokerOrder",
+        "strategyExecute",
+        "buyAction",
+        "sellAction",
+    ]:
+        require(forbidden_interface not in viewmodel_sources, f"ViewModel / Model avoids {forbidden_interface}")
+    require("ShellAccountingStatusObject" not in qml_sources, "QML does not bind ShellAccountingStatusObject")
+    require("ShellAccountingIssueListModel" not in qml_sources, "QML does not bind ShellAccountingIssueListModel")
+    require("ShellPositionListModel" not in qml_sources, "QML does not bind ShellPositionListModel")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

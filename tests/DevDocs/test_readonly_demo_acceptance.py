@@ -73,6 +73,36 @@ def main() -> int:
     shell_accounting_service_integration_readiness_path = (
         root / "docs" / "52_shell_accounting_service_integration_readiness.md"
     )
+    shell_accounting_service_adapter_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingServiceAdapter.h"
+    )
+    shell_accounting_service_types_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingServiceTypes.h"
+    )
+    shell_accounting_service_types_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingServiceTypes.cpp"
+    )
+    shell_accounting_service_adapter_cmake_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "CMakeLists.txt"
+    )
+    fake_shell_accounting_service_adapter_header_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "FakeShellAccountingServiceAdapter.h"
+    )
+    fake_shell_accounting_service_adapter_source_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "FakeShellAccountingServiceAdapter.cpp"
+    )
+    shell_accounting_service_adapter_interface_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_service_adapter_interface.cpp"
+    )
+    shell_accounting_service_result_contract_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_service_result_contract.cpp"
+    )
+    shell_accounting_service_adapter_no_dependency_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_service_adapter_no_real_dependency.cpp"
+    )
+    shell_accounting_controller_adapter_injection_test_path = (
+        root / "tests" / "ShellAccountingServiceAdapter" / "test_shell_accounting_controller_adapter_injection.cpp"
+    )
     shell_accounting_scaffolding_cmake_path = (
         root / "tests" / "ShellAccountingControllerScaffolding" / "CMakeLists.txt"
     )
@@ -414,6 +444,22 @@ def main() -> int:
         shell_accounting_service_integration_readiness_path.exists(),
         "Shell accounting service integration readiness doc exists",
     )
+    require(shell_accounting_service_adapter_header_path.exists(), "ShellAccountingServiceAdapter header exists")
+    require(shell_accounting_service_types_header_path.exists(), "ShellAccountingServiceTypes header exists")
+    require(shell_accounting_service_types_source_path.exists(), "ShellAccountingServiceTypes source exists")
+    require(shell_accounting_service_adapter_cmake_path.exists(), "ShellAccountingServiceAdapter test CMake exists")
+    require(fake_shell_accounting_service_adapter_header_path.exists(), "fake Shell accounting service adapter header exists")
+    require(fake_shell_accounting_service_adapter_source_path.exists(), "fake Shell accounting service adapter source exists")
+    require(shell_accounting_service_adapter_interface_test_path.exists(), "Shell accounting service adapter interface test exists")
+    require(shell_accounting_service_result_contract_test_path.exists(), "Shell accounting service result contract test exists")
+    require(
+        shell_accounting_service_adapter_no_dependency_test_path.exists(),
+        "Shell accounting service adapter no real dependency test exists",
+    )
+    require(
+        shell_accounting_controller_adapter_injection_test_path.exists(),
+        "Shell accounting controller adapter injection test exists",
+    )
     require(shell_accounting_scaffolding_cmake_path.exists(), "Shell accounting scaffolding CMake exists")
     require(shell_accounting_scenario_header_path.exists(), "Shell accounting scenario header exists")
     require(shell_accounting_scenario_source_path.exists(), "Shell accounting scenario source exists")
@@ -741,6 +787,24 @@ def main() -> int:
     accounting_replay_minimal_test = accounting_replay_minimal_test_path.read_text(encoding="utf-8")
     shell_accounting_service_adapter_boundary = shell_accounting_service_adapter_boundary_path.read_text(encoding="utf-8")
     shell_accounting_service_integration_readiness = shell_accounting_service_integration_readiness_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_service_adapter_header = shell_accounting_service_adapter_header_path.read_text(encoding="utf-8")
+    shell_accounting_service_types_header = shell_accounting_service_types_header_path.read_text(encoding="utf-8")
+    shell_accounting_service_types_source = shell_accounting_service_types_source_path.read_text(encoding="utf-8")
+    shell_accounting_service_adapter_cmake = shell_accounting_service_adapter_cmake_path.read_text(encoding="utf-8")
+    fake_shell_accounting_service_adapter_header = fake_shell_accounting_service_adapter_header_path.read_text(encoding="utf-8")
+    fake_shell_accounting_service_adapter_source = fake_shell_accounting_service_adapter_source_path.read_text(encoding="utf-8")
+    shell_accounting_service_adapter_interface_test = shell_accounting_service_adapter_interface_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_service_result_contract_test = shell_accounting_service_result_contract_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_service_adapter_no_dependency_test = shell_accounting_service_adapter_no_dependency_test_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_controller_adapter_injection_test = shell_accounting_controller_adapter_injection_test_path.read_text(
         encoding="utf-8"
     )
     release_notes = release_notes_path.read_text(encoding="utf-8")
@@ -2948,6 +3012,155 @@ def main() -> int:
     require(
         "ShellAccountingServiceAdapter" in position_list_real_boundary,
         "docs/45 mentions ShellAccountingServiceAdapter",
+    )
+    require(
+        "ShellAccountingServiceAdapter interface skeleton" in readme,
+        "README mentions ShellAccountingServiceAdapter interface skeleton",
+    )
+    require(
+        "TASK-104" in shell_accounting_service_adapter_boundary
+        and "interface skeleton" in shell_accounting_service_adapter_boundary,
+        "docs/51 mentions TASK-104 interface skeleton",
+    )
+    require(
+        "TASK-104" in shell_accounting_service_integration_readiness,
+        "docs/52 mentions TASK-104",
+    )
+    require("TASK-104" in codex_prompt_template, "prompt template mentions TASK-104")
+    require(
+        "ShellAccountingServiceAdapter interface skeleton does not equal a" in codex_prompt_template,
+        "prompt template states adapter skeleton is not real adapter",
+    )
+    require(
+        "Do not implement ShellAccountingDataServiceAdapter without explicit" in codex_prompt_template,
+        "prompt template forbids real adapter without authorization",
+    )
+    require(
+        "ShellAccountingServiceAdapter" in shellservices_public_header,
+        "ShellServices public header includes ShellAccountingServiceAdapter",
+    )
+    require(
+        "ShellAccountingServiceAdapter" in shellservices_cmake,
+        "ShellServices CMake includes ShellAccountingServiceAdapter",
+    )
+    require(
+        "ShellAccountingServiceTypes" in shellservices_cmake,
+        "ShellServices CMake includes ShellAccountingServiceTypes",
+    )
+    require(
+        "class ShellAccountingServiceAdapter" in shell_accounting_service_adapter_header,
+        "adapter header declares ShellAccountingServiceAdapter",
+    )
+    require("fetchPositionList" in shell_accounting_service_adapter_header, "adapter exposes fetchPositionList")
+    require("fetchCashSummary" in shell_accounting_service_adapter_header, "adapter exposes fetchCashSummary")
+    require("fetchPortfolioPnlSummary" in shell_accounting_service_adapter_header, "adapter exposes fetchPortfolioPnlSummary")
+    require("fetchBasePositionSummary" in shell_accounting_service_adapter_header, "adapter exposes fetchBasePositionSummary")
+    require("fetchSniperPoolSummary" in shell_accounting_service_adapter_header, "adapter exposes fetchSniperPoolSummary")
+    require(
+        "struct ShellAccountingServiceRequest" in shell_accounting_service_types_header,
+        "service types header declares request",
+    )
+    require(
+        "struct ShellAccountingServiceResult" in shell_accounting_service_types_header,
+        "service types header declares result",
+    )
+    require("protocolSuccess" in shell_accounting_service_types_header, "result exposes protocolSuccess")
+    require("domainError" in shell_accounting_service_types_header, "result exposes domainError")
+    require("readOnly = true" in shell_accounting_service_types_header, "result defaults readOnly true")
+    require("writeEnabled = false" in shell_accounting_service_types_header, "result defaults writeEnabled false")
+    require("generatedTradeDraft = false" in shell_accounting_service_types_header, "result defaults no TradeDraft")
+    require("generatedTradeSuggestion = false" in shell_accounting_service_types_header, "result defaults no trade suggestion")
+    require("isShellAccountingServiceResultReadOnly" in shell_accounting_service_types_source, "service result source checks read-only")
+    require(
+        "setServiceAdapter" in shell_accounting_controller_header
+        and "hasServiceAdapter" in shell_accounting_controller_header
+        and "clearServiceAdapter" in shell_accounting_controller_header,
+        "controller exposes adapter injection skeleton",
+    )
+    require(
+        "serviceAdapter_" in shell_accounting_controller_header,
+        "controller stores optional service adapter",
+    )
+    require(
+        "shell_accounting_service_adapter_interface" in shell_accounting_service_adapter_cmake,
+        "adapter tests register interface test",
+    )
+    require(
+        "shell_accounting_service_result_contract" in shell_accounting_service_adapter_cmake,
+        "adapter tests register result contract test",
+    )
+    require(
+        "shell_accounting_service_adapter_no_real_dependency" in shell_accounting_service_adapter_cmake,
+        "adapter tests register no real dependency test",
+    )
+    require(
+        "shell_accounting_controller_adapter_injection" in shell_accounting_service_adapter_cmake,
+        "adapter tests register controller injection test",
+    )
+    require(
+        "add_subdirectory(ShellAccountingServiceAdapter)" in tests_cmake,
+        "tests CMake adds Shell accounting service adapter tests",
+    )
+    require(
+        "FakeShellAccountingServiceAdapter" in fake_shell_accounting_service_adapter_header
+        and "public etfdt::shell_services::ShellAccountingServiceAdapter" in fake_shell_accounting_service_adapter_header,
+        "fake adapter implements adapter interface",
+    )
+    require(
+        "fetchPositionList" in shell_accounting_service_adapter_interface_test
+        and "fetchCashSummary" in shell_accounting_service_adapter_interface_test
+        and "fetchPortfolioPnlSummary" in shell_accounting_service_adapter_interface_test
+        and "fetchBasePositionSummary" in shell_accounting_service_adapter_interface_test
+        and "fetchSniperPoolSummary" in shell_accounting_service_adapter_interface_test,
+        "interface test covers all fetch methods",
+    )
+    require(
+        "protocolSuccess=false" in shell_accounting_service_result_contract_test
+        or "protocolSuccess = false" in shell_accounting_service_result_contract_test,
+        "result contract test covers protocol error",
+    )
+    require(
+        "POSITION_LIST_NOT_AVAILABLE" in shell_accounting_service_result_contract_test,
+        "result contract test covers guard status",
+    )
+    require(
+        "DataServiceClient" in shell_accounting_service_adapter_no_dependency_test,
+        "adapter no dependency test scans DataServiceClient",
+    )
+    require(
+        "setting adapter does not trigger fetch call" in shell_accounting_controller_adapter_injection_test,
+        "controller injection test verifies no automatic service call",
+    )
+    adapter_production_sources = "\n".join(
+        [
+            shell_accounting_service_adapter_header,
+            shell_accounting_service_types_header,
+            shell_accounting_service_types_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite", "QtQuick", "QML"]:
+        require(
+            forbidden not in adapter_production_sources,
+            f"ShellAccountingServiceAdapter interface skeleton does not include {forbidden}",
+        )
+    fake_adapter_sources = "\n".join(
+        [
+            fake_shell_accounting_service_adapter_header,
+            fake_shell_accounting_service_adapter_source,
+        ]
+    )
+    for forbidden in ["DataServiceClient", "SQLite"]:
+        require(
+            forbidden not in fake_adapter_sources,
+            f"fake Shell accounting service adapter does not include {forbidden}",
+        )
+    require(
+        "ShellAccountingServiceAdapter" not in qml_sources,
+        "QML does not reference ShellAccountingServiceAdapter",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter" not in qml_sources,
+        "QML does not reference ShellAccountingDataServiceAdapter",
     )
 
     require(

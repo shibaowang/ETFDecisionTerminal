@@ -1,0 +1,23 @@
+#pragma once
+
+#include "ShellServices/ShellAccountingServiceTypes.h"
+
+namespace etfdt::shell_services {
+
+class ShellAccountingServiceAdapter {
+public:
+    virtual ~ShellAccountingServiceAdapter() = default;
+
+    virtual ShellAccountingServiceResult fetchPositionList(
+        const ShellAccountingServiceRequest& request) = 0;
+    virtual ShellAccountingServiceResult fetchCashSummary(
+        const ShellAccountingServiceRequest& request) = 0;
+    virtual ShellAccountingServiceResult fetchPortfolioPnlSummary(
+        const ShellAccountingServiceRequest& request) = 0;
+    virtual ShellAccountingServiceResult fetchBasePositionSummary(
+        const ShellAccountingServiceRequest& request) = 0;
+    virtual ShellAccountingServiceResult fetchSniperPoolSummary(
+        const ShellAccountingServiceRequest& request) = 0;
+};
+
+}  // namespace etfdt::shell_services

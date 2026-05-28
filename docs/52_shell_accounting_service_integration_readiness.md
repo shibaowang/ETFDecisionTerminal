@@ -68,3 +68,19 @@ Suggested next tasks:
 
 Any real DataServiceClient integration requires separate authorization. Any QML
 integration requires separate authorization.
+
+## TASK-104 Interface Skeleton Status
+
+TASK-104 completes the `ShellAccountingServiceAdapter` interface skeleton and
+service request/result types.
+
+Updated readiness:
+
+- `ShellAccountingServiceAdapter` interface skeleton exists.
+- `ShellAccountingServiceResult` expresses protocol error and domain issue
+  separately.
+- Test-only fake adapter contract tests exist.
+- Controller adapter injection skeleton exists, but it does not call services.
+- Real adapter still requires separate authorization.
+- DataServiceClient integration has not started.
+- QML integration has not started.

@@ -3,6 +3,8 @@
 #include "ShellServices/ShellAccountingDisplayText.h"
 #include "ShellServices/ShellAccountingIssue.h"
 #include "ShellServices/ShellAccountingReadOnlyController.h"
+#include "ShellServices/ShellAccountingServiceAdapter.h"
+#include "ShellServices/ShellAccountingServiceTypes.h"
 #include "ShellServices/ShellAccountingState.h"
 #include "ShellServices/ShellDataConnectionObject.h"
 #include "ShellServices/ShellDataTypes.h"

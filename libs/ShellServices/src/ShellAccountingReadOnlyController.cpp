@@ -104,12 +104,29 @@ void ShellAccountingReadOnlyController::markUnavailable(
     issues_.push_back(std::move(issue));
 }
 
+void ShellAccountingReadOnlyController::setServiceAdapter(
+    std::shared_ptr<ShellAccountingServiceAdapter> adapter) noexcept
+{
+    serviceAdapter_ = std::move(adapter);
+}
+
+bool ShellAccountingReadOnlyController::hasServiceAdapter() const noexcept
+{
+    return static_cast<bool>(serviceAdapter_);
+}
+
+void ShellAccountingReadOnlyController::clearServiceAdapter() noexcept
+{
+    serviceAdapter_.reset();
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();
     state_ = ShellAccountingViewState::Idle;
     issues_.clear();
     privacyMode_ = false;
+    serviceAdapter_.reset();
 }
 
 }  // namespace etfdt::shell_services

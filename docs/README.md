@@ -145,6 +145,13 @@
   `ShellAccountingDataServiceAdapter` body, and QML still do not directly
   depend on DataServiceClient; no SQLite, AccountingEngine, writes, TradeDraft,
   or trade suggestion behavior is added.
+- ShellAccountingReadOnlyController concrete port integration hardening:
+  controller integration tests now exercise controller -> DataService adapter
+  -> concrete DataServiceClient port -> guard wrapper for `position.list`,
+  `cash.summary`, `portfolio.pnl.summary`, `base_position.summary`, and
+  `sniper_pool.summary`. Guard payloads still map to Unavailable; QML,
+  SQLite, AccountingEngine, writes, TradeDraft, and trade suggestions remain
+  out of scope.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

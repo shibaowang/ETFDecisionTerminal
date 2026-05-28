@@ -372,6 +372,22 @@ The controller boundary remains unchanged:
 - no TradeDraft, trade suggestion, strategy execution, broker order, SQLite
   access, AccountingEngine call, or database write is added.
 
+## TASK-112 Concrete Port Integration Hardening
+
+TASK-112 adds controller-level integration tests for the full guard-wrapper
+consumer path:
+
+`ShellAccountingReadOnlyController -> ShellAccountingDataServiceAdapter ->
+ShellAccountingDataServiceClientPortAdapter -> DataServiceClient guard wrapper`.
+
+The tests cover all five read-only accounting actions and assert
+`implemented=false -> Unavailable`, visible issues, `readOnly=true`,
+`writeEnabled=false`, and no TradeDraft / no trade suggestion / no strategy /
+no broker order.
+
+The controller still does not directly depend on DataServiceClient, DataServiceApi,
+DataAccess, AccountingEngine, SQLite, QtQuick, or QML. QML remains unwired.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

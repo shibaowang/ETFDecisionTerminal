@@ -218,3 +218,14 @@ malformed response, domain issues, no-write flags, and no-trade flags.
 QML remains unwired. SQLite, AccountingEngine, DataAccess, write actions,
 TradeDraft generation, trade suggestions, strategy execution, and broker orders
 remain forbidden.
+
+## TASK-112 Guard Wrapper Integration Gate Status
+
+TASK-112 completes the controller-side hardening for the first live-call guard
+wrapper scope. The verified path is controller -> service adapter -> concrete
+client port -> allowlisted guard wrapper.
+
+The gate remains closed for broader behavior: no QML wiring, no SQLite facts
+query, no AccountingEngine call, no write action, no real `position.list`
+implementation, no TradeDraft, and no trade suggestion are allowed by this
+task.

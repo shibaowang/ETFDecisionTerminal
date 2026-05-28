@@ -1,5 +1,21 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-112 ShellAccounting controller concrete port integration hardening
+
+`ShellAccountingReadOnlyController` now has concrete-port integration tests that
+exercise the chain:
+
+`ShellAccountingReadOnlyController -> ShellAccountingDataServiceAdapter ->
+ShellAccountingDataServiceClientPortAdapter -> DataServiceClient guard wrapper`.
+
+The tests cover `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. Each guard payload remains
+`Unavailable` with visible issues, `readOnly=true`, and `writeEnabled=false`.
+
+This does not implement real accounting actions. QML remains unwired, SQLite
+facts queries remain unaccessed, AccountingEngine remains uncalled, no database
+tables are written, and no TradeDraft or trade suggestion is generated.
+
 ## TASK-111 ShellAccounting DataServiceClient port for guard wrappers
 
 `ShellAccountingDataServiceClientPortAdapter` is the production concrete port for guard wrappers and the concrete implementation of the ShellServices

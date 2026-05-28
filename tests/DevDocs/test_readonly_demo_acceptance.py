@@ -3956,6 +3956,56 @@ def main() -> int:
         "ShellAccountingDataServiceClientPortAdapter" not in qml_sources,
         "QML does not reference ShellAccountingDataServiceClientPortAdapter",
     )
+    require(
+        "TASK-112" in codex_prompt_template,
+        "prompt template mentions TASK-112",
+    )
+    require(
+        "concrete port integration hardening" in readme,
+        "README mentions concrete port integration hardening",
+    )
+    for doc_text, doc_name in [
+        (shellservices_accounting_controller_contract, "docs/49"),
+        (shell_accounting_viewmodel_state_contract, "docs/50"),
+        (shell_accounting_service_adapter_boundary, "docs/51"),
+        (shell_accounting_service_integration_readiness, "docs/52"),
+        (shell_accounting_dataservice_adapter_boundary, "docs/53"),
+        (shell_accounting_dataservice_adapter_test_plan, "docs/54"),
+        (shell_accounting_dataservice_adapter_live_call_gate, "docs/55"),
+        (shell_accounting_dataservice_adapter_live_call_checklist, "docs/56"),
+    ]:
+        require("TASK-112" in doc_text, f"{doc_name} mentions TASK-112")
+    for test_name in [
+        "shell_accounting_controller_concrete_port_position_list_guard",
+        "shell_accounting_controller_concrete_port_cash_summary_guard",
+        "shell_accounting_controller_concrete_port_portfolio_pnl_summary_guard",
+        "shell_accounting_controller_concrete_port_base_position_summary_guard",
+        "shell_accounting_controller_concrete_port_sniper_pool_summary_guard",
+        "shell_accounting_controller_concrete_port_no_write_no_trade",
+        "shell_accounting_controller_concrete_port_no_qml_or_forbidden_dependency",
+    ]:
+        require(
+            test_name in shell_accounting_dataservice_adapter_skeleton_cmake,
+            f"controller concrete port integration registers {test_name}",
+        )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_source,
+        "TASK-112 controller still avoids DataServiceClient include",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_adapter_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_dataservice_adapter_source,
+        "TASK-112 adapter body still avoids DataServiceClient include",
+    )
+    for accounting_action in [
+        "position.list",
+        "cash.summary",
+        "portfolio.pnl.summary",
+        "base_position.summary",
+        "sniper_pool.summary",
+    ]:
+        require(accounting_action not in qml_sources, f"QML does not call {accounting_action}")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -447,3 +447,15 @@ writes, strategy execution, or broker orders.
 The server-side no-write guarantee remains covered by DataService guard tests.
 The Shell concrete port adds consumer-side checks that only allowlisted wrapper
 methods are called and that TradeDraft / trade suggestion flags remain false.
+
+## TASK-112 Controller Concrete Port No-write Boundary
+
+TASK-112 adds controller-level no-write / no-trade hardening for the concrete
+port integration path. The tests verify only allowlisted read-only accounting
+actions are observed and no forbidden write, draft, snapshot, strategy, or
+broker action is selected.
+
+This controller integration still relies on the existing DataService guard
+no-write tests for server-side table row guarantees. It does not access SQLite
+facts queries, does not call AccountingEngine, and does not write database
+tables from ShellServices.

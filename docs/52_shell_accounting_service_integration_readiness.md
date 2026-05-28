@@ -193,3 +193,14 @@ Readiness status:
 
 Real accounting action implementation and QML ViewModel wiring still require
 separate explicit authorization.
+
+## TASK-112 Readiness Update
+
+Controller concrete port integration hardening is complete for guard wrappers.
+The verified path is controller -> service adapter -> DataService adapter ->
+concrete client port -> read-only accounting guard wrapper.
+
+This improves readiness for a future ShellServices accounting ViewModel task,
+but it is not QML integration and it is not real accounting action
+implementation. SQLite facts access, AccountingEngine integration, writes,
+TradeDraft generation, and trade suggestions remain No-Go items.

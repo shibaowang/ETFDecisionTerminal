@@ -205,3 +205,16 @@ may be composed for sniper pool calculation. That work still requires separate
 read-only query, AccountingEngine integration, and no-write test authorization.
 `remainingAmountText` is not a trade suggestion, and `completed` is not derived
 from current market value by the guard.
+
+## TASK-093 Guard Suite Mapping Boundary
+
+TASK-093 records the DataService accounting guard suite milestone in
+`docs/43_dataservice_accounting_guard_suite_milestone.md` and the no-write
+readiness review in
+`docs/44_dataservice_accounting_guard_no_write_readiness_review.md`.
+
+The guard suite does not use this facts mapping to produce real accounting
+outputs. `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary` still return guard payloads.
+Future real actions must explicitly authorize DTO mapping from read-only facts
+to AccountingEngine request / response structures.

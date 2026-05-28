@@ -48,6 +48,12 @@ def main() -> int:
     accounting_facts_source_mapping_path = root / "docs" / "40_accounting_facts_source_mapping.md"
     cash_facts_source_boundary_path = root / "docs" / "41_cash_facts_source_boundary.md"
     cash_facts_query_decision_path = root / "docs" / "42_cash_facts_query_decision.md"
+    dataservice_guard_suite_milestone_path = (
+        root / "docs" / "43_dataservice_accounting_guard_suite_milestone.md"
+    )
+    dataservice_guard_no_write_readiness_path = (
+        root / "docs" / "44_dataservice_accounting_guard_no_write_readiness_review.md"
+    )
     root_cmake_path = root / "CMakeLists.txt"
     tests_cmake_path = root / "tests" / "CMakeLists.txt"
     accounting_engine_dir = root / "libs" / "AccountingEngine"
@@ -137,6 +143,7 @@ def main() -> int:
     release_notes_v02_path = root / "docs" / "release_notes" / "v0_2_readonly_business_pages.md"
     release_notes_v03_path = root / "docs" / "release_notes" / "v0_3_accounting_replay_testonly_coverage.md"
     release_notes_v04_path = root / "docs" / "release_notes" / "v0_4_accounting_engine_replay_skeleton.md"
+    release_notes_v05_path = root / "docs" / "release_notes" / "v0_5_dataservice_accounting_guard_suite.md"
     docs_index_path = root / "docs" / "README.md"
     protocol_path = root / "docs" / "04_protocol.md"
     accounting_rules_path = root / "docs" / "06_accounting_rules.md"
@@ -204,6 +211,11 @@ def main() -> int:
     require(accounting_facts_source_mapping_path.exists(), "Accounting facts source mapping doc exists")
     require(cash_facts_source_boundary_path.exists(), "Cash facts source boundary doc exists")
     require(cash_facts_query_decision_path.exists(), "Cash facts query decision doc exists")
+    require(dataservice_guard_suite_milestone_path.exists(), "DataService accounting guard suite milestone doc exists")
+    require(
+        dataservice_guard_no_write_readiness_path.exists(),
+        "DataService accounting guard no-write readiness review doc exists",
+    )
     require(root_cmake_path.exists(), "root CMakeLists exists")
     require(tests_cmake_path.exists(), "tests CMakeLists exists")
     require(accounting_engine_dir.exists(), "AccountingEngine module directory exists")
@@ -267,6 +279,7 @@ def main() -> int:
     require(release_notes_v02_path.exists(), "v0.2 release notes doc exists")
     require(release_notes_v03_path.exists(), "v0.3 accounting replay release notes doc exists")
     require(release_notes_v04_path.exists(), "v0.4 AccountingEngine replay skeleton release notes doc exists")
+    require(release_notes_v05_path.exists(), "v0.5 DataService accounting guard suite release notes doc exists")
     require(docs_index_path.exists(), "docs index exists")
     require(protocol_path.exists(), "protocol doc exists")
     require(accounting_rules_path.exists(), "accounting rules doc exists")
@@ -324,6 +337,8 @@ def main() -> int:
     accounting_facts_source_mapping = accounting_facts_source_mapping_path.read_text(encoding="utf-8")
     cash_facts_source_boundary = cash_facts_source_boundary_path.read_text(encoding="utf-8")
     cash_facts_query_decision = cash_facts_query_decision_path.read_text(encoding="utf-8")
+    dataservice_guard_suite_milestone = dataservice_guard_suite_milestone_path.read_text(encoding="utf-8")
+    dataservice_guard_no_write_readiness = dataservice_guard_no_write_readiness_path.read_text(encoding="utf-8")
     root_cmake = root_cmake_path.read_text(encoding="utf-8")
     tests_cmake = tests_cmake_path.read_text(encoding="utf-8")
     accounting_engine_cmake = accounting_engine_cmake_path.read_text(encoding="utf-8")
@@ -389,6 +404,7 @@ def main() -> int:
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     release_notes_v03 = release_notes_v03_path.read_text(encoding="utf-8")
     release_notes_v04 = release_notes_v04_path.read_text(encoding="utf-8")
+    release_notes_v05 = release_notes_v05_path.read_text(encoding="utf-8")
     docs_index = docs_index_path.read_text(encoding="utf-8")
     protocol_doc = protocol_path.read_text(encoding="utf-8")
     accounting_rules = accounting_rules_path.read_text(encoding="utf-8")
@@ -558,6 +574,22 @@ def main() -> int:
     require(
         "42_cash_facts_query_decision" in readme,
         "README links cash facts query decision",
+    )
+    require(
+        "v0.5 DataService Accounting Guard Suite" in readme,
+        "README documents v0.5 DataService Accounting Guard Suite",
+    )
+    require(
+        "43_dataservice_accounting_guard_suite_milestone" in readme,
+        "README links DataService accounting guard suite milestone",
+    )
+    require(
+        "44_dataservice_accounting_guard_no_write_readiness_review" in readme,
+        "README links DataService accounting guard no-write readiness review",
+    )
+    require(
+        "v0_5_dataservice_accounting_guard_suite" in readme,
+        "README links v0.5 DataService accounting guard suite release notes",
     )
     require(
         "v0_4_accounting_engine_replay_skeleton" in readme,
@@ -735,10 +767,22 @@ def main() -> int:
         "42_cash_facts_query_decision.md" in docs_index,
         "docs index links cash facts query decision",
     )
+    require(
+        "43_dataservice_accounting_guard_suite_milestone.md" in docs_index,
+        "docs index links DataService accounting guard suite milestone",
+    )
+    require(
+        "44_dataservice_accounting_guard_no_write_readiness_review.md" in docs_index,
+        "docs index links DataService accounting guard no-write readiness review",
+    )
     require("../libs/AccountingEngine" in docs_index, "docs index links AccountingEngine skeleton module")
     require("AccountingEngine public headers" in docs_index, "docs index links AccountingEngine DTO parser boundary")
     require("release_notes/v0_3_accounting_replay_testonly_coverage.md" in docs_index, "docs index links v0.3 accounting replay release notes")
     require("release_notes/v0_4_accounting_engine_replay_skeleton.md" in docs_index, "docs index links v0.4 AccountingEngine release notes")
+    require(
+        "release_notes/v0_5_dataservice_accounting_guard_suite.md" in docs_index,
+        "docs index links v0.5 DataService accounting guard suite release notes",
+    )
     require("20_position_accounting_boundary.md" in docs_index, "docs index links position boundary")
     require("21_position_readonly_data_contract_draft.md" in docs_index, "docs index links position data contract")
     require("22_position_accounting_data_contract.md" in docs_index, "docs index links stable position contract")
@@ -1773,6 +1817,44 @@ def main() -> int:
     require(
         "completed` is not derived from current market value" in codex_prompt_template,
         "prompt template says completed is not derived from market value",
+    )
+    require("accounting.replay.preview" in dataservice_guard_suite_milestone, "guard suite milestone lists replay preview")
+    require("position.list" in dataservice_guard_suite_milestone, "guard suite milestone lists position.list")
+    require("cash.summary" in dataservice_guard_suite_milestone, "guard suite milestone lists cash.summary")
+    require("portfolio.pnl.summary" in dataservice_guard_suite_milestone, "guard suite milestone lists portfolio.pnl.summary")
+    require("base_position.summary" in dataservice_guard_suite_milestone, "guard suite milestone lists base_position.summary")
+    require("sniper_pool.summary" in dataservice_guard_suite_milestone, "guard suite milestone lists sniper_pool.summary")
+    require("implemented=false" in dataservice_guard_suite_milestone, "guard suite milestone states implemented=false")
+    require("readOnly=true" in dataservice_guard_suite_milestone, "guard suite milestone states readOnly=true")
+    require("writeEnabled=false" in dataservice_guard_suite_milestone, "guard suite milestone states writeEnabled=false")
+    require("no-write" in dataservice_guard_suite_milestone, "guard suite milestone documents no-write coverage")
+    require("Go / No-Go Checklist" in dataservice_guard_no_write_readiness, "guard readiness has Go / No-Go Checklist")
+    require(
+        "AccountingEngine has not been called by DataService" in dataservice_guard_no_write_readiness,
+        "guard readiness says AccountingEngine is not called by DataService",
+    )
+    require(
+        "SQLite facts query has not been called by DataService" in dataservice_guard_no_write_readiness,
+        "guard readiness says SQLite facts query is not called by DataService",
+    )
+    require(
+        "v0.5.0-dataservice-accounting-guard-suite" in release_notes_v05,
+        "v0.5 release notes include suggested tag",
+    )
+    require("DataService Accounting Guard Suite" in release_notes_v05, "v0.5 release notes title exists")
+    require("No-write guard tests" in release_notes_v05, "v0.5 release notes list no-write guard tests")
+    require(
+        "docs/43_dataservice_accounting_guard_suite_milestone.md" in dataservice_readonly_accounting_contracts,
+        "DataService contract doc links docs/43",
+    )
+    require(
+        "docs/43_dataservice_accounting_guard_suite_milestone.md" in dataservice_accounting_no_write_plan,
+        "no-write plan links docs/43",
+    )
+    require(
+        "DataService accounting guard suite milestone does not equal real action implementation"
+        in codex_prompt_template,
+        "prompt template says guard suite milestone is not real action implementation",
     )
 
     require(

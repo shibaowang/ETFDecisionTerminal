@@ -366,3 +366,16 @@ The guard does not calculate T1-T6 tiers, does not generate trade suggestions,
 and does not generate TradeDraft rows. Future SQLite trade facts or tier
 derivation integration for real `sniper_pool.summary` requires separate tasks
 and must keep the read-only and no-write boundaries in this document.
+
+## TASK-093 Guard Suite Boundary
+
+TASK-093 documents the DataService accounting guard suite milestone in
+`docs/43_dataservice_accounting_guard_suite_milestone.md` and the no-write
+readiness review in
+`docs/44_dataservice_accounting_guard_no_write_readiness_review.md`.
+
+The guard suite does not use SQLite facts query. DataService still does not
+call the SQLite trade facts reader skeleton, does not query cash facts, does
+not query market price facts, and does not query FX facts. Any future SQLite
+facts query connection to DataService requires a separate authorized task and
+must pass no-write table count tests.

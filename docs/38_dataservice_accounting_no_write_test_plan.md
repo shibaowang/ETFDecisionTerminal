@@ -302,3 +302,23 @@ rows. The real `sniper_pool.summary` implementation must extend these no-write
 tests before it can read facts or map real sniper pool DTOs, and it must
 continue to protect `trade_draft`, `position_snapshot`, and `portfolio_summary`
 from writes.
+
+## TASK-093 Guard Suite No-write Milestone
+
+TASK-093 records the DataService accounting guard suite no-write milestone in
+`docs/43_dataservice_accounting_guard_suite_milestone.md` and the readiness
+gate in `docs/44_dataservice_accounting_guard_no_write_readiness_review.md`.
+
+The guard suite has stage-level no-write coverage for:
+
+- `position.list`
+- `cash.summary`
+- `portfolio.pnl.summary`
+- `base_position.summary`
+- `sniper_pool.summary`
+
+These tests protect `trade_log`, `trade_execution_group`, `trade_draft`,
+`cash_snapshot`, `position_snapshot`, `portfolio_summary`, and `audit_log`.
+Future real action implementations must extend no-write tests for their real
+SQLite, DataAccess, AccountingEngine mapping, and failure paths before the
+guard payload can be replaced.

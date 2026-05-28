@@ -41,6 +41,8 @@
 - [40 Accounting Facts Source Mapping](40_accounting_facts_source_mapping.md)
 - [41 Cash Facts Source Boundary](41_cash_facts_source_boundary.md)
 - [42 Cash Facts Query Decision](42_cash_facts_query_decision.md)
+- [43 DataService Accounting Guard Suite Milestone](43_dataservice_accounting_guard_suite_milestone.md)
+- [44 DataService Accounting Guard No-write Readiness Review](44_dataservice_accounting_guard_no_write_readiness_review.md)
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under
@@ -64,6 +66,10 @@
   `implemented=false`; real sniper pool calculation, T1-T6 tier calculation,
   trade suggestions, TradeDraft generation, snapshot reads, and writes remain
   unimplemented.
+- DataService accounting guard suite milestone: guard layer coverage is
+  complete for the current read-only milestone; real accounting actions,
+  SQLite integration, AccountingEngine integration, QML integration, and writes
+  remain unimplemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)
@@ -80,3 +86,4 @@
 - [Release Notes - v0.2 ReadOnly Business Pages](release_notes/v0_2_readonly_business_pages.md)
 - [Release Notes - v0.3 Accounting Replay Test-only Coverage](release_notes/v0_3_accounting_replay_testonly_coverage.md)
 - [Release Notes - v0.4 AccountingEngine Replay Skeleton](release_notes/v0_4_accounting_engine_replay_skeleton.md)
+- [Release Notes - v0.5 DataService Accounting Guard Suite](release_notes/v0_5_dataservice_accounting_guard_suite.md)

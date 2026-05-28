@@ -123,3 +123,21 @@ TASK-100 adds test-only Shell accounting controller scaffolding. The first-stage
 real action remains non-QML-facing until a production ShellServices controller
 implementation task is separately authorized and passes the TASK-100 state,
 issue, privacy, and no trade action contract tests.
+
+## TASK-103 Shell Accounting Service Adapter Boundary
+
+First-stage real `position.list` remains non-QML-facing unless a separate
+ShellServices service adapter and controller integration task is authorized.
+
+The intended consumer path is:
+
+```text
+DataServiceClient positionList wrapper
+-> ShellAccountingServiceAdapter
+-> ShellAccountingReadOnlyController
+-> ShellServices ViewModel / Model
+```
+
+The first real `position.list` PR must not let QML call DataServiceClient
+directly and must not skip the adapter boundary documented in
+`docs/51_shell_accounting_service_adapter_boundary.md`.

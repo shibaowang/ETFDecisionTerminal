@@ -276,3 +276,12 @@ v0.1 草案。
 - Future UI must still bind through ShellServices only.
 - Fake payload state, warning, error, stale, privacy, and no-trade coverage is
   a controller boundary test, not a page implementation.
+
+## TASK-103 Shell Accounting Service Adapter Boundary
+
+- ShellServices service adapter boundary docs do not imply QML integration.
+- Future UI must still bind ViewModel / Model objects only.
+- QML must not call DataServiceClient, ShellAccountingDataServiceAdapter,
+  SQLite, DataAccess, or AccountingEngine directly.
+- Adapter integration remains a ShellServices boundary concern, not a QML page
+  shortcut.

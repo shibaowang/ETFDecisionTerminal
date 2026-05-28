@@ -301,3 +301,22 @@ DataServiceClient path.
 
 The scaffolding does not implement production controller code and does not make
 `position.list` QML-facing.
+
+## TASK-103 Shell Accounting Service Adapter Boundary
+
+Future `position.list` output must flow through ShellServices service adapter
+and controller boundaries before it reaches QML:
+
+```text
+position.list DataService action
+-> DataServiceClient wrapper
+-> ShellAccountingServiceAdapter
+-> ShellAccountingReadOnlyController
+-> ShellServices ViewModel / Model
+-> QML
+```
+
+QML must not call DataServiceClient directly. QML must not bypass
+`ShellAccountingServiceAdapter` or the controller to interpret
+`PositionListResponse` payloads. The adapter boundary is documented in
+`docs/51_shell_accounting_service_adapter_boundary.md`.

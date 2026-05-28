@@ -67,6 +67,12 @@ def main() -> int:
     shell_accounting_viewmodel_state_contract_path = (
         root / "docs" / "50_shell_accounting_viewmodel_state_contract.md"
     )
+    shell_accounting_service_adapter_boundary_path = (
+        root / "docs" / "51_shell_accounting_service_adapter_boundary.md"
+    )
+    shell_accounting_service_integration_readiness_path = (
+        root / "docs" / "52_shell_accounting_service_integration_readiness.md"
+    )
     shell_accounting_scaffolding_cmake_path = (
         root / "tests" / "ShellAccountingControllerScaffolding" / "CMakeLists.txt"
     )
@@ -400,6 +406,14 @@ def main() -> int:
         shell_accounting_viewmodel_state_contract_path.exists(),
         "Shell accounting ViewModel state contract doc exists",
     )
+    require(
+        shell_accounting_service_adapter_boundary_path.exists(),
+        "Shell accounting service adapter boundary doc exists",
+    )
+    require(
+        shell_accounting_service_integration_readiness_path.exists(),
+        "Shell accounting service integration readiness doc exists",
+    )
     require(shell_accounting_scaffolding_cmake_path.exists(), "Shell accounting scaffolding CMake exists")
     require(shell_accounting_scenario_header_path.exists(), "Shell accounting scenario header exists")
     require(shell_accounting_scenario_source_path.exists(), "Shell accounting scenario source exists")
@@ -725,6 +739,10 @@ def main() -> int:
     accounting_replay_minimal_header = accounting_replay_minimal_header_path.read_text(encoding="utf-8")
     accounting_replay_minimal_source = accounting_replay_minimal_source_path.read_text(encoding="utf-8")
     accounting_replay_minimal_test = accounting_replay_minimal_test_path.read_text(encoding="utf-8")
+    shell_accounting_service_adapter_boundary = shell_accounting_service_adapter_boundary_path.read_text(encoding="utf-8")
+    shell_accounting_service_integration_readiness = shell_accounting_service_integration_readiness_path.read_text(
+        encoding="utf-8"
+    )
     release_notes = release_notes_path.read_text(encoding="utf-8")
     release_notes_v02 = release_notes_v02_path.read_text(encoding="utf-8")
     release_notes_v03 = release_notes_v03_path.read_text(encoding="utf-8")
@@ -2861,6 +2879,75 @@ def main() -> int:
         "DataServiceClient" in shell_accounting_fake_no_real_dependency_test
         and "AccountingEngine" in shell_accounting_fake_no_real_dependency_test,
         "fake no real dependency test scans service and engine dependencies",
+    )
+    require(
+        "51_shell_accounting_service_adapter_boundary" in readme,
+        "README links Shell accounting service adapter boundary",
+    )
+    require(
+        "52_shell_accounting_service_integration_readiness" in readme,
+        "README links Shell accounting service integration readiness",
+    )
+    require(
+        "51_shell_accounting_service_adapter_boundary" in docs_index,
+        "docs index links Shell accounting service adapter boundary",
+    )
+    require(
+        "52_shell_accounting_service_integration_readiness" in docs_index,
+        "docs index links Shell accounting service integration readiness",
+    )
+    require(
+        "ShellAccountingServiceAdapter" in shell_accounting_service_adapter_boundary,
+        "docs/51 defines ShellAccountingServiceAdapter",
+    )
+    require(
+        "controller must not directly hard-depend on `DataServiceClient`" in shell_accounting_service_adapter_boundary
+        or "controller must not directly depend on `DataServiceClient`" in shell_accounting_service_adapter_boundary,
+        "docs/51 says controller does not directly depend on DataServiceClient",
+    )
+    require(
+        "Fake adapter" in shell_accounting_service_adapter_boundary
+        or "Fake Adapter" in shell_accounting_service_adapter_boundary,
+        "docs/51 defines fake adapter boundary",
+    )
+    require(
+        "Real adapter" in shell_accounting_service_adapter_boundary
+        or "Real Adapter" in shell_accounting_service_adapter_boundary,
+        "docs/51 defines real adapter boundary",
+    )
+    require("protocol error" in shell_accounting_service_adapter_boundary, "docs/51 handles protocol error")
+    require("domain issue" in shell_accounting_service_adapter_boundary, "docs/51 handles domain issue")
+    require(
+        "Go / No-Go Checklist" in shell_accounting_service_integration_readiness,
+        "docs/52 defines Go / No-Go Checklist",
+    )
+    require(
+        "User explicitly authorized real adapter implementation" in shell_accounting_service_integration_readiness,
+        "docs/52 requires user authorization",
+    )
+    require(
+        "51_shell_accounting_service_adapter_boundary.md" in shellservices_accounting_controller_contract,
+        "docs/49 links docs/51",
+    )
+    require(
+        "protocol error" in shell_accounting_viewmodel_state_contract,
+        "docs/50 mentions protocol error",
+    )
+    require(
+        "docs/51_shell_accounting_service_adapter_boundary.md" in codex_prompt_template,
+        "prompt template links docs/51",
+    )
+    require(
+        "docs/52_shell_accounting_service_integration_readiness.md" in codex_prompt_template,
+        "prompt template links docs/52",
+    )
+    require(
+        "ShellAccountingServiceAdapter" in codex_prompt_template,
+        "prompt template prefers ShellAccountingServiceAdapter",
+    )
+    require(
+        "ShellAccountingServiceAdapter" in position_list_real_boundary,
+        "docs/45 mentions ShellAccountingServiceAdapter",
     )
 
     require(

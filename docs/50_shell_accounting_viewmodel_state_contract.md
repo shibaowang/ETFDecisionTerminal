@@ -145,3 +145,22 @@ The fake payload coverage locks these ViewModel state rules:
 
 The fake payload tests are not real DataServiceClient integration and do not
 authorize QML integration.
+
+## TASK-103 Service Adapter State Mapping
+
+The future service adapter must map service results into this ViewModel state
+contract.
+
+- `implemented=false` still maps to `Unavailable`.
+- Protocol error and domain issue must stay distinct.
+- A protocol error may indicate malformed response, timeout, transport error,
+  or `protocolSuccess=false`.
+- A domain issue such as `MARKET_PRICE_MISSING`,
+  `MULTI_CURRENCY_UNSUPPORTED`, or `FX_RATE_MISSING` must enter the visible
+  issue list.
+- Warning issues must not be swallowed.
+- Blocking issues must remain visible.
+- Adapter output must preserve `readOnly` and `writeEnabled`.
+
+See [Shell Accounting Service Adapter Boundary](51_shell_accounting_service_adapter_boundary.md)
+and [Shell Accounting Service Integration Readiness](52_shell_accounting_service_integration_readiness.md).

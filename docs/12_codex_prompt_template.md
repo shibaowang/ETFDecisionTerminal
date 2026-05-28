@@ -551,3 +551,12 @@ v0.1 草案。
 - Do not call real DataServiceClient unless explicitly authorized.
 - QML integration requires a separate task.
 - No TradeDraft / no trade suggestion remains mandatory.
+- ShellServices service integration tasks must reference
+  `docs/51_shell_accounting_service_adapter_boundary.md` and
+  `docs/52_shell_accounting_service_integration_readiness.md`.
+- Do not call real DataServiceClient directly from
+  `ShellAccountingReadOnlyController` unless explicitly authorized.
+- Prefer a `ShellAccountingServiceAdapter` abstraction for service integration.
+- Fake adapter must remain test-only.
+- Real adapter requires a separate task.
+- QML integration requires a separate task.

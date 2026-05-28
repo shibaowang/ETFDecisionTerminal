@@ -682,3 +682,15 @@ but QML must not consume DataService payloads directly.
 The scaffolding verifies guard payload state mapping, issue visibility, privacy
 display, and no TradeDraft / no trade suggestion boundaries without calling
 real DataServiceClient or modifying DataService guard behavior.
+
+## TASK-103 Shell Accounting Service Adapter Boundary
+
+Shell real adapter work is documented in
+`docs/51_shell_accounting_service_adapter_boundary.md` and
+`docs/52_shell_accounting_service_integration_readiness.md`.
+
+A future real adapter may consume DataServiceClient wrappers, but DataService
+payloads still must not be consumed directly by QML. The adapter must preserve
+`implemented`, `readOnly`, `writeEnabled`, protocol errors, and domain issues
+without generating TradeDraft, trade suggestions, strategy execution, writes,
+SQLite access, or AccountingEngine calls.

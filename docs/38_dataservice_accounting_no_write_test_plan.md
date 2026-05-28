@@ -393,3 +393,16 @@ the guard can switch to `implemented=true`.
 
 The scaffolding is descriptor-only. It does not access SQLite, does not call
 real DataService replay paths, and does not write database tables.
+
+## TASK-106 Shell Accounting DataService Adapter No-write Boundary
+
+The ShellAccountingDataServiceAdapter boundary and test plan are documented in
+`docs/53_shell_accounting_dataservice_adapter_boundary.md` and
+`docs/54_shell_accounting_dataservice_adapter_test_plan.md`.
+
+The future adapter itself must not access SQLite or write database tables. Its
+indirect no-write guarantee depends on only calling read-only accounting
+DataServiceClient wrappers whose DataService actions have no-write tests. The
+adapter must not call write actions, `data.audit.append`, TradeDraft
+generation, trade suggestion generation, strategy execution, or broker order
+actions.

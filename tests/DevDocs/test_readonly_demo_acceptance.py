@@ -73,6 +73,12 @@ def main() -> int:
     shell_accounting_service_integration_readiness_path = (
         root / "docs" / "52_shell_accounting_service_integration_readiness.md"
     )
+    shell_accounting_dataservice_adapter_boundary_path = (
+        root / "docs" / "53_shell_accounting_dataservice_adapter_boundary.md"
+    )
+    shell_accounting_dataservice_adapter_test_plan_path = (
+        root / "docs" / "54_shell_accounting_dataservice_adapter_test_plan.md"
+    )
     shell_accounting_service_adapter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingServiceAdapter.h"
     )
@@ -462,6 +468,14 @@ def main() -> int:
         shell_accounting_service_integration_readiness_path.exists(),
         "Shell accounting service integration readiness doc exists",
     )
+    require(
+        shell_accounting_dataservice_adapter_boundary_path.exists(),
+        "Shell accounting DataService adapter boundary doc exists",
+    )
+    require(
+        shell_accounting_dataservice_adapter_test_plan_path.exists(),
+        "Shell accounting DataService adapter test plan doc exists",
+    )
     require(shell_accounting_service_adapter_header_path.exists(), "ShellAccountingServiceAdapter header exists")
     require(shell_accounting_service_types_header_path.exists(), "ShellAccountingServiceTypes header exists")
     require(shell_accounting_service_types_source_path.exists(), "ShellAccountingServiceTypes source exists")
@@ -829,6 +843,12 @@ def main() -> int:
     accounting_replay_minimal_test = accounting_replay_minimal_test_path.read_text(encoding="utf-8")
     shell_accounting_service_adapter_boundary = shell_accounting_service_adapter_boundary_path.read_text(encoding="utf-8")
     shell_accounting_service_integration_readiness = shell_accounting_service_integration_readiness_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_adapter_boundary = shell_accounting_dataservice_adapter_boundary_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_adapter_test_plan = shell_accounting_dataservice_adapter_test_plan_path.read_text(
         encoding="utf-8"
     )
     shell_accounting_service_adapter_header = shell_accounting_service_adapter_header_path.read_text(encoding="utf-8")
@@ -3278,6 +3298,64 @@ def main() -> int:
     require("TASK-105" in shell_accounting_service_integration_readiness, "docs/52 mentions TASK-105")
     require("TASK-105" in codex_prompt_template, "prompt template mentions TASK-105")
     require("fake adapter injection behavior" in readme, "README mentions fake adapter injection behavior")
+    require(
+        "53_shell_accounting_dataservice_adapter_boundary" in readme,
+        "README links Shell accounting DataService adapter boundary",
+    )
+    require(
+        "54_shell_accounting_dataservice_adapter_test_plan" in readme,
+        "README links Shell accounting DataService adapter test plan",
+    )
+    require(
+        "53_shell_accounting_dataservice_adapter_boundary" in docs_index,
+        "docs index links Shell accounting DataService adapter boundary",
+    )
+    require(
+        "54_shell_accounting_dataservice_adapter_test_plan" in docs_index,
+        "docs index links Shell accounting DataService adapter test plan",
+    )
+    require(
+        "ShellAccountingDataServiceAdapter" in shell_accounting_dataservice_adapter_boundary,
+        "docs/53 defines ShellAccountingDataServiceAdapter",
+    )
+    require(
+        "DataServiceClient guard wrappers" in shell_accounting_dataservice_adapter_boundary
+        or "DataServiceClient wrappers" in shell_accounting_dataservice_adapter_boundary,
+        "docs/53 references DataServiceClient wrappers",
+    )
+    require("protocol error" in shell_accounting_dataservice_adapter_boundary, "docs/53 covers protocol error")
+    require("domain issue" in shell_accounting_dataservice_adapter_boundary, "docs/53 covers domain issue")
+    require("TradeDraft" in shell_accounting_dataservice_adapter_boundary, "docs/53 forbids TradeDraft")
+    require(
+        "trade suggestions" in shell_accounting_dataservice_adapter_boundary
+        or "trade suggestion" in shell_accounting_dataservice_adapter_boundary,
+        "docs/53 forbids trade suggestion",
+    )
+    require("Test Matrix" in shell_accounting_dataservice_adapter_test_plan, "docs/54 defines Test matrix")
+    require(
+        "Read-only Action Allowlist" in shell_accounting_dataservice_adapter_test_plan,
+        "docs/54 defines read-only action allowlist",
+    )
+    require(
+        "data.audit.append" in shell_accounting_dataservice_adapter_test_plan,
+        "docs/54 forbids data.audit.append",
+    )
+    require(
+        "53_shell_accounting_dataservice_adapter_boundary.md" in shell_accounting_service_adapter_boundary,
+        "docs/51 links docs/53",
+    )
+    require(
+        "54_shell_accounting_dataservice_adapter_test_plan.md" in shell_accounting_service_integration_readiness,
+        "docs/52 links docs/54",
+    )
+    require(
+        "docs/53_shell_accounting_dataservice_adapter_boundary.md" in codex_prompt_template,
+        "prompt template links docs/53",
+    )
+    require(
+        "docs/54_shell_accounting_dataservice_adapter_test_plan.md" in codex_prompt_template,
+        "prompt template links docs/54",
+    )
     controller_adapter_sources = "\n".join([shell_accounting_controller_header, shell_accounting_controller_source])
     for forbidden in ["DataServiceClient", "DataServiceApi", "DataAccess", "AccountingEngine", "SQLite"]:
         require(

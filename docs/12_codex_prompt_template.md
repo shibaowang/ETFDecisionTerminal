@@ -574,3 +574,11 @@ v0.1 草案。
 - QML integration requires a separate task.
 - No TradeDraft / no trade suggestion / no strategy execution remains
   mandatory for Shell accounting refresh paths.
+- ShellAccountingDataServiceAdapter implementation tasks must reference
+  `docs/53_shell_accounting_dataservice_adapter_boundary.md` and
+  `docs/54_shell_accounting_dataservice_adapter_test_plan.md`.
+- Do not implement the real adapter without explicit authorization.
+- Do not call real DataServiceClient unless the task explicitly allows it.
+- The adapter may only call read-only accounting wrappers.
+- No write action invocation is allowed.
+- QML integration requires a separate task.

@@ -310,6 +310,18 @@ disabled.
 Real DataServiceClient integration has not started. QML integration has not
 started. The fake adapter remains test-only.
 
+## TASK-106 DataService Adapter Consumer Boundary
+
+TASK-106 defines the future `ShellAccountingDataServiceAdapter` boundary in
+[docs/53_shell_accounting_dataservice_adapter_boundary.md](53_shell_accounting_dataservice_adapter_boundary.md)
+and its test plan in
+[docs/54_shell_accounting_dataservice_adapter_test_plan.md](54_shell_accounting_dataservice_adapter_test_plan.md).
+
+The controller may consume DataServiceClient only indirectly through
+`ShellAccountingServiceAdapter` and a separately authorized real adapter. The
+controller must not directly hard-depend on DataServiceClient, must not access
+SQLite, and must not call AccountingEngine.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

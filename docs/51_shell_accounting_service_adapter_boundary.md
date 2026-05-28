@@ -252,3 +252,13 @@ abstract layer. A real adapter must only wrap read-only DataServiceClient guard
 wrappers, must not access SQLite, must not call AccountingEngine, must not
 generate TradeDraft or trade suggestions, and must not be consumed directly by
 QML.
+
+## TASK-107 DataService Adapter Spy Scaffolding
+
+TASK-107 adds test-only spy/wrapper scaffolding for the future
+`ShellAccountingDataServiceAdapter`.
+
+The scaffolding proves the future real adapter must stay inside the read-only
+accounting wrapper allowlist and must reject write, draft, snapshot, strategy,
+and broker action paths. The real adapter still requires separate
+authorization.

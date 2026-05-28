@@ -406,3 +406,13 @@ DataServiceClient wrappers whose DataService actions have no-write tests. The
 adapter must not call write actions, `data.audit.append`, TradeDraft
 generation, trade suggestion generation, strategy execution, or broker order
 actions.
+
+## TASK-107 Shell Adapter Spy No-write Scaffolding
+
+TASK-107 adds spy/wrapper scaffolding with forbidden action checks. The future
+real adapter must not call write actions, `data.audit.append`, trade write
+actions, draft actions, snapshot write actions, strategy execution actions, or
+broker order actions.
+
+The scaffolding does not replace DataService action no-write tests; it prevents
+the Shell adapter layer from selecting write-capable paths.

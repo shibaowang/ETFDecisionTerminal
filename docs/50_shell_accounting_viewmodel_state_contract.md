@@ -222,3 +222,13 @@ losing ViewModel state semantics:
 
 Real adapter implementation is still not started and does not imply QML
 integration.
+
+## TASK-107 Spy Response Mapping Boundary
+
+TASK-107 adds test-only response and error mapping scaffolding for future
+DataService ProtocolResponse conversion into `ShellAccountingServiceResult`.
+
+The scaffolding keeps protocol error, timeout, transport error, domain issue,
+`implemented=false`, `*_NOT_AVAILABLE`, warning, blocking issue, raw payload,
+`readOnly`, and `writeEnabled` semantics visible for future ViewModel state
+mapping.

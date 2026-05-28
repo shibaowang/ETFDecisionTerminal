@@ -704,3 +704,11 @@ test plan in `docs/54_shell_accounting_dataservice_adapter_test_plan.md`.
 The adapter may consume DataServiceClient wrappers in a future separately
 authorized task, but DataService payloads must still not be consumed directly
 by QML. DataService guard behavior remains unchanged in TASK-106.
+
+## TASK-107 Shell Adapter Spy Allowlist
+
+The Shell adapter spy allowlist mirrors the DataService accounting read-only
+action contracts. It includes only `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
+
+DataService action payloads still must not be consumed directly by QML.

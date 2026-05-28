@@ -75,6 +75,9 @@
 - ShellAccountingDataServiceAdapter boundary and test plan: documentation only
   for a future real adapter wrapping read-only DataServiceClient guard
   wrappers; real adapter and QML integration remain unimplemented.
+- ShellAccountingDataServiceAdapter spy/wrapper scaffolding:
+  `tests/ShellAccountingDataServiceAdapterScaffolding`; real adapter, real
+  DataServiceClient calls, and QML integration remain unimplemented.
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under

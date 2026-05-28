@@ -79,6 +79,12 @@ def main() -> int:
     shell_accounting_dataservice_adapter_test_plan_path = (
         root / "docs" / "54_shell_accounting_dataservice_adapter_test_plan.md"
     )
+    shell_accounting_dataservice_adapter_live_call_gate_path = (
+        root / "docs" / "55_shell_accounting_dataservice_adapter_live_call_gate.md"
+    )
+    shell_accounting_dataservice_adapter_live_call_checklist_path = (
+        root / "docs" / "56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md"
+    )
     shell_accounting_dataservice_adapter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceAdapter.h"
     )
@@ -87,6 +93,9 @@ def main() -> int:
     )
     shell_accounting_dataservice_adapter_skeleton_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapter" / "CMakeLists.txt"
+    )
+    shell_accounting_dataservice_adapter_live_call_gate_cmake_path = (
+        root / "tests" / "ShellAccountingDataServiceAdapterLiveCallGate" / "CMakeLists.txt"
     )
     shell_accounting_dataservice_adapter_scaffolding_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceAdapterScaffolding" / "CMakeLists.txt"
@@ -501,6 +510,14 @@ def main() -> int:
         "Shell accounting DataService adapter test plan doc exists",
     )
     require(
+        shell_accounting_dataservice_adapter_live_call_gate_path.exists(),
+        "Shell accounting DataService adapter live-call gate doc exists",
+    )
+    require(
+        shell_accounting_dataservice_adapter_live_call_checklist_path.exists(),
+        "Shell accounting DataService adapter live-call acceptance checklist exists",
+    )
+    require(
         shell_accounting_dataservice_adapter_header_path.exists(),
         "ShellAccountingDataServiceAdapter production skeleton header exists",
     )
@@ -511,6 +528,10 @@ def main() -> int:
     require(
         shell_accounting_dataservice_adapter_skeleton_cmake_path.exists(),
         "Shell accounting DataService adapter skeleton CMake exists",
+    )
+    require(
+        shell_accounting_dataservice_adapter_live_call_gate_cmake_path.exists(),
+        "Shell accounting DataService adapter live-call gate CMake exists",
     )
     require(
         shell_accounting_dataservice_adapter_scaffolding_cmake_path.exists(),
@@ -901,6 +922,12 @@ def main() -> int:
     shell_accounting_dataservice_adapter_test_plan = shell_accounting_dataservice_adapter_test_plan_path.read_text(
         encoding="utf-8"
     )
+    shell_accounting_dataservice_adapter_live_call_gate = (
+        shell_accounting_dataservice_adapter_live_call_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_dataservice_adapter_live_call_checklist = (
+        shell_accounting_dataservice_adapter_live_call_checklist_path.read_text(encoding="utf-8")
+    )
     shell_accounting_dataservice_adapter_header = shell_accounting_dataservice_adapter_header_path.read_text(
         encoding="utf-8"
     )
@@ -909,6 +936,9 @@ def main() -> int:
     )
     shell_accounting_dataservice_adapter_skeleton_cmake = (
         shell_accounting_dataservice_adapter_skeleton_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_dataservice_adapter_live_call_gate_cmake = (
+        shell_accounting_dataservice_adapter_live_call_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_dataservice_adapter_scaffolding_cmake = (
         shell_accounting_dataservice_adapter_scaffolding_cmake_path.read_text(encoding="utf-8")
@@ -3475,6 +3505,22 @@ def main() -> int:
         "docs index mentions ShellAccountingDataServiceAdapter production skeleton",
     )
     require(
+        "55_shell_accounting_dataservice_adapter_live_call_gate" in readme,
+        "README links ShellAccountingDataServiceAdapter live-call gate",
+    )
+    require(
+        "56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist" in readme,
+        "README links ShellAccountingDataServiceAdapter live-call acceptance checklist",
+    )
+    require(
+        "55_shell_accounting_dataservice_adapter_live_call_gate" in docs_index,
+        "docs index links ShellAccountingDataServiceAdapter live-call gate",
+    )
+    require(
+        "56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist" in docs_index,
+        "docs index links ShellAccountingDataServiceAdapter live-call acceptance checklist",
+    )
+    require(
         "TASK-108" in shell_accounting_dataservice_adapter_boundary
         or "Production Skeleton Boundary" in shell_accounting_dataservice_adapter_boundary,
         "docs/53 mentions TASK-108 production skeleton",
@@ -3482,6 +3528,63 @@ def main() -> int:
     require(
         "TASK-108" in shell_accounting_dataservice_adapter_test_plan,
         "docs/54 mentions TASK-108 skeleton tests",
+    )
+    require(
+        "Read-only Allowlist" in shell_accounting_dataservice_adapter_live_call_gate
+        or "read-only allowlist" in shell_accounting_dataservice_adapter_live_call_gate,
+        "docs/55 defines read-only allowlist",
+    )
+    require(
+        "Forbidden Call Denylist" in shell_accounting_dataservice_adapter_live_call_gate,
+        "docs/55 defines forbidden call denylist",
+    )
+    require("rollback" in shell_accounting_dataservice_adapter_live_call_gate, "docs/55 defines rollback")
+    require(
+        "Go / No-Go Checklist" in shell_accounting_dataservice_adapter_live_call_checklist,
+        "docs/56 defines Go / No-Go Checklist",
+    )
+    require(
+        "用户明确授权" in shell_accounting_dataservice_adapter_live_call_checklist,
+        "docs/56 requires explicit user authorization",
+    )
+    require(
+        "TASK-109" in codex_prompt_template,
+        "prompt template mentions TASK-109",
+    )
+    require(
+        "TASK-109 live-call gate is not live implementation" in codex_prompt_template,
+        "prompt template states live-call gate is not live implementation",
+    )
+    require(
+        "docs/55_shell_accounting_dataservice_adapter_live_call_gate.md" in codex_prompt_template,
+        "prompt template links docs/55",
+    )
+    require(
+        "docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md" in codex_prompt_template,
+        "prompt template links docs/56",
+    )
+    for test_name in [
+        "shell_accounting_dataservice_adapter_live_call_allowlist_gate",
+        "shell_accounting_dataservice_adapter_live_call_mapping_gate",
+        "shell_accounting_dataservice_adapter_live_call_error_gate",
+        "shell_accounting_dataservice_adapter_live_call_no_write_gate",
+        "shell_accounting_dataservice_adapter_live_call_readiness_gate",
+    ]:
+        require(
+            test_name in shell_accounting_dataservice_adapter_live_call_gate_cmake,
+            f"DataService adapter live-call gate registers {test_name}",
+        )
+    require(
+        "add_subdirectory(ShellAccountingDataServiceAdapterLiveCallGate)" in tests_cmake,
+        "tests CMake adds Shell accounting DataService adapter live-call gate",
+    )
+    require(
+        "docs/55_shell_accounting_dataservice_adapter_live_call_gate.md" in shell_accounting_dataservice_adapter_boundary,
+        "docs/53 links docs/55",
+    )
+    require(
+        "docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md" in shell_accounting_service_integration_readiness,
+        "docs/52 links docs/56",
     )
     require(
         "SpyAccountingDataServiceClient" in spy_accounting_dataservice_client_header,

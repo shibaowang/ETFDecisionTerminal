@@ -341,6 +341,17 @@ does not directly hard-depend on DataServiceClient, QML is still disconnected,
 and no write, TradeDraft, trade suggestion, strategy, or broker order path is
 enabled.
 
+## TASK-109 Live-call Controller Gate
+
+TASK-109 keeps the controller boundary unchanged for future live-call work:
+
+- controller must continue to consume `ShellAccountingServiceAdapter`
+- controller must not directly depend on DataServiceClient
+- live-call adapter behavior does not imply QML integration
+- `implemented=false` must still map to `Unavailable`
+- warning, error, and stale states must remain visible
+- controller must not generate TradeDraft or trade suggestions
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

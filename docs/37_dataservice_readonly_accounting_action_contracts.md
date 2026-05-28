@@ -712,3 +712,18 @@ action contracts. It includes only `position.list`, `cash.summary`,
 `portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
 
 DataService action payloads still must not be consumed directly by QML.
+
+## TASK-109 Shell Adapter Live-call Allowlist Gate
+
+The live-call adapter allowlist mirrors the DataService accounting read-only
+action contracts. It includes only:
+
+- `position.list`
+- `cash.summary`
+- `portfolio.pnl.summary`
+- `base_position.summary`
+- `sniper_pool.summary`
+
+Any future `ShellAccountingDataServiceAdapter` live-call implementation must
+only call these read-only wrappers and must preserve `readOnly=true` and
+`writeEnabled=false`.

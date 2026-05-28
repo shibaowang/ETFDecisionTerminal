@@ -597,3 +597,10 @@ v0.1 草案。
   DataServiceApi, DataAccess, AccountingEngine, SQLite, QtQuick, or QML until a
   separately authorized real adapter task changes that boundary.
 - QML integration requires a separate task.
+- Do not implement ShellAccountingDataServiceAdapter live calls without
+  `docs/55_shell_accounting_dataservice_adapter_live_call_gate.md` and
+  `docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md`.
+- TASK-109 live-call gate is not live implementation.
+- A live adapter may only call allowlisted read-only wrappers.
+- Live-call tasks must keep no QML, no SQLite, no AccountingEngine, no writes,
+  no TradeDraft, and no trade suggestion unless separately authorized.

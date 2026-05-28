@@ -1920,6 +1920,28 @@ QtQuick, or QML. Every fetch method returns a controlled
 wired, no live service calls are made, and no writes, TradeDraft, trade
 suggestions, strategies, or broker orders are enabled.
 
+## TASK-109 ShellAccountingDataServiceAdapter live-call gate
+
+ShellAccountingDataServiceAdapter live-call gate docs and test-only gate
+descriptors have been added:
+
+- `docs/55_shell_accounting_dataservice_adapter_live_call_gate.md`
+- `docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md`
+
+New CTest gates:
+
+- `shell_accounting_dataservice_adapter_live_call_allowlist_gate`
+- `shell_accounting_dataservice_adapter_live_call_mapping_gate`
+- `shell_accounting_dataservice_adapter_live_call_error_gate`
+- `shell_accounting_dataservice_adapter_live_call_no_write_gate`
+- `shell_accounting_dataservice_adapter_live_call_readiness_gate`
+
+The live-call gate is not a live adapter implementation. The production
+`ShellAccountingDataServiceAdapter` still returns not connected / unavailable.
+No real DataServiceClient calls, QML wiring, SQLite access, AccountingEngine
+calls, database writes, TradeDraft, trade suggestions, strategy execution, or
+broker orders are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

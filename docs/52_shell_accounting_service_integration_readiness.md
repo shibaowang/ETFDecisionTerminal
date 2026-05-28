@@ -148,3 +148,20 @@ Updated readiness:
 - QML integration has not started.
 - Replacing not-connected behavior with real wrapper calls still requires
   explicit authorization and must pass the TASK-107 spy/wrapper gate.
+
+## TASK-109 Live-call Acceptance Gate
+
+TASK-109 adds the live-call gate and acceptance checklist:
+
+- [ShellAccountingDataServiceAdapter Live-call Gate](55_shell_accounting_dataservice_adapter_live_call_gate.md)
+  (`docs/55_shell_accounting_dataservice_adapter_live_call_gate.md`)
+- [ShellAccountingDataServiceAdapter Live-call Acceptance Checklist](56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md)
+  (`docs/56_shell_accounting_dataservice_adapter_live_call_acceptance_checklist.md`)
+
+Updated readiness:
+
+- Live-call allowlist, denylist, mapping, error, no-write, rollback, and
+  readiness gates are documented.
+- Live-call gate CTests exist.
+- Real DataServiceClient integration still requires explicit authorization.
+- QML integration has not started.

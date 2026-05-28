@@ -153,3 +153,17 @@ strategy, no broker order, and controller refresh mapping to `Unavailable`.
 Future real adapter work must replace the not-connected behavior with
 DataServiceClient wrapper calls only after explicit authorization, while still
 passing the TASK-107 spy/wrapper checks or their real equivalents.
+
+## TASK-109 Live-call Gate Tests
+
+TASK-109 adds test-only gate tests for future live-call work:
+
+- `shell_accounting_dataservice_adapter_live_call_allowlist_gate`
+- `shell_accounting_dataservice_adapter_live_call_mapping_gate`
+- `shell_accounting_dataservice_adapter_live_call_error_gate`
+- `shell_accounting_dataservice_adapter_live_call_no_write_gate`
+- `shell_accounting_dataservice_adapter_live_call_readiness_gate`
+
+Future live implementation must pass these gates or their real-adapter
+equivalents. TASK-109 does not implement live calls and does not change the
+current skeleton not-connected behavior.

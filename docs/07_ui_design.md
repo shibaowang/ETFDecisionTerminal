@@ -295,3 +295,16 @@ v0.1 草案。
   call DataServiceClient or calculate accounting values.
 - Read-only accounting UI must still avoid TradeDraft, trade suggestion,
   strategy, and broker-order controls.
+
+## TASK-113 Shell Accounting ViewModel / Model Boundary
+
+- Future accounting UI must bind ShellServices ViewModel / Model objects:
+  `ShellAccountingStatusObject`, `ShellAccountingIssueListModel`, and
+  `ShellPositionListModel`.
+- QML must not call DataServiceClient, ShellAccountingDataServiceAdapter,
+  SQLite, DataAccess, or AccountingEngine directly.
+- QML must not calculate accounting, cost, PnL, base-position sellable amount,
+  sniper-pool remaining amount, privacy masks, or issue state.
+- Read-only accounting UI must not show buy / sell buttons, TradeDraft actions,
+  broker order actions, strategy execution controls, or write-enabled flows.
+- TASK-113 does not wire QML and does not register QML types.

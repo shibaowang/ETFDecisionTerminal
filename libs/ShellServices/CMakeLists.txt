@@ -6,12 +6,15 @@ add_library(ETFShellServices STATIC
     include/ShellServices/ShellAccountingDataServiceAdapter.h
     include/ShellServices/ShellAccountingDisplayText.h
     include/ShellServices/ShellAccountingIssue.h
+    include/ShellServices/ShellAccountingIssueListModel.h
     include/ShellServices/ShellAccountingReadOnlyController.h
     include/ShellServices/ShellAccountingServiceAdapter.h
     include/ShellServices/ShellAccountingServiceTypes.h
     include/ShellServices/ShellAccountingState.h
+    include/ShellServices/ShellAccountingStatusObject.h
     include/ShellServices/ShellDataConnectionObject.h
     include/ShellServices/ShellDataTypes.h
+    include/ShellServices/ShellPositionListModel.h
     include/ShellServices/ShellReadOnlyConnectionPresets.h
     include/ShellServices/ShellReadOnlyDataController.h
     include/ShellServices/ShellReadOnlyDataFacade.h
@@ -23,10 +26,13 @@ add_library(ETFShellServices STATIC
     src/ShellAccountingDataServiceClientPortAdapter.cpp
     src/ShellAccountingDisplayText.cpp
     src/ShellAccountingIssue.cpp
+    src/ShellAccountingIssueListModel.cpp
     src/ShellAccountingReadOnlyController.cpp
     src/ShellAccountingServiceTypes.cpp
     src/ShellAccountingState.cpp
+    src/ShellAccountingStatusObject.cpp
     src/ShellDataConnectionObject.cpp
+    src/ShellPositionListModel.cpp
     src/ShellReadOnlyConnectionPresets.cpp
     src/ShellReadOnlyDataController.cpp
     src/ShellReadOnlyDataFacade.cpp

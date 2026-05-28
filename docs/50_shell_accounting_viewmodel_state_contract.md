@@ -206,3 +206,19 @@ The tests cover:
 
 Empty and Unavailable remain distinct. Fake adapter refresh does not imply real
 DataServiceClient or QML integration.
+
+## TASK-106 Real Adapter State Input Boundary
+
+The future `ShellAccountingDataServiceAdapter` must map DataService
+ProtocolResponse and payload data into `ShellAccountingServiceResult` without
+losing ViewModel state semantics:
+
+- protocol error remains separate from domain issue
+- `implemented=false` remains `Unavailable`
+- `*_NOT_AVAILABLE` remains visible as unavailable state
+- warnings and blocking errors remain visible issues
+- `readOnly` and `writeEnabled` are preserved
+- raw payload can be retained for diagnostics
+
+Real adapter implementation is still not started and does not imply QML
+integration.

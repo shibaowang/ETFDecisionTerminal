@@ -51,6 +51,8 @@
 - [50 Shell Accounting ViewModel State Contract](50_shell_accounting_viewmodel_state_contract.md)
 - [51 Shell Accounting Service Adapter Boundary](51_shell_accounting_service_adapter_boundary.md)
 - [52 Shell Accounting Service Integration Readiness](52_shell_accounting_service_integration_readiness.md)
+- [53 Shell Accounting DataService Adapter Boundary](53_shell_accounting_dataservice_adapter_boundary.md)
+- [54 Shell Accounting DataService Adapter Test Plan](54_shell_accounting_dataservice_adapter_test_plan.md)
 - ShellServices accounting controller test scaffolding:
   `tests/ShellAccountingControllerScaffolding`; production controller and QML
   integration remain unimplemented.
@@ -70,6 +72,9 @@
   controller refresh methods can consume the abstract adapter with a test-only
   fake adapter; real DataServiceClient adapter and QML integration remain
   unimplemented.
+- ShellAccountingDataServiceAdapter boundary and test plan: documentation only
+  for a future real adapter wrapping read-only DataServiceClient guard
+  wrappers; real adapter and QML integration remain unimplemented.
 - DataService `position.list` guard: registered read-only guard with
   `implemented=false`; real position query remains unimplemented.
 - SQLite read-only no-write harness skeleton: test-only helpers under

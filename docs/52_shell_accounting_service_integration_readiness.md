@@ -85,6 +85,22 @@ Updated readiness:
 - DataServiceClient integration has not started.
 - QML integration has not started.
 
+## TASK-106 DataService Adapter Boundary Status
+
+TASK-106 defines the `ShellAccountingDataServiceAdapter` boundary and test plan:
+
+- [Shell Accounting DataService Adapter Boundary](53_shell_accounting_dataservice_adapter_boundary.md)
+- [Shell Accounting DataService Adapter Test Plan](54_shell_accounting_dataservice_adapter_test_plan.md)
+
+Updated readiness:
+
+- Real adapter boundary and test plan are documented.
+- Real adapter implementation still requires separate authorization.
+- DataServiceClient integration has not started.
+- QML integration has not started.
+- Adapter implementation must preserve protocol error vs domain issue mapping,
+  no-write boundaries, no TradeDraft, and no trade suggestion behavior.
+
 ## TASK-105 Fake Adapter Injection Status
 
 TASK-105 completes fake adapter injection behavior for controller refresh

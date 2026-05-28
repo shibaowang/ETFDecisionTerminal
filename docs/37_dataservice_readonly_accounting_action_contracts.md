@@ -694,3 +694,13 @@ payloads still must not be consumed directly by QML. The adapter must preserve
 `implemented`, `readOnly`, `writeEnabled`, protocol errors, and domain issues
 without generating TradeDraft, trade suggestions, strategy execution, writes,
 SQLite access, or AccountingEngine calls.
+
+## TASK-106 Shell Accounting DataService Adapter Boundary
+
+The future Shell real adapter boundary is documented in
+`docs/53_shell_accounting_dataservice_adapter_boundary.md`, with the required
+test plan in `docs/54_shell_accounting_dataservice_adapter_test_plan.md`.
+
+The adapter may consume DataServiceClient wrappers in a future separately
+authorized task, but DataService payloads must still not be consumed directly
+by QML. DataService guard behavior remains unchanged in TASK-106.

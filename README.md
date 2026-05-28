@@ -1861,6 +1861,19 @@ test-only, QML is still not wired, SQLite is not accessed, AccountingEngine is
 not called, and no database writes, TradeDraft, trade suggestions, strategies,
 or broker orders are enabled.
 
+## TASK-106 ShellAccountingDataServiceAdapter boundary / test plan
+
+ShellAccountingDataServiceAdapter boundary and test plan docs have been added:
+
+- [docs/53_shell_accounting_dataservice_adapter_boundary.md](docs/53_shell_accounting_dataservice_adapter_boundary.md)
+- [docs/54_shell_accounting_dataservice_adapter_test_plan.md](docs/54_shell_accounting_dataservice_adapter_test_plan.md)
+
+The future real adapter may only wrap read-only DataServiceClient accounting
+guard wrappers. The real adapter is still unimplemented, real DataServiceClient
+calls are still not wired, QML is still not wired, SQLite is not accessed,
+AccountingEngine is not called, and no writes, TradeDraft, trade suggestions,
+strategies, or broker orders are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

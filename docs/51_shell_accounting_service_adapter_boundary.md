@@ -238,3 +238,17 @@ Covered behavior:
 The real `ShellAccountingDataServiceAdapter` is still not implemented. The fake
 adapter remains under tests. The controller still does not include or call real
 DataServiceClient.
+
+## TASK-106 DataService Adapter Boundary
+
+TASK-106 adds the next boundary docs:
+
+- [Shell Accounting DataService Adapter Boundary](53_shell_accounting_dataservice_adapter_boundary.md)
+- [Shell Accounting DataService Adapter Test Plan](54_shell_accounting_dataservice_adapter_test_plan.md)
+
+The future `ShellAccountingDataServiceAdapter` remains a real adapter candidate,
+not an implementation in this task. `ShellAccountingServiceAdapter` remains the
+abstract layer. A real adapter must only wrap read-only DataServiceClient guard
+wrappers, must not access SQLite, must not call AccountingEngine, must not
+generate TradeDraft or trade suggestions, and must not be consumed directly by
+QML.

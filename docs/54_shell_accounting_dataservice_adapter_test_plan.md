@@ -211,3 +211,20 @@ The tests use a test-only local fake wrapper server so the concrete port can
 exercise real `DataServiceClient` wrapper methods without changing DataService
 guard behavior. QML, SQLite, AccountingEngine, DataAccess, write actions,
 TradeDraft generation, and trade suggestions remain outside this test scope.
+
+## TASK-112 Controller Concrete Port Integration Tests
+
+TASK-112 adds controller-level concrete port integration tests:
+
+- `shell_accounting_controller_concrete_port_position_list_guard`
+- `shell_accounting_controller_concrete_port_cash_summary_guard`
+- `shell_accounting_controller_concrete_port_portfolio_pnl_summary_guard`
+- `shell_accounting_controller_concrete_port_base_position_summary_guard`
+- `shell_accounting_controller_concrete_port_sniper_pool_summary_guard`
+- `shell_accounting_controller_concrete_port_no_write_no_trade`
+- `shell_accounting_controller_concrete_port_no_qml_or_forbidden_dependency`
+
+These tests verify `Unavailable` state mapping for all guard wrappers, visible
+issues, read-only flags, no-write / no-trade behavior, no direct controller
+DataServiceClient dependency, no direct adapter DataServiceClient dependency,
+and no QML accounting action wiring.

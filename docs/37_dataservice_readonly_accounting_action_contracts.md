@@ -745,3 +745,12 @@ The concrete port is a ShellServices consumer boundary only. It does not
 implement real accounting calculations, does not access SQLite, does not call
 AccountingEngine, does not write tables, and does not make QML consume
 DataService payloads directly.
+
+## TASK-112 Shell Controller Concrete Port Consumer Boundary
+
+TASK-112 verifies that `ShellAccountingReadOnlyController` can consume the five
+guard wrappers through ShellServices boundaries only. The DataService action
+contracts remain unchanged: each accounting action is still a read-only guard,
+and real action implementation is not included.
+
+DataService payloads are still not consumed directly by QML.

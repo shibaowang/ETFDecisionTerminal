@@ -320,3 +320,14 @@ The concrete port is limited to the five read-only accounting guard wrappers
 and does not add QML integration, SQLite access, AccountingEngine calls,
 database writes, TradeDraft generation, trade suggestions, strategy execution,
 or broker orders.
+
+## TASK-112 Controller Concrete Port Integration
+
+TASK-112 verifies the service adapter boundary from the controller side. The
+controller consumes `ShellAccountingServiceAdapter`; the DataService adapter
+consumes `ShellAccountingDataServiceClientPort`; and the concrete port consumes
+only read-only DataServiceClient guard wrappers.
+
+The tests keep the layering rule intact: controller and QML do not call
+DataServiceClient directly, and the concrete port remains the only class that
+may wrap the real client.

@@ -91,6 +91,24 @@ TASK-111 completes the concrete port for guard wrappers:
 Future work that wires QML or implements real accounting action payloads still
 requires a separate authorization.
 
+## TASK-112 Acceptance Update
+
+Controller concrete port integration hardening is complete:
+
+- [x] Controller refresh is tested through the concrete port for all five guard
+  wrappers.
+- [x] Guard payloads map to `Unavailable`.
+- [x] Guard issues remain visible.
+- [x] `readOnly=true` and `writeEnabled=false` are preserved.
+- [x] No TradeDraft / no trade suggestion / no strategy / no broker order is
+  preserved.
+- [x] Controller and adapter still do not directly include DataServiceClient.
+- [x] QML remains unwired.
+
+QML integration, SQLite facts access, AccountingEngine integration, and real
+accounting action implementation remain separate No-Go items until explicitly
+authorized.
+
 ## TASK-110 Status
 
 - [x] Live-call skeleton with abstract client port has been added.

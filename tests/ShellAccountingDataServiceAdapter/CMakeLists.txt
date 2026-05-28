@@ -82,6 +82,23 @@ target_include_directories(ShellAccountingDataServiceClientPortAdapterTestUtils
 
 target_compile_features(ShellAccountingDataServiceClientPortAdapterTestUtils PUBLIC cxx_std_17)
 
+add_library(ShellAccountingControllerConcretePortIntegrationTestUtils STATIC
+    ShellAccountingControllerConcretePortIntegrationTestUtils.cpp
+    ShellAccountingControllerConcretePortIntegrationTestUtils.h
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortIntegrationTestUtils
+    PUBLIC
+        ShellAccountingDataServiceClientPortAdapterTestUtils
+)
+
+target_include_directories(ShellAccountingControllerConcretePortIntegrationTestUtils
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_compile_features(ShellAccountingControllerConcretePortIntegrationTestUtils PUBLIC cxx_std_17)
+
 add_executable(ShellAccountingDataServiceAdapterLiveCallSkeletonDefaultNotConnectedTests
     test_shell_accounting_dataservice_adapter_live_call_skeleton_default_not_connected.cpp
 )
@@ -252,6 +269,78 @@ target_link_libraries(ShellAccountingDataServiceAdapterWithClientPortAdapterGuar
 
 target_compile_features(ShellAccountingDataServiceAdapterWithClientPortAdapterGuardPayloadTests PRIVATE cxx_std_17)
 
+add_executable(ShellAccountingControllerConcretePortPositionListGuardTests
+    test_shell_accounting_controller_concrete_port_position_list_guard.cpp
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortPositionListGuardTests
+    PRIVATE
+        ShellAccountingControllerConcretePortIntegrationTestUtils
+)
+
+target_compile_features(ShellAccountingControllerConcretePortPositionListGuardTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerConcretePortCashSummaryGuardTests
+    test_shell_accounting_controller_concrete_port_cash_summary_guard.cpp
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortCashSummaryGuardTests
+    PRIVATE
+        ShellAccountingControllerConcretePortIntegrationTestUtils
+)
+
+target_compile_features(ShellAccountingControllerConcretePortCashSummaryGuardTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerConcretePortPortfolioPnlSummaryGuardTests
+    test_shell_accounting_controller_concrete_port_portfolio_pnl_summary_guard.cpp
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortPortfolioPnlSummaryGuardTests
+    PRIVATE
+        ShellAccountingControllerConcretePortIntegrationTestUtils
+)
+
+target_compile_features(ShellAccountingControllerConcretePortPortfolioPnlSummaryGuardTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerConcretePortBasePositionSummaryGuardTests
+    test_shell_accounting_controller_concrete_port_base_position_summary_guard.cpp
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortBasePositionSummaryGuardTests
+    PRIVATE
+        ShellAccountingControllerConcretePortIntegrationTestUtils
+)
+
+target_compile_features(ShellAccountingControllerConcretePortBasePositionSummaryGuardTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerConcretePortSniperPoolSummaryGuardTests
+    test_shell_accounting_controller_concrete_port_sniper_pool_summary_guard.cpp
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortSniperPoolSummaryGuardTests
+    PRIVATE
+        ShellAccountingControllerConcretePortIntegrationTestUtils
+)
+
+target_compile_features(ShellAccountingControllerConcretePortSniperPoolSummaryGuardTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerConcretePortNoWriteNoTradeTests
+    test_shell_accounting_controller_concrete_port_no_write_no_trade.cpp
+)
+
+target_link_libraries(ShellAccountingControllerConcretePortNoWriteNoTradeTests
+    PRIVATE
+        ShellAccountingControllerConcretePortIntegrationTestUtils
+)
+
+target_compile_features(ShellAccountingControllerConcretePortNoWriteNoTradeTests PRIVATE cxx_std_17)
+
+add_executable(ShellAccountingControllerConcretePortNoQmlOrForbiddenDependencyTests
+    test_shell_accounting_controller_concrete_port_no_qml_or_forbidden_dependency.cpp
+)
+
+target_compile_features(ShellAccountingControllerConcretePortNoQmlOrForbiddenDependencyTests PRIVATE cxx_std_17)
+
 add_test(
     NAME shell_accounting_dataservice_adapter_skeleton_interface
     COMMAND ShellAccountingDataServiceAdapterSkeletonInterfaceTests
@@ -364,4 +453,42 @@ add_test(
 add_test(
     NAME shell_accounting_dataservice_adapter_with_client_port_adapter_guard_payload
     COMMAND ShellAccountingDataServiceAdapterWithClientPortAdapterGuardPayloadTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_position_list_guard
+    COMMAND ShellAccountingControllerConcretePortPositionListGuardTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_cash_summary_guard
+    COMMAND ShellAccountingControllerConcretePortCashSummaryGuardTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_portfolio_pnl_summary_guard
+    COMMAND ShellAccountingControllerConcretePortPortfolioPnlSummaryGuardTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_base_position_summary_guard
+    COMMAND ShellAccountingControllerConcretePortBasePositionSummaryGuardTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_sniper_pool_summary_guard
+    COMMAND ShellAccountingControllerConcretePortSniperPoolSummaryGuardTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_no_write_no_trade
+    COMMAND ShellAccountingControllerConcretePortNoWriteNoTradeTests
+)
+
+add_test(
+    NAME shell_accounting_controller_concrete_port_no_qml_or_forbidden_dependency
+    COMMAND
+        ShellAccountingControllerConcretePortNoQmlOrForbiddenDependencyTests
+        --source-root
+        ${PROJECT_SOURCE_DIR}
 )

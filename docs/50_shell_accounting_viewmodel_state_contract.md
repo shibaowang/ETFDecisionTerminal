@@ -284,3 +284,17 @@ The concrete port must preserve the same state semantics:
 
 This does not change privacy display rules and does not add TradeDraft or trade
 suggestion state.
+
+## TASK-112 Concrete Port Controller State
+
+TASK-112 verifies the concrete-port controller path for all five guard
+wrappers. Each guard payload remains a state input that maps to `Unavailable`:
+
+- `POSITION_LIST_NOT_AVAILABLE`
+- `CASH_SUMMARY_NOT_AVAILABLE`
+- `PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE`
+- `BASE_POSITION_SUMMARY_NOT_AVAILABLE`
+- `SNIPER_POOL_SUMMARY_NOT_AVAILABLE`
+
+`implemented=false` continues to mean `Unavailable`, not `Empty`. Visible issues
+are retained, and `readOnly=true` / `writeEnabled=false` stay intact.

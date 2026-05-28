@@ -323,3 +323,21 @@ This task does not implement real accounting actions and does not change guard
 payload behavior. QML remains disconnected. The port does not access SQLite,
 does not call AccountingEngine or DataAccess, does not write any database table,
 does not generate TradeDraft, and does not generate trade suggestions.
+
+## TASK-112 Controller Concrete Port Integration
+
+TASK-112 hardens the consumer path above the concrete port. Tests now verify
+that `ShellAccountingReadOnlyController` can refresh through
+`ShellAccountingDataServiceAdapter`, `ShellAccountingDataServiceClientPortAdapter`,
+and the real DataServiceClient guard wrapper shape for:
+
+- `position.list`
+- `cash.summary`
+- `portfolio.pnl.summary`
+- `base_position.summary`
+- `sniper_pool.summary`
+
+The integration remains guard-only. No real accounting action is implemented,
+the DataService guard payloads are not changed, QML is still not wired, SQLite
+facts queries are not accessed, AccountingEngine is not called, and no write /
+TradeDraft / trade suggestion path is introduced.

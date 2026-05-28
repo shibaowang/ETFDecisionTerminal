@@ -622,3 +622,10 @@ v0.1 草案。
 - Do not wire QML without an explicit separate task.
 - Do not implement real `position.list` or any other real accounting action in
   a Shell adapter / port task.
+- TASK-112 Shell controller concrete port integration hardening does not imply
+  QML integration.
+- Do not wire QML without an explicit task.
+- Do not implement real accounting actions in Shell controller / adapter tasks.
+- Controller concrete port integration must keep no SQLite, no AccountingEngine,
+  no writes, no TradeDraft, and no trade suggestion unless separately
+  authorized.

@@ -120,3 +120,16 @@ Explicitly excluded:
 - TradeDraft
 - strategy execution
 - broker order
+
+## TASK-115 Presenter Skeleton Status
+
+TASK-115 adds a production `ShellAccountingPresenter` skeleton that can hold
+the read-only status object, issue model, position list model, and optional
+controller boundary. This satisfies one prerequisite for future QML binding,
+but QML binding has not started.
+
+The presenter skeleton is not a QML type and is not registered with QML.
+Future QML work still requires a separate task and explicit authorization. QML
+must continue to bind only ShellServices read-only objects, must preserve Empty
+vs Unavailable, and must not add trading buttons, TradeDraft, trade suggestion,
+strategy, broker, SQLite, AccountingEngine, or DataServiceClient access.

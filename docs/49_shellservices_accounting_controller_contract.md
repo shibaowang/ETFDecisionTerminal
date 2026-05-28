@@ -417,6 +417,18 @@ The controller is consumed by the presenter / facade boundary, not by QML
 calling DataServiceClient directly. QML integration remains separately
 authorized and is not implemented in this task.
 
+## TASK-115 Presenter Skeleton
+
+TASK-115 adds the production `ShellAccountingPresenter` skeleton between the
+controller and any future QML binding. The presenter can hold and expose
+`ShellAccountingStatusObject`, `ShellAccountingIssueListModel`, and
+`ShellPositionListModel`, and it can hold an optional
+`ShellAccountingReadOnlyController`.
+
+The presenter still routes refresh only through the controller boundary. QML
+still does not directly consume the controller, adapters, concrete port, or
+DataServiceClient.
+
 ## Explicitly Forbidden
 
 - QML 不直接调用 DataServiceClient。

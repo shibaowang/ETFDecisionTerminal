@@ -1,5 +1,23 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-115 ShellAccountingPresenter skeleton
+
+ShellServices now includes a production-side `ShellAccountingPresenter`
+skeleton. It owns the read-only accounting presentation boundary for future QML
+work by holding:
+
+- `ShellAccountingStatusObject`
+- `ShellAccountingIssueListModel`
+- `ShellPositionListModel`
+- an optional `ShellAccountingReadOnlyController`
+
+The presenter remains read-only, keeps `writeEnabled=false`, does not expose
+TradeDraft / trade suggestion / strategy / broker submission paths, and only
+refreshes through `ShellAccountingReadOnlyController`. QML is still not wired,
+no QML type is registered, the presenter does not call DataServiceClient, does
+not access SQLite, does not call AccountingEngine, and writes no database
+tables.
+
 ## TASK-114 ShellAccounting presenter / QML binding plan
 
 ShellAccounting presenter and QML binding plan docs are now defined:

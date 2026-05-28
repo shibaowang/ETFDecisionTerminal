@@ -171,3 +171,30 @@ Future presenter implementation must include:
 - no DataServiceClient direct dependency
 - no SQLite / no AccountingEngine dependency
 - refresh no-write behavior
+
+## TASK-115 Production Skeleton
+
+TASK-115 adds the production-side `ShellAccountingPresenter` skeleton. The
+skeleton owns and exposes only read-only ShellServices presentation objects:
+
+- `ShellAccountingStatusObject`
+- `ShellAccountingIssueListModel`
+- `ShellPositionListModel`
+- an optional `ShellAccountingReadOnlyController`
+
+The skeleton keeps `readOnly=true`, `writeEnabled=false`,
+`tradeDraftGenerationEnabled=false`, `tradeSuggestionEnabled=false`,
+`strategyExecutionEnabled=false`, and broker submission disabled. It does not
+register a QML type, does not modify QML, and does not call DataServiceClient.
+
+`refreshPositionList` and `refreshAllReadOnly` are presenter boundary methods.
+When no controller is configured they return a controlled Unavailable state
+with a visible `CONTROLLER_NOT_CONFIGURED` issue. When a controller is
+configured, refresh is routed only through `ShellAccountingReadOnlyController`;
+the presenter does not directly depend on adapters, concrete ports, or
+DataServiceClient.
+
+QML integration remains a separate authorization step. The presenter skeleton
+does not implement accounting calculations, does not access SQLite, does not
+call AccountingEngine, does not write database tables, and does not generate
+TradeDraft or trade suggestions.

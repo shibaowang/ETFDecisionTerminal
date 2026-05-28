@@ -6,6 +6,7 @@
 #include "ShellServices/ShellAccountingDisplayText.h"
 #include "ShellServices/ShellAccountingIssue.h"
 #include "ShellServices/ShellAccountingIssueListModel.h"
+#include "ShellServices/ShellAccountingPresenter.h"
 #include "ShellServices/ShellAccountingReadOnlyController.h"
 #include "ShellServices/ShellAccountingServiceAdapter.h"
 #include "ShellServices/ShellAccountingServiceTypes.h"

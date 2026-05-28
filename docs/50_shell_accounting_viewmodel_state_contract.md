@@ -337,3 +337,19 @@ must preserve this state contract:
 - Privacy mode affects `displayText` only.
 - Read-only accounting UI must not expose trading buttons, TradeDraft actions,
   trade suggestions, strategy execution, or broker order controls.
+
+## TASK-115 Presenter Skeleton State Boundary
+
+TASK-115 adds `ShellAccountingPresenter` as a production skeleton that exposes
+the status object, issue model, and position list model. The presenter keeps
+the same state contract:
+
+- `implemented=false -> Unavailable`
+- Empty is not Unavailable
+- Warning / Error / Stale remain visible
+- privacy mode affects display text only
+- no TradeDraft or trade suggestion action is exposed
+
+Without a controller, presenter refresh produces a controlled Unavailable
+state with a visible `CONTROLLER_NOT_CONFIGURED` issue. With a controller,
+refresh remains routed only through `ShellAccountingReadOnlyController`.

@@ -509,3 +509,12 @@ v0.1 草案。
 - Real `position.list` implementation must keep the skeleton no-write matrix
   passing and add real action no-write tests before changing
   `implemented=false`.
+- Real `position.list` implementation tasks must reference
+  `docs/47_position_list_readiness_hardening.md` and
+  `docs/48_position_list_first_stage_real_action_scope.md`.
+- Do not implement true `position.list` without explicit authorization.
+- Do not expand first implementation scope beyond
+  `docs/48_position_list_first_stage_real_action_scope.md`.
+- The no-write hardening matrix in docs/47 must pass before merge.
+- Guard fallback must remain documented and available during first real
+  `position.list` implementation.

@@ -91,3 +91,15 @@ DataAccess, AccountingEngine, SQLite facts query, QML, snapshot, TradeDraft, or
 TradeLog integration. Future real implementation must keep this skeleton
 passing and then extend it against the real action before any
 `implemented=true` transition.
+
+## TASK-097 Readiness Hardening Status
+
+`docs/47_position_list_readiness_hardening.md` and
+`docs/48_position_list_first_stage_real_action_scope.md` are now Go / No-Go
+preconditions. They define the final failure behavior matrix, no-write gate,
+cash facts / market price / FX gap strategies, guard fallback, first-stage
+allowed scope, and explicitly excluded scope.
+
+Switching `position.list` from `implemented=false` to `implemented=true` still
+requires separate explicit authorization. The first implementation PR must not
+exceed `docs/48_position_list_first_stage_real_action_scope.md`.

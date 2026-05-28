@@ -240,3 +240,15 @@ production query data.
 
 The tests are contract tests only; they do not connect DataAccess to
 DataService and do not implement real `position.list`.
+
+## TASK-097 position.list Readiness Hardening Mapping Scope
+
+The mapping contracts feed
+`docs/47_position_list_readiness_hardening.md` and
+`docs/48_position_list_first_stage_real_action_scope.md`.
+
+The first-stage real action may map `TradeFactRow` to `TradeFactDto`, but cash
+facts, market price facts, and FX rate facts gaps remain explicit. Missing
+cash facts must degrade or block with issues, missing market price must use
+`MARKET_PRICE_MISSING` / `UNAVAILABLE`, and missing FX must use
+`MULTI_CURRENCY_UNSUPPORTED` / `FX_RATE_MISSING` without fabricated rates.

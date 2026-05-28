@@ -260,3 +260,14 @@ not write tables.
 Before the guard -> real action switch, these skeleton tests must be replaced
 or extended with real action no-write coverage while preserving the same
 protected table guarantees.
+
+## TASK-097 Readiness Hardening
+
+TASK-097 adds the final readiness hardening document in
+`docs/47_position_list_readiness_hardening.md` and the first-stage real action
+scope in `docs/48_position_list_first_stage_real_action_scope.md`.
+
+Those documents are prerequisites before a real implementation task can switch
+the guard. The `position.list` guard remains `implemented=false`; this task
+does not connect DataAccess to DataService, does not call AccountingEngine,
+does not access SQLite, and does not write database tables.

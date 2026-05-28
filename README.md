@@ -1716,6 +1716,20 @@ unimplemented, the guard behavior is unchanged, DataAccess is not connected to
 DataService, AccountingEngine is not called, no real SQLite facts query is
 accessed, and no database tables are written.
 
+## TASK-097 position.list readiness hardening
+
+Readiness hardening docs have been added for the future real `position.list`
+implementation:
+
+- [docs/47_position_list_readiness_hardening.md](docs/47_position_list_readiness_hardening.md)
+- [docs/48_position_list_first_stage_real_action_scope.md](docs/48_position_list_first_stage_real_action_scope.md)
+
+These docs define the final Go / No-Go gates, first-stage scope, degraded
+output policy, failure behavior matrix, no-write gate, and guard fallback
+requirements. Real `position.list` is still not implemented, the
+`position.list` guard behavior is unchanged, and no DataAccess / DataService /
+AccountingEngine / SQLite integration or writes are enabled.
+
 ## TASK-066 Accounting Replay Minimal FX012
 
 - `AccountingReplayMinimalEngine` now supports `FX001_EMPTY_LEDGER` through

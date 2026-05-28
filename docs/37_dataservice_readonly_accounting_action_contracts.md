@@ -761,3 +761,10 @@ The presenter / QML binding plan does not change DataService contracts. QML
 must not consume DataService payloads directly and must not call
 DataServiceClient. Accounting payloads must flow through ShellServices
 presenter / ViewModel / Model boundaries.
+
+## TASK-116 Presenter Guard Consumption
+
+ShellAccountingPresenter concrete-port integration still consumes only
+DataService read-only guard actions through ShellServices boundaries. The
+presenter does not call DataServiceClient directly, does not access SQLite, and
+does not implement real accounting actions.

@@ -466,3 +466,10 @@ The presenter / QML binding plan does not authorize write behavior. Future
 presenter or QML tasks must keep no database writes, no `data.audit.append`, no
 write actions, no TradeDraft generation, no trade suggestion generation, no
 strategy execution, and no broker orders.
+
+## TASK-116 Presenter Concrete Port No-write Boundary
+
+Presenter concrete-port integration relies on the existing guard action
+no-write and forbidden-action checks. The presenter path must not call
+`data.audit.append`, trade write actions, draft actions, snapshot writes,
+strategy actions, broker actions, SQLite facts queries, or AccountingEngine.

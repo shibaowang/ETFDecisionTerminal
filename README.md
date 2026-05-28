@@ -18,6 +18,26 @@ no QML type is registered, the presenter does not call DataServiceClient, does
 not access SQLite, does not call AccountingEngine, and writes no database
 tables.
 
+## TASK-116 ShellAccountingPresenter concrete port integration
+
+ShellAccountingPresenter concrete-port integration hardening is now covered by
+tests. The presenter can refresh through:
+
+`ShellAccountingPresenter -> ShellAccountingReadOnlyController ->
+ShellAccountingDataServiceAdapter -> ShellAccountingDataServiceClientPortAdapter
+-> DataServiceClient guard wrapper`.
+
+The current presenter skeleton exposes only `refreshPositionList` and
+`refreshAllReadOnly`, with `refreshAllReadOnly` intentionally delegating to
+`position.list`. The integration verifies the `position.list` guard payload
+maps to `Unavailable`, keeps `POSITION_LIST_NOT_AVAILABLE` visible, preserves
+`readOnly=true` and `writeEnabled=false`, and keeps no TradeDraft, no trade
+suggestion, no strategy execution, and no broker order.
+
+QML remains unwired, no QML type is registered, no real accounting action is
+implemented, SQLite facts queries and AccountingEngine are not accessed, and no
+database tables are written.
+
 ## TASK-114 ShellAccounting presenter / QML binding plan
 
 ShellAccounting presenter and QML binding plan docs are now defined:

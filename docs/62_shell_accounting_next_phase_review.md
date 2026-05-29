@@ -29,7 +29,7 @@ This document does not modify QML and does not implement a QML page.
 - [ ] QML direct DataServiceClient denylist passes.
 - [ ] QML direct SQLite / AccountingEngine denylist passes.
 - [ ] QML binding task scope is limited to read-only behavior.
-- [ ] 用户明确授权 QML binding.
+- [ ] User explicitly authorized QML binding.
 
 ## First QML Binding Recommended Scope
 
@@ -86,4 +86,16 @@ The QML binding smoke scaffold is now a precondition for QML binding. It locks
 the object contract, state matrix, guard payload, issue / privacy, no-trade UI,
 and static gate dependency before any QML file is modified.
 
+QML binding still requires User explicitly authorized QML binding.
 QML binding still requires 用户明确授权 QML binding.
+
+## TASK-122 QML Smoke CTest Status
+
+TASK-122 adds test-only runtime QML smoke CTests. The tests load inline QML with
+fake read-only presenter/status/issue/position properties and verify the smoke
+rules from docs/59 without modifying production QML.
+
+This makes QML binding smoke a stronger precondition, but it is still not
+production QML binding. A future QML task must still be explicitly authorized,
+must pass TASK-119 static gate, TASK-121 scaffold, and TASK-122 smoke CTests,
+and must remain read-only.

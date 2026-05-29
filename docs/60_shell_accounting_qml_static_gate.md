@@ -135,3 +135,22 @@ adding read-only accounting QML.
 The static gate remains the precondition for preventing direct
 DataServiceClient, SQLite, DataAccess, AccountingEngine, write action,
 TradeDraft, strategy, broker, or accounting-scope trading UI tokens.
+
+## TASK-122 Smoke CTest Regression
+
+TASK-122 adds runtime QML smoke CTests that continue to depend on this static
+gate. The runtime smoke tests use test-only inline QML and fake read-only
+objects; they do not modify production QML and do not register production QML
+types.
+
+The static gate regression smoke checks that the TASK-119 CTests remain present:
+
+- `shell_accounting_qml_static_gate_no_direct_service`
+- `shell_accounting_qml_static_gate_no_accounting_binding_yet`
+- `shell_accounting_qml_static_gate_no_write_tokens`
+- `shell_accounting_qml_static_gate_accounting_scope_no_trade`
+- `shell_accounting_qml_static_gate_docs_sync`
+
+Test-only QML smoke is not production QML binding. Any future production QML
+binding task must still pass this static gate and receive explicit
+authorization before modifying `apps/ETFDecisionShell/qml`.

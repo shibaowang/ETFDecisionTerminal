@@ -154,3 +154,15 @@ scaffold verifies future object binding, state matrix, guard payload display,
 issue / privacy, no-trade UI, and static gate dependency expectations.
 
 QML is still not wired, and real accounting actions remain unimplemented.
+
+## TASK-122 Follow-up
+
+TASK-122 adds test-only QML smoke CTests as the next v0.6 follow-up. The tests
+load inline QML with fake read-only objects and verify object availability,
+state display, guard unavailable display, issue visibility, privacy display,
+no-trade UI tokens, and TASK-119 static gate regression.
+
+Production QML remains unwired. No ShellAccounting QML type is registered, no
+production accounting page is implemented, real accounting actions remain
+unimplemented, and no SQLite, AccountingEngine, write, TradeDraft, or trade
+suggestion behavior is enabled.

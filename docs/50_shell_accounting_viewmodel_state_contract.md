@@ -414,3 +414,17 @@ ShellServices, and no TradeDraft or trade suggestion behavior is exposed.
 The smoke scaffold now tests the future QML state matrix, guard payload
 Unavailable mapping, issue / privacy visibility, and no-trade UI rules. The
 ViewModel / Model boundary remains read-only and ShellServices-owned.
+
+## TASK-122 QML Smoke CTest
+
+TASK-122 adds test-only runtime QML smoke CTests for the ViewModel state
+contract. Inline QML reads fake read-only status, issue, position, and amount
+properties and verifies:
+
+- Idle / Loading / Loaded / Empty / Unavailable / Warning / Error / Stale.
+- Empty is not Unavailable.
+- implemented=false maps to Unavailable.
+- guard unavailable statuses remain visible.
+- issue and warning visibility survives privacy mode.
+- QML reads `displayText` and does not calculate `maskedText`.
+- no trade or write affordance is present.

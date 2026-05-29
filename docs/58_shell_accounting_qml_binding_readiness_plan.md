@@ -199,3 +199,14 @@ QML binding smoke scaffold CTests now cover object contract, state matrix,
 guard payloads, issue / privacy, no-trade UI, and TASK-119 static gate
 dependency. These tests are a readiness input for QML binding, not QML binding
 itself.
+
+## TASK-122 QML Smoke CTest
+
+TASK-122 adds test-only runtime QML smoke CTests. The tests load inline QML with
+fake read-only objects to verify object availability, state display, guard
+Unavailable display, issue visibility, privacy display, no-trade UI tokens, and
+TASK-119 static gate regression.
+
+This does not implement production QML binding. A production QML binding task
+still needs explicit authorization and must pass TASK-119, TASK-121, and
+TASK-122.

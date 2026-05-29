@@ -109,6 +109,9 @@ def main() -> int:
     shell_accounting_qml_binding_smoke_cmake_path = (
         root / "tests" / "ShellAccountingQmlBindingSmoke" / "CMakeLists.txt"
     )
+    shell_accounting_qml_smoke_runtime_cmake_path = (
+        root / "tests" / "ShellAccountingQmlBindingSmokeRuntime" / "CMakeLists.txt"
+    )
     shell_accounting_presenter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
     )
@@ -1044,6 +1047,7 @@ def main() -> int:
     shell_accounting_next_phase_review = shell_accounting_next_phase_review_path.read_text(encoding="utf-8")
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
+    shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
     shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
     shell_accounting_presenter_cmake = shell_accounting_presenter_cmake_path.read_text(encoding="utf-8")
@@ -4485,6 +4489,33 @@ def main() -> int:
     )
     require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-121")
     require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-121")
+
+    require(
+        "add_subdirectory(ShellAccountingQmlBindingSmokeRuntime)" in tests_cmake,
+        "tests/CMakeLists includes ShellAccountingQmlBindingSmokeRuntime",
+    )
+    for qml_smoke_test_name in [
+        "shell_accounting_qml_smoke_object_availability",
+        "shell_accounting_qml_smoke_state_display",
+        "shell_accounting_qml_smoke_guard_unavailable",
+        "shell_accounting_qml_smoke_issue_visibility",
+        "shell_accounting_qml_smoke_privacy_display",
+        "shell_accounting_qml_smoke_no_trade_ui",
+        "shell_accounting_qml_smoke_static_gate_regression",
+    ]:
+        require(
+            qml_smoke_test_name in shell_accounting_qml_smoke_runtime_cmake,
+            f"TASK-122 CTest exists: {qml_smoke_test_name}",
+        )
+    require("TASK-122" in shell_accounting_qml_binding_smoke_plan, "docs/59 mentions TASK-122")
+    require("runtime smoke CTest" in shell_accounting_qml_binding_smoke_plan, "docs/59 mentions runtime smoke CTest")
+    require("TASK-122" in shell_accounting_qml_static_gate, "docs/60 mentions TASK-122")
+    require("TASK-122" in shell_accounting_readonly_ui_milestone, "docs/61 mentions TASK-122")
+    require("TASK-122" in shell_accounting_next_phase_review, "docs/62 mentions TASK-122")
+    require("TASK-122" in codex_prompt_template, "docs/12 mentions TASK-122")
+    require("ShellAccounting QML smoke CTest" in readme, "README mentions ShellAccounting QML smoke CTest")
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-122")
+    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-122")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

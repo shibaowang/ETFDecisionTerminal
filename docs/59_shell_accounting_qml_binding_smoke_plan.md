@@ -189,3 +189,26 @@ only lock the future smoke expectations so a later QML binding task cannot
 bypass read-only ShellServices objects, Empty vs Unavailable, guard
 Unavailable mapping, issue visibility, privacy display, no-trade UI rules, or
 the TASK-119 static gate.
+
+## TASK-122 QML Smoke CTest Implementation
+
+TASK-122 adds test-only runtime smoke CTest coverage under
+`tests/ShellAccountingQmlBindingSmokeRuntime`.
+
+Automated smoke coverage now includes:
+
+- object availability through inline QML reading fake read-only presenter,
+  status, issue, and position properties.
+- state display for Idle, Loading, Loaded, Empty, Unavailable, Warning, Error,
+  and Stale.
+- five guard unavailable payloads mapped to Unavailable.
+- issue visibility for code, level, message, blocking, sourceId, warning, and
+  unknown issues.
+- privacy display where QML reads only `displayText` and does not calculate
+  `maskedText`.
+- no-trade UI token checks on the test-only smoke QML.
+- static gate regression confirming TASK-119 remains a prerequisite.
+
+This is not production QML binding. It does not modify
+`apps/ETFDecisionShell/qml`, does not register production QML types, and does
+not implement an accounting QML page.

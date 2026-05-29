@@ -210,6 +210,12 @@
   uses test-only inline QML to verify object availability, state display, guard
   Unavailable display, issue visibility, privacy display, no-trade UI tokens,
   and static gate regression. Production QML remains unwired.
+- ShellAccounting production QML binding boundary:
+  [63_shell_accounting_production_qml_binding_boundary.md](63_shell_accounting_production_qml_binding_boundary.md)
+  defines the production QML binding boundary before any QML file is modified.
+- ShellAccounting first-stage QML binding checklist:
+  [64_shell_accounting_first_stage_qml_binding_checklist.md](64_shell_accounting_first_stage_qml_binding_checklist.md)
+  defines the Go / No-Go checklist for the first read-only production QML stage.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -745,3 +745,15 @@ v0.1 草案。
   `writeEnabled: true`.
 - No TradeDraft, no trade suggestion, no write action, no SQLite, and no
   AccountingEngine access remain mandatory.
+
+## TASK-123 ShellAccounting Production QML Binding Boundary
+
+- Production QML binding tasks must reference
+  `docs/63_shell_accounting_production_qml_binding_boundary.md` and
+  `docs/64_shell_accounting_first_stage_qml_binding_checklist.md`.
+- Do not modify QML without explicit authorization.
+- Production QML binding must pass TASK-119, TASK-121, and TASK-122 gates.
+- First-stage QML must be read-only placeholder / Unavailable / issue /
+  privacy smoke only.
+- No real accounting action, no write action, no TradeDraft, no trade
+  suggestion, no broker order, and no strategy execution are allowed.

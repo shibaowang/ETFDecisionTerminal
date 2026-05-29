@@ -210,3 +210,10 @@ TASK-119 static gate regression.
 This does not implement production QML binding. A production QML binding task
 still needs explicit authorization and must pass TASK-119, TASK-121, and
 TASK-122.
+
+## TASK-123 Production QML Binding Boundary
+
+Production QML binding boundary is docs/63. The first-stage production QML
+binding checklist is docs/64. These are required before any production QML file
+is modified. The first stage remains read-only placeholder / Unavailable /
+issue / privacy smoke only.

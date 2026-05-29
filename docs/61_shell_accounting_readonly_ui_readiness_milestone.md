@@ -166,3 +166,10 @@ Production QML remains unwired. No ShellAccounting QML type is registered, no
 production accounting page is implemented, real accounting actions remain
 unimplemented, and no SQLite, AccountingEngine, write, TradeDraft, or trade
 suggestion behavior is enabled.
+
+## TASK-123 Production QML Boundary
+
+TASK-123 adds the production QML binding boundary docs/63 and first-stage QML
+binding checklist docs/64. Production QML binding still requires explicit
+authorization and remains limited to read-only placeholder / Unavailable /
+issue / privacy smoke for the first stage.

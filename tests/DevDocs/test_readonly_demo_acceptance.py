@@ -103,6 +103,12 @@ def main() -> int:
     shell_accounting_next_phase_review_path = (
         root / "docs" / "62_shell_accounting_next_phase_review.md"
     )
+    shell_accounting_production_qml_boundary_path = (
+        root / "docs" / "63_shell_accounting_production_qml_binding_boundary.md"
+    )
+    shell_accounting_first_stage_qml_checklist_path = (
+        root / "docs" / "64_shell_accounting_first_stage_qml_binding_checklist.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -1045,6 +1051,10 @@ def main() -> int:
     shell_accounting_qml_static_gate = shell_accounting_qml_static_gate_path.read_text(encoding="utf-8")
     shell_accounting_readonly_ui_milestone = shell_accounting_readonly_ui_milestone_path.read_text(encoding="utf-8")
     shell_accounting_next_phase_review = shell_accounting_next_phase_review_path.read_text(encoding="utf-8")
+    shell_accounting_production_qml_boundary = shell_accounting_production_qml_boundary_path.read_text(encoding="utf-8")
+    shell_accounting_first_stage_qml_checklist = shell_accounting_first_stage_qml_checklist_path.read_text(
+        encoding="utf-8"
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -4516,6 +4526,43 @@ def main() -> int:
     require("ShellAccounting QML smoke CTest" in readme, "README mentions ShellAccounting QML smoke CTest")
     require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-122")
     require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-122")
+
+    require(shell_accounting_production_qml_boundary_path.exists(), "docs/63 production QML boundary exists")
+    require(shell_accounting_first_stage_qml_checklist_path.exists(), "docs/64 first-stage QML checklist exists")
+    require(
+        "docs/63_shell_accounting_production_qml_binding_boundary.md" in readme,
+        "README links docs/63",
+    )
+    require(
+        "docs/64_shell_accounting_first_stage_qml_binding_checklist.md" in readme,
+        "README links docs/64",
+    )
+    require(
+        "63_shell_accounting_production_qml_binding_boundary.md" in docs_index,
+        "docs/README links docs/63",
+    )
+    require(
+        "64_shell_accounting_first_stage_qml_binding_checklist.md" in docs_index,
+        "docs/README links docs/64",
+    )
+    require("DataServiceClient" in shell_accounting_production_qml_boundary, "docs/63 includes DataServiceClient deny item")
+    require("SQLite" in shell_accounting_production_qml_boundary, "docs/63 includes SQLite deny item")
+    require("AccountingEngine" in shell_accounting_production_qml_boundary, "docs/63 includes AccountingEngine deny item")
+    require("no trading buttons" in shell_accounting_production_qml_boundary, "docs/63 includes no trading buttons")
+    require("TASK-119" in shell_accounting_production_qml_boundary, "docs/63 includes TASK-119")
+    require("TASK-121" in shell_accounting_production_qml_boundary, "docs/63 includes TASK-121")
+    require("TASK-122" in shell_accounting_production_qml_boundary, "docs/63 includes TASK-122")
+    require("Go / No-Go Checklist" in shell_accounting_first_stage_qml_checklist, "docs/64 includes checklist")
+    require(
+        "用户明确授权 production QML binding" in shell_accounting_first_stage_qml_checklist,
+        "docs/64 requires explicit production QML binding authorization",
+    )
+    require("docs/63_shell_accounting_production_qml_binding_boundary.md" in codex_prompt_template, "docs/12 links docs/63")
+    require("docs/64_shell_accounting_first_stage_qml_binding_checklist.md" in codex_prompt_template, "docs/12 links docs/64")
+    require("docs/63_shell_accounting_production_qml_binding_boundary.md" in shell_accounting_qml_binding_smoke_plan, "docs/59 links docs/63")
+    require("docs/64_shell_accounting_first_stage_qml_binding_checklist.md" in shell_accounting_qml_static_gate, "docs/60 links docs/64")
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-123")
+    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-123")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

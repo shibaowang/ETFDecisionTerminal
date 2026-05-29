@@ -99,3 +99,11 @@ This makes QML binding smoke a stronger precondition, but it is still not
 production QML binding. A future QML task must still be explicitly authorized,
 must pass TASK-119 static gate, TASK-121 scaffold, and TASK-122 smoke CTests,
 and must remain read-only.
+
+## TASK-123 Production QML Binding Boundary
+
+TASK-123 adds docs/63 production QML binding boundary and docs/64 first-stage
+QML binding checklist. Production QML binding still requires explicit
+authorization. The first production stage must remain read-only placeholder /
+Unavailable / issue / privacy smoke and must not include real accounting data,
+trading buttons, TradeDraft, broker order, strategy execution, or write action.

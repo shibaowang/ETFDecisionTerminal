@@ -196,3 +196,10 @@ The first-stage read-only QML types are now registered through the centralized
 ShellServices helper. This does not change the production QML binding boundary:
 production QML still must not import the module or bind the presenter until a
 separate authorized production QML task.
+
+## TASK-128 Production Boundary Update
+
+The production startup registration gate is now documented in docs/69 and
+docs/70. Startup wiring remains unimplemented and must not be confused with
+production QML page binding, production QML imports, or real accounting action
+implementation.

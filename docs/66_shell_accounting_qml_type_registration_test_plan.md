@@ -130,3 +130,10 @@ TASK-127 adds implementation tests:
 These tests prove the module imports, the four allowlist types are registered as
 read-only uncreatable types, forbidden types and methods are absent, and
 production QML still does not bind the module.
+
+## TASK-128 Startup Registration Gate Tests
+
+TASK-128 adds startup registration gate tests covering required pre-gates,
+startup location policy, current no-production-wiring state, forbidden exposure
+scanning, and rollback policy. Future startup wiring implementation must pass
+these tests or their production-equivalent successor.

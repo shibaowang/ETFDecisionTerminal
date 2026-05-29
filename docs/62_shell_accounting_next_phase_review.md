@@ -135,3 +135,10 @@ TASK-127 implements the first-stage type registration, but the next phase for
 production QML binding still requires explicit authorization. The allowed next
 UI step remains a read-only placeholder / unavailable / issue / privacy smoke,
 not real accounting data or trading UI.
+
+## TASK-128 Review Update
+
+The startup registration gate is now defined. A future startup wiring task must
+pass TASK-119 / TASK-121 / TASK-122 / TASK-125 / TASK-126 / TASK-127 and the new
+TASK-128 gate, must be explicitly authorized, and must not be treated as QML
+page binding or real accounting action implementation.

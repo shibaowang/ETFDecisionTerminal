@@ -121,6 +121,12 @@ def main() -> int:
     shell_accounting_qml_type_registration_rollback_strategy_path = (
         root / "docs" / "68_shell_accounting_qml_type_registration_rollback_strategy.md"
     )
+    shell_accounting_qml_startup_registration_gate_path = (
+        root / "docs" / "69_shell_accounting_qml_startup_registration_gate.md"
+    )
+    shell_accounting_qml_startup_registration_test_plan_path = (
+        root / "docs" / "70_shell_accounting_qml_startup_registration_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -138,6 +144,9 @@ def main() -> int:
     )
     shell_accounting_qml_type_registration_implementation_cmake_path = (
         root / "tests" / "ShellAccountingQmlTypeRegistrationImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_qml_startup_registration_gate_cmake_path = (
+        root / "tests" / "ShellAccountingQmlStartupRegistrationGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1094,6 +1103,12 @@ def main() -> int:
     shell_accounting_qml_type_registration_rollback_strategy = (
         shell_accounting_qml_type_registration_rollback_strategy_path.read_text(encoding="utf-8")
     )
+    shell_accounting_qml_startup_registration_gate = (
+        shell_accounting_qml_startup_registration_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_qml_startup_registration_test_plan = (
+        shell_accounting_qml_startup_registration_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1105,6 +1120,9 @@ def main() -> int:
     )
     shell_accounting_qml_type_registration_implementation_cmake = (
         shell_accounting_qml_type_registration_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_qml_startup_registration_gate_cmake = (
+        shell_accounting_qml_startup_registration_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -4915,6 +4933,70 @@ def main() -> int:
         "production QML has not imported ShellAccounting module after TASK-127",
     )
     require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-127")
+
+    require(
+        shell_accounting_qml_startup_registration_gate_path.exists(),
+        "docs/69 QML startup registration gate exists",
+    )
+    require(
+        shell_accounting_qml_startup_registration_test_plan_path.exists(),
+        "docs/70 QML startup registration test plan exists",
+    )
+    require(
+        "docs/69_shell_accounting_qml_startup_registration_gate.md" in readme,
+        "README links docs/69",
+    )
+    require(
+        "docs/70_shell_accounting_qml_startup_registration_test_plan.md" in readme,
+        "README links docs/70",
+    )
+    require(
+        "69_shell_accounting_qml_startup_registration_gate.md" in docs_index,
+        "docs/README links docs/69",
+    )
+    require(
+        "70_shell_accounting_qml_startup_registration_test_plan.md" in docs_index,
+        "docs/README links docs/70",
+    )
+    require("TASK-128" in shell_accounting_qml_startup_registration_gate, "docs/69 mentions TASK-128")
+    require(
+        "Test Matrix" in shell_accounting_qml_startup_registration_test_plan,
+        "docs/70 includes Test matrix",
+    )
+    require("TASK-128" in codex_prompt_template, "docs/12 mentions TASK-128")
+    require(
+        "shell_accounting_qml_startup_registration_gate"
+        in shell_accounting_qml_startup_registration_gate_cmake,
+        "tests include startup registration gate",
+    )
+    require(
+        "shell_accounting_qml_startup_registration_location_policy"
+        in shell_accounting_qml_startup_registration_gate_cmake,
+        "tests include startup registration location policy",
+    )
+    require(
+        "shell_accounting_qml_startup_registration_no_production_wiring"
+        in shell_accounting_qml_startup_registration_gate_cmake,
+        "tests include startup registration no production wiring",
+    )
+    require(
+        "shell_accounting_qml_startup_registration_no_forbidden_exposure"
+        in shell_accounting_qml_startup_registration_gate_cmake,
+        "tests include startup registration no forbidden exposure",
+    )
+    require(
+        "shell_accounting_qml_startup_registration_rollback_policy"
+        in shell_accounting_qml_startup_registration_gate_cmake,
+        "tests include startup registration rollback policy",
+    )
+    require(
+        "registerShellAccountingQmlTypes" not in registration_sources,
+        "production startup has not called registerShellAccountingQmlTypes after TASK-128",
+    )
+    require(
+        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
+        "production QML has not imported ShellAccounting module after TASK-128",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

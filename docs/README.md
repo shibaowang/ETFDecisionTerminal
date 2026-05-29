@@ -239,6 +239,13 @@
   registers only the first-stage read-only allowlist types under
   `ETFDecisionTerminal.ShellAccounting` 1.0. Production QML still does not
   import or bind the module.
+- ShellAccounting QML startup registration gate:
+  [69_shell_accounting_qml_startup_registration_gate.md](69_shell_accounting_qml_startup_registration_gate.md)
+  defines the future production app-startup wiring gate. Startup wiring is not
+  implemented.
+- ShellAccounting QML startup registration test plan:
+  [70_shell_accounting_qml_startup_registration_test_plan.md](70_shell_accounting_qml_startup_registration_test_plan.md)
+  defines the future startup wiring test matrix and Go / No-Go checklist.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

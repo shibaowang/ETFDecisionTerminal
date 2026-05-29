@@ -91,3 +91,9 @@ The first-stage registration Go / No-Go item is now satisfied by the centralized
 helper and module import tests. Production QML binding remains a separate
 Go / No-Go decision and still excludes real positions, cash, PnL, base position,
 sniper pool, TradeDraft, broker order, strategy execution, and write actions.
+
+## TASK-128 Checklist Update
+
+Before any production startup wiring, docs/69 and docs/70 must be merged and
+the `shell_accounting_qml_startup_registration` gate must pass. Startup wiring
+does not authorize production QML page binding or real accounting data display.

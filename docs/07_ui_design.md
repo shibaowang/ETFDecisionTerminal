@@ -507,3 +507,9 @@ The ShellAccounting UI can now reflect read-only adapter state through the
 production presenter path. It remains unavailable-safe and must not show trade
 UI, write actions, TradeDraft generation, trade suggestions, broker order, or
 strategy execution controls.
+
+## TASK-136 DataService Facts Query Gate
+
+The DataService facts query gate is added. The ShellAccounting UI remains
+read-only and unavailable-safe until a separately authorized DataService facts
+query implementation exists. The UI still has no trade UI.

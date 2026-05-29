@@ -278,6 +278,12 @@
   [80_shell_accounting_real_data_adapter_implementation.md](80_shell_accounting_real_data_adapter_implementation.md)
   records TASK-135 read-only adapter wiring and its no-write/no-raw-payload
   boundary.
+- ShellAccounting DataService read-only facts query gate:
+  [81_shell_accounting_dataservice_readonly_facts_query_gate.md](81_shell_accounting_dataservice_readonly_facts_query_gate.md)
+  defines the future DataService-only facts query boundary.
+- ShellAccounting DataService read-only facts query test plan:
+  [82_shell_accounting_dataservice_readonly_facts_query_test_plan.md](82_shell_accounting_dataservice_readonly_facts_query_test_plan.md)
+  defines the future SELECT-only, no-replay, no-write test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

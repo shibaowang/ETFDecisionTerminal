@@ -168,6 +168,20 @@ production QML page or component is implemented, no `accountingPresenter`
 binding is added, no real accounting action is implemented, no database write is
 enabled, and no TradeDraft or trade suggestion is generated.
 
+## TASK-130 ShellAccounting Production QML Binding Gate
+
+ShellAccounting production QML binding gate docs and CTest have been added:
+
+- [docs/72_shell_accounting_production_qml_binding_gate.md](docs/72_shell_accounting_production_qml_binding_gate.md)
+- [docs/73_shell_accounting_production_qml_binding_test_plan.md](docs/73_shell_accounting_production_qml_binding_test_plan.md)
+- `tests/ShellAccountingProductionQmlBindingGate`
+
+This task does not modify production QML. Production QML still does not import
+`ETFDecisionTerminal.ShellAccounting`, no ShellAccounting page/component is
+implemented, no `accountingPresenter` binding is added, no real accounting
+action is implemented, no database write is enabled, and no TradeDraft or trade
+suggestion is generated.
+
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 
 ShellAccounting QML type registration implementation gate docs are now added:

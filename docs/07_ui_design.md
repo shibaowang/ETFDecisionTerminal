@@ -458,3 +458,13 @@ type registration location. Production QML still does not import
 Future UI work must pass the startup registration gate and remain read-only: no
 trading buttons, no write action, no `TradeDraft`, no strategy execution, no
 broker order, and no real accounting data until separately authorized.
+
+## TASK-130 Production QML Binding UI Gate
+
+The production QML binding gate is now defined. Production UI is still not
+wired: no production QML import, page/component, `accountingPresenter` binding,
+or ShellAccounting presenter context exposure exists yet. Future ShellAccounting
+UI must be read-only, Unavailable-safe, disabled-state aware, and must not show
+trading buttons, write actions, TradeDraft generation, trade suggestions,
+strategy execution, broker order controls, or real accounting data until a
+separate task explicitly authorizes that scope.

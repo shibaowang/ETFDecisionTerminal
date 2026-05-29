@@ -106,3 +106,10 @@ authorized task. That task must re-gate:
 - no write path.
 - no TradeDraft.
 - no trading button.
+
+## TASK-130 Production QML Binding Gate
+
+TASK-130 adds the production QML binding gate and test plan. Startup wiring
+remains registration-only. Production QML binding is still not implemented:
+there is no production QML import, no ShellAccounting page/component, no
+`accountingPresenter` binding, and no real accounting action.

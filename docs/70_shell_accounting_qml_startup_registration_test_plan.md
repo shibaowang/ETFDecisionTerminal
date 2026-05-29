@@ -82,3 +82,10 @@ runtime access, and rollback readiness.
 
 Production QML binding remains separate and real accounting actions remain
 unimplemented.
+
+## TASK-130 Production QML Binding Gate
+
+TASK-130 adds production QML binding gate tests. Startup registration remains a
+single helper call only; production QML binding is still not implemented and
+requires a separate explicit task before adding imports, page routes,
+components, presenter context exposure, or any real accounting UI.

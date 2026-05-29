@@ -107,3 +107,10 @@ registration location. The wiring remains registration-only. Production QML
 binding remains separate, production QML still does not import
 `ETFDecisionTerminal.ShellAccounting`, and real accounting action
 implementation remains separate.
+
+## TASK-130 Production QML Binding Gate
+
+TASK-130 adds the production QML binding gate. Startup wiring remains
+registration-only. Production QML binding is still not implemented, production
+QML still does not import `ETFDecisionTerminal.ShellAccounting`, and real
+accounting action implementation remains separate.

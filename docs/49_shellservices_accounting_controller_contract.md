@@ -534,3 +534,11 @@ Production QML binding boundary docs/63 and first-stage checklist docs/64 keep
 QML above the presenter / model boundary. Future QML must not call controller,
 adapter, concrete port, DataServiceClient, SQLite, DataAccess, or
 AccountingEngine directly.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary docs/65 and registration test plan docs/66 require
+any future registration to preserve the controller boundary. QML may only see
+read-only ShellAccounting presenter / ViewModel / Model types, never controller
+internals, adapter, concrete port, DataServiceClient, SQLite, AccountingEngine,
+write actions, TradeDraft, or trade suggestions.

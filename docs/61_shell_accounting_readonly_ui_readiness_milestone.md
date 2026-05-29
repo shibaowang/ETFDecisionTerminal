@@ -173,3 +173,11 @@ TASK-123 adds the production QML binding boundary docs/63 and first-stage QML
 binding checklist docs/64. Production QML binding still requires explicit
 authorization and remains limited to read-only placeholder / Unavailable /
 issue / privacy smoke for the first stage.
+
+## TASK-124 QML Type Registration Boundary
+
+TASK-124 adds the QML type registration boundary docs/65 and registration test
+plan docs/66. QML registration still requires explicit authorization. The v0.6
+readiness milestone remains read-only: production QML is unwired, no type is
+registered, no real accounting action is implemented, and no write / TradeDraft
+/ trade suggestion path is enabled.

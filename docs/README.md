@@ -216,6 +216,14 @@
 - ShellAccounting first-stage QML binding checklist:
   [64_shell_accounting_first_stage_qml_binding_checklist.md](64_shell_accounting_first_stage_qml_binding_checklist.md)
   defines the Go / No-Go checklist for the first read-only production QML stage.
+- ShellAccounting QML type registration boundary:
+  [65_shell_accounting_qml_type_registration_boundary.md](65_shell_accounting_qml_type_registration_boundary.md)
+  defines the future read-only QML type registration boundary before any type is
+  registered.
+- ShellAccounting QML type registration test plan:
+  [66_shell_accounting_qml_type_registration_test_plan.md](66_shell_accounting_qml_type_registration_test_plan.md)
+  defines the registration construction, allowlist, denylist, smoke, and static
+  gate test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

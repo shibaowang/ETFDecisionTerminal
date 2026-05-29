@@ -299,3 +299,11 @@ how a future QML task may bind the presenter. The first stage remains read-only
 and may only expose placeholder / Unavailable / issue / privacy smoke behavior.
 Presenter binding must not expose write methods, trade actions, TradeDraft,
 strategy, broker order, or real accounting data.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary docs/65 and test plan docs/66 define how the
+presenter may eventually be registered as a read-only QML type. Registration is
+not implemented here and must not expose DataServiceClient, adapters, concrete
+ports, SQLite, AccountingEngine, write methods, TradeDraft, trade suggestions,
+broker order, or strategy execution.

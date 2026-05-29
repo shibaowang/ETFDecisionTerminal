@@ -757,3 +757,17 @@ v0.1 草案。
   privacy smoke only.
 - No real accounting action, no write action, no TradeDraft, no trade
   suggestion, no broker order, and no strategy execution are allowed.
+
+## TASK-124 ShellAccounting QML Type Registration Boundary
+
+- QML type registration tasks must reference
+  `docs/65_shell_accounting_qml_type_registration_boundary.md` and
+  `docs/66_shell_accounting_qml_type_registration_test_plan.md`.
+- Do not register QML type without explicit authorization.
+- Do not expose DataServiceClient, SQLite, AccountingEngine, DataAccess,
+  adapter, concrete port, write methods, TradeDraft, trade suggestion, broker
+  order, or strategy execution to QML.
+- Registration must pass TASK-119 static gate, TASK-121 smoke scaffold, and
+  TASK-122 runtime smoke CTest.
+- QML type registration does not imply production QML page binding or real
+  accounting action implementation.

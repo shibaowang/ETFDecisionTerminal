@@ -77,6 +77,22 @@ Production QML is still not modified, no QML type is registered, no production
 QML page is implemented, no real accounting action is implemented, no database
 write is enabled, and no TradeDraft or trade suggestion is generated.
 
+## TASK-124 ShellAccounting QML Type Registration Boundary
+
+ShellAccounting QML type registration boundary docs are now added:
+
+- [docs/65_shell_accounting_qml_type_registration_boundary.md](docs/65_shell_accounting_qml_type_registration_boundary.md)
+- [docs/66_shell_accounting_qml_type_registration_test_plan.md](docs/66_shell_accounting_qml_type_registration_test_plan.md)
+
+The boundary defines the first-stage read-only type allowlist, forbidden service
+/ SQLite / AccountingEngine / write / trade exposure, registration location and
+module constraints, required TASK-119 / TASK-121 / TASK-122 gates, and rollback
+behavior. QML type registration still requires a separate explicit task.
+
+Production QML is still not modified, no QML type is registered, no production
+QML page is implemented, no real accounting action is implemented, no database
+write is enabled, and no TradeDraft or trade suggestion is generated.
+
 ## TASK-115 ShellAccountingPresenter skeleton
 
 ShellServices now includes a production-side `ShellAccountingPresenter`

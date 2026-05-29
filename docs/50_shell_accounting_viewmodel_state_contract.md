@@ -435,3 +435,11 @@ Production QML boundary docs/63 and first-stage checklist docs/64 require any
 future QML to preserve the ViewModel state contract. First-stage QML is limited
 to read-only placeholder / Unavailable / issue / privacy smoke and must keep
 Empty distinct from Unavailable.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary docs/65 and test plan docs/66 require registered
+types to preserve the ViewModel state contract. Any registered
+ShellAccountingPresenter, status object, issue model, or position model must be
+read-only and must not expose write methods, trade methods, TradeDraft, broker
+order, strategy execution, or direct service access.

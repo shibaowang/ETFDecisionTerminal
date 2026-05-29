@@ -60,3 +60,13 @@ This document does not modify QML.
 - future production QML smoke.
 - transport 50 repeat.
 - `git status` clean.
+
+## TASK-124 QML Type Registration Boundary
+
+Before the first production QML binding stage registers any ShellAccounting type,
+the registration boundary in
+`docs/65_shell_accounting_qml_type_registration_boundary.md` and the test plan in
+`docs/66_shell_accounting_qml_type_registration_test_plan.md` must be reviewed.
+Registration still requires explicit authorization and must remain read-only,
+with no DataServiceClient, SQLite, AccountingEngine, write action, TradeDraft,
+trade suggestion, broker order, or strategy execution exposure.

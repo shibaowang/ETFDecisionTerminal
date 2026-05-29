@@ -510,3 +510,10 @@ The milestone confirms the controller can participate in the read-only
 Presenter -> Controller -> Adapter -> Concrete Port -> DataServiceClient guard
 wrapper path while QML remains unwired and real accounting actions remain
 unimplemented.
+
+## TASK-121 QML Binding Smoke Scaffold
+
+The QML binding smoke scaffold confirms future QML must stay above the
+Presenter / ViewModel / Model boundary. It does not change controller behavior
+and does not authorize QML to call controller, adapter, concrete port, or
+DataServiceClient directly.

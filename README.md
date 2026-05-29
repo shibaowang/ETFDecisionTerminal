@@ -16,6 +16,27 @@ not connected to DataService, DataService still does not call AccountingEngine,
 and no database writes, TradeDraft, trade suggestion, strategy execution, or
 broker order behavior is enabled.
 
+## TASK-121 ShellAccounting QML Binding Smoke Scaffold
+
+ShellAccounting QML binding smoke scaffold tests are now added under
+`tests/ShellAccountingQmlBindingSmoke`.
+
+The scaffold fixes the future read-only QML binding smoke matrix without
+modifying QML:
+
+- allowed object contract for ShellAccountingPresenter, status object, issue
+  model, position model, and future cash / PnL / base / sniper models.
+- Idle / Loading / Loaded / Empty / Unavailable / Warning / Error / Stale state
+  display matrix.
+- five guard payload display rules mapping `*_NOT_AVAILABLE` to Unavailable.
+- issue visibility and privacy display rules.
+- no-trade UI rules.
+- dependency on the TASK-119 QML static gate.
+
+QML remains unwired, QML static gate remains a prerequisite, no real accounting
+action is implemented, no SQLite or AccountingEngine integration is added, no
+database write is enabled, and no TradeDraft or trade suggestion is generated.
+
 ## TASK-115 ShellAccountingPresenter skeleton
 
 ShellServices now includes a production-side `ShellAccountingPresenter`

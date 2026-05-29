@@ -203,6 +203,9 @@
   [62_shell_accounting_next_phase_review.md](62_shell_accounting_next_phase_review.md)
   defines the Go / No-Go checklist for a future read-only QML binding task.
 - [Release Notes - v0.6 ShellAccounting Read-only UI Readiness](release_notes/v0_6_shell_accounting_readonly_ui_readiness.md)
+- ShellAccounting QML binding smoke scaffold: `tests/ShellAccountingQmlBindingSmoke`
+  locks object contract, state matrix, guard payload, issue / privacy,
+  no-trade UI, and static gate dependency expectations before any QML binding.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

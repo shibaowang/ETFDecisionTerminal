@@ -125,3 +125,13 @@ The v0.6 readiness milestone in
 `docs/61_shell_accounting_readonly_ui_readiness_milestone.md` treats this static
 gate as a required precondition for any future QML binding. The milestone does
 not modify QML and does not loosen this gate.
+
+## TASK-121 Smoke Scaffold Dependency
+
+TASK-121 QML binding smoke scaffold depends on the TASK-119 static gate. Future
+QML binding tasks must pass both the static gate and the smoke scaffold before
+adding read-only accounting QML.
+
+The static gate remains the precondition for preventing direct
+DataServiceClient, SQLite, DataAccess, AccountingEngine, write action,
+TradeDraft, strategy, broker, or accounting-scope trading UI tokens.

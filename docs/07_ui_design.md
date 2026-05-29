@@ -388,3 +388,11 @@ This milestone does not wire QML. Future accounting UI binding must remain
 read-only, must pass the TASK-119 QML static gate, must keep Empty distinct from
 Unavailable, and must not display trading buttons, TradeDraft, strategy, or
 broker-order controls.
+
+## TASK-121 ShellAccounting QML Binding Smoke Scaffold
+
+The QML binding smoke scaffold is now available as a test-only readiness gate.
+Future accounting UI should pass the scaffold before QML binding: only
+ShellServices read-only objects may be bound, all UI states must be represented,
+guard payloads must show Unavailable, issues and privacy rules must remain
+visible, and no trading controls may be displayed.

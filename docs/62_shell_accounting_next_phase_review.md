@@ -79,3 +79,11 @@ accounting action still requires separate authorization and no-write tests.
 
 Do not directly modify QML to show real data. Do not directly implement real
 `position.list` in a QML task. Do not add trading buttons in QML.
+
+## TASK-121 Smoke Scaffold Status
+
+The QML binding smoke scaffold is now a precondition for QML binding. It locks
+the object contract, state matrix, guard payload, issue / privacy, no-trade UI,
+and static gate dependency before any QML file is modified.
+
+QML binding still requires 用户明确授权 QML binding.

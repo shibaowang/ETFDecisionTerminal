@@ -106,6 +106,9 @@ def main() -> int:
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
+    shell_accounting_qml_binding_smoke_cmake_path = (
+        root / "tests" / "ShellAccountingQmlBindingSmoke" / "CMakeLists.txt"
+    )
     shell_accounting_presenter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
     )
@@ -1040,6 +1043,7 @@ def main() -> int:
     shell_accounting_readonly_ui_milestone = shell_accounting_readonly_ui_milestone_path.read_text(encoding="utf-8")
     shell_accounting_next_phase_review = shell_accounting_next_phase_review_path.read_text(encoding="utf-8")
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
+    shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
     shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
     shell_accounting_presenter_cmake = shell_accounting_presenter_cmake_path.read_text(encoding="utf-8")
@@ -4449,6 +4453,38 @@ def main() -> int:
         or "v0.6 readiness" in shell_accounting_qml_static_gate,
         "docs/60 references docs/61 or v0.6 readiness",
     )
+
+    require(
+        "add_subdirectory(ShellAccountingQmlBindingSmoke)" in tests_cmake,
+        "tests/CMakeLists includes ShellAccountingQmlBindingSmoke",
+    )
+    for qml_binding_smoke_test_name in [
+        "shell_accounting_qml_binding_smoke_object_contract",
+        "shell_accounting_qml_binding_smoke_state_matrix",
+        "shell_accounting_qml_binding_smoke_guard_payloads",
+        "shell_accounting_qml_binding_smoke_issue_privacy",
+        "shell_accounting_qml_binding_smoke_no_trade_ui",
+        "shell_accounting_qml_binding_smoke_static_gate_dependency",
+    ]:
+        require(
+            qml_binding_smoke_test_name in shell_accounting_qml_binding_smoke_cmake,
+            f"TASK-121 CTest exists: {qml_binding_smoke_test_name}",
+        )
+    require("TASK-121" in shell_accounting_qml_binding_smoke_plan, "docs/59 mentions TASK-121")
+    require(
+        "smoke scaffold" in shell_accounting_qml_binding_smoke_plan,
+        "docs/59 mentions smoke scaffold",
+    )
+    require("TASK-121" in shell_accounting_qml_static_gate, "docs/60 mentions TASK-121")
+    require("TASK-121" in shell_accounting_readonly_ui_milestone, "docs/61 mentions TASK-121")
+    require("TASK-121" in shell_accounting_next_phase_review, "docs/62 mentions TASK-121")
+    require("TASK-121" in codex_prompt_template, "docs/12 mentions TASK-121")
+    require(
+        "ShellAccounting QML binding smoke scaffold" in readme,
+        "README mentions ShellAccounting QML binding smoke scaffold",
+    )
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-121")
+    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-121")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

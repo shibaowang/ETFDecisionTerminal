@@ -140,7 +140,6 @@ std::vector<std::string> forbiddenRuntimeTokens()
         "AccountingEngine",
         "SQLite",
         "DataAccess",
-        "ShellAccountingReadOnlyController",
         "ShellAccountingDataServiceAdapter",
         "ShellAccountingDataServiceClientPortAdapter",
         "createTradeDraft",

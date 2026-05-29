@@ -4,6 +4,7 @@ Item {
     id: root
     required property var diagnosticAdapter
     required property var readOnlyDataController
+    required property var accountingPresenter
     required property var navigationController
     required property var statusController
     property string currentPageKey: navigationController.currentPageKey
@@ -77,6 +78,7 @@ Item {
         pagePlaceholder: root.navigationController.currentPagePlaceholder
         diagnosticAdapter: root.diagnosticAdapter
         readOnlyDataController: root.readOnlyDataController
+        accountingPresenter: root.accountingPresenter
         metricsModel: root.statusController.metricsModel
         actionHintModel: root.statusController.actionHintModel
     }

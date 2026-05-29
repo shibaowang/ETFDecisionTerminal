@@ -142,3 +142,12 @@ TASK-131 shell still does not create `ShellAccountingPresenter`, does not call
 `setContextProperty`, and does not bind a real presenter. Its nullable
 `accountingPresenter` property must continue to render an Unavailable / disabled
 state until a separate authorized lifecycle task changes that boundary.
+
+## TASK-133 Presenter Context Exposure
+
+TASK-133 wires the production-owned `accountingPresenter` context object into
+the existing ShellAccounting read-only shell. The page still renders an
+Unavailable / read-only state because real accounting data is not connected.
+Fallback remains unavailable-safe and must not call DataServiceClient, access
+SQLite, call AccountingEngine, write database tables, generate TradeDraft, or
+show trading UI.

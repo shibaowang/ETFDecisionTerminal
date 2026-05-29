@@ -29,9 +29,12 @@ int main(int argc, char** argv)
     std::copy_if(hits.begin(), hits.end(), std::back_inserter(disallowedHits), [](const auto& hit) {
         const auto filename = hit.path.filename().string();
         const auto authorizedShellAccountingPage = filename == "ShellAccountingReadOnlyPage.qml";
+        const auto authorizedPresenterPlumbing =
+            (filename == "Main.qml" || filename == "AppShell.qml" || filename == "ContentHost.qml") &&
+            hit.token == "accountingPresenter";
         const auto authorizedPresenterProperty =
             hit.token == "ShellAccountingPresenter" || hit.token == "accountingPresenter";
-        return !(authorizedShellAccountingPage && authorizedPresenterProperty);
+        return !((authorizedShellAccountingPage && authorizedPresenterProperty) || authorizedPresenterPlumbing);
     });
 
     if (!disallowedHits.empty()) {

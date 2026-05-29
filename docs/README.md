@@ -265,6 +265,9 @@
 - ShellAccounting presenter lifecycle test plan:
   [76_shell_accounting_presenter_lifecycle_test_plan.md](76_shell_accounting_presenter_lifecycle_test_plan.md)
   defines the future lifecycle / context exposure test matrix.
+- ShellAccounting presenter lifecycle implementation:
+  [77_shell_accounting_presenter_lifecycle_implementation.md](77_shell_accounting_presenter_lifecycle_implementation.md)
+  records TASK-133 production-owned presenter lifecycle and context exposure.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

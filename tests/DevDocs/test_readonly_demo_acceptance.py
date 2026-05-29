@@ -145,6 +145,9 @@ def main() -> int:
     shell_accounting_presenter_lifecycle_test_plan_path = (
         root / "docs" / "76_shell_accounting_presenter_lifecycle_test_plan.md"
     )
+    shell_accounting_presenter_lifecycle_implementation_path = (
+        root / "docs" / "77_shell_accounting_presenter_lifecycle_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -177,6 +180,9 @@ def main() -> int:
     )
     shell_accounting_presenter_lifecycle_gate_cmake_path = (
         root / "tests" / "ShellAccountingPresenterLifecycleGate" / "CMakeLists.txt"
+    )
+    shell_accounting_presenter_lifecycle_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingPresenterLifecycleImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1167,6 +1173,9 @@ def main() -> int:
     shell_accounting_presenter_lifecycle_test_plan = (
         shell_accounting_presenter_lifecycle_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_presenter_lifecycle_implementation = (
+        shell_accounting_presenter_lifecycle_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1193,6 +1202,9 @@ def main() -> int:
     )
     shell_accounting_presenter_lifecycle_gate_cmake = shell_accounting_presenter_lifecycle_gate_cmake_path.read_text(
         encoding="utf-8"
+    )
+    shell_accounting_presenter_lifecycle_implementation_cmake = (
+        shell_accounting_presenter_lifecycle_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5170,12 +5182,12 @@ def main() -> int:
         "production QML has exactly one authorized nullable accountingPresenter property after TASK-131",
     )
     require(
-        'setContextProperty("accountingPresenter"' not in registration_sources,
-        "production startup has not exposed accountingPresenter context property",
+        registration_sources.count('setContextProperty("accountingPresenter"') == 1,
+        "production startup has exactly one authorized accountingPresenter context property after TASK-133",
     )
     require(
-        "ShellAccountingPresenter " not in registration_sources,
-        "production startup has not created ShellAccountingPresenter",
+        registration_sources.count("ShellAccountingPresenter shellAccountingPresenter") == 1,
+        "production startup has exactly one authorized ShellAccountingPresenter creation after TASK-133",
     )
 
     require(
@@ -5230,12 +5242,12 @@ def main() -> int:
         "production QML has exactly one authorized nullable accountingPresenter property after TASK-131",
     )
     require(
-        'setContextProperty("accountingPresenter"' not in registration_sources,
-        "production startup has not exposed accountingPresenter after TASK-130",
+        registration_sources.count('setContextProperty("accountingPresenter"') == 1,
+        "production startup has exactly one authorized accountingPresenter context property after TASK-133",
     )
     require(
-        "ShellAccountingPresenter " not in registration_sources,
-        "production startup has not created ShellAccountingPresenter after TASK-130",
+        registration_sources.count("ShellAccountingPresenter shellAccountingPresenter") == 1,
+        "production startup has exactly one authorized ShellAccountingPresenter creation after TASK-133",
     )
 
     require(
@@ -5291,12 +5303,12 @@ def main() -> int:
     ]:
         require(ctest_name in shell_accounting_production_qml_binding_implementation_cmake, f"tests include {ctest_name}")
     require(
-        'setContextProperty("accountingPresenter"' not in registration_sources,
-        "production startup still does not expose accountingPresenter after TASK-131",
+        registration_sources.count('setContextProperty("accountingPresenter"') == 1,
+        "production startup has exactly one authorized accountingPresenter context property after TASK-133",
     )
     require(
-        "ShellAccountingPresenter " not in registration_sources,
-        "production startup still does not create ShellAccountingPresenter after TASK-131",
+        registration_sources.count("ShellAccountingPresenter shellAccountingPresenter") == 1,
+        "production startup has exactly one authorized ShellAccountingPresenter creation after TASK-133",
     )
     for forbidden_qml_runtime_token in [
         "DataServiceClient",
@@ -5355,17 +5367,82 @@ def main() -> int:
     ]:
         require(ctest_name in shell_accounting_presenter_lifecycle_gate_cmake, f"tests include {ctest_name}")
     require(
-        "ShellAccountingPresenter " not in registration_sources,
-        "production startup still does not create ShellAccountingPresenter after TASK-132",
+        registration_sources.count("ShellAccountingPresenter shellAccountingPresenter") == 1,
+        "production startup has exactly one authorized ShellAccountingPresenter creation after TASK-133",
     )
     require(
-        'setContextProperty("accountingPresenter"' not in registration_sources,
-        "production startup still does not expose accountingPresenter after TASK-132",
+        registration_sources.count('setContextProperty("accountingPresenter"') == 1,
+        "production startup has exactly one authorized accountingPresenter context property after TASK-133",
     )
     require(
         authorized_shell_accounting_presenter_property_count == 1,
         "production QML only keeps the nullable accountingPresenter property after TASK-132",
     )
+    require(
+        shell_accounting_presenter_lifecycle_implementation_path.exists(),
+        "docs/77 presenter lifecycle implementation exists",
+    )
+    require(
+        "docs/77_shell_accounting_presenter_lifecycle_implementation.md" in readme,
+        "README links docs/77",
+    )
+    require(
+        "77_shell_accounting_presenter_lifecycle_implementation.md" in docs_index,
+        "docs/README links docs/77",
+    )
+    require("TASK-133" in shell_accounting_presenter_lifecycle_gate, "docs/75 mentions TASK-133")
+    require("TASK-133" in shell_accounting_presenter_lifecycle_test_plan, "docs/76 mentions TASK-133")
+    require("TASK-133" in shell_accounting_presenter_lifecycle_implementation, "docs/77 mentions TASK-133")
+    require("accountingPresenter" in shell_accounting_presenter_lifecycle_implementation, "docs/77 records accountingPresenter")
+    require("rollback" in shell_accounting_presenter_lifecycle_implementation, "docs/77 includes rollback")
+    require("TASK-133" in codex_prompt_template, "docs/12 mentions TASK-133")
+    for ctest_name in [
+        "shell_accounting_presenter_lifecycle_implementation",
+        "shell_accounting_presenter_lifecycle_authorized_creation",
+        "shell_accounting_presenter_lifecycle_authorized_context_exposure",
+        "shell_accounting_presenter_lifecycle_ownership_order",
+        "shell_accounting_presenter_lifecycle_unavailable_state_after_exposure",
+        "shell_accounting_presenter_lifecycle_no_forbidden_runtime_access_after_exposure",
+        "shell_accounting_presenter_lifecycle_no_trade_ui_after_exposure",
+        "shell_accounting_presenter_lifecycle_rollback_ready_after_exposure",
+    ]:
+        require(
+            ctest_name in shell_accounting_presenter_lifecycle_implementation_cmake,
+            f"tests include {ctest_name}",
+        )
+    require(
+        registration_sources.count("ShellAccountingPresenter shellAccountingPresenter") == 1,
+        "production startup creates ShellAccountingPresenter exactly once after TASK-133",
+    )
+    require(
+        registration_sources.count('setContextProperty("accountingPresenter"') == 1,
+        "production startup exposes accountingPresenter exactly once after TASK-133",
+    )
+    for forbidden_context_token in [
+        'setContextProperty("DataServiceClient"',
+        'setContextProperty("AccountingEngine"',
+        'setContextProperty("DataAccess"',
+        'setContextProperty("SQLite"',
+    ]:
+        require(
+            forbidden_context_token not in registration_sources,
+            f"production startup does not expose {forbidden_context_token} after TASK-133",
+        )
+    for forbidden_trade_ui_token in [
+        "买入",
+        "卖出",
+        "下单",
+        "TradeDraft",
+        "brokerOrder",
+        "strategyExecute",
+        "confirmTrade",
+        "manualEntry",
+        "cashAdjustment",
+    ]:
+        require(
+            forbidden_trade_ui_token not in shell_accounting_readonly_page,
+            f"ShellAccounting read-only page avoids {forbidden_trade_ui_token} after TASK-133",
+        )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

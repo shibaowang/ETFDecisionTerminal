@@ -115,6 +115,12 @@ def main() -> int:
     shell_accounting_qml_type_registration_test_plan_path = (
         root / "docs" / "66_shell_accounting_qml_type_registration_test_plan.md"
     )
+    shell_accounting_qml_type_registration_implementation_gate_path = (
+        root / "docs" / "67_shell_accounting_qml_type_registration_implementation_gate.md"
+    )
+    shell_accounting_qml_type_registration_rollback_strategy_path = (
+        root / "docs" / "68_shell_accounting_qml_type_registration_rollback_strategy.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -126,6 +132,9 @@ def main() -> int:
     )
     shell_accounting_qml_type_registration_cmake_path = (
         root / "tests" / "ShellAccountingQmlTypeRegistrationScaffold" / "CMakeLists.txt"
+    )
+    shell_accounting_qml_type_registration_gate_cmake_path = (
+        root / "tests" / "ShellAccountingQmlTypeRegistrationGate" / "CMakeLists.txt"
     )
     shell_accounting_presenter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
@@ -1070,10 +1079,19 @@ def main() -> int:
     shell_accounting_qml_type_registration_test_plan = (
         shell_accounting_qml_type_registration_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_qml_type_registration_implementation_gate = (
+        shell_accounting_qml_type_registration_implementation_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_qml_type_registration_rollback_strategy = (
+        shell_accounting_qml_type_registration_rollback_strategy_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_type_registration_cmake = shell_accounting_qml_type_registration_cmake_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_qml_type_registration_gate_cmake = shell_accounting_qml_type_registration_gate_cmake_path.read_text(
         encoding="utf-8"
     )
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
@@ -4709,6 +4727,85 @@ def main() -> int:
     require(
         "qmlRegisterType<ShellPositionListModel>" not in registration_sources,
         "production registration has not registered ShellPositionListModel",
+    )
+
+    require(
+        shell_accounting_qml_type_registration_implementation_gate_path.exists(),
+        "docs/67 QML type registration implementation gate exists",
+    )
+    require(
+        shell_accounting_qml_type_registration_rollback_strategy_path.exists(),
+        "docs/68 QML type registration rollback strategy exists",
+    )
+    require(
+        "docs/67_shell_accounting_qml_type_registration_implementation_gate.md" in readme,
+        "README links docs/67",
+    )
+    require(
+        "docs/68_shell_accounting_qml_type_registration_rollback_strategy.md" in readme,
+        "README links docs/68",
+    )
+    require(
+        "67_shell_accounting_qml_type_registration_implementation_gate.md" in docs_index,
+        "docs/README links docs/67",
+    )
+    require(
+        "68_shell_accounting_qml_type_registration_rollback_strategy.md" in docs_index,
+        "docs/README links docs/68",
+    )
+    require(
+        "TASK-126" in shell_accounting_qml_type_registration_implementation_gate,
+        "docs/67 mentions TASK-126",
+    )
+    require(
+        "rollback" in shell_accounting_qml_type_registration_rollback_strategy.lower(),
+        "docs/68 covers rollback",
+    )
+    require("TASK-126" in codex_prompt_template, "docs/12 mentions TASK-126")
+    require(
+        "shell_accounting_qml_type_registration_implementation_gate"
+        in shell_accounting_qml_type_registration_gate_cmake,
+        "tests include type registration implementation gate",
+    )
+    require(
+        "shell_accounting_qml_type_registration_location_gate" in shell_accounting_qml_type_registration_gate_cmake,
+        "tests include type registration location gate",
+    )
+    require(
+        "shell_accounting_qml_type_registration_allowlist_gate" in shell_accounting_qml_type_registration_gate_cmake,
+        "tests include type registration allowlist gate",
+    )
+    require(
+        "shell_accounting_qml_type_registration_forbidden_exposure_gate"
+        in shell_accounting_qml_type_registration_gate_cmake,
+        "tests include type registration forbidden exposure gate",
+    )
+    require(
+        "shell_accounting_qml_type_registration_rollback_gate" in shell_accounting_qml_type_registration_gate_cmake,
+        "tests include type registration rollback gate",
+    )
+    require(
+        "shell_accounting_qml_type_registration_no_production_registration"
+        in shell_accounting_qml_type_registration_gate_cmake,
+        "tests include type registration no production registration gate",
+    )
+    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-126")
+    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-126")
+    require(
+        "qmlRegisterType<ShellAccountingPresenter>" not in registration_sources,
+        "TASK-126 production registration has not registered ShellAccountingPresenter",
+    )
+    require(
+        "qmlRegisterType<ShellAccountingStatusObject>" not in registration_sources,
+        "TASK-126 production registration has not registered ShellAccountingStatusObject",
+    )
+    require(
+        "qmlRegisterType<ShellAccountingIssueListModel>" not in registration_sources,
+        "TASK-126 production registration has not registered ShellAccountingIssueListModel",
+    )
+    require(
+        "qmlRegisterType<ShellPositionListModel>" not in registration_sources,
+        "TASK-126 production registration has not registered ShellPositionListModel",
     )
 
     require(

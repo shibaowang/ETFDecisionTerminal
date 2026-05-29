@@ -228,6 +228,12 @@
   `tests/ShellAccountingQmlTypeRegistrationScaffold` fixes the first-stage type
   allowlist, forbidden type and method/property denylists, module import
   boundary, gate dependency, and no-production-change checks.
+- ShellAccounting QML type registration implementation gate:
+  [67_shell_accounting_qml_type_registration_implementation_gate.md](67_shell_accounting_qml_type_registration_implementation_gate.md)
+  defines the final gate before any production QML type registration task.
+- ShellAccounting QML type registration rollback strategy:
+  [68_shell_accounting_qml_type_registration_rollback_strategy.md](68_shell_accounting_qml_type_registration_rollback_strategy.md)
+  defines rollback triggers, fallback behavior, and verification after rollback.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

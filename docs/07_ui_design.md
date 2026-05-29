@@ -431,3 +431,11 @@ QML type registration scaffold tests now fix the first-stage registration
 allowlist, denylist, module boundary, and no-production-change gate. Production
 UI remains unwired; the scaffold is not QML type registration and is not a QML
 page implementation.
+
+## TASK-126 QML Type Registration Implementation Gate
+
+QML type registration implementation gate and rollback strategy are now defined
+in docs/67 and docs/68. Production UI remains unwired. Future registration must
+stay read-only, preserve rollback / disable behavior, and must not expose
+DataServiceClient, SQLite, AccountingEngine, write methods, TradeDraft, trade
+suggestion, broker order, or strategy execution.

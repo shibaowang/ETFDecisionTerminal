@@ -121,3 +121,10 @@ TASK-125 adds automated scaffold tests for the future QML type registration
 task. QML registration remains separately authorized and must pass the scaffold,
 static gate, binding smoke scaffold, runtime smoke CTest, full CTest, and
 transport repeat before it can be considered ready.
+
+## TASK-126 Implementation Gate
+
+TASK-126 adds implementation gate tests and rollback strategy docs. Future QML
+type registration remains separately authorized and must pass the implementation
+gate, location gate, allowlist gate, forbidden exposure gate, rollback gate, and
+no-production-registration gate.

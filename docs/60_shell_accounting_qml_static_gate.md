@@ -179,3 +179,10 @@ The QML type registration scaffold now depends on this static gate. Future
 registration work must keep `shell_accounting_qml_static_gate` passing and must
 also pass `shell_accounting_qml_type_registration` before any production QML
 type is registered.
+
+## TASK-126 Implementation Gate
+
+The QML type registration implementation gate now requires this static gate as a
+precondition. Future registration must also pass
+`shell_accounting_qml_type_registration_implementation_gate` and preserve the
+rollback / disable strategy in docs/68.

@@ -182,3 +182,10 @@ Before production QML binding can depend on registered ShellAccounting types,
 `shell_accounting_qml_type_registration` tests must pass together with
 TASK-119 static gate, TASK-121 binding smoke scaffold, and TASK-122 runtime smoke
 CTest.
+
+## TASK-126 Implementation Gate
+
+The QML type registration implementation gate is now another production QML
+binding prerequisite. Production QML binding must not rely on registered
+ShellAccounting types until docs/67, docs/68, and
+`shell_accounting_qml_type_registration_implementation_gate` pass.

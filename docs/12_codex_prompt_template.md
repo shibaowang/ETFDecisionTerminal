@@ -782,3 +782,16 @@ v0.1 草案。
   strategy execution.
 - The TASK-125 scaffold is not production QML type registration and does not
   authorize production QML edits.
+
+## TASK-126 ShellAccounting QML Type Registration Implementation Gate
+
+- QML type registration implementation tasks must pass the TASK-126
+  implementation gates.
+- Do not register QML types without explicit authorization.
+- Registration must preserve rollback / disable strategy from
+  `docs/68_shell_accounting_qml_type_registration_rollback_strategy.md`.
+- Registration must not expose DataServiceClient, SQLite, AccountingEngine,
+  DataAccess, adapter, concrete port, write methods, trade methods, TradeDraft,
+  broker order, or strategy execution.
+- TASK-126 gate is not production registration and does not authorize production
+  QML edits.

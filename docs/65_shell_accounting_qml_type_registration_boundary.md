@@ -146,3 +146,14 @@ Production registration is still not implemented. No QML type is registered, no
 production QML file is modified, and this scaffold does not authorize real
 accounting actions, writes, TradeDraft, trade suggestions, broker orders, or
 strategy execution.
+
+## TASK-126 Implementation Gate
+
+TASK-126 adds the implementation gate in
+`docs/67_shell_accounting_qml_type_registration_implementation_gate.md` and the
+rollback strategy in
+`docs/68_shell_accounting_qml_type_registration_rollback_strategy.md`.
+Registration remains not implemented. Future registration must pass the
+implementation gate, location gate, allowlist gate, forbidden exposure gate,
+rollback gate, and no-production-registration gate before any production type is
+registered.

@@ -148,6 +148,12 @@ def main() -> int:
     shell_accounting_presenter_lifecycle_implementation_path = (
         root / "docs" / "77_shell_accounting_presenter_lifecycle_implementation.md"
     )
+    shell_accounting_real_data_adapter_gate_path = (
+        root / "docs" / "78_shell_accounting_real_data_adapter_gate.md"
+    )
+    shell_accounting_real_data_adapter_test_plan_path = (
+        root / "docs" / "79_shell_accounting_real_data_adapter_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -183,6 +189,9 @@ def main() -> int:
     )
     shell_accounting_presenter_lifecycle_implementation_cmake_path = (
         root / "tests" / "ShellAccountingPresenterLifecycleImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_real_data_adapter_gate_cmake_path = (
+        root / "tests" / "ShellAccountingRealDataAdapterGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1176,6 +1185,12 @@ def main() -> int:
     shell_accounting_presenter_lifecycle_implementation = (
         shell_accounting_presenter_lifecycle_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_real_data_adapter_gate = shell_accounting_real_data_adapter_gate_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_real_data_adapter_test_plan = shell_accounting_real_data_adapter_test_plan_path.read_text(
+        encoding="utf-8"
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1205,6 +1220,9 @@ def main() -> int:
     )
     shell_accounting_presenter_lifecycle_implementation_cmake = (
         shell_accounting_presenter_lifecycle_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_real_data_adapter_gate_cmake = (
+        shell_accounting_real_data_adapter_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5442,6 +5460,93 @@ def main() -> int:
         require(
             forbidden_trade_ui_token not in shell_accounting_readonly_page,
             f"ShellAccounting read-only page avoids {forbidden_trade_ui_token} after TASK-133",
+        )
+
+    require(
+        shell_accounting_real_data_adapter_gate_path.exists(),
+        "docs/78 real data adapter gate exists",
+    )
+    require(
+        shell_accounting_real_data_adapter_test_plan_path.exists(),
+        "docs/79 real data adapter test plan exists",
+    )
+    require(
+        "docs/78_shell_accounting_real_data_adapter_gate.md" in readme,
+        "README links docs/78",
+    )
+    require(
+        "docs/79_shell_accounting_real_data_adapter_test_plan.md" in readme,
+        "README links docs/79",
+    )
+    require(
+        "78_shell_accounting_real_data_adapter_gate.md" in docs_index,
+        "docs/README links docs/78",
+    )
+    require(
+        "79_shell_accounting_real_data_adapter_test_plan.md" in docs_index,
+        "docs/README links docs/79",
+    )
+    require("TASK-134" in shell_accounting_real_data_adapter_gate, "docs/78 mentions TASK-134")
+    require("TASK-134" in shell_accounting_real_data_adapter_test_plan, "docs/79 mentions TASK-134")
+    require("TASK-134" in codex_prompt_template, "docs/12 mentions TASK-134")
+    require(
+        "real adapter is not write path" in shell_accounting_real_data_adapter_gate,
+        "docs/78 states real adapter is not write path",
+    )
+    require("rollback" in shell_accounting_real_data_adapter_gate, "docs/78 includes rollback")
+    require("Test Matrix" in shell_accounting_real_data_adapter_test_plan, "docs/79 includes Test Matrix")
+    for ctest_name in [
+        "shell_accounting_real_data_adapter_gate",
+        "shell_accounting_real_data_adapter_no_real_action_yet",
+        "shell_accounting_real_data_adapter_readonly_action_policy",
+        "shell_accounting_real_data_adapter_no_write_path",
+        "shell_accounting_real_data_adapter_no_sqlite_direct_access",
+        "shell_accounting_real_data_adapter_no_accounting_engine_direct_access",
+        "shell_accounting_real_data_adapter_error_mapping_policy",
+        "shell_accounting_real_data_adapter_privacy_policy",
+        "shell_accounting_real_data_adapter_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_real_data_adapter_gate_cmake,
+            f"tests include {ctest_name}",
+        )
+    shell_accounting_production_path = "\n".join(
+        [
+            registration_sources,
+            shell_accounting_readonly_page,
+            shell_accounting_presenter_header,
+            shell_accounting_presenter_source,
+            shell_accounting_controller_header,
+            shell_accounting_controller_source,
+        ]
+    )
+    for forbidden_service_token in [
+        "DataServiceClient",
+        "SQLiteConnection",
+        "sqlite3",
+        "SQL SELECT",
+        "AccountingTradeFactReader",
+        "AccountingEngine",
+        "AccountingReplayEngine",
+        "replayFromFacts",
+        "trade_log write",
+        "trade_execution_group write",
+        "trade_draft write",
+        "cash_snapshot write",
+        "position_snapshot write",
+        "portfolio_summary write",
+        "audit_log write",
+        "data.audit.append",
+        "confirmTrade",
+        "manualEntry",
+        "cashAdjustment",
+        "createTradeDraft",
+        "strategyExecute",
+        "writeEnabled: true",
+    ]:
+        require(
+            forbidden_service_token not in shell_accounting_production_path,
+            f"production ShellAccounting path avoids {forbidden_service_token} after TASK-134",
         )
 
     require(

@@ -137,3 +137,10 @@ and exposed once as `accountingPresenter`. This remains read-only and
 Unavailable-safe: real accounting action, DataServiceClient, SQLite,
 AccountingEngine, database writes, TradeDraft, trade suggestion, and trading UI
 are still not implemented.
+
+## TASK-134 Real Data Adapter Gate
+
+TASK-134 adds the real data adapter / DataService read-only action integration
+gate. The real adapter is still not implemented, DataService / SQLite /
+AccountingEngine are still not connected, and the presenter remains
+read-only/unavailable-safe until a separate implementation task is authorized.

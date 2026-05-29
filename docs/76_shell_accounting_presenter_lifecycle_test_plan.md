@@ -104,3 +104,11 @@ TASK-133 adds implementation tests for:
   execution, broker order, or trading UI.
 - rollback readiness for removing presenter construction, context exposure,
   minimal QML plumbing, tests, and docs.
+
+## TASK-134 Real Data Adapter Gate
+
+TASK-134 adds gate tests for future real data adapter integration. The gate
+keeps the current presenter lifecycle read-only/unavailable-safe and requires
+future adapter work to prove read-only action names, error mapping, privacy
+behavior, no direct SQLite access, no direct AccountingEngine access, no write
+path, no TradeDraft, and rollback readiness.

@@ -113,3 +113,21 @@ A future production QML binding PR must report:
 - confirmation that there is no trading UI.
 - rollback plan.
 - all gate test results.
+
+## TASK-131 Authorized Binding Shell
+
+TASK-131 has implemented the first authorized production QML binding shell.
+The gate now permits exactly one production QML import:
+
+```qml
+import ETFDecisionTerminal.ShellAccounting 1.0
+```
+
+That import is authorized only in
+`apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml`. The page may
+declare only `property ShellAccountingPresenter accountingPresenter: null`.
+It remains read-only, disabled, and Unavailable-safe. It does not create a
+presenter, does not expose a context property, does not call DataServiceClient,
+does not access SQLite, does not call AccountingEngine, does not write a
+database table, does not generate TradeDraft or trade suggestions, and does not
+show trading UI.

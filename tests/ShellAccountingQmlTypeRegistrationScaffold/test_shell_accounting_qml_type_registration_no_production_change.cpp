@@ -70,6 +70,12 @@ bool isAllowedNegativeQmlStatement(const std::string& line, const std::string& t
            line.find(token) != std::string::npos;
 }
 
+bool isAuthorizedShellAccountingBindingToken(const std::filesystem::path& file, const std::string& token)
+{
+    return file.filename() == "ShellAccountingReadOnlyPage.qml" &&
+           (token == "ShellAccountingPresenter" || token == "accountingPresenter");
+}
+
 bool containsForbiddenToken(
     const std::vector<std::filesystem::path>& files,
     const std::vector<std::string>& tokens)
@@ -80,7 +86,8 @@ bool containsForbiddenToken(
             const auto& line = lines[index];
             for (const auto& token : tokens) {
                 if (line.find(token) == std::string::npos ||
-                    isAllowedNegativeQmlStatement(line, token)) {
+                    isAllowedNegativeQmlStatement(line, token) ||
+                    isAuthorizedShellAccountingBindingToken(file, token)) {
                     continue;
                 }
                 std::cerr << file.generic_string() << ':' << (index + 1)

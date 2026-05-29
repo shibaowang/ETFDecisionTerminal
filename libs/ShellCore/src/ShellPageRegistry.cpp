@@ -35,6 +35,7 @@ std::vector<ShellPageMetadata> ShellPageRegistry::pages()
         makePage("readonly_data", "只读数据预览", "ReadOnlyDataPage", "开发期只读数据页面，仅通过 ShellServices Controller 调用 DataService 只读接口。", false, "overview"),
         makePage("market", "行情监控", "MarketPlaceholderPage", "当前页面为占位 Mock，行情接口尚未接入。", true, "market"),
         makePage("account_portfolio", "账户与组合", "AccountPortfolioReadOnlyPage", "账户与组合只读预览，不支持编辑、入账或交易。", false, "portfolio"),
+        makePage("shell_accounting", "ShellAccounting", "ShellAccountingReadOnlyPage", "Read-only accounting shell. Data binding is unavailable.", false, "portfolio"),
         makePage("positions", "持仓明细", "PositionPlaceholderPage", "当前页面为占位 Mock，持仓数据尚未接入。", true, "portfolio"),
         makePage("strategy", "标的与策略", "InstrumentStrategyReadOnlyPage", "标的、策略与 OTC 通道只读预览，不支持编辑、策略执行或交易。", false, "strategy"),
         makePage("trade_draft", "TradeDraft 建议", "TradeDraftPlaceholderPage", "当前页面为占位 Mock，TradeDraft 生命周期尚未接入。", true, "trade"),

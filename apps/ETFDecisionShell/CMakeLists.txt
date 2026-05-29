@@ -38,6 +38,7 @@ qt_add_qml_module(ETFDecisionShell
         qml/pages/PositionPlaceholderPage.qml
         qml/pages/ReadOnlyDataPage.qml
         qml/pages/SettingsPlaceholderPage.qml
+        qml/pages/ShellAccountingReadOnlyPage.qml
         qml/pages/StrategyPlaceholderPage.qml
         qml/pages/TradeConfirmPlaceholderPage.qml
         qml/pages/TradeDraftPlaceholderPage.qml

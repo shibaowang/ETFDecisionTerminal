@@ -9,10 +9,18 @@ using namespace etfdt::tests::shell_accounting_qml_type_registration_gate;
 int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
+    const auto authorizedQml =
+        root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml";
+    const auto authorizedQmlText = readTextFile(authorizedQml);
+    if (authorizedQmlText.find("import ETFDecisionTerminal.ShellAccounting 1.0") == std::string::npos ||
+        authorizedQmlText.find("property ShellAccountingPresenter accountingPresenter: null") == std::string::npos) {
+        std::cerr << "TASK-131 authorized QML binding shell is missing\n";
+        return 1;
+    }
     const std::vector<std::string> qmlTokens{
-        "ShellAccountingPresenter",
-        "accountingPresenter",
-        "ETFDecisionTerminal.ShellAccounting",
+        "ShellAccountingStatusObject",
+        "ShellAccountingIssueListModel",
+        "ShellPositionListModel",
     };
     if (containsAnyToken(productionQmlFiles(root), qmlTokens)) {
         return 1;

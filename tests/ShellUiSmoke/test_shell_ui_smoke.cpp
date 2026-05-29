@@ -2,6 +2,7 @@
 #include "ShellCore/ShellDiagnosticServiceListModel.h"
 #include "ShellCore/ShellNavigationController.h"
 #include "ShellCore/ShellStatusController.h"
+#include "ShellServices/ShellAccountingQmlRegistration.h"
 #include "ShellServices/ShellReadOnlyDataController.h"
 
 #include <QGuiApplication>
@@ -73,6 +74,7 @@ int main(int argc, char* argv[])
         1,
         0,
         "ShellReadOnlyDataController");
+    (void)etfdt::shell_services::registerShellAccountingQmlTypes();
 
     etfdt::shell::ShellDiagnosticQtAdapter adapter;
     etfdt::shell::ShellNavigationController navigationController;
@@ -82,7 +84,7 @@ int main(int argc, char* argv[])
     expectTrue(adapter.serviceModel()->rowCount() > 0, "adapter serviceModel has rows");
     expectTrue(adapter.selectService(0), "adapter selectService does not fail");
     expectTrue(adapter.summaryObject()->totalServices() > 0, "summaryObject has totalServices");
-    expectEqual(navigationController.navigationModel()->rowCount(), 14, "navigation model has 14 rows");
+    expectEqual(navigationController.navigationModel()->rowCount(), 15, "navigation model has 15 rows");
     expectTrue(statusController.metricsModel()->rowCount() >= 4, "status metrics model has dashboard rows");
     expectTrue(statusController.actionHintModel()->rowCount() > 0, "status action hint model has rows");
     expectTrue(readOnlyDataController.connectionObject() != nullptr, "read-only controller has connection object");
@@ -268,6 +270,30 @@ int main(int argc, char* argv[])
         expectTrue(
             appShell->findChild<QObject*>("accountTradeButton") == nullptr,
             "AccountPortfolioReadOnlyPage has no trade button");
+
+        invoked = navigationController.selectPage(QStringLiteral("shell_accounting"));
+        processQmlEvents();
+        expectTrue(invoked, "navigateTo shell_accounting succeeds");
+        expectEqual(navigationController.currentPageKey(), "shell_accounting", "current page is shell_accounting");
+        expectEqual(
+            contentHost == nullptr ? QString() : contentHost->property("pageQmlComponent").toString(),
+            "ShellAccountingReadOnlyPage",
+            "ContentHost receives shell accounting qml component");
+        expectTrue(
+            appShell->findChild<QObject*>("shellAccountingReadOnlyPage") != nullptr,
+            "ShellAccountingReadOnlyPage is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("shellAccountingReadOnlyNotice") != nullptr,
+            "ShellAccountingReadOnlyPage read-only notice is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("shellAccountingUnavailablePanel") != nullptr,
+            "ShellAccountingReadOnlyPage unavailable panel is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("shellAccountingReadOnlyBadge") != nullptr,
+            "ShellAccountingReadOnlyPage status badge is loaded");
+        expectTrue(
+            appShell->findChild<QObject*>("shellAccountingActionButton") == nullptr,
+            "ShellAccountingReadOnlyPage exposes no action button");
 
         invoked = navigationController.selectPage(QStringLiteral("strategy"));
         processQmlEvents();

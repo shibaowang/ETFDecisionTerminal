@@ -39,10 +39,9 @@ int main(int argc, char** argv)
         std::cerr << "production startup must not directly register ShellAccounting types after TASK-129\n";
         return 1;
     }
-    if (containsToken(qmlFiles, "import ETFDecisionTerminal.ShellAccounting") ||
-        containsToken(qmlFiles, "accountingPresenter") ||
-        containsToken(qmlFiles, "ShellAccountingPresenter")) {
-        std::cerr << "production QML must remain unbound after TASK-129 startup wiring\n";
+    if (countToken(qmlFiles, "import ETFDecisionTerminal.ShellAccounting") != 1 ||
+        countToken(qmlFiles, "property ShellAccountingPresenter accountingPresenter: null") != 1) {
+        std::cerr << "TASK-131 permits exactly one read-only ShellAccounting QML shell binding\n";
         return 1;
     }
     return 0;

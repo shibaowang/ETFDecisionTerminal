@@ -127,6 +127,9 @@ def main() -> int:
     shell_accounting_qml_startup_registration_test_plan_path = (
         root / "docs" / "70_shell_accounting_qml_startup_registration_test_plan.md"
     )
+    shell_accounting_qml_startup_registration_wiring_path = (
+        root / "docs" / "71_shell_accounting_qml_startup_registration_wiring.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -147,6 +150,9 @@ def main() -> int:
     )
     shell_accounting_qml_startup_registration_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStartupRegistrationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_qml_startup_registration_wiring_cmake_path = (
+        root / "tests" / "ShellAccountingQmlStartupRegistrationWiring" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1109,6 +1115,9 @@ def main() -> int:
     shell_accounting_qml_startup_registration_test_plan = (
         shell_accounting_qml_startup_registration_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_qml_startup_registration_wiring = (
+        shell_accounting_qml_startup_registration_wiring_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1123,6 +1132,9 @@ def main() -> int:
     )
     shell_accounting_qml_startup_registration_gate_cmake = (
         shell_accounting_qml_startup_registration_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_qml_startup_registration_wiring_cmake = (
+        shell_accounting_qml_startup_registration_wiring_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -4943,6 +4955,10 @@ def main() -> int:
         "docs/70 QML startup registration test plan exists",
     )
     require(
+        shell_accounting_qml_startup_registration_wiring_path.exists(),
+        "docs/71 QML startup registration wiring exists",
+    )
+    require(
         "docs/69_shell_accounting_qml_startup_registration_gate.md" in readme,
         "README links docs/69",
     )
@@ -4951,12 +4967,20 @@ def main() -> int:
         "README links docs/70",
     )
     require(
+        "docs/71_shell_accounting_qml_startup_registration_wiring.md" in readme,
+        "README links docs/71",
+    )
+    require(
         "69_shell_accounting_qml_startup_registration_gate.md" in docs_index,
         "docs/README links docs/69",
     )
     require(
         "70_shell_accounting_qml_startup_registration_test_plan.md" in docs_index,
         "docs/README links docs/70",
+    )
+    require(
+        "71_shell_accounting_qml_startup_registration_wiring.md" in docs_index,
+        "docs/README links docs/71",
     )
     require("TASK-128" in shell_accounting_qml_startup_registration_gate, "docs/69 mentions TASK-128")
     require(
@@ -4990,12 +5014,50 @@ def main() -> int:
         "tests include startup registration rollback policy",
     )
     require(
-        "registerShellAccountingQmlTypes" not in registration_sources,
-        "production startup has not called registerShellAccountingQmlTypes after TASK-128",
+        registration_sources.count("registerShellAccountingQmlTypes") == 1,
+        "production startup has exactly one registerShellAccountingQmlTypes call after TASK-129",
     )
     require(
         "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
         "production QML has not imported ShellAccounting module after TASK-128",
+    )
+
+    require("TASK-129" in shell_accounting_qml_startup_registration_gate, "docs/69 mentions TASK-129")
+    require("TASK-129" in shell_accounting_qml_startup_registration_test_plan, "docs/70 mentions TASK-129")
+    require("TASK-129" in shell_accounting_qml_startup_registration_wiring, "docs/71 mentions TASK-129")
+    require(
+        "registerShellAccountingQmlTypes" in shell_accounting_qml_startup_registration_wiring,
+        "docs/71 records startup registration helper call",
+    )
+    require("rollback" in shell_accounting_qml_startup_registration_wiring, "docs/71 includes rollback")
+    require("TASK-129" in codex_prompt_template, "docs/12 mentions TASK-129")
+    for ctest_name in [
+        "shell_accounting_qml_startup_registration_wiring",
+        "shell_accounting_qml_startup_registration_wiring_single_call",
+        "shell_accounting_qml_startup_registration_wiring_location_policy",
+        "shell_accounting_qml_startup_registration_wiring_preserves_readonly_allowlist",
+        "shell_accounting_qml_startup_registration_wiring_no_qml_import",
+        "shell_accounting_qml_startup_registration_wiring_no_context_exposure",
+        "shell_accounting_qml_startup_registration_wiring_no_forbidden_runtime_access",
+        "shell_accounting_qml_startup_registration_wiring_rollback_ready",
+    ]:
+        require(ctest_name in shell_accounting_qml_startup_registration_wiring_cmake, f"tests include {ctest_name}")
+    require(
+        registration_sources.count("registerShellAccountingQmlTypes") == 1,
+        "production startup calls registerShellAccountingQmlTypes exactly once after TASK-129",
+    )
+    require(
+        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
+        "production QML has not imported ShellAccounting module after TASK-129",
+    )
+    require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-129")
+    require(
+        'setContextProperty("accountingPresenter"' not in registration_sources,
+        "production startup has not exposed accountingPresenter context property",
+    )
+    require(
+        "ShellAccountingPresenter " not in registration_sources,
+        "production startup has not created ShellAccountingPresenter",
     )
 
     require(

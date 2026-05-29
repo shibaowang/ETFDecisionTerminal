@@ -195,10 +195,10 @@ production QML files still must not import `ETFDecisionTerminal.ShellAccounting`
 or bind `accountingPresenter`. Forbidden direct service, SQLite,
 AccountingEngine, write, TradeDraft, broker, and strategy tokens remain denied.
 
-## TASK-128 Startup Registration Static Gate Update
+## TASK-128 / TASK-129 Startup Registration Static Gate Update
 
 TASK-128 adds a startup registration gate for the future production app-startup
-call. The current static position remains: production startup does not call
-`registerShellAccountingQmlTypes`, production QML does not import
-`ETFDecisionTerminal.ShellAccounting`, and no accounting page binding is
-authorized.
+call. TASK-129 adds the centralized production startup call to
+`registerShellAccountingQmlTypes`. The current static position remains:
+production QML does not import `ETFDecisionTerminal.ShellAccounting`, and no
+accounting page binding is authorized.

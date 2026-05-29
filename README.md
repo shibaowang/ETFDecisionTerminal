@@ -144,13 +144,29 @@ ShellAccounting QML startup registration gate docs and CTest have been added:
 - `docs/70_shell_accounting_qml_startup_registration_test_plan.md`
 - `tests/ShellAccountingQmlStartupRegistrationGate`
 
-This task does not wire `registerShellAccountingQmlTypes` into production app
-startup. Production QML still does not import `ETFDecisionTerminal.ShellAccounting`,
-and no production accounting page or component is implemented. The gate fixes
+TASK-128 did not wire `registerShellAccountingQmlTypes` into production app
+startup; TASK-129 adds that startup wiring separately. Production QML still does
+not import `ETFDecisionTerminal.ShellAccounting`, and no production accounting
+page or component is implemented. The gate fixes
 the future startup wiring policy: centralized call only, no direct
 `DataServiceClient`, SQLite, `DataAccess`, `AccountingEngine`, adapter, concrete
 port, write action, `TradeDraft`, trade suggestion, strategy, or broker
 exposure. Real accounting actions remain unimplemented.
+
+## TASK-129 ShellAccounting QML Startup Registration Wiring
+
+ShellAccounting QML startup registration wiring is now added:
+
+- [docs/71_shell_accounting_qml_startup_registration_wiring.md](docs/71_shell_accounting_qml_startup_registration_wiring.md)
+- `tests/ShellAccountingQmlStartupRegistrationWiring`
+
+Production startup calls `registerShellAccountingQmlTypes` once from the
+centralized app QML type registration location. The module remains
+`ETFDecisionTerminal.ShellAccounting` 1.0 and the TASK-127 read-only allowlist
+remains unchanged. Production QML still does not import the module, no
+production QML page or component is implemented, no `accountingPresenter`
+binding is added, no real accounting action is implemented, no database write is
+enabled, and no TradeDraft or trade suggestion is generated.
 
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 

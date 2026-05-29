@@ -449,12 +449,12 @@ still not implemented: production QML must not import the module until a
 separate authorized task, and the future first UI stage remains read-only
 placeholder / unavailable / issue / privacy smoke only.
 
-## TASK-128 Startup Registration UI Boundary
+## TASK-128 / TASK-129 Startup Registration UI Boundary
 
-The startup registration gate is now defined, but production app startup still
-does not call `registerShellAccountingQmlTypes`. Production QML still does not
-import `ETFDecisionTerminal.ShellAccounting`, and no ShellAccounting UI page is
-wired. Future UI work must pass the startup registration gate and remain
-read-only: no trading buttons, no write action, no `TradeDraft`, no strategy
-execution, no broker order, and no real accounting data until separately
-authorized.
+The startup registration gate is now defined, and TASK-129 wires production app
+startup to call `registerShellAccountingQmlTypes` once from the centralized QML
+type registration location. Production QML still does not import
+`ETFDecisionTerminal.ShellAccounting`, and no ShellAccounting UI page is wired.
+Future UI work must pass the startup registration gate and remain read-only: no
+trading buttons, no write action, no `TradeDraft`, no strategy execution, no
+broker order, and no real accounting data until separately authorized.

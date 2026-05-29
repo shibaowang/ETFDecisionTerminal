@@ -5,9 +5,9 @@ test-only gate task, not production startup wiring.
 
 ## Document Purpose
 
-This document defines the gate for a future task that wires the
+This document defines the gate used before a task wires the
 `ShellAccountingQmlRegistration` helper into production app startup. This
-document does not modify startup code, does not call the registration helper,
+document itself does not modify startup code, does not call the registration helper,
 does not modify QML, and does not implement a QML page.
 
 ## Current Status
@@ -16,7 +16,8 @@ does not modify QML, and does not implement a QML page.
 - `ETFDecisionTerminal.ShellAccounting` 1.0 can be registered and imported in
   tests.
 - TASK-127 completed the helper implementation.
-- Production app startup does not call `registerShellAccountingQmlTypes`.
+- TASK-129 adds one centralized production startup call to
+  `registerShellAccountingQmlTypes`.
 - Production QML does not import `ETFDecisionTerminal.ShellAccounting`.
 - Production QML pages are not implemented for ShellAccounting.
 - Real accounting actions are not implemented.
@@ -97,3 +98,12 @@ A future startup wiring PR must report:
 - confirmation that no production QML page binding was added.
 - rollback plan.
 - all gate test results.
+
+## TASK-129 Wiring Status
+
+TASK-129 has implemented centralized startup wiring by calling
+`registerShellAccountingQmlTypes` once from the production app startup QML type
+registration location. The wiring remains registration-only. Production QML
+binding remains separate, production QML still does not import
+`ETFDecisionTerminal.ShellAccounting`, and real accounting action
+implementation remains separate.

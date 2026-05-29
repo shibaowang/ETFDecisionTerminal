@@ -823,3 +823,18 @@ v0.1 草案。
 - Startup wiring must not expose `DataServiceClient`, SQLite, `DataAccess`,
   `AccountingEngine`, adapters, concrete ports, write actions, trade actions,
   `TradeDraft`, trade suggestions, strategy execution, or broker orders.
+
+## TASK-129 ShellAccounting QML Startup Registration Wiring
+
+- Startup wiring tasks must reference
+  `docs/69_shell_accounting_qml_startup_registration_gate.md`,
+  `docs/70_shell_accounting_qml_startup_registration_test_plan.md`, and
+  `docs/71_shell_accounting_qml_startup_registration_wiring.md`.
+- TASK-129 allows only one centralized call to
+  `registerShellAccountingQmlTypes`.
+- Do not bind production QML without explicit authorization.
+- Startup wiring is not QML page binding and is not real accounting action.
+- Do not add production QML imports, `accountingPresenter`, presenter context
+  exposure, DataServiceClient, SQLite, DataAccess, AccountingEngine,
+  write/trade exposure, TradeDraft, trade suggestion, strategy, or broker
+  behavior.

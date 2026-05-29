@@ -72,3 +72,13 @@ This document does not modify startup code.
 - [ ] TASK-127 helper implementation passes.
 - [ ] Rollback strategy documented.
 - [ ] User explicitly authorized startup wiring.
+
+## TASK-129 Wiring Tests
+
+TASK-129 adds startup wiring tests for the centralized helper call. The tests
+cover the single-call check, startup location policy, read-only allowlist
+preservation, no production QML import, no context exposure, no forbidden
+runtime access, and rollback readiness.
+
+Production QML binding remains separate and real accounting actions remain
+unimplemented.

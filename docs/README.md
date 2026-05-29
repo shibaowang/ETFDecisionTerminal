@@ -246,6 +246,10 @@
 - ShellAccounting QML startup registration test plan:
   [70_shell_accounting_qml_startup_registration_test_plan.md](70_shell_accounting_qml_startup_registration_test_plan.md)
   defines the future startup wiring test matrix and Go / No-Go checklist.
+- ShellAccounting QML startup registration wiring:
+  [71_shell_accounting_qml_startup_registration_wiring.md](71_shell_accounting_qml_startup_registration_wiring.md)
+  records TASK-129 centralized startup wiring. Production QML still does not
+  import or bind the module.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

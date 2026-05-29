@@ -1,6 +1,7 @@
 #include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellNavigationController.h"
 #include "ShellCore/ShellStatusController.h"
+#include "ShellServices/ShellAccountingQmlRegistration.h"
 #include "ShellServices/ShellReadOnlyDataController.h"
 
 #include <QGuiApplication>
@@ -30,6 +31,7 @@ int main(int argc, char* argv[])
         1,
         0,
         "ShellReadOnlyDataController");
+    (void)etfdt::shell_services::registerShellAccountingQmlTypes();
 
     etfdt::shell::ShellDiagnosticQtAdapter diagnosticAdapter;
     etfdt::shell::ShellNavigationController navigationController;

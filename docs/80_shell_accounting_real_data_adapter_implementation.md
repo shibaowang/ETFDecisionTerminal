@@ -135,3 +135,10 @@ Fallback must not bypass DataService with SQLite direct reads.
 Connecting a real SQLite facts query, AccountingEngine replay, snapshot
 generation, TradeDraft, trade suggestion, strategy execution, or broker order
 flow requires a separate explicit TASK with its own gates.
+
+## TASK-136 DataService Facts Query Gate Update
+
+TASK-136 adds the gate for a future DataService-only read-only facts query. The
+facts query is still not implemented. SQLite and AccountingEngine remain
+unconnected from the ShellAccounting read-only adapter path. The adapter remains
+read-only and no-write.

@@ -157,6 +157,12 @@ def main() -> int:
     shell_accounting_real_data_adapter_implementation_path = (
         root / "docs" / "80_shell_accounting_real_data_adapter_implementation.md"
     )
+    shell_accounting_dataservice_facts_query_gate_path = (
+        root / "docs" / "81_shell_accounting_dataservice_readonly_facts_query_gate.md"
+    )
+    shell_accounting_dataservice_facts_query_test_plan_path = (
+        root / "docs" / "82_shell_accounting_dataservice_readonly_facts_query_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -198,6 +204,9 @@ def main() -> int:
     )
     shell_accounting_real_data_adapter_implementation_cmake_path = (
         root / "tests" / "ShellAccountingRealDataAdapterImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_dataservice_facts_query_gate_cmake_path = (
+        root / "tests" / "ShellAccountingDataServiceFactsQueryGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1200,6 +1209,12 @@ def main() -> int:
     shell_accounting_real_data_adapter_implementation = (
         shell_accounting_real_data_adapter_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_dataservice_facts_query_gate = shell_accounting_dataservice_facts_query_gate_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_dataservice_facts_query_test_plan = (
+        shell_accounting_dataservice_facts_query_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1235,6 +1250,9 @@ def main() -> int:
     )
     shell_accounting_real_data_adapter_implementation_cmake = (
         shell_accounting_real_data_adapter_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_dataservice_facts_query_gate_cmake = (
+        shell_accounting_dataservice_facts_query_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5624,6 +5642,81 @@ def main() -> int:
             forbidden_service_token not in shell_accounting_production_path,
             f"production ShellAccounting path avoids {forbidden_service_token} after TASK-134",
         )
+
+    require(
+        shell_accounting_dataservice_facts_query_gate_path.exists(),
+        "docs/81 DataService facts query gate exists",
+    )
+    require(
+        shell_accounting_dataservice_facts_query_test_plan_path.exists(),
+        "docs/82 DataService facts query test plan exists",
+    )
+    require(
+        "docs/81_shell_accounting_dataservice_readonly_facts_query_gate.md" in readme,
+        "README links docs/81",
+    )
+    require(
+        "docs/82_shell_accounting_dataservice_readonly_facts_query_test_plan.md" in readme,
+        "README links docs/82",
+    )
+    require(
+        "81_shell_accounting_dataservice_readonly_facts_query_gate.md" in docs_index,
+        "docs/README links docs/81",
+    )
+    require(
+        "82_shell_accounting_dataservice_readonly_facts_query_test_plan.md" in docs_index,
+        "docs/README links docs/82",
+    )
+    require("TASK-136" in shell_accounting_dataservice_facts_query_gate, "docs/81 mentions TASK-136")
+    require("TASK-136" in shell_accounting_dataservice_facts_query_test_plan, "docs/82 mentions TASK-136")
+    require("TASK-136" in codex_prompt_template, "docs/12 mentions TASK-136")
+    require(
+        "facts query is not write path" in shell_accounting_dataservice_facts_query_gate,
+        "docs/81 states facts query is not write path",
+    )
+    require(
+        "facts query is not AccountingEngine replay" in shell_accounting_dataservice_facts_query_gate,
+        "docs/81 states no AccountingEngine replay",
+    )
+    require("rollback" in shell_accounting_dataservice_facts_query_gate, "docs/81 includes rollback")
+    require(
+        "Test Matrix" in shell_accounting_dataservice_facts_query_test_plan,
+        "docs/82 includes Test Matrix",
+    )
+    for ctest_name in [
+        "shell_accounting_dataservice_facts_query_gate",
+        "shell_accounting_dataservice_facts_query_no_query_yet",
+        "shell_accounting_dataservice_facts_query_allowed_sources_policy",
+        "shell_accounting_dataservice_facts_query_no_write_sql",
+        "shell_accounting_dataservice_facts_query_no_snapshot_rebuild",
+        "shell_accounting_dataservice_facts_query_no_accounting_engine_replay",
+        "shell_accounting_dataservice_facts_query_error_mapping_policy",
+        "shell_accounting_dataservice_facts_query_privacy_policy",
+        "shell_accounting_dataservice_facts_query_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_dataservice_facts_query_gate_cmake,
+            f"TASK-136 tests include {ctest_name}",
+        )
+    data_service_actions_source = (root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp").read_text(
+        encoding="utf-8"
+    )
+    for action in [
+        "position.list",
+        "cash.summary",
+        "portfolio.pnl.summary",
+        "base_position.summary",
+        "sniper_pool.summary",
+    ]:
+        require(action in data_service_actions_source, f"DataService action source contains {action}")
+    for guard_token in [
+        '"implemented":false',
+        '"sqliteAccessed":false',
+        '"accountingEngineCalled":false',
+        "NO_SQLITE_FACTS_QUERY",
+        "NO_ACCOUNTING_ENGINE_CALL",
+    ]:
+        require(guard_token in data_service_actions_source, f"DataService accounting guard keeps {guard_token}")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

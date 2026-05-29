@@ -2451,3 +2451,12 @@ Unavailable-safe. No database writes, TradeDraft, trade suggestion, strategy
 execution, broker order, trading buttons, direct SQLite access, or direct
 AccountingEngine calls are enabled. See
 `docs/80_shell_accounting_real_data_adapter_implementation.md`.
+
+## TASK-136 DataService Read-only Facts Query Gate
+
+ShellAccounting now has a DataService read-only facts query gate and test plan.
+The facts query is still not implemented. SQLite and AccountingEngine replay are
+still not connected. No database writes, TradeDraft, trade suggestion, strategy
+execution, broker order, or trading UI are enabled. See
+`docs/81_shell_accounting_dataservice_readonly_facts_query_gate.md` and
+`docs/82_shell_accounting_dataservice_readonly_facts_query_test_plan.md`.

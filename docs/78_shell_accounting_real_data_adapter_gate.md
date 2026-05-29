@@ -138,3 +138,9 @@ TASK-135 has implemented the authorized read-only adapter/action chain for
 not a write path, does not authorize TradeDraft or trading action, keeps QML off
 `DataServiceClient`, keeps the presenter off SQLite and AccountingEngine, and
 continues to require rollback / disable behavior for the real adapter.
+
+## TASK-136 DataService Facts Query Gate Update
+
+TASK-136 adds the DataService read-only facts query gate. The facts query is
+still not implemented. SQLite / AccountingEngine is still not connected to
+ShellAccounting read-only actions. The adapter remains read-only and no-write.

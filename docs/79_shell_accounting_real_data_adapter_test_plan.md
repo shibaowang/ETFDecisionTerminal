@@ -90,3 +90,10 @@ integration, no SQLite direct access after integration, no AccountingEngine
 direct access after integration, and rollback readiness after integration.
 Rollback fallback must not fake data, must not write DB, must not generate TradeDraft,
 and must not bypass DataService with SQLite direct reads.
+
+## TASK-136 DataService Facts Query Gate Update
+
+TASK-136 adds a DataService facts query gate and test plan before any SQLite
+facts query implementation. The facts query remains not implemented. SQLite /
+AccountingEngine remains not connected. The read-only adapter remains no-write
+and continues to require no raw payload and rollback coverage.

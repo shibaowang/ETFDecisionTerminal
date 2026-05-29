@@ -1,0 +1,29 @@
+#include "ShellAccountingDataServiceFactsQueryGate.h"
+
+#include <iostream>
+
+using namespace etfdt::tests::shell_accounting_dataservice_facts_query_gate;
+
+int main(int argc, char** argv)
+{
+    const auto root = sourceRoot(argc, argv);
+    const auto docs = readTextFile(docs81Path(root)) + "\n" + readTextFile(docs82Path(root));
+    for (const auto& token : {
+             "empty account",
+             "missing account",
+             "missing portfolio",
+             "missing instrument",
+             "stale snapshot",
+             "data inconsistency",
+             "query error",
+             "timeout",
+             "no silent success",
+             "no fake data",
+         }) {
+        if (docs.find(token) == std::string::npos) {
+            std::cerr << "facts query error mapping policy missing token `" << token << "`\n";
+            return 1;
+        }
+    }
+    return 0;
+}

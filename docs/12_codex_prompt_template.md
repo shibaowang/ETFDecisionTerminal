@@ -926,3 +926,13 @@ v0.1 草案。
   directly access SQLite, DataAccess, or AccountingEngine.
 - No raw SQL, full trade_log payload, raw transport payload, or sensitive raw
   payload may be exposed to QML.
+
+## TASK-136 ShellAccounting DataService Facts Query Gate
+
+- DataService facts query tasks must reference
+  `docs/81_shell_accounting_dataservice_readonly_facts_query_gate.md` and
+  `docs/82_shell_accounting_dataservice_readonly_facts_query_test_plan.md`.
+- Do not implement SQLite facts query without explicit authorization.
+- facts query is not write path.
+- facts query is not AccountingEngine replay.
+- No TradeDraft / no trading UI.

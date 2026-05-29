@@ -240,3 +240,10 @@ QML type registration scaffold tests are now added under
 registration allowlist, denylist, method/property denylist, module import
 boundary, gate dependency, and no-production-change expectations. QML type
 registration still requires separate authorization.
+
+## TASK-126 Implementation Gate
+
+The QML type registration implementation gate is now documented in docs/67, with
+rollback strategy in docs/68. Future QML binding and registration work must keep
+the smoke plan, static gate, scaffold, implementation gate, rollback strategy,
+and no-production-registration checks passing.

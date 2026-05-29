@@ -100,3 +100,17 @@ TASK-125 adds the test scaffold for this plan. The scaffold covers:
 Future registration implementation must pass these tests or production-equivalent
 tests. The scaffold is not production QML type registration and does not modify
 production QML.
+
+## TASK-126 Implementation Gate Tests
+
+TASK-126 adds implementation gate tests:
+
+- `shell_accounting_qml_type_registration_implementation_gate`.
+- `shell_accounting_qml_type_registration_location_gate`.
+- `shell_accounting_qml_type_registration_allowlist_gate`.
+- `shell_accounting_qml_type_registration_forbidden_exposure_gate`.
+- `shell_accounting_qml_type_registration_rollback_gate`.
+- `shell_accounting_qml_type_registration_no_production_registration`.
+
+Future registration implementation must pass these gates in addition to the
+TASK-125 scaffold and the TASK-119 / TASK-121 / TASK-122 gates.

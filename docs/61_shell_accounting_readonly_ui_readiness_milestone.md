@@ -188,3 +188,10 @@ TASK-125 adds the QML type registration scaffold as a post-v0.6 readiness gate.
 It does not register QML types or modify production QML. It fixes the future
 registration allowlist, denylist, module boundary, and no-production-change
 checks before any registration task is authorized.
+
+## TASK-126 Implementation Gate
+
+TASK-126 adds the QML type registration implementation gate and rollback
+strategy as the final pre-registration readiness layer. It still does not
+register QML types, modify production QML, or authorize real accounting actions,
+writes, TradeDraft, trade suggestions, broker orders, or strategy execution.

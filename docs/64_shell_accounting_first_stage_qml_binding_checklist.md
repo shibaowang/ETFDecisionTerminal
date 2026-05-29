@@ -77,3 +77,10 @@ The first-stage Go / No-Go decision must include a passing
 `shell_accounting_qml_type_registration` scaffold run. That scaffold proves the
 allowed type list, forbidden type list, method/property denylist, module import
 boundary, gate dependency, and no-production-change boundary remain intact.
+
+## TASK-126 Implementation Gate
+
+The first-stage Go / No-Go decision must also include the TASK-126
+implementation gate and rollback strategy. Registration is still a separate
+authorization step and must preserve read-only types, no forbidden exposure, and
+rollback / disable behavior.

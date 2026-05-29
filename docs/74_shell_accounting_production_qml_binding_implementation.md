@@ -134,3 +134,11 @@ Future tasks must be separate and explicitly authorized for:
 
 Those tasks must keep no-write, no-TradeDraft, no trading UI, and unavailable
 fallback gates in place.
+
+## TASK-132 Presenter Lifecycle Gate
+
+TASK-132 adds the gate for future presenter lifecycle and context exposure. The
+TASK-131 shell still does not create `ShellAccountingPresenter`, does not call
+`setContextProperty`, and does not bind a real presenter. Its nullable
+`accountingPresenter` property must continue to render an Unavailable / disabled
+state until a separate authorized lifecycle task changes that boundary.

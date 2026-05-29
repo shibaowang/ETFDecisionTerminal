@@ -259,6 +259,12 @@
 - ShellAccounting production QML binding implementation:
   [74_shell_accounting_production_qml_binding_implementation.md](74_shell_accounting_production_qml_binding_implementation.md)
   records TASK-131 read-only, unavailable-safe production QML shell binding.
+- ShellAccounting presenter lifecycle gate:
+  [75_shell_accounting_presenter_lifecycle_gate.md](75_shell_accounting_presenter_lifecycle_gate.md)
+  defines the future presenter creation and context exposure gate.
+- ShellAccounting presenter lifecycle test plan:
+  [76_shell_accounting_presenter_lifecycle_test_plan.md](76_shell_accounting_presenter_lifecycle_test_plan.md)
+  defines the future lifecycle / context exposure test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

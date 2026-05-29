@@ -139,6 +139,12 @@ def main() -> int:
     shell_accounting_production_qml_binding_implementation_path = (
         root / "docs" / "74_shell_accounting_production_qml_binding_implementation.md"
     )
+    shell_accounting_presenter_lifecycle_gate_path = (
+        root / "docs" / "75_shell_accounting_presenter_lifecycle_gate.md"
+    )
+    shell_accounting_presenter_lifecycle_test_plan_path = (
+        root / "docs" / "76_shell_accounting_presenter_lifecycle_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -168,6 +174,9 @@ def main() -> int:
     )
     shell_accounting_production_qml_binding_implementation_cmake_path = (
         root / "tests" / "ShellAccountingProductionQmlBindingImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_presenter_lifecycle_gate_cmake_path = (
+        root / "tests" / "ShellAccountingPresenterLifecycleGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1152,6 +1161,12 @@ def main() -> int:
     shell_accounting_production_qml_binding_implementation = (
         shell_accounting_production_qml_binding_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_presenter_lifecycle_gate = shell_accounting_presenter_lifecycle_gate_path.read_text(
+        encoding="utf-8"
+    )
+    shell_accounting_presenter_lifecycle_test_plan = (
+        shell_accounting_presenter_lifecycle_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1175,6 +1190,9 @@ def main() -> int:
     )
     shell_accounting_production_qml_binding_implementation_cmake = (
         shell_accounting_production_qml_binding_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_presenter_lifecycle_gate_cmake = shell_accounting_presenter_lifecycle_gate_cmake_path.read_text(
+        encoding="utf-8"
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5295,6 +5313,59 @@ def main() -> int:
             f"ShellAccounting read-only page avoids {forbidden_qml_runtime_token} after TASK-131",
         )
     require("rollback" in shell_accounting_production_qml_binding_implementation, "docs/74 includes rollback")
+
+    require(shell_accounting_presenter_lifecycle_gate_path.exists(), "docs/75 presenter lifecycle gate exists")
+    require(
+        shell_accounting_presenter_lifecycle_test_plan_path.exists(),
+        "docs/76 presenter lifecycle test plan exists",
+    )
+    require(
+        "docs/75_shell_accounting_presenter_lifecycle_gate.md" in readme,
+        "README links docs/75",
+    )
+    require(
+        "docs/76_shell_accounting_presenter_lifecycle_test_plan.md" in readme,
+        "README links docs/76",
+    )
+    require(
+        "75_shell_accounting_presenter_lifecycle_gate.md" in docs_index,
+        "docs/README links docs/75",
+    )
+    require(
+        "76_shell_accounting_presenter_lifecycle_test_plan.md" in docs_index,
+        "docs/README links docs/76",
+    )
+    require("TASK-132" in shell_accounting_presenter_lifecycle_gate, "docs/75 mentions TASK-132")
+    require("TASK-132" in shell_accounting_presenter_lifecycle_test_plan, "docs/76 mentions TASK-132")
+    require("TASK-132" in codex_prompt_template, "docs/12 mentions TASK-132")
+    require(
+        "Presenter lifecycle is not real accounting action" in shell_accounting_presenter_lifecycle_gate,
+        "docs/75 states presenter lifecycle is not real accounting action",
+    )
+    require("rollback" in shell_accounting_presenter_lifecycle_gate, "docs/75 includes rollback")
+    require("Test Matrix" in shell_accounting_presenter_lifecycle_test_plan, "docs/76 includes Test Matrix")
+    for ctest_name in [
+        "shell_accounting_presenter_lifecycle_gate",
+        "shell_accounting_presenter_lifecycle_no_creation_yet",
+        "shell_accounting_presenter_lifecycle_no_context_exposure_yet",
+        "shell_accounting_presenter_lifecycle_null_presenter_policy",
+        "shell_accounting_presenter_lifecycle_no_forbidden_runtime_access",
+        "shell_accounting_presenter_lifecycle_no_trade_ui",
+        "shell_accounting_presenter_lifecycle_rollback_policy",
+    ]:
+        require(ctest_name in shell_accounting_presenter_lifecycle_gate_cmake, f"tests include {ctest_name}")
+    require(
+        "ShellAccountingPresenter " not in registration_sources,
+        "production startup still does not create ShellAccountingPresenter after TASK-132",
+    )
+    require(
+        'setContextProperty("accountingPresenter"' not in registration_sources,
+        "production startup still does not expose accountingPresenter after TASK-132",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "production QML only keeps the nullable accountingPresenter property after TASK-132",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -198,6 +198,20 @@ DataServiceClient, SQLite, or AccountingEngine, does not write any database
 table, does not generate TradeDraft or trade suggestions, and does not show
 trading buttons.
 
+## TASK-132 ShellAccounting Presenter Lifecycle Gate
+
+ShellAccounting presenter lifecycle and context exposure gate docs and CTest are
+now added:
+
+- [docs/75_shell_accounting_presenter_lifecycle_gate.md](docs/75_shell_accounting_presenter_lifecycle_gate.md)
+- [docs/76_shell_accounting_presenter_lifecycle_test_plan.md](docs/76_shell_accounting_presenter_lifecycle_test_plan.md)
+- `tests/ShellAccountingPresenterLifecycleGate`
+
+Presenter lifecycle remains unimplemented. No `ShellAccountingPresenter` is
+created, no `accountingPresenter` context property is exposed, and the
+production QML shell continues to tolerate a null presenter. No real accounting
+action, database write, TradeDraft, trade suggestion, or trading UI is enabled.
+
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 
 ShellAccounting QML type registration implementation gate docs are now added:

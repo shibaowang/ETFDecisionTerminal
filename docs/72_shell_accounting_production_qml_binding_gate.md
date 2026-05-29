@@ -131,3 +131,10 @@ presenter, does not expose a context property, does not call DataServiceClient,
 does not access SQLite, does not call AccountingEngine, does not write a
 database table, does not generate TradeDraft or trade suggestions, and does not
 show trading UI.
+
+## TASK-132 Presenter Lifecycle Gate
+
+TASK-132 adds the presenter lifecycle / context exposure gate. Presenter
+lifecycle remains unimplemented, context exposure remains unimplemented, and
+the production QML shell remains read-only and Unavailable-safe with a nullable
+presenter property only.

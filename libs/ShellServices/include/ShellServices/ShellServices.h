@@ -7,6 +7,7 @@
 #include "ShellServices/ShellAccountingIssue.h"
 #include "ShellServices/ShellAccountingIssueListModel.h"
 #include "ShellServices/ShellAccountingPresenter.h"
+#include "ShellServices/ShellAccountingQmlRegistration.h"
 #include "ShellServices/ShellAccountingReadOnlyController.h"
 #include "ShellServices/ShellAccountingServiceAdapter.h"
 #include "ShellServices/ShellAccountingServiceTypes.h"

@@ -114,3 +114,19 @@ TASK-126 adds implementation gate tests:
 
 Future registration implementation must pass these gates in addition to the
 TASK-125 scaffold and the TASK-119 / TASK-121 / TASK-122 gates.
+
+## TASK-127 Registration Implementation Tests
+
+TASK-127 adds implementation tests:
+
+- `shell_accounting_qml_type_registration_module_import`.
+- `shell_accounting_qml_type_registration_allowlist_registered`.
+- `shell_accounting_qml_type_registration_forbidden_types_absent`.
+- `shell_accounting_qml_type_registration_forbidden_methods_absent`.
+- `shell_accounting_qml_type_registration_uncreatable_readonly`.
+- `shell_accounting_qml_type_registration_no_production_qml_binding`.
+- `shell_accounting_qml_type_registration_gate_regression`.
+
+These tests prove the module imports, the four allowlist types are registered as
+read-only uncreatable types, forbidden types and methods are absent, and
+production QML still does not bind the module.

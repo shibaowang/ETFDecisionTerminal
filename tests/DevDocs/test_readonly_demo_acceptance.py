@@ -136,6 +136,15 @@ def main() -> int:
     shell_accounting_qml_type_registration_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlTypeRegistrationGate" / "CMakeLists.txt"
     )
+    shell_accounting_qml_type_registration_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingQmlTypeRegistrationImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_qml_registration_header_path = (
+        root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
+    )
+    shell_accounting_qml_registration_source_path = (
+        root / "libs" / "ShellServices" / "src" / "ShellAccountingQmlRegistration.cpp"
+    )
     shell_accounting_presenter_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h"
     )
@@ -1094,6 +1103,11 @@ def main() -> int:
     shell_accounting_qml_type_registration_gate_cmake = shell_accounting_qml_type_registration_gate_cmake_path.read_text(
         encoding="utf-8"
     )
+    shell_accounting_qml_type_registration_implementation_cmake = (
+        shell_accounting_qml_type_registration_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
+    shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
     shell_accounting_presenter_header = shell_accounting_presenter_header_path.read_text(encoding="utf-8")
     shell_accounting_presenter_source = shell_accounting_presenter_source_path.read_text(encoding="utf-8")
     shell_accounting_presenter_cmake = shell_accounting_presenter_cmake_path.read_text(encoding="utf-8")
@@ -4807,6 +4821,100 @@ def main() -> int:
         "qmlRegisterType<ShellPositionListModel>" not in registration_sources,
         "TASK-126 production registration has not registered ShellPositionListModel",
     )
+
+    require(
+        shell_accounting_qml_registration_header_path.exists(),
+        "ShellAccountingQmlRegistration header exists",
+    )
+    require(
+        shell_accounting_qml_registration_source_path.exists(),
+        "ShellAccountingQmlRegistration source exists",
+    )
+    require("TASK-127" in shell_accounting_qml_type_registration_boundary, "docs/65 mentions TASK-127")
+    require("TASK-127" in shell_accounting_qml_type_registration_test_plan, "docs/66 mentions TASK-127")
+    require("TASK-127" in shell_accounting_qml_type_registration_implementation_gate, "docs/67 mentions TASK-127")
+    require("TASK-127" in shell_accounting_qml_type_registration_rollback_strategy, "docs/68 mentions TASK-127")
+    require("TASK-127" in codex_prompt_template, "docs/12 mentions TASK-127")
+    require(
+        "ShellAccounting QML type registration implementation" in readme,
+        "README mentions ShellAccounting QML type registration implementation",
+    )
+    require(
+        "shell_accounting_qml_type_registration_module_import"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include type registration module import implementation",
+    )
+    require(
+        "shell_accounting_qml_type_registration_allowlist_registered"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include type registration allowlist registered",
+    )
+    require(
+        "shell_accounting_qml_type_registration_forbidden_types_absent"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include type registration forbidden types absent",
+    )
+    require(
+        "shell_accounting_qml_type_registration_forbidden_methods_absent"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include type registration forbidden methods absent",
+    )
+    require(
+        "shell_accounting_qml_type_registration_uncreatable_readonly"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include type registration uncreatable readonly",
+    )
+    require(
+        "shell_accounting_qml_type_registration_no_production_qml_binding"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include no production QML binding registration test",
+    )
+    require(
+        "shell_accounting_qml_type_registration_gate_regression"
+        in shell_accounting_qml_type_registration_implementation_cmake,
+        "tests include type registration gate regression",
+    )
+    for allowed_type in [
+        "ShellAccountingPresenter",
+        "ShellAccountingStatusObject",
+        "ShellAccountingIssueListModel",
+        "ShellPositionListModel",
+    ]:
+        require(allowed_type in shell_accounting_qml_registration_source, f"registration helper registers {allowed_type}")
+    for forbidden_type in [
+        "DataServiceClient",
+        "DataServiceApi",
+        "ShellAccountingDataServiceAdapter",
+        "ShellAccountingDataServiceClientPortAdapter",
+        "DataAccess",
+        "SQLite",
+        "AccountingEngine",
+        "ShellCashSummaryObject",
+        "ShellPortfolioPnlObject",
+        "ShellBasePositionObject",
+        "ShellSniperPoolObject",
+        "ShellSniperTierListModel",
+        "createTradeDraft",
+        "brokerOrder",
+        "strategyExecute",
+    ]:
+        require(
+            forbidden_type not in shell_accounting_qml_registration_source,
+            f"registration helper does not expose {forbidden_type}",
+        )
+    require(
+        "qmlRegisterUncreatableType" in shell_accounting_qml_registration_source,
+        "registration helper uses uncreatable registration",
+    )
+    require(
+        "ETFDecisionTerminal.ShellAccounting" in shell_accounting_qml_registration_header,
+        "registration helper fixes ShellAccounting module name",
+    )
+    require(
+        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
+        "production QML has not imported ShellAccounting module after TASK-127",
+    )
+    require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-127")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

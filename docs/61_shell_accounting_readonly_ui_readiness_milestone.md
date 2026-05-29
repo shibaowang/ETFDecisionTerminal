@@ -195,3 +195,10 @@ TASK-126 adds the QML type registration implementation gate and rollback
 strategy as the final pre-registration readiness layer. It still does not
 register QML types, modify production QML, or authorize real accounting actions,
 writes, TradeDraft, trade suggestions, broker orders, or strategy execution.
+
+## TASK-127 Type Registration Implementation
+
+TASK-127 completes the first-stage read-only QML type registration after the
+v0.6 milestone. It registers only the ShellAccounting allowlist types through a
+centralized helper. Production QML is still not bound, real accounting actions
+remain unimplemented, and no-write / no-trade rules remain mandatory.

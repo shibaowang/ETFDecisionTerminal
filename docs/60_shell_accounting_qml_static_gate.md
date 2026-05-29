@@ -186,3 +186,11 @@ The QML type registration implementation gate now requires this static gate as a
 precondition. Future registration must also pass
 `shell_accounting_qml_type_registration_implementation_gate` and preserve the
 rollback / disable strategy in docs/68.
+
+## TASK-127 Type Registration Implementation
+
+TASK-127 updates the static gate expectation: centralized ShellServices
+registration is now allowed for the four read-only allowlist types, but
+production QML files still must not import `ETFDecisionTerminal.ShellAccounting`
+or bind `accountingPresenter`. Forbidden direct service, SQLite,
+AccountingEngine, write, TradeDraft, broker, and strategy tokens remain denied.

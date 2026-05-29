@@ -5,6 +5,11 @@
 
 namespace etfdt::shell_services {
 
+ShellAccountingStatusObject::ShellAccountingStatusObject(QObject* parent)
+    : QObject(parent)
+{
+}
+
 void ShellAccountingStatusObject::reset()
 {
     actionName_.clear();
@@ -45,6 +50,11 @@ const std::string& ShellAccountingStatusObject::actionName() const noexcept
     return actionName_;
 }
 
+QString ShellAccountingStatusObject::actionNameText() const
+{
+    return QString::fromStdString(actionName_);
+}
+
 ShellAccountingViewState ShellAccountingStatusObject::state() const noexcept
 {
     return state_;
@@ -53,6 +63,11 @@ ShellAccountingViewState ShellAccountingStatusObject::state() const noexcept
 const char* ShellAccountingStatusObject::stateText() const noexcept
 {
     return toString(state_);
+}
+
+QString ShellAccountingStatusObject::stateTextQml() const
+{
+    return QString::fromUtf8(stateText());
 }
 
 bool ShellAccountingStatusObject::implemented() const noexcept

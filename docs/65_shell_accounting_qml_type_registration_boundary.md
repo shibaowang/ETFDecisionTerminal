@@ -157,3 +157,13 @@ Registration remains not implemented. Future registration must pass the
 implementation gate, location gate, allowlist gate, forbidden exposure gate,
 rollback gate, and no-production-registration gate before any production type is
 registered.
+
+## TASK-127 Type Registration Implementation
+
+TASK-127 implements the first-stage registration boundary. Only
+`ShellAccountingPresenter`, `ShellAccountingStatusObject`,
+`ShellAccountingIssueListModel`, and `ShellPositionListModel` are registered,
+and they are registered as uncreatable read-only QML types under
+`ETFDecisionTerminal.ShellAccounting` 1.0. Production QML binding is still not
+implemented and forbidden service / engine / adapter / write / trade exposure
+remains denied.

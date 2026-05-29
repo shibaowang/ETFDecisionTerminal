@@ -126,7 +126,10 @@ void appendIssues(
 
 }  // namespace
 
-ShellAccountingPresenter::ShellAccountingPresenter() = default;
+ShellAccountingPresenter::ShellAccountingPresenter(QObject* parent)
+    : QObject(parent)
+{
+}
 
 bool ShellAccountingPresenter::readOnly() const noexcept
 {

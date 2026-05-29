@@ -4,22 +4,34 @@
 #include "ShellServices/ShellAccountingReadOnlyController.h"
 #include "ShellServices/ShellAccountingState.h"
 
+#include <QObject>
+#include <QString>
+
 #include <cstddef>
 #include <string>
 #include <vector>
 
 namespace etfdt::shell_services {
 
-class ShellAccountingStatusObject final {
+class ShellAccountingStatusObject final : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(QString actionNameText READ actionNameText)
+    Q_PROPERTY(QString stateTextQml READ stateTextQml)
+    Q_PROPERTY(bool implemented READ implemented)
+    Q_PROPERTY(bool readOnly READ readOnly)
+    Q_PROPERTY(bool writeEnabled READ writeEnabled)
+
 public:
-    ShellAccountingStatusObject() = default;
+    explicit ShellAccountingStatusObject(QObject* parent = nullptr);
 
     void reset();
     void applyStateSnapshot(ShellAccountingStateSnapshot snapshot);
 
     [[nodiscard]] const std::string& actionName() const noexcept;
+    [[nodiscard]] QString actionNameText() const;
     [[nodiscard]] ShellAccountingViewState state() const noexcept;
     [[nodiscard]] const char* stateText() const noexcept;
+    [[nodiscard]] QString stateTextQml() const;
     [[nodiscard]] bool implemented() const noexcept;
     [[nodiscard]] bool readOnly() const noexcept;
     [[nodiscard]] bool writeEnabled() const noexcept;

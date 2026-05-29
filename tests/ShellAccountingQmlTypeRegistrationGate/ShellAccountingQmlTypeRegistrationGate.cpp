@@ -18,7 +18,7 @@ bool hasExtension(const std::filesystem::path& path, const std::vector<std::stri
     return false;
 }
 
-std::vector<std::filesystem::path> filesUnder(
+std::vector<std::filesystem::path> collectFilesUnder(
     const std::filesystem::path& root,
     const std::vector<std::string>& extensions)
 {
@@ -52,6 +52,13 @@ std::string readTextFile(const std::filesystem::path& path)
     std::ostringstream output;
     output << input.rdbuf();
     return output.str();
+}
+
+std::vector<std::filesystem::path> filesUnder(
+    const std::filesystem::path& root,
+    const std::vector<std::string>& extensions)
+{
+    return collectFilesUnder(root, extensions);
 }
 
 std::vector<std::string> preGateTokens()
@@ -156,12 +163,12 @@ std::vector<std::string> rollbackRules()
 
 std::vector<std::filesystem::path> productionQmlFiles(const std::filesystem::path& root)
 {
-    return filesUnder(root / "apps" / "ETFDecisionShell" / "qml", {".qml", ".js"});
+    return collectFilesUnder(root / "apps" / "ETFDecisionShell" / "qml", {".qml", ".js"});
 }
 
 std::vector<std::filesystem::path> productionRegistrationFiles(const std::filesystem::path& root)
 {
-    return filesUnder(root / "apps" / "ETFDecisionShell", {".cpp", ".h", ".hpp", ".qml", ".js"});
+    return collectFilesUnder(root / "apps" / "ETFDecisionShell", {".cpp", ".h", ".hpp", ".qml", ".js"});
 }
 
 bool containsAnyToken(

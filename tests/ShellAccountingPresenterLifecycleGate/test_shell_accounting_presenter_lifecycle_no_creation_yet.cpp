@@ -8,15 +8,18 @@ int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
     const auto startupFiles = productionStartupFiles(root);
+    if (countToken(startupFiles, "ShellAccountingPresenter shellAccountingPresenter") != 1) {
+        std::cerr << "production startup must have exactly one authorized ShellAccountingPresenter creation\n";
+        return 1;
+    }
     for (const auto& token : {
              "new ShellAccountingPresenter",
              "std::make_unique<ShellAccountingPresenter",
              "std::make_shared<ShellAccountingPresenter",
-             "ShellAccountingPresenter accountingPresenter",
              "ShellAccountingPresenter* accountingPresenter",
          }) {
         if (containsToken(startupFiles, token)) {
-            std::cerr << "production startup has created ShellAccountingPresenter\n";
+            std::cerr << "production startup has unauthorized ShellAccountingPresenter creation\n";
             return 1;
         }
     }

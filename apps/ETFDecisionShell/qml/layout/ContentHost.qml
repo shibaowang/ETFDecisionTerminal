@@ -11,6 +11,7 @@ Rectangle {
     required property bool pagePlaceholder
     required property var diagnosticAdapter
     required property var readOnlyDataController
+    required property var accountingPresenter
     required property var metricsModel
     required property var actionHintModel
 
@@ -81,6 +82,7 @@ Rectangle {
         id: shellAccountingReadOnlyPage
         ShellAccountingReadOnlyPage {
             objectName: "shellAccountingReadOnlyPage"
+            accountingPresenter: root.accountingPresenter
         }
     }
 

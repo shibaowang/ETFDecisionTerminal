@@ -1,7 +1,9 @@
 #include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellNavigationController.h"
 #include "ShellCore/ShellStatusController.h"
+#include "ShellServices/ShellAccountingPresenter.h"
 #include "ShellServices/ShellAccountingQmlRegistration.h"
+#include "ShellServices/ShellAccountingReadOnlyController.h"
 #include "ShellServices/ShellReadOnlyDataController.h"
 
 #include <QGuiApplication>
@@ -10,6 +12,7 @@
 #include <QUrl>
 #include <QtQml>
 #include <iostream>
+#include <memory>
 
 int main(int argc, char* argv[])
 {
@@ -37,6 +40,11 @@ int main(int argc, char* argv[])
     etfdt::shell::ShellNavigationController navigationController;
     etfdt::shell::ShellStatusController statusController;
     etfdt::shell_services::ShellReadOnlyDataController readOnlyDataController;
+    auto shellAccountingController =
+        std::make_shared<etfdt::shell_services::ShellAccountingReadOnlyController>();
+    etfdt::shell_services::ShellAccountingPresenter shellAccountingPresenter;
+    shellAccountingPresenter.setController(shellAccountingController);
+
     if (app.arguments().contains("--help")) {
         std::cout << "ETFDecisionShell --diagnostics-mock" << '\n';
         return 0;
@@ -48,6 +56,7 @@ int main(int argc, char* argv[])
     engine.rootContext()->setContextProperty("shellNavigationController", &navigationController);
     engine.rootContext()->setContextProperty("shellStatusController", &statusController);
     engine.rootContext()->setContextProperty("readOnlyDataController", &readOnlyDataController);
+    engine.rootContext()->setContextProperty("accountingPresenter", &shellAccountingPresenter);
 
     QObject::connect(
         &engine,

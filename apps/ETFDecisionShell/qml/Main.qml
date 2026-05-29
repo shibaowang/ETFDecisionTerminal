@@ -14,12 +14,14 @@ Window {
 
     readonly property var injectedDiagnosticAdapter: diagnosticAdapter
     readonly property var injectedReadOnlyDataController: readOnlyDataController
+    readonly property var injectedAccountingPresenter: accountingPresenter
 
     AppShell {
         objectName: "appShell"
         anchors.fill: parent
         diagnosticAdapter: root.injectedDiagnosticAdapter
         readOnlyDataController: root.injectedReadOnlyDataController
+        accountingPresenter: root.injectedAccountingPresenter
         navigationController: shellNavigationController
         statusController: shellStatusController
     }

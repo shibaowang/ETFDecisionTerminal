@@ -882,3 +882,19 @@ v0.1 草案。
   trade suggestions, strategy, broker behavior, or trading UI.
 - The production QML shell must keep supporting null / Unavailable presenter
   state until a separate implementation task authorizes lifecycle wiring.
+
+## TASK-133 ShellAccounting Presenter Lifecycle Implementation
+
+- Presenter lifecycle implementation tasks must reference
+  `docs/75_shell_accounting_presenter_lifecycle_gate.md`,
+  `docs/76_shell_accounting_presenter_lifecycle_test_plan.md`, and
+  `docs/77_shell_accounting_presenter_lifecycle_implementation.md`.
+- TASK-133 authorizes only centralized `ShellAccountingPresenter` creation and
+  one `setContextProperty("accountingPresenter", ...)` exposure.
+- Presenter lifecycle is not DataService / SQLite / AccountingEngine
+  integration and is not real accounting action.
+- Do not expose DataServiceClient, DataAccess, SQLite, AccountingEngine,
+  concrete adapters, write-enabled objects, TradeDraft, trade suggestions,
+  strategy execution, broker behavior, or trading UI.
+- The ShellAccounting page must remain read-only and Unavailable-safe until a
+  separate real data task is authorized.

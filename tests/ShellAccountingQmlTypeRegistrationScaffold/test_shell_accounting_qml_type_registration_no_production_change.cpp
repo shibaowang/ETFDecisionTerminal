@@ -72,6 +72,11 @@ bool isAllowedNegativeQmlStatement(const std::string& line, const std::string& t
 
 bool isAuthorizedShellAccountingBindingToken(const std::filesystem::path& file, const std::string& token)
 {
+    const auto filename = file.filename().string();
+    if ((filename == "Main.qml" || filename == "AppShell.qml" || filename == "ContentHost.qml") &&
+        token == "accountingPresenter") {
+        return true;
+    }
     return file.filename() == "ShellAccountingReadOnlyPage.qml" &&
            (token == "ShellAccountingPresenter" || token == "accountingPresenter");
 }

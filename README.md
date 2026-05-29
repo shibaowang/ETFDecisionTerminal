@@ -212,6 +212,19 @@ created, no `accountingPresenter` context property is exposed, and the
 production QML shell continues to tolerate a null presenter. No real accounting
 action, database write, TradeDraft, trade suggestion, or trading UI is enabled.
 
+## TASK-133 ShellAccounting Presenter Lifecycle Implementation
+
+ShellAccounting presenter lifecycle and context exposure are now wired for the
+read-only production QML shell:
+
+- [docs/77_shell_accounting_presenter_lifecycle_implementation.md](docs/77_shell_accounting_presenter_lifecycle_implementation.md)
+- `tests/ShellAccountingPresenterLifecycleImplementation`
+
+The presenter is production-owned in startup and exposed through the explicit
+`accountingPresenter` context property. The UI remains Unavailable-safe and
+read-only: no real accounting action is connected, no database write is enabled,
+no TradeDraft or trade suggestion is generated, and no trading UI is shown.
+
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 
 ShellAccounting QML type registration implementation gate docs are now added:

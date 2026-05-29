@@ -8,13 +8,16 @@ int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
     const auto startupFiles = productionStartupFiles(root);
+    if (countToken(startupFiles, "setContextProperty(\"accountingPresenter\"") != 1) {
+        std::cerr << "production startup must expose exactly one authorized accountingPresenter context property\n";
+        return 1;
+    }
     for (const auto& token : {
-             "setContextProperty(\"accountingPresenter\"",
              "setContextProperty(\"ShellAccountingPresenter\"",
              "setInitialProperties",
-             "ShellAccountingReadOnlyController ",
-             "ShellAccountingDataServiceAdapter ",
-             "ShellAccountingDataServiceClientPortAdapter ",
+             "setContextProperty(\"ShellAccountingReadOnlyController\"",
+             "setContextProperty(\"ShellAccountingDataServiceAdapter\"",
+             "setContextProperty(\"ShellAccountingDataServiceClientPortAdapter\"",
          }) {
         if (containsToken(startupFiles, token)) {
             std::cerr << "production startup has exposed presenter or accounting services\n";

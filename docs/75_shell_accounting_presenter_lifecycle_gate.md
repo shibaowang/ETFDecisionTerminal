@@ -128,3 +128,12 @@ A future presenter lifecycle PR must report:
 - No TradeDraft.
 - Rollback plan.
 - All gate test results.
+
+## TASK-133 Authorized Lifecycle Implementation
+
+TASK-133 implements the authorized presenter lifecycle and context exposure.
+`ShellAccountingPresenter` is created once in `apps/ETFDecisionShell/src/main.cpp`
+and exposed once as `accountingPresenter`. This remains read-only and
+Unavailable-safe: real accounting action, DataServiceClient, SQLite,
+AccountingEngine, database writes, TradeDraft, trade suggestion, and trading UI
+are still not implemented.

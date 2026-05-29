@@ -1,0 +1,29 @@
+#pragma once
+
+#include <filesystem>
+#include <string>
+#include <vector>
+
+namespace etfdt::tests::shell_accounting_presenter_lifecycle_implementation {
+
+[[nodiscard]] std::filesystem::path sourceRoot(int argc, char** argv);
+[[nodiscard]] std::string readTextFile(const std::filesystem::path& path);
+[[nodiscard]] std::vector<std::filesystem::path> filesUnder(
+    const std::filesystem::path& root,
+    const std::vector<std::string>& extensions);
+[[nodiscard]] std::vector<std::filesystem::path> productionStartupFiles(
+    const std::filesystem::path& root);
+[[nodiscard]] std::vector<std::filesystem::path> productionQmlFiles(
+    const std::filesystem::path& root);
+[[nodiscard]] std::filesystem::path shellAccountingReadOnlyPage(
+    const std::filesystem::path& root);
+[[nodiscard]] int countTokenInFiles(
+    const std::vector<std::filesystem::path>& files,
+    const std::string& token);
+[[nodiscard]] bool containsToken(
+    const std::vector<std::filesystem::path>& files,
+    const std::string& token);
+[[nodiscard]] std::vector<std::string> forbiddenRuntimeTokens();
+[[nodiscard]] std::vector<std::string> forbiddenTradeUiTokens();
+
+}  // namespace etfdt::tests::shell_accounting_presenter_lifecycle_implementation

@@ -145,11 +145,9 @@ bool containsForbiddenExposure(
 std::vector<std::string> contextExposureTokens()
 {
     return {
-        "accountingPresenter",
-        "ShellAccountingPresenter",
-        "ShellAccountingReadOnlyController",
-        "ShellAccountingDataServiceAdapter",
-        "ShellAccountingDataServiceClientPortAdapter",
+        "setContextProperty(\"ShellAccountingReadOnlyController\"",
+        "setContextProperty(\"ShellAccountingDataServiceAdapter\"",
+        "setContextProperty(\"ShellAccountingDataServiceClientPortAdapter\"",
         "DataServiceClient",
         "AccountingEngine",
         "SQLite",

@@ -8,7 +8,7 @@ Rectangle {
 
     property ShellAccountingPresenter accountingPresenter: null
     readonly property bool presenterAvailable: accountingPresenter !== null
-    readonly property string shellState: presenterAvailable ? "READONLY" : "UNAVAILABLE"
+    readonly property string shellState: "UNAVAILABLE"
 
     radius: 8
     color: "#ffffff"
@@ -35,7 +35,7 @@ Rectangle {
             ReadOnlyStatusBadge {
                 objectName: "shellAccountingReadOnlyBadge"
                 status: root.shellState
-                textOverride: root.presenterAvailable ? "READ ONLY" : "UNAVAILABLE"
+                textOverride: root.presenterAvailable ? "UNAVAILABLE / READ ONLY" : "UNAVAILABLE"
             }
         }
 
@@ -83,8 +83,8 @@ Rectangle {
                     objectName: "shellAccountingDisabledState"
                     width: parent.width
                     text: root.presenterAvailable
-                        ? "The registered ShellAccounting module is visible to QML, but this shell still exposes no actions."
-                        : "No presenter lifecycle is wired in this task. The page shows Unavailable instead of data."
+                        ? "The production-owned ShellAccounting presenter is available, but real accounting data is not connected."
+                        : "No accounting presenter context is available. The page shows Unavailable instead of data."
                     color: "#465066"
                     font.pixelSize: 14
                     wrapMode: Text.WordWrap

@@ -90,3 +90,17 @@ context exposure implementation can be accepted.
 - [ ] TASK-131 production QML binding shell passes.
 - [ ] Rollback strategy documented.
 - [ ] User explicitly authorized presenter lifecycle implementation.
+
+## TASK-133 Post-implementation Test Matrix
+
+TASK-133 adds implementation tests for:
+
+- authorized presenter creation in production startup.
+- exactly one `accountingPresenter` context property.
+- presenter ownership and destruction order.
+- unavailable/read-only page state after context exposure.
+- no DataServiceClient, SQLite, DataAccess, or AccountingEngine access.
+- no database writes, TradeDraft generation, trade suggestion, strategy
+  execution, broker order, or trading UI.
+- rollback readiness for removing presenter construction, context exposure,
+  minimal QML plumbing, tests, and docs.

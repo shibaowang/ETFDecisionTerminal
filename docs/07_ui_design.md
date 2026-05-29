@@ -484,3 +484,11 @@ The ShellAccounting presenter lifecycle gate is now defined. The production UI
 shell still supports a null / Unavailable presenter and remains read-only. No
 presenter is created, no context property is exposed, no real data is connected,
 and no trading UI or write path is enabled.
+
+## TASK-133 Presenter Lifecycle Implementation
+
+The ShellAccounting UI shell now receives a production-owned
+`accountingPresenter` context object. The page still renders an
+Unavailable-safe, read-only state because real accounting data is not connected.
+No fake rows, trade buttons, write actions, TradeDraft generation, broker order,
+or strategy execution UI is introduced.

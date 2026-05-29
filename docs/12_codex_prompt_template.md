@@ -720,3 +720,14 @@ v0.1 草案。
 - no-write, no-trade, and the TASK-119 QML static gate remain mandatory.
 - Do not create the suggested v0.6 Git tag from an implementation task unless
   the user explicitly requests it after merge.
+
+## TASK-121 ShellAccounting QML Binding Smoke Scaffold
+
+- QML binding tasks must pass the TASK-119 static gate and TASK-121 smoke
+  scaffold.
+- Do not modify QML without explicit authorization.
+- The smoke scaffold is not QML binding and does not register QML types.
+- Future QML may bind only ShellServices read-only objects.
+- Empty vs Unavailable, issue visibility, privacy display, no TradeDraft, no
+  trade suggestion, no write action, no strategy, and no broker order remain
+  mandatory.

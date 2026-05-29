@@ -408,3 +408,9 @@ The v0.6 readiness milestone preserves ViewModel state mapping and no-trade
 rules. Five guard payloads still map to Unavailable, Empty remains distinct from
 Unavailable, issues remain visible, privacy display remains owned by
 ShellServices, and no TradeDraft or trade suggestion behavior is exposed.
+
+## TASK-121 QML Binding Smoke Scaffold
+
+The smoke scaffold now tests the future QML state matrix, guard payload
+Unavailable mapping, issue / privacy visibility, and no-trade UI rules. The
+ViewModel / Model boundary remains read-only and ShellServices-owned.

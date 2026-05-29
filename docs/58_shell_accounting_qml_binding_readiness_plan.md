@@ -192,3 +192,10 @@ ShellAccountingPresenter, status object, issue model, position model, presenter
 all guard refresh, QML smoke plan, and QML static gate are in place, but QML
 binding is still not implemented and still requires explicit user
 authorization.
+
+## TASK-121 QML Binding Smoke Scaffold
+
+QML binding smoke scaffold CTests now cover object contract, state matrix,
+guard payloads, issue / privacy, no-trade UI, and TASK-119 static gate
+dependency. These tests are a readiness input for QML binding, not QML binding
+itself.

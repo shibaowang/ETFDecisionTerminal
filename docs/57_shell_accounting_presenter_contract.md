@@ -273,3 +273,10 @@ The v0.6 readiness milestone is documented in docs/61 and the next phase review
 is documented in docs/62. The presenter is ready as a read-only boundary for a
 future QML task, but QML binding is still not implemented and must not bypass
 the presenter / model boundary or the TASK-119 static gate.
+
+## TASK-121 QML Binding Smoke Scaffold
+
+The QML binding smoke scaffold locks that future QML can only bind the
+presenter and read-only ShellAccounting models through the approved object
+contract. It does not implement QML binding and does not change presenter
+behavior.

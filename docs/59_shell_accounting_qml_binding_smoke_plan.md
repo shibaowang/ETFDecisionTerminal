@@ -177,3 +177,15 @@ The v0.6 readiness milestone is documented in
 `docs/61_shell_accounting_readonly_ui_readiness_milestone.md`. The milestone
 confirms the smoke plan is ready as a pre-QML input, but it does not implement
 QML binding, QML smoke UI tests, or real accounting actions.
+
+## TASK-121 QML Binding Smoke Scaffold
+
+TASK-121 adds QML binding smoke scaffold CTests. The scaffold automates the
+object contract, state matrix, guard payload, issue / privacy, no-trade UI, and
+static gate dependency portions of this smoke plan.
+
+This is still not a real QML page and does not register QML types. The tests
+only lock the future smoke expectations so a later QML binding task cannot
+bypass read-only ShellServices objects, Empty vs Unavailable, guard
+Unavailable mapping, issue visibility, privacy display, no-trade UI rules, or
+the TASK-119 static gate.

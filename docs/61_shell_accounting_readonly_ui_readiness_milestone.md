@@ -146,3 +146,11 @@ does not create a Git tag.
 - ShellAccountingPresenter QML registration task.
 - Real `position.list` implementation remains separate.
 - no-write, no-trade, and TASK-119 static gate remain mandatory.
+
+## TASK-121 Follow-up
+
+TASK-121 adds the first v0.6 follow-up: QML binding smoke scaffold CTests. The
+scaffold verifies future object binding, state matrix, guard payload display,
+issue / privacy, no-trade UI, and static gate dependency expectations.
+
+QML is still not wired, and real accounting actions remain unimplemented.

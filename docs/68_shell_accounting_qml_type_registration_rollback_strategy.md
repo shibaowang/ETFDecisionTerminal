@@ -61,3 +61,11 @@ startup call to the helper. Because production QML is still not bound to the
 module, rollback risk is limited to type registration availability and does not
 touch real accounting data, SQLite, DataServiceClient, writes, TradeDraft,
 trade suggestions, strategy execution, or broker order paths.
+
+## TASK-128 Startup Rollback Note
+
+TASK-128 documents the rollback expectation for future startup wiring. If a
+future production startup call breaks app launch or module import, the
+centralized call must be reverted or disabled. Fallback must not call
+`DataServiceClient`, must not fake data, must not write any database table, and
+must show Unavailable or no accounting UI.

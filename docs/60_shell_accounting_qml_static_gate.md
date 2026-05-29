@@ -194,3 +194,11 @@ registration is now allowed for the four read-only allowlist types, but
 production QML files still must not import `ETFDecisionTerminal.ShellAccounting`
 or bind `accountingPresenter`. Forbidden direct service, SQLite,
 AccountingEngine, write, TradeDraft, broker, and strategy tokens remain denied.
+
+## TASK-128 Startup Registration Static Gate Update
+
+TASK-128 adds a startup registration gate for the future production app-startup
+call. The current static position remains: production startup does not call
+`registerShellAccountingQmlTypes`, production QML does not import
+`ETFDecisionTerminal.ShellAccounting`, and no accounting page binding is
+authorized.

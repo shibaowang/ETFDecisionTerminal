@@ -167,3 +167,10 @@ and they are registered as uncreatable read-only QML types under
 `ETFDecisionTerminal.ShellAccounting` 1.0. Production QML binding is still not
 implemented and forbidden service / engine / adapter / write / trade exposure
 remains denied.
+
+## TASK-128 Startup Registration Boundary
+
+TASK-128 adds the app-startup registration gate for a future task that may call
+`registerShellAccountingQmlTypes` from production startup. This task does not
+perform that wiring. Any future startup wiring must remain centralized,
+scan-friendly, read-only, and rollbackable.

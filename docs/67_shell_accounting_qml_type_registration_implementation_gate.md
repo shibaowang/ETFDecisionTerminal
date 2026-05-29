@@ -162,3 +162,11 @@ limited to the read-only allowlist and are uncreatable from QML. Production QML
 page binding is still not implemented, and registration still does not provide
 real accounting data, write ability, TradeDraft, strategy, or broker
 integration.
+
+## TASK-128 Startup Wiring Gate
+
+TASK-128 adds the final gate before wiring the registration helper into
+production app startup. Startup wiring remains not implemented. A future task
+must keep the call centralized, avoid forbidden type exposure, preserve rollback
+or disable behavior, and continue passing TASK-119 / TASK-121 / TASK-122 /
+TASK-125 / TASK-126 / TASK-127.

@@ -255,3 +255,11 @@ registration through a centralized helper. The module import and allowlist
 registration are now test-covered, but production QML page binding still
 requires a separate authorized task and real accounting actions remain
 unimplemented.
+
+## TASK-128 Startup Registration Gate
+
+TASK-128 adds `docs/69_shell_accounting_qml_startup_registration_gate.md`,
+`docs/70_shell_accounting_qml_startup_registration_test_plan.md`, and the
+`shell_accounting_qml_startup_registration` gate tests. Startup wiring still is
+not implemented, production QML still does not import the module, and smoke
+binding remains a separate future task.

@@ -202,3 +202,10 @@ TASK-127 completes the first-stage read-only QML type registration after the
 v0.6 milestone. It registers only the ShellAccounting allowlist types through a
 centralized helper. Production QML is still not bound, real accounting actions
 remain unimplemented, and no-write / no-trade rules remain mandatory.
+
+## TASK-128 Post-Milestone Startup Gate
+
+TASK-128 adds the startup registration gate and test plan for a future app
+startup wiring task. The production app still does not call the registration
+helper, production QML still does not import the module, and no real accounting
+action or write capability is added.

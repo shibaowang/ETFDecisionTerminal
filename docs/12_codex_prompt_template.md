@@ -810,3 +810,16 @@ v0.1 草案。
   order, or strategy execution.
 - Future production QML binding must still pass TASK-119 / TASK-121 / TASK-122 /
   TASK-125 / TASK-126 / TASK-127 gates.
+
+## TASK-128 ShellAccounting QML Startup Registration Gate
+
+- Startup wiring tasks must reference
+  `docs/69_shell_accounting_qml_startup_registration_gate.md` and
+  `docs/70_shell_accounting_qml_startup_registration_test_plan.md`.
+- Do not wire `registerShellAccountingQmlTypes` into production startup without
+  explicit authorization.
+- Startup wiring is not production QML page binding and is not real accounting
+  action implementation.
+- Startup wiring must not expose `DataServiceClient`, SQLite, `DataAccess`,
+  `AccountingEngine`, adapters, concrete ports, write actions, trade actions,
+  `TradeDraft`, trade suggestions, strategy execution, or broker orders.

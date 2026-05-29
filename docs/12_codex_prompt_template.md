@@ -868,3 +868,17 @@ v0.1 草案。
   context property, and do not call DataServiceClient, SQLite, DataAccess,
   AccountingEngine, write actions, TradeDraft, trade suggestions, strategy,
   broker behavior, or trading UI.
+
+## TASK-132 ShellAccounting Presenter Lifecycle Gate
+
+- Presenter lifecycle tasks must reference
+  `docs/75_shell_accounting_presenter_lifecycle_gate.md` and
+  `docs/76_shell_accounting_presenter_lifecycle_test_plan.md`.
+- Do not create `ShellAccountingPresenter` without explicit authorization.
+- Do not expose an `accountingPresenter` context property without explicit
+  authorization.
+- Presenter lifecycle is not real accounting action and does not authorize
+  DataServiceClient, SQLite, DataAccess, AccountingEngine, writes, TradeDraft,
+  trade suggestions, strategy, broker behavior, or trading UI.
+- The production QML shell must keep supporting null / Unavailable presenter
+  state until a separate implementation task authorizes lifecycle wiring.

@@ -110,3 +110,10 @@ TASK-131 adds production QML binding implementation tests for:
   strategy execution, or trading UI.
 - rollback readiness for removing the page, ContentHost mapping, registry
   entry, QML file list entry, tests, and docs.
+
+## TASK-132 Presenter Lifecycle Gate
+
+TASK-132 adds a presenter lifecycle / context exposure gate. Future lifecycle
+implementation must pass the docs/75 and docs/76 checks, continue to tolerate a
+null presenter, avoid DataServiceClient / SQLite / AccountingEngine exposure,
+avoid writes and TradeDraft generation, and preserve rollback coverage.

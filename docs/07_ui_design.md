@@ -477,3 +477,10 @@ Unavailable-safe page. It imports `ETFDecisionTerminal.ShellAccounting` only in
 shows disabled state when no presenter lifecycle is provided. It still does not
 connect real accounting data, write paths, TradeDraft generation, trade
 suggestions, broker behavior, strategy execution, or trading UI.
+
+## TASK-132 Presenter Lifecycle Gate
+
+The ShellAccounting presenter lifecycle gate is now defined. The production UI
+shell still supports a null / Unavailable presenter and remains read-only. No
+presenter is created, no context property is exposed, no real data is connected,
+and no trading UI or write path is enabled.

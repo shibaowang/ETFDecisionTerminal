@@ -838,3 +838,16 @@ v0.1 草案。
   exposure, DataServiceClient, SQLite, DataAccess, AccountingEngine,
   write/trade exposure, TradeDraft, trade suggestion, strategy, or broker
   behavior.
+
+## TASK-130 ShellAccounting Production QML Binding Gate
+
+- Production QML binding tasks must reference
+  `docs/72_shell_accounting_production_qml_binding_gate.md` and
+  `docs/73_shell_accounting_production_qml_binding_test_plan.md`.
+- Do not modify production QML without explicit authorization.
+- Production QML binding is not real accounting action.
+- Do not add production QML imports, page routes, page components,
+  `accountingPresenter`, presenter context exposure, DataServiceClient, SQLite,
+  DataAccess, AccountingEngine, write/trade exposure, TradeDraft, trade
+  suggestion, strategy, broker behavior, or trading UI unless the task
+  explicitly authorizes them.

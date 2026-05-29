@@ -130,6 +130,12 @@ def main() -> int:
     shell_accounting_qml_startup_registration_wiring_path = (
         root / "docs" / "71_shell_accounting_qml_startup_registration_wiring.md"
     )
+    shell_accounting_production_qml_binding_gate_path = (
+        root / "docs" / "72_shell_accounting_production_qml_binding_gate.md"
+    )
+    shell_accounting_production_qml_binding_test_plan_path = (
+        root / "docs" / "73_shell_accounting_production_qml_binding_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -153,6 +159,9 @@ def main() -> int:
     )
     shell_accounting_qml_startup_registration_wiring_cmake_path = (
         root / "tests" / "ShellAccountingQmlStartupRegistrationWiring" / "CMakeLists.txt"
+    )
+    shell_accounting_production_qml_binding_gate_cmake_path = (
+        root / "tests" / "ShellAccountingProductionQmlBindingGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1118,6 +1127,12 @@ def main() -> int:
     shell_accounting_qml_startup_registration_wiring = (
         shell_accounting_qml_startup_registration_wiring_path.read_text(encoding="utf-8")
     )
+    shell_accounting_production_qml_binding_gate = (
+        shell_accounting_production_qml_binding_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_production_qml_binding_test_plan = (
+        shell_accounting_production_qml_binding_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1135,6 +1150,9 @@ def main() -> int:
     )
     shell_accounting_qml_startup_registration_wiring_cmake = (
         shell_accounting_qml_startup_registration_wiring_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_production_qml_binding_gate_cmake = (
+        shell_accounting_production_qml_binding_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5058,6 +5076,63 @@ def main() -> int:
     require(
         "ShellAccountingPresenter " not in registration_sources,
         "production startup has not created ShellAccountingPresenter",
+    )
+
+    require(
+        shell_accounting_production_qml_binding_gate_path.exists(),
+        "docs/72 production QML binding gate exists",
+    )
+    require(
+        shell_accounting_production_qml_binding_test_plan_path.exists(),
+        "docs/73 production QML binding test plan exists",
+    )
+    require(
+        "docs/72_shell_accounting_production_qml_binding_gate.md" in readme,
+        "README links docs/72",
+    )
+    require(
+        "docs/73_shell_accounting_production_qml_binding_test_plan.md" in readme,
+        "README links docs/73",
+    )
+    require(
+        "72_shell_accounting_production_qml_binding_gate.md" in docs_index,
+        "docs/README links docs/72",
+    )
+    require(
+        "73_shell_accounting_production_qml_binding_test_plan.md" in docs_index,
+        "docs/README links docs/73",
+    )
+    require("TASK-130" in shell_accounting_production_qml_binding_gate, "docs/72 mentions TASK-130")
+    require("TASK-130" in shell_accounting_production_qml_binding_test_plan, "docs/73 mentions TASK-130")
+    require("TASK-130" in codex_prompt_template, "docs/12 mentions TASK-130")
+    require(
+        "production QML binding 不等于 real accounting action" in shell_accounting_production_qml_binding_gate,
+        "docs/72 distinguishes production QML binding from real accounting action",
+    )
+    require("rollback" in shell_accounting_production_qml_binding_gate, "docs/72 includes rollback")
+    require("Test matrix" in shell_accounting_production_qml_binding_test_plan, "docs/73 includes Test matrix")
+    for ctest_name in [
+        "shell_accounting_production_qml_binding_gate",
+        "shell_accounting_production_qml_binding_no_import_yet",
+        "shell_accounting_production_qml_binding_no_page_yet",
+        "shell_accounting_production_qml_binding_no_context_exposure",
+        "shell_accounting_production_qml_binding_no_forbidden_runtime_access",
+        "shell_accounting_production_qml_binding_unavailable_policy",
+        "shell_accounting_production_qml_binding_rollback_policy",
+    ]:
+        require(ctest_name in shell_accounting_production_qml_binding_gate_cmake, f"tests include {ctest_name}")
+    require(
+        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
+        "production QML has not imported ShellAccounting module after TASK-130",
+    )
+    require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-130")
+    require(
+        'setContextProperty("accountingPresenter"' not in registration_sources,
+        "production startup has not exposed accountingPresenter after TASK-130",
+    )
+    require(
+        "ShellAccountingPresenter " not in registration_sources,
+        "production startup has not created ShellAccountingPresenter after TASK-130",
     )
 
     require(

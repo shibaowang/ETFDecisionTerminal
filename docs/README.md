@@ -250,6 +250,12 @@
   [71_shell_accounting_qml_startup_registration_wiring.md](71_shell_accounting_qml_startup_registration_wiring.md)
   records TASK-129 centralized startup wiring. Production QML still does not
   import or bind the module.
+- ShellAccounting production QML binding gate:
+  [72_shell_accounting_production_qml_binding_gate.md](72_shell_accounting_production_qml_binding_gate.md)
+  defines the final gate before any production QML import or page binding.
+- ShellAccounting production QML binding test plan:
+  [73_shell_accounting_production_qml_binding_test_plan.md](73_shell_accounting_production_qml_binding_test_plan.md)
+  defines the future production QML binding test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

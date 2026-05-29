@@ -93,6 +93,31 @@ Production QML is still not modified, no QML type is registered, no production
 QML page is implemented, no real accounting action is implemented, no database
 write is enabled, and no TradeDraft or trade suggestion is generated.
 
+## TASK-125 ShellAccounting QML Type Registration Test Scaffold
+
+ShellAccounting QML type registration test scaffold is now added under
+`tests/ShellAccountingQmlTypeRegistrationScaffold`.
+
+The scaffold fixes the future registration boundary without registering QML
+types:
+
+- first-stage allowlist for `ShellAccountingPresenter`,
+  `ShellAccountingStatusObject`, `ShellAccountingIssueListModel`, and
+  `ShellPositionListModel`.
+- forbidden type denylist for DataServiceClient, DataServiceApi, adapters,
+  concrete port, DataAccess, SQLite, AccountingEngine, StrategyEngine,
+  MarketEngine, broker/order API, and write services.
+- forbidden method / property denylist for buy/sell, TradeDraft, broker,
+  strategy, write, snapshot, and suggestion tokens.
+- future module/import boundary for `ETFDecisionTerminal.ShellAccounting`.
+- TASK-119 / TASK-121 / TASK-122 gate dependency.
+- no-production-change scan for current QML and registration code.
+
+QML type registration still requires a separate explicit task. Production QML is
+still not modified, no QML type is registered, no production QML page is
+implemented, no real accounting action is implemented, no database write is
+enabled, and no TradeDraft or trade suggestion is generated.
+
 ## TASK-115 ShellAccountingPresenter skeleton
 
 ShellServices now includes a production-side `ShellAccountingPresenter`

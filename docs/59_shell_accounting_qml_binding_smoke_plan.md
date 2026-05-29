@@ -232,3 +232,11 @@ registration test plan is
 `docs/66_shell_accounting_qml_type_registration_test_plan.md`. Registration must
 preserve the smoke plan object contract, state matrix, guard payload,
 issue/privacy, no-trade, and static gate dependency expectations.
+
+## TASK-125 Registration Scaffold
+
+QML type registration scaffold tests are now added under
+`tests/ShellAccountingQmlTypeRegistrationScaffold`. They lock the future
+registration allowlist, denylist, method/property denylist, module import
+boundary, gate dependency, and no-production-change expectations. QML type
+registration still requires separate authorization.

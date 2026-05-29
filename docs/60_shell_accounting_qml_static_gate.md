@@ -172,3 +172,10 @@ registration prerequisites. If a future registration task changes allowed
 ShellAccounting QML tokens, the TASK-119 static gate allowlist and denylist must
 be updated in the same task without weakening direct service, SQLite,
 AccountingEngine, write, or trade denials.
+
+## TASK-125 Registration Scaffold
+
+The QML type registration scaffold now depends on this static gate. Future
+registration work must keep `shell_accounting_qml_static_gate` passing and must
+also pass `shell_accounting_qml_type_registration` before any production QML
+type is registered.

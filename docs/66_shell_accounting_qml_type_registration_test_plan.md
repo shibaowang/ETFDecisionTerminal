@@ -85,3 +85,18 @@ Future registration tests should provide:
 - [ ] forbidden type denylist has been confirmed.
 - [ ] forbidden method denylist has been confirmed.
 - [ ] 用户明确授权 QML type registration.
+
+## TASK-125 Scaffold Status
+
+TASK-125 adds the test scaffold for this plan. The scaffold covers:
+
+- `shell_accounting_qml_type_registration_allowlist_scaffold`.
+- `shell_accounting_qml_type_registration_denylist_scaffold`.
+- `shell_accounting_qml_type_registration_method_denylist_scaffold`.
+- `shell_accounting_qml_type_registration_module_import_scaffold`.
+- `shell_accounting_qml_type_registration_gate_dependency`.
+- `shell_accounting_qml_type_registration_no_production_change`.
+
+Future registration implementation must pass these tests or production-equivalent
+tests. The scaffold is not production QML type registration and does not modify
+production QML.

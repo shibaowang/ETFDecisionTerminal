@@ -771,3 +771,14 @@ v0.1 草案。
   TASK-122 runtime smoke CTest.
 - QML type registration does not imply production QML page binding or real
   accounting action implementation.
+
+## TASK-125 ShellAccounting QML Type Registration Scaffold
+
+- QML type registration tasks must pass the TASK-125
+  `shell_accounting_qml_type_registration` scaffold.
+- Do not register QML types without explicit authorization.
+- QML registration must not expose DataServiceClient, SQLite, AccountingEngine,
+  DataAccess, write methods, trade methods, TradeDraft, broker order, or
+  strategy execution.
+- The TASK-125 scaffold is not production QML type registration and does not
+  authorize production QML edits.

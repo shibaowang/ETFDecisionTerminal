@@ -133,3 +133,16 @@ not be broken. If the presenter is unavailable or unconfigured, QML must show
 Unavailable through ShellServices state. It must not fallback to direct
 `DataServiceClient`, fake data, SQLite queries, write actions, `TradeDraft`,
 trade suggestions, strategy execution, or broker orders.
+
+## TASK-125 Registration Scaffold
+
+TASK-125 adds QML type registration scaffold CTests under
+`tests/ShellAccountingQmlTypeRegistrationScaffold`. The scaffold automates the
+first-stage allowlist, forbidden type denylist, forbidden method / property
+denylist, module import boundary, TASK-119 / TASK-121 / TASK-122 gate
+dependency, and no-production-change checks.
+
+Production registration is still not implemented. No QML type is registered, no
+production QML file is modified, and this scaffold does not authorize real
+accounting actions, writes, TradeDraft, trade suggestions, broker orders, or
+strategy execution.

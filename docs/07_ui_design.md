@@ -408,3 +408,11 @@ Production UI binding is still not implemented. Future accounting UI must still
 be read-only, must not show trading buttons, must keep Empty distinct from
 Unavailable, and must pass TASK-119 / TASK-121 / TASK-122 before any QML file is
 modified.
+
+## TASK-123 Production QML Binding Boundary
+
+Production QML binding boundary is now defined in docs/63, with the first-stage
+checklist in docs/64. The first production stage can only be a read-only
+placeholder / Unavailable / issue / privacy smoke. It must not show real
+accounting data, trading buttons, TradeDraft, broker order, strategy execution,
+or write actions.

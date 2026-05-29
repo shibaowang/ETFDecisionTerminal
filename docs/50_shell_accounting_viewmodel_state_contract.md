@@ -428,3 +428,10 @@ properties and verifies:
 - issue and warning visibility survives privacy mode.
 - QML reads `displayText` and does not calculate `maskedText`.
 - no trade or write affordance is present.
+
+## TASK-123 Production QML Binding Boundary
+
+Production QML boundary docs/63 and first-stage checklist docs/64 require any
+future QML to preserve the ViewModel state contract. First-stage QML is limited
+to read-only placeholder / Unavailable / issue / privacy smoke and must keep
+Empty distinct from Unavailable.

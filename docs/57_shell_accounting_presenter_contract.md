@@ -291,3 +291,11 @@ production QML type registration.
 The presenter contract remains unchanged: production QML is not wired,
 DataServiceClient is not called from QML or presenter, and no write, TradeDraft,
 trade suggestion, strategy, or broker action is exposed.
+
+## TASK-123 Production QML Binding Boundary
+
+Production QML binding boundary docs/63 and first-stage checklist docs/64 define
+how a future QML task may bind the presenter. The first stage remains read-only
+and may only expose placeholder / Unavailable / issue / privacy smoke behavior.
+Presenter binding must not expose write methods, trade actions, TradeDraft,
+strategy, broker order, or real accounting data.

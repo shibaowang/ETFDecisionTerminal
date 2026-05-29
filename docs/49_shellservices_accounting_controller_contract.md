@@ -527,3 +527,10 @@ or service clients.
 Controller behavior is unchanged. Production QML remains unwired and must not
 call the controller directly to reach DataServiceClient, SQLite, DataAccess, or
 AccountingEngine.
+
+## TASK-123 Production QML Binding Boundary
+
+Production QML binding boundary docs/63 and first-stage checklist docs/64 keep
+QML above the presenter / model boundary. Future QML must not call controller,
+adapter, concrete port, DataServiceClient, SQLite, DataAccess, or
+AccountingEngine directly.

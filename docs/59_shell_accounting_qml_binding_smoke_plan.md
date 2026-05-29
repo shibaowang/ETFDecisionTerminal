@@ -212,3 +212,14 @@ Automated smoke coverage now includes:
 This is not production QML binding. It does not modify
 `apps/ETFDecisionShell/qml`, does not register production QML types, and does
 not implement an accounting QML page.
+
+## TASK-123 Production QML Boundary
+
+Production QML binding boundary is
+`docs/63_shell_accounting_production_qml_binding_boundary.md`. The first-stage
+QML checklist is
+`docs/64_shell_accounting_first_stage_qml_binding_checklist.md`.
+
+The smoke plan remains a prerequisite. Production QML binding must still pass
+TASK-119 static gate, TASK-121 scaffold, and TASK-122 runtime smoke CTest before
+any QML file is modified.

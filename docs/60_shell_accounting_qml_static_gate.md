@@ -154,3 +154,12 @@ The static gate regression smoke checks that the TASK-119 CTests remain present:
 Test-only QML smoke is not production QML binding. Any future production QML
 binding task must still pass this static gate and receive explicit
 authorization before modifying `apps/ETFDecisionShell/qml`.
+
+## TASK-123 Production QML Boundary
+
+`docs/63_shell_accounting_production_qml_binding_boundary.md` and
+`docs/64_shell_accounting_first_stage_qml_binding_checklist.md` are production
+QML binding prerequisites. The static gate remains required for any future
+production QML binding task and must continue to reject direct
+DataServiceClient, SQLite, DataAccess, AccountingEngine, write, TradeDraft,
+broker, strategy, and accounting-scope trade UI tokens.

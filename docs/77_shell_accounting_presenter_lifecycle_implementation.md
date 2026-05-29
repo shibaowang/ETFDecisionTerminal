@@ -137,3 +137,10 @@ Connecting a real data adapter, DataService action, SQLite-backed facts query,
 AccountingEngine replay, snapshot write path, TradeDraft generation, trade
 suggestion, strategy execution, or broker order flow requires a separate
 explicit TASK with its own gates.
+
+## TASK-134 Real Data Adapter Gate
+
+TASK-134 adds the real data adapter / DataService read-only action integration
+gate. The real adapter remains unimplemented, DataService read-only actions are
+not connected, SQLite and AccountingEngine remain disconnected from the
+presenter path, and the UI remains read-only/unavailable-safe.

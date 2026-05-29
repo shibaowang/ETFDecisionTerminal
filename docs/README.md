@@ -268,6 +268,12 @@
 - ShellAccounting presenter lifecycle implementation:
   [77_shell_accounting_presenter_lifecycle_implementation.md](77_shell_accounting_presenter_lifecycle_implementation.md)
   records TASK-133 production-owned presenter lifecycle and context exposure.
+- ShellAccounting real data adapter gate:
+  [78_shell_accounting_real_data_adapter_gate.md](78_shell_accounting_real_data_adapter_gate.md)
+  defines the future read-only real data adapter / DataService action gate.
+- ShellAccounting real data adapter test plan:
+  [79_shell_accounting_real_data_adapter_test_plan.md](79_shell_accounting_real_data_adapter_test_plan.md)
+  defines the future adapter error, privacy, no-write, and rollback test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

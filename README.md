@@ -225,6 +225,21 @@ The presenter is production-owned in startup and exposed through the explicit
 read-only: no real accounting action is connected, no database write is enabled,
 no TradeDraft or trade suggestion is generated, and no trading UI is shown.
 
+## TASK-134 ShellAccounting Real Data Adapter Gate
+
+ShellAccounting real data adapter / DataService read-only action integration
+gate docs and test-only CTest coverage are now added:
+
+- [docs/78_shell_accounting_real_data_adapter_gate.md](docs/78_shell_accounting_real_data_adapter_gate.md)
+- [docs/79_shell_accounting_real_data_adapter_test_plan.md](docs/79_shell_accounting_real_data_adapter_test_plan.md)
+- `tests/ShellAccountingRealDataAdapterGate`
+
+The real data adapter is still not implemented. DataService read-only actions
+are still not implemented. The presenter remains read-only and
+Unavailable-safe: no direct SQLite access, no direct AccountingEngine access, no
+database writes, no TradeDraft or trade suggestion, and no trading UI are
+enabled.
+
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 
 ShellAccounting QML type registration implementation gate docs are now added:

@@ -492,3 +492,11 @@ The ShellAccounting UI shell now receives a production-owned
 Unavailable-safe, read-only state because real accounting data is not connected.
 No fake rows, trade buttons, write actions, TradeDraft generation, broker order,
 or strategy execution UI is introduced.
+
+## TASK-134 Real Data Adapter Gate
+
+The real data adapter gate is now defined. The UI remains read-only and
+Unavailable-safe until a separate real adapter implementation task is
+authorized. Future real data must map unavailable/error/stale states explicitly
+and must not add trade UI, write actions, TradeDraft generation, broker order,
+strategy execution, direct SQLite reads, or direct AccountingEngine calls.

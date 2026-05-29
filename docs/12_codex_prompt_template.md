@@ -898,3 +898,16 @@ v0.1 草案。
   strategy execution, broker behavior, or trading UI.
 - The ShellAccounting page must remain read-only and Unavailable-safe until a
   separate real data task is authorized.
+
+## TASK-134 ShellAccounting Real Data Adapter Gate
+
+- Real data adapter tasks must reference
+  `docs/78_shell_accounting_real_data_adapter_gate.md` and
+  `docs/79_shell_accounting_real_data_adapter_test_plan.md`.
+- Do not implement a DataService read-only action without explicit
+  authorization.
+- The real adapter is not write path and does not authorize TradeDraft,
+  strategy execution, broker order, trade suggestion, or trading UI.
+- Do not add QML direct DataServiceClient access, presenter direct SQLite
+  access, presenter direct AccountingEngine access, DataAccess bypasses, raw
+  SQL logging, sensitive payload exposure, or write-enabled actions.

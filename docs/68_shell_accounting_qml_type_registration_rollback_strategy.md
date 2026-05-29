@@ -52,3 +52,12 @@ A future implementation task may use these steps as a rollback template:
 
 This task does not execute these steps. The future implementation task must
 document its actual rollback steps.
+
+## TASK-127 Rollback Note
+
+TASK-127 keeps registration centralized in `ShellAccountingQmlRegistration`.
+Rollback can revert that helper and its CMake wiring, or remove any future app
+startup call to the helper. Because production QML is still not bound to the
+module, rollback risk is limited to type registration availability and does not
+touch real accounting data, SQLite, DataServiceClient, writes, TradeDraft,
+trade suggestions, strategy execution, or broker order paths.

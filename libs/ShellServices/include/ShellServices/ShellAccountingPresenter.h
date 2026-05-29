@@ -5,13 +5,19 @@
 #include "ShellServices/ShellAccountingStatusObject.h"
 #include "ShellServices/ShellPositionListModel.h"
 
+#include <QObject>
+
 #include <memory>
 
 namespace etfdt::shell_services {
 
-class ShellAccountingPresenter final {
+class ShellAccountingPresenter final : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(bool readOnly READ readOnly)
+    Q_PROPERTY(bool writeEnabled READ writeEnabled)
+
 public:
-    ShellAccountingPresenter();
+    explicit ShellAccountingPresenter(QObject* parent = nullptr);
 
     [[nodiscard]] bool readOnly() const noexcept;
     [[nodiscard]] bool writeEnabled() const noexcept;

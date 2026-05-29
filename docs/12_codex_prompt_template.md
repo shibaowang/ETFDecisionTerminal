@@ -795,3 +795,18 @@ v0.1 草案。
   broker order, or strategy execution.
 - TASK-126 gate is not production registration and does not authorize production
   QML edits.
+
+## TASK-127 ShellAccounting QML Type Registration Implementation
+
+- QML type registration implementation does not imply production QML page
+  binding.
+- Do not add production QML imports without an explicit task.
+- Registration is allowlist-only for `ShellAccountingPresenter`,
+  `ShellAccountingStatusObject`, `ShellAccountingIssueListModel`, and
+  `ShellPositionListModel`.
+- Use centralized registration through `ShellAccountingQmlRegistration`.
+- Do not expose DataServiceClient, SQLite, DataAccess, AccountingEngine,
+  adapter / concrete port, write methods, TradeDraft, trade suggestion, broker
+  order, or strategy execution.
+- Future production QML binding must still pass TASK-119 / TASK-121 / TASK-122 /
+  TASK-125 / TASK-126 / TASK-127 gates.

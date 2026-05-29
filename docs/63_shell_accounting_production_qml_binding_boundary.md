@@ -189,3 +189,10 @@ The QML type registration implementation gate is now another production QML
 binding prerequisite. Production QML binding must not rely on registered
 ShellAccounting types until docs/67, docs/68, and
 `shell_accounting_qml_type_registration_implementation_gate` pass.
+
+## TASK-127 Type Registration Implementation
+
+The first-stage read-only QML types are now registered through the centralized
+ShellServices helper. This does not change the production QML binding boundary:
+production QML still must not import the module or bind the presenter until a
+separate authorized production QML task.

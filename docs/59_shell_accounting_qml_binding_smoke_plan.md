@@ -247,3 +247,11 @@ The QML type registration implementation gate is now documented in docs/67, with
 rollback strategy in docs/68. Future QML binding and registration work must keep
 the smoke plan, static gate, scaffold, implementation gate, rollback strategy,
 and no-production-registration checks passing.
+
+## TASK-127 Type Registration Implementation
+
+TASK-127 implements the first-stage read-only ShellAccounting QML type
+registration through a centralized helper. The module import and allowlist
+registration are now test-covered, but production QML page binding still
+requires a separate authorized task and real accounting actions remain
+unimplemented.

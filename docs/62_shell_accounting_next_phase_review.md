@@ -128,3 +128,10 @@ TASK-126 adds implementation gate tests and rollback strategy docs. Future QML
 type registration remains separately authorized and must pass the implementation
 gate, location gate, allowlist gate, forbidden exposure gate, rollback gate, and
 no-production-registration gate.
+
+## TASK-127 Type Registration Implementation
+
+TASK-127 implements the first-stage type registration, but the next phase for
+production QML binding still requires explicit authorization. The allowed next
+UI step remains a read-only placeholder / unavailable / issue / privacy smoke,
+not real accounting data or trading UI.

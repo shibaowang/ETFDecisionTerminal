@@ -84,3 +84,10 @@ The first-stage Go / No-Go decision must also include the TASK-126
 implementation gate and rollback strategy. Registration is still a separate
 authorization step and must preserve read-only types, no forbidden exposure, and
 rollback / disable behavior.
+
+## TASK-127 Type Registration Implementation
+
+The first-stage registration Go / No-Go item is now satisfied by the centralized
+helper and module import tests. Production QML binding remains a separate
+Go / No-Go decision and still excludes real positions, cash, PnL, base position,
+sniper pool, TradeDraft, broker order, strategy execution, and write actions.

@@ -234,6 +234,11 @@
 - ShellAccounting QML type registration rollback strategy:
   [68_shell_accounting_qml_type_registration_rollback_strategy.md](68_shell_accounting_qml_type_registration_rollback_strategy.md)
   defines rollback triggers, fallback behavior, and verification after rollback.
+- ShellAccounting QML type registration implementation:
+  `libs/ShellServices/include/ShellServices/ShellAccountingQmlRegistration.h`
+  registers only the first-stage read-only allowlist types under
+  `ETFDecisionTerminal.ShellAccounting` 1.0. Production QML still does not
+  import or bind the module.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

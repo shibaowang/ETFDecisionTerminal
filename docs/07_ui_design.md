@@ -439,3 +439,12 @@ in docs/67 and docs/68. Production UI remains unwired. Future registration must
 stay read-only, preserve rollback / disable behavior, and must not expose
 DataServiceClient, SQLite, AccountingEngine, write methods, TradeDraft, trade
 suggestion, broker order, or strategy execution.
+
+## TASK-127 QML Type Registration Implementation
+
+The first-stage ShellAccounting QML type registration now exists as a
+centralized ShellServices helper. It registers only read-only, uncreatable
+allowlist types in `ETFDecisionTerminal.ShellAccounting` 1.0. UI page binding is
+still not implemented: production QML must not import the module until a
+separate authorized task, and the future first UI stage remains read-only
+placeholder / unavailable / issue / privacy smoke only.

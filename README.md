@@ -118,6 +118,24 @@ still not modified, no QML type is registered, no production QML page is
 implemented, no real accounting action is implemented, no database write is
 enabled, and no TradeDraft or trade suggestion is generated.
 
+## TASK-127 ShellAccounting QML Type Registration Implementation
+
+ShellAccounting first-stage QML type registration is now implemented through the
+centralized ShellServices helper
+`ShellAccountingQmlRegistration`. It registers only the read-only allowlist
+types under `ETFDecisionTerminal.ShellAccounting` 1.0:
+
+- `ShellAccountingPresenter`
+- `ShellAccountingStatusObject`
+- `ShellAccountingIssueListModel`
+- `ShellPositionListModel`
+
+The registration uses uncreatable QML types because ShellAccounting objects are
+provided by ShellServices and remain read-only. Production QML is still not
+modified, no production QML page imports the module, no real accounting action
+is implemented, no database write is enabled, and no TradeDraft or trade
+suggestion is generated.
+
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 
 ShellAccounting QML type registration implementation gate docs are now added:

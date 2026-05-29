@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core Qml REQUIRED)
 
 add_library(ETFShellServices STATIC
     include/ShellServices/ShellAccountingDataServiceClientPort.h
@@ -8,6 +8,7 @@ add_library(ETFShellServices STATIC
     include/ShellServices/ShellAccountingIssue.h
     include/ShellServices/ShellAccountingIssueListModel.h
     include/ShellServices/ShellAccountingPresenter.h
+    include/ShellServices/ShellAccountingQmlRegistration.h
     include/ShellServices/ShellAccountingReadOnlyController.h
     include/ShellServices/ShellAccountingServiceAdapter.h
     include/ShellServices/ShellAccountingServiceTypes.h
@@ -29,6 +30,7 @@ add_library(ETFShellServices STATIC
     src/ShellAccountingIssue.cpp
     src/ShellAccountingIssueListModel.cpp
     src/ShellAccountingPresenter.cpp
+    src/ShellAccountingQmlRegistration.cpp
     src/ShellAccountingReadOnlyController.cpp
     src/ShellAccountingServiceTypes.cpp
     src/ShellAccountingState.cpp
@@ -55,6 +57,7 @@ target_link_libraries(ETFShellServices
         ETFDecisionTerminal::CoreDomain
         ETFDecisionTerminal::Protocol
         Qt6::Core
+        Qt6::Qml
 )
 
 target_compile_features(ETFShellServices PUBLIC cxx_std_17)

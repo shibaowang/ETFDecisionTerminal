@@ -153,3 +153,12 @@ A future registration implementation PR must report:
 - rollback strategy.
 - full CTest result.
 - transport 50 repeat result.
+
+## TASK-127 Gate Result
+
+TASK-127 satisfies the first-stage implementation gate by adding centralized
+registration through `ShellAccountingQmlRegistration`. The registered types are
+limited to the read-only allowlist and are uncreatable from QML. Production QML
+page binding is still not implemented, and registration still does not provide
+real accounting data, write ability, TradeDraft, strategy, or broker
+integration.

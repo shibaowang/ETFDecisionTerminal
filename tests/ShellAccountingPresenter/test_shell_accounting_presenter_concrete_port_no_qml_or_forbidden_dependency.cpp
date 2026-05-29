@@ -84,7 +84,10 @@ int main(int argc, char** argv)
             continue;
         }
         const auto text = readFile(entry.path());
-        expectTrue(text.find("ShellAccountingPresenter") == std::string::npos, "QML does not bind accounting presenter");
+        const bool authorizedShellAccountingShell = entry.path().filename() == "ShellAccountingReadOnlyPage.qml";
+        expectTrue(
+            authorizedShellAccountingShell || text.find("ShellAccountingPresenter") == std::string::npos,
+            "QML only references accounting presenter in authorized read-only shell");
         expectTrue(text.find("ShellAccountingStatusObject") == std::string::npos, "QML does not bind accounting status");
         expectTrue(text.find("position.list") == std::string::npos, "QML does not call position.list");
         expectTrue(text.find("qmlRegisterType") == std::string::npos, "QML does not register accounting type");

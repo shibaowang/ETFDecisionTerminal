@@ -468,3 +468,12 @@ UI must be read-only, Unavailable-safe, disabled-state aware, and must not show
 trading buttons, write actions, TradeDraft generation, trade suggestions,
 strategy execution, broker order controls, or real accounting data until a
 separate task explicitly authorizes that scope.
+
+## TASK-131 Production QML Binding Shell
+
+The ShellAccounting production QML shell is now wired as a read-only,
+Unavailable-safe page. It imports `ETFDecisionTerminal.ShellAccounting` only in
+`ShellAccountingReadOnlyPage.qml`, declares a nullable presenter property, and
+shows disabled state when no presenter lifecycle is provided. It still does not
+connect real accounting data, write paths, TradeDraft generation, trade
+suggestions, broker behavior, strategy execution, or trading UI.

@@ -851,3 +851,20 @@ v0.1 草案。
   DataAccess, AccountingEngine, write/trade exposure, TradeDraft, trade
   suggestion, strategy, broker behavior, or trading UI unless the task
   explicitly authorizes them.
+
+## TASK-131 ShellAccounting Production QML Binding Implementation
+
+- Production QML binding implementation tasks must reference
+  `docs/72_shell_accounting_production_qml_binding_gate.md`,
+  `docs/73_shell_accounting_production_qml_binding_test_plan.md`, and
+  `docs/74_shell_accounting_production_qml_binding_implementation.md`.
+- TASK-131 authorizes only the read-only, unavailable-safe
+  `ShellAccountingReadOnlyPage.qml` shell.
+- The only production QML import is
+  `import ETFDecisionTerminal.ShellAccounting 1.0` in the authorized shell page.
+- The only presenter binding is a nullable
+  `property ShellAccountingPresenter accountingPresenter: null`.
+- Do not create `ShellAccountingPresenter`, do not set an accounting presenter
+  context property, and do not call DataServiceClient, SQLite, DataAccess,
+  AccountingEngine, write actions, TradeDraft, trade suggestions, strategy,
+  broker behavior, or trading UI.

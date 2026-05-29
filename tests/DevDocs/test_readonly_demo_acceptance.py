@@ -136,6 +136,9 @@ def main() -> int:
     shell_accounting_production_qml_binding_test_plan_path = (
         root / "docs" / "73_shell_accounting_production_qml_binding_test_plan.md"
     )
+    shell_accounting_production_qml_binding_implementation_path = (
+        root / "docs" / "74_shell_accounting_production_qml_binding_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -162,6 +165,9 @@ def main() -> int:
     )
     shell_accounting_production_qml_binding_gate_cmake_path = (
         root / "tests" / "ShellAccountingProductionQmlBindingGate" / "CMakeLists.txt"
+    )
+    shell_accounting_production_qml_binding_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingProductionQmlBindingImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1000,6 +1006,16 @@ def main() -> int:
     shellservices_public_header = shellservices_public_header_path.read_text(encoding="utf-8")
     shellservices_tests_cmake = shellservices_tests_cmake_path.read_text(encoding="utf-8")
     qml_sources = "\n".join(path.read_text(encoding="utf-8") for path in qml_dir.rglob("*.qml"))
+    shell_accounting_readonly_page_path = qml_dir / "pages" / "ShellAccountingReadOnlyPage.qml"
+    shell_accounting_readonly_page = (
+        shell_accounting_readonly_page_path.read_text(encoding="utf-8")
+        if shell_accounting_readonly_page_path.exists()
+        else ""
+    )
+    authorized_shell_accounting_import_count = qml_sources.count("import ETFDecisionTerminal.ShellAccounting")
+    authorized_shell_accounting_presenter_property_count = qml_sources.count(
+        "property ShellAccountingPresenter accountingPresenter: null"
+    )
     position_list_first_stage_cmake = position_list_first_stage_cmake_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_header = position_list_first_stage_scenario_header_path.read_text(encoding="utf-8")
     position_list_first_stage_scenario_source = position_list_first_stage_scenario_source_path.read_text(encoding="utf-8")
@@ -1133,6 +1149,9 @@ def main() -> int:
     shell_accounting_production_qml_binding_test_plan = (
         shell_accounting_production_qml_binding_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_production_qml_binding_implementation = (
+        shell_accounting_production_qml_binding_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1153,6 +1172,9 @@ def main() -> int:
     )
     shell_accounting_production_qml_binding_gate_cmake = (
         shell_accounting_production_qml_binding_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_production_qml_binding_implementation_cmake = (
+        shell_accounting_production_qml_binding_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -4299,7 +4321,6 @@ def main() -> int:
     require("57_shell_accounting_presenter_contract" in shellservices_accounting_controller_contract, "docs/49 references docs/57")
     require("58_shell_accounting_qml_binding_readiness_plan" in shell_accounting_viewmodel_state_contract, "docs/50 references docs/58")
     for qml_binding in [
-        "ShellAccountingPresenter",
         "ShellAccountingStatusObject",
         "ShellAccountingIssueListModel",
         "ShellPositionListModel",
@@ -4307,6 +4328,10 @@ def main() -> int:
         "PositionListReadOnlyTable",
     ]:
         require(qml_binding not in qml_sources, f"QML has not added accounting binding {qml_binding}")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
 
     require("ShellAccountingPresenter skeleton" in readme, "README mentions ShellAccountingPresenter skeleton")
     require("TASK-115" in shell_accounting_presenter_contract, "docs/57 mentions TASK-115")
@@ -4345,7 +4370,10 @@ def main() -> int:
     require("ShellAccountingDataServiceClientPortAdapter" not in presenter_sources, "Presenter avoids concrete port adapter")
     require("ShellAccountingDataServiceAdapter" not in presenter_sources, "Presenter avoids data service adapter")
     require("qmlRegisterType" not in presenter_sources, "Presenter does not register QML type")
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting presenter binding")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
 
     require(
         "presenter concrete-port integration" in readme
@@ -4392,7 +4420,10 @@ def main() -> int:
         or "DataServiceClient/DataServiceClient.h" in shell_accounting_dataservice_client_port_adapter_source,
         "only concrete port adapter may include DataServiceClient",
     )
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added presenter binding after TASK-116")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
 
     require(
         "presenter all guard actions refresh" in readme
@@ -4446,7 +4477,10 @@ def main() -> int:
         "ShellAccountingDataServiceAdapter" not in presenter_sources,
         "Presenter still avoids data service adapter after TASK-117",
     )
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added presenter binding after TASK-117")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
 
     require(shell_accounting_qml_binding_smoke_plan_path.exists(), "docs/59 QML binding smoke plan exists")
     require(shell_accounting_qml_static_gate_path.exists(), "docs/60 QML static gate exists")
@@ -4484,7 +4518,10 @@ def main() -> int:
     require("60_shell_accounting_qml_static_gate" in codex_prompt_template, "docs/12 references docs/60")
     require("59_shell_accounting_qml_binding_smoke_plan" in shell_accounting_presenter_contract, "docs/57 references docs/59")
     require("60_shell_accounting_qml_static_gate" in shell_accounting_qml_binding_readiness, "docs/58 references docs/60")
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-118")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
 
     require(
         "add_subdirectory(ShellAccountingQmlStaticGate)" in tests_cmake,
@@ -4513,7 +4550,10 @@ def main() -> int:
     )
     require("TASK-119" in codex_prompt_template, "docs/12 mentions TASK-119")
     require("ShellAccounting QML static gate CTest" in readme, "README mentions ShellAccounting QML static gate CTest")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-119")
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
 
     require(
         "v0.6 ShellAccounting Read-only UI Readiness" in readme,
@@ -4595,8 +4635,14 @@ def main() -> int:
         "ShellAccounting QML binding smoke scaffold" in readme,
         "README mentions ShellAccounting QML binding smoke scaffold",
     )
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-121")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-121")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
 
     require(
         "add_subdirectory(ShellAccountingQmlBindingSmokeRuntime)" in tests_cmake,
@@ -4622,8 +4668,14 @@ def main() -> int:
     require("TASK-122" in shell_accounting_next_phase_review, "docs/62 mentions TASK-122")
     require("TASK-122" in codex_prompt_template, "docs/12 mentions TASK-122")
     require("ShellAccounting QML smoke CTest" in readme, "README mentions ShellAccounting QML smoke CTest")
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-122")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-122")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
 
     require(shell_accounting_production_qml_boundary_path.exists(), "docs/63 production QML boundary exists")
     require(shell_accounting_first_stage_qml_checklist_path.exists(), "docs/64 first-stage QML checklist exists")
@@ -4659,8 +4711,14 @@ def main() -> int:
     require("docs/64_shell_accounting_first_stage_qml_binding_checklist.md" in codex_prompt_template, "docs/12 links docs/64")
     require("docs/63_shell_accounting_production_qml_binding_boundary.md" in shell_accounting_qml_binding_smoke_plan, "docs/59 links docs/63")
     require("docs/64_shell_accounting_first_stage_qml_binding_checklist.md" in shell_accounting_qml_static_gate, "docs/60 links docs/64")
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-123")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-123")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
 
     require(
         shell_accounting_qml_type_registration_boundary_path.exists(),
@@ -4732,8 +4790,14 @@ def main() -> int:
         "docs/66_shell_accounting_qml_type_registration_test_plan.md" in shell_accounting_qml_static_gate,
         "docs/60 links docs/66",
     )
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-124")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-124")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
 
     require("TASK-125" in shell_accounting_qml_type_registration_boundary, "docs/65 mentions TASK-125")
     require("TASK-125" in shell_accounting_qml_type_registration_test_plan, "docs/66 mentions TASK-125")
@@ -4768,8 +4832,14 @@ def main() -> int:
         "shell_accounting_qml_type_registration_no_production_change" in shell_accounting_qml_type_registration_cmake,
         "tests include type registration no production change",
     )
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-125")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-125")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
     registration_sources = ""
     for path in (root / "apps" / "ETFDecisionShell").rglob("*"):
         if path.is_file() and path.suffix in {".cpp", ".h", ".hpp"}:
@@ -4851,8 +4921,14 @@ def main() -> int:
         in shell_accounting_qml_type_registration_gate_cmake,
         "tests include type registration no production registration gate",
     )
-    require("ShellAccountingPresenter" not in qml_sources, "QML has not added accounting binding after TASK-126")
-    require("accountingPresenter" not in qml_sources, "QML has not added accountingPresenter binding after TASK-126")
+    require(
+        qml_sources.count("ShellAccountingPresenter") == 1,
+        "QML only has the authorized ShellAccountingPresenter property after TASK-131",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "QML only declares the authorized nullable accountingPresenter property after TASK-131",
+    )
     require(
         "qmlRegisterType<ShellAccountingPresenter>" not in registration_sources,
         "TASK-126 production registration has not registered ShellAccountingPresenter",
@@ -4959,10 +5035,13 @@ def main() -> int:
         "registration helper fixes ShellAccounting module name",
     )
     require(
-        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
-        "production QML has not imported ShellAccounting module after TASK-127",
+        authorized_shell_accounting_import_count == 1,
+        "production QML has exactly one authorized ShellAccounting import after TASK-131",
     )
-    require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-127")
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "production QML has exactly one authorized nullable accountingPresenter property after TASK-131",
+    )
 
     require(
         shell_accounting_qml_startup_registration_gate_path.exists(),
@@ -5036,8 +5115,8 @@ def main() -> int:
         "production startup has exactly one registerShellAccountingQmlTypes call after TASK-129",
     )
     require(
-        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
-        "production QML has not imported ShellAccounting module after TASK-128",
+        authorized_shell_accounting_import_count == 1,
+        "production QML has exactly one authorized ShellAccounting import after TASK-131",
     )
 
     require("TASK-129" in shell_accounting_qml_startup_registration_gate, "docs/69 mentions TASK-129")
@@ -5065,10 +5144,13 @@ def main() -> int:
         "production startup calls registerShellAccountingQmlTypes exactly once after TASK-129",
     )
     require(
-        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
-        "production QML has not imported ShellAccounting module after TASK-129",
+        authorized_shell_accounting_import_count == 1,
+        "production QML has exactly one authorized ShellAccounting import after TASK-131",
     )
-    require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-129")
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "production QML has exactly one authorized nullable accountingPresenter property after TASK-131",
+    )
     require(
         'setContextProperty("accountingPresenter"' not in registration_sources,
         "production startup has not exposed accountingPresenter context property",
@@ -5122,10 +5204,13 @@ def main() -> int:
     ]:
         require(ctest_name in shell_accounting_production_qml_binding_gate_cmake, f"tests include {ctest_name}")
     require(
-        "import ETFDecisionTerminal.ShellAccounting" not in qml_sources,
-        "production QML has not imported ShellAccounting module after TASK-130",
+        authorized_shell_accounting_import_count == 1,
+        "production QML has exactly one authorized ShellAccounting import after TASK-131",
     )
-    require("accountingPresenter" not in qml_sources, "production QML has not bound accountingPresenter after TASK-130")
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "production QML has exactly one authorized nullable accountingPresenter property after TASK-131",
+    )
     require(
         'setContextProperty("accountingPresenter"' not in registration_sources,
         "production startup has not exposed accountingPresenter after TASK-130",
@@ -5134,6 +5219,82 @@ def main() -> int:
         "ShellAccountingPresenter " not in registration_sources,
         "production startup has not created ShellAccountingPresenter after TASK-130",
     )
+
+    require(
+        shell_accounting_production_qml_binding_implementation_path.exists(),
+        "docs/74 production QML binding implementation exists",
+    )
+    require(
+        "docs/74_shell_accounting_production_qml_binding_implementation.md" in readme,
+        "README links docs/74",
+    )
+    require(
+        "74_shell_accounting_production_qml_binding_implementation.md" in docs_index,
+        "docs/README links docs/74",
+    )
+    require("TASK-131" in shell_accounting_production_qml_binding_gate, "docs/72 mentions TASK-131")
+    require("TASK-131" in shell_accounting_production_qml_binding_test_plan, "docs/73 mentions TASK-131")
+    require("TASK-131" in shell_accounting_production_qml_binding_implementation, "docs/74 mentions TASK-131")
+    require("TASK-131" in codex_prompt_template, "docs/12 mentions TASK-131")
+    require(
+        "ShellAccounting production QML binding shell" in readme,
+        "README mentions ShellAccounting production QML binding shell",
+    )
+    require(shell_accounting_readonly_page_path.exists(), "authorized ShellAccounting read-only QML page exists")
+    require(
+        "import ETFDecisionTerminal.ShellAccounting 1.0" in shell_accounting_readonly_page,
+        "authorized page imports ShellAccounting module",
+    )
+    require(
+        authorized_shell_accounting_import_count == 1,
+        "production QML has exactly one authorized ShellAccounting import after TASK-131",
+    )
+    require(
+        "property ShellAccountingPresenter accountingPresenter: null" in shell_accounting_readonly_page,
+        "authorized page declares nullable accountingPresenter property",
+    )
+    require(
+        authorized_shell_accounting_presenter_property_count == 1,
+        "production QML has exactly one authorized nullable accountingPresenter property after TASK-131",
+    )
+    require("shellAccountingReadOnlyPage" in shell_accounting_readonly_page, "authorized page has stable objectName")
+    require("shellAccountingUnavailablePanel" in shell_accounting_readonly_page, "authorized page has unavailable panel")
+    require("disabled" in shell_accounting_readonly_page, "authorized page displays disabled state")
+    require("unavailable-safe" in shell_accounting_readonly_page, "authorized page displays unavailable-safe state")
+    for ctest_name in [
+        "shell_accounting_production_qml_binding_implementation",
+        "shell_accounting_production_qml_binding_authorized_import",
+        "shell_accounting_production_qml_binding_authorized_page",
+        "shell_accounting_production_qml_binding_unavailable_state",
+        "shell_accounting_production_qml_binding_no_context_exposure_after_binding",
+        "shell_accounting_production_qml_binding_no_forbidden_runtime_access_after_binding",
+        "shell_accounting_production_qml_binding_no_trade_ui_after_binding",
+        "shell_accounting_production_qml_binding_rollback_ready_after_binding",
+    ]:
+        require(ctest_name in shell_accounting_production_qml_binding_implementation_cmake, f"tests include {ctest_name}")
+    require(
+        'setContextProperty("accountingPresenter"' not in registration_sources,
+        "production startup still does not expose accountingPresenter after TASK-131",
+    )
+    require(
+        "ShellAccountingPresenter " not in registration_sources,
+        "production startup still does not create ShellAccountingPresenter after TASK-131",
+    )
+    for forbidden_qml_runtime_token in [
+        "DataServiceClient",
+        "SQLite",
+        "AccountingEngine",
+        "createTradeDraft",
+        "brokerOrder",
+        "strategyExecute",
+        "writeEnabled: true",
+        "data.audit.append",
+    ]:
+        require(
+            forbidden_qml_runtime_token not in shell_accounting_readonly_page,
+            f"ShellAccounting read-only page avoids {forbidden_qml_runtime_token} after TASK-131",
+        )
+    require("rollback" in shell_accounting_production_qml_binding_implementation, "docs/74 includes rollback")
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -684,7 +684,7 @@ void testQtSummaryAndAdapter(const std::filesystem::path& tempDir)
 void testShellPageRegistry()
 {
     const auto items = etfdt::shell::ShellPageRegistry::listNavigationItems();
-    expectEqual(static_cast<int>(items.size()), 14, "ShellPageRegistry returns 14 navigation items");
+    expectEqual(static_cast<int>(items.size()), 15, "ShellPageRegistry returns 15 navigation items");
 
     std::set<std::string> keys;
     for (const auto& item : items) {
@@ -709,6 +709,14 @@ void testShellPageRegistry()
         "account_portfolio points to AccountPortfolioReadOnlyPage");
     expectTrue(!accountPortfolio->placeholder, "account_portfolio is a read-only prototype page");
 
+    const auto shellAccounting = etfdt::shell::ShellPageRegistry::metadataForKey("shell_accounting");
+    expectTrue(shellAccounting.has_value(), "shell_accounting metadata exists");
+    expectEqual(
+        shellAccounting->qmlComponent,
+        "ShellAccountingReadOnlyPage",
+        "shell_accounting points to ShellAccountingReadOnlyPage");
+    expectTrue(!shellAccounting->placeholder, "shell_accounting is a read-only unavailable-safe page");
+
     const auto strategy = etfdt::shell::ShellPageRegistry::metadataForKey("strategy");
     expectTrue(strategy.has_value(), "strategy metadata exists");
     expectEqual(
@@ -731,7 +739,7 @@ void testShellPageRegistry()
 void testShellNavigationModel()
 {
     etfdt::shell::ShellNavigationModel model;
-    expectEqual(model.rowCount(), 14, "ShellNavigationModel rowCount is 14");
+    expectEqual(model.rowCount(), 15, "ShellNavigationModel rowCount is 15");
 
     const auto roles = model.roleNames();
     expectTrue(roles.contains(etfdt::shell::ShellNavigationModel::KeyRole), "NavigationModel has key role");
@@ -758,7 +766,7 @@ void testShellNavigationController()
     etfdt::shell::ShellNavigationController controller;
     expectEqual(controller.currentPageKey().toStdString(), "dashboard", "NavigationController default key");
     expectTrue(controller.navigationModel() != nullptr, "NavigationController has navigation model");
-    expectEqual(controller.navigationModel()->rowCount(), 14, "NavigationController navigation model rowCount");
+    expectEqual(controller.navigationModel()->rowCount(), 15, "NavigationController navigation model rowCount");
 
     expectTrue(controller.selectPage(QStringLiteral("diagnostics")), "selectPage diagnostics succeeds");
     expectEqual(controller.currentPageKey().toStdString(), "diagnostics", "current key is diagnostics");
@@ -780,7 +788,7 @@ void testShellNavigationController()
 void testShellPageStatusModel()
 {
     etfdt::shell::ShellPageStatusModel model;
-    expectEqual(model.rowCount(), 14, "ShellPageStatusModel rowCount is 14");
+    expectEqual(model.rowCount(), 15, "ShellPageStatusModel rowCount is 15");
 
     const auto roles = model.roleNames();
     expectTrue(roles.contains(etfdt::shell::ShellPageStatusModel::PageKeyRole), "StatusModel has pageKey role");
@@ -810,7 +818,7 @@ void testShellPageInfoAndStatusController()
     expectTrue(controller.statusModel() != nullptr, "StatusController has status model");
     expectTrue(controller.pageInfo() != nullptr, "StatusController has pageInfo");
     expectTrue(controller.logModel() != nullptr, "StatusController has logModel");
-    expectEqual(controller.statusModel()->rowCount(), 14, "StatusController status rowCount");
+    expectEqual(controller.statusModel()->rowCount(), 15, "StatusController status rowCount");
     expectEqual(controller.pageInfo()->pageKey().toStdString(), "dashboard", "StatusController default page");
     expectEqual(controller.pageInfo()->moduleStatus().toStdString(), "PLACEHOLDER", "StatusController default module status");
 

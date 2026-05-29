@@ -94,3 +94,19 @@ task.
 - [ ] TASK-129 startup wiring passes.
 - [ ] Rollback strategy documented.
 - [ ] User explicitly authorized production QML binding.
+
+## TASK-131 Post-implementation Test Matrix
+
+TASK-131 adds production QML binding implementation tests for:
+
+- the authorized `ETFDecisionTerminal.ShellAccounting 1.0` import.
+- the authorized `ShellAccountingReadOnlyPage.qml` component.
+- the `shell_accounting` navigation entry and ContentHost mapping.
+- Unavailable / disabled / read-only default state.
+- nullable `ShellAccountingPresenter accountingPresenter: null` only.
+- no presenter creation and no accounting context exposure.
+- no DataServiceClient, SQLite, DataAccess, or AccountingEngine access.
+- no write path, TradeDraft generation, trade suggestion, broker action,
+  strategy execution, or trading UI.
+- rollback readiness for removing the page, ContentHost mapping, registry
+  entry, QML file list entry, tests, and docs.

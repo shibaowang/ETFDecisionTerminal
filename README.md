@@ -182,6 +182,22 @@ implemented, no `accountingPresenter` binding is added, no real accounting
 action is implemented, no database write is enabled, and no TradeDraft or trade
 suggestion is generated.
 
+## TASK-131 ShellAccounting Production QML Binding Shell
+
+ShellAccounting production QML binding shell is now added as a minimal read-only shell:
+
+- [docs/74_shell_accounting_production_qml_binding_implementation.md](docs/74_shell_accounting_production_qml_binding_implementation.md)
+- `apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml`
+- `tests/ShellAccountingProductionQmlBindingImplementation`
+
+The shell adds one authorized `ETFDecisionTerminal.ShellAccounting 1.0` import,
+declares only a nullable `ShellAccountingPresenter` property, and shows an
+Unavailable / disabled / read-only state when no presenter is provided. It does
+not create a presenter, does not expose a context property, does not call
+DataServiceClient, SQLite, or AccountingEngine, does not write any database
+table, does not generate TradeDraft or trade suggestions, and does not show
+trading buttons.
+
 ## TASK-126 ShellAccounting QML Type Registration Implementation Gate
 
 ShellAccounting QML type registration implementation gate docs are now added:

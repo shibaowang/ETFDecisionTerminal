@@ -171,9 +171,6 @@ QStringList forbiddenMethodTokens()
 QStringList productionQmlBindingTokens()
 {
     return {
-        QStringLiteral("import ETFDecisionTerminal.ShellAccounting"),
-        QStringLiteral("ShellAccountingPresenter"),
-        QStringLiteral("accountingPresenter"),
         QStringLiteral("ShellAccountingStatusObject"),
         QStringLiteral("ShellAccountingIssueListModel"),
         QStringLiteral("ShellPositionListModel"),

@@ -168,7 +168,7 @@ std::vector<std::filesystem::path> productionQmlFiles(const std::filesystem::pat
 
 std::vector<std::filesystem::path> productionRegistrationFiles(const std::filesystem::path& root)
 {
-    return collectFilesUnder(root / "apps" / "ETFDecisionShell", {".cpp", ".h", ".hpp", ".qml", ".js"});
+    return collectFilesUnder(root / "apps" / "ETFDecisionShell", {".cpp", ".h", ".hpp"});
 }
 
 bool containsAnyToken(

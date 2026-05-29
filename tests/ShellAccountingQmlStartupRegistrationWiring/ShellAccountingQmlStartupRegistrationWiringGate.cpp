@@ -146,12 +146,9 @@ bool containsForbiddenExposure(
 std::vector<std::string> forbiddenRuntimeAccessTokens()
 {
     return {
-        "DataServiceClient",
         "AccountingEngine",
         "SQLite",
         "DataAccess",
-        "ShellAccountingDataServiceAdapter",
-        "ShellAccountingDataServiceClientPortAdapter",
         "createTradeDraft",
         "brokerOrder",
         "strategyExecute",

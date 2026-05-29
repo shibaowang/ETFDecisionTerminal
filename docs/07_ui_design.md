@@ -500,3 +500,10 @@ Unavailable-safe until a separate real adapter implementation task is
 authorized. Future real data must map unavailable/error/stale states explicitly
 and must not add trade UI, write actions, TradeDraft generation, broker order,
 strategy execution, direct SQLite reads, or direct AccountingEngine calls.
+
+## TASK-135 Real Read-only Adapter
+
+The ShellAccounting UI can now reflect read-only adapter state through the
+production presenter path. It remains unavailable-safe and must not show trade
+UI, write actions, TradeDraft generation, trade suggestions, broker order, or
+strategy execution controls.

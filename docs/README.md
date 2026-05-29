@@ -274,6 +274,10 @@
 - ShellAccounting real data adapter test plan:
   [79_shell_accounting_real_data_adapter_test_plan.md](79_shell_accounting_real_data_adapter_test_plan.md)
   defines the future adapter error, privacy, no-write, and rollback test matrix.
+- ShellAccounting real data adapter implementation:
+  [80_shell_accounting_real_data_adapter_implementation.md](80_shell_accounting_real_data_adapter_implementation.md)
+  records TASK-135 read-only adapter wiring and its no-write/no-raw-payload
+  boundary.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

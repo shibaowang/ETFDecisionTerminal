@@ -1,6 +1,9 @@
+#include "DataServiceClient/DataServiceClient.h"
 #include "ShellCore/ShellDiagnosticQtAdapter.h"
 #include "ShellCore/ShellNavigationController.h"
 #include "ShellCore/ShellStatusController.h"
+#include "ShellServices/ShellAccountingDataServiceAdapter.h"
+#include "ShellServices/ShellAccountingDataServiceClientPortAdapter.h"
 #include "ShellServices/ShellAccountingPresenter.h"
 #include "ShellServices/ShellAccountingQmlRegistration.h"
 #include "ShellServices/ShellAccountingReadOnlyController.h"
@@ -42,6 +45,15 @@ int main(int argc, char* argv[])
     etfdt::shell_services::ShellReadOnlyDataController readOnlyDataController;
     auto shellAccountingController =
         std::make_shared<etfdt::shell_services::ShellAccountingReadOnlyController>();
+    auto shellAccountingDataServiceClient =
+        std::make_shared<etfdt::data_service_client::DataServiceClient>();
+    auto shellAccountingClientPort =
+        std::make_shared<etfdt::shell_services::ShellAccountingDataServiceClientPortAdapter>(
+            shellAccountingDataServiceClient);
+    auto shellAccountingDataServiceAdapter =
+        std::make_shared<etfdt::shell_services::ShellAccountingDataServiceAdapter>(
+            shellAccountingClientPort);
+    shellAccountingController->setServiceAdapter(shellAccountingDataServiceAdapter);
     etfdt::shell_services::ShellAccountingPresenter shellAccountingPresenter;
     shellAccountingPresenter.setController(shellAccountingController);
 

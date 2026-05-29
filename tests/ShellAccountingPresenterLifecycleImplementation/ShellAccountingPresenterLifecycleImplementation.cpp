@@ -97,10 +97,10 @@ bool containsToken(const std::vector<std::filesystem::path>& files, const std::s
 std::vector<std::string> forbiddenRuntimeTokens()
 {
     return {
-        "DataServiceClient",
         "AccountingEngine",
         "SQLite",
         "DataAccess",
+        "setContextProperty(\"DataServiceClient\"",
         "createTradeDraft",
         "brokerOrder",
         "strategyExecute",

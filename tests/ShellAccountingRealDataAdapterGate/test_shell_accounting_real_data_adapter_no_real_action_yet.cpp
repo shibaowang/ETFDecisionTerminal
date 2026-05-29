@@ -12,15 +12,24 @@ int main(int argc, char** argv)
         root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml",
     };
     const auto presenterFiles = presenterCoreFiles(root);
+    const auto startupText = readTextFile(root / "apps" / "ETFDecisionShell" / "src" / "main.cpp");
 
+    if (countTokenInFiles(startupFiles, "ShellAccountingDataServiceAdapter") == 0 ||
+        countTokenInFiles(startupFiles, "ShellAccountingDataServiceClientPortAdapter") == 0 ||
+        countTokenInFiles(startupFiles, "DataServiceClient") == 0 ||
+        countTokenInFiles(startupFiles, "setServiceAdapter(") != 1) {
+        std::cerr << "production startup must contain exactly one authorized read-only adapter wiring path\n";
+        return 1;
+    }
     for (const auto& token : {
-             "ShellAccountingDataServiceAdapter",
-             "ShellAccountingDataServiceClientPortAdapter",
-             "DataServiceClient",
-             "setServiceAdapter(",
+             "createTradeDraft",
+             "brokerOrder(",
+             "strategyExecute",
+             "data.audit.append",
+             "writeEnabled: true",
          }) {
-        if (containsTokenInFiles(startupFiles, token)) {
-            std::cerr << "production startup has real adapter wiring token `" << token << "`\n";
+        if (startupText.find(token) != std::string::npos) {
+            std::cerr << "production startup must not contain write/trade token `" << token << "`\n";
             return 1;
         }
     }

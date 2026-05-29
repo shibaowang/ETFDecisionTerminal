@@ -129,3 +129,12 @@ A future real data adapter PR must document implemented action names, adapter
 class, request/response contract, error mapping, no write path evidence, no
 SQLite direct access evidence, no AccountingEngine direct access evidence, QML
 state behavior, rollback plan, and all gate test results.
+
+## TASK-135 Implementation Update
+
+TASK-135 has implemented the authorized read-only adapter/action chain for
+`position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. The implementation remains
+not a write path, does not authorize TradeDraft or trading action, keeps QML off
+`DataServiceClient`, keeps the presenter off SQLite and AccountingEngine, and
+continues to require rollback / disable behavior for the real adapter.

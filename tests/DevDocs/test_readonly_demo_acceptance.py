@@ -154,6 +154,9 @@ def main() -> int:
     shell_accounting_real_data_adapter_test_plan_path = (
         root / "docs" / "79_shell_accounting_real_data_adapter_test_plan.md"
     )
+    shell_accounting_real_data_adapter_implementation_path = (
+        root / "docs" / "80_shell_accounting_real_data_adapter_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -192,6 +195,9 @@ def main() -> int:
     )
     shell_accounting_real_data_adapter_gate_cmake_path = (
         root / "tests" / "ShellAccountingRealDataAdapterGate" / "CMakeLists.txt"
+    )
+    shell_accounting_real_data_adapter_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingRealDataAdapterImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1191,6 +1197,9 @@ def main() -> int:
     shell_accounting_real_data_adapter_test_plan = shell_accounting_real_data_adapter_test_plan_path.read_text(
         encoding="utf-8"
     )
+    shell_accounting_real_data_adapter_implementation = (
+        shell_accounting_real_data_adapter_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1223,6 +1232,9 @@ def main() -> int:
     )
     shell_accounting_real_data_adapter_gate_cmake = (
         shell_accounting_real_data_adapter_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_real_data_adapter_implementation_cmake = (
+        shell_accounting_real_data_adapter_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5471,12 +5483,20 @@ def main() -> int:
         "docs/79 real data adapter test plan exists",
     )
     require(
+        shell_accounting_real_data_adapter_implementation_path.exists(),
+        "docs/80 real data adapter implementation exists",
+    )
+    require(
         "docs/78_shell_accounting_real_data_adapter_gate.md" in readme,
         "README links docs/78",
     )
     require(
         "docs/79_shell_accounting_real_data_adapter_test_plan.md" in readme,
         "README links docs/79",
+    )
+    require(
+        "docs/80_shell_accounting_real_data_adapter_implementation.md" in readme,
+        "README links docs/80",
     )
     require(
         "78_shell_accounting_real_data_adapter_gate.md" in docs_index,
@@ -5486,9 +5506,30 @@ def main() -> int:
         "79_shell_accounting_real_data_adapter_test_plan.md" in docs_index,
         "docs/README links docs/79",
     )
+    require(
+        "80_shell_accounting_real_data_adapter_implementation.md" in docs_index,
+        "docs/README links docs/80",
+    )
     require("TASK-134" in shell_accounting_real_data_adapter_gate, "docs/78 mentions TASK-134")
     require("TASK-134" in shell_accounting_real_data_adapter_test_plan, "docs/79 mentions TASK-134")
     require("TASK-134" in codex_prompt_template, "docs/12 mentions TASK-134")
+    require("TASK-135" in shell_accounting_real_data_adapter_gate, "docs/78 mentions TASK-135")
+    require("TASK-135" in shell_accounting_real_data_adapter_test_plan, "docs/79 mentions TASK-135")
+    require("TASK-135" in shell_accounting_real_data_adapter_implementation, "docs/80 mentions TASK-135")
+    require("TASK-135" in codex_prompt_template, "docs/12 mentions TASK-135")
+    require(
+        "ShellAccountingDataServiceAdapter" in shell_accounting_real_data_adapter_implementation,
+        "docs/80 names adapter class",
+    )
+    require(
+        "ShellAccountingDataServiceClientPortAdapter" in shell_accounting_real_data_adapter_implementation,
+        "docs/80 names concrete port adapter class",
+    )
+    require(
+        "DataServiceClient" in shell_accounting_real_data_adapter_implementation,
+        "docs/80 names DataServiceClient boundary",
+    )
+    require("rollback" in shell_accounting_real_data_adapter_implementation, "docs/80 includes rollback")
     require(
         "real adapter is not write path" in shell_accounting_real_data_adapter_gate,
         "docs/78 states real adapter is not write path",
@@ -5510,6 +5551,42 @@ def main() -> int:
             ctest_name in shell_accounting_real_data_adapter_gate_cmake,
             f"tests include {ctest_name}",
         )
+    for ctest_name in [
+        "shell_accounting_real_data_adapter_implementation",
+        "shell_accounting_real_data_adapter_authorized_readonly_actions",
+        "shell_accounting_real_data_adapter_success_mapping",
+        "shell_accounting_real_data_adapter_unavailable_mapping",
+        "shell_accounting_real_data_adapter_transport_error_mapping",
+        "shell_accounting_real_data_adapter_protocol_error_mapping",
+        "shell_accounting_real_data_adapter_timeout_mapping",
+        "shell_accounting_real_data_adapter_privacy_no_raw_payload",
+        "shell_accounting_real_data_adapter_no_write_path_after_integration",
+        "shell_accounting_real_data_adapter_no_sqlite_direct_after_integration",
+        "shell_accounting_real_data_adapter_no_accounting_engine_direct_after_integration",
+        "shell_accounting_real_data_adapter_rollback_ready_after_integration",
+    ]:
+        require(
+            ctest_name in shell_accounting_real_data_adapter_implementation_cmake,
+            f"TASK-135 tests include {ctest_name}",
+        )
+    require(
+        "ShellAccountingDataServiceAdapter" in registration_sources
+        and "ShellAccountingDataServiceClientPortAdapter" in registration_sources
+        and "DataServiceClient" in registration_sources
+        and registration_sources.count("setServiceAdapter(") == 1,
+        "production startup wires authorized read-only ShellAccounting adapter once",
+    )
+    require(
+        "DataServiceClient" not in shell_accounting_readonly_page,
+        "ShellAccounting QML still does not call DataServiceClient",
+    )
+    require(
+        "DataServiceClient/DataServiceClient.h" not in shell_accounting_presenter_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_presenter_source
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_header
+        and "DataServiceClient/DataServiceClient.h" not in shell_accounting_controller_source,
+        "presenter/controller still avoid direct DataServiceClient include",
+    )
     shell_accounting_production_path = "\n".join(
         [
             registration_sources,
@@ -5521,7 +5598,6 @@ def main() -> int:
         ]
     )
     for forbidden_service_token in [
-        "DataServiceClient",
         "SQLiteConnection",
         "sqlite3",
         "SQL SELECT",

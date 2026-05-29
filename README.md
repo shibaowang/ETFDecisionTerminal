@@ -2441,3 +2441,13 @@ broker orders are enabled.
 
 1. TASK-018：为 Watchdog 增加状态报告消费方或更细的诊断输出，但仍不做自动重启和 Windows Service。
 2. TASK-019：为 Shell / StrategyService 调用 DataServiceClient 增加更细的接口 DTO，但仍不引入 UI 或策略业务写入。
+
+## TASK-135 Real Read-only Data Adapter
+
+ShellAccounting now has an authorized read-only adapter/DataService action
+chain for `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. The UI remains read-only and
+Unavailable-safe. No database writes, TradeDraft, trade suggestion, strategy
+execution, broker order, trading buttons, direct SQLite access, or direct
+AccountingEngine calls are enabled. See
+`docs/80_shell_accounting_real_data_adapter_implementation.md`.

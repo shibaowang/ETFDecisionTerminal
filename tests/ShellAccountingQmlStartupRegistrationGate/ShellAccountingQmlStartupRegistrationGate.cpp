@@ -113,12 +113,9 @@ std::vector<std::string> rollbackPolicyTokens()
 std::vector<std::string> forbiddenExposureTokens()
 {
     return {
-        "DataServiceClient",
         "AccountingEngine",
         "SQLite",
         "DataAccess",
-        "ShellAccountingDataServiceAdapter",
-        "ShellAccountingDataServiceClientPortAdapter",
         "createTradeDraft",
         "brokerOrder",
         "strategyExecute",

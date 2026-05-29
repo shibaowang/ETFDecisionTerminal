@@ -517,3 +517,13 @@ The QML binding smoke scaffold confirms future QML must stay above the
 Presenter / ViewModel / Model boundary. It does not change controller behavior
 and does not authorize QML to call controller, adapter, concrete port, or
 DataServiceClient directly.
+
+## TASK-122 QML Smoke CTest
+
+The test-only QML smoke CTests verify that future QML can read fake read-only
+presenter/status/issue/position properties without touching controller internals
+or service clients.
+
+Controller behavior is unchanged. Production QML remains unwired and must not
+call the controller directly to reach DataServiceClient, SQLite, DataAccess, or
+AccountingEngine.

@@ -206,6 +206,10 @@
 - ShellAccounting QML binding smoke scaffold: `tests/ShellAccountingQmlBindingSmoke`
   locks object contract, state matrix, guard payload, issue / privacy,
   no-trade UI, and static gate dependency expectations before any QML binding.
+- ShellAccounting QML smoke CTest: `tests/ShellAccountingQmlBindingSmokeRuntime`
+  uses test-only inline QML to verify object availability, state display, guard
+  Unavailable display, issue visibility, privacy display, no-trade UI tokens,
+  and static gate regression. Production QML remains unwired.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

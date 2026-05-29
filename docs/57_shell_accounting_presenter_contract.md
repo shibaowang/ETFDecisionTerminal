@@ -280,3 +280,14 @@ The QML binding smoke scaffold locks that future QML can only bind the
 presenter and read-only ShellAccounting models through the approved object
 contract. It does not implement QML binding and does not change presenter
 behavior.
+
+## TASK-122 QML Smoke CTest
+
+TASK-122 adds runtime smoke CTests using test-only inline QML and fake read-only
+presenter properties. The smoke tests verify that QML can read presenter-like
+status, issues, positions, privacy display, and read-only flags without a
+production QML type registration.
+
+The presenter contract remains unchanged: production QML is not wired,
+DataServiceClient is not called from QML or presenter, and no write, TradeDraft,
+trade suggestion, strategy, or broker action is exposed.

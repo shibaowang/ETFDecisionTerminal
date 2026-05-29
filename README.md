@@ -37,6 +37,30 @@ QML remains unwired, QML static gate remains a prerequisite, no real accounting
 action is implemented, no SQLite or AccountingEngine integration is added, no
 database write is enabled, and no TradeDraft or trade suggestion is generated.
 
+## TASK-122 ShellAccounting QML Smoke CTest
+
+ShellAccounting QML smoke CTests are now added under
+`tests/ShellAccountingQmlBindingSmokeRuntime`.
+
+The runtime smoke tests use only test-only inline QML and `QVariantMap` /
+`QVariantList` objects to verify:
+
+- object availability for fake read-only presenter, status, issue, and position
+  bindings.
+- Idle / Loading / Loaded / Empty / Unavailable / Warning / Error / Stale state
+  display.
+- five guard unavailable statuses mapping to Unavailable.
+- issue visibility for code, level, message, blocking, and sourceId.
+- privacy display using `displayText` without QML calculating `maskedText`.
+- no-trade UI tokens and no write affordances.
+- dependency on TASK-119 QML static gate.
+
+This remains test-only. Production QML is still not modified, no production QML
+type is registered, no production QML page is implemented, no DataServiceClient,
+SQLite, DataAccess, or AccountingEngine path is called, and no writes,
+TradeDraft, trade suggestion, strategy execution, or broker order behavior is
+enabled.
+
 ## TASK-115 ShellAccountingPresenter skeleton
 
 ShellServices now includes a production-side `ShellAccountingPresenter`

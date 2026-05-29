@@ -396,3 +396,15 @@ Future accounting UI should pass the scaffold before QML binding: only
 ShellServices read-only objects may be bound, all UI states must be represented,
 guard payloads must show Unavailable, issues and privacy rules must remain
 visible, and no trading controls may be displayed.
+
+## TASK-122 ShellAccounting QML Smoke CTest
+
+Test-only ShellAccounting QML smoke CTests now verify the first runtime binding
+expectations with inline QML. The smoke tests cover object availability, state
+display, guard Unavailable display, issue visibility, privacy display, no-trade
+UI tokens, and static gate regression.
+
+Production UI binding is still not implemented. Future accounting UI must still
+be read-only, must not show trading buttons, must keep Empty distinct from
+Unavailable, and must pass TASK-119 / TASK-121 / TASK-122 before any QML file is
+modified.

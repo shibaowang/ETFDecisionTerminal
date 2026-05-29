@@ -731,3 +731,17 @@ v0.1 草案。
 - Empty vs Unavailable, issue visibility, privacy display, no TradeDraft, no
   trade suggestion, no write action, no strategy, and no broker order remain
   mandatory.
+
+## TASK-122 ShellAccounting QML Smoke CTest
+
+- QML binding tasks must pass the TASK-119 static gate, TASK-121 smoke
+  scaffold, and TASK-122 runtime smoke CTests.
+- TASK-122 uses test-only inline QML; it is not production QML binding.
+- Do not modify production QML without explicit authorization.
+- Do not register production ShellAccounting QML types without explicit
+  authorization.
+- Smoke QML must remain read-only and must not include buy, sell,
+  createTradeDraft, brokerOrder, strategyExecute, `data.audit.append`, or
+  `writeEnabled: true`.
+- No TradeDraft, no trade suggestion, no write action, no SQLite, and no
+  AccountingEngine access remain mandatory.

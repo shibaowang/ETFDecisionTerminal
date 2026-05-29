@@ -144,3 +144,12 @@ TASK-134 adds the real data adapter / DataService read-only action integration
 gate. The real adapter remains unimplemented, DataService read-only actions are
 not connected, SQLite and AccountingEngine remain disconnected from the
 presenter path, and the UI remains read-only/unavailable-safe.
+
+## TASK-135 Read-only Adapter Implementation
+
+TASK-135 connects the production-owned presenter/controller to the authorized
+read-only adapter chain. The presenter can now use
+`ShellAccountingDataServiceAdapter` through the controller, but it still does
+not own SQLite, DataAccess repositories, or AccountingEngine. The UI remains
+read-only/unavailable-safe and no write path, TradeDraft, trade suggestion, or
+trading UI is introduced.

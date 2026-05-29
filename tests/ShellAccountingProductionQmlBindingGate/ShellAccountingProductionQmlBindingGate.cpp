@@ -148,7 +148,7 @@ std::vector<std::string> contextExposureTokens()
         "setContextProperty(\"ShellAccountingReadOnlyController\"",
         "setContextProperty(\"ShellAccountingDataServiceAdapter\"",
         "setContextProperty(\"ShellAccountingDataServiceClientPortAdapter\"",
-        "DataServiceClient",
+        "setContextProperty(\"DataServiceClient\"",
         "AccountingEngine",
         "SQLite",
         "DataAccess",

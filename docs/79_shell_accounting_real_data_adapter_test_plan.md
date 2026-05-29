@@ -80,3 +80,13 @@ the real adapter and does not implement DataService action.
 - [ ] user explicitly authorized real data adapter implementation.
 - [ ] read-only action names approved.
 - [ ] no write path tests ready.
+
+## TASK-135 Post-implementation Matrix
+
+TASK-135 adds implementation tests for authorized read-only actions, fake
+success mapping, unavailable mapping, transport error mapping, protocol error
+mapping, timeout mapping, privacy / no raw payload exposure, no write path after
+integration, no SQLite direct access after integration, no AccountingEngine
+direct access after integration, and rollback readiness after integration.
+Rollback fallback must not fake data, must not write DB, must not generate TradeDraft,
+and must not bypass DataService with SQLite direct reads.

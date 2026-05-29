@@ -136,12 +136,12 @@ bool containsForbiddenToken(
 std::vector<std::string> forbiddenRuntimeTokens()
 {
     return {
-        "DataServiceClient",
         "AccountingEngine",
         "SQLite",
         "DataAccess",
-        "ShellAccountingDataServiceAdapter",
-        "ShellAccountingDataServiceClientPortAdapter",
+        "setContextProperty(\"DataServiceClient\"",
+        "setContextProperty(\"ShellAccountingDataServiceAdapter\"",
+        "setContextProperty(\"ShellAccountingDataServiceClientPortAdapter\"",
         "createTradeDraft",
         "brokerOrder",
         "strategyExecute",

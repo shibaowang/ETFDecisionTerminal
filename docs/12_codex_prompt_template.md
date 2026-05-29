@@ -911,3 +911,18 @@ v0.1 草案。
 - Do not add QML direct DataServiceClient access, presenter direct SQLite
   access, presenter direct AccountingEngine access, DataAccess bypasses, raw
   SQL logging, sensitive payload exposure, or write-enabled actions.
+
+## TASK-135 ShellAccounting Real Data Adapter Implementation
+
+- Real data adapter implementation tasks must reference
+  `docs/78_shell_accounting_real_data_adapter_gate.md`,
+  `docs/79_shell_accounting_real_data_adapter_test_plan.md`, and
+  `docs/80_shell_accounting_real_data_adapter_implementation.md`.
+- TASK-135 authorizes only `position.list`, `cash.summary`,
+  `portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
+- Read-only adapter integration is not a write path and does not authorize
+  TradeDraft, trade suggestions, strategy execution, broker order, or trading UI.
+- QML must not directly call `DataServiceClient`; presenter/controller must not
+  directly access SQLite, DataAccess, or AccountingEngine.
+- No raw SQL, full trade_log payload, raw transport payload, or sensitive raw
+  payload may be exposed to QML.

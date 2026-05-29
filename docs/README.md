@@ -224,6 +224,10 @@
   [66_shell_accounting_qml_type_registration_test_plan.md](66_shell_accounting_qml_type_registration_test_plan.md)
   defines the registration construction, allowlist, denylist, smoke, and static
   gate test matrix.
+- ShellAccounting QML type registration scaffold:
+  `tests/ShellAccountingQmlTypeRegistrationScaffold` fixes the first-stage type
+  allowlist, forbidden type and method/property denylists, module import
+  boundary, gate dependency, and no-production-change checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -174,3 +174,11 @@ Production QML binding still requires explicit authorization. Type registration
 must be read-only and must not expose DataServiceClient, SQLite,
 AccountingEngine, write actions, TradeDraft, trade suggestions, broker order, or
 strategy execution.
+
+## TASK-125 Registration Scaffold
+
+The QML type registration scaffold is now a production QML binding prerequisite.
+Before production QML binding can depend on registered ShellAccounting types,
+`shell_accounting_qml_type_registration` tests must pass together with
+TASK-119 static gate, TASK-121 binding smoke scaffold, and TASK-122 runtime smoke
+CTest.

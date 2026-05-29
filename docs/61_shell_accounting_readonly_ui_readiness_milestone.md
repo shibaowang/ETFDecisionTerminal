@@ -181,3 +181,10 @@ plan docs/66. QML registration still requires explicit authorization. The v0.6
 readiness milestone remains read-only: production QML is unwired, no type is
 registered, no real accounting action is implemented, and no write / TradeDraft
 / trade suggestion path is enabled.
+
+## TASK-125 Registration Scaffold
+
+TASK-125 adds the QML type registration scaffold as a post-v0.6 readiness gate.
+It does not register QML types or modify production QML. It fixes the future
+registration allowlist, denylist, module boundary, and no-production-change
+checks before any registration task is authorized.

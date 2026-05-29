@@ -70,3 +70,10 @@ the registration boundary in
 Registration still requires explicit authorization and must remain read-only,
 with no DataServiceClient, SQLite, AccountingEngine, write action, TradeDraft,
 trade suggestion, broker order, or strategy execution exposure.
+
+## TASK-125 Registration Scaffold Gate
+
+The first-stage Go / No-Go decision must include a passing
+`shell_accounting_qml_type_registration` scaffold run. That scaffold proves the
+allowed type list, forbidden type list, method/property denylist, module import
+boundary, gate dependency, and no-production-change boundary remain intact.

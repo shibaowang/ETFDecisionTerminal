@@ -424,3 +424,10 @@ test plan in docs/66. Type registration is not UI page binding. The first stage
 must remain read-only and must not expose DataServiceClient, SQLite,
 AccountingEngine, write methods, TradeDraft, trade suggestion, broker order, or
 strategy execution to QML.
+
+## TASK-125 QML Type Registration Scaffold
+
+QML type registration scaffold tests now fix the first-stage registration
+allowlist, denylist, module boundary, and no-production-change gate. Production
+UI remains unwired; the scaffold is not QML type registration and is not a QML
+page implementation.

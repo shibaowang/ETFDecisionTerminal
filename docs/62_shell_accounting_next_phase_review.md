@@ -114,3 +114,10 @@ TASK-124 adds docs/65 QML type registration boundary and docs/66 registration
 test plan. QML registration remains a separate explicitly authorized task and
 must preserve TASK-119 static gate, TASK-121 scaffold, TASK-122 runtime smoke,
 read-only type exposure, no-write, and no-trade boundaries.
+
+## TASK-125 Registration Scaffold
+
+TASK-125 adds automated scaffold tests for the future QML type registration
+task. QML registration remains separately authorized and must pass the scaffold,
+static gate, binding smoke scaffold, runtime smoke CTest, full CTest, and
+transport repeat before it can be considered ready.

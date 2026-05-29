@@ -223,3 +223,12 @@ QML checklist is
 The smoke plan remains a prerequisite. Production QML binding must still pass
 TASK-119 static gate, TASK-121 scaffold, and TASK-122 runtime smoke CTest before
 any QML file is modified.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary is
+`docs/65_shell_accounting_qml_type_registration_boundary.md`. The QML type
+registration test plan is
+`docs/66_shell_accounting_qml_type_registration_test_plan.md`. Registration must
+preserve the smoke plan object contract, state matrix, guard payload,
+issue/privacy, no-trade, and static gate dependency expectations.

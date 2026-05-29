@@ -217,3 +217,11 @@ Production QML binding boundary is docs/63. The first-stage production QML
 binding checklist is docs/64. These are required before any production QML file
 is modified. The first stage remains read-only placeholder / Unavailable /
 issue / privacy smoke only.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary is docs/65 and the registration test plan is
+docs/66. Type registration still requires explicit authorization and must pass
+TASK-119, TASK-121, and TASK-122. Registration does not authorize production QML
+pages, real accounting data, writes, TradeDraft, trade suggestions, broker
+orders, or strategy execution.

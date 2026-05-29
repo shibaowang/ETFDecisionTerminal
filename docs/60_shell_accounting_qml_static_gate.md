@@ -163,3 +163,12 @@ QML binding prerequisites. The static gate remains required for any future
 production QML binding task and must continue to reject direct
 DataServiceClient, SQLite, DataAccess, AccountingEngine, write, TradeDraft,
 broker, strategy, and accounting-scope trade UI tokens.
+
+## TASK-124 QML Type Registration Boundary
+
+`docs/65_shell_accounting_qml_type_registration_boundary.md` and
+`docs/66_shell_accounting_qml_type_registration_test_plan.md` are QML type
+registration prerequisites. If a future registration task changes allowed
+ShellAccounting QML tokens, the TASK-119 static gate allowlist and denylist must
+be updated in the same task without weakening direct service, SQLite,
+AccountingEngine, write, or trade denials.

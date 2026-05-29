@@ -416,3 +416,11 @@ checklist in docs/64. The first production stage can only be a read-only
 placeholder / Unavailable / issue / privacy smoke. It must not show real
 accounting data, trading buttons, TradeDraft, broker order, strategy execution,
 or write actions.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary is now defined in docs/65, with the registration
+test plan in docs/66. Type registration is not UI page binding. The first stage
+must remain read-only and must not expose DataServiceClient, SQLite,
+AccountingEngine, write methods, TradeDraft, trade suggestion, broker order, or
+strategy execution to QML.

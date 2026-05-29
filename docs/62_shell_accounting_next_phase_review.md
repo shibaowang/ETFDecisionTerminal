@@ -107,3 +107,10 @@ QML binding checklist. Production QML binding still requires explicit
 authorization. The first production stage must remain read-only placeholder /
 Unavailable / issue / privacy smoke and must not include real accounting data,
 trading buttons, TradeDraft, broker order, strategy execution, or write action.
+
+## TASK-124 QML Type Registration Boundary
+
+TASK-124 adds docs/65 QML type registration boundary and docs/66 registration
+test plan. QML registration remains a separate explicitly authorized task and
+must preserve TASK-119 static gate, TASK-121 scaffold, TASK-122 runtime smoke,
+read-only type exposure, no-write, and no-trade boundaries.

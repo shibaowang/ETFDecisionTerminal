@@ -164,3 +164,13 @@ Production QML integration must be reversible. If the presenter is not
 configured, the UI displays Unavailable. If a guard returns not available, the
 UI displays Unavailable. QML must not fabricate data, must not swallow issues,
 and must not fall back to direct DataServiceClient access.
+
+## TASK-124 QML Type Registration Boundary
+
+QML type registration boundary is
+`docs/65_shell_accounting_qml_type_registration_boundary.md`; registration test
+plan is `docs/66_shell_accounting_qml_type_registration_test_plan.md`.
+Production QML binding still requires explicit authorization. Type registration
+must be read-only and must not expose DataServiceClient, SQLite,
+AccountingEngine, write actions, TradeDraft, trade suggestions, broker order, or
+strategy execution.

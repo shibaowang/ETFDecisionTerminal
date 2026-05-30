@@ -9,6 +9,10 @@ ledger write, confirmed `trade_draft` status metadata, and sanitized
 trading UI, schema changes, and Shell/QML direct ledger writes remain
 unauthorized.
 
+TASK-151 update: production trading UI authorization is now gated separately.
+Confirmation remains backend-only until a future explicitly authorized UI task
+binds it through the presenter/controller/adapter/DataService boundary.
+
 ## Document Purpose
 
 TASK-149 defines the authorization gate for any future ShellAccounting

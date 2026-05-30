@@ -6,6 +6,11 @@ TASK-150 implements ShellAccounting TradeDraft confirmation inside the DataServi
 
 TASK-149 authorization gate is complete. This document records the implementation boundary, tests, rollback policy, and non-goals.
 
+TASK-151 update: production trading UI authorization is now gated separately.
+This implementation remains backend-only; production QML still does not expose
+TradeDraft creation, TradeDraft confirmation, broker order placement, strategy
+execution, or order submission.
+
 ## Confirmation Definition
 
 TradeDraft confirmation is a user-authorized ledger write from an existing draft. It is not a broker order, not automatic trading, not strategy execution, and not production trading UI. Confirmation writes the accounting ledger only after validating that the draft exists and remains confirmable.

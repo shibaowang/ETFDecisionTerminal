@@ -572,3 +572,11 @@ remains read-only, does not trigger `accounting.snapshot.write`, does not reques
 write authorization, and does not display trading buttons. Snapshot write
 persists only derived snapshot tables and does not change production QML or
 production startup.
+
+## TASK-145 Audit Write Authorization Gate
+
+The audit write authorization gate is added. The UI remains read-only, does not
+trigger audit write, does not request audit authorization, and does not display
+trading buttons. Future audit write must remain behind the DataService boundary
+and must not create a UI audit trigger unless a later task explicitly
+authorizes one.

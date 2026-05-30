@@ -157,3 +157,12 @@ requires checks for forbidden tables (`trade_log`, `trade_execution_group`,
 `trade_draft`, `audit_log`), no production QML/startup trigger, transaction
 rollback, idempotency, duplicate handling, privacy, no TradeDraft, no strategy,
 no broker order, full CTest, and transport 50 repeat.
+
+## TASK-145 Audit Write Authorization Gate
+
+TASK-145 adds a separate audit write authorization gate and test plan. Audit
+write is still not implemented, `audit_log` remains unwritten, and TASK-144
+snapshot write tests must continue to prove that snapshot write does not append
+audit rows. Future audit write tests must cover sanitized payloads,
+DataService-only coordination, rollback, idempotency, and no TradeDraft /
+strategy / broker order behavior.

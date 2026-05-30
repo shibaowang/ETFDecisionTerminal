@@ -2550,3 +2550,15 @@ transactional rollback and idempotent duplicate handling. It does not write
 still does not generate TradeDraft, trade suggestion, strategy execution, broker
 order, production QML changes, production startup changes, or trading UI. See
 `docs/94_shell_accounting_snapshot_write_implementation.md`.
+
+## TASK-145 Audit Write Authorization Gate
+
+ShellAccounting now has an audit write authorization gate and test plan. Audit
+write remains unimplemented, `audit_log` remains unwritten, and TASK-144
+snapshot write behavior is unchanged. Future audit write must be DataService
+only, explicitly authorized, sourced only from an authorized DataService write
+result, sanitized, rollback-ready, and still no TradeDraft, trade suggestion,
+strategy execution, broker order, production QML changes, production startup
+changes, or trading UI. See
+`docs/95_shell_accounting_audit_write_authorization_gate.md` and
+`docs/96_shell_accounting_audit_write_authorization_test_plan.md`.

@@ -129,3 +129,11 @@ The following remain unapproved and require separate tasks:
 - broker order
 - production QML write controls
 - schema migration
+
+## TASK-145 Audit Write Authorization Gate
+
+TASK-145 adds the audit write authorization gate after this implementation.
+Audit write remains unimplemented, `audit_log` remains unwritten by
+ShellAccounting snapshot write, and TASK-144 snapshot write behavior is
+unchanged. Future audit write must be separately authorized, DataService-only,
+sanitized, and rollback-ready.

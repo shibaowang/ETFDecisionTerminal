@@ -1048,3 +1048,21 @@ v0.1 草案。
 - Do not add production QML/startup changes, Shell/QML/Presenter write triggers,
   schema migration, TradeDraft generation, trade suggestion, strategy execution,
   broker order, or trading UI.
+
+## TASK-145 ShellAccounting Audit Write Authorization Gate
+
+- Future audit write tasks must reference
+  `docs/95_shell_accounting_audit_write_authorization_gate.md` and
+  `docs/96_shell_accounting_audit_write_authorization_test_plan.md`.
+- Audit write implementation must be a separate explicitly authorized TASK.
+- Audit input must come only from an authorized DataService write action result;
+  the current future candidate source is TASK-144 snapshot write result.
+- Audit write must be DataService-only, sanitized, transactional or explicitly
+  scoped by the future task, idempotent, rollback-ready, and disableable.
+- Do not write `audit_log`, `trade_log`, `trade_execution_group`, or
+  `trade_draft` in a gate-only task.
+- Do not expose raw SQL, full trade_log payloads, full snapshot payloads, or
+  internal stack traces in audit payloads or QML.
+- Do not add production QML/startup changes, Shell/QML/Presenter audit write
+  triggers, schema migration, TradeDraft generation, trade suggestion, strategy
+  execution, broker order, or trading UI.

@@ -182,3 +182,11 @@ authorization gate now checks this positive boundary while continuing to forbid
 `trade_log`, `trade_execution_group`, `trade_draft`, `audit_log`, production
 QML/startup write triggers, schema changes, TradeDraft generation, trade
 suggestions, strategy execution, and broker order submission.
+
+## TASK-145 Audit Write Authorization Gate
+
+TASK-145 adds the audit write authorization gate. Audit write remains
+unimplemented, `audit_log` remains forbidden for TASK-144 snapshot write, and
+snapshot write behavior remains unchanged. Future audit write must be
+DataService-only, explicitly authorized, sanitized, and sourced only from an
+authorized DataService write action result.

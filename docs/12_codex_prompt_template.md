@@ -1080,3 +1080,19 @@ v0.1 草案。
 - Do not add production QML/startup changes, Shell/QML/Presenter audit triggers,
   schema migration, TradeDraft generation, trade suggestion, strategy execution,
   broker order, or trading UI.
+
+## TASK-147 ShellAccounting TradeDraft Authorization Gate
+
+- Future TradeDraft tasks must reference
+  `docs/98_shell_accounting_tradedraft_authorization_gate.md` and
+  `docs/99_shell_accounting_tradedraft_authorization_test_plan.md`.
+- TradeDraft implementation must be a separate explicitly authorized TASK.
+- TradeDraft is not trade execution, not strategy execution, and not broker
+  order.
+- Future TradeDraft must be DataService-only, explicitly authorized, sanitized,
+  audited, idempotent, rollback-ready, and disableable.
+- Do not write `trade_draft`, `trade_log`, or `trade_execution_group` in a
+  gate-only task.
+- Do not add production QML/startup changes, Shell/QML/Presenter draft write
+  triggers, schema migration, strategy execution, broker order, trade execution,
+  or trading UI.

@@ -134,3 +134,11 @@ The following remain unapproved and require separate tasks:
 - broker order
 - production QML write controls
 - schema migration
+
+## TASK-147 Follow-up Gate
+
+TASK-147 adds the TradeDraft authorization gate. TASK-146 audit write remains
+unchanged: it writes only sanitized `audit_log` events for authorized snapshot
+write results and still does not create TradeDraft, write `trade_draft`, write
+`trade_log`, write `trade_execution_group`, execute strategy, submit broker
+orders, or expose trading UI.

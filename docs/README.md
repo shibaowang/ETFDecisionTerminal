@@ -339,6 +339,13 @@
 - ShellAccounting audit write implementation:
   [97_shell_accounting_audit_write_implementation.md](97_shell_accounting_audit_write_implementation.md)
   records TASK-146 DataService-internal sanitized audit write to `audit_log`.
+- ShellAccounting TradeDraft authorization gate:
+  [98_shell_accounting_tradedraft_authorization_gate.md](98_shell_accounting_tradedraft_authorization_gate.md)
+  defines the TASK-147 future TradeDraft authorization boundary.
+- ShellAccounting TradeDraft authorization test plan:
+  [99_shell_accounting_tradedraft_authorization_test_plan.md](99_shell_accounting_tradedraft_authorization_test_plan.md)
+  defines the TASK-147 DataService-only, sanitized, audited, no-execution
+  TradeDraft test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

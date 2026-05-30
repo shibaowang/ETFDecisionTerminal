@@ -587,3 +587,12 @@ Audit write is implemented only inside the DataService boundary. The UI remains
 read-only, does not trigger `accounting.audit.write`, does not request audit
 authorization, and does not display trading buttons. Audit write records a
 sanitized `audit_log` event for authorized snapshot write results only.
+
+## TASK-147 TradeDraft Authorization Gate
+
+The TradeDraft authorization gate is added. The UI remains read-only, does not
+create TradeDraft, does not call a draft DataService action, does not request
+draft authorization, and does not display buy, sell, order, broker, strategy,
+or trade confirmation controls. Future draft work must stay behind DataService
+authorization and must not create a UI draft trigger unless a later task
+explicitly authorizes one.

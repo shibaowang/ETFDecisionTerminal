@@ -2572,3 +2572,14 @@ It does not write `trade_log`, `trade_execution_group`, or `trade_draft`, and it
 does not modify production QML/startup, schema, TradeDraft, trade suggestions,
 strategy execution, broker orders, or trading UI. See
 `docs/97_shell_accounting_audit_write_implementation.md`.
+
+## TASK-147 TradeDraft Authorization Gate
+
+ShellAccounting now has a TradeDraft authorization gate and test plan.
+TradeDraft remains unimplemented, `trade_draft` remains unwritten, and
+`trade_log` / `trade_execution_group` remain untouched. Future TradeDraft must
+be DataService-only, explicitly authorized, sanitized, audited,
+idempotent, rollback-ready, and must not be treated as execution, strategy, or
+broker order. Production QML/startup remain unchanged. See
+`docs/98_shell_accounting_tradedraft_authorization_gate.md` and
+`docs/99_shell_accounting_tradedraft_authorization_test_plan.md`.

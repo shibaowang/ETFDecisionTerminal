@@ -138,3 +138,10 @@ TASK-137 facts query remains a read-only fallback. AccountingEngine replay,
 snapshot rebuild, snapshot write, TradeDraft generation, trade suggestions,
 strategy execution, broker order, and trading UI are still not implemented or
 authorized.
+
+## TASK-139 Read-only Replay Implementation
+
+TASK-139 adds an explicit DataService-internal read-only replay calculation
+path. This document remains the fallback record for TASK-137 SELECT-only facts
+query. Snapshot rebuild/write remains unimplemented, and Shell/QML/Presenter
+still do not directly access AccountingEngine, SQLite, or DataAccess.

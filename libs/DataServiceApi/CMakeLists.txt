@@ -19,6 +19,7 @@ target_link_libraries(ETFDataServiceApi
         ETFDecisionTerminal::Protocol
         ETFDecisionTerminal::ServiceRuntime
         ETFDecisionTerminal::DataAccess
+        ETFDecisionTerminal::AccountingEngine
 )
 
 target_compile_features(ETFDataServiceApi PUBLIC cxx_std_17)

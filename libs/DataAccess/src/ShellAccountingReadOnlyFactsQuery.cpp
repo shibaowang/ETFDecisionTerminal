@@ -63,6 +63,13 @@ constexpr std::string_view kSniperPoolSummaryReadOnlySql =
     "GROUP BY tta.account_id, tta.portfolio_id, tta.strategy_code, tta.tier_no, tta.tier_name "
     "ORDER BY tta.account_id, tta.portfolio_id, tta.strategy_code, tta.tier_no;";
 
+constexpr std::string_view kInitialCashFactsReadOnlySql =
+    "SELECT "
+    "a.id, a.initial_cash_cents, a.base_currency, COALESCE(a.updated_at_utc, a.created_at_utc) "
+    "FROM account a "
+    "WHERE (? = '' OR CAST(a.id AS TEXT) = ?) "
+    "ORDER BY a.id;";
+
 template <typename T>
 RepositoryResult<T> failure(std::string message)
 {
@@ -233,6 +240,21 @@ RepositoryResult<ShellAccountingSniperPoolTierRow> parseSniperPoolTierRow(const 
     return RepositoryResult<ShellAccountingSniperPoolTierRow>::success(std::move(value));
 }
 
+RepositoryResult<ShellAccountingInitialCashFactRow> parseInitialCashFactRow(const SqlQueryRow& row)
+{
+    if (row.size() != 4) {
+        return failure<ShellAccountingInitialCashFactRow>(
+            "initial cash facts query returned unexpected column count");
+    }
+
+    ShellAccountingInitialCashFactRow value;
+    value.accountId = std::to_string(row[0].int64Value);
+    value.amountText = formatCents(row[1].int64Value);
+    value.currency = row[2].text.empty() ? "CNY" : row[2].text;
+    value.updatedAtUtc = row[3].text;
+    return RepositoryResult<ShellAccountingInitialCashFactRow>::success(std::move(value));
+}
+
 template <typename T, typename Parser>
 RepositoryResult<std::vector<T>> loadRows(
     const std::vector<SqlQueryRow>& rows,
@@ -277,6 +299,11 @@ std::string_view shellAccountingBasePositionSummaryReadOnlySql() noexcept
 std::string_view shellAccountingSniperPoolSummaryReadOnlySql() noexcept
 {
     return kSniperPoolSummaryReadOnlySql;
+}
+
+std::string_view shellAccountingInitialCashFactsReadOnlySql() noexcept
+{
+    return kInitialCashFactsReadOnlySql;
 }
 
 RepositoryResult<std::vector<ShellAccountingPositionRow>>
@@ -342,6 +369,24 @@ ShellAccountingReadOnlyFactsQuery::loadSniperPoolTiers(
             rows.error().message);
     }
     return loadRows<ShellAccountingSniperPoolTierRow>(rows.value(), parseSniperPoolTierRow);
+}
+
+RepositoryResult<std::vector<ShellAccountingInitialCashFactRow>>
+ShellAccountingReadOnlyFactsQuery::loadInitialCashFacts(
+    const ShellAccountingFactsQueryRequest& request) const
+{
+    auto rows = queryRows(
+        std::string(kInitialCashFactsReadOnlySql),
+        {
+            request.accountId,
+            request.accountId,
+        });
+    if (!rows) {
+        return RepositoryResult<std::vector<ShellAccountingInitialCashFactRow>>::failure(
+            rows.error().errorCode,
+            rows.error().message);
+    }
+    return loadRows<ShellAccountingInitialCashFactRow>(rows.value(), parseInitialCashFactRow);
 }
 
 }  // namespace etfdt::data_access

@@ -35,7 +35,7 @@ int main(int argc, char** argv)
              "\\\"implemented\\\":true",
              "\\\"dataSourceAccessed\\\":true",
              "\\\"sqliteAccessed\\\":true",
-             "\\\"accountingEngineCalled\\\":false",
+             "\\\"accountingEngineCalled\\\":",
              "\\\"snapshotRebuilt\\\":false",
              "\\\"readOnly\\\":true",
              "\\\"writeEnabled\\\":false",
@@ -47,8 +47,6 @@ int main(int argc, char** argv)
     }
     for (const auto& token : {
              "sqlite3_",
-             "AccountingTradeFactReader",
-             "AccountingReplayEngine",
              "replayFromFacts",
          }) {
         if (actionRegion.find(token) != std::string::npos) {

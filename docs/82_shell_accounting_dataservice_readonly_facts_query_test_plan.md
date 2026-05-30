@@ -117,3 +117,10 @@ require separate authorization and tests.
 - [ ] allowed read source list approved.
 - [ ] no write SQL tests ready.
 - [ ] no AccountingEngine replay tests ready.
+
+## TASK-139 Update
+
+TASK-139 read-only replay implementation tests now cover the authorized
+DataService-only replay path while keeping this facts query plan as the
+SELECT-only fallback boundary. Snapshot rebuild/write remains separate future
+scope.

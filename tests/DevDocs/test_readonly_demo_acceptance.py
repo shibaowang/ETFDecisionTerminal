@@ -172,6 +172,9 @@ def main() -> int:
     shell_accounting_replay_snapshot_rebuild_test_plan_path = (
         root / "docs" / "85_shell_accounting_replay_snapshot_rebuild_test_plan.md"
     )
+    shell_accounting_readonly_replay_implementation_path = (
+        root / "docs" / "86_shell_accounting_readonly_replay_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -222,6 +225,9 @@ def main() -> int:
     )
     shell_accounting_replay_snapshot_rebuild_gate_cmake_path = (
         root / "tests" / "ShellAccountingReplaySnapshotRebuildGate" / "CMakeLists.txt"
+    )
+    shell_accounting_readonly_replay_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingReadOnlyReplayImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1239,6 +1245,9 @@ def main() -> int:
     shell_accounting_replay_snapshot_rebuild_test_plan = (
         shell_accounting_replay_snapshot_rebuild_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_readonly_replay_implementation = (
+        shell_accounting_readonly_replay_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1283,6 +1292,9 @@ def main() -> int:
     )
     shell_accounting_replay_snapshot_rebuild_gate_cmake = (
         shell_accounting_replay_snapshot_rebuild_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_readonly_replay_implementation_cmake = (
+        shell_accounting_readonly_replay_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -2191,7 +2203,7 @@ def main() -> int:
         '\\"writeEnabled\\":false',
         '\\"sqliteAccessed\\":true',
         '\\"snapshotRebuilt\\":false',
-        '\\"accountingEngineCalled\\":false',
+        '\\"accountingEngineCalled\\":',
         '\\"tradeDraftGenerated\\":false',
     ]:
         require(payload_token in dataservice_actions_source, f"DataService read-only payload includes {payload_token}")
@@ -5588,7 +5600,7 @@ def main() -> int:
         "ShellAccountingReadOnlyFactsQuery",
         '\\"implemented\\":true',
         '\\"sqliteAccessed\\":true',
-        '\\"accountingEngineCalled\\":false',
+        '\\"accountingEngineCalled\\":',
         '\\"snapshotRebuilt\\":false',
         '\\"tradeDraftGenerated\\":false',
     ]:
@@ -5697,6 +5709,57 @@ def main() -> int:
         and "TASK-138" in shell_accounting_dataservice_facts_query_test_plan
         and "TASK-138" in shell_accounting_dataservice_facts_query_implementation,
         "docs/81 docs/82 docs/83 mention TASK-138",
+    )
+    require(
+        shell_accounting_readonly_replay_implementation_path.exists(),
+        "docs/86 read-only replay implementation exists",
+    )
+    require(
+        "docs/86_shell_accounting_readonly_replay_implementation.md" in readme,
+        "README links docs/86",
+    )
+    require(
+        "86_shell_accounting_readonly_replay_implementation.md" in docs_index,
+        "docs/README links docs/86",
+    )
+    require("TASK-139" in shell_accounting_readonly_replay_implementation, "docs/86 mentions TASK-139")
+    require("TASK-139" in codex_prompt_template, "docs/12 mentions TASK-139")
+    for ctest_name in [
+        "shell_accounting_readonly_replay_implementation",
+        "shell_accounting_readonly_replay_dataservice_only_boundary",
+        "shell_accounting_readonly_replay_position_list_success",
+        "shell_accounting_readonly_replay_cash_summary_success",
+        "shell_accounting_readonly_replay_portfolio_pnl_summary_success",
+        "shell_accounting_readonly_replay_base_position_summary_success",
+        "shell_accounting_readonly_replay_sniper_pool_summary_success",
+        "shell_accounting_readonly_replay_missing_facts_mapping",
+        "shell_accounting_readonly_replay_missing_market_price_mapping",
+        "shell_accounting_readonly_replay_missing_fx_mapping",
+        "shell_accounting_readonly_replay_inconsistent_facts_mapping",
+        "shell_accounting_readonly_replay_no_snapshot_rebuild",
+        "shell_accounting_readonly_replay_no_snapshot_write",
+        "shell_accounting_readonly_replay_no_trade_or_strategy",
+        "shell_accounting_readonly_replay_privacy",
+        "shell_accounting_readonly_replay_rollback_ready",
+    ]:
+        require(
+            ctest_name in shell_accounting_readonly_replay_implementation_cmake,
+            f"TASK-139 tests include {ctest_name}",
+        )
+    require(
+        "AccountingReplayEngine engine" in dataservice_actions_source
+        and "calculationMode" in dataservice_actions_source
+        and "readonlyReplay" in dataservice_actions_source,
+        "DataService contains explicit read-only replay implementation",
+    )
+    require(
+        "snapshotRebuilt\":true" not in dataservice_actions_source,
+        "TASK-139 does not enable snapshot rebuild",
+    )
+    require(
+        "TASK-139" in shell_accounting_replay_snapshot_rebuild_gate
+        and "TASK-139" in shell_accounting_replay_snapshot_rebuild_test_plan,
+        "docs/84 docs/85 mention TASK-139",
     )
 
     require(

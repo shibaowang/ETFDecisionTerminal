@@ -1,5 +1,7 @@
 #include "DataServiceApi/DataServiceActions.h"
 
+#include "AccountingEngine/AccountingReplayEngine.h"
+#include "DataAccess/AccountingTradeFactReader.h"
 #include "DataServiceApi/JsonBuilders.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "Protocol/Json.h"
@@ -324,7 +326,9 @@ std::string shellAccountingPayloadPrefix(
     const char* action,
     const char* status,
     const char* dataQualityStatus,
-    bool hasRows)
+    bool hasRows,
+    bool replayExecuted = false,
+    bool accountingEngineCalled = false)
 {
     std::ostringstream stream;
     stream << "{"
@@ -333,21 +337,236 @@ std::string shellAccountingPayloadPrefix(
            << "\"implemented\":true,"
            << "\"readOnly\":true,"
            << "\"writeEnabled\":false,"
-           << "\"replayExecuted\":false,"
+           << "\"replayExecuted\":" << (replayExecuted ? "true" : "false") << ','
            << "\"snapshotRebuilt\":false,"
            << "\"dataSourceAccessed\":true,"
            << "\"sqliteAccessed\":true,"
-           << "\"accountingEngineCalled\":false,"
+           << "\"accountingEngineCalled\":" << (accountingEngineCalled ? "true" : "false") << ','
            << "\"tradeDraftGenerated\":false,"
            << "\"tradeSuggestionGenerated\":false,"
            << "\"strategyExecuted\":false,"
            << "\"brokerOrderSubmitted\":false,"
-           << "\"contractVersion\":\"0.5-readonly-facts\","
-           << "\"calculationVersion\":\"readonly-facts-query-v1\","
+           << "\"contractVersion\":"
+           << jsonStringValue(replayExecuted ? "0.6-readonly-replay" : "0.5-readonly-facts") << ','
+           << "\"calculationVersion\":"
+           << jsonStringValue(replayExecuted ? "readonly-replay-v1" : "readonly-facts-query-v1") << ','
            << "\"status\":" << jsonStringValue(status) << ','
            << "\"dataQualityStatus\":" << jsonStringValue(dataQualityStatus) << ','
            << "\"hasRows\":" << (hasRows ? "true" : "false") << ','
            << "\"stale\":false,";
+    return stream.str();
+}
+
+bool shellAccountingReplayRequested(const std::string& payloadJson)
+{
+    const auto calculationMode = extractJsonStringField(payloadJson, "calculationMode").value_or("");
+    return calculationMode == "readonlyReplay";
+}
+
+std::string removeTrailingCurrency(std::string value, const std::string& currency)
+{
+    const std::string suffix = " " + currency;
+    if (!currency.empty() && value.size() > suffix.size()
+        && value.compare(value.size() - suffix.size(), suffix.size(), suffix) == 0) {
+        value.erase(value.size() - suffix.size());
+    }
+    return value;
+}
+
+std::string portfolioForAccount(
+    const std::vector<etfdt::data_access::TradeFactRow>& tradeFacts,
+    const std::string& accountId,
+    const std::string& fallbackPortfolioId)
+{
+    if (!fallbackPortfolioId.empty()) {
+        return fallbackPortfolioId;
+    }
+    for (const auto& fact : tradeFacts) {
+        if (fact.accountId == accountId) {
+            return fact.portfolioId;
+        }
+    }
+    return {};
+}
+
+etfdt::accounting::TradeFactDto toReplayTradeFact(
+    const etfdt::data_access::TradeFactRow& row)
+{
+    return etfdt::accounting::TradeFactDto{
+        row.factId,
+        row.tradeTime,
+        row.accountId,
+        row.portfolioId,
+        row.instrumentCode,
+        row.action,
+        row.quantityText,
+        removeTrailingCurrency(row.priceText, row.currency),
+        removeTrailingCurrency(row.amountText, row.currency),
+        removeTrailingCurrency(row.feeText, row.currency),
+        removeTrailingCurrency(row.cashFlowText, row.currency),
+        row.currency.empty() ? "CNY" : row.currency,
+        row.source,
+        {},
+    };
+}
+
+std::vector<etfdt::accounting::TradeFactDto> toReplayTradeFacts(
+    const std::vector<etfdt::data_access::TradeFactRow>& rows)
+{
+    std::vector<etfdt::accounting::TradeFactDto> facts;
+    facts.reserve(rows.size());
+    for (const auto& row : rows) {
+        facts.push_back(toReplayTradeFact(row));
+    }
+    return facts;
+}
+
+std::vector<etfdt::accounting::CashFactDto> toReplayCashFacts(
+    const std::vector<etfdt::data_access::ShellAccountingInitialCashFactRow>& rows,
+    const std::vector<etfdt::data_access::TradeFactRow>& tradeFacts,
+    const etfdt::data_access::ShellAccountingFactsQueryRequest& request)
+{
+    std::vector<etfdt::accounting::CashFactDto> facts;
+    facts.reserve(rows.size());
+    for (const auto& row : rows) {
+        facts.push_back(etfdt::accounting::CashFactDto{
+            "initial-cash-" + row.accountId,
+            row.updatedAtUtc,
+            row.accountId,
+            portfolioForAccount(tradeFacts, row.accountId, request.portfolioId),
+            etfdt::accounting::CashAction::InitialCash,
+            row.amountText,
+            row.currency.empty() ? "CNY" : row.currency,
+            {},
+        });
+    }
+    return facts;
+}
+
+std::vector<std::string> requestedReplayOutputsForAction(const char* action)
+{
+    const std::string actionName(action);
+    if (actionName == "position.list") {
+        return {etfdt::accounting::RequestedReplayOutput::Positions};
+    }
+    if (actionName == "cash.summary") {
+        return {etfdt::accounting::RequestedReplayOutput::Cash};
+    }
+    if (actionName == "portfolio.pnl.summary") {
+        return {etfdt::accounting::RequestedReplayOutput::Positions,
+                etfdt::accounting::RequestedReplayOutput::Cash,
+                etfdt::accounting::RequestedReplayOutput::Pnl};
+    }
+    if (actionName == "base_position.summary") {
+        return {etfdt::accounting::RequestedReplayOutput::Positions,
+                etfdt::accounting::RequestedReplayOutput::BasePosition};
+    }
+    return {etfdt::accounting::RequestedReplayOutput::Positions,
+            etfdt::accounting::RequestedReplayOutput::SniperPool};
+}
+
+struct ShellAccountingReplayAttempt final {
+    bool requested = false;
+    bool queryFailed = false;
+    const char* queryErrorCode = "";
+    etfdt::accounting::AccountingReplayResult result;
+};
+
+ShellAccountingReplayAttempt runShellAccountingReadOnlyReplay(
+    etfdt::data_access::SQLiteConnection& connection,
+    const char* action,
+    const std::string& payloadJson)
+{
+    ShellAccountingReplayAttempt attempt;
+    attempt.requested = shellAccountingReplayRequested(payloadJson);
+    if (!attempt.requested) {
+        return attempt;
+    }
+
+    const auto request = shellAccountingQueryRequest(payloadJson);
+
+    etfdt::data_access::AccountingTradeFactReader tradeReader(connection);
+    etfdt::data_access::TradeFactQueryRequest tradeRequest;
+    tradeRequest.accountId = request.accountId;
+    tradeRequest.portfolioId = request.portfolioId;
+    const auto tradeFactsResult = tradeReader.loadTradeFacts(tradeRequest);
+    if (!tradeFactsResult) {
+        attempt.queryFailed = true;
+        attempt.queryErrorCode = "READONLY_REPLAY_TRADE_FACT_QUERY_ERROR";
+        return attempt;
+    }
+
+    etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
+    const auto initialCashFacts = factsQuery.loadInitialCashFacts(request);
+    if (!initialCashFacts) {
+        attempt.queryFailed = true;
+        attempt.queryErrorCode = "READONLY_REPLAY_INITIAL_CASH_QUERY_ERROR";
+        return attempt;
+    }
+
+    etfdt::accounting::ReplayRequestDto replayRequest;
+    replayRequest.accountId = request.accountId;
+    replayRequest.portfolioId = request.portfolioId;
+    replayRequest.requestedOutputs = requestedReplayOutputsForAction(action);
+    replayRequest.includeIssues = true;
+    replayRequest.calculationVersion = "readonly-replay-v1";
+
+    etfdt::accounting::AccountingReplayEngine engine;
+    attempt.result = engine.replayReadOnly(
+        replayRequest,
+        toReplayTradeFacts(tradeFactsResult.value().rows),
+        toReplayCashFacts(initialCashFacts.value(), tradeFactsResult.value().rows, request),
+        {},
+        {});
+    return attempt;
+}
+
+void appendReplayIssueObject(
+    std::ostringstream& stream,
+    const etfdt::accounting::AccountingIssueDto& issue)
+{
+    stream << "{"
+           << "\"level\":" << jsonStringValue(issue.level) << ','
+           << "\"code\":" << jsonStringValue(issue.code) << ','
+           << "\"message\":" << jsonStringValue(issue.message) << ','
+           << "\"blocking\":" << (issue.blocking ? "true" : "false") << ','
+           << "\"field\":" << jsonStringValue(issue.field) << ','
+           << "\"sourceId\":\"AccountingReplayEngine\""
+           << "}";
+}
+
+std::string replayIssuesJson(const std::vector<etfdt::accounting::AccountingIssueDto>& issues)
+{
+    std::ostringstream stream;
+    stream << '[';
+    for (std::size_t index = 0; index < issues.size(); ++index) {
+        if (index != 0U) {
+            stream << ',';
+        }
+        appendReplayIssueObject(stream, issues[index]);
+    }
+    stream << ']';
+    return stream.str();
+}
+
+std::string shellAccountingReplayErrorPayload(
+    const char* action,
+    const char* errorCode)
+{
+    std::ostringstream stream;
+    stream << shellAccountingPayloadPrefix(action, "QUERY_ERROR", "ERROR", false, false, false)
+           << "\"message\":\"ShellAccounting read-only replay input query failed.\","
+           << "\"issues\":[";
+    appendIssueObject(
+        stream,
+        "ERROR",
+        errorCode,
+        "ShellAccounting read-only replay input query failed without exposing raw SQL or payload.",
+        true);
+    stream << "],\"warnings\":[],\"errors\":[],"
+           << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+           << "\"rawReplayPayloadExposed\":false}"
+           << "}";
     return stream.str();
 }
 
@@ -475,6 +694,88 @@ void writeSniperPoolTierRow(
     appendJsonField(stream, "allocatedAmountText", row.allocatedAmountText, comma);
     appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
     stream << '}';
+}
+
+void writeReplayPositionRow(
+    std::ostringstream& stream,
+    const etfdt::accounting::PositionSummaryDto& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "instrumentCode", row.instrumentCode, comma);
+    appendJsonField(stream, "quantityText", row.quantityText, comma);
+    appendJsonField(stream, "costAmountText", row.costAmountText, comma);
+    appendJsonField(stream, "costPriceText", row.costPriceText, comma);
+    appendJsonField(stream, "marketValueText", row.marketValueText, comma);
+    appendJsonField(stream, "unrealizedPnlText", row.unrealizedPnlText, comma);
+    appendJsonField(stream, "currency", row.currency, comma);
+    appendJsonField(stream, "dataQualityStatus", row.dataQualityStatus, comma);
+    stream << '}';
+}
+
+void writeReplayCashSummary(
+    std::ostringstream& stream,
+    const etfdt::accounting::CashSummaryDto& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "currency", row.currency, comma);
+    appendJsonField(stream, "cashBalanceText", row.cashBalanceText, comma);
+    appendJsonField(stream, "dataQualityStatus", row.dataQualityStatus, comma);
+    stream << '}';
+}
+
+void writeReplayPortfolioPnl(
+    std::ostringstream& stream,
+    const etfdt::accounting::PortfolioPnlDto& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "currency", row.currency, comma);
+    appendJsonField(stream, "realizedPnlText", row.realizedPnlText, comma);
+    appendJsonField(stream, "unrealizedPnlText", row.unrealizedPnlText, comma);
+    appendJsonField(stream, "totalAssetsText", row.totalAssetsText, comma);
+    appendJsonField(stream, "totalPnlText", row.totalPnlText, comma);
+    appendJsonField(stream, "dataQualityStatus", row.dataQualityStatus, comma);
+    stream << '}';
+}
+
+std::string replayDataQualityStatus(const etfdt::accounting::AccountingReplayResult& result)
+{
+    if (!result.positionList.dataQualityStatus.empty()) {
+        return result.positionList.dataQualityStatus;
+    }
+    if (result.hasCashSummary && !result.cashSummary.dataQualityStatus.empty()) {
+        return result.cashSummary.dataQualityStatus;
+    }
+    if (result.hasPortfolioPnl && !result.portfolioPnl.dataQualityStatus.empty()) {
+        return result.portfolioPnl.dataQualityStatus;
+    }
+    return result.status.empty() ? "UNKNOWN" : result.status;
+}
+
+bool replayHasBlockingIssue(const etfdt::accounting::AccountingReplayResult& result)
+{
+    for (const auto& issue : result.issues) {
+        if (issue.blocking) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::string replayStatusForPayload(const etfdt::accounting::AccountingReplayResult& result)
+{
+    if (result.status == etfdt::accounting::AccountingReplayStatus::Ok
+        || result.status == etfdt::accounting::AccountingReplayStatus::Warning) {
+        return result.status;
+    }
+    return replayHasBlockingIssue(result) ? "ERROR" : "UNAVAILABLE";
 }
 
 struct AuditPayloadParseResult final {
@@ -911,6 +1212,31 @@ etfdt::protocol::ProtocolResponse handlePositionList(
             "position.list payload must be a JSON object");
     }
 
+    const auto replay = runShellAccountingReadOnlyReplay(connection, "position.list", context.request.payloadJson);
+    if (replay.requested) {
+        if (replay.queryFailed) {
+            return successResponse(context, shellAccountingReplayErrorPayload("position.list", replay.queryErrorCode));
+        }
+
+        const auto hasRows = !replay.result.positionList.positions.empty();
+        std::ostringstream payload;
+        payload << shellAccountingPayloadPrefix(
+                       "position.list",
+                       replayStatusForPayload(replay.result).c_str(),
+                       replayDataQualityStatus(replay.result).c_str(),
+                       hasRows,
+                       replay.result.replayExecuted,
+                       true)
+                << "\"message\":" << jsonStringValue(replay.result.message) << ','
+                << "\"issues\":" << replayIssuesJson(replay.result.issues)
+                << ",\"warnings\":[],\"errors\":[],"
+                << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"rawReplayPayloadExposed\":false},"
+                << "\"positions\":" << jsonArray(replay.result.positionList.positions, writeReplayPositionRow)
+                << "}";
+        return successResponse(context, payload.str());
+    }
+
     etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
     auto positions = factsQuery.loadPositions(shellAccountingQueryRequest(context.request.payloadJson));
     if (!positions) {
@@ -942,6 +1268,41 @@ etfdt::protocol::ProtocolResponse handleCashSummary(
             context,
             etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
             "cash.summary payload must be a JSON object");
+    }
+
+    const auto replay = runShellAccountingReadOnlyReplay(connection, "cash.summary", context.request.payloadJson);
+    if (replay.requested) {
+        if (replay.queryFailed) {
+            return successResponse(context, shellAccountingReplayErrorPayload("cash.summary", replay.queryErrorCode));
+        }
+
+        std::vector<etfdt::accounting::CashSummaryDto> summaries = replay.result.accountCashSummaries;
+        if (summaries.empty() && replay.result.hasCashSummary) {
+            summaries.push_back(replay.result.cashSummary);
+        }
+        const auto hasRows = !summaries.empty();
+        std::ostringstream payload;
+        payload << shellAccountingPayloadPrefix(
+                       "cash.summary",
+                       replayStatusForPayload(replay.result).c_str(),
+                       replayDataQualityStatus(replay.result).c_str(),
+                       hasRows,
+                       replay.result.replayExecuted,
+                       true)
+                << "\"message\":" << jsonStringValue(replay.result.message) << ','
+                << "\"issues\":" << replayIssuesJson(replay.result.issues)
+                << ",\"warnings\":[],\"errors\":[],"
+                << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"rawReplayPayloadExposed\":false},"
+                << "\"accountCashSummaries\":" << jsonArray(summaries, writeReplayCashSummary)
+                << ",\"cashSummary\":";
+        if (hasRows) {
+            writeReplayCashSummary(payload, summaries.front());
+        } else {
+            payload << "{}";
+        }
+        payload << "}";
+        return successResponse(context, payload.str());
     }
 
     etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
@@ -978,6 +1339,49 @@ etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
             context,
             etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
             "portfolio.pnl.summary payload must be a JSON object");
+    }
+
+    const auto replay =
+        runShellAccountingReadOnlyReplay(connection, "portfolio.pnl.summary", context.request.payloadJson);
+    if (replay.requested) {
+        if (replay.queryFailed) {
+            return successResponse(
+                context,
+                shellAccountingReplayErrorPayload(
+                    "portfolio.pnl.summary",
+                    replay.queryErrorCode));
+        }
+
+        const auto hasRows = replay.result.hasPortfolioPnl;
+        std::ostringstream payload;
+        payload << shellAccountingPayloadPrefix(
+                       "portfolio.pnl.summary",
+                       replayStatusForPayload(replay.result).c_str(),
+                       replayDataQualityStatus(replay.result).c_str(),
+                       hasRows,
+                       replay.result.replayExecuted,
+                       true)
+                << "\"message\":" << jsonStringValue(replay.result.message) << ','
+                << "\"issues\":" << replayIssuesJson(replay.result.issues)
+                << ",\"warnings\":[],\"errors\":[],"
+                << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"rawReplayPayloadExposed\":false},"
+                << "\"portfolioPnlSummaries\":";
+        if (hasRows) {
+            payload << '[';
+            writeReplayPortfolioPnl(payload, replay.result.portfolioPnl);
+            payload << ']';
+        } else {
+            payload << "[]";
+        }
+        payload << ",\"portfolioPnl\":";
+        if (hasRows) {
+            writeReplayPortfolioPnl(payload, replay.result.portfolioPnl);
+        } else {
+            payload << "{}";
+        }
+        payload << "}";
+        return successResponse(context, payload.str());
     }
 
     etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
@@ -1023,6 +1427,16 @@ etfdt::protocol::ProtocolResponse handleBasePositionSummary(
             "base_position.summary payload must be a JSON object");
     }
 
+    const auto replay =
+        runShellAccountingReadOnlyReplay(connection, "base_position.summary", context.request.payloadJson);
+    if (replay.requested && replay.queryFailed) {
+        return successResponse(
+            context,
+            shellAccountingReplayErrorPayload(
+                "base_position.summary",
+                replay.queryErrorCode));
+    }
+
     etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
     auto summaries =
         factsQuery.loadBasePositionSummaries(shellAccountingQueryRequest(context.request.payloadJson));
@@ -1044,10 +1458,19 @@ etfdt::protocol::ProtocolResponse handleBasePositionSummary(
     }
 
     std::ostringstream payload;
-    payload << shellAccountingPayloadPrefix("base_position.summary", "OK", "OK", true)
+    payload << shellAccountingPayloadPrefix(
+                   "base_position.summary",
+                   replay.requested ? replayStatusForPayload(replay.result).c_str() : "OK",
+                   replay.requested ? replayDataQualityStatus(replay.result).c_str() : "OK",
+                   true,
+                   replay.requested ? replay.result.replayExecuted : false,
+                   replay.requested)
             << "\"message\":\"base_position.summary read-only facts query completed.\","
-            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
-            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"issues\":"
+            << (replay.requested ? replayIssuesJson(replay.result.issues) : "[]")
+            << ",\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+            << "\"rawReplayPayloadExposed\":false},"
             << "\"basePositions\":" << jsonArray(summaries.value(), writeBasePositionSummaryRow)
             << ",\"basePosition\":";
     writeBasePositionSummaryRow(payload, summaries.value().front());
@@ -1064,6 +1487,16 @@ etfdt::protocol::ProtocolResponse handleSniperPoolSummary(
             context,
             etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
             "sniper_pool.summary payload must be a JSON object");
+    }
+
+    const auto replay =
+        runShellAccountingReadOnlyReplay(connection, "sniper_pool.summary", context.request.payloadJson);
+    if (replay.requested && replay.queryFailed) {
+        return successResponse(
+            context,
+            shellAccountingReplayErrorPayload(
+                "sniper_pool.summary",
+                replay.queryErrorCode));
     }
 
     etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
@@ -1086,10 +1519,19 @@ etfdt::protocol::ProtocolResponse handleSniperPoolSummary(
     }
 
     std::ostringstream payload;
-    payload << shellAccountingPayloadPrefix("sniper_pool.summary", "OK", "OK", true)
+    payload << shellAccountingPayloadPrefix(
+                   "sniper_pool.summary",
+                   replay.requested ? replayStatusForPayload(replay.result).c_str() : "OK",
+                   replay.requested ? replayDataQualityStatus(replay.result).c_str() : "OK",
+                   true,
+                   replay.requested ? replay.result.replayExecuted : false,
+                   replay.requested)
             << "\"message\":\"sniper_pool.summary read-only facts query completed.\","
-            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
-            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"issues\":"
+            << (replay.requested ? replayIssuesJson(replay.result.issues) : "[]")
+            << ",\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+            << "\"rawReplayPayloadExposed\":false},"
             << "\"tierSummary\":" << jsonArray(tiers.value(), writeSniperPoolTierRow)
             << ",\"sniperPool\":";
     writeSniperPoolTierRow(payload, tiers.value().front());

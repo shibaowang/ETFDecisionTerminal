@@ -222,7 +222,6 @@ std::vector<std::string> forbiddenWriteTokens()
 std::vector<std::string> forbiddenReplayTokens()
 {
     return {
-        "AccountingReplayEngine",
         "replayFromFacts",
         "snapshotRebuilt\":true",
         "rebuild summary",

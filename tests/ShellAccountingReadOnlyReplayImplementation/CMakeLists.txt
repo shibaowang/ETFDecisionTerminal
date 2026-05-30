@@ -1,0 +1,56 @@
+find_package(Qt6 COMPONENTS Core REQUIRED)
+
+add_library(ShellAccountingReadOnlyReplayImplementationLib STATIC
+    ShellAccountingReadOnlyReplayImplementation.cpp
+    ShellAccountingReadOnlyReplayImplementation.h
+)
+
+target_compile_features(ShellAccountingReadOnlyReplayImplementationLib PUBLIC cxx_std_17)
+
+target_include_directories(ShellAccountingReadOnlyReplayImplementationLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(ShellAccountingReadOnlyReplayImplementationLib
+    PUBLIC
+        ETFDecisionTerminal::DataServiceApi
+        Qt6::Core
+)
+
+function(add_shell_accounting_readonly_replay_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingReadOnlyReplayImplementationLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(
+        NAME ${ctest_name}
+        COMMAND
+            ${target_name}
+            --source-root ${PROJECT_SOURCE_DIR}
+            --migration ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+    )
+    set_tests_properties(${ctest_name} PROPERTIES
+        ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+    )
+endfunction()
+
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayImplementationTests test_shell_accounting_readonly_replay_implementation.cpp shell_accounting_readonly_replay_implementation)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayBoundaryTests test_shell_accounting_readonly_replay_dataservice_only_boundary.cpp shell_accounting_readonly_replay_dataservice_only_boundary)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayPositionTests test_shell_accounting_readonly_replay_position_list_success.cpp shell_accounting_readonly_replay_position_list_success)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayCashTests test_shell_accounting_readonly_replay_cash_summary_success.cpp shell_accounting_readonly_replay_cash_summary_success)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayPnlTests test_shell_accounting_readonly_replay_portfolio_pnl_summary_success.cpp shell_accounting_readonly_replay_portfolio_pnl_summary_success)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayBaseTests test_shell_accounting_readonly_replay_base_position_summary_success.cpp shell_accounting_readonly_replay_base_position_summary_success)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplaySniperTests test_shell_accounting_readonly_replay_sniper_pool_summary_success.cpp shell_accounting_readonly_replay_sniper_pool_summary_success)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayMissingFactsTests test_shell_accounting_readonly_replay_missing_facts_mapping.cpp shell_accounting_readonly_replay_missing_facts_mapping)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayMissingMarketPriceTests test_shell_accounting_readonly_replay_missing_market_price_mapping.cpp shell_accounting_readonly_replay_missing_market_price_mapping)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayMissingFxTests test_shell_accounting_readonly_replay_missing_fx_mapping.cpp shell_accounting_readonly_replay_missing_fx_mapping)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayInconsistentFactsTests test_shell_accounting_readonly_replay_inconsistent_facts_mapping.cpp shell_accounting_readonly_replay_inconsistent_facts_mapping)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayNoSnapshotRebuildTests test_shell_accounting_readonly_replay_no_snapshot_rebuild.cpp shell_accounting_readonly_replay_no_snapshot_rebuild)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayNoSnapshotWriteTests test_shell_accounting_readonly_replay_no_snapshot_write.cpp shell_accounting_readonly_replay_no_snapshot_write)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayNoTradeTests test_shell_accounting_readonly_replay_no_trade_or_strategy.cpp shell_accounting_readonly_replay_no_trade_or_strategy)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayPrivacyTests test_shell_accounting_readonly_replay_privacy.cpp shell_accounting_readonly_replay_privacy)
+add_shell_accounting_readonly_replay_test(ReadOnlyReplayRollbackTests test_shell_accounting_readonly_replay_rollback_ready.cpp shell_accounting_readonly_replay_rollback_ready)

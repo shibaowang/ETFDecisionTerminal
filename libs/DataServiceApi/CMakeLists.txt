@@ -3,6 +3,7 @@ add_library(ETFDataServiceApi STATIC
     src/DataServiceActions.cpp
     src/DataServiceApi.cpp
     src/JsonBuilders.cpp
+    src/ShellAccountingBrokerOrderPort.cpp
     src/WriteActionPolicy.cpp
 )
 

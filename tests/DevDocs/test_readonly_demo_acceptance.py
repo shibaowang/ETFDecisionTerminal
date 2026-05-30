@@ -166,6 +166,12 @@ def main() -> int:
     shell_accounting_dataservice_facts_query_implementation_path = (
         root / "docs" / "83_shell_accounting_dataservice_readonly_facts_query_implementation.md"
     )
+    shell_accounting_replay_snapshot_rebuild_gate_path = (
+        root / "docs" / "84_shell_accounting_replay_snapshot_rebuild_gate.md"
+    )
+    shell_accounting_replay_snapshot_rebuild_test_plan_path = (
+        root / "docs" / "85_shell_accounting_replay_snapshot_rebuild_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -213,6 +219,9 @@ def main() -> int:
     )
     shell_accounting_dataservice_facts_query_implementation_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceFactsQueryImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_replay_snapshot_rebuild_gate_cmake_path = (
+        root / "tests" / "ShellAccountingReplaySnapshotRebuildGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1224,6 +1233,12 @@ def main() -> int:
     shell_accounting_dataservice_facts_query_implementation = (
         shell_accounting_dataservice_facts_query_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_replay_snapshot_rebuild_gate = (
+        shell_accounting_replay_snapshot_rebuild_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_replay_snapshot_rebuild_test_plan = (
+        shell_accounting_replay_snapshot_rebuild_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1265,6 +1280,9 @@ def main() -> int:
     )
     shell_accounting_dataservice_facts_query_implementation_cmake = (
         shell_accounting_dataservice_facts_query_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_replay_snapshot_rebuild_gate_cmake = (
+        shell_accounting_replay_snapshot_rebuild_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5600,6 +5618,86 @@ def main() -> int:
             forbidden_shell_token not in shell_accounting_production_path_after_137,
             f"ShellAccounting production path avoids {forbidden_shell_token} after TASK-137",
         )
+
+    require(
+        shell_accounting_replay_snapshot_rebuild_gate_path.exists(),
+        "docs/84 replay snapshot rebuild gate exists",
+    )
+    require(
+        shell_accounting_replay_snapshot_rebuild_test_plan_path.exists(),
+        "docs/85 replay snapshot rebuild test plan exists",
+    )
+    require(
+        "docs/84_shell_accounting_replay_snapshot_rebuild_gate.md" in readme,
+        "README links docs/84",
+    )
+    require(
+        "docs/85_shell_accounting_replay_snapshot_rebuild_test_plan.md" in readme,
+        "README links docs/85",
+    )
+    require(
+        "84_shell_accounting_replay_snapshot_rebuild_gate.md" in docs_index,
+        "docs/README links docs/84",
+    )
+    require(
+        "85_shell_accounting_replay_snapshot_rebuild_test_plan.md" in docs_index,
+        "docs/README links docs/85",
+    )
+    require("TASK-138" in shell_accounting_replay_snapshot_rebuild_gate, "docs/84 mentions TASK-138")
+    require(
+        "Test Matrix" in shell_accounting_replay_snapshot_rebuild_test_plan,
+        "docs/85 includes Test Matrix",
+    )
+    require("TASK-138" in codex_prompt_template, "docs/12 mentions TASK-138")
+    for ctest_name in [
+        "shell_accounting_replay_snapshot_rebuild_gate",
+        "shell_accounting_replay_snapshot_rebuild_no_replay_yet",
+        "shell_accounting_replay_snapshot_rebuild_no_snapshot_write_yet",
+        "shell_accounting_replay_snapshot_rebuild_dataservice_only_policy",
+        "shell_accounting_replay_snapshot_rebuild_no_ui_direct_engine_access",
+        "shell_accounting_replay_snapshot_rebuild_no_write_path",
+        "shell_accounting_replay_snapshot_rebuild_no_trade_or_strategy",
+        "shell_accounting_replay_snapshot_rebuild_error_mapping_policy",
+        "shell_accounting_replay_snapshot_rebuild_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_replay_snapshot_rebuild_gate_cmake,
+            f"TASK-138 tests include {ctest_name}",
+        )
+    require(
+        "TradeDraft" not in shell_accounting_readonly_page
+        and "买入" not in shell_accounting_readonly_page
+        and "卖出" not in shell_accounting_readonly_page
+        and "下单" not in shell_accounting_readonly_page,
+        "production QML has no new trading UI after TASK-138",
+    )
+    shell_and_qml_after_138 = "\n".join(
+        [
+            registration_sources,
+            shell_accounting_readonly_page,
+            shell_accounting_presenter_header,
+            shell_accounting_presenter_source,
+            shell_accounting_controller_header,
+            shell_accounting_controller_source,
+        ]
+    )
+    for forbidden_replay_token in [
+        "AccountingReplayEngine",
+        "replayFromFacts",
+        "SQLiteConnection",
+        "sqlite3",
+        "ShellAccountingReadOnlyFactsQuery",
+    ]:
+        require(
+            forbidden_replay_token not in shell_and_qml_after_138,
+            f"Shell/QML avoids direct replay or storage token {forbidden_replay_token} after TASK-138",
+        )
+    require(
+        "TASK-138" in shell_accounting_dataservice_facts_query_gate
+        and "TASK-138" in shell_accounting_dataservice_facts_query_test_plan
+        and "TASK-138" in shell_accounting_dataservice_facts_query_implementation,
+        "docs/81 docs/82 docs/83 mention TASK-138",
+    )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

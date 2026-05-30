@@ -10,6 +10,10 @@ TASK-137 update: the read-only facts query implementation now exists. This test
 plan remains the regression matrix for keeping that implementation SELECT-only,
 no-write, no-snapshot-rebuild, no-AccountingEngine-replay, and no-TradeDraft.
 
+TASK-138 adds the replay snapshot rebuild gate. TASK-137 facts query remains
+the read-only fallback, while AccountingEngine replay and snapshot rebuild still
+require separate authorization and tests.
+
 ## Test Matrix
 
 ### TASK-137 Post-implementation Matrix

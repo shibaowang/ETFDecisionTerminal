@@ -2470,3 +2470,13 @@ still reads through DataService only; there is no direct SQLite or DataAccess
 access from Shell/QML, no AccountingEngine replay, no snapshot rebuild, no
 database writes, no TradeDraft, no trade suggestion, and no trading UI. See
 `docs/83_shell_accounting_dataservice_readonly_facts_query_implementation.md`.
+
+## TASK-138 Replay Snapshot Rebuild Gate
+
+ShellAccounting now has an AccountingEngine replay / snapshot rebuild gate and
+test plan. AccountingEngine replay is still not connected to ShellAccounting,
+snapshot rebuild is still not implemented, snapshot write is still not
+authorized, and there is still no TradeDraft, trade suggestion, strategy
+execution, broker order, or trading UI. See
+`docs/84_shell_accounting_replay_snapshot_rebuild_gate.md` and
+`docs/85_shell_accounting_replay_snapshot_rebuild_test_plan.md`.

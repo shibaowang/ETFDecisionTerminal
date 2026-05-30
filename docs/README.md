@@ -288,6 +288,13 @@
   [83_shell_accounting_dataservice_readonly_facts_query_implementation.md](83_shell_accounting_dataservice_readonly_facts_query_implementation.md)
   records TASK-137 SELECT-only DataService facts query implementation and its
   no-write/no-replay/no-TradeDraft boundary.
+- ShellAccounting replay snapshot rebuild gate:
+  [84_shell_accounting_replay_snapshot_rebuild_gate.md](84_shell_accounting_replay_snapshot_rebuild_gate.md)
+  defines the future AccountingEngine replay / snapshot rebuild boundary.
+- ShellAccounting replay snapshot rebuild test plan:
+  [85_shell_accounting_replay_snapshot_rebuild_test_plan.md](85_shell_accounting_replay_snapshot_rebuild_test_plan.md)
+  defines the future replay, rebuild, no-write, no-trade, and rollback test
+  matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

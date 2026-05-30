@@ -47,6 +47,10 @@ TASK-137 implementation completed the positive boundary: facts query exists
 only as an authorized read-only DataService implementation and remains outside
 write path, TradeDraft, trading action, snapshot rebuild, and replay scope.
 
+TASK-138 adds the replay snapshot rebuild gate. TASK-137 facts query remains
+the read-only fallback. AccountingEngine replay and snapshot rebuild are still
+not implemented, and snapshot write is still not authorized.
+
 ## Required Pre-gates
 
 - TASK-119 QML static gate.

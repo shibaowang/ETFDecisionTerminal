@@ -2669,3 +2669,16 @@ sanitized `audit_log` event. It does not call a broker SDK, place a real order,
 write `trade_log`, `trade_execution_group`, or `trade_draft`, execute strategy,
 or enable automatic trading. See
 `docs/109_shell_accounting_broker_order_dry_run_implementation.md`.
+
+## TASK-155 Real Broker Order Authorization Gate
+
+ShellAccounting now has a real broker order authorization gate and test plan.
+Real broker order placement remains unimplemented: there is no broker adapter,
+no broker SDK import/link/call, no sandbox or paper trading broker call, no
+real order placement, no StrategyEngine execution, and no automatic trading.
+Future real broker order work must require a successful TASK-154 dry-run
+preflight, confirmed-ledger input, final user confirmation, an independent
+authorization token, kill switch, idempotency key, sanitized audit,
+reconciliation policy, and incident rollback / containment. See
+`docs/110_shell_accounting_real_broker_order_authorization_gate.md` and
+`docs/111_shell_accounting_real_broker_order_authorization_test_plan.md`.

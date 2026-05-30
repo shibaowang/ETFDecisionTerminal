@@ -147,3 +147,12 @@ The implementation test matrix now includes:
 - no `trade_log`, `trade_execution_group`, or `trade_draft` write
 - no broker SDK / no real order placement
 - rollback and disable readiness
+
+## TASK-155 Test Update
+
+TASK-155 adds a real broker order authorization gate and test plan. It keeps the
+TASK-154 dry-run implementation as the only allowed broker-order-related
+behavior and adds static checks for no real broker order, no broker adapter, no
+broker SDK include / import / link, no sandbox or paper trading broker call, no
+real order placement, no StrategyEngine execution, no automatic trading, and no
+production QML direct broker access.

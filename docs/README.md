@@ -388,6 +388,14 @@
   records TASK-154 DataService-only dry-run boundary, sanitized audit-only
   writes, no broker SDK call, no real order placement, no strategy execution,
   and no automatic trading.
+- ShellAccounting real broker order authorization gate:
+  [110_shell_accounting_real_broker_order_authorization_gate.md](110_shell_accounting_real_broker_order_authorization_gate.md)
+  defines the TASK-155 future real broker order / real order placement gate.
+- ShellAccounting real broker order authorization test plan:
+  [111_shell_accounting_real_broker_order_authorization_test_plan.md](111_shell_accounting_real_broker_order_authorization_test_plan.md)
+  defines TASK-155 dry-run preflight, confirmed-ledger input, final
+  confirmation, independent authorization, risk control, reconciliation, and
+  rollback / incident containment probes.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

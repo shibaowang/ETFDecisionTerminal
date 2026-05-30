@@ -665,3 +665,13 @@ unchanged and does not expose broker order controls, place-order buttons,
 broker SDK calls, StrategyEngine execution, automatic trading, or direct DB
 writes. Any future broker UI must stay separate from the dry-run backend
 boundary and keep explicit user confirmation.
+
+## TASK-155 Real Broker Order Authorization Gate
+
+TASK-155 adds only the real broker order authorization gate. Production QML
+remains unchanged and still does not call broker SDKs, sandbox brokers, paper
+trading brokers, or real order placement APIs. Future real broker order UI must
+require TASK-154 dry-run preflight, confirmed-ledger input, final user
+confirmation, independent authorization, kill switch, idempotency, sanitized
+audit, reconciliation, and incident rollback / containment before any real
+placement task is considered.

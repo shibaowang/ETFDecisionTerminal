@@ -1017,3 +1017,18 @@ v0.1 草案。
   suggestion, strategy execution, broker order, or trading UI.
 - Future snapshot write tasks must reference TASK-140 through TASK-142 docs and
   require separate explicit authorization.
+
+## TASK-143 ShellAccounting Snapshot Write Authorization Gate
+
+- Future snapshot write tasks must reference
+  `docs/92_shell_accounting_snapshot_write_authorization_gate.md` and
+  `docs/93_shell_accounting_snapshot_write_authorization_test_plan.md`.
+- Snapshot write implementation must be a separate explicitly authorized TASK.
+- Snapshot write input must come only from TASK-142 `snapshotRebuildPreview`.
+- Snapshot write must be DataService-only, table-allowlisted, transactional,
+  idempotent, rollback-ready, and disableable.
+- Do not write `trade_log`, `trade_execution_group`, `trade_draft`, or
+  `audit_log` unless a future task separately authorizes the specific write.
+- Do not add production QML/startup changes, direct Shell/QML/Presenter write
+  triggers, schema migration, TradeDraft generation, trade suggestion, strategy
+  execution, broker order, or trading UI.

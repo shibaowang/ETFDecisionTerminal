@@ -1,0 +1,81 @@
+add_library(ShellAccountingSnapshotWriteAuthorizationGateLib STATIC
+    ShellAccountingSnapshotWriteAuthorizationGate.cpp
+    ShellAccountingSnapshotWriteAuthorizationGate.h
+)
+
+target_compile_features(ShellAccountingSnapshotWriteAuthorizationGateLib PUBLIC cxx_std_17)
+
+target_include_directories(ShellAccountingSnapshotWriteAuthorizationGateLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+function(add_shell_accounting_snapshot_write_authorization_gate_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingSnapshotWriteAuthorizationGateLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(NAME ${ctest_name} COMMAND ${target_name} --source-root ${PROJECT_SOURCE_DIR})
+endfunction()
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationGateTests
+    test_shell_accounting_snapshot_write_authorization_gate.cpp
+    shell_accounting_snapshot_write_authorization_gate
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationNoWriteYetTests
+    test_shell_accounting_snapshot_write_authorization_no_write_yet.cpp
+    shell_accounting_snapshot_write_authorization_no_write_yet
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationDataServiceOnlyPolicyTests
+    test_shell_accounting_snapshot_write_authorization_dataservice_only_policy.cpp
+    shell_accounting_snapshot_write_authorization_dataservice_only_policy
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationPreviewInputPolicyTests
+    test_shell_accounting_snapshot_write_authorization_preview_input_policy.cpp
+    shell_accounting_snapshot_write_authorization_preview_input_policy
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationAllowlistPolicyTests
+    test_shell_accounting_snapshot_write_authorization_allowlist_policy.cpp
+    shell_accounting_snapshot_write_authorization_allowlist_policy
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationForbiddenTablePolicyTests
+    test_shell_accounting_snapshot_write_authorization_forbidden_table_policy.cpp
+    shell_accounting_snapshot_write_authorization_forbidden_table_policy
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationNoUiTriggeredWriteTests
+    test_shell_accounting_snapshot_write_authorization_no_ui_triggered_write.cpp
+    shell_accounting_snapshot_write_authorization_no_ui_triggered_write
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationNoTradeOrStrategyTests
+    test_shell_accounting_snapshot_write_authorization_no_trade_or_strategy.cpp
+    shell_accounting_snapshot_write_authorization_no_trade_or_strategy
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationErrorMappingPolicyTests
+    test_shell_accounting_snapshot_write_authorization_error_mapping_policy.cpp
+    shell_accounting_snapshot_write_authorization_error_mapping_policy
+)
+
+add_shell_accounting_snapshot_write_authorization_gate_test(
+    ShellAccountingSnapshotWriteAuthorizationRollbackPolicyTests
+    test_shell_accounting_snapshot_write_authorization_rollback_policy.cpp
+    shell_accounting_snapshot_write_authorization_rollback_policy
+)

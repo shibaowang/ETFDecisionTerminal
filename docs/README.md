@@ -318,6 +318,13 @@
   [91_shell_accounting_snapshot_rebuild_implementation.md](91_shell_accounting_snapshot_rebuild_implementation.md)
   records TASK-142 DataService-internal snapshot rebuild preview. Snapshot write
   remains unimplemented and separately unauthorized.
+- ShellAccounting snapshot write authorization gate:
+  [92_shell_accounting_snapshot_write_authorization_gate.md](92_shell_accounting_snapshot_write_authorization_gate.md)
+  defines the TASK-143 future snapshot write authorization boundary.
+- ShellAccounting snapshot write authorization test plan:
+  [93_shell_accounting_snapshot_write_authorization_test_plan.md](93_shell_accounting_snapshot_write_authorization_test_plan.md)
+  defines the TASK-143 future preview-input-only, allowlisted, transactional, no-trade,
+  rollback-ready snapshot write test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -114,3 +114,11 @@ read-only replay remains the fallback. TASK-141 keeps the future rebuild
 boundary DataService-only, read-only replay input only, in-memory preview output
 only, no database write, no TradeDraft, no trade suggestion, no strategy
 execution, no broker order, and no trading UI.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+TASK-143 adds the snapshot write authorization gate. Snapshot write is still not
+implemented. TASK-142 snapshot rebuild preview remains the only future input
+candidate, no snapshot table is written, and any future write requires explicit
+authorization, DataService-only coordination, table allowlisting, transaction /
+rollback policy, idempotency policy, and no TradeDraft / no trading behavior.

@@ -696,3 +696,12 @@ Production QML remains unchanged and does not import or call the scaffold. The
 UI still cannot directly access broker SDKs, broker endpoints, DataServiceClient
 broker actions, SQLite, DataAccess, strategy execution, automatic trading, or
 real order placement. Future UI exposure remains a separate authorization task.
+## TASK-158 Broker Adapter Implementation Gate
+
+TASK-158 does not change production UI. ShellAccounting trading UI remains
+limited to the already authorized TradeDraft create / review / confirm flow and
+does not expose broker adapter configuration, broker credentials, broker SDK
+state, sandbox / paper / real broker mode controls, or real order placement.
+Future broker adapter implementation must remain behind the DataService
+boundary; QML and Presenter must not directly call a broker adapter, broker SDK,
+network endpoint, or strategy execution path.

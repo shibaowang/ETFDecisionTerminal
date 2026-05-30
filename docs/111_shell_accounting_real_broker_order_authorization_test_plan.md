@@ -218,3 +218,9 @@ disabled/null behavior, and test-only fake behavior. They continue to reject
 concrete broker SDK tokens, broker network calls, credentials, database writes,
 QML exposure, Presenter broker access, strategy execution, automatic trading,
 and real broker order ids.
+# TASK-158 Update
+
+TASK-158 adds broker adapter implementation gate probes that must continue to
+pass before any real broker work. The authorization test matrix still requires
+no broker SDK, no broker network call, no credentials, no strategy execution,
+no automatic trading, and no direct QML / Presenter broker access.

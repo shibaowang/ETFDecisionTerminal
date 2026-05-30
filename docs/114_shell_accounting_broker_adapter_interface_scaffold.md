@@ -155,3 +155,10 @@ Future real broker implementation must:
 - keep CI broker network calls disabled
 - avoid credentials in source, docs, tests, QML, and logs
 - avoid StrategyEngine execution and automatic trading
+# TASK-158 Update
+
+TASK-158 adds the broker adapter implementation gate and test plan. The
+TASK-157 port / DTO / disabled adapter scaffold remains unchanged and is still
+not a concrete broker adapter implementation. Future work must pass docs/115
+and docs/116 before any sandbox, paper, or real adapter implementation is
+authorized.

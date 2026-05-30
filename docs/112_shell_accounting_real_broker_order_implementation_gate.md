@@ -214,3 +214,10 @@ not import or link a broker SDK, does not call sandbox / paper / real broker
 endpoints, does not place real orders, does not add credentials, and does not
 change production QML/startup, TASK-148 / TASK-150 / TASK-152 / TASK-154
 behavior, StrategyEngine execution, automatic trading, or schema.
+# TASK-158 Update
+
+TASK-158 adds a separate broker adapter implementation gate after the TASK-157
+interface scaffold. Real broker order implementation remains unimplemented:
+there is no concrete broker adapter, no SDK, no network call, no real order id
+storage, no reconciliation implementation, no cancellation/correction flow, no
+strategy execution, and no automatic trading.

@@ -183,3 +183,11 @@ order, execute a strategy, or trigger automatic trading.
 
 The TASK-153 no-broker-yet gate now means no real broker order yet; only the
 DataService-internal authorized dry-run broker order boundary is allowed.
+
+## TASK-155 Real Broker Order Gate Update
+
+TASK-155 adds the real broker order authorization gate. TASK-154 dry-run remains
+the only broker-order-related implementation. Real broker order, broker adapter,
+broker SDK, sandbox / paper trading broker calls, real placement, strategy
+execution, automatic trading, production QML changes, production startup
+changes, and schema changes remain unimplemented and unauthorized.

@@ -118,3 +118,11 @@ The TASK-154 test suite covers:
 
 Future real broker SDK / real order placement must be a separate TASK with its
 own authorization gate and implementation tests.
+
+## TASK-155 Real Broker Order Gate
+
+TASK-155 adds the real broker order authorization gate. This dry-run boundary
+remains unchanged: it still writes `audit_log` only, does not call broker SDK,
+does not call sandbox or paper trading broker endpoints, does not place a real
+order, does not write `trade_log`, `trade_execution_group`, or `trade_draft`,
+does not execute strategy, and does not enable automatic trading.

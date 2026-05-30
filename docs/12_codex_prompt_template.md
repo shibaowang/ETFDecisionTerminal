@@ -1209,3 +1209,21 @@ v0.1 草案。
 - Do not call broker SDK, place a real order, execute strategy, enable
   automatic trading, modify production QML/startup, or change schema.
 - Future real broker order placement must be separately authorized.
+
+## TASK-155 ShellAccounting Real Broker Order Authorization Gate
+
+- Future real broker order tasks must reference
+  `docs/110_shell_accounting_real_broker_order_authorization_gate.md` and
+  `docs/111_shell_accounting_real_broker_order_authorization_test_plan.md`.
+- TASK-155 is a gate only. It does not authorize real broker order
+  implementation, broker adapters, broker SDK calls, sandbox broker calls,
+  paper trading broker calls, real order placement, StrategyEngine execution,
+  automatic trading, production QML changes, production startup changes, or
+  schema migration.
+- Future real broker order must require successful TASK-154 dry-run preflight,
+  confirmed-ledger input, final user confirmation, an independent authorization
+  token, kill switch, idempotency key, sanitized audit, reconciliation policy,
+  and rollback / incident containment.
+- Real broker order must not accept raw QML payload, must not bypass
+  DataService, must not be triggered directly by Presenter or QML, and must not
+  execute strategy or automatic trading.

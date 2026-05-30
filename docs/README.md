@@ -410,6 +410,17 @@
   records TASK-157 DataServiceApi-owned broker order port / DTO scaffold,
   disabled/null adapter, test-only fake adapter, and no-SDK/no-network/no-order
   boundary.
+- ShellAccounting broker adapter implementation gate:
+  [115_shell_accounting_broker_adapter_implementation_gate.md](115_shell_accounting_broker_adapter_implementation_gate.md)
+  records TASK-158 future adapter implementation boundaries: default disabled,
+  fake test-only / sandbox / paper / real mode isolation, DataService-only
+  access, no SDK, no network, no credentials, no real order, no strategy, no
+  automatic trading, and rollback / kill switch policy.
+- ShellAccounting broker adapter implementation test plan:
+  [116_shell_accounting_broker_adapter_implementation_test_plan.md](116_shell_accounting_broker_adapter_implementation_test_plan.md)
+  defines TASK-158 static probes for no adapter implementation yet, no SDK, no
+  network call, no credentials, no QML / Presenter direct broker access, no
+  real order id, reconciliation/cancellation handoff, and regression coverage.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

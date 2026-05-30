@@ -214,3 +214,9 @@ still forbidding concrete real broker adapters, broker SDK imports, broker
 network calls, sandbox / paper / real broker calls, real order placement,
 credentials, StrategyEngine execution, automatic trading, QML broker exposure,
 Presenter broker access, database writes, and schema changes.
+# TASK-158 Update
+
+TASK-158 adds static broker adapter implementation gate tests. The TASK-156
+real broker implementation test plan remains a required regression gate and
+still blocks broker SDK imports, broker network calls, credentials, real order
+placement, strategy execution, automatic trading, and UI direct broker access.

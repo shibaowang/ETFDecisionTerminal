@@ -2709,3 +2709,19 @@ endpoints, place orders, add credentials, change production QML/startup, change
 TASK-148 / TASK-150 / TASK-152 / TASK-154 behavior, execute strategy, enable
 automatic trading, or modify schema. See
 `docs/114_shell_accounting_broker_adapter_interface_scaffold.md`.
+
+## TASK-158 Broker Adapter Implementation Gate
+
+ShellAccounting now has a broker adapter implementation gate and test plan.
+The TASK-157 interface scaffold remains the only production broker-facing
+adapter boundary: no concrete broker adapter is implemented, no broker SDK is
+imported or linked, no broker network call is reachable, no sandbox / paper /
+real broker is called, no real order is placed, no credentials or secrets are
+added, and no production QML/startup or schema behavior changes. Future broker
+adapter work must be separately authorized, default disabled, DataService-only,
+mode-isolated across fake test-only / sandbox / paper / real, CI-network-free,
+credential-isolated, kill-switchable, and still separate from reconciliation,
+cancellation, correction, strategy execution, automatic trading, and real order
+placement. See
+`docs/115_shell_accounting_broker_adapter_implementation_gate.md` and
+`docs/116_shell_accounting_broker_adapter_implementation_test_plan.md`.

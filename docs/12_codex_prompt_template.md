@@ -1260,3 +1260,13 @@ v0.1 草案。
   schema.
 - Keep concrete future broker SDK types behind DataService, never in QML,
   Shell, Presenter, ShellServices, ShellCore, DataAccess, tests, or docs.
+## TASK-158 Broker Adapter Implementation Gate Prompt Rule
+
+Future ShellAccounting broker adapter implementation tasks must reference
+docs/115 and docs/116. Do not implement a concrete broker adapter, import a
+broker SDK, call broker network, place a real order, add credentials/secrets, or
+enable strategy execution / automatic trading unless the new task explicitly
+authorizes that scope. Keep broker adapter access DataService-only, default
+disabled, mode-isolated across fake test-only / sandbox / paper / real, and
+rollback / kill-switch ready. QML, Presenter, ShellServices, and ShellCore must
+not directly call broker adapter code.

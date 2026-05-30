@@ -197,3 +197,10 @@ authorize a real broker adapter, concrete broker SDK, sandbox / paper / real
 broker call, real order placement, StrategyEngine execution, automatic trading,
 production QML changes, production startup changes, credentials, or schema
 changes.
+# TASK-158 Update
+
+TASK-158 adds a broker adapter implementation gate. Real broker order
+authorization remains separate from broker adapter implementation: there is
+still no broker SDK, no broker network call, no sandbox / paper / real broker
+adapter, no real order placement, no credentials, no strategy execution, and no
+automatic trading.

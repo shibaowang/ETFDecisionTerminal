@@ -6,6 +6,7 @@
 #include "DataAccess/ShellAccountingAuditWriteRepository.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
+#include "DataAccess/ShellAccountingTradeDraftRepository.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
@@ -790,6 +791,64 @@ etfdt::data_access::ShellAccountingAuditWriteRequest auditWriteRequestFromPayloa
     request.cashRows = extractJsonIntField(payloadJson, "cash_snapshot").value_or(0);
     request.positionRows = extractJsonIntField(payloadJson, "position_snapshot").value_or(0);
     request.portfolioSummaryRows = extractJsonIntField(payloadJson, "portfolio_summary").value_or(0);
+    request.createdAtUtc = std::string(timestampUtc);
+    return request;
+}
+
+std::int64_t extractJsonInt64OrStringField(
+    const std::string& payloadJson,
+    const std::string& fieldName)
+{
+    if (const auto text = extractJsonStringField(payloadJson, fieldName); text.has_value()) {
+        return parseOptionalInt64(*text).value_or(0);
+    }
+    return extractJsonIntField(payloadJson, fieldName).value_or(0);
+}
+
+std::int64_t extractTradeDraftQuantity1e6(const std::string& payloadJson)
+{
+    if (const auto integer = extractJsonIntField(payloadJson, "quantity1e6"); integer.has_value()) {
+        return *integer;
+    }
+    if (const auto quantity = extractJsonStringField(payloadJson, "quantity"); quantity.has_value()) {
+        return parseNumericTextScaled(*quantity, 1000000);
+    }
+    return 0;
+}
+
+bool tradeDraftRiskBlocked(const std::string& payloadJson)
+{
+    const auto riskFlags = extractJsonFragmentField(payloadJson, "riskFlags").value_or("");
+    if (riskFlags.empty()) {
+        return false;
+    }
+    return extractJsonBoolField(riskFlags, "blocked").value_or(false);
+}
+
+bool tradeDraftRiskFlagsPresent(const std::string& payloadJson)
+{
+    const auto riskFlags = extractJsonFragmentField(payloadJson, "riskFlags");
+    return riskFlags.has_value() && !riskFlags->empty() && riskFlags->front() == '{';
+}
+
+etfdt::data_access::ShellAccountingTradeDraftCreateRequest tradeDraftRequestFromPayload(
+    const std::string& payloadJson,
+    std::string_view timestampUtc)
+{
+    etfdt::data_access::ShellAccountingTradeDraftCreateRequest request;
+    request.accountId = extractJsonInt64OrStringField(payloadJson, "accountId");
+    request.portfolioId = extractJsonInt64OrStringField(payloadJson, "portfolioId");
+    request.strategyId = extractJsonInt64OrStringField(payloadJson, "strategyId");
+    request.strategyCode = extractJsonStringField(payloadJson, "strategyCode").value_or("");
+    request.instrumentId = extractJsonInt64OrStringField(payloadJson, "instrumentId");
+    request.instrumentCode = extractJsonStringField(payloadJson, "instrumentCode")
+                                 .value_or(extractJsonStringField(payloadJson, "symbol").value_or(""));
+    request.side = extractJsonStringField(payloadJson, "side").value_or("");
+    request.quantity1e6 = extractTradeDraftQuantity1e6(payloadJson);
+    request.reason = extractJsonStringField(payloadJson, "reason").value_or("");
+    request.sourceSnapshotId = extractJsonStringField(payloadJson, "sourceSnapshotId").value_or("");
+    request.sourceReplayId = extractJsonStringField(payloadJson, "sourceReplayId").value_or("");
+    request.authorizationToken = extractJsonStringField(payloadJson, "authorization").value_or("");
     request.createdAtUtc = std::string(timestampUtc);
     return request;
 }
@@ -1754,6 +1813,135 @@ etfdt::protocol::ProtocolResponse handleAccountingAuditWrite(
             << "\"issues\":[],"
             << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
             << "\"fullSnapshotPayloadExposed\":false,\"internalStackExposed\":false}"
+            << "}";
+    return successResponse(context, payload.str());
+}
+
+etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreate(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "accounting.tradedraft.create payload must be a JSON object");
+    }
+
+    if (extractJsonBoolField(context.request.payloadJson, "tradeDraftDisabled").value_or(false)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8002_PERMISSION_DENIED,
+            "accounting.tradedraft.create is disabled by request");
+    }
+
+    const auto authorization =
+        extractJsonStringField(context.request.payloadJson, "authorization").value_or("");
+    if (authorization != "TASK-148_TRADEDRAFT_WRITE") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8001_AUTH_REQUIRED,
+            "accounting.tradedraft.create requires TASK-148_TRADEDRAFT_WRITE authorization");
+    }
+
+    const auto source = extractJsonStringField(context.request.payloadJson, "source").value_or("");
+    if (source != "snapshotRebuildPreview" && source != "readonlyReplay") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.tradedraft.create requires source=snapshotRebuildPreview or source=readonlyReplay");
+    }
+
+    if (!tradeDraftRiskFlagsPresent(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.tradedraft.create requires structured riskFlags");
+    }
+
+    if (tradeDraftRiskBlocked(context.request.payloadJson)) {
+        std::ostringstream payload;
+        payload << "{"
+                << "\"module\":\"accounting\","
+                << "\"action\":\"accounting.tradedraft.create\","
+                << "\"implemented\":true,"
+                << "\"writeAuthorized\":true,"
+                << "\"draftWritten\":false,"
+                << "\"auditWritten\":false,"
+                << "\"databaseWritten\":false,"
+                << "\"transactionRolledBack\":false,"
+                << "\"status\":\"RISK_CHECK_BLOCKED\","
+                << "\"issues\":[";
+        appendIssueObject(
+            payload,
+            "ERROR",
+            "RISK_CHECK_BLOCKED",
+            "TradeDraft creation was blocked by risk flags.",
+            true);
+        payload << "],"
+                << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"fullSnapshotPayloadExposed\":false,\"internalStackExposed\":false},"
+                << "\"tradeLogModified\":false,"
+                << "\"tradeExecutionGroupModified\":false,"
+                << "\"tradeSuggestionGenerated\":false,"
+                << "\"strategyExecuted\":false,"
+                << "\"brokerOrderSubmitted\":false"
+                << "}";
+        return successResponse(context, payload.str());
+    }
+
+    auto request = tradeDraftRequestFromPayload(context.request.payloadJson, context.request.timestampUtc);
+    etfdt::data_access::ShellAccountingTradeDraftRepository repository(connection);
+    auto writeResult = repository.createTradeDraft(request);
+    if (!writeResult) {
+        return errorResponse(context, writeResult);
+    }
+
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":\"accounting.tradedraft.create\","
+            << "\"implemented\":true,"
+            << "\"writeAuthorized\":true,"
+            << "\"source\":" << jsonStringValue(source) << ','
+            << "\"authorization\":\"TASK-148_TRADEDRAFT_WRITE\","
+            << "\"draftOnly\":true,"
+            << "\"notExecution\":true,"
+            << "\"draftWritten\":" << (writeResult.value().draftWritten ? "true" : "false") << ','
+            << "\"auditWritten\":" << (writeResult.value().auditWritten ? "true" : "false") << ','
+            << "\"databaseWritten\":"
+            << ((writeResult.value().draftWritten || writeResult.value().auditWritten) ? "true" : "false") << ','
+            << "\"partialWrite\":false,"
+            << "\"transactionCommitted\":"
+            << (writeResult.value().transactionCommitted ? "true" : "false") << ','
+            << "\"transactionRolledBack\":false,"
+            << "\"idempotent\":" << (writeResult.value().idempotent ? "true" : "false") << ','
+            << "\"duplicateDraft\":" << (writeResult.value().duplicateDraft ? "true" : "false") << ','
+            << "\"duplicateHandling\":\"SKIP_EXISTING_BY_DRAFT_SIGNATURE\","
+            << "\"status\":" << jsonStringValue(writeResult.value().duplicateDraft ? "DUPLICATE" : "OK") << ','
+            << "\"draftId\":" << writeResult.value().draftId << ','
+            << "\"auditLogId\":" << writeResult.value().auditLogId << ','
+            << "\"draftUid\":" << jsonStringValue(writeResult.value().draftUid) << ','
+            << "\"draftSignature\":" << jsonStringValue(writeResult.value().draftSignature) << ','
+            << "\"allowlistTables\":[\"trade_draft\",\"audit_log\"],"
+            << "\"forbiddenTables\":[\"trade_log\",\"trade_execution_group\"],"
+            << "\"payloadPolicy\":{"
+            << "\"sanitized\":true,"
+            << "\"rawSqlExposed\":false,"
+            << "\"rawTradeLogPayloadExposed\":false,"
+            << "\"fullSnapshotPayloadExposed\":false,"
+            << "\"internalStackExposed\":false,"
+            << "\"sensitiveRawPayloadExposed\":false"
+            << "},"
+            << "\"tradeLogModified\":false,"
+            << "\"tradeExecutionGroupModified\":false,"
+            << "\"tradeSuggestionGenerated\":false,"
+            << "\"strategyExecuted\":false,"
+            << "\"brokerOrderSubmitted\":false,"
+            << "\"issues\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+            << "\"fullSnapshotPayloadExposed\":false,\"internalStackExposed\":false,"
+            << "\"sensitiveRawPayloadExposed\":false}"
             << "}";
     return successResponse(context, payload.str());
 }

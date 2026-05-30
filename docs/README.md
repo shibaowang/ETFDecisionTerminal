@@ -346,6 +346,11 @@
   [99_shell_accounting_tradedraft_authorization_test_plan.md](99_shell_accounting_tradedraft_authorization_test_plan.md)
   defines the TASK-147 DataService-only, sanitized, audited, no-execution
   TradeDraft test matrix.
+- ShellAccounting TradeDraft implementation:
+  [100_shell_accounting_tradedraft_implementation.md](100_shell_accounting_tradedraft_implementation.md)
+  records TASK-148 DataService-internal, authorized, audited TradeDraft
+  creation without trade execution, strategy execution, broker order, or
+  production trading UI.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

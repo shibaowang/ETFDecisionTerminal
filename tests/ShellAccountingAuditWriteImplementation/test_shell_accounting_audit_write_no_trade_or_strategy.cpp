@@ -7,7 +7,6 @@ int main(int argc, char** argv)
     const auto root = sourceRoot(argc, argv);
     const auto text = dataServiceActionsText(root) + auditWriteRepositoryText(root);
     return containsAnyToken(text, {
-        "createTradeDraft",
         "brokerOrder(",
         "placeOrder",
         "\"strategyExecute\"",

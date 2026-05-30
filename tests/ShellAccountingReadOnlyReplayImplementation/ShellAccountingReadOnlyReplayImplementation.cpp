@@ -303,8 +303,6 @@ std::vector<std::string> snapshotWriteTokens()
 std::vector<std::string> tradeOrStrategyTokens()
 {
     return {
-        "TradeDraft",
-        "createTradeDraft",
         "brokerOrder(",
         "placeOrder",
         "\"strategyExecute\"",

@@ -115,3 +115,16 @@ A future TradeDraft implementation PR must list the action name, authorization
 token, input source, payload contract, audit behavior, idempotency key,
 duplicate handling, no-trade-execution evidence, no strategy/broker evidence,
 rollback strategy, and all gate test results.
+
+## TASK-148 Implementation Status
+
+TASK-148 implements the authorized DataService-internal TradeDraft creation
+path as `accounting.tradedraft.create` with `TASK-148_TRADEDRAFT_WRITE`.
+The gate has evolved from no TradeDraft yet to authorized TradeDraft creation
+only. TradeDraft remains draft-only: it is not trade execution, not strategy
+execution, not broker order, and not user confirmation.
+
+TASK-148 may write only `trade_draft` and a sanitized `audit_log` event.
+`trade_log`, `trade_execution_group`, broker order, strategy execution,
+trade execution, production trading UI, and schema migration remain
+unauthorized.

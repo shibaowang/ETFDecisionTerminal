@@ -596,3 +596,11 @@ draft authorization, and does not display buy, sell, order, broker, strategy,
 or trade confirmation controls. Future draft work must stay behind DataService
 authorization and must not create a UI draft trigger unless a later task
 explicitly authorizes one.
+
+## TASK-148 TradeDraft Implementation
+
+TradeDraft creation is implemented only inside the DataService boundary. The UI
+still does not directly create TradeDraft, does not request
+`TASK-148_TRADEDRAFT_WRITE`, does not call `accounting.tradedraft.create`, and
+does not display buy, sell, order, broker, strategy, or confirmation controls.
+TradeDraft is not an order and is not trade execution.

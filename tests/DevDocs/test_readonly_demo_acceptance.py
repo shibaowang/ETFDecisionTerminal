@@ -214,6 +214,9 @@ def main() -> int:
     shell_accounting_tradedraft_authorization_test_plan_path = (
         root / "docs" / "99_shell_accounting_tradedraft_authorization_test_plan.md"
     )
+    shell_accounting_tradedraft_implementation_path = (
+        root / "docs" / "100_shell_accounting_tradedraft_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -291,6 +294,9 @@ def main() -> int:
     )
     shell_accounting_tradedraft_authorization_gate_cmake_path = (
         root / "tests" / "ShellAccountingTradeDraftAuthorizationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_tradedraft_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingTradeDraftImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1350,6 +1356,9 @@ def main() -> int:
     shell_accounting_tradedraft_authorization_test_plan = (
         shell_accounting_tradedraft_authorization_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_tradedraft_implementation = (
+        shell_accounting_tradedraft_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1421,6 +1430,9 @@ def main() -> int:
     )
     shell_accounting_tradedraft_authorization_gate_cmake = (
         shell_accounting_tradedraft_authorization_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_tradedraft_implementation_cmake = (
+        shell_accounting_tradedraft_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6533,9 +6545,97 @@ def main() -> int:
             ctest_name in shell_accounting_tradedraft_authorization_gate_cmake,
             f"TASK-147 tests include {ctest_name}",
         )
+    require(
+        shell_accounting_tradedraft_implementation_path.exists(),
+        "docs/100 TradeDraft implementation exists",
+    )
+    require(
+        shell_accounting_tradedraft_implementation_cmake_path.exists(),
+        "TASK-148 TradeDraft implementation tests exist",
+    )
+    require(
+        "docs/100_shell_accounting_tradedraft_implementation.md" in readme,
+        "README links docs/100",
+    )
+    require(
+        "100_shell_accounting_tradedraft_implementation.md" in docs_index,
+        "docs/README links docs/100",
+    )
+    require("TASK-148" in shell_accounting_tradedraft_implementation, "docs/100 mentions TASK-148")
+    require("TASK-148" in shell_accounting_tradedraft_authorization_gate, "docs/98 mentions TASK-148")
+    require("TASK-148" in shell_accounting_tradedraft_authorization_test_plan, "docs/99 mentions TASK-148")
+    require("TASK-148" in codex_prompt_template, "docs/12 mentions TASK-148")
+    for required_doc_token in [
+        "accounting.tradedraft.create",
+        "TASK-148_TRADEDRAFT_WRITE",
+        "trade_draft",
+        "audit_log",
+        "trade_log",
+        "trade_execution_group",
+        "audit failure",
+        "Duplicate",
+        "No Production UI Or Startup Changes",
+    ]:
+        require(
+            required_doc_token in shell_accounting_tradedraft_implementation,
+            f"docs/100 records {required_doc_token}",
+        )
+    for ctest_name in [
+        "shell_accounting_tradedraft_implementation",
+        "shell_accounting_tradedraft_dataservice_only_boundary",
+        "shell_accounting_tradedraft_requires_authorization",
+        "shell_accounting_tradedraft_disabled_mapping",
+        "shell_accounting_tradedraft_success",
+        "shell_accounting_tradedraft_input_validation",
+        "shell_accounting_tradedraft_invalid_instrument",
+        "shell_accounting_tradedraft_invalid_side",
+        "shell_accounting_tradedraft_invalid_quantity",
+        "shell_accounting_tradedraft_source_snapshot_required",
+        "shell_accounting_tradedraft_payload_sanitized",
+        "shell_accounting_tradedraft_audit_event_required",
+        "shell_accounting_tradedraft_audit_failure_rolls_back",
+        "shell_accounting_tradedraft_transaction_rollback",
+        "shell_accounting_tradedraft_idempotency",
+        "shell_accounting_tradedraft_duplicate_handling",
+        "shell_accounting_tradedraft_no_trade_log_write",
+        "shell_accounting_tradedraft_no_trade_execution_group_write",
+        "shell_accounting_tradedraft_no_broker_order",
+        "shell_accounting_tradedraft_no_strategy_execution",
+        "shell_accounting_tradedraft_no_ui_trigger",
+        "shell_accounting_tradedraft_privacy",
+        "shell_accounting_tradedraft_rollback_ready",
+    ]:
+        require(
+            ctest_name in shell_accounting_tradedraft_implementation_cmake,
+            f"TASK-148 tests include {ctest_name}",
+        )
+    trade_draft_repository_source = (
+        root / "libs" / "DataAccess" / "src" / "ShellAccountingTradeDraftRepository.cpp"
+    ).read_text(encoding="utf-8")
+    require(
+        "INSERT INTO trade_draft" in trade_draft_repository_source,
+        "TASK-148 repository writes trade_draft",
+    )
+    require(
+        "AuditLogRepository" in trade_draft_repository_source
+        and "insertAuditLog" in trade_draft_repository_source,
+        "TASK-148 repository writes sanitized audit event",
+    )
+    for forbidden_repository_write in [
+        "INSERT INTO trade_log",
+        "UPDATE trade_log",
+        "INSERT INTO trade_execution_group",
+        "UPDATE trade_execution_group",
+    ]:
+        require(
+            forbidden_repository_write not in trade_draft_repository_source,
+            f"TASK-148 repository does not write {forbidden_repository_write}",
+        )
     for qml_forbidden_trade_token in [
         "createTradeDraft",
         "accounting.tradedraft.write",
+        "accounting.tradedraft.create",
+        "TASK-148_TRADEDRAFT_WRITE",
         "trade_draft.write",
         "brokerOrder(",
         "placeOrder",
@@ -6549,9 +6649,9 @@ def main() -> int:
         data_service_actions_source
         + snapshot_write_repository_source
         + audit_write_repository_source
+        + trade_draft_repository_source
     )
     for forbidden_write_token in [
-        "INSERT INTO trade_draft",
         "UPDATE trade_draft",
         "DELETE FROM trade_draft",
         "INSERT INTO trade_log",

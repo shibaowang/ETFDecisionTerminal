@@ -9,8 +9,6 @@ int main(int argc, char** argv)
         readTextFile(root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml")
         + "\n" + dataServiceReadOnlyAccountingRegion(root);
     return containsAnyToken(scannedText, {
-        "TradeDraft",
-        "createTradeDraft",
         "brokerOrder(",
         "placeOrder",
         "\"strategyExecute\"",

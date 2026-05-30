@@ -2583,3 +2583,15 @@ idempotent, rollback-ready, and must not be treated as execution, strategy, or
 broker order. Production QML/startup remain unchanged. See
 `docs/98_shell_accounting_tradedraft_authorization_gate.md` and
 `docs/99_shell_accounting_tradedraft_authorization_test_plan.md`.
+
+## TASK-148 TradeDraft Implementation
+
+ShellAccounting now implements DataService-internal TradeDraft creation through
+`accounting.tradedraft.create` with `TASK-148_TRADEDRAFT_WRITE` authorization.
+TradeDraft is a pending draft only: it is not execution, not broker order, not
+strategy execution, and not user confirmation. The implementation writes only
+`trade_draft` and sanitized `audit_log`, rolls back draft creation if audit
+write fails, and keeps duplicate requests idempotent. It does not write
+`trade_log` or `trade_execution_group`, does not modify production QML/startup
+or schema, and does not add trading UI. See
+`docs/100_shell_accounting_tradedraft_implementation.md`.

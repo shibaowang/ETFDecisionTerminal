@@ -213,8 +213,6 @@ std::vector<std::string> uiTriggeredWriteForbiddenTokens()
 std::vector<std::string> tradeOrStrategyForbiddenTokens()
 {
     return {
-        "TradeDraft",
-        "createTradeDraft",
         "brokerOrder(",
         "placeOrder",
         "\"strategyExecute\"",

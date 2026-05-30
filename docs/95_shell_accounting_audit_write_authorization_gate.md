@@ -177,3 +177,11 @@ now checks this positive boundary while continuing to forbid `trade_log`,
 schema changes, raw SQL payloads, raw trade_log payloads, full snapshot
 payloads, internal stack traces, TradeDraft generation, trade suggestions,
 strategy execution, and broker order submission.
+
+## TASK-147 Follow-up Gate
+
+TASK-147 adds the TradeDraft authorization gate. TradeDraft remains
+unimplemented, `trade_draft` remains unwritten, and audit write remains limited
+to sanitized audit events for authorized snapshot write results. The new gate
+does not change TASK-146 audit write behavior and still does not authorize
+trade execution, strategy execution, broker order, or trading UI.

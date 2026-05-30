@@ -160,3 +160,11 @@ The matrix still requires checks for forbidden tables (`trade_log`,
 transaction rollback, idempotency, duplicate handling, sanitized payload,
 privacy, no TradeDraft, no strategy, no broker order, full CTest, and transport
 50 repeat.
+
+## TASK-147 Follow-up Gate
+
+TASK-147 adds a TradeDraft authorization gate and test plan. Audit write remains
+implemented only for sanitized TASK-144 snapshot write results, and TASK-147
+does not modify audit write behavior. TradeDraft, `trade_draft` write,
+`trade_log` write, `trade_execution_group` write, trade execution, strategy
+execution, broker order, and trading UI remain unimplemented.

@@ -208,6 +208,12 @@ def main() -> int:
     shell_accounting_audit_write_implementation_path = (
         root / "docs" / "97_shell_accounting_audit_write_implementation.md"
     )
+    shell_accounting_tradedraft_authorization_gate_path = (
+        root / "docs" / "98_shell_accounting_tradedraft_authorization_gate.md"
+    )
+    shell_accounting_tradedraft_authorization_test_plan_path = (
+        root / "docs" / "99_shell_accounting_tradedraft_authorization_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -282,6 +288,9 @@ def main() -> int:
     )
     shell_accounting_audit_write_implementation_cmake_path = (
         root / "tests" / "ShellAccountingAuditWriteImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_tradedraft_authorization_gate_cmake_path = (
+        root / "tests" / "ShellAccountingTradeDraftAuthorizationGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1335,6 +1344,12 @@ def main() -> int:
     shell_accounting_audit_write_implementation = (
         shell_accounting_audit_write_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_tradedraft_authorization_gate = (
+        shell_accounting_tradedraft_authorization_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_tradedraft_authorization_test_plan = (
+        shell_accounting_tradedraft_authorization_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1403,6 +1418,9 @@ def main() -> int:
     )
     shell_accounting_audit_write_implementation_cmake = (
         shell_accounting_audit_write_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_tradedraft_authorization_gate_cmake = (
+        shell_accounting_tradedraft_authorization_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6467,6 +6485,84 @@ def main() -> int:
         and "ShellAccountingAuditWriteRepository" not in production_startup_source,
         "production startup does not trigger TASK-146 audit write",
     )
+
+    require(
+        shell_accounting_tradedraft_authorization_gate_path.exists(),
+        "docs/98 TradeDraft authorization gate exists",
+    )
+    require(
+        shell_accounting_tradedraft_authorization_test_plan_path.exists(),
+        "docs/99 TradeDraft authorization test plan exists",
+    )
+    require(
+        "docs/98_shell_accounting_tradedraft_authorization_gate.md" in readme,
+        "README links docs/98",
+    )
+    require(
+        "docs/99_shell_accounting_tradedraft_authorization_test_plan.md" in readme,
+        "README links docs/99",
+    )
+    require(
+        "98_shell_accounting_tradedraft_authorization_gate.md" in docs_index,
+        "docs/README links docs/98",
+    )
+    require(
+        "99_shell_accounting_tradedraft_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/99",
+    )
+    require("TASK-147" in shell_accounting_tradedraft_authorization_gate, "docs/98 mentions TASK-147")
+    require("Test Matrix" in shell_accounting_tradedraft_authorization_test_plan, "docs/99 contains Test matrix")
+    require("TASK-147" in codex_prompt_template, "docs/12 mentions TASK-147")
+    require("TASK-147" in shell_accounting_audit_write_authorization_gate, "docs/95 mentions TASK-147")
+    require("TASK-147" in shell_accounting_audit_write_authorization_test_plan, "docs/96 mentions TASK-147")
+    require("TASK-147" in shell_accounting_audit_write_implementation, "docs/97 mentions TASK-147")
+    for ctest_name in [
+        "shell_accounting_tradedraft_authorization_gate",
+        "shell_accounting_tradedraft_authorization_no_tradedraft_yet",
+        "shell_accounting_tradedraft_authorization_dataservice_only_policy",
+        "shell_accounting_tradedraft_authorization_input_policy",
+        "shell_accounting_tradedraft_authorization_payload_policy",
+        "shell_accounting_tradedraft_authorization_audit_policy",
+        "shell_accounting_tradedraft_authorization_no_ui_triggered_draft",
+        "shell_accounting_tradedraft_authorization_no_trade_execution",
+        "shell_accounting_tradedraft_authorization_no_strategy_or_broker",
+        "shell_accounting_tradedraft_authorization_error_mapping_policy",
+        "shell_accounting_tradedraft_authorization_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_tradedraft_authorization_gate_cmake,
+            f"TASK-147 tests include {ctest_name}",
+        )
+    for qml_forbidden_trade_token in [
+        "createTradeDraft",
+        "accounting.tradedraft.write",
+        "trade_draft.write",
+        "brokerOrder(",
+        "placeOrder",
+        "strategyExecute(",
+    ]:
+        require(
+            qml_forbidden_trade_token not in qml_sources,
+            f"production QML does not add trading UI token {qml_forbidden_trade_token}",
+        )
+    production_write_scan = (
+        data_service_actions_source
+        + snapshot_write_repository_source
+        + audit_write_repository_source
+    )
+    for forbidden_write_token in [
+        "INSERT INTO trade_draft",
+        "UPDATE trade_draft",
+        "DELETE FROM trade_draft",
+        "INSERT INTO trade_log",
+        "UPDATE trade_log",
+        "INSERT INTO trade_execution_group",
+        "UPDATE trade_execution_group",
+    ]:
+        require(
+            forbidden_write_token not in production_write_scan,
+            f"production path does not write {forbidden_write_token}",
+        )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

@@ -116,3 +116,11 @@ The full prerequisite sequence is TASK-119, TASK-120, TASK-121, TASK-122,
 TASK-123, TASK-124, TASK-125, TASK-126, TASK-127, TASK-128, TASK-129,
 TASK-130, TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, and
 TASK-137.
+
+## TASK-139 Update
+
+TASK-139 implements authorized DataService-internal read-only replay for the
+five existing ShellAccounting read-only actions. Snapshot rebuild is still not
+implemented, snapshot write is still not authorized, Shell/QML/Presenter still
+must not call AccountingEngine directly, and the TASK-137 read-only facts query
+remains the fallback if read-only replay is disabled.

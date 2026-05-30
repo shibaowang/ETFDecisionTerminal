@@ -41,7 +41,7 @@ std::string readTextFile(const std::filesystem::path& path)
 std::string dataServiceAccountingActionRegion(const std::filesystem::path& root)
 {
     const auto source = readTextFile(dataServiceActionsPath(root));
-    const auto begin = source.find("etfdt::protocol::ProtocolResponse handlePositionList");
+    const auto begin = source.find("bool shellAccountingReplayRequested");
     const auto end = source.find("}  // namespace etfdt::data_service_api", begin);
     if (begin == std::string::npos || end == std::string::npos || end <= begin) {
         return {};

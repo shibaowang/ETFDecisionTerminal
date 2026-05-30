@@ -15,5 +15,10 @@ int main(int argc, char** argv)
             return 1;
         }
     }
+    if (source.find("AccountingReplayEngine") == std::string::npos ||
+        source.find("calculationMode") == std::string::npos) {
+        std::cerr << "TASK-139 authorized read-only replay path is not visible in DataService\n";
+        return 1;
+    }
     return 0;
 }

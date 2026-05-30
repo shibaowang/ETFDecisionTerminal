@@ -191,3 +191,10 @@ A future DataService facts query PR must document implemented query methods,
 allowed tables, SQL read-only evidence, no write path evidence, no
 AccountingEngine replay evidence, response contract, stale/unavailable/error
 mapping, privacy handling, rollback plan, and all gate test results.
+
+## TASK-139 Update
+
+TASK-139 adds an explicit DataService-internal read-only replay path. The
+TASK-137 facts query remains SELECT-only fallback. Snapshot rebuild/write,
+TradeDraft, trade suggestion, strategy execution, broker order, and trading UI
+remain unauthorized.

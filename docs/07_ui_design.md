@@ -528,3 +528,10 @@ The replay / snapshot rebuild gate is added. The UI remains read-only; replay
 and rebuild are not connected to UI. The UI must not trigger snapshot rebuild,
 snapshot writes, TradeDraft generation, trade suggestions, broker order,
 strategy execution, or trading buttons.
+
+## TASK-139 Read-only Replay Implementation
+
+ShellAccounting read-only replay is now available inside the DataService
+boundary. The UI remains read-only, does not directly trigger replay, does not
+trigger snapshot rebuild/write, and still has no trading buttons. Shell/QML do
+not call AccountingEngine, SQLite, or DataAccess directly.

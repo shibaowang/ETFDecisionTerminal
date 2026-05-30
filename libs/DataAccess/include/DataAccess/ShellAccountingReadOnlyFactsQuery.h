@@ -73,11 +73,19 @@ struct ShellAccountingSniperPoolTierRow final {
     std::string updatedAtUtc;
 };
 
+struct ShellAccountingInitialCashFactRow final {
+    std::string accountId;
+    std::string amountText;
+    std::string currency;
+    std::string updatedAtUtc;
+};
+
 [[nodiscard]] std::string_view shellAccountingPositionListReadOnlySql() noexcept;
 [[nodiscard]] std::string_view shellAccountingCashSummaryReadOnlySql() noexcept;
 [[nodiscard]] std::string_view shellAccountingPortfolioSummaryReadOnlySql() noexcept;
 [[nodiscard]] std::string_view shellAccountingBasePositionSummaryReadOnlySql() noexcept;
 [[nodiscard]] std::string_view shellAccountingSniperPoolSummaryReadOnlySql() noexcept;
+[[nodiscard]] std::string_view shellAccountingInitialCashFactsReadOnlySql() noexcept;
 
 class ShellAccountingReadOnlyFactsQuery final : public ReadOnlyRepositoryBase {
 public:
@@ -93,6 +101,8 @@ public:
     loadBasePositionSummaries(const ShellAccountingFactsQueryRequest& request) const;
     [[nodiscard]] RepositoryResult<std::vector<ShellAccountingSniperPoolTierRow>>
     loadSniperPoolTiers(const ShellAccountingFactsQueryRequest& request) const;
+    [[nodiscard]] RepositoryResult<std::vector<ShellAccountingInitialCashFactRow>>
+    loadInitialCashFacts(const ShellAccountingFactsQueryRequest& request) const;
 };
 
 }  // namespace etfdt::data_access

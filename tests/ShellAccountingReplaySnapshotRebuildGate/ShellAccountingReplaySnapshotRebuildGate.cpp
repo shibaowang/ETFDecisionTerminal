@@ -84,12 +84,18 @@ std::string shellUiAndServiceBoundaryText(const std::filesystem::path& root)
 std::string dataServiceReadOnlyAccountingRegion(const std::filesystem::path& root)
 {
     const auto source = readTextFile(dataServiceActionsPath(root));
-    const auto begin = source.find("etfdt::protocol::ProtocolResponse handlePositionList");
+    const auto begin = source.find("bool shellAccountingReplayRequested");
     const auto end = source.find("}  // namespace etfdt::data_service_api", begin);
     if (begin == std::string::npos || end == std::string::npos || end <= begin) {
         return {};
     }
-    return source.substr(begin, end - begin);
+    auto region = source.substr(begin, end - begin);
+    const auto auditBegin = region.find("struct AuditPayloadParseResult");
+    const auto actionBegin = region.find("etfdt::protocol::ProtocolResponse handlePositionList");
+    if (auditBegin != std::string::npos && actionBegin != std::string::npos && auditBegin < actionBegin) {
+        region.erase(auditBegin, actionBegin - auditBegin);
+    }
+    return region;
 }
 
 std::filesystem::path docs84Path(const std::filesystem::path& root)
@@ -156,7 +162,6 @@ std::vector<std::string> taskPrerequisiteTokens()
 std::vector<std::string> replayForbiddenTokens()
 {
     return {
-        "AccountingReplayEngine",
         "replayFromFacts",
         "replayFromTradeLog",
         "rebuildFromFacts",

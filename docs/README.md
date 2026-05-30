@@ -295,6 +295,11 @@
   [85_shell_accounting_replay_snapshot_rebuild_test_plan.md](85_shell_accounting_replay_snapshot_rebuild_test_plan.md)
   defines the future replay, rebuild, no-write, no-trade, and rollback test
   matrix.
+- ShellAccounting read-only replay implementation:
+  [86_shell_accounting_readonly_replay_implementation.md](86_shell_accounting_readonly_replay_implementation.md)
+  records TASK-139 DataService-internal read-only replay. Snapshot rebuild and
+  snapshot write remain unimplemented, and Shell/QML still do not directly call
+  AccountingEngine.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

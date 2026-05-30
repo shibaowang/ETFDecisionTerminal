@@ -11,10 +11,16 @@ int main(int argc, char** argv)
     const auto readOnlyRegion = dataServiceReadOnlyAccountingRegion(root);
     int failures = 0;
 
-    if (containsAnyToken(shellBoundary, replayForbiddenTokens())) {
+    if (containsAnyToken(shellBoundary, replayForbiddenTokens()) ||
+        shellBoundary.find("AccountingReplayEngine") != std::string::npos) {
         ++failures;
     }
     if (containsAnyToken(readOnlyRegion, replayForbiddenTokens())) {
+        ++failures;
+    }
+    if (readOnlyRegion.find("AccountingReplayEngine") == std::string::npos ||
+        readOnlyRegion.find("calculationMode") == std::string::npos) {
+        std::cerr << "authorized read-only replay must remain explicit and DataService-only\n";
         ++failures;
     }
     for (const auto& forbiddenAction : {

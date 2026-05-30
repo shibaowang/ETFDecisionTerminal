@@ -85,3 +85,12 @@ implement any write path.
 - [ ] user explicitly authorized replay implementation.
 - [ ] user explicitly authorized snapshot rebuild implementation.
 - [ ] user explicitly authorized any write path, if snapshot writes are needed.
+
+## TASK-139 Post-implementation Matrix
+
+TASK-139 adds read-only replay implementation tests under
+`tests/ShellAccountingReadOnlyReplayImplementation`. The replay tests verify
+DataService-only replay, the five authorized read-only actions, missing facts,
+missing market price, missing FX, inconsistent facts, no snapshot rebuild, no
+snapshot write, no trade / strategy, privacy, and rollback readiness. Snapshot
+rebuild/write remains future scope and still requires a separate task.

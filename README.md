@@ -2480,3 +2480,15 @@ authorized, and there is still no TradeDraft, trade suggestion, strategy
 execution, broker order, or trading UI. See
 `docs/84_shell_accounting_replay_snapshot_rebuild_gate.md` and
 `docs/85_shell_accounting_replay_snapshot_rebuild_test_plan.md`.
+
+## TASK-139 Read-only Replay Implementation
+
+ShellAccounting now has a DataService-internal read-only replay path for the
+authorized actions `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. Replay is explicit through
+the DataService action boundary, Shell/QML/Presenter still do not call
+AccountingEngine directly, and TASK-137 read-only facts query remains the
+rollback fallback. Snapshot rebuild/write remains unimplemented and there is no
+database write, TradeDraft, trade suggestion, strategy execution, broker order,
+or trading UI. See
+`docs/86_shell_accounting_readonly_replay_implementation.md`.

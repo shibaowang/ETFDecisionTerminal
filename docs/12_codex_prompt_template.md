@@ -965,3 +965,15 @@ v0.1 草案。
 - Do not add snapshot write without explicit authorization.
 - The TASK-137 read-only facts query remains the fallback if replay or rebuild
   is disabled in a future implementation.
+
+## TASK-139 ShellAccounting Read-only Replay Implementation
+
+- TASK-139 implementation tasks must reference
+  `docs/86_shell_accounting_readonly_replay_implementation.md`.
+- Read-only replay may occur only inside the DataService boundary.
+- Shell, QML, Presenter, and ShellServices must not call AccountingEngine,
+  SQLite, or DataAccess directly.
+- Snapshot rebuild/write remains unimplemented and requires separate explicit
+  authorization.
+- Read-only replay is not TradeDraft, trade suggestion, strategy execution,
+  broker order, trading UI, or any write path.

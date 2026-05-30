@@ -688,3 +688,11 @@ DataService boundary, require successful dry-run preflight, confirmed-ledger
 input, final user confirmation, independent authorization, risk checks,
 idempotency, sanitized audit, reconciliation, kill switch, and rollback /
 incident containment before any real placement implementation is considered.
+
+## TASK-157 Broker Adapter Interface Scaffold
+
+TASK-157 adds only a DataServiceApi-owned broker adapter interface scaffold.
+Production QML remains unchanged and does not import or call the scaffold. The
+UI still cannot directly access broker SDKs, broker endpoints, DataServiceClient
+broker actions, SQLite, DataAccess, strategy execution, automatic trading, or
+real order placement. Future UI exposure remains a separate authorization task.

@@ -405,6 +405,11 @@
   defines TASK-156 static probes for no real order, no broker adapter, no SDK,
   no broker network call, no credentials, no strategy execution, and no
   automatic trading.
+- ShellAccounting broker adapter interface scaffold:
+  [114_shell_accounting_broker_adapter_interface_scaffold.md](114_shell_accounting_broker_adapter_interface_scaffold.md)
+  records TASK-157 DataServiceApi-owned broker order port / DTO scaffold,
+  disabled/null adapter, test-only fake adapter, and no-SDK/no-network/no-order
+  boundary.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -188,3 +188,12 @@ broker network call, no sandbox / paper broker call, no credentials, no
 StrategyEngine execution, no automatic trading, and no QML / Presenter direct
 broker access. Real broker order placement remains unimplemented and requires a
 separate user-authorized implementation TASK.
+
+## TASK-157 Broker Adapter Interface Scaffold Update
+
+TASK-157 adds only an abstract DataServiceApi broker order port / DTO scaffold,
+a disabled/null implementation, and test-only fake coverage. It still does not
+authorize a real broker adapter, concrete broker SDK, sandbox / paper / real
+broker call, real order placement, StrategyEngine execution, automatic trading,
+production QML changes, production startup changes, credentials, or schema
+changes.

@@ -1246,3 +1246,17 @@ v0.1 草案。
   TASK-154 dry-run, TASK-150 confirmed ledger input, or TASK-152 user
   confirmation, and must not introduce credentials or broker network calls into
   tests.
+
+## TASK-157 ShellAccounting Broker Adapter Interface Scaffold
+
+- Future broker adapter tasks must reference
+  `docs/114_shell_accounting_broker_adapter_interface_scaffold.md`.
+- TASK-157 is a scaffold only. It permits abstract DataServiceApi interface /
+  DTOs, disabled/null port behavior, and test-only fake coverage.
+- Do not implement a real broker adapter, import/link/call a broker SDK, call
+  sandbox / paper / real broker endpoints, place orders, add credentials,
+  modify production QML/startup, change TASK-148 / TASK-150 / TASK-152 /
+  TASK-154 behavior, execute strategy, enable automatic trading, or modify
+  schema.
+- Keep concrete future broker SDK types behind DataService, never in QML,
+  Shell, Presenter, ShellServices, ShellCore, DataAccess, tests, or docs.

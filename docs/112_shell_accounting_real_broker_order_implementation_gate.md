@@ -204,3 +204,13 @@ A future real broker order implementation PR must include:
 - no automatic trading
 - full CTest, ShellAccounting gates, TASK-155 gate, TASK-156 gate, broker
   dry-run tests, and transport 50-repeat results
+
+## TASK-157 Broker Adapter Interface Scaffold Update
+
+TASK-157 adds only the abstract `ShellAccountingBrokerOrderPort` / DTO scaffold
+inside DataServiceApi, plus a disabled/null implementation and test-only fake
+adapter coverage. It does not implement a concrete real broker adapter, does
+not import or link a broker SDK, does not call sandbox / paper / real broker
+endpoints, does not place real orders, does not add credentials, and does not
+change production QML/startup, TASK-148 / TASK-150 / TASK-152 / TASK-154
+behavior, StrategyEngine execution, automatic trading, or schema.

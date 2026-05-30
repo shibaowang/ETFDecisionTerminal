@@ -205,3 +205,12 @@ automatic trading, or real order placement.
 - [ ] risk preflight approved.
 - [ ] credential handling approved outside repo.
 - [ ] reconciliation and incident containment approved.
+
+## TASK-157 Test Update
+
+TASK-157 adds the broker adapter interface scaffold test suite. The TASK-156
+real-order gate now coexists with an abstract DataServiceApi port scaffold while
+still forbidding concrete real broker adapters, broker SDK imports, broker
+network calls, sandbox / paper / real broker calls, real order placement,
+credentials, StrategyEngine execution, automatic trading, QML broker exposure,
+Presenter broker access, database writes, and schema changes.

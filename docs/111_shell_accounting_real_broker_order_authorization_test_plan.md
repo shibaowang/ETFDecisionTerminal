@@ -208,3 +208,13 @@ execution, no automatic trading, no UI direct broker access, and complete
 documentation of dry-run preflight, confirmed-ledger input, final confirmation,
 independent authorization, sandbox / paper / real isolation, risk preflight,
 audit, reconciliation, kill switch, error mapping, and rollback policy.
+
+## TASK-157 Test Update
+
+TASK-157 adds `docs/114` and
+`tests/ShellAccountingBrokerAdapterInterfaceScaffold`. The new scaffold tests
+allow only an abstract DataServiceApi broker order port / DTO boundary,
+disabled/null behavior, and test-only fake behavior. They continue to reject
+concrete broker SDK tokens, broker network calls, credentials, database writes,
+QML exposure, Presenter broker access, strategy execution, automatic trading,
+and real broker order ids.

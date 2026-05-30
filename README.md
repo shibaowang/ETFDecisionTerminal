@@ -2696,3 +2696,16 @@ independently authorized, risk-guarded, idempotent, audited, reconciled, and
 kill-switchable. See
 `docs/112_shell_accounting_real_broker_order_implementation_gate.md` and
 `docs/113_shell_accounting_real_broker_order_implementation_test_plan.md`.
+
+## TASK-157 Broker Adapter Interface Scaffold
+
+ShellAccounting now has a DataServiceApi-owned broker adapter interface
+scaffold: `ShellAccountingBrokerOrderPort`, minimal order intent request /
+response DTOs, broker order status mapping, and a disabled/null implementation
+that returns disabled with no side effects. A test-only fake lives only under
+`tests/ShellAccountingBrokerAdapterInterfaceScaffold`. This does not implement
+a real broker adapter, import a broker SDK, call sandbox / paper / real broker
+endpoints, place orders, add credentials, change production QML/startup, change
+TASK-148 / TASK-150 / TASK-152 / TASK-154 behavior, execute strategy, enable
+automatic trading, or modify schema. See
+`docs/114_shell_accounting_broker_adapter_interface_scaffold.md`.

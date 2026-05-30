@@ -256,6 +256,9 @@ def main() -> int:
     shell_accounting_real_broker_order_implementation_test_plan_path = (
         root / "docs" / "113_shell_accounting_real_broker_order_implementation_test_plan.md"
     )
+    shell_accounting_broker_adapter_interface_scaffold_path = (
+        root / "docs" / "114_shell_accounting_broker_adapter_interface_scaffold.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -360,6 +363,9 @@ def main() -> int:
     )
     shell_accounting_real_broker_order_implementation_gate_cmake_path = (
         root / "tests" / "ShellAccountingRealBrokerOrderImplementationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_adapter_interface_scaffold_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerAdapterInterfaceScaffold" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1461,6 +1467,9 @@ def main() -> int:
     shell_accounting_real_broker_order_implementation_test_plan = (
         shell_accounting_real_broker_order_implementation_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_adapter_interface_scaffold = (
+        shell_accounting_broker_adapter_interface_scaffold_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1559,6 +1568,9 @@ def main() -> int:
     )
     shell_accounting_real_broker_order_implementation_gate_cmake = (
         shell_accounting_real_broker_order_implementation_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_adapter_interface_scaffold_cmake = (
+        shell_accounting_broker_adapter_interface_scaffold_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6992,6 +7004,10 @@ def main() -> int:
         "docs/113 real broker order implementation test plan exists",
     )
     require(
+        shell_accounting_broker_adapter_interface_scaffold_path.exists(),
+        "docs/114 broker adapter interface scaffold exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
@@ -7018,6 +7034,10 @@ def main() -> int:
     require(
         "docs/113_shell_accounting_real_broker_order_implementation_test_plan.md" in readme,
         "README links docs/113",
+    )
+    require(
+        "docs/114_shell_accounting_broker_adapter_interface_scaffold.md" in readme,
+        "README links docs/114",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7058,6 +7078,10 @@ def main() -> int:
     require(
         "113_shell_accounting_real_broker_order_implementation_test_plan.md" in docs_index,
         "docs/README links docs/113",
+    )
+    require(
+        "114_shell_accounting_broker_adapter_interface_scaffold.md" in docs_index,
+        "docs/README links docs/114",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -7105,6 +7129,15 @@ def main() -> int:
     require("CI network calls disabled" in shell_accounting_real_broker_order_implementation_gate, "docs/112 documents CI broker network ban")
     require("no StrategyEngine execution" in shell_accounting_real_broker_order_implementation_test_plan, "docs/113 forbids strategy execution")
     require("no automatic trading" in shell_accounting_real_broker_order_implementation_test_plan, "docs/113 forbids automatic trading")
+    require("TASK-157" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 mentions TASK-157")
+    require("TASK-157" in codex_prompt_template, "docs/12 mentions TASK-157")
+    require("ShellAccountingBrokerOrderPort" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents broker order port")
+    require("disabled/null adapter" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents disabled/null adapter")
+    require("Test-only Fake Adapter Policy" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents test-only fake")
+    require("No Broker SDK Policy" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents no SDK policy")
+    require("No Network Call Policy" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents no network policy")
+    require("No Credentials Policy" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents no credentials policy")
+    require("No Real Order Placement Policy" in shell_accounting_broker_adapter_interface_scaffold, "docs/114 documents no real order policy")
     require("TASK-153" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-153")
     require(
         "TASK-153" in shell_accounting_production_trading_ui_authorization_test_plan,
@@ -7249,6 +7282,26 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_real_broker_order_implementation_gate_cmake,
             f"TASK-156 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_adapter_interface_scaffold",
+        "shell_accounting_broker_adapter_interface_no_sdk",
+        "shell_accounting_broker_adapter_interface_no_network_call",
+        "shell_accounting_broker_adapter_interface_no_credentials",
+        "shell_accounting_broker_adapter_interface_disabled_default",
+        "shell_accounting_broker_adapter_interface_fake_test_only",
+        "shell_accounting_broker_adapter_interface_no_real_order_id",
+        "shell_accounting_broker_adapter_interface_no_database_write",
+        "shell_accounting_broker_adapter_interface_no_qml_exposure",
+        "shell_accounting_broker_adapter_interface_no_presenter_broker",
+        "shell_accounting_broker_adapter_interface_no_strategy_execution",
+        "shell_accounting_broker_adapter_interface_no_auto_trading",
+        "shell_accounting_broker_adapter_interface_error_mapping",
+        "shell_accounting_broker_adapter_interface_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_adapter_interface_scaffold_cmake,
+            f"TASK-157 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

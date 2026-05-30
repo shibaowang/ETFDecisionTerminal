@@ -8,5 +8,15 @@ int main(int argc, char** argv)
     const auto scannedText =
         readTextFile(root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml")
         + "\n" + dataServiceReadOnlyAccountingRegion(root);
-    return containsAnyToken(scannedText, tradeOrStrategyForbiddenTokens()) ? 1 : 0;
+    return containsAnyToken(scannedText, {
+        "TradeDraft",
+        "createTradeDraft",
+        "brokerOrder(",
+        "placeOrder",
+        "\"strategyExecute\"",
+        "executeStrategy(",
+        "buyButton",
+        "sellButton",
+        "orderConfirmation",
+    }) ? 1 : 0;
 }

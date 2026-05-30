@@ -137,3 +137,11 @@ A future snapshot rebuild implementation PR must state:
 - Evidence that no TradeDraft, trade suggestion, strategy execution, broker
   order, order placement, or trading UI was added.
 - Rollback / disable strategy and all gate test results.
+
+## TASK-142 Implementation Status
+
+TASK-142 implements the authorized preview-only rebuild. The implementation is
+DataService-only, uses TASK-139 read-only replay input, returns an in-memory
+`snapshotRebuildPreview` payload, keeps `snapshotRebuilt:false`, and does not
+write database tables. Snapshot write remains unimplemented and separately
+unauthorized.

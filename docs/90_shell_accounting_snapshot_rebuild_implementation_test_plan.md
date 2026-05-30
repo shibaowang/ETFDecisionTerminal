@@ -120,3 +120,13 @@ not authorize database writes or trading behavior.
 - [ ] User explicitly confirmed snapshot write remains out of scope.
 - [ ] No write SQL tests ready.
 - [ ] No TradeDraft / trading tests ready.
+
+## TASK-142 Post-Implementation Matrix
+
+- Preview implementation tests pass.
+- Preview input comes from TASK-139 read-only replay.
+- Preview output is `snapshotRebuildPreview` in memory only.
+- `snapshotRebuilt` remains false.
+- Snapshot write remains unimplemented.
+- No database write, TradeDraft, trade suggestion, strategy execution, broker
+  order, or trading UI exists.

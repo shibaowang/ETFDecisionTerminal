@@ -314,6 +314,10 @@
   [90_shell_accounting_snapshot_rebuild_implementation_test_plan.md](90_shell_accounting_snapshot_rebuild_implementation_test_plan.md)
   defines the future rebuild-only, in-memory preview, no-write, no-trade, and
   rollback test matrix.
+- ShellAccounting snapshot rebuild implementation:
+  [91_shell_accounting_snapshot_rebuild_implementation.md](91_shell_accounting_snapshot_rebuild_implementation.md)
+  records TASK-142 DataService-internal snapshot rebuild preview. Snapshot write
+  remains unimplemented and separately unauthorized.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

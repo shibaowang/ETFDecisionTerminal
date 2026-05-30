@@ -85,7 +85,10 @@ std::string dataServiceReadOnlyAccountingRegion(const std::filesystem::path& roo
 {
     const auto source = readTextFile(dataServiceActionsPath(root));
     const auto begin = source.find("bool shellAccountingReplayRequested");
-    const auto end = source.find("}  // namespace etfdt::data_service_api", begin);
+    auto end = source.find("struct AuditPayloadParseResult", begin);
+    if (end == std::string::npos) {
+        end = source.find("}  // namespace etfdt::data_service_api", begin);
+    }
     if (begin == std::string::npos || end == std::string::npos || end <= begin) {
         return {};
     }

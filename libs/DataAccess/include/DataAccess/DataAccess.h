@@ -8,6 +8,7 @@
 #include "DataAccess/Repositories.h"
 #include "DataAccess/RepositoryTypes.h"
 #include "DataAccess/ShellAccountingAuditWriteRepository.h"
+#include "DataAccess/ShellAccountingBrokerOrderDryRunRepository.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "DataAccess/SQLiteConnection.h"

@@ -1,0 +1,58 @@
+find_package(Qt6 COMPONENTS Core REQUIRED)
+
+add_library(ShellAccountingBrokerOrderImplementationLib STATIC
+    ShellAccountingBrokerOrderImplementation.cpp
+)
+target_include_directories(ShellAccountingBrokerOrderImplementationLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/tests/ShellAccountingTradeDraftConfirmationImplementation
+)
+target_link_libraries(ShellAccountingBrokerOrderImplementationLib
+    PUBLIC
+        ShellAccountingTradeDraftConfirmationImplementationLib
+        ETFDecisionTerminal::DataServiceApi
+        Qt6::Core
+)
+target_compile_features(ShellAccountingBrokerOrderImplementationLib PUBLIC cxx_std_17)
+
+function(add_shell_accounting_broker_order_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingBrokerOrderImplementationLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(
+        NAME ${ctest_name}
+        COMMAND
+            ${target_name}
+            --source-root ${PROJECT_SOURCE_DIR}
+            --migration ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+    )
+    set_tests_properties(${ctest_name} PROPERTIES
+        ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+    )
+endfunction()
+
+add_shell_accounting_broker_order_test(BrokerOrderImplementationTests test_shell_accounting_broker_order_implementation.cpp shell_accounting_broker_order_implementation)
+add_shell_accounting_broker_order_test(BrokerOrderBoundaryTests test_shell_accounting_broker_order_dataservice_only_boundary.cpp shell_accounting_broker_order_dataservice_only_boundary)
+add_shell_accounting_broker_order_test(BrokerOrderAuthTests test_shell_accounting_broker_order_requires_authorization.cpp shell_accounting_broker_order_requires_authorization)
+add_shell_accounting_broker_order_test(BrokerOrderConfirmedTradeTests test_shell_accounting_broker_order_requires_confirmed_trade.cpp shell_accounting_broker_order_requires_confirmed_trade)
+add_shell_accounting_broker_order_test(BrokerOrderRawUiTests test_shell_accounting_broker_order_rejects_raw_ui_payload.cpp shell_accounting_broker_order_rejects_raw_ui_payload)
+add_shell_accounting_broker_order_test(BrokerOrderDryRunOnlyTests test_shell_accounting_broker_order_dry_run_only.cpp shell_accounting_broker_order_dry_run_only)
+add_shell_accounting_broker_order_test(BrokerOrderDisabledTests test_shell_accounting_broker_order_broker_disabled.cpp shell_accounting_broker_order_broker_disabled)
+add_shell_accounting_broker_order_test(BrokerOrderNoSdkTests test_shell_accounting_broker_order_no_broker_sdk_call.cpp shell_accounting_broker_order_no_broker_sdk_call)
+add_shell_accounting_broker_order_test(BrokerOrderNoRealPlacementTests test_shell_accounting_broker_order_no_real_order_placement.cpp shell_accounting_broker_order_no_real_order_placement)
+add_shell_accounting_broker_order_test(BrokerOrderNoStrategyTests test_shell_accounting_broker_order_no_strategy_execution.cpp shell_accounting_broker_order_no_strategy_execution)
+add_shell_accounting_broker_order_test(BrokerOrderNoAutoTradingTests test_shell_accounting_broker_order_no_auto_trading.cpp shell_accounting_broker_order_no_auto_trading)
+add_shell_accounting_broker_order_test(BrokerOrderAuditRequiredTests test_shell_accounting_broker_order_audit_required.cpp shell_accounting_broker_order_audit_required)
+add_shell_accounting_broker_order_test(BrokerOrderAuditPrivacyTests test_shell_accounting_broker_order_audit_payload_sanitized.cpp shell_accounting_broker_order_audit_payload_sanitized)
+add_shell_accounting_broker_order_test(BrokerOrderAuditFailureTests test_shell_accounting_broker_order_audit_failure_blocks_success.cpp shell_accounting_broker_order_audit_failure_blocks_success)
+add_shell_accounting_broker_order_test(BrokerOrderIdempotencyTests test_shell_accounting_broker_order_idempotency.cpp shell_accounting_broker_order_idempotency)
+add_shell_accounting_broker_order_test(BrokerOrderDuplicateTests test_shell_accounting_broker_order_duplicate_handling.cpp shell_accounting_broker_order_duplicate_handling)
+add_shell_accounting_broker_order_test(BrokerOrderNoTradeLogWriteTests test_shell_accounting_broker_order_no_trade_log_write.cpp shell_accounting_broker_order_no_trade_log_write)
+add_shell_accounting_broker_order_test(BrokerOrderNoExecutionGroupWriteTests test_shell_accounting_broker_order_no_execution_group_write.cpp shell_accounting_broker_order_no_execution_group_write)
+add_shell_accounting_broker_order_test(BrokerOrderNoTradeDraftWriteTests test_shell_accounting_broker_order_no_trade_draft_write.cpp shell_accounting_broker_order_no_trade_draft_write)
+add_shell_accounting_broker_order_test(BrokerOrderRollbackTests test_shell_accounting_broker_order_rollback_ready.cpp shell_accounting_broker_order_rollback_ready)

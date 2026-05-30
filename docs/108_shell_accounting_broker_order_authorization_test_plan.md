@@ -126,3 +126,24 @@ StrategyEngine execution, automatic trading, or order placement.
 - [ ] independent broker authorization token approved.
 - [ ] dry-run / disabled / rollback behavior approved.
 - [ ] audit and privacy policy approved.
+
+## TASK-154 Test Update
+
+TASK-154 converts the no-broker-yet check into an authorized dry-run-only check.
+The positive boundary must find `accounting.broker_order.dry_run` and
+`TASK-154_BROKER_ORDER_DRY_RUN`, while still rejecting broker SDK calls, real
+order placement, StrategyEngine execution, automatic trading, UI direct broker
+calls, raw UI payload orders, and writes outside `audit_log`.
+
+The implementation test matrix now includes:
+
+- DataService-only dry-run boundary
+- confirmed TradeDraft / ledger fact input only
+- explicit authorization token
+- explicit user confirmation
+- dry-run / broker-disabled response semantics
+- sanitized audit event
+- idempotency and duplicate dry-run handling
+- no `trade_log`, `trade_execution_group`, or `trade_draft` write
+- no broker SDK / no real order placement
+- rollback and disable readiness

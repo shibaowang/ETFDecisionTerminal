@@ -241,6 +241,9 @@ def main() -> int:
     shell_accounting_broker_order_authorization_test_plan_path = (
         root / "docs" / "108_shell_accounting_broker_order_authorization_test_plan.md"
     )
+    shell_accounting_broker_order_dry_run_implementation_path = (
+        root / "docs" / "109_shell_accounting_broker_order_dry_run_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -336,6 +339,9 @@ def main() -> int:
     )
     shell_accounting_broker_order_authorization_gate_cmake_path = (
         root / "tests" / "ShellAccountingBrokerOrderAuthorizationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_order_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerOrderImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1422,6 +1428,9 @@ def main() -> int:
     shell_accounting_broker_order_authorization_test_plan = (
         shell_accounting_broker_order_authorization_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_order_dry_run_implementation = (
+        shell_accounting_broker_order_dry_run_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1511,6 +1520,9 @@ def main() -> int:
     )
     shell_accounting_broker_order_authorization_gate_cmake = (
         shell_accounting_broker_order_authorization_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_order_implementation_cmake = (
+        shell_accounting_broker_order_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6924,12 +6936,20 @@ def main() -> int:
         "docs/108 broker order authorization test plan exists",
     )
     require(
+        shell_accounting_broker_order_dry_run_implementation_path.exists(),
+        "docs/109 broker order dry-run implementation exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
     require(
         "docs/108_shell_accounting_broker_order_authorization_test_plan.md" in readme,
         "README links docs/108",
+    )
+    require(
+        "docs/109_shell_accounting_broker_order_dry_run_implementation.md" in readme,
+        "README links docs/109",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -6951,6 +6971,10 @@ def main() -> int:
         "108_shell_accounting_broker_order_authorization_test_plan.md" in docs_index,
         "docs/README links docs/108",
     )
+    require(
+        "109_shell_accounting_broker_order_dry_run_implementation.md" in docs_index,
+        "docs/README links docs/109",
+    )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
         "Test Matrix" in shell_accounting_production_trading_ui_authorization_test_plan,
@@ -6965,6 +6989,13 @@ def main() -> int:
         "docs/108 contains Test matrix",
     )
     require("TASK-153" in codex_prompt_template, "docs/12 mentions TASK-153")
+    require("TASK-154" in shell_accounting_broker_order_dry_run_implementation, "docs/109 mentions TASK-154")
+    require("TASK-154" in codex_prompt_template, "docs/12 mentions TASK-154")
+    require("accounting.broker_order.dry_run" in shell_accounting_broker_order_dry_run_implementation, "docs/109 documents dry-run action")
+    require("TASK-154_BROKER_ORDER_DRY_RUN" in shell_accounting_broker_order_dry_run_implementation, "docs/109 documents dry-run authorization")
+    require("audit_log only" in shell_accounting_broker_order_dry_run_implementation, "docs/109 documents audit-only write")
+    require("no broker SDK" in shell_accounting_broker_order_dry_run_implementation, "docs/109 forbids broker SDK")
+    require("no real order placement" in shell_accounting_broker_order_dry_run_implementation, "docs/109 forbids real order placement")
     require("TASK-153" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-153")
     require(
         "TASK-153" in shell_accounting_production_trading_ui_authorization_test_plan,
@@ -7031,6 +7062,32 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_order_authorization_gate_cmake,
             f"TASK-153 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_order_implementation",
+        "shell_accounting_broker_order_dataservice_only_boundary",
+        "shell_accounting_broker_order_requires_authorization",
+        "shell_accounting_broker_order_requires_confirmed_trade",
+        "shell_accounting_broker_order_rejects_raw_ui_payload",
+        "shell_accounting_broker_order_dry_run_only",
+        "shell_accounting_broker_order_broker_disabled",
+        "shell_accounting_broker_order_no_broker_sdk_call",
+        "shell_accounting_broker_order_no_real_order_placement",
+        "shell_accounting_broker_order_no_strategy_execution",
+        "shell_accounting_broker_order_no_auto_trading",
+        "shell_accounting_broker_order_audit_required",
+        "shell_accounting_broker_order_audit_payload_sanitized",
+        "shell_accounting_broker_order_audit_failure_blocks_success",
+        "shell_accounting_broker_order_idempotency",
+        "shell_accounting_broker_order_duplicate_handling",
+        "shell_accounting_broker_order_no_trade_log_write",
+        "shell_accounting_broker_order_no_execution_group_write",
+        "shell_accounting_broker_order_no_trade_draft_write",
+        "shell_accounting_broker_order_rollback_ready",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_order_implementation_cmake,
+            f"TASK-154 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

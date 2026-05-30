@@ -8,12 +8,13 @@
 namespace etfdt::data_service_api {
 namespace {
 
-constexpr std::array<const char*, 5> kAllowedWriteActions = {
+constexpr std::array<const char*, 6> kAllowedWriteActions = {
     kActionDataAuditAppend,
     kActionAccountingSnapshotWrite,
     kActionAccountingAuditWrite,
     kActionAccountingTradeDraftCreate,
     kActionAccountingTradeDraftConfirm,
+    kActionAccountingBrokerOrderDryRun,
 };
 
 }  // namespace

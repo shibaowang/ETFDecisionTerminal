@@ -383,6 +383,11 @@
   [108_shell_accounting_broker_order_authorization_test_plan.md](108_shell_accounting_broker_order_authorization_test_plan.md)
   defines the TASK-153 no-broker-yet, DataService-only, confirmed-ledger-input,
   no-strategy/no-automatic-trading test matrix.
+- ShellAccounting broker order dry-run implementation:
+  [109_shell_accounting_broker_order_dry_run_implementation.md](109_shell_accounting_broker_order_dry_run_implementation.md)
+  records TASK-154 DataService-only dry-run boundary, sanitized audit-only
+  writes, no broker SDK call, no real order placement, no strategy execution,
+  and no automatic trading.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

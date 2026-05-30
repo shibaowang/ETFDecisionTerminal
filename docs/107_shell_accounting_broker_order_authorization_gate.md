@@ -171,3 +171,15 @@ A future broker order PR must include:
 - no schema migration unless separately authorized
 - full CTest, ShellAccounting gates, broker order gate, and transport 50-repeat
   results
+
+## TASK-154 Dry-run Boundary Update
+
+TASK-154 adds `accounting.broker_order.dry_run` as the only authorized
+broker-order-related boundary. The action requires
+`TASK-154_BROKER_ORDER_DRY_RUN`, accepts only an already confirmed TradeDraft /
+ledger fact, returns `dryRun=true` and `brokerDisabled=true`, writes only a
+sanitized `audit_log` event, and must not call a broker SDK, place a real
+order, execute a strategy, or trigger automatic trading.
+
+The TASK-153 no-broker-yet gate now means no real broker order yet; only the
+DataService-internal authorized dry-run broker order boundary is allowed.

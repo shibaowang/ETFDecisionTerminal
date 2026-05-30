@@ -2658,3 +2658,14 @@ explicitly user-confirmed, dry-run/rollback-ready, audited, and still must not
 accept raw QML payload as an order. See
 `docs/107_shell_accounting_broker_order_authorization_gate.md` and
 `docs/108_shell_accounting_broker_order_authorization_test_plan.md`.
+
+## TASK-154 Broker Order Dry-run Boundary
+
+ShellAccounting now has a DataService-only broker order dry-run boundary:
+`accounting.broker_order.dry_run` with
+`TASK-154_BROKER_ORDER_DRY_RUN`. It accepts only a confirmed TradeDraft /
+ledger fact, returns dry-run / broker-disabled semantics, and writes only a
+sanitized `audit_log` event. It does not call a broker SDK, place a real order,
+write `trade_log`, `trade_execution_group`, or `trade_draft`, execute strategy,
+or enable automatic trading. See
+`docs/109_shell_accounting_broker_order_dry_run_implementation.md`.

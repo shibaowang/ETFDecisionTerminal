@@ -130,3 +130,11 @@ not authorize database writes or trading behavior.
 - Snapshot write remains unimplemented.
 - No database write, TradeDraft, trade suggestion, strategy execution, broker
   order, or trading UI exists.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+TASK-143 adds snapshot write authorization gate tests. Snapshot write remains
+unimplemented. Future implementation must keep TASK-142 preview as the only
+input, require explicit authorization, use table allowlisting, prove no
+forbidden table writes, cover transaction rollback and idempotency, and retain
+no TradeDraft / no strategy / no broker order behavior.

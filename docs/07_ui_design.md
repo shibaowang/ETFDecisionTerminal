@@ -556,3 +556,11 @@ Snapshot rebuild preview is now available only inside the DataService read-only
 response boundary. The UI remains read-only, does not trigger preview
 calculation directly, does not trigger snapshot write, and does not display
 trading buttons.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+The snapshot write authorization gate is added. The UI remains read-only, does
+not trigger snapshot write, does not request write authorization, and does not
+display trading buttons. Future snapshot write implementation must stay behind
+DataService authorization and must not create a UI write trigger unless a later
+task explicitly authorizes one.

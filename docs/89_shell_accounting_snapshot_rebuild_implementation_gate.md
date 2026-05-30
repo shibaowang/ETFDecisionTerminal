@@ -145,3 +145,10 @@ DataService-only, uses TASK-139 read-only replay input, returns an in-memory
 `snapshotRebuildPreview` payload, keeps `snapshotRebuilt:false`, and does not
 write database tables. Snapshot write remains unimplemented and separately
 unauthorized.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+TASK-143 adds the snapshot write authorization gate. Snapshot rebuild preview
+remains preview-only. Snapshot write remains unimplemented and requires a
+separate DataService-only, explicitly authorized, table-allowlisted,
+transactional write task.

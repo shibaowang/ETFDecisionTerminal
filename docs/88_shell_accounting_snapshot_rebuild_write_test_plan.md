@@ -96,3 +96,12 @@ Future rebuild implementation must keep DataService-only coordination,
 read-only replay input, in-memory preview output, no database write, no
 TradeDraft, no trade suggestion, no strategy execution, no broker order, and no
 trading UI.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+TASK-143 adds the snapshot write authorization gate. Snapshot write remains
+unimplemented. Future tests must prove preview-input-only behavior from
+TASK-142, explicit authorization, candidate allowlist tables, forbidden
+`trade_log` / `trade_execution_group` / `trade_draft` / `audit_log` writes,
+transaction rollback, idempotency, no UI-triggered write, no TradeDraft, no
+strategy, no broker order, and rollback readiness.

@@ -115,3 +115,12 @@ derived snapshot table can be persisted.
 
 Snapshot write, schema migration, TradeDraft generation, trade suggestions,
 strategy execution, broker orders, and trading UI require separate future TASKs.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+TASK-143 adds the snapshot write authorization gate. Snapshot write remains
+unimplemented. TASK-142 `snapshotRebuildPreview` is the only future input
+candidate for an authorized write task, and the future write boundary must be
+DataService-only, explicitly authorized, table-allowlisted, transactional,
+idempotent, disableable, rollback-ready, and still no TradeDraft / no trading
+behavior.

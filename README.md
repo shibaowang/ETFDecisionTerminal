@@ -2523,3 +2523,14 @@ is still unimplemented and separately unauthorized. There is still no database
 write, TradeDraft, trade suggestion, strategy execution, broker order, or
 trading UI. See
 `docs/91_shell_accounting_snapshot_rebuild_implementation.md`.
+
+## TASK-143 Snapshot Write Authorization Gate
+
+ShellAccounting now has a snapshot write authorization gate and test plan.
+Snapshot write remains unimplemented, no snapshot tables are written, and
+TASK-142 snapshot rebuild preview remains an in-memory read-only payload. Future
+snapshot write must be DataService-only, explicitly authorized, preview-input
+only, allowlisted by table, transactional, rollback-ready, and still no
+TradeDraft, trade suggestion, strategy execution, broker order, or trading UI.
+See `docs/92_shell_accounting_snapshot_write_authorization_gate.md` and
+`docs/93_shell_accounting_snapshot_write_authorization_test_plan.md`.

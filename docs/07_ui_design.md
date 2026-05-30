@@ -521,3 +521,10 @@ queries through the existing presenter path. The UI remains read-only and must
 not add trade UI, write actions, TradeDraft generation, trade suggestions,
 broker order, strategy execution controls, direct SQLite reads, or
 AccountingEngine replay.
+
+## TASK-138 Replay Snapshot Rebuild Gate
+
+The replay / snapshot rebuild gate is added. The UI remains read-only; replay
+and rebuild are not connected to UI. The UI must not trigger snapshot rebuild,
+snapshot writes, TradeDraft generation, trade suggestions, broker order,
+strategy execution, or trading buttons.

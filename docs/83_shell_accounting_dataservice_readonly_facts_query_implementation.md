@@ -130,3 +130,11 @@ query implementation.
 The next phases still require separate authorization for AccountingEngine
 replay, snapshot rebuild, richer stale-data detection, TradeDraft, trade
 suggestions, strategy execution, broker order, and any write-enabled action.
+
+## TASK-138 Replay Snapshot Rebuild Gate
+
+TASK-138 adds the replay snapshot rebuild gate after this implementation. The
+TASK-137 facts query remains a read-only fallback. AccountingEngine replay,
+snapshot rebuild, snapshot write, TradeDraft generation, trade suggestions,
+strategy execution, broker order, and trading UI are still not implemented or
+authorized.

@@ -951,3 +951,17 @@ v0.1 草案。
 - Do not call AccountingEngine replay, `replayFromFacts`, snapshot rebuild,
   correction, reversal, TradeDraft generation, trade suggestion, broker order,
   strategy execution, or any write-enabled action without a separate task.
+
+## TASK-138 ShellAccounting Replay Snapshot Rebuild Gate
+
+- Future replay / rebuild tasks must reference
+  `docs/84_shell_accounting_replay_snapshot_rebuild_gate.md` and
+  `docs/85_shell_accounting_replay_snapshot_rebuild_test_plan.md`.
+- TASK-138 is a gate only. It does not authorize AccountingEngine replay,
+  `replayFromFacts`, snapshot rebuild, snapshot writes, TradeDraft generation,
+  trade suggestions, strategy execution, broker order, or trading UI.
+- Do not add direct Shell / QML / Presenter AccountingEngine access.
+- Do not add direct Shell / QML / Presenter SQLite or DataAccess access.
+- Do not add snapshot write without explicit authorization.
+- The TASK-137 read-only facts query remains the fallback if replay or rebuild
+  is disabled in a future implementation.

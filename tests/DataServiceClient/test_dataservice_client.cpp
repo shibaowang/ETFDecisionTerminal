@@ -133,6 +133,40 @@ void expectSuccessfulResponse(
     }
 }
 
+void expectReadOnlyFactsEmptyPayload(
+    const QJsonObject& payload,
+    std::string_view action,
+    std::string_view outputArray,
+    std::string_view label)
+{
+    expectEqual(payload.value("action").toString().toStdString(), action, std::string(label) + " action");
+    expectEqual(payload.value("module").toString().toStdString(), "accounting", std::string(label) + " module");
+    expectTrue(payload.value("implemented").toBool(false), std::string(label) + " implemented=true");
+    expectTrue(payload.value("readOnly").toBool(false), std::string(label) + " readOnly=true");
+    expectTrue(!payload.value("writeEnabled").toBool(true), std::string(label) + " writeEnabled=false");
+    expectTrue(!payload.value("replayExecuted").toBool(true), std::string(label) + " replayExecuted=false");
+    expectTrue(!payload.value("snapshotRebuilt").toBool(true), std::string(label) + " snapshotRebuilt=false");
+    expectTrue(payload.value("sqliteAccessed").toBool(false), std::string(label) + " sqliteAccessed=true");
+    expectTrue(
+        !payload.value("accountingEngineCalled").toBool(true),
+        std::string(label) + " accountingEngineCalled=false");
+    expectTrue(
+        !payload.value("tradeDraftGenerated").toBool(true),
+        std::string(label) + " tradeDraftGenerated=false");
+    expectTrue(
+        !payload.value("strategyExecuted").toBool(true),
+        std::string(label) + " strategyExecuted=false");
+    expectEqual(payload.value("status").toString().toStdString(), "EMPTY", std::string(label) + " status");
+    expectEqual(
+        payload.value("dataQualityStatus").toString().toStdString(),
+        "OK",
+        std::string(label) + " dataQualityStatus");
+    expectTrue(!payload.value("hasRows").toBool(true), std::string(label) + " hasRows=false");
+    expectTrue(
+        payload.value(QString::fromStdString(std::string(outputArray))).toArray().isEmpty(),
+        std::string(label) + " returns empty output array");
+}
+
 void testDataServiceClient(const std::filesystem::path& migrationPath)
 {
     const auto tempDir = createTempDirectory();
@@ -267,23 +301,7 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     expectSuccessfulResponse(positionList, "client.positionList");
     if (positionList) {
         const auto payload = payloadObject(positionList.value());
-        expectEqual(payload.value("action").toString().toStdString(), "position.list", "positionList action");
-        expectEqual(payload.value("module").toString().toStdString(), "accounting", "positionList module");
-        expectTrue(!payload.value("implemented").toBool(true), "positionList implemented=false");
-        expectTrue(payload.value("readOnly").toBool(false), "positionList readOnly=true");
-        expectTrue(!payload.value("writeEnabled").toBool(true), "positionList writeEnabled=false");
-        expectTrue(!payload.value("replayExecuted").toBool(true), "positionList replayExecuted=false");
-        expectTrue(!payload.value("sqliteAccessed").toBool(true), "positionList sqliteAccessed=false");
-        expectTrue(
-            !payload.value("accountingEngineCalled").toBool(true),
-            "positionList accountingEngineCalled=false");
-        expectEqual(
-            payload.value("status").toString().toStdString(),
-            "POSITION_LIST_NOT_AVAILABLE",
-            "positionList status");
-        expectTrue(
-            payload.value("futureOutput").toObject().value("positions").toArray().isEmpty(),
-            "positionList wrapper returns no real positions");
+        expectReadOnlyFactsEmptyPayload(payload, "position.list", "positions", "positionList");
     }
     expectEqual(
         countRows(connection, "audit_log"),
@@ -294,31 +312,11 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     expectSuccessfulResponse(cashSummary, "client.cashSummary");
     if (cashSummary) {
         const auto payload = payloadObject(cashSummary.value());
-        expectEqual(payload.value("action").toString().toStdString(), "cash.summary", "cashSummary action");
-        expectEqual(payload.value("module").toString().toStdString(), "accounting", "cashSummary module");
-        expectTrue(!payload.value("implemented").toBool(true), "cashSummary implemented=false");
-        expectTrue(payload.value("readOnly").toBool(false), "cashSummary readOnly=true");
-        expectTrue(!payload.value("writeEnabled").toBool(true), "cashSummary writeEnabled=false");
-        expectTrue(!payload.value("replayExecuted").toBool(true), "cashSummary replayExecuted=false");
-        expectTrue(!payload.value("sqliteAccessed").toBool(true), "cashSummary sqliteAccessed=false");
-        expectTrue(!payload.value("cashFactsAccessed").toBool(true), "cashSummary cashFactsAccessed=false");
-        expectTrue(!payload.value("snapshotAccessed").toBool(true), "cashSummary snapshotAccessed=false");
-        expectTrue(
-            !payload.value("portfolioSummaryAccessed").toBool(true),
-            "cashSummary portfolioSummaryAccessed=false");
-        expectTrue(
-            !payload.value("accountingEngineCalled").toBool(true),
-            "cashSummary accountingEngineCalled=false");
-        expectEqual(
-            payload.value("status").toString().toStdString(),
-            "CASH_SUMMARY_NOT_AVAILABLE",
-            "cashSummary status");
-        const auto futureOutput = payload.value("futureOutput").toObject();
-        expectTrue(futureOutput.value("cashSummary").isNull(), "cashSummary wrapper returns no real summary");
-        expectTrue(
-            futureOutput.value("accountCashSummaries").toArray().isEmpty(),
-            "cashSummary wrapper returns no account cash summaries");
-        expectTrue(!payload.contains("cashBalance"), "cashSummary wrapper returns no real cashBalance");
+        expectReadOnlyFactsEmptyPayload(
+            payload,
+            "cash.summary",
+            "accountCashSummaries",
+            "cashSummary");
     }
     expectEqual(
         countRows(connection, "audit_log"),
@@ -329,43 +327,11 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     expectSuccessfulResponse(portfolioPnlSummary, "client.portfolioPnlSummary");
     if (portfolioPnlSummary) {
         const auto payload = payloadObject(portfolioPnlSummary.value());
-        expectEqual(
-            payload.value("action").toString().toStdString(),
+        expectReadOnlyFactsEmptyPayload(
+            payload,
             "portfolio.pnl.summary",
-            "portfolioPnlSummary action");
-        expectEqual(
-            payload.value("module").toString().toStdString(),
-            "accounting",
-            "portfolioPnlSummary module");
-        expectTrue(!payload.value("implemented").toBool(true), "portfolioPnlSummary implemented=false");
-        expectTrue(payload.value("readOnly").toBool(false), "portfolioPnlSummary readOnly=true");
-        expectTrue(!payload.value("writeEnabled").toBool(true), "portfolioPnlSummary writeEnabled=false");
-        expectTrue(!payload.value("replayExecuted").toBool(true), "portfolioPnlSummary replayExecuted=false");
-        expectTrue(!payload.value("sqliteAccessed").toBool(true), "portfolioPnlSummary sqliteAccessed=false");
-        expectTrue(!payload.value("tradeFactsAccessed").toBool(true), "portfolioPnlSummary tradeFactsAccessed=false");
-        expectTrue(!payload.value("cashFactsAccessed").toBool(true), "portfolioPnlSummary cashFactsAccessed=false");
-        expectTrue(
-            !payload.value("marketPriceFactsAccessed").toBool(true),
-            "portfolioPnlSummary marketPriceFactsAccessed=false");
-        expectTrue(!payload.value("snapshotAccessed").toBool(true), "portfolioPnlSummary snapshotAccessed=false");
-        expectTrue(
-            !payload.value("portfolioSummaryAccessed").toBool(true),
-            "portfolioPnlSummary portfolioSummaryAccessed=false");
-        expectTrue(
-            !payload.value("accountingEngineCalled").toBool(true),
-            "portfolioPnlSummary accountingEngineCalled=false");
-        expectEqual(
-            payload.value("status").toString().toStdString(),
-            "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
-            "portfolioPnlSummary status");
-        const auto futureOutput = payload.value("futureOutput").toObject();
-        expectTrue(
-            futureOutput.value("portfolioPnl").isNull(),
-            "portfolioPnlSummary wrapper returns no real pnl summary");
-        expectTrue(!payload.contains("totalAssets"), "portfolioPnlSummary wrapper returns no real totalAssets");
-        expectTrue(!payload.contains("realizedPnl"), "portfolioPnlSummary wrapper returns no real realizedPnl");
-        expectTrue(!payload.contains("unrealizedPnl"), "portfolioPnlSummary wrapper returns no real unrealizedPnl");
-        expectTrue(!payload.contains("totalPnl"), "portfolioPnlSummary wrapper returns no real totalPnl");
+            "portfolioPnlSummaries",
+            "portfolioPnlSummary");
     }
     expectEqual(
         countRows(connection, "audit_log"),
@@ -376,52 +342,11 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     expectSuccessfulResponse(basePositionSummary, "client.basePositionSummary");
     if (basePositionSummary) {
         const auto payload = payloadObject(basePositionSummary.value());
-        expectEqual(
-            payload.value("action").toString().toStdString(),
+        expectReadOnlyFactsEmptyPayload(
+            payload,
             "base_position.summary",
-            "basePositionSummary action");
-        expectEqual(
-            payload.value("module").toString().toStdString(),
-            "accounting",
-            "basePositionSummary module");
-        expectTrue(!payload.value("implemented").toBool(true), "basePositionSummary implemented=false");
-        expectTrue(payload.value("readOnly").toBool(false), "basePositionSummary readOnly=true");
-        expectTrue(!payload.value("writeEnabled").toBool(true), "basePositionSummary writeEnabled=false");
-        expectTrue(!payload.value("replayExecuted").toBool(true), "basePositionSummary replayExecuted=false");
-        expectTrue(!payload.value("sqliteAccessed").toBool(true), "basePositionSummary sqliteAccessed=false");
-        expectTrue(!payload.value("tradeFactsAccessed").toBool(true), "basePositionSummary tradeFactsAccessed=false");
-        expectTrue(!payload.value("snapshotAccessed").toBool(true), "basePositionSummary snapshotAccessed=false");
-        expectTrue(
-            !payload.value("positionSnapshotAccessed").toBool(true),
-            "basePositionSummary positionSnapshotAccessed=false");
-        expectTrue(
-            !payload.value("portfolioSummaryAccessed").toBool(true),
-            "basePositionSummary portfolioSummaryAccessed=false");
-        expectTrue(
-            !payload.value("accountingEngineCalled").toBool(true),
-            "basePositionSummary accountingEngineCalled=false");
-        expectTrue(
-            !payload.value("tradeDraftGenerated").toBool(true),
-            "basePositionSummary tradeDraftGenerated=false");
-        expectTrue(
-            !payload.value("tradeSuggestionGenerated").toBool(true),
-            "basePositionSummary tradeSuggestionGenerated=false");
-        expectTrue(!payload.value("strategyExecuted").toBool(true), "basePositionSummary strategyExecuted=false");
-        expectEqual(
-            payload.value("status").toString().toStdString(),
-            "BASE_POSITION_SUMMARY_NOT_AVAILABLE",
-            "basePositionSummary status");
-        const auto futureOutput = payload.value("futureOutput").toObject();
-        expectTrue(
-            futureOutput.value("basePosition").isNull(),
-            "basePositionSummary wrapper returns no real base position");
-        expectTrue(!payload.contains("targetBaseRatioText"), "basePositionSummary wrapper returns no target base ratio");
-        expectTrue(
-            !payload.contains("lockedBaseAmountText"),
-            "basePositionSummary wrapper returns no locked base amount");
-        expectTrue(
-            !payload.contains("sellableAboveBaseAmountText"),
-            "basePositionSummary wrapper returns no sellable amount");
+            "basePositions",
+            "basePositionSummary");
     }
     expectEqual(
         countRows(connection, "audit_log"),
@@ -432,61 +357,11 @@ void testDataServiceClient(const std::filesystem::path& migrationPath)
     expectSuccessfulResponse(sniperPoolSummary, "client.sniperPoolSummary");
     if (sniperPoolSummary) {
         const auto payload = payloadObject(sniperPoolSummary.value());
-        expectEqual(
-            payload.value("action").toString().toStdString(),
+        expectReadOnlyFactsEmptyPayload(
+            payload,
             "sniper_pool.summary",
-            "sniperPoolSummary action");
-        expectEqual(
-            payload.value("module").toString().toStdString(),
-            "accounting",
-            "sniperPoolSummary module");
-        expectTrue(!payload.value("implemented").toBool(true), "sniperPoolSummary implemented=false");
-        expectTrue(payload.value("readOnly").toBool(false), "sniperPoolSummary readOnly=true");
-        expectTrue(!payload.value("writeEnabled").toBool(true), "sniperPoolSummary writeEnabled=false");
-        expectTrue(!payload.value("replayExecuted").toBool(true), "sniperPoolSummary replayExecuted=false");
-        expectTrue(!payload.value("sqliteAccessed").toBool(true), "sniperPoolSummary sqliteAccessed=false");
-        expectTrue(!payload.value("tradeFactsAccessed").toBool(true), "sniperPoolSummary tradeFactsAccessed=false");
-        expectTrue(!payload.value("snapshotAccessed").toBool(true), "sniperPoolSummary snapshotAccessed=false");
-        expectTrue(
-            !payload.value("positionSnapshotAccessed").toBool(true),
-            "sniperPoolSummary positionSnapshotAccessed=false");
-        expectTrue(
-            !payload.value("cashSnapshotAccessed").toBool(true),
-            "sniperPoolSummary cashSnapshotAccessed=false");
-        expectTrue(
-            !payload.value("portfolioSummaryAccessed").toBool(true),
-            "sniperPoolSummary portfolioSummaryAccessed=false");
-        expectTrue(
-            !payload.value("accountingEngineCalled").toBool(true),
-            "sniperPoolSummary accountingEngineCalled=false");
-        expectTrue(
-            !payload.value("sniperPoolCalculated").toBool(true),
-            "sniperPoolSummary sniperPoolCalculated=false");
-        expectTrue(
-            !payload.value("tierSummaryCalculated").toBool(true),
-            "sniperPoolSummary tierSummaryCalculated=false");
-        expectTrue(
-            !payload.value("tradeDraftGenerated").toBool(true),
-            "sniperPoolSummary tradeDraftGenerated=false");
-        expectTrue(
-            !payload.value("tradeSuggestionGenerated").toBool(true),
-            "sniperPoolSummary tradeSuggestionGenerated=false");
-        expectTrue(!payload.value("strategyExecuted").toBool(true), "sniperPoolSummary strategyExecuted=false");
-        expectEqual(
-            payload.value("status").toString().toStdString(),
-            "SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
-            "sniperPoolSummary status");
-        const auto futureOutput = payload.value("futureOutput").toObject();
-        expectTrue(
-            futureOutput.value("sniperPool").isNull(),
-            "sniperPoolSummary wrapper returns no real sniper pool");
-        expectTrue(
-            futureOutput.value("tierSummary").toArray().isEmpty(),
-            "sniperPoolSummary wrapper returns no real tier summary");
-        expectTrue(!payload.contains("poolAmountText"), "sniperPoolSummary wrapper returns no pool amount");
-        expectTrue(!payload.contains("remainingAmountText"), "sniperPoolSummary wrapper returns no remaining amount");
-        expectTrue(!payload.contains("T1"), "sniperPoolSummary wrapper returns no T1 tier");
-        expectTrue(!payload.contains("T6"), "sniperPoolSummary wrapper returns no T6 tier");
+            "tierSummary",
+            "sniperPoolSummary");
     }
     expectEqual(
         countRows(connection, "audit_log"),

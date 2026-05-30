@@ -163,6 +163,9 @@ def main() -> int:
     shell_accounting_dataservice_facts_query_test_plan_path = (
         root / "docs" / "82_shell_accounting_dataservice_readonly_facts_query_test_plan.md"
     )
+    shell_accounting_dataservice_facts_query_implementation_path = (
+        root / "docs" / "83_shell_accounting_dataservice_readonly_facts_query_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -207,6 +210,9 @@ def main() -> int:
     )
     shell_accounting_dataservice_facts_query_gate_cmake_path = (
         root / "tests" / "ShellAccountingDataServiceFactsQueryGate" / "CMakeLists.txt"
+    )
+    shell_accounting_dataservice_facts_query_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingDataServiceFactsQueryImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1215,6 +1221,9 @@ def main() -> int:
     shell_accounting_dataservice_facts_query_test_plan = (
         shell_accounting_dataservice_facts_query_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_dataservice_facts_query_implementation = (
+        shell_accounting_dataservice_facts_query_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1253,6 +1262,9 @@ def main() -> int:
     )
     shell_accounting_dataservice_facts_query_gate_cmake = (
         shell_accounting_dataservice_facts_query_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_dataservice_facts_query_implementation_cmake = (
+        shell_accounting_dataservice_facts_query_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -2144,177 +2156,29 @@ def main() -> int:
     require("sendAction(kActionBasePositionSummary" in dataservice_client_source, "DataServiceClient wrapper sends base_position.summary")
     require("kActionSniperPoolSummary" in dataservice_client_source, "DataServiceClient has sniper_pool.summary action constant")
     require("sendAction(kActionSniperPoolSummary" in dataservice_client_source, "DataServiceClient wrapper sends sniper_pool.summary")
-    require("POSITION_LIST_NOT_AVAILABLE" in position_list_guard_source, "position.list guard source returns not available status")
-    require('"implemented":false' in position_list_guard_source, "position.list guard source sets implemented=false")
-    require('"readOnly":true' in position_list_guard_source, "position.list guard source sets readOnly=true")
-    require('"writeEnabled":false' in position_list_guard_source, "position.list guard source sets writeEnabled=false")
-    require('"sqliteAccessed":false' in position_list_guard_source, "position.list guard source sets sqliteAccessed=false")
-    require(
-        '"accountingEngineCalled":false' in position_list_guard_source,
-        "position.list guard source sets accountingEngineCalled=false",
-    )
-    require("AccountingEngine/" not in position_list_guard_source, "position.list guard source does not include AccountingEngine")
-    require("DataAccess" not in position_list_guard_source, "position.list guard source does not reference DataAccess repository")
-    require("data.audit.append" not in position_list_guard_source, "position.list guard source does not call data.audit.append")
-    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
-        require(forbidden_sql not in position_list_guard_source, f"position.list guard source does not contain {forbidden_sql}")
-    require("CASH_SUMMARY_NOT_AVAILABLE" in cash_summary_guard_source, "cash.summary guard source returns not available status")
-    require('"implemented":false' in cash_summary_guard_source, "cash.summary guard source sets implemented=false")
-    require('"readOnly":true' in cash_summary_guard_source, "cash.summary guard source sets readOnly=true")
-    require('"writeEnabled":false' in cash_summary_guard_source, "cash.summary guard source sets writeEnabled=false")
-    require('"sqliteAccessed":false' in cash_summary_guard_source, "cash.summary guard source sets sqliteAccessed=false")
-    require('"cashFactsAccessed":false' in cash_summary_guard_source, "cash.summary guard source sets cashFactsAccessed=false")
-    require('"snapshotAccessed":false' in cash_summary_guard_source, "cash.summary guard source sets snapshotAccessed=false")
-    require(
-        '"portfolioSummaryAccessed":false' in cash_summary_guard_source,
-        "cash.summary guard source sets portfolioSummaryAccessed=false",
-    )
-    require('"accountingEngineCalled":false' in cash_summary_guard_source, "cash.summary guard source sets accountingEngineCalled=false")
-    require("CashSummaryResponse" in cash_summary_guard_source, "cash.summary guard source declares future CashSummaryResponse")
-    require("cash_snapshot" in cash_summary_guard_source, "cash.summary guard source forbids cash_snapshot source/write")
-    require("portfolio_summary" in cash_summary_guard_source, "cash.summary guard source forbids portfolio_summary source/write")
-    require("AccountingEngine/" not in cash_summary_guard_source, "cash.summary guard source does not include AccountingEngine")
-    require("DataAccess" not in cash_summary_guard_source, "cash.summary guard source does not reference DataAccess repository")
-    require("data.audit.append" not in cash_summary_guard_source, "cash.summary guard source does not call data.audit.append")
-    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
-        require(forbidden_sql not in cash_summary_guard_source, f"cash.summary guard source does not contain {forbidden_sql}")
-    require(
-        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE" in portfolio_pnl_summary_guard_source,
-        "portfolio.pnl.summary guard source returns not available status",
-    )
-    require('"implemented":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets implemented=false")
-    require('"readOnly":true' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets readOnly=true")
-    require('"writeEnabled":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets writeEnabled=false")
-    require('"sqliteAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets sqliteAccessed=false")
-    require('"tradeFactsAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets tradeFactsAccessed=false")
-    require('"cashFactsAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets cashFactsAccessed=false")
-    require(
-        '"marketPriceFactsAccessed":false' in portfolio_pnl_summary_guard_source,
-        "portfolio.pnl.summary guard source sets marketPriceFactsAccessed=false",
-    )
-    require('"snapshotAccessed":false' in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source sets snapshotAccessed=false")
-    require(
-        '"portfolioSummaryAccessed":false' in portfolio_pnl_summary_guard_source,
-        "portfolio.pnl.summary guard source sets portfolioSummaryAccessed=false",
-    )
-    require(
-        '"accountingEngineCalled":false' in portfolio_pnl_summary_guard_source,
-        "portfolio.pnl.summary guard source sets accountingEngineCalled=false",
-    )
-    require(
-        "PortfolioPnlSummaryResponse" in portfolio_pnl_summary_guard_source,
-        "portfolio.pnl.summary guard source declares future PortfolioPnlSummaryResponse",
-    )
-    require("cash_snapshot" in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source forbids cash_snapshot source/write")
-    require("position_snapshot" in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source forbids position_snapshot source/write")
-    require("portfolio_summary" in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source forbids portfolio_summary source/write")
-    require("AccountingEngine/" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not include AccountingEngine")
-    require("DataAccess" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not reference DataAccess repository")
-    require("data.audit.append" not in portfolio_pnl_summary_guard_source, "portfolio.pnl.summary guard source does not call data.audit.append")
-    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
-        require(forbidden_sql not in portfolio_pnl_summary_guard_source, f"portfolio.pnl.summary guard source does not contain {forbidden_sql}")
-    require(
-        "BASE_POSITION_SUMMARY_NOT_AVAILABLE" in base_position_summary_guard_source,
-        "base_position.summary guard source returns not available status",
-    )
-    require('"implemented":false' in base_position_summary_guard_source, "base_position.summary guard source sets implemented=false")
-    require('"readOnly":true' in base_position_summary_guard_source, "base_position.summary guard source sets readOnly=true")
-    require('"writeEnabled":false' in base_position_summary_guard_source, "base_position.summary guard source sets writeEnabled=false")
-    require('"sqliteAccessed":false' in base_position_summary_guard_source, "base_position.summary guard source sets sqliteAccessed=false")
-    require('"tradeFactsAccessed":false' in base_position_summary_guard_source, "base_position.summary guard source sets tradeFactsAccessed=false")
-    require('"snapshotAccessed":false' in base_position_summary_guard_source, "base_position.summary guard source sets snapshotAccessed=false")
-    require(
-        '"positionSnapshotAccessed":false' in base_position_summary_guard_source,
-        "base_position.summary guard source sets positionSnapshotAccessed=false",
-    )
-    require(
-        '"portfolioSummaryAccessed":false' in base_position_summary_guard_source,
-        "base_position.summary guard source sets portfolioSummaryAccessed=false",
-    )
-    require(
-        '"accountingEngineCalled":false' in base_position_summary_guard_source,
-        "base_position.summary guard source sets accountingEngineCalled=false",
-    )
-    require(
-        '"tradeDraftGenerated":false' in base_position_summary_guard_source,
-        "base_position.summary guard source sets tradeDraftGenerated=false",
-    )
-    require(
-        '"tradeSuggestionGenerated":false' in base_position_summary_guard_source,
-        "base_position.summary guard source sets tradeSuggestionGenerated=false",
-    )
-    require('"strategyExecuted":false' in base_position_summary_guard_source, "base_position.summary guard source sets strategyExecuted=false")
-    require(
-        "BasePositionSummaryResponse" in base_position_summary_guard_source,
-        "base_position.summary guard source declares future BasePositionSummaryResponse",
-    )
-    require("position_snapshot" in base_position_summary_guard_source, "base_position.summary guard source forbids position_snapshot")
-    require("portfolio_summary" in base_position_summary_guard_source, "base_position.summary guard source forbids portfolio_summary")
-    require("trade_draft_generation" in base_position_summary_guard_source, "base_position.summary guard source forbids trade draft generation")
-    require("trade_suggestion_generation" in base_position_summary_guard_source, "base_position.summary guard source forbids trade suggestion generation")
-    require("AccountingEngine/" not in base_position_summary_guard_source, "base_position.summary guard source does not include AccountingEngine")
-    require("DataAccess" not in base_position_summary_guard_source, "base_position.summary guard source does not reference DataAccess repository")
-    require("data.audit.append" not in base_position_summary_guard_source, "base_position.summary guard source does not call data.audit.append")
-    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
-        require(forbidden_sql not in base_position_summary_guard_source, f"base_position.summary guard source does not contain {forbidden_sql}")
-    require(
-        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source returns not available status",
-    )
-    require('"implemented":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets implemented=false")
-    require('"readOnly":true' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets readOnly=true")
-    require('"writeEnabled":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets writeEnabled=false")
-    require('"sqliteAccessed":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets sqliteAccessed=false")
-    require('"tradeFactsAccessed":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets tradeFactsAccessed=false")
-    require('"snapshotAccessed":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets snapshotAccessed=false")
-    require(
-        '"positionSnapshotAccessed":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets positionSnapshotAccessed=false",
-    )
-    require(
-        '"cashSnapshotAccessed":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets cashSnapshotAccessed=false",
-    )
-    require(
-        '"portfolioSummaryAccessed":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets portfolioSummaryAccessed=false",
-    )
-    require(
-        '"accountingEngineCalled":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets accountingEngineCalled=false",
-    )
-    require(
-        '"sniperPoolCalculated":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets sniperPoolCalculated=false",
-    )
-    require(
-        '"tierSummaryCalculated":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets tierSummaryCalculated=false",
-    )
-    require(
-        '"tradeDraftGenerated":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets tradeDraftGenerated=false",
-    )
-    require(
-        '"tradeSuggestionGenerated":false' in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source sets tradeSuggestionGenerated=false",
-    )
-    require('"strategyExecuted":false' in sniper_pool_summary_guard_source, "sniper_pool.summary guard source sets strategyExecuted=false")
-    require(
-        "SniperPoolSummaryResponse" in sniper_pool_summary_guard_source,
-        "sniper_pool.summary guard source declares future SniperPoolSummaryResponse",
-    )
-    require("tierSummary" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source declares empty tierSummary")
-    require("position_snapshot" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids position_snapshot")
-    require("cash_snapshot" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids cash_snapshot")
-    require("portfolio_summary" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids portfolio_summary")
-    require("trade_draft_generation" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids trade draft generation")
-    require("trade_suggestion_generation" in sniper_pool_summary_guard_source, "sniper_pool.summary guard source forbids trade suggestion generation")
-    require("AccountingEngine/" not in sniper_pool_summary_guard_source, "sniper_pool.summary guard source does not include AccountingEngine")
-    require("DataAccess" not in sniper_pool_summary_guard_source, "sniper_pool.summary guard source does not reference DataAccess repository")
-    require("data.audit.append" not in sniper_pool_summary_guard_source, "sniper_pool.summary guard source does not call data.audit.append")
-    for forbidden_sql in ["INSERT", "UPDATE", "DELETE", "CREATE", "DROP", "ALTER", "REPLACE", "VACUUM"]:
-        require(forbidden_sql not in sniper_pool_summary_guard_source, f"sniper_pool.summary guard source does not contain {forbidden_sql}")
+    for action_source, label in [
+        (position_list_guard_source, "position.list"),
+        (cash_summary_guard_source, "cash.summary"),
+        (portfolio_pnl_summary_guard_source, "portfolio.pnl.summary"),
+        (base_position_summary_guard_source, "base_position.summary"),
+        (sniper_pool_summary_guard_source, "sniper_pool.summary"),
+    ]:
+        require("ShellAccountingReadOnlyFactsQuery" in action_source, f"{label} uses read-only facts query")
+        require("shellAccountingPayloadPrefix" in action_source, f"{label} uses shared read-only payload")
+        require("data.audit.append" not in action_source, f"{label} source does not call data.audit.append")
+        require("AccountingReplayEngine" not in action_source, f"{label} source does not call replay engine")
+    for payload_token in [
+        '\\"implemented\\":true',
+        '\\"readOnly\\":true',
+        '\\"writeEnabled\\":false',
+        '\\"sqliteAccessed\\":true',
+        '\\"snapshotRebuilt\\":false',
+        '\\"accountingEngineCalled\\":false',
+        '\\"tradeDraftGenerated\\":false',
+    ]:
+        require(payload_token in dataservice_actions_source, f"DataService read-only payload includes {payload_token}")
+    for forbidden_sql in ["INSERT ", "UPDATE ", "DELETE ", "CREATE TABLE", "DROP ", "ALTER ", "REPLACE ", "VACUUM"]:
+        require(forbidden_sql not in dataservice_actions_source, f"DataService accounting actions do not contain {forbidden_sql}")
     require("dataservice_position_list_guard" in dataservice_test_cmake, "DataService CMake registers position.list guard test")
     require("dataservice_position_list_no_write" in dataservice_test_cmake, "DataService CMake registers position.list no-write test")
     require("dataservice_cash_summary_guard" in dataservice_test_cmake, "DataService CMake registers cash.summary guard test")
@@ -2364,85 +2228,34 @@ def main() -> int:
         "DataServiceClient CMake registers sniper_pool.summary client guard test",
     )
     require("kActionPositionList" in dataservice_readonly_test, "DataService test calls position.list action")
-    require("POSITION_LIST_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks position.list status")
-    require("position.list does not return real positions" in dataservice_readonly_test, "DataService test checks no real positions")
+    require("POSITION_LIST_EMPTY" in dataservice_readonly_test, "DataService test checks position.list empty status")
+    require("position.list returns empty positions" in dataservice_readonly_test, "DataService test checks empty positions")
     require("expectProtectedTableCountsUnchanged" in dataservice_readonly_test, "DataService test checks position.list no-write")
     require("kActionCashSummary" in dataservice_readonly_test, "DataService test calls cash.summary action")
-    require("CASH_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test, "DataService test checks cash.summary status")
-    require("cash.summary does not return real cashBalance" in dataservice_readonly_test, "DataService test checks no real cashBalance")
-    require("cash.summary cashFactsAccessed=false" in dataservice_readonly_test, "DataService test checks cash facts not accessed")
-    require("cash.summary snapshotAccessed=false" in dataservice_readonly_test, "DataService test checks snapshot not accessed")
-    require(
-        "cash.summary portfolioSummaryAccessed=false" in dataservice_readonly_test,
-        "DataService test checks portfolio summary not accessed",
-    )
+    require("CASH_SUMMARY_EMPTY" in dataservice_readonly_test, "DataService test checks cash.summary empty status")
+    require("cash.summary returns empty accountCashSummaries" in dataservice_readonly_test, "DataService test checks empty cash summaries")
     require("kActionPortfolioPnlSummary" in dataservice_readonly_test, "DataService test calls portfolio.pnl.summary action")
     require(
-        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test,
-        "DataService test checks portfolio.pnl.summary status",
+        "PORTFOLIO_PNL_SUMMARY_EMPTY" in dataservice_readonly_test,
+        "DataService test checks portfolio.pnl.summary empty status",
     )
-    require(
-        "portfolio.pnl.summary tradeFactsAccessed=false" in dataservice_readonly_test,
-        "DataService test checks trade facts not accessed",
-    )
-    require(
-        "portfolio.pnl.summary cashFactsAccessed=false" in dataservice_readonly_test,
-        "DataService test checks cash facts not accessed for PnL",
-    )
-    require(
-        "portfolio.pnl.summary marketPriceFactsAccessed=false" in dataservice_readonly_test,
-        "DataService test checks market price facts not accessed",
-    )
-    require(
-        "portfolio.pnl.summary portfolioSummaryAccessed=false" in dataservice_readonly_test,
-        "DataService test checks portfolio summary not accessed for PnL",
-    )
-    require(
-        "portfolio.pnl.summary does not return real totalAssets" in dataservice_readonly_test,
-        "DataService test checks no real totalAssets",
-    )
+    require("portfolio.pnl.summary returns empty portfolioPnlSummaries" in dataservice_readonly_test, "DataService test checks empty PnL summaries")
     require("kActionBasePositionSummary" in dataservice_readonly_test, "DataService test calls base_position.summary action")
     require(
-        "BASE_POSITION_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test,
-        "DataService test checks base_position.summary status",
+        "BASE_POSITION_SUMMARY_EMPTY" in dataservice_readonly_test,
+        "DataService test checks base_position.summary empty status",
     )
-    require(
-        "base_position.summary tradeFactsAccessed=false" in dataservice_readonly_test,
-        "DataService test checks trade facts not accessed for base position",
-    )
-    require(
-        "base_position.summary positionSnapshotAccessed=false" in dataservice_readonly_test,
-        "DataService test checks position snapshot not accessed for base position",
-    )
-    require(
-        "base_position.summary tradeDraftGenerated=false" in dataservice_readonly_test,
-        "DataService test checks TradeDraft not generated",
-    )
-    require(
-        "base_position.summary does not return real sellableAboveBaseAmountText" in dataservice_readonly_test,
-        "DataService test checks no real sellable amount",
-    )
+    require("base_position.summary returns empty basePositions" in dataservice_readonly_test, "DataService test checks empty base positions")
     require("kActionSniperPoolSummary" in dataservice_readonly_test, "DataService test calls sniper_pool.summary action")
     require(
-        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE" in dataservice_readonly_test,
-        "DataService test checks sniper_pool.summary status",
+        "SNIPER_POOL_SUMMARY_EMPTY" in dataservice_readonly_test,
+        "DataService test checks sniper_pool.summary empty status",
     )
-    require(
-        "sniper_pool.summary tradeFactsAccessed=false" in dataservice_readonly_test,
-        "DataService test checks trade facts not accessed for sniper pool",
-    )
-    require(
-        "sniper_pool.summary cashSnapshotAccessed=false" in dataservice_readonly_test,
-        "DataService test checks cash snapshot not accessed for sniper pool",
-    )
-    require(
-        "sniper_pool.summary tierSummaryCalculated=false" in dataservice_readonly_test,
-        "DataService test checks tier summary not calculated",
-    )
-    require(
-        "sniper_pool.summary does not return real remainingAmountText" in dataservice_readonly_test,
-        "DataService test checks no real remaining amount",
-    )
+    require("sniper_pool.summary returns empty tierSummary" in dataservice_readonly_test, "DataService test checks empty tier summary")
+    require("implemented=true" in dataservice_readonly_test, "DataService test checks read-only facts implemented")
+    require("sqliteAccessed=true" in dataservice_readonly_test, "DataService test checks SQLite access is DataService-owned")
+    require("accountingEngineCalled=false" in dataservice_readonly_test, "DataService test checks no AccountingEngine")
+    require("tradeDraftGenerated=false" in dataservice_readonly_test, "DataService test checks no TradeDraft")
     require("client.positionList" in dataservice_client_test, "DataServiceClient test calls positionList wrapper")
     require("client.cashSummary" in dataservice_client_test, "DataServiceClient test calls cashSummary wrapper")
     require("client.portfolioPnlSummary" in dataservice_client_test, "DataServiceClient test calls portfolioPnlSummary wrapper")
@@ -5652,12 +5465,20 @@ def main() -> int:
         "docs/82 DataService facts query test plan exists",
     )
     require(
+        shell_accounting_dataservice_facts_query_implementation_path.exists(),
+        "docs/83 DataService facts query implementation exists",
+    )
+    require(
         "docs/81_shell_accounting_dataservice_readonly_facts_query_gate.md" in readme,
         "README links docs/81",
     )
     require(
         "docs/82_shell_accounting_dataservice_readonly_facts_query_test_plan.md" in readme,
         "README links docs/82",
+    )
+    require(
+        "docs/83_shell_accounting_dataservice_readonly_facts_query_implementation.md" in readme,
+        "README links docs/83",
     )
     require(
         "81_shell_accounting_dataservice_readonly_facts_query_gate.md" in docs_index,
@@ -5667,9 +5488,17 @@ def main() -> int:
         "82_shell_accounting_dataservice_readonly_facts_query_test_plan.md" in docs_index,
         "docs/README links docs/82",
     )
+    require(
+        "83_shell_accounting_dataservice_readonly_facts_query_implementation.md" in docs_index,
+        "docs/README links docs/83",
+    )
     require("TASK-136" in shell_accounting_dataservice_facts_query_gate, "docs/81 mentions TASK-136")
     require("TASK-136" in shell_accounting_dataservice_facts_query_test_plan, "docs/82 mentions TASK-136")
     require("TASK-136" in codex_prompt_template, "docs/12 mentions TASK-136")
+    require("TASK-137" in shell_accounting_dataservice_facts_query_gate, "docs/81 mentions TASK-137")
+    require("TASK-137" in shell_accounting_dataservice_facts_query_test_plan, "docs/82 mentions TASK-137")
+    require("TASK-137" in shell_accounting_dataservice_facts_query_implementation, "docs/83 mentions TASK-137")
+    require("TASK-137" in codex_prompt_template, "docs/12 mentions TASK-137")
     require(
         "facts query is not write path" in shell_accounting_dataservice_facts_query_gate,
         "docs/81 states facts query is not write path",
@@ -5682,6 +5511,14 @@ def main() -> int:
     require(
         "Test Matrix" in shell_accounting_dataservice_facts_query_test_plan,
         "docs/82 includes Test Matrix",
+    )
+    require(
+        "rollback" in shell_accounting_dataservice_facts_query_implementation,
+        "docs/83 includes rollback",
+    )
+    require(
+        "no AccountingEngine replay" in shell_accounting_dataservice_facts_query_implementation,
+        "docs/83 states no replay",
     )
     for ctest_name in [
         "shell_accounting_dataservice_facts_query_gate",
@@ -5709,14 +5546,60 @@ def main() -> int:
         "sniper_pool.summary",
     ]:
         require(action in data_service_actions_source, f"DataService action source contains {action}")
-    for guard_token in [
-        '"implemented":false',
-        '"sqliteAccessed":false',
-        '"accountingEngineCalled":false',
-        "NO_SQLITE_FACTS_QUERY",
-        "NO_ACCOUNTING_ENGINE_CALL",
+    for ctest_name in [
+        "shell_accounting_dataservice_facts_query_implementation",
+        "shell_accounting_dataservice_facts_query_position_list_success",
+        "shell_accounting_dataservice_facts_query_cash_summary_success",
+        "shell_accounting_dataservice_facts_query_portfolio_pnl_summary_success",
+        "shell_accounting_dataservice_facts_query_base_position_summary_success",
+        "shell_accounting_dataservice_facts_query_sniper_pool_summary_success",
+        "shell_accounting_dataservice_facts_query_empty_data_mapping",
+        "shell_accounting_dataservice_facts_query_missing_data_mapping",
+        "shell_accounting_dataservice_facts_query_query_error_mapping",
+        "shell_accounting_dataservice_facts_query_no_write_sql_after_implementation",
+        "shell_accounting_dataservice_facts_query_no_snapshot_rebuild_after_implementation",
+        "shell_accounting_dataservice_facts_query_no_accounting_engine_replay_after_implementation",
+        "shell_accounting_dataservice_facts_query_privacy_after_implementation",
+        "shell_accounting_dataservice_facts_query_rollback_ready_after_implementation",
     ]:
-        require(guard_token in data_service_actions_source, f"DataService accounting guard keeps {guard_token}")
+        require(
+            ctest_name in shell_accounting_dataservice_facts_query_implementation_cmake,
+            f"TASK-137 tests include {ctest_name}",
+        )
+    for implementation_token in [
+        "ShellAccountingReadOnlyFactsQuery",
+        '\\"implemented\\":true',
+        '\\"sqliteAccessed\\":true',
+        '\\"accountingEngineCalled\\":false',
+        '\\"snapshotRebuilt\\":false',
+        '\\"tradeDraftGenerated\\":false',
+    ]:
+        require(
+            implementation_token in data_service_actions_source,
+            f"DataService read-only facts implementation keeps {implementation_token}",
+        )
+    readonly_query_source = (root / "libs" / "DataAccess" / "src" / "ShellAccountingReadOnlyFactsQuery.cpp").read_text(
+        encoding="utf-8"
+    )
+    require("SELECT " in readonly_query_source, "read-only facts query source contains SELECT")
+    for forbidden_query_token in ["INSERT ", "UPDATE ", "DELETE ", "REPLACE ", "AccountingReplayEngine", "replayFromFacts"]:
+        require(
+            forbidden_query_token not in readonly_query_source,
+            f"read-only facts query source avoids {forbidden_query_token}",
+        )
+    shell_accounting_production_path_after_137 = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in [
+            root / "libs" / "ShellServices" / "src" / "ShellAccountingPresenter.cpp",
+            root / "libs" / "ShellServices" / "src" / "ShellAccountingReadOnlyController.cpp",
+            root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml",
+        ]
+    )
+    for forbidden_shell_token in ["SQLiteConnection", "DataAccess", "AccountingReplayEngine", "TradeDraft"]:
+        require(
+            forbidden_shell_token not in shell_accounting_production_path_after_137,
+            f"ShellAccounting production path avoids {forbidden_shell_token} after TASK-137",
+        )
 
     require(
         "v0.4.0-accounting-engine-replay-skeleton" in release_notes_v04,

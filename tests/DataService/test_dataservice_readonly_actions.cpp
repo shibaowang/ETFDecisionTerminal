@@ -178,6 +178,53 @@ void expectSuccess(const QJsonObject& response, std::string_view label)
     expectTrue(response.value("success").toBool(false), std::string(label) + " success=true");
 }
 
+void expectReadOnlyFactsEmptyPayload(
+    const QJsonObject& payload,
+    std::string_view action,
+    std::string_view emptyIssueCode,
+    std::string_view label)
+{
+    expectEqual(payload.value("action").toString().toStdString(), action, std::string(label) + " action");
+    expectEqual(payload.value("module").toString().toStdString(), "accounting", std::string(label) + " module");
+    expectTrue(payload.value("implemented").toBool(false), std::string(label) + " implemented=true");
+    expectTrue(payload.value("readOnly").toBool(false), std::string(label) + " readOnly=true");
+    expectTrue(!payload.value("writeEnabled").toBool(true), std::string(label) + " writeEnabled=false");
+    expectTrue(!payload.value("replayExecuted").toBool(true), std::string(label) + " replayExecuted=false");
+    expectTrue(!payload.value("snapshotRebuilt").toBool(true), std::string(label) + " snapshotRebuilt=false");
+    expectTrue(payload.value("dataSourceAccessed").toBool(false), std::string(label) + " dataSourceAccessed=true");
+    expectTrue(payload.value("sqliteAccessed").toBool(false), std::string(label) + " sqliteAccessed=true");
+    expectTrue(
+        !payload.value("accountingEngineCalled").toBool(true),
+        std::string(label) + " accountingEngineCalled=false");
+    expectTrue(
+        !payload.value("tradeDraftGenerated").toBool(true),
+        std::string(label) + " tradeDraftGenerated=false");
+    expectTrue(
+        !payload.value("tradeSuggestionGenerated").toBool(true),
+        std::string(label) + " tradeSuggestionGenerated=false");
+    expectTrue(
+        !payload.value("strategyExecuted").toBool(true),
+        std::string(label) + " strategyExecuted=false");
+    expectEqual(payload.value("status").toString().toStdString(), "EMPTY", std::string(label) + " status");
+    expectEqual(
+        payload.value("dataQualityStatus").toString().toStdString(),
+        "OK",
+        std::string(label) + " dataQualityStatus");
+    expectTrue(!payload.value("hasRows").toBool(true), std::string(label) + " hasRows=false");
+    const auto issues = payload.value("issues").toArray();
+    const bool hasEmptyIssue = std::any_of(issues.begin(), issues.end(), [&](const auto& value) {
+        const auto issue = value.toObject();
+        return issue.value("code").toString().toStdString() == emptyIssueCode
+            && !issue.value("blocking").toBool(true);
+    });
+    expectTrue(hasEmptyIssue, std::string(label) + " issues contains non-blocking empty issue");
+    const auto privacy = payload.value("privacy").toObject();
+    expectTrue(!privacy.value("rawSqlExposed").toBool(true), std::string(label) + " rawSqlExposed=false");
+    expectTrue(
+        !privacy.value("rawTradeLogPayloadExposed").toBool(true),
+        std::string(label) + " rawTradeLogPayloadExposed=false");
+}
+
 void testReadOnlyActions(const std::filesystem::path& migrationPath)
 {
     const auto tempDir = createTempDirectory();
@@ -338,44 +385,37 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         "accounting.health writeEnabled=false");
 
     const auto implementedActions = accountingPayload.value("implementedActions").toArray();
-    const bool hasAccountingHealth =
-        std::any_of(implementedActions.begin(), implementedActions.end(), [](const auto& value) {
-            return value.toString() == "accounting.health";
+    const auto implementedActionExists = [&implementedActions](const QString& action) {
+        return std::any_of(implementedActions.begin(), implementedActions.end(), [&action](const auto& value) {
+            return value.toString() == action;
         });
+    };
+    const bool hasAccountingHealth = implementedActionExists("accounting.health");
     expectTrue(hasAccountingHealth, "accounting.health implementedActions contains accounting.health");
+    expectTrue(
+        implementedActionExists("position.list"),
+        "accounting.health implementedActions contains position.list");
+    expectTrue(
+        implementedActionExists("cash.summary"),
+        "accounting.health implementedActions contains cash.summary");
+    expectTrue(
+        implementedActionExists("portfolio.pnl.summary"),
+        "accounting.health implementedActions contains portfolio.pnl.summary");
+    expectTrue(
+        implementedActionExists("base_position.summary"),
+        "accounting.health implementedActions contains base_position.summary");
+    expectTrue(
+        implementedActionExists("sniper_pool.summary"),
+        "accounting.health implementedActions contains sniper_pool.summary");
 
     const auto futureActions = accountingPayload.value("futureActions").toArray();
-    const bool hasPositionList =
+    const bool hasReplayPreview =
         std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
-            return value.toString() == "position.list";
-        });
-    expectTrue(hasPositionList, "accounting.health futureActions contains position.list");
-    const bool hasCashSummary =
-        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
-            return value.toString() == "cash.summary";
-        });
-    expectTrue(hasCashSummary, "accounting.health futureActions contains cash.summary");
-    const bool hasPortfolioPnlSummary =
-        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
-            return value.toString() == "portfolio.pnl.summary";
+            return value.toString() == "accounting.replay.preview";
         });
     expectTrue(
-        hasPortfolioPnlSummary,
-        "accounting.health futureActions contains portfolio.pnl.summary");
-    const bool hasBasePositionSummary =
-        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
-            return value.toString() == "base_position.summary";
-        });
-    expectTrue(
-        hasBasePositionSummary,
-        "accounting.health futureActions contains base_position.summary");
-    const bool hasSniperPoolSummary =
-        std::any_of(futureActions.begin(), futureActions.end(), [](const auto& value) {
-            return value.toString() == "sniper_pool.summary";
-        });
-    expectTrue(
-        hasSniperPoolSummary,
-        "accounting.health futureActions contains sniper_pool.summary");
+        hasReplayPreview,
+        "accounting.health futureActions contains accounting.replay.preview");
 
     const auto warnings = accountingPayload.value("warnings").toArray();
     const bool hasReplayWarning = std::any_of(warnings.begin(), warnings.end(), [](const auto& value) {
@@ -472,61 +512,12 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         "position.list");
     expectSuccess(positionList, "position.list guard");
     const auto positionPayload = positionList.value("payload").toObject();
-    expectEqual(
-        positionPayload.value("action").toString().toStdString(),
+    expectReadOnlyFactsEmptyPayload(
+        positionPayload,
         "position.list",
-        "position.list payload action");
-    expectEqual(
-        positionPayload.value("module").toString().toStdString(),
-        "accounting",
-        "position.list module");
-    expectTrue(!positionPayload.value("implemented").toBool(true), "position.list implemented=false");
-    expectTrue(positionPayload.value("readOnly").toBool(false), "position.list readOnly=true");
-    expectTrue(!positionPayload.value("writeEnabled").toBool(true), "position.list writeEnabled=false");
-    expectTrue(!positionPayload.value("replayExecuted").toBool(true), "position.list replayExecuted=false");
-    expectTrue(!positionPayload.value("dataSourceAccessed").toBool(true), "position.list dataSourceAccessed=false");
-    expectTrue(!positionPayload.value("sqliteAccessed").toBool(true), "position.list sqliteAccessed=false");
-    expectTrue(
-        !positionPayload.value("accountingEngineCalled").toBool(true),
-        "position.list accountingEngineCalled=false");
-    expectEqual(
-        positionPayload.value("status").toString().toStdString(),
-        "POSITION_LIST_NOT_AVAILABLE",
-        "position.list status");
-    const auto positionIssues = positionPayload.value("issues").toArray();
-    const bool hasPositionUnavailableIssue =
-        std::any_of(positionIssues.begin(), positionIssues.end(), [](const auto& value) {
-            const auto issue = value.toObject();
-            return issue.value("code").toString() == "POSITION_LIST_NOT_AVAILABLE"
-                && issue.value("blocking").toBool(false);
-        });
-    expectTrue(
-        hasPositionUnavailableIssue,
-        "position.list issues contains blocking POSITION_LIST_NOT_AVAILABLE");
-    const auto positionForbiddenWrites = positionPayload.value("forbiddenWrites").toArray();
-    const bool positionForbidsTradeLog =
-        std::any_of(positionForbiddenWrites.begin(), positionForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_log";
-        });
-    const bool positionForbidsPositionSnapshot =
-        std::any_of(positionForbiddenWrites.begin(), positionForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "position_snapshot";
-        });
-    const bool positionForbidsPortfolioSummary =
-        std::any_of(positionForbiddenWrites.begin(), positionForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(positionForbidsTradeLog, "position.list forbiddenWrites contains trade_log");
-    expectTrue(positionForbidsPositionSnapshot, "position.list forbiddenWrites contains position_snapshot");
-    expectTrue(positionForbidsPortfolioSummary, "position.list forbiddenWrites contains portfolio_summary");
-    const auto futureOutput = positionPayload.value("futureOutput").toObject();
-    expectEqual(
-        futureOutput.value("type").toString().toStdString(),
-        "PositionListResponse",
-        "position.list futureOutput type");
-    expectTrue(
-        futureOutput.value("positions").toArray().isEmpty(),
-        "position.list does not return real positions");
+        "POSITION_LIST_EMPTY",
+        "position.list");
+    expectTrue(positionPayload.value("positions").toArray().isEmpty(), "position.list returns empty positions");
     expectProtectedTableCountsUnchanged(connection, positionListCountsBefore, "position.list guard");
 
     auto positionListInvalidPayload = sendEnvelope(
@@ -563,79 +554,14 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         "cash.summary");
     expectSuccess(cashSummary, "cash.summary guard");
     const auto cashPayload = cashSummary.value("payload").toObject();
-    expectEqual(
-        cashPayload.value("action").toString().toStdString(),
+    expectReadOnlyFactsEmptyPayload(
+        cashPayload,
         "cash.summary",
-        "cash.summary payload action");
-    expectEqual(
-        cashPayload.value("module").toString().toStdString(),
-        "accounting",
-        "cash.summary module");
-    expectTrue(!cashPayload.value("implemented").toBool(true), "cash.summary implemented=false");
-    expectTrue(cashPayload.value("readOnly").toBool(false), "cash.summary readOnly=true");
-    expectTrue(!cashPayload.value("writeEnabled").toBool(true), "cash.summary writeEnabled=false");
-    expectTrue(!cashPayload.value("replayExecuted").toBool(true), "cash.summary replayExecuted=false");
-    expectTrue(!cashPayload.value("dataSourceAccessed").toBool(true), "cash.summary dataSourceAccessed=false");
-    expectTrue(!cashPayload.value("sqliteAccessed").toBool(true), "cash.summary sqliteAccessed=false");
-    expectTrue(!cashPayload.value("cashFactsAccessed").toBool(true), "cash.summary cashFactsAccessed=false");
-    expectTrue(!cashPayload.value("snapshotAccessed").toBool(true), "cash.summary snapshotAccessed=false");
+        "CASH_SUMMARY_EMPTY",
+        "cash.summary");
     expectTrue(
-        !cashPayload.value("portfolioSummaryAccessed").toBool(true),
-        "cash.summary portfolioSummaryAccessed=false");
-    expectTrue(
-        !cashPayload.value("accountingEngineCalled").toBool(true),
-        "cash.summary accountingEngineCalled=false");
-    expectEqual(
-        cashPayload.value("status").toString().toStdString(),
-        "CASH_SUMMARY_NOT_AVAILABLE",
-        "cash.summary status");
-    const auto cashIssues = cashPayload.value("issues").toArray();
-    const bool hasCashUnavailableIssue =
-        std::any_of(cashIssues.begin(), cashIssues.end(), [](const auto& value) {
-            const auto issue = value.toObject();
-            return issue.value("code").toString() == "CASH_SUMMARY_NOT_AVAILABLE"
-                && issue.value("blocking").toBool(false);
-        });
-    expectTrue(
-        hasCashUnavailableIssue,
-        "cash.summary issues contains blocking CASH_SUMMARY_NOT_AVAILABLE");
-    const auto forbiddenSources = cashPayload.value("forbiddenSources").toArray();
-    const bool forbidsCashSnapshotSource =
-        std::any_of(forbiddenSources.begin(), forbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "cash_snapshot";
-        });
-    const bool forbidsPortfolioSummarySource =
-        std::any_of(forbiddenSources.begin(), forbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(forbidsCashSnapshotSource, "cash.summary forbiddenSources contains cash_snapshot");
-    expectTrue(forbidsPortfolioSummarySource, "cash.summary forbiddenSources contains portfolio_summary");
-    const auto cashForbiddenWrites = cashPayload.value("forbiddenWrites").toArray();
-    const bool cashForbidsTradeLog =
-        std::any_of(cashForbiddenWrites.begin(), cashForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_log";
-        });
-    const bool cashForbidsCashSnapshot =
-        std::any_of(cashForbiddenWrites.begin(), cashForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "cash_snapshot";
-        });
-    const bool cashForbidsPortfolioSummary =
-        std::any_of(cashForbiddenWrites.begin(), cashForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(cashForbidsTradeLog, "cash.summary forbiddenWrites contains trade_log");
-    expectTrue(cashForbidsCashSnapshot, "cash.summary forbiddenWrites contains cash_snapshot");
-    expectTrue(cashForbidsPortfolioSummary, "cash.summary forbiddenWrites contains portfolio_summary");
-    const auto cashFutureOutput = cashPayload.value("futureOutput").toObject();
-    expectEqual(
-        cashFutureOutput.value("type").toString().toStdString(),
-        "CashSummaryResponse",
-        "cash.summary futureOutput type");
-    expectTrue(cashFutureOutput.value("cashSummary").isNull(), "cash.summary futureOutput cashSummary is null");
-    expectTrue(
-        cashFutureOutput.value("accountCashSummaries").toArray().isEmpty(),
-        "cash.summary futureOutput accountCashSummaries is empty");
-    expectTrue(!cashPayload.contains("cashBalance"), "cash.summary does not return real cashBalance");
+        cashPayload.value("accountCashSummaries").toArray().isEmpty(),
+        "cash.summary returns empty accountCashSummaries");
     expectProtectedTableCountsUnchanged(connection, cashSummaryCountsBefore, "cash.summary guard");
 
     auto cashSummaryInvalidPayload = sendEnvelope(
@@ -672,103 +598,14 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         "portfolio.pnl.summary");
     expectSuccess(portfolioPnlSummary, "portfolio.pnl.summary guard");
     const auto portfolioPnlPayload = portfolioPnlSummary.value("payload").toObject();
-    expectEqual(
-        portfolioPnlPayload.value("action").toString().toStdString(),
+    expectReadOnlyFactsEmptyPayload(
+        portfolioPnlPayload,
         "portfolio.pnl.summary",
-        "portfolio.pnl.summary payload action");
-    expectEqual(
-        portfolioPnlPayload.value("module").toString().toStdString(),
-        "accounting",
-        "portfolio.pnl.summary module");
+        "PORTFOLIO_PNL_SUMMARY_EMPTY",
+        "portfolio.pnl.summary");
     expectTrue(
-        !portfolioPnlPayload.value("implemented").toBool(true),
-        "portfolio.pnl.summary implemented=false");
-    expectTrue(
-        portfolioPnlPayload.value("readOnly").toBool(false),
-        "portfolio.pnl.summary readOnly=true");
-    expectTrue(
-        !portfolioPnlPayload.value("writeEnabled").toBool(true),
-        "portfolio.pnl.summary writeEnabled=false");
-    expectTrue(
-        !portfolioPnlPayload.value("replayExecuted").toBool(true),
-        "portfolio.pnl.summary replayExecuted=false");
-    expectTrue(
-        !portfolioPnlPayload.value("dataSourceAccessed").toBool(true),
-        "portfolio.pnl.summary dataSourceAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("sqliteAccessed").toBool(true),
-        "portfolio.pnl.summary sqliteAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("tradeFactsAccessed").toBool(true),
-        "portfolio.pnl.summary tradeFactsAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("cashFactsAccessed").toBool(true),
-        "portfolio.pnl.summary cashFactsAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("marketPriceFactsAccessed").toBool(true),
-        "portfolio.pnl.summary marketPriceFactsAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("snapshotAccessed").toBool(true),
-        "portfolio.pnl.summary snapshotAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("portfolioSummaryAccessed").toBool(true),
-        "portfolio.pnl.summary portfolioSummaryAccessed=false");
-    expectTrue(
-        !portfolioPnlPayload.value("accountingEngineCalled").toBool(true),
-        "portfolio.pnl.summary accountingEngineCalled=false");
-    expectEqual(
-        portfolioPnlPayload.value("status").toString().toStdString(),
-        "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
-        "portfolio.pnl.summary status");
-    const auto portfolioPnlIssues = portfolioPnlPayload.value("issues").toArray();
-    const bool hasPortfolioPnlUnavailableIssue =
-        std::any_of(portfolioPnlIssues.begin(), portfolioPnlIssues.end(), [](const auto& value) {
-            const auto issue = value.toObject();
-            return issue.value("code").toString() == "PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE"
-                && issue.value("blocking").toBool(false);
-        });
-    expectTrue(
-        hasPortfolioPnlUnavailableIssue,
-        "portfolio.pnl.summary issues contains blocking PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE");
-    const auto pnlForbiddenSources = portfolioPnlPayload.value("forbiddenSources").toArray();
-    const bool pnlForbidsCashSnapshotSource =
-        std::any_of(pnlForbiddenSources.begin(), pnlForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "cash_snapshot";
-        });
-    const bool pnlForbidsPositionSnapshotSource =
-        std::any_of(pnlForbiddenSources.begin(), pnlForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "position_snapshot";
-        });
-    const bool pnlForbidsPortfolioSummarySource =
-        std::any_of(pnlForbiddenSources.begin(), pnlForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(pnlForbidsCashSnapshotSource, "portfolio.pnl.summary forbiddenSources contains cash_snapshot");
-    expectTrue(pnlForbidsPositionSnapshotSource, "portfolio.pnl.summary forbiddenSources contains position_snapshot");
-    expectTrue(pnlForbidsPortfolioSummarySource, "portfolio.pnl.summary forbiddenSources contains portfolio_summary");
-    const auto pnlForbiddenWrites = portfolioPnlPayload.value("forbiddenWrites").toArray();
-    const bool pnlForbidsTradeLog =
-        std::any_of(pnlForbiddenWrites.begin(), pnlForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_log";
-        });
-    const bool pnlForbidsPortfolioSummary =
-        std::any_of(pnlForbiddenWrites.begin(), pnlForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(pnlForbidsTradeLog, "portfolio.pnl.summary forbiddenWrites contains trade_log");
-    expectTrue(pnlForbidsPortfolioSummary, "portfolio.pnl.summary forbiddenWrites contains portfolio_summary");
-    const auto portfolioPnlFutureOutput = portfolioPnlPayload.value("futureOutput").toObject();
-    expectEqual(
-        portfolioPnlFutureOutput.value("type").toString().toStdString(),
-        "PortfolioPnlSummaryResponse",
-        "portfolio.pnl.summary futureOutput type");
-    expectTrue(
-        portfolioPnlFutureOutput.value("portfolioPnl").isNull(),
-        "portfolio.pnl.summary futureOutput portfolioPnl is null");
-    expectTrue(!portfolioPnlPayload.contains("totalAssets"), "portfolio.pnl.summary does not return real totalAssets");
-    expectTrue(!portfolioPnlPayload.contains("realizedPnl"), "portfolio.pnl.summary does not return real realizedPnl");
-    expectTrue(!portfolioPnlPayload.contains("unrealizedPnl"), "portfolio.pnl.summary does not return real unrealizedPnl");
-    expectTrue(!portfolioPnlPayload.contains("totalPnl"), "portfolio.pnl.summary does not return real totalPnl");
+        portfolioPnlPayload.value("portfolioPnlSummaries").toArray().isEmpty(),
+        "portfolio.pnl.summary returns empty portfolioPnlSummaries");
     expectProtectedTableCountsUnchanged(connection, portfolioPnlCountsBefore, "portfolio.pnl.summary guard");
 
     auto portfolioPnlInvalidPayload = sendEnvelope(
@@ -805,138 +642,14 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         "base_position.summary");
     expectSuccess(basePositionSummary, "base_position.summary guard");
     const auto basePositionPayload = basePositionSummary.value("payload").toObject();
-    expectEqual(
-        basePositionPayload.value("action").toString().toStdString(),
+    expectReadOnlyFactsEmptyPayload(
+        basePositionPayload,
         "base_position.summary",
-        "base_position.summary payload action");
-    expectEqual(
-        basePositionPayload.value("module").toString().toStdString(),
-        "accounting",
-        "base_position.summary module");
+        "BASE_POSITION_SUMMARY_EMPTY",
+        "base_position.summary");
     expectTrue(
-        !basePositionPayload.value("implemented").toBool(true),
-        "base_position.summary implemented=false");
-    expectTrue(
-        basePositionPayload.value("readOnly").toBool(false),
-        "base_position.summary readOnly=true");
-    expectTrue(
-        !basePositionPayload.value("writeEnabled").toBool(true),
-        "base_position.summary writeEnabled=false");
-    expectTrue(
-        !basePositionPayload.value("replayExecuted").toBool(true),
-        "base_position.summary replayExecuted=false");
-    expectTrue(
-        !basePositionPayload.value("dataSourceAccessed").toBool(true),
-        "base_position.summary dataSourceAccessed=false");
-    expectTrue(
-        !basePositionPayload.value("sqliteAccessed").toBool(true),
-        "base_position.summary sqliteAccessed=false");
-    expectTrue(
-        !basePositionPayload.value("tradeFactsAccessed").toBool(true),
-        "base_position.summary tradeFactsAccessed=false");
-    expectTrue(
-        !basePositionPayload.value("snapshotAccessed").toBool(true),
-        "base_position.summary snapshotAccessed=false");
-    expectTrue(
-        !basePositionPayload.value("positionSnapshotAccessed").toBool(true),
-        "base_position.summary positionSnapshotAccessed=false");
-    expectTrue(
-        !basePositionPayload.value("portfolioSummaryAccessed").toBool(true),
-        "base_position.summary portfolioSummaryAccessed=false");
-    expectTrue(
-        !basePositionPayload.value("accountingEngineCalled").toBool(true),
-        "base_position.summary accountingEngineCalled=false");
-    expectTrue(
-        !basePositionPayload.value("tradeDraftGenerated").toBool(true),
-        "base_position.summary tradeDraftGenerated=false");
-    expectTrue(
-        !basePositionPayload.value("tradeSuggestionGenerated").toBool(true),
-        "base_position.summary tradeSuggestionGenerated=false");
-    expectTrue(
-        !basePositionPayload.value("strategyExecuted").toBool(true),
-        "base_position.summary strategyExecuted=false");
-    expectEqual(
-        basePositionPayload.value("status").toString().toStdString(),
-        "BASE_POSITION_SUMMARY_NOT_AVAILABLE",
-        "base_position.summary status");
-    const auto basePositionIssues = basePositionPayload.value("issues").toArray();
-    const bool hasBasePositionUnavailableIssue =
-        std::any_of(basePositionIssues.begin(), basePositionIssues.end(), [](const auto& value) {
-            const auto issue = value.toObject();
-            return issue.value("code").toString() == "BASE_POSITION_SUMMARY_NOT_AVAILABLE"
-                && issue.value("blocking").toBool(false);
-        });
-    expectTrue(
-        hasBasePositionUnavailableIssue,
-        "base_position.summary issues contains blocking BASE_POSITION_SUMMARY_NOT_AVAILABLE");
-    const auto baseForbiddenSources = basePositionPayload.value("forbiddenSources").toArray();
-    const bool baseForbidsPositionSnapshotSource =
-        std::any_of(baseForbiddenSources.begin(), baseForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "position_snapshot";
-        });
-    const bool baseForbidsPortfolioSummarySource =
-        std::any_of(baseForbiddenSources.begin(), baseForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(
-        baseForbidsPositionSnapshotSource,
-        "base_position.summary forbiddenSources contains position_snapshot");
-    expectTrue(
-        baseForbidsPortfolioSummarySource,
-        "base_position.summary forbiddenSources contains portfolio_summary");
-    const auto baseForbiddenWrites = basePositionPayload.value("forbiddenWrites").toArray();
-    const bool baseForbidsTradeLog =
-        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_log";
-        });
-    const bool baseForbidsTradeDraft =
-        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_draft";
-        });
-    const bool baseForbidsPositionSnapshot =
-        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "position_snapshot";
-        });
-    const bool baseForbidsPortfolioSummary =
-        std::any_of(baseForbiddenWrites.begin(), baseForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(baseForbidsTradeLog, "base_position.summary forbiddenWrites contains trade_log");
-    expectTrue(baseForbidsTradeDraft, "base_position.summary forbiddenWrites contains trade_draft");
-    expectTrue(baseForbidsPositionSnapshot, "base_position.summary forbiddenWrites contains position_snapshot");
-    expectTrue(baseForbidsPortfolioSummary, "base_position.summary forbiddenWrites contains portfolio_summary");
-    const auto baseForbiddenActions = basePositionPayload.value("forbiddenActions").toArray();
-    const bool baseForbidsTradeDraftGeneration =
-        std::any_of(baseForbiddenActions.begin(), baseForbiddenActions.end(), [](const auto& value) {
-            return value.toString() == "trade_draft_generation";
-        });
-    const bool baseForbidsTradeSuggestionGeneration =
-        std::any_of(baseForbiddenActions.begin(), baseForbiddenActions.end(), [](const auto& value) {
-            return value.toString() == "trade_suggestion_generation";
-        });
-    expectTrue(
-        baseForbidsTradeDraftGeneration,
-        "base_position.summary forbiddenActions contains trade_draft_generation");
-    expectTrue(
-        baseForbidsTradeSuggestionGeneration,
-        "base_position.summary forbiddenActions contains trade_suggestion_generation");
-    const auto basePositionFutureOutput = basePositionPayload.value("futureOutput").toObject();
-    expectEqual(
-        basePositionFutureOutput.value("type").toString().toStdString(),
-        "BasePositionSummaryResponse",
-        "base_position.summary futureOutput type");
-    expectTrue(
-        basePositionFutureOutput.value("basePosition").isNull(),
-        "base_position.summary futureOutput basePosition is null");
-    expectTrue(
-        !basePositionPayload.contains("targetBaseRatioText"),
-        "base_position.summary does not return real targetBaseRatioText");
-    expectTrue(
-        !basePositionPayload.contains("lockedBaseAmountText"),
-        "base_position.summary does not return real lockedBaseAmountText");
-    expectTrue(
-        !basePositionPayload.contains("sellableAboveBaseAmountText"),
-        "base_position.summary does not return real sellableAboveBaseAmountText");
+        basePositionPayload.value("basePositions").toArray().isEmpty(),
+        "base_position.summary returns empty basePositions");
     expectProtectedTableCountsUnchanged(connection, basePositionCountsBefore, "base_position.summary guard");
 
     auto basePositionInvalidPayload = sendEnvelope(
@@ -973,153 +686,14 @@ void testReadOnlyActions(const std::filesystem::path& migrationPath)
         "sniper_pool.summary");
     expectSuccess(sniperPoolSummary, "sniper_pool.summary guard");
     const auto sniperPoolPayload = sniperPoolSummary.value("payload").toObject();
-    expectEqual(
-        sniperPoolPayload.value("action").toString().toStdString(),
+    expectReadOnlyFactsEmptyPayload(
+        sniperPoolPayload,
         "sniper_pool.summary",
-        "sniper_pool.summary payload action");
-    expectEqual(
-        sniperPoolPayload.value("module").toString().toStdString(),
-        "accounting",
-        "sniper_pool.summary module");
+        "SNIPER_POOL_SUMMARY_EMPTY",
+        "sniper_pool.summary");
     expectTrue(
-        !sniperPoolPayload.value("implemented").toBool(true),
-        "sniper_pool.summary implemented=false");
-    expectTrue(
-        sniperPoolPayload.value("readOnly").toBool(false),
-        "sniper_pool.summary readOnly=true");
-    expectTrue(
-        !sniperPoolPayload.value("writeEnabled").toBool(true),
-        "sniper_pool.summary writeEnabled=false");
-    expectTrue(
-        !sniperPoolPayload.value("replayExecuted").toBool(true),
-        "sniper_pool.summary replayExecuted=false");
-    expectTrue(
-        !sniperPoolPayload.value("dataSourceAccessed").toBool(true),
-        "sniper_pool.summary dataSourceAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("sqliteAccessed").toBool(true),
-        "sniper_pool.summary sqliteAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("tradeFactsAccessed").toBool(true),
-        "sniper_pool.summary tradeFactsAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("snapshotAccessed").toBool(true),
-        "sniper_pool.summary snapshotAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("positionSnapshotAccessed").toBool(true),
-        "sniper_pool.summary positionSnapshotAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("cashSnapshotAccessed").toBool(true),
-        "sniper_pool.summary cashSnapshotAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("portfolioSummaryAccessed").toBool(true),
-        "sniper_pool.summary portfolioSummaryAccessed=false");
-    expectTrue(
-        !sniperPoolPayload.value("accountingEngineCalled").toBool(true),
-        "sniper_pool.summary accountingEngineCalled=false");
-    expectTrue(
-        !sniperPoolPayload.value("sniperPoolCalculated").toBool(true),
-        "sniper_pool.summary sniperPoolCalculated=false");
-    expectTrue(
-        !sniperPoolPayload.value("tierSummaryCalculated").toBool(true),
-        "sniper_pool.summary tierSummaryCalculated=false");
-    expectTrue(
-        !sniperPoolPayload.value("tradeDraftGenerated").toBool(true),
-        "sniper_pool.summary tradeDraftGenerated=false");
-    expectTrue(
-        !sniperPoolPayload.value("tradeSuggestionGenerated").toBool(true),
-        "sniper_pool.summary tradeSuggestionGenerated=false");
-    expectTrue(
-        !sniperPoolPayload.value("strategyExecuted").toBool(true),
-        "sniper_pool.summary strategyExecuted=false");
-    expectEqual(
-        sniperPoolPayload.value("status").toString().toStdString(),
-        "SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
-        "sniper_pool.summary status");
-    const auto sniperPoolIssues = sniperPoolPayload.value("issues").toArray();
-    const bool hasSniperPoolUnavailableIssue =
-        std::any_of(sniperPoolIssues.begin(), sniperPoolIssues.end(), [](const auto& value) {
-            const auto issue = value.toObject();
-            return issue.value("code").toString() == "SNIPER_POOL_SUMMARY_NOT_AVAILABLE"
-                && issue.value("blocking").toBool(false);
-        });
-    expectTrue(
-        hasSniperPoolUnavailableIssue,
-        "sniper_pool.summary issues contains blocking SNIPER_POOL_SUMMARY_NOT_AVAILABLE");
-    const auto sniperForbiddenSources = sniperPoolPayload.value("forbiddenSources").toArray();
-    const bool sniperForbidsPositionSnapshotSource =
-        std::any_of(sniperForbiddenSources.begin(), sniperForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "position_snapshot";
-        });
-    const bool sniperForbidsPortfolioSummarySource =
-        std::any_of(sniperForbiddenSources.begin(), sniperForbiddenSources.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(
-        sniperForbidsPositionSnapshotSource,
-        "sniper_pool.summary forbiddenSources contains position_snapshot");
-    expectTrue(
-        sniperForbidsPortfolioSummarySource,
-        "sniper_pool.summary forbiddenSources contains portfolio_summary");
-    const auto sniperForbiddenWrites = sniperPoolPayload.value("forbiddenWrites").toArray();
-    const bool sniperForbidsTradeLog =
-        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_log";
-        });
-    const bool sniperForbidsTradeDraft =
-        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "trade_draft";
-        });
-    const bool sniperForbidsPositionSnapshot =
-        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "position_snapshot";
-        });
-    const bool sniperForbidsPortfolioSummary =
-        std::any_of(sniperForbiddenWrites.begin(), sniperForbiddenWrites.end(), [](const auto& value) {
-            return value.toString() == "portfolio_summary";
-        });
-    expectTrue(sniperForbidsTradeLog, "sniper_pool.summary forbiddenWrites contains trade_log");
-    expectTrue(sniperForbidsTradeDraft, "sniper_pool.summary forbiddenWrites contains trade_draft");
-    expectTrue(sniperForbidsPositionSnapshot, "sniper_pool.summary forbiddenWrites contains position_snapshot");
-    expectTrue(sniperForbidsPortfolioSummary, "sniper_pool.summary forbiddenWrites contains portfolio_summary");
-    const auto sniperForbiddenActions = sniperPoolPayload.value("forbiddenActions").toArray();
-    const bool sniperForbidsTradeDraftGeneration =
-        std::any_of(sniperForbiddenActions.begin(), sniperForbiddenActions.end(), [](const auto& value) {
-            return value.toString() == "trade_draft_generation";
-        });
-    const bool sniperForbidsTradeSuggestionGeneration =
-        std::any_of(sniperForbiddenActions.begin(), sniperForbiddenActions.end(), [](const auto& value) {
-            return value.toString() == "trade_suggestion_generation";
-        });
-    expectTrue(
-        sniperForbidsTradeDraftGeneration,
-        "sniper_pool.summary forbiddenActions contains trade_draft_generation");
-    expectTrue(
-        sniperForbidsTradeSuggestionGeneration,
-        "sniper_pool.summary forbiddenActions contains trade_suggestion_generation");
-    const auto sniperPoolFutureOutput = sniperPoolPayload.value("futureOutput").toObject();
-    expectEqual(
-        sniperPoolFutureOutput.value("type").toString().toStdString(),
-        "SniperPoolSummaryResponse",
-        "sniper_pool.summary futureOutput type");
-    expectTrue(
-        sniperPoolFutureOutput.value("sniperPool").isNull(),
-        "sniper_pool.summary futureOutput sniperPool is null");
-    expectTrue(
-        sniperPoolFutureOutput.value("tierSummary").toArray().isEmpty(),
-        "sniper_pool.summary futureOutput tierSummary is empty");
-    expectTrue(
-        !sniperPoolPayload.contains("poolAmountText"),
-        "sniper_pool.summary does not return real poolAmountText");
-    expectTrue(
-        !sniperPoolPayload.contains("remainingAmountText"),
-        "sniper_pool.summary does not return real remainingAmountText");
-    expectTrue(
-        !sniperPoolPayload.contains("T1"),
-        "sniper_pool.summary does not return real T1 tier data");
-    expectTrue(
-        !sniperPoolPayload.contains("T6"),
-        "sniper_pool.summary does not return real T6 tier data");
+        sniperPoolPayload.value("tierSummary").toArray().isEmpty(),
+        "sniper_pool.summary returns empty tierSummary");
     expectProtectedTableCountsUnchanged(connection, sniperPoolCountsBefore, "sniper_pool.summary guard");
 
     auto sniperPoolInvalidPayload = sendEnvelope(

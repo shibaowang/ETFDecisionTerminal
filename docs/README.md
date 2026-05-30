@@ -284,6 +284,10 @@
 - ShellAccounting DataService read-only facts query test plan:
   [82_shell_accounting_dataservice_readonly_facts_query_test_plan.md](82_shell_accounting_dataservice_readonly_facts_query_test_plan.md)
   defines the future SELECT-only, no-replay, no-write test matrix.
+- ShellAccounting DataService read-only facts query implementation:
+  [83_shell_accounting_dataservice_readonly_facts_query_implementation.md](83_shell_accounting_dataservice_readonly_facts_query_implementation.md)
+  records TASK-137 SELECT-only DataService facts query implementation and its
+  no-write/no-replay/no-TradeDraft boundary.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

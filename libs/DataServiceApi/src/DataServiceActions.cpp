@@ -1,6 +1,7 @@
 #include "DataServiceApi/DataServiceActions.h"
 
 #include "DataServiceApi/JsonBuilders.h"
+#include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
@@ -9,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace etfdt::data_service_api {
 namespace {
@@ -250,6 +252,229 @@ bool isJsonObjectPayloadShape(const std::string& payloadJson)
     }
     return trimmedPayload.find('"') != std::string::npos
         && trimmedPayload.find(':') != std::string::npos;
+}
+
+etfdt::data_access::ShellAccountingFactsQueryRequest shellAccountingQueryRequest(
+    const std::string& payloadJson)
+{
+    etfdt::data_access::ShellAccountingFactsQueryRequest request;
+    request.accountId = extractJsonStringField(payloadJson, "accountId").value_or("");
+    request.portfolioId = extractJsonStringField(payloadJson, "portfolioId").value_or("");
+    return request;
+}
+
+void appendJsonField(
+    std::ostringstream& stream,
+    const char* name,
+    const std::string& value,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":" << jsonStringValue(value);
+    needsComma = true;
+}
+
+void appendJsonField(
+    std::ostringstream& stream,
+    const char* name,
+    int value,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":" << value;
+    needsComma = true;
+}
+
+template <typename T, typename Writer>
+std::string jsonArray(const std::vector<T>& rows, Writer writer)
+{
+    std::ostringstream stream;
+    stream << '[';
+    for (std::size_t index = 0; index < rows.size(); ++index) {
+        if (index != 0U) {
+            stream << ',';
+        }
+        writer(stream, rows[index]);
+    }
+    stream << ']';
+    return stream.str();
+}
+
+void appendIssueObject(
+    std::ostringstream& stream,
+    const char* level,
+    const char* code,
+    const char* message,
+    bool blocking)
+{
+    stream << "{"
+           << "\"level\":" << jsonStringValue(level) << ','
+           << "\"code\":" << jsonStringValue(code) << ','
+           << "\"message\":" << jsonStringValue(message) << ','
+           << "\"blocking\":" << (blocking ? "true" : "false") << ','
+           << "\"sourceId\":\"DataServiceShellAccountingFactsQuery\""
+           << "}";
+}
+
+std::string shellAccountingPayloadPrefix(
+    const char* action,
+    const char* status,
+    const char* dataQualityStatus,
+    bool hasRows)
+{
+    std::ostringstream stream;
+    stream << "{"
+           << "\"module\":\"accounting\","
+           << "\"action\":" << jsonStringValue(action) << ','
+           << "\"implemented\":true,"
+           << "\"readOnly\":true,"
+           << "\"writeEnabled\":false,"
+           << "\"replayExecuted\":false,"
+           << "\"snapshotRebuilt\":false,"
+           << "\"dataSourceAccessed\":true,"
+           << "\"sqliteAccessed\":true,"
+           << "\"accountingEngineCalled\":false,"
+           << "\"tradeDraftGenerated\":false,"
+           << "\"tradeSuggestionGenerated\":false,"
+           << "\"strategyExecuted\":false,"
+           << "\"brokerOrderSubmitted\":false,"
+           << "\"contractVersion\":\"0.5-readonly-facts\","
+           << "\"calculationVersion\":\"readonly-facts-query-v1\","
+           << "\"status\":" << jsonStringValue(status) << ','
+           << "\"dataQualityStatus\":" << jsonStringValue(dataQualityStatus) << ','
+           << "\"hasRows\":" << (hasRows ? "true" : "false") << ','
+           << "\"stale\":false,";
+    return stream.str();
+}
+
+std::string shellAccountingEmptyPayload(
+    const char* action,
+    const char* emptyCode,
+    const char* outputField,
+    const char* emptyValue)
+{
+    std::ostringstream stream;
+    stream << shellAccountingPayloadPrefix(action, "EMPTY", "OK", false)
+           << "\"message\":\"ShellAccounting read-only facts query returned no rows.\","
+           << "\"issues\":[";
+    appendIssueObject(stream, "WARNING", emptyCode, "No read-only ShellAccounting facts are available.", false);
+    stream << "],\"warnings\":[],\"errors\":[],"
+           << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+           << '"' << outputField << "\":" << emptyValue << "}";
+    return stream.str();
+}
+
+std::string shellAccountingQueryErrorPayload(
+    const char* action,
+    const char* errorCode)
+{
+    std::ostringstream stream;
+    stream << shellAccountingPayloadPrefix(action, "QUERY_ERROR", "ERROR", false)
+           << "\"message\":\"ShellAccounting read-only facts query failed.\","
+           << "\"issues\":[";
+    appendIssueObject(
+        stream,
+        "ERROR",
+        errorCode,
+        "ShellAccounting read-only facts query failed without exposing raw SQL or payload.",
+        true);
+    stream << "],\"warnings\":[],\"errors\":[],"
+           << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false}"
+           << "}";
+    return stream.str();
+}
+
+void writePositionRow(
+    std::ostringstream& stream,
+    const etfdt::data_access::ShellAccountingPositionRow& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "strategyCode", row.strategyCode, comma);
+    appendJsonField(stream, "instrumentCode", row.instrumentCode, comma);
+    appendJsonField(stream, "tradeSource", row.tradeSource, comma);
+    appendJsonField(stream, "quantityText", row.quantityText, comma);
+    appendJsonField(stream, "costAmountText", row.costAmountText, comma);
+    appendJsonField(stream, "marketValueText", row.marketValueText, comma);
+    appendJsonField(stream, "unrealizedPnlText", row.unrealizedPnlText, comma);
+    appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
+    stream << '}';
+}
+
+void writeCashSummaryRow(
+    std::ostringstream& stream,
+    const etfdt::data_access::ShellAccountingCashSummaryRow& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "cashBalanceText", row.cashBalanceText, comma);
+    appendJsonField(stream, "principalBaseText", row.principalBaseText, comma);
+    appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
+    stream << '}';
+}
+
+void writePortfolioSummaryRow(
+    std::ostringstream& stream,
+    const etfdt::data_access::ShellAccountingPortfolioSummaryRow& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "totalAssetsText", row.totalAssetsText, comma);
+    appendJsonField(stream, "totalMarketValueText", row.totalMarketValueText, comma);
+    appendJsonField(stream, "cashBalanceText", row.cashBalanceText, comma);
+    appendJsonField(stream, "principalBaseText", row.principalBaseText, comma);
+    appendJsonField(stream, "holdingCostText", row.holdingCostText, comma);
+    appendJsonField(stream, "totalPnlText", row.totalPnlText, comma);
+    appendJsonField(stream, "totalReturnText", row.totalReturnText, comma);
+    appendJsonField(stream, "baseCompletionRatioText", row.baseCompletionRatioText, comma);
+    appendJsonField(stream, "sniperPoolText", row.sniperPoolText, comma);
+    appendJsonField(stream, "activeGridCycleCount", row.activeGridCycleCount, comma);
+    appendJsonField(stream, "activeDraftCount", row.activeDraftCount, comma);
+    appendJsonField(stream, "baseViolationCount", row.baseViolationCount, comma);
+    appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
+    stream << '}';
+}
+
+void writeBasePositionSummaryRow(
+    std::ostringstream& stream,
+    const etfdt::data_access::ShellAccountingBasePositionSummaryRow& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "strategyCode", row.strategyCode, comma);
+    appendJsonField(stream, "instrumentCode", row.instrumentCode, comma);
+    appendJsonField(stream, "targetBaseAmountText", row.targetBaseAmountText, comma);
+    appendJsonField(stream, "allocatedAmountText", row.allocatedAmountText, comma);
+    appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
+    stream << '}';
+}
+
+void writeSniperPoolTierRow(
+    std::ostringstream& stream,
+    const etfdt::data_access::ShellAccountingSniperPoolTierRow& row)
+{
+    bool comma = false;
+    stream << '{';
+    appendJsonField(stream, "accountId", row.accountId, comma);
+    appendJsonField(stream, "portfolioId", row.portfolioId, comma);
+    appendJsonField(stream, "strategyCode", row.strategyCode, comma);
+    appendJsonField(stream, "tierNo", row.tierNo, comma);
+    appendJsonField(stream, "tierName", row.tierName, comma);
+    appendJsonField(stream, "allocatedAmountText", row.allocatedAmountText, comma);
+    appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
+    stream << '}';
 }
 
 struct AuditPayloadParseResult final {
@@ -534,19 +759,21 @@ etfdt::protocol::ProtocolResponse handleAccountingHealth(
 "module":"accounting",
 "healthy":true,
 "readOnly":true,
-"contractVersion":"0.3-draft",
-"calculationVersion":"not-implemented",
+"contractVersion":"0.5-readonly-facts",
+"calculationVersion":"readonly-facts-query-v1",
 "replayImplemented":false,
 "snapshotImplemented":false,
 "writeEnabled":false,
-"implementedActions":["accounting.health"],
-"futureActions":[
-"accounting.replay.preview",
+"implementedActions":[
+"accounting.health",
 "position.list",
 "cash.summary",
 "portfolio.pnl.summary",
 "base_position.summary",
 "sniper_pool.summary"
+],
+"futureActions":[
+"accounting.replay.preview"
 ],
 "sourceOfTruth":"trade_log",
 "derivedTables":[
@@ -677,8 +904,6 @@ etfdt::protocol::ProtocolResponse handlePositionList(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
-
     if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
         return protocolErrorResponse(
             context,
@@ -686,63 +911,32 @@ etfdt::protocol::ProtocolResponse handlePositionList(
             "position.list payload must be a JSON object");
     }
 
-    const std::string payload = R"json({
-"module":"accounting",
-"action":"position.list",
-"implemented":false,
-"readOnly":true,
-"writeEnabled":false,
-"replayExecuted":false,
-"dataSourceAccessed":false,
-"sqliteAccessed":false,
-"accountingEngineCalled":false,
-"contractVersion":"0.4-draft",
-"calculationVersion":"not-implemented",
-"status":"POSITION_LIST_NOT_AVAILABLE",
-"message":"position.list is a read-only contract guard and is not implemented yet.",
-"futureOutput":{
-"type":"PositionListResponse",
-"positions":[]
-},
-"forbiddenWrites":[
-"trade_log",
-"trade_execution_group",
-"trade_draft",
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary",
-"audit_log"
-],
-"requiredNextTasks":[
-"SQLite read-only facts query implementation",
-"AccountingEngine integration boundary",
-"position.list no-write integration test",
-"real PositionListResponse mapping"
-],
-"issues":[
-{
-"level":"ERROR",
-"code":"POSITION_LIST_NOT_AVAILABLE",
-"message":"position.list is not implemented.",
-"blocking":true
-}
-],
-"warnings":[
-"POSITION_LIST_NOT_IMPLEMENTED",
-"NO_SQLITE_FACTS_QUERY",
-"NO_ACCOUNTING_ENGINE_CALL"
-]
-})json";
+    etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
+    auto positions = factsQuery.loadPositions(shellAccountingQueryRequest(context.request.payloadJson));
+    if (!positions) {
+        return successResponse(
+            context,
+            shellAccountingQueryErrorPayload("position.list", "POSITION_LIST_QUERY_ERROR"));
+    }
+    if (positions.value().empty()) {
+        return successResponse(
+            context,
+            shellAccountingEmptyPayload("position.list", "POSITION_LIST_EMPTY", "positions", "[]"));
+    }
 
-    return successResponse(context, payload);
+    std::ostringstream payload;
+    payload << shellAccountingPayloadPrefix("position.list", "OK", "OK", true)
+            << "\"message\":\"position.list read-only facts query completed.\","
+            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"positions\":" << jsonArray(positions.value(), writePositionRow) << "}";
+    return successResponse(context, payload.str());
 }
 
 etfdt::protocol::ProtocolResponse handleCashSummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
-
     if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
         return protocolErrorResponse(
             context,
@@ -750,74 +944,35 @@ etfdt::protocol::ProtocolResponse handleCashSummary(
             "cash.summary payload must be a JSON object");
     }
 
-    const std::string payload = R"json({
-"module":"accounting",
-"action":"cash.summary",
-"implemented":false,
-"readOnly":true,
-"writeEnabled":false,
-"replayExecuted":false,
-"dataSourceAccessed":false,
-"sqliteAccessed":false,
-"cashFactsAccessed":false,
-"snapshotAccessed":false,
-"portfolioSummaryAccessed":false,
-"accountingEngineCalled":false,
-"contractVersion":"0.4-draft",
-"calculationVersion":"not-implemented",
-"status":"CASH_SUMMARY_NOT_AVAILABLE",
-"message":"cash.summary is a read-only contract guard and is not implemented yet.",
-"futureOutput":{
-"type":"CashSummaryResponse",
-"cashSummary":null,
-"accountCashSummaries":[]
-},
-"forbiddenSources":[
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary"
-],
-"forbiddenWrites":[
-"trade_log",
-"trade_execution_group",
-"trade_draft",
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary",
-"audit_log"
-],
-"requiredNextTasks":[
-"Cash facts source schema review",
-"Cash facts read-only query implementation",
-"AccountingEngine integration boundary",
-"cash.summary no-write integration test",
-"real CashSummaryResponse mapping"
-],
-"issues":[
-{
-"level":"ERROR",
-"code":"CASH_SUMMARY_NOT_AVAILABLE",
-"message":"cash.summary is not implemented.",
-"blocking":true
-}
-],
-"warnings":[
-"CASH_SUMMARY_NOT_IMPLEMENTED",
-"NO_CASH_FACTS_SOURCE",
-"NO_SQLITE_FACTS_QUERY",
-"NO_ACCOUNTING_ENGINE_CALL"
-]
-})json";
+    etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
+    auto summaries = factsQuery.loadCashSummaries(shellAccountingQueryRequest(context.request.payloadJson));
+    if (!summaries) {
+        return successResponse(
+            context,
+            shellAccountingQueryErrorPayload("cash.summary", "CASH_SUMMARY_QUERY_ERROR"));
+    }
+    if (summaries.value().empty()) {
+        return successResponse(
+            context,
+            shellAccountingEmptyPayload("cash.summary", "CASH_SUMMARY_EMPTY", "accountCashSummaries", "[]"));
+    }
 
-    return successResponse(context, payload);
+    std::ostringstream payload;
+    payload << shellAccountingPayloadPrefix("cash.summary", "OK", "OK", true)
+            << "\"message\":\"cash.summary read-only facts query completed.\","
+            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"accountCashSummaries\":" << jsonArray(summaries.value(), writeCashSummaryRow)
+            << ",\"cashSummary\":";
+    writeCashSummaryRow(payload, summaries.value().front());
+    payload << "}";
+    return successResponse(context, payload.str());
 }
 
 etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
-
     if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
         return protocolErrorResponse(
             context,
@@ -825,78 +980,42 @@ etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
             "portfolio.pnl.summary payload must be a JSON object");
     }
 
-    const std::string payload = R"json({
-"module":"accounting",
-"action":"portfolio.pnl.summary",
-"implemented":false,
-"readOnly":true,
-"writeEnabled":false,
-"replayExecuted":false,
-"dataSourceAccessed":false,
-"sqliteAccessed":false,
-"tradeFactsAccessed":false,
-"cashFactsAccessed":false,
-"marketPriceFactsAccessed":false,
-"snapshotAccessed":false,
-"portfolioSummaryAccessed":false,
-"accountingEngineCalled":false,
-"contractVersion":"0.4-draft",
-"calculationVersion":"not-implemented",
-"status":"PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
-"message":"portfolio.pnl.summary is a read-only contract guard and is not implemented yet.",
-"futureOutput":{
-"type":"PortfolioPnlSummaryResponse",
-"portfolioPnl":null
-},
-"forbiddenSources":[
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary"
-],
-"forbiddenWrites":[
-"trade_log",
-"trade_execution_group",
-"trade_draft",
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary",
-"audit_log"
-],
-"requiredNextTasks":[
-"Trade facts read-only query integration review",
-"Cash facts source review",
-"Market price facts source review",
-"AccountingEngine integration boundary",
-"portfolio.pnl.summary no-write integration test",
-"real PortfolioPnlSummaryResponse mapping"
-],
-"issues":[
-{
-"level":"ERROR",
-"code":"PORTFOLIO_PNL_SUMMARY_NOT_AVAILABLE",
-"message":"portfolio.pnl.summary is not implemented.",
-"blocking":true
-}
-],
-"warnings":[
-"PORTFOLIO_PNL_SUMMARY_NOT_IMPLEMENTED",
-"NO_TRADE_FACTS_QUERY_IN_ACTION",
-"NO_CASH_FACTS_SOURCE",
-"NO_MARKET_PRICE_FACTS_SOURCE",
-"NO_SQLITE_FACTS_QUERY",
-"NO_ACCOUNTING_ENGINE_CALL"
-]
-})json";
+    etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
+    auto summaries =
+        factsQuery.loadPortfolioSummaries(shellAccountingQueryRequest(context.request.payloadJson));
+    if (!summaries) {
+        return successResponse(
+            context,
+            shellAccountingQueryErrorPayload(
+                "portfolio.pnl.summary",
+                "PORTFOLIO_PNL_SUMMARY_QUERY_ERROR"));
+    }
+    if (summaries.value().empty()) {
+        return successResponse(
+            context,
+            shellAccountingEmptyPayload(
+                "portfolio.pnl.summary",
+                "PORTFOLIO_PNL_SUMMARY_EMPTY",
+                "portfolioPnlSummaries",
+                "[]"));
+    }
 
-    return successResponse(context, payload);
+    std::ostringstream payload;
+    payload << shellAccountingPayloadPrefix("portfolio.pnl.summary", "OK", "OK", true)
+            << "\"message\":\"portfolio.pnl.summary read-only facts query completed.\","
+            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"portfolioPnlSummaries\":" << jsonArray(summaries.value(), writePortfolioSummaryRow)
+            << ",\"portfolioPnl\":";
+    writePortfolioSummaryRow(payload, summaries.value().front());
+    payload << "}";
+    return successResponse(context, payload.str());
 }
 
 etfdt::protocol::ProtocolResponse handleBasePositionSummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
-
     if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
         return protocolErrorResponse(
             context,
@@ -904,84 +1023,42 @@ etfdt::protocol::ProtocolResponse handleBasePositionSummary(
             "base_position.summary payload must be a JSON object");
     }
 
-    const std::string payload = R"json({
-"module":"accounting",
-"action":"base_position.summary",
-"implemented":false,
-"readOnly":true,
-"writeEnabled":false,
-"replayExecuted":false,
-"dataSourceAccessed":false,
-"sqliteAccessed":false,
-"tradeFactsAccessed":false,
-"snapshotAccessed":false,
-"positionSnapshotAccessed":false,
-"portfolioSummaryAccessed":false,
-"accountingEngineCalled":false,
-"tradeDraftGenerated":false,
-"tradeSuggestionGenerated":false,
-"strategyExecuted":false,
-"contractVersion":"0.4-draft",
-"calculationVersion":"not-implemented",
-"status":"BASE_POSITION_SUMMARY_NOT_AVAILABLE",
-"message":"base_position.summary is a read-only contract guard and is not implemented yet.",
-"futureOutput":{
-"type":"BasePositionSummaryResponse",
-"basePosition":null
-},
-"forbiddenSources":[
-"position_snapshot",
-"cash_snapshot",
-"portfolio_summary"
-],
-"forbiddenWrites":[
-"trade_log",
-"trade_execution_group",
-"trade_draft",
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary",
-"audit_log"
-],
-"forbiddenActions":[
-"trade_draft_generation",
-"trade_suggestion_generation",
-"strategy_execution",
-"broker_order"
-],
-"requiredNextTasks":[
-"Base position production calculation boundary review",
-"AccountingEngine integration boundary",
-"base_position.summary no-write integration test",
-"real BasePositionSummaryResponse mapping"
-],
-"issues":[
-{
-"level":"ERROR",
-"code":"BASE_POSITION_SUMMARY_NOT_AVAILABLE",
-"message":"base_position.summary is not implemented.",
-"blocking":true
-}
-],
-"warnings":[
-"BASE_POSITION_SUMMARY_NOT_IMPLEMENTED",
-"NO_TRADE_FACTS_QUERY_IN_ACTION",
-"NO_POSITION_SNAPSHOT_SOURCE",
-"NO_SQLITE_FACTS_QUERY",
-"NO_ACCOUNTING_ENGINE_CALL",
-"NO_TRADE_DRAFT_GENERATION"
-]
-})json";
+    etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
+    auto summaries =
+        factsQuery.loadBasePositionSummaries(shellAccountingQueryRequest(context.request.payloadJson));
+    if (!summaries) {
+        return successResponse(
+            context,
+            shellAccountingQueryErrorPayload(
+                "base_position.summary",
+                "BASE_POSITION_SUMMARY_QUERY_ERROR"));
+    }
+    if (summaries.value().empty()) {
+        return successResponse(
+            context,
+            shellAccountingEmptyPayload(
+                "base_position.summary",
+                "BASE_POSITION_SUMMARY_EMPTY",
+                "basePositions",
+                "[]"));
+    }
 
-    return successResponse(context, payload);
+    std::ostringstream payload;
+    payload << shellAccountingPayloadPrefix("base_position.summary", "OK", "OK", true)
+            << "\"message\":\"base_position.summary read-only facts query completed.\","
+            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"basePositions\":" << jsonArray(summaries.value(), writeBasePositionSummaryRow)
+            << ",\"basePosition\":";
+    writeBasePositionSummaryRow(payload, summaries.value().front());
+    payload << "}";
+    return successResponse(context, payload.str());
 }
 
 etfdt::protocol::ProtocolResponse handleSniperPoolSummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
-
     if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
         return protocolErrorResponse(
             context,
@@ -989,81 +1066,35 @@ etfdt::protocol::ProtocolResponse handleSniperPoolSummary(
             "sniper_pool.summary payload must be a JSON object");
     }
 
-    const std::string payload = R"json({
-"module":"accounting",
-"action":"sniper_pool.summary",
-"implemented":false,
-"readOnly":true,
-"writeEnabled":false,
-"replayExecuted":false,
-"dataSourceAccessed":false,
-"sqliteAccessed":false,
-"tradeFactsAccessed":false,
-"snapshotAccessed":false,
-"positionSnapshotAccessed":false,
-"cashSnapshotAccessed":false,
-"portfolioSummaryAccessed":false,
-"accountingEngineCalled":false,
-"sniperPoolCalculated":false,
-"tierSummaryCalculated":false,
-"tradeDraftGenerated":false,
-"tradeSuggestionGenerated":false,
-"strategyExecuted":false,
-"contractVersion":"0.4-draft",
-"calculationVersion":"not-implemented",
-"status":"SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
-"message":"sniper_pool.summary is a read-only contract guard and is not implemented yet.",
-"futureOutput":{
-"type":"SniperPoolSummaryResponse",
-"sniperPool":null,
-"tierSummary":[]
-},
-"forbiddenSources":[
-"position_snapshot",
-"cash_snapshot",
-"portfolio_summary"
-],
-"forbiddenWrites":[
-"trade_log",
-"trade_execution_group",
-"trade_draft",
-"cash_snapshot",
-"position_snapshot",
-"portfolio_summary",
-"audit_log"
-],
-"forbiddenActions":[
-"trade_draft_generation",
-"trade_suggestion_generation",
-"strategy_execution",
-"broker_order"
-],
-"requiredNextTasks":[
-"Sniper pool production calculation boundary review",
-"AccountingEngine integration boundary",
-"sniper_pool.summary no-write integration test",
-"real SniperPoolSummaryResponse mapping"
-],
-"issues":[
-{
-"level":"ERROR",
-"code":"SNIPER_POOL_SUMMARY_NOT_AVAILABLE",
-"message":"sniper_pool.summary is not implemented.",
-"blocking":true
-}
-],
-"warnings":[
-"SNIPER_POOL_SUMMARY_NOT_IMPLEMENTED",
-"NO_TRADE_FACTS_QUERY_IN_ACTION",
-"NO_POSITION_SNAPSHOT_SOURCE",
-"NO_SQLITE_FACTS_QUERY",
-"NO_ACCOUNTING_ENGINE_CALL",
-"NO_TRADE_DRAFT_GENERATION",
-"NO_TRADE_SUGGESTION_GENERATION"
-]
-})json";
+    etfdt::data_access::ShellAccountingReadOnlyFactsQuery factsQuery(connection);
+    auto tiers = factsQuery.loadSniperPoolTiers(shellAccountingQueryRequest(context.request.payloadJson));
+    if (!tiers) {
+        return successResponse(
+            context,
+            shellAccountingQueryErrorPayload(
+                "sniper_pool.summary",
+                "SNIPER_POOL_SUMMARY_QUERY_ERROR"));
+    }
+    if (tiers.value().empty()) {
+        return successResponse(
+            context,
+            shellAccountingEmptyPayload(
+                "sniper_pool.summary",
+                "SNIPER_POOL_SUMMARY_EMPTY",
+                "tierSummary",
+                "[]"));
+    }
 
-    return successResponse(context, payload);
+    std::ostringstream payload;
+    payload << shellAccountingPayloadPrefix("sniper_pool.summary", "OK", "OK", true)
+            << "\"message\":\"sniper_pool.summary read-only facts query completed.\","
+            << "\"issues\":[],\"warnings\":[],\"errors\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false},"
+            << "\"tierSummary\":" << jsonArray(tiers.value(), writeSniperPoolTierRow)
+            << ",\"sniperPool\":";
+    writeSniperPoolTierRow(payload, tiers.value().front());
+    payload << "}";
+    return successResponse(context, payload.str());
 }
 
 }  // namespace etfdt::data_service_api

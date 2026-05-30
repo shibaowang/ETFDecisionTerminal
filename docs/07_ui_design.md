@@ -513,3 +513,11 @@ strategy execution controls.
 The DataService facts query gate is added. The ShellAccounting UI remains
 read-only and unavailable-safe until a separately authorized DataService facts
 query implementation exists. The UI still has no trade UI.
+
+## TASK-137 DataService Facts Query Implementation
+
+ShellAccounting read-only data can now flow from DataService SELECT-only facts
+queries through the existing presenter path. The UI remains read-only and must
+not add trade UI, write actions, TradeDraft generation, trade suggestions,
+broker order, strategy execution controls, direct SQLite reads, or
+AccountingEngine replay.

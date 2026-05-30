@@ -6,7 +6,23 @@ TASK-136 defines the future DataService read-only facts query implementation
 test plan. This document does not implement query. This document does not access
 SQLite. This document does not call AccountingEngine.
 
+TASK-137 update: the read-only facts query implementation now exists. This test
+plan remains the regression matrix for keeping that implementation SELECT-only,
+no-write, no-snapshot-rebuild, no-AccountingEngine-replay, and no-TradeDraft.
+
 ## Test Matrix
+
+### TASK-137 Post-implementation Matrix
+
+- five authorized action success fixtures.
+- empty data mapping.
+- missing data mapping.
+- query error mapping.
+- no write SQL scan.
+- no snapshot rebuild scan.
+- no AccountingEngine replay scan.
+- privacy / no raw payload scan.
+- rollback / disable facts query policy.
 
 ### A. Read-only SQL / Facts Boundary
 

@@ -8,9 +8,13 @@ This document defines the gate that must pass before any future ShellAccounting 
 
 TASK-119 through TASK-157 are prerequisites. TASK-154 provides a broker order dry-run boundary. TASK-155 and TASK-156 define real broker order authorization and implementation gates. TASK-157 added the DataServiceApi-owned broker order port scaffold, request / response DTOs, a disabled/null implementation, and a test-only fake adapter. There is still no real broker adapter, no broker SDK, no sandbox / paper / real broker call, no real order placement, no strategy execution, and no automatic trading.
 
+TASK-159 update: DataServiceApi now wires the disabled/null broker port as the default internal provider. The implementation gate's no-adapter-yet check has evolved to allow only disabled/null adapter wiring. Concrete sandbox, paper, and real adapter implementations remain forbidden.
+
 ## TASK-157 Interface Scaffold Complete
 
 The only production broker-facing type currently allowed is the abstract port scaffold from TASK-157. It is an interface boundary and disabled/null adapter, not a concrete broker adapter implementation. Future implementation work must preserve this separation: interface ownership can stay in DataServiceApi, while real adapter wiring must be separately authorized and default disabled.
+
+TASK-159 keeps that contract and only adds default disabled wiring. The default provider is not a sandbox, paper, or real adapter.
 
 ## Future Adapter Implementation Gate Summary
 

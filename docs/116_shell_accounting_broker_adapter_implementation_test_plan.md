@@ -6,9 +6,9 @@ This test plan defines the static and behavioral probes required before any futu
 
 ## Test Matrix
 
-### No Adapter Implementation Yet
+### Disabled/Null Adapter Wiring Only
 
-Verify production code still contains only the TASK-157 port scaffold and disabled/null adapter, with no concrete sandbox, paper, or real broker adapter implementation.
+Verify production code still contains only the TASK-157 port scaffold plus TASK-159 disabled/null adapter wiring, with no concrete sandbox, paper, or real broker adapter implementation.
 
 ### Disabled Default
 
@@ -101,7 +101,7 @@ Verify TASK-157 broker adapter interface tests, TASK-154 broker order dry-run te
 - [ ] docs/116 merged.
 - [ ] TASK-157 interface scaffold still passes.
 - [ ] TASK-158 broker adapter implementation gate passes.
-- [ ] No adapter implementation exists in production code.
+- [ ] Only disabled/null adapter wiring exists in production code.
 - [ ] No broker SDK is imported or linked.
 - [ ] No broker network call is reachable in CI.
 - [ ] No credentials or secrets are committed.

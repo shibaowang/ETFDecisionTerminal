@@ -162,3 +162,10 @@ TASK-157 port / DTO / disabled adapter scaffold remains unchanged and is still
 not a concrete broker adapter implementation. Future work must pass docs/115
 and docs/116 before any sandbox, paper, or real adapter implementation is
 authorized.
+
+# TASK-159 Update
+
+TASK-159 wires the disabled/null port into the DataService internal broker
+boundary. The TASK-157 interface contract remains unchanged: fake adapters stay
+test-only, and the only production default is still
+`DisabledShellAccountingBrokerOrderPort`.

@@ -1270,3 +1270,13 @@ authorizes that scope. Keep broker adapter access DataService-only, default
 disabled, mode-isolated across fake test-only / sandbox / paper / real, and
 rollback / kill-switch ready. QML, Presenter, ShellServices, and ShellCore must
 not directly call broker adapter code.
+
+## TASK-159 Broker Adapter Disabled Wiring Prompt Rule
+
+Future broker adapter work must preserve TASK-159's default disabled/null
+wiring until a later task explicitly authorizes sandbox, paper, or real adapter
+behavior. Do not expose adapter wiring to QML / Presenter / Shell, do not
+replace the disabled provider with a live adapter, do not add broker SDK,
+network calls, credentials, real broker order ids, real placement, strategy
+execution, automatic trading, or schema changes unless the task explicitly
+authorizes that scope.

@@ -2502,3 +2502,14 @@ no TradeDraft, trade suggestion, strategy execution, broker order, order
 placement, or trading UI. See
 `docs/87_shell_accounting_snapshot_rebuild_write_gate.md` and
 `docs/88_shell_accounting_snapshot_rebuild_write_test_plan.md`.
+
+## TASK-141 Snapshot Rebuild Implementation Gate
+
+ShellAccounting now has a snapshot rebuild implementation gate and test plan.
+Snapshot rebuild remains unimplemented, snapshot write remains separately
+unauthorized, and TASK-139 read-only replay remains the fallback. The future
+rebuild boundary is DataService-only, read-only replay input only, in-memory
+preview output only, and still has no database write, TradeDraft, trade
+suggestion, strategy execution, broker order, or trading UI. See
+`docs/89_shell_accounting_snapshot_rebuild_implementation_gate.md` and
+`docs/90_shell_accounting_snapshot_rebuild_implementation_test_plan.md`.

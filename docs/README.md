@@ -307,6 +307,13 @@
   [88_shell_accounting_snapshot_rebuild_write_test_plan.md](88_shell_accounting_snapshot_rebuild_write_test_plan.md)
   defines the future rebuild/write, no-trade, no-generic-write, and rollback
   test matrix.
+- ShellAccounting snapshot rebuild implementation gate:
+  [89_shell_accounting_snapshot_rebuild_implementation_gate.md](89_shell_accounting_snapshot_rebuild_implementation_gate.md)
+  defines the future snapshot rebuild implementation boundary.
+- ShellAccounting snapshot rebuild implementation test plan:
+  [90_shell_accounting_snapshot_rebuild_implementation_test_plan.md](90_shell_accounting_snapshot_rebuild_implementation_test_plan.md)
+  defines the future rebuild-only, in-memory preview, no-write, no-trade, and
+  rollback test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

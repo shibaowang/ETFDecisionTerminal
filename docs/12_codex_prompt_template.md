@@ -991,3 +991,17 @@ v0.1 草案。
   trading UI.
 - TASK-139 read-only replay remains the fallback until a separate
   snapshot rebuild/write implementation is authorized.
+
+## TASK-141 ShellAccounting Snapshot Rebuild Implementation Gate
+
+- Future snapshot rebuild implementation tasks must reference
+  `docs/89_shell_accounting_snapshot_rebuild_implementation_gate.md` and
+  `docs/90_shell_accounting_snapshot_rebuild_implementation_test_plan.md`.
+- Snapshot rebuild must be DataService-only, use TASK-139 read-only replay
+  input, and produce only an in-memory derived snapshot preview unless a later
+  task explicitly authorizes snapshot write.
+- Do not add direct Shell / QML / Presenter snapshot rebuild triggers.
+- Do not add snapshot write, database write, TradeDraft generation, trade
+  suggestion, strategy execution, broker order, or trading UI.
+- TASK-139 read-only replay remains the fallback until a separate snapshot
+  rebuild implementation is authorized and completed.

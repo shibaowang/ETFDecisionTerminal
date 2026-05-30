@@ -181,6 +181,12 @@ def main() -> int:
     shell_accounting_snapshot_rebuild_write_test_plan_path = (
         root / "docs" / "88_shell_accounting_snapshot_rebuild_write_test_plan.md"
     )
+    shell_accounting_snapshot_rebuild_implementation_gate_path = (
+        root / "docs" / "89_shell_accounting_snapshot_rebuild_implementation_gate.md"
+    )
+    shell_accounting_snapshot_rebuild_implementation_test_plan_path = (
+        root / "docs" / "90_shell_accounting_snapshot_rebuild_implementation_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -237,6 +243,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_rebuild_write_gate_cmake_path = (
         root / "tests" / "ShellAccountingSnapshotRebuildWriteGate" / "CMakeLists.txt"
+    )
+    shell_accounting_snapshot_rebuild_implementation_gate_cmake_path = (
+        root / "tests" / "ShellAccountingSnapshotRebuildImplementationGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1263,6 +1272,12 @@ def main() -> int:
     shell_accounting_snapshot_rebuild_write_test_plan = (
         shell_accounting_snapshot_rebuild_write_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_snapshot_rebuild_implementation_gate = (
+        shell_accounting_snapshot_rebuild_implementation_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_snapshot_rebuild_implementation_test_plan = (
+        shell_accounting_snapshot_rebuild_implementation_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1313,6 +1328,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_rebuild_write_gate_cmake = (
         shell_accounting_snapshot_rebuild_write_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_snapshot_rebuild_implementation_gate_cmake = (
+        shell_accounting_snapshot_rebuild_implementation_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5859,6 +5877,86 @@ def main() -> int:
         and "TASK-140" in shell_accounting_replay_snapshot_rebuild_test_plan
         and "TASK-140" in shell_accounting_readonly_replay_implementation,
         "docs/84 docs/85 docs/86 mention TASK-140",
+    )
+    require(
+        shell_accounting_snapshot_rebuild_implementation_gate_path.exists(),
+        "docs/89 snapshot rebuild implementation gate exists",
+    )
+    require(
+        shell_accounting_snapshot_rebuild_implementation_test_plan_path.exists(),
+        "docs/90 snapshot rebuild implementation test plan exists",
+    )
+    require(
+        "docs/89_shell_accounting_snapshot_rebuild_implementation_gate.md" in readme,
+        "README links docs/89",
+    )
+    require(
+        "docs/90_shell_accounting_snapshot_rebuild_implementation_test_plan.md" in readme,
+        "README links docs/90",
+    )
+    require(
+        "89_shell_accounting_snapshot_rebuild_implementation_gate.md" in docs_index,
+        "docs/README links docs/89",
+    )
+    require(
+        "90_shell_accounting_snapshot_rebuild_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/90",
+    )
+    require("TASK-141" in shell_accounting_snapshot_rebuild_implementation_gate, "docs/89 mentions TASK-141")
+    require(
+        "Test Matrix" in shell_accounting_snapshot_rebuild_implementation_test_plan,
+        "docs/90 includes Test Matrix",
+    )
+    require("TASK-141" in codex_prompt_template, "docs/12 mentions TASK-141")
+    for ctest_name in [
+        "shell_accounting_snapshot_rebuild_implementation_gate",
+        "shell_accounting_snapshot_rebuild_implementation_no_rebuild_yet",
+        "shell_accounting_snapshot_rebuild_implementation_dataservice_only_policy",
+        "shell_accounting_snapshot_rebuild_implementation_readonly_replay_input_policy",
+        "shell_accounting_snapshot_rebuild_implementation_preview_only_policy",
+        "shell_accounting_snapshot_rebuild_implementation_no_write_path",
+        "shell_accounting_snapshot_rebuild_implementation_no_trade_or_strategy",
+        "shell_accounting_snapshot_rebuild_implementation_error_mapping_policy",
+        "shell_accounting_snapshot_rebuild_implementation_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_snapshot_rebuild_implementation_gate_cmake,
+            f"TASK-141 tests include {ctest_name}",
+        )
+    require(
+        "TradeDraft" not in shell_accounting_readonly_page
+        and "buy button" not in shell_accounting_readonly_page
+        and "sell button" not in shell_accounting_readonly_page
+        and "trading action" not in shell_accounting_readonly_page,
+        "production QML has no new trading UI after TASK-141",
+    )
+    for forbidden_rebuild_token in [
+        "rebuildSnapshot",
+        "rebuildFromReplay",
+        "rebuildFromFacts",
+        "snapshot.rebuild",
+        "accounting.snapshot.rebuild",
+    ]:
+        require(
+            forbidden_rebuild_token not in shell_and_qml_after_140,
+            f"Shell/QML avoids direct snapshot rebuild token {forbidden_rebuild_token} after TASK-141",
+        )
+    for forbidden_write_token in [
+        "INSERT INTO",
+        "UPDATE ",
+        "DELETE FROM",
+        "REPLACE INTO",
+        "writeEnabled: true",
+        "data.audit.append",
+    ]:
+        require(
+            forbidden_write_token not in shell_and_qml_after_140,
+            f"Shell/QML avoids direct SQLite/DataAccess write token {forbidden_write_token} after TASK-141",
+        )
+    require(
+        "TASK-141" in shell_accounting_snapshot_rebuild_write_gate
+        and "TASK-141" in shell_accounting_snapshot_rebuild_write_test_plan,
+        "docs/87 docs/88 mention TASK-141",
     )
 
     require(

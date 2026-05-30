@@ -1,0 +1,75 @@
+add_library(ShellAccountingSnapshotRebuildImplementationGateLib STATIC
+    ShellAccountingSnapshotRebuildImplementationGate.cpp
+    ShellAccountingSnapshotRebuildImplementationGate.h
+)
+
+target_compile_features(ShellAccountingSnapshotRebuildImplementationGateLib PUBLIC cxx_std_17)
+
+target_include_directories(ShellAccountingSnapshotRebuildImplementationGateLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+function(add_shell_accounting_snapshot_rebuild_implementation_gate_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingSnapshotRebuildImplementationGateLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(NAME ${ctest_name} COMMAND ${target_name} --source-root ${PROJECT_SOURCE_DIR})
+endfunction()
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationGateTests
+    test_shell_accounting_snapshot_rebuild_implementation_gate.cpp
+    shell_accounting_snapshot_rebuild_implementation_gate
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationNoRebuildYetTests
+    test_shell_accounting_snapshot_rebuild_implementation_no_rebuild_yet.cpp
+    shell_accounting_snapshot_rebuild_implementation_no_rebuild_yet
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationDataServiceOnlyPolicyTests
+    test_shell_accounting_snapshot_rebuild_implementation_dataservice_only_policy.cpp
+    shell_accounting_snapshot_rebuild_implementation_dataservice_only_policy
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationReadOnlyReplayInputPolicyTests
+    test_shell_accounting_snapshot_rebuild_implementation_readonly_replay_input_policy.cpp
+    shell_accounting_snapshot_rebuild_implementation_readonly_replay_input_policy
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationPreviewOnlyPolicyTests
+    test_shell_accounting_snapshot_rebuild_implementation_preview_only_policy.cpp
+    shell_accounting_snapshot_rebuild_implementation_preview_only_policy
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationNoWritePathTests
+    test_shell_accounting_snapshot_rebuild_implementation_no_write_path.cpp
+    shell_accounting_snapshot_rebuild_implementation_no_write_path
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationNoTradeOrStrategyTests
+    test_shell_accounting_snapshot_rebuild_implementation_no_trade_or_strategy.cpp
+    shell_accounting_snapshot_rebuild_implementation_no_trade_or_strategy
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationErrorMappingPolicyTests
+    test_shell_accounting_snapshot_rebuild_implementation_error_mapping_policy.cpp
+    shell_accounting_snapshot_rebuild_implementation_error_mapping_policy
+)
+
+add_shell_accounting_snapshot_rebuild_implementation_gate_test(
+    ShellAccountingSnapshotRebuildImplementationRollbackPolicyTests
+    test_shell_accounting_snapshot_rebuild_implementation_rollback_policy.cpp
+    shell_accounting_snapshot_rebuild_implementation_rollback_policy
+)

@@ -94,3 +94,11 @@ DataService-only replay, the five authorized read-only actions, missing facts,
 missing market price, missing FX, inconsistent facts, no snapshot rebuild, no
 snapshot write, no trade / strategy, privacy, and rollback readiness. Snapshot
 rebuild/write remains future scope and still requires a separate task.
+
+## TASK-140 Snapshot Rebuild Write Gate
+
+TASK-140 adds `tests/ShellAccountingSnapshotRebuildWriteGate` and the
+`shell_accounting_snapshot_rebuild_write_*` CTests. The tests keep snapshot
+rebuild/write as future scope, verify no UI-triggered write, preserve
+DataService-only policy, and confirm TASK-139 read-only replay remains the
+fallback.

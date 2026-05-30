@@ -300,6 +300,13 @@
   records TASK-139 DataService-internal read-only replay. Snapshot rebuild and
   snapshot write remain unimplemented, and Shell/QML still do not directly call
   AccountingEngine.
+- ShellAccounting snapshot rebuild write gate:
+  [87_shell_accounting_snapshot_rebuild_write_gate.md](87_shell_accounting_snapshot_rebuild_write_gate.md)
+  defines the future snapshot rebuild / snapshot write boundary.
+- ShellAccounting snapshot rebuild write test plan:
+  [88_shell_accounting_snapshot_rebuild_write_test_plan.md](88_shell_accounting_snapshot_rebuild_write_test_plan.md)
+  defines the future rebuild/write, no-trade, no-generic-write, and rollback
+  test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

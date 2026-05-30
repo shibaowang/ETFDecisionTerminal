@@ -977,3 +977,17 @@ v0.1 草案。
   authorization.
 - Read-only replay is not TradeDraft, trade suggestion, strategy execution,
   broker order, trading UI, or any write path.
+
+## TASK-140 ShellAccounting Snapshot Rebuild Write Gate
+
+- Future snapshot rebuild/write tasks must reference
+  `docs/87_shell_accounting_snapshot_rebuild_write_gate.md` and
+  `docs/88_shell_accounting_snapshot_rebuild_write_test_plan.md`.
+- Do not add direct Shell / QML snapshot write or rebuild triggers.
+- Do not add snapshot write without explicit authorization.
+- Do not add generic write-enabled escape hatches through DataServiceApi or
+  DataServiceClient.
+- Do not add TradeDraft, trade suggestion, strategy execution, broker order, or
+  trading UI.
+- TASK-139 read-only replay remains the fallback until a separate
+  snapshot rebuild/write implementation is authorized.

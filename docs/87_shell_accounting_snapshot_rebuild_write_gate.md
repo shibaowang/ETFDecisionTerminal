@@ -105,3 +105,12 @@ The full prerequisite sequence is TASK-119, TASK-120, TASK-121, TASK-122,
 TASK-123, TASK-124, TASK-125, TASK-126, TASK-127, TASK-128, TASK-129,
 TASK-130, TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136,
 TASK-137, TASK-138, and TASK-139.
+
+## TASK-141 Follow-Up Gate
+
+TASK-141 adds the snapshot rebuild implementation gate. Snapshot rebuild is
+still not implemented, snapshot write is still not authorized, and TASK-139
+read-only replay remains the fallback. TASK-141 keeps the future rebuild
+boundary DataService-only, read-only replay input only, in-memory preview output
+only, no database write, no TradeDraft, no trade suggestion, no strategy
+execution, no broker order, and no trading UI.

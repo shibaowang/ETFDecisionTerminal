@@ -86,3 +86,13 @@ document does not implement rebuild or any write path.
 - [ ] user explicitly authorized snapshot rebuild implementation.
 - [ ] user explicitly authorized snapshot write implementation.
 - [ ] user explicitly authorized any schema migration, if needed.
+
+## TASK-141 Follow-Up Gate
+
+TASK-141 adds the snapshot rebuild implementation gate and test plan.
+Snapshot rebuild remains unimplemented in TASK-141, snapshot write remains
+separately unauthorized, and TASK-139 read-only replay remains the fallback.
+Future rebuild implementation must keep DataService-only coordination,
+read-only replay input, in-memory preview output, no database write, no
+TradeDraft, no trade suggestion, no strategy execution, no broker order, and no
+trading UI.

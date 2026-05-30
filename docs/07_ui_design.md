@@ -542,3 +542,10 @@ The snapshot rebuild/write gate is added. The UI remains read-only, does not
 trigger snapshot rebuild or snapshot write, and does not display trading
 buttons. Future rebuild/write tasks must keep UI interaction separate from
 DataService-only snapshot coordination.
+
+## TASK-141 Snapshot Rebuild Implementation Gate
+
+The snapshot rebuild implementation gate is added. The UI remains read-only,
+does not trigger snapshot rebuild, does not trigger snapshot write, and does
+not display trading buttons. Future rebuild work must stay inside the
+DataService boundary and expose only read-only, unavailable-safe state to UI.

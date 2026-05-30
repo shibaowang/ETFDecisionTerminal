@@ -108,3 +108,10 @@ A future production trading UI PR must state:
 - rollback / disable strategy
 - no broker, no strategy, no automatic trading evidence
 - full CTest, ShellAccounting gates, and transport 50-repeat results
+
+## TASK-153 Follow-up Gate
+
+TASK-153 adds the broker order authorization gate after the TASK-152 production
+Draft UI. Broker order remains unimplemented. TASK-152 UI behavior is unchanged:
+it may create and confirm Drafts through DataService, but it must not call a
+broker, execute strategy, place orders, or enable automatic trading.

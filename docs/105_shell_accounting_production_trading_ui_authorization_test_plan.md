@@ -136,3 +136,10 @@ and order submission.
 - [ ] user explicitly authorized QML TradeDraft create binding.
 - [ ] user explicitly authorized QML TradeDraft confirm binding.
 - [ ] user explicitly accepted no broker / no strategy / no automatic trading boundary.
+
+## TASK-153 Follow-up Gate
+
+TASK-153 adds broker order authorization tests after TASK-152. Production
+trading UI tests remain the regression baseline. Broker order, broker adapter,
+StrategyEngine execution, automatic trading, and real order placement remain
+outside this test plan until a separate implementation task is authorized.

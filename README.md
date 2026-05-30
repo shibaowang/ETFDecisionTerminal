@@ -2646,3 +2646,15 @@ and error states without silent success. QML does not call DataServiceClient,
 SQLite, DataAccess, broker/order APIs, or StrategyEngine directly, and schema
 remains unchanged. See
 `docs/106_shell_accounting_production_trading_ui_implementation.md`.
+
+## TASK-153 Broker Order Authorization Gate
+
+ShellAccounting now has a broker order authorization gate and test plan.
+Broker order placement remains unimplemented: there is no broker adapter, no
+broker SDK call, no real order placement, no StrategyEngine execution, and no
+automatic trading. Future broker order work must be DataService-only, based on
+an already confirmed TradeDraft / ledger fact, independently authorized,
+explicitly user-confirmed, dry-run/rollback-ready, audited, and still must not
+accept raw QML payload as an order. See
+`docs/107_shell_accounting_broker_order_authorization_gate.md` and
+`docs/108_shell_accounting_broker_order_authorization_test_plan.md`.

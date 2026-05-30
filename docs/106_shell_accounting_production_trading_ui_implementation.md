@@ -110,3 +110,10 @@ TradeDraft, and confirmation backend behavior. Fallback must provide no fake dra
 
 Broker order placement, StrategyEngine execution, automatic trading, and
 additional trading workflow UI require separate TASK authorization.
+
+## TASK-153 Follow-up Gate
+
+TASK-153 adds the broker order authorization gate. The TASK-152 production UI
+remains limited to Draft creation, Draft review, Draft confirmation, and ledger
+status. Broker order placement remains unimplemented and must not be inferred
+from confirmed-ledger state.

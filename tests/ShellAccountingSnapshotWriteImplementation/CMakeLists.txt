@@ -1,0 +1,49 @@
+find_package(Qt6 COMPONENTS Core REQUIRED)
+
+add_library(ShellAccountingSnapshotWriteImplementationLib STATIC
+    ShellAccountingSnapshotWriteImplementation.cpp
+)
+target_link_libraries(ShellAccountingSnapshotWriteImplementationLib
+    PUBLIC
+        ShellAccountingReadOnlyReplayImplementationLib
+        ETFDecisionTerminal::DataServiceApi
+        Qt6::Core
+)
+target_compile_features(ShellAccountingSnapshotWriteImplementationLib PUBLIC cxx_std_17)
+
+function(add_shell_accounting_snapshot_write_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingSnapshotWriteImplementationLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(
+        NAME ${ctest_name}
+        COMMAND
+            ${target_name}
+            --source-root ${PROJECT_SOURCE_DIR}
+            --migration ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+    )
+    set_tests_properties(${ctest_name} PROPERTIES
+        ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+    )
+endfunction()
+
+add_shell_accounting_snapshot_write_test(SnapshotWriteImplementationTests test_shell_accounting_snapshot_write_implementation.cpp shell_accounting_snapshot_write_implementation)
+add_shell_accounting_snapshot_write_test(SnapshotWriteBoundaryTests test_shell_accounting_snapshot_write_dataservice_only_boundary.cpp shell_accounting_snapshot_write_dataservice_only_boundary)
+add_shell_accounting_snapshot_write_test(SnapshotWriteRequiresPreviewTests test_shell_accounting_snapshot_write_requires_preview_input.cpp shell_accounting_snapshot_write_requires_preview_input)
+add_shell_accounting_snapshot_write_test(SnapshotWriteCashTests test_shell_accounting_snapshot_write_cash_snapshot_success.cpp shell_accounting_snapshot_write_cash_snapshot_success)
+add_shell_accounting_snapshot_write_test(SnapshotWritePositionTests test_shell_accounting_snapshot_write_position_snapshot_success.cpp shell_accounting_snapshot_write_position_snapshot_success)
+add_shell_accounting_snapshot_write_test(SnapshotWritePortfolioTests test_shell_accounting_snapshot_write_portfolio_summary_success.cpp shell_accounting_snapshot_write_portfolio_summary_success)
+add_shell_accounting_snapshot_write_test(SnapshotWriteRollbackTests test_shell_accounting_snapshot_write_transaction_rollback.cpp shell_accounting_snapshot_write_transaction_rollback)
+add_shell_accounting_snapshot_write_test(SnapshotWriteIdempotencyTests test_shell_accounting_snapshot_write_idempotency.cpp shell_accounting_snapshot_write_idempotency)
+add_shell_accounting_snapshot_write_test(SnapshotWriteDuplicateTests test_shell_accounting_snapshot_write_duplicate_snapshot_handling.cpp shell_accounting_snapshot_write_duplicate_snapshot_handling)
+add_shell_accounting_snapshot_write_test(SnapshotWriteNoTradeLogTests test_shell_accounting_snapshot_write_no_trade_log_write.cpp shell_accounting_snapshot_write_no_trade_log_write)
+add_shell_accounting_snapshot_write_test(SnapshotWriteNoTradeDraftTests test_shell_accounting_snapshot_write_no_trade_draft_write.cpp shell_accounting_snapshot_write_no_trade_draft_write)
+add_shell_accounting_snapshot_write_test(SnapshotWriteNoAuditTests test_shell_accounting_snapshot_write_no_audit_write.cpp shell_accounting_snapshot_write_no_audit_write)
+add_shell_accounting_snapshot_write_test(SnapshotWriteNoTradeTests test_shell_accounting_snapshot_write_no_trade_or_strategy.cpp shell_accounting_snapshot_write_no_trade_or_strategy)
+add_shell_accounting_snapshot_write_test(SnapshotWriteNoUiTriggerTests test_shell_accounting_snapshot_write_no_ui_trigger.cpp shell_accounting_snapshot_write_no_ui_trigger)
+add_shell_accounting_snapshot_write_test(SnapshotWritePrivacyTests test_shell_accounting_snapshot_write_privacy.cpp shell_accounting_snapshot_write_privacy)
+add_shell_accounting_snapshot_write_test(SnapshotWriteRollbackReadyTests test_shell_accounting_snapshot_write_rollback_ready.cpp shell_accounting_snapshot_write_rollback_ready)

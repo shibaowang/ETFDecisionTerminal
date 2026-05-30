@@ -26,6 +26,14 @@
 - 缺少必填 payload 字段时必须返回协议错误，且不得插入 `audit_log`。
 - 未在写入白名单中的 action，例如 `data.trade_log.append`，必须返回 `E1004_INVALID_ACTION`。
 
+## TASK-144 快照写入边界
+
+- TASK-144 不修改数据库 schema，不修改 `migrations/001_initial_schema.sql`。
+- `accounting.snapshot.write` 是受控 DataService 内部写入 action。
+- 该 action 只允许写 `cash_snapshot`、`position_snapshot` 和 `portfolio_summary`。
+- 该 action 不得写 `trade_log`、`trade_execution_group`、`trade_draft` 或 `audit_log`。
+- 写入必须来自 TASK-142 `snapshotRebuildPreview`，必须有显式授权，且必须在同一事务中完成，失败时 rollback。
+
 ## 当前状态
 
 v0.1 草案。初始迁移脚本见 `migrations/001_initial_schema.sql`。

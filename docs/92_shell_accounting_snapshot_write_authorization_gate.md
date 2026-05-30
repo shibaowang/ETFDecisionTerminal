@@ -171,3 +171,14 @@ TASK-130, TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137,
 TASK-138, TASK-139, TASK-140, TASK-141, TASK-142, full CTest,
 `transport_local_socket_echo` 50 repeat, clean git status, TASK-143 gate tests,
 and explicit user authorization.
+
+## TASK-144 Snapshot Write Implementation
+
+TASK-144 implements the authorized snapshot write boundary. The only authorized
+write action is `accounting.snapshot.write`, the input must come from TASK-142
+`snapshotRebuildPreview`, and the only allowlist write tables are
+`cash_snapshot`, `position_snapshot`, and `portfolio_summary`. The TASK-143
+authorization gate now checks this positive boundary while continuing to forbid
+`trade_log`, `trade_execution_group`, `trade_draft`, `audit_log`, production
+QML/startup write triggers, schema changes, TradeDraft generation, trade
+suggestions, strategy execution, and broker order submission.

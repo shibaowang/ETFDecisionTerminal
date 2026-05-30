@@ -325,6 +325,10 @@
   [93_shell_accounting_snapshot_write_authorization_test_plan.md](93_shell_accounting_snapshot_write_authorization_test_plan.md)
   defines the TASK-143 future preview-input-only, allowlisted, transactional, no-trade,
   rollback-ready snapshot write test matrix.
+- ShellAccounting snapshot write implementation:
+  [94_shell_accounting_snapshot_write_implementation.md](94_shell_accounting_snapshot_write_implementation.md)
+  records TASK-144 DataService-internal snapshot write to the allowlist tables
+  `cash_snapshot`, `position_snapshot`, and `portfolio_summary`.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

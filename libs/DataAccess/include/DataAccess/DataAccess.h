@@ -10,6 +10,7 @@
 #include "DataAccess/SQLiteConnection.h"
 #include "DataAccess/Transaction.h"
 #include "DataAccess/TransactionRunner.h"
+#include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 
 #include <string_view>
 

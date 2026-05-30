@@ -172,6 +172,12 @@ SQLite 唯一写入口。负责账务写入、数据迁移、备份恢复、Repo
 - ServiceHost 和 Transport 仍不得依赖 DataAccess；只有 ETFDataService 进程内的 DataServiceApi handler 可以通过受控 Repository 写入。
 - 本阶段不提供 TradeLog、TradeDraft、成交组、资金池、grid_cycle 或派生快照表的写入 action。
 
+TASK-144 adds one later, explicit snapshot write action:
+`accounting.snapshot.write`. It is still DataService-only and table-allowlisted
+to `cash_snapshot`, `position_snapshot`, and `portfolio_summary`; it does not
+write `trade_log`, `trade_execution_group`, `trade_draft`, or `audit_log`, and
+it does not expose a generic write-enabled escape hatch.
+
 ## DataServiceClient 层边界
 
 - TASK-012 新增 DataServiceClient，位于客户端 / 服务调用方侧。

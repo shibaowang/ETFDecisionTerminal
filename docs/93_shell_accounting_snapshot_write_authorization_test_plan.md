@@ -146,3 +146,14 @@ TradeDraft, trade suggestions, strategy execution, or broker orders.
 - [ ] user explicitly authorized snapshot write allowlist tables
 - [ ] user explicitly authorized any audit write, if needed
 - [ ] user explicitly authorized any schema migration, if needed
+
+## TASK-144 Post-Implementation Matrix
+
+TASK-144 implements `accounting.snapshot.write` as an authorized DataService-only
+snapshot write. The authorization gate now verifies that the write remains
+limited to TASK-142 `snapshotRebuildPreview` input and the allowlist tables
+`cash_snapshot`, `position_snapshot`, and `portfolio_summary`. The matrix still
+requires checks for forbidden tables (`trade_log`, `trade_execution_group`,
+`trade_draft`, `audit_log`), no production QML/startup trigger, transaction
+rollback, idempotency, duplicate handling, privacy, no TradeDraft, no strategy,
+no broker order, full CTest, and transport 50 repeat.

@@ -564,3 +564,11 @@ not trigger snapshot write, does not request write authorization, and does not
 display trading buttons. Future snapshot write implementation must stay behind
 DataService authorization and must not create a UI write trigger unless a later
 task explicitly authorizes one.
+
+## TASK-144 Snapshot Write Implementation
+
+Snapshot write is implemented only inside the DataService boundary. The UI
+remains read-only, does not trigger `accounting.snapshot.write`, does not request
+write authorization, and does not display trading buttons. Snapshot write
+persists only derived snapshot tables and does not change production QML or
+production startup.

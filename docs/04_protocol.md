@@ -216,7 +216,10 @@ TASK-009 定义 `data.*` 只读 action 命名规则：`data.<resource>.<operatio
 
 ## DataService 审计写入 action
 
-TASK-011 定义当前唯一允许的写入 action：`data.audit.append`。默认所有其他 `data.*` action 仍然禁止写入，未注册或未授权写入 action 必须返回 `E1004_INVALID_ACTION`。
+TASK-011 定义第一个受控写入 action：`data.audit.append`。TASK-144
+新增受控 snapshot write action：`accounting.snapshot.write`。默认所有其他
+`data.*` 或 accounting 写入 action 仍然禁止写入，未注册或未授权写入 action
+必须返回 `E1004_INVALID_ACTION`。
 
 ### data.audit.append
 
@@ -261,6 +264,15 @@ TASK-011 定义当前唯一允许的写入 action：`data.audit.append`。默认
 - 数据库事务或写入失败时返回数据库类错误码。
 - `data.audit.append` 只在开发期审计写入服务中注册；只读服务必须返回 `E1004_INVALID_ACTION`。
 - 不允许任何通过 payload 传入 SQL 的 action。
+
+### accounting.snapshot.write
+
+TASK-144 defines `accounting.snapshot.write` as a DataService-internal snapshot
+write action. The request must be authorized with `TASK-144_SNAPSHOT_WRITE`,
+must declare `source=snapshotRebuildPreview`, and must use the TASK-142 preview
+as input. The action may write only `cash_snapshot`, `position_snapshot`, and
+`portfolio_summary`; it must not write `trade_log`, `trade_execution_group`,
+`trade_draft`, or `audit_log`.
 
 ## DataServiceClient 请求和响应规则
 

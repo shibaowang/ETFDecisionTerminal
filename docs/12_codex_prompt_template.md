@@ -1125,3 +1125,21 @@ v0.1 草案。
 - Do not modify TASK-148 TradeDraft creation behavior, production QML/startup,
   schema, broker/order code, StrategyEngine behavior, or DataServiceClient
   transport/API behavior.
+
+## TASK-150 ShellAccounting TradeDraft Confirmation Implementation
+
+- TradeDraft confirmation is authorized only as
+  `accounting.tradedraft.confirm` inside the DataService boundary.
+- The required authorization token is `TASK-150_TRADEDRAFT_CONFIRM`.
+- Confirmation input must reference an existing unconfirmed TradeDraft and must
+  validate the persisted draft before writing ledger facts.
+- Confirmation may atomically write `trade_execution_group`, `trade_log`,
+  sanitized `audit_log`, and the confirmed `trade_draft` status / confirmation
+  metadata only.
+- Audit failure must roll back `trade_execution_group`, `trade_log`, and
+  `trade_draft` status changes.
+- Duplicate confirmation must not create duplicate `trade_log` rows.
+- Confirmation is not broker order, not strategy execution, not automatic
+  trading, and not production trading UI.
+- Do not modify production QML/startup, schema, broker/order code,
+  StrategyEngine behavior, or DataServiceClient transport/API behavior.

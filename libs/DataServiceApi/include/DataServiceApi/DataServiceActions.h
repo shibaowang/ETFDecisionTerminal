@@ -18,6 +18,7 @@ constexpr const char* kActionAccountingReplayPreview = "accounting.replay.previe
 constexpr const char* kActionAccountingSnapshotWrite = "accounting.snapshot.write";
 constexpr const char* kActionAccountingAuditWrite = "accounting.audit.write";
 constexpr const char* kActionAccountingTradeDraftCreate = "accounting.tradedraft.create";
+constexpr const char* kActionAccountingTradeDraftConfirm = "accounting.tradedraft.confirm";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
@@ -73,6 +74,10 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreate(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftConfirm(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

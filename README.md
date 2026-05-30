@@ -2607,3 +2607,16 @@ and must not be treated as broker order, strategy execution, automatic
 trading, or production trading UI. See
 `docs/101_shell_accounting_tradedraft_confirmation_authorization_gate.md` and
 `docs/102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md`.
+
+## TASK-150 TradeDraft Confirmation Implementation
+
+ShellAccounting now implements DataService-internal TradeDraft confirmation
+through `accounting.tradedraft.confirm` with `TASK-150_TRADEDRAFT_CONFIRM`
+authorization. Confirmation atomically writes `trade_execution_group` and
+`trade_log`, updates only the confirmed `trade_draft` status / confirmation
+metadata, and writes a sanitized `audit_log` event in the same transaction.
+Audit failure rolls back the ledger write, and duplicate confirmation does not
+create duplicate ledger rows. This is not broker order placement, strategy
+execution, automatic trading, or production trading UI. Production QML/startup
+and schema remain unchanged. See
+`docs/103_shell_accounting_tradedraft_confirmation_implementation.md`.

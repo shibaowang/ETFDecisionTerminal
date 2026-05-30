@@ -6,6 +6,7 @@ int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
     const auto production = dataServiceBoundaryText(root);
+    const auto creation = tradeDraftCreationBoundaryText(root);
     bool ok = containsAllTokens(
         production,
         {"kActionAccountingTradeDraftCreate",
@@ -15,7 +16,7 @@ int main(int argc, char** argv)
          "INSERT INTO trade_draft",
          "INSERT INTO audit_log"});
     ok &= !containsAnyToken(
-        production,
+        creation,
         {"INSERT INTO trade_log",
          "UPDATE trade_log",
          "INSERT INTO trade_execution_group",
@@ -23,5 +24,11 @@ int main(int argc, char** argv)
          "brokerOrder(",
          "placeOrder",
          "strategyExecute("});
+    ok &= containsAllTokens(
+        production,
+        {"kActionAccountingTradeDraftConfirm",
+         "handleAccountingTradeDraftConfirm",
+         "ShellAccountingTradeDraftConfirmationRepository",
+         "TASK-150_TRADEDRAFT_CONFIRM"});
     return ok ? 0 : 1;
 }

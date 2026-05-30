@@ -359,6 +359,11 @@
   [102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md](102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md)
   defines the TASK-149 DataService-only, audited, transactional,
   no-broker/no-strategy confirmation test matrix.
+- ShellAccounting TradeDraft confirmation implementation:
+  [103_shell_accounting_tradedraft_confirmation_implementation.md](103_shell_accounting_tradedraft_confirmation_implementation.md)
+  records TASK-150 DataService-internal, authorized, audited, transactional
+  confirmation into `trade_execution_group` / `trade_log` without broker order,
+  strategy execution, automatic trading, or production trading UI.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

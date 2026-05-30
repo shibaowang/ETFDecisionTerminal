@@ -1,5 +1,14 @@
 # ShellAccounting TradeDraft Confirmation Authorization Gate
 
+TASK-150 update: the authorization gate has been exercised by the
+DataService-internal `accounting.tradedraft.confirm` implementation. The
+allowed implementation path is now only authorized TradeDraft confirmation with
+`TASK-150_TRADEDRAFT_CONFIRM`, atomic `trade_execution_group` / `trade_log`
+ledger write, confirmed `trade_draft` status metadata, and sanitized
+`audit_log`. Broker order, strategy execution, automatic trading, production
+trading UI, schema changes, and Shell/QML direct ledger writes remain
+unauthorized.
+
 ## Document Purpose
 
 TASK-149 defines the authorization gate for any future ShellAccounting

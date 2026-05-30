@@ -6,6 +6,7 @@
 #include "DataAccess/ShellAccountingAuditWriteRepository.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
+#include "DataAccess/ShellAccountingTradeDraftConfirmationRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftRepository.h"
 #include "Protocol/Json.h"
 
@@ -850,6 +851,28 @@ etfdt::data_access::ShellAccountingTradeDraftCreateRequest tradeDraftRequestFrom
     request.sourceReplayId = extractJsonStringField(payloadJson, "sourceReplayId").value_or("");
     request.authorizationToken = extractJsonStringField(payloadJson, "authorization").value_or("");
     request.createdAtUtc = std::string(timestampUtc);
+    return request;
+}
+
+etfdt::data_access::ShellAccountingTradeDraftConfirmationRequest tradeDraftConfirmationRequestFromPayload(
+    const std::string& payloadJson,
+    std::string_view timestampUtc)
+{
+    etfdt::data_access::ShellAccountingTradeDraftConfirmationRequest request;
+    request.draftId = extractJsonInt64OrStringField(payloadJson, "draftId");
+    request.accountId = extractJsonInt64OrStringField(payloadJson, "accountId");
+    request.portfolioId = extractJsonInt64OrStringField(payloadJson, "portfolioId");
+    request.strategyId = extractJsonInt64OrStringField(payloadJson, "strategyId");
+    request.strategyCode = extractJsonStringField(payloadJson, "strategyCode").value_or("");
+    request.instrumentId = extractJsonInt64OrStringField(payloadJson, "instrumentId");
+    request.instrumentCode = extractJsonStringField(payloadJson, "instrumentCode")
+                                 .value_or(extractJsonStringField(payloadJson, "symbol").value_or(""));
+    request.side = extractJsonStringField(payloadJson, "side").value_or("");
+    request.quantity1e6 = extractTradeDraftQuantity1e6(payloadJson);
+    request.sourceSnapshotId = extractJsonStringField(payloadJson, "sourceSnapshotId").value_or("");
+    request.sourceReplayId = extractJsonStringField(payloadJson, "sourceReplayId").value_or("");
+    request.authorizationToken = extractJsonStringField(payloadJson, "authorization").value_or("");
+    request.confirmedAtUtc = std::string(timestampUtc);
     return request;
 }
 
@@ -1941,6 +1964,107 @@ etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreate(
             << "\"issues\":[],"
             << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
             << "\"fullSnapshotPayloadExposed\":false,\"internalStackExposed\":false,"
+            << "\"sensitiveRawPayloadExposed\":false}"
+            << "}";
+    return successResponse(context, payload.str());
+}
+
+etfdt::protocol::ProtocolResponse handleAccountingTradeDraftConfirm(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "accounting.tradedraft.confirm payload must be a JSON object");
+    }
+
+    if (extractJsonBoolField(context.request.payloadJson, "confirmationDisabled").value_or(false)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8002_PERMISSION_DENIED,
+            "accounting.tradedraft.confirm is disabled by request");
+    }
+
+    const auto authorization =
+        extractJsonStringField(context.request.payloadJson, "authorization").value_or("");
+    if (authorization != "TASK-150_TRADEDRAFT_CONFIRM") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8001_AUTH_REQUIRED,
+            "accounting.tradedraft.confirm requires TASK-150_TRADEDRAFT_CONFIRM authorization");
+    }
+
+    const auto source = extractJsonStringField(context.request.payloadJson, "source").value_or("");
+    if (source != "existingTradeDraft") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.tradedraft.confirm requires source=existingTradeDraft");
+    }
+
+    auto request = tradeDraftConfirmationRequestFromPayload(
+        context.request.payloadJson,
+        context.request.timestampUtc);
+    etfdt::data_access::ShellAccountingTradeDraftConfirmationRepository repository(connection);
+    auto writeResult = repository.confirmTradeDraft(request);
+    if (!writeResult) {
+        return errorResponse(context, writeResult);
+    }
+
+    const auto& result = writeResult.value();
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":\"accounting.tradedraft.confirm\","
+            << "\"implemented\":true,"
+            << "\"writeAuthorized\":true,"
+            << "\"source\":\"existingTradeDraft\","
+            << "\"authorization\":\"TASK-150_TRADEDRAFT_CONFIRM\","
+            << "\"confirmationOnly\":true,"
+            << "\"notBrokerOrder\":true,"
+            << "\"notStrategyExecution\":true,"
+            << "\"executionGroupWritten\":" << (result.executionGroupWritten ? "true" : "false") << ','
+            << "\"tradeLogWritten\":" << (result.tradeLogWritten ? "true" : "false") << ','
+            << "\"draftStatusUpdated\":" << (result.draftStatusUpdated ? "true" : "false") << ','
+            << "\"auditWritten\":" << (result.auditWritten ? "true" : "false") << ','
+            << "\"databaseWritten\":"
+            << ((result.executionGroupWritten || result.tradeLogWritten || result.draftStatusUpdated
+                 || result.auditWritten)
+                    ? "true"
+                    : "false")
+            << ','
+            << "\"partialWrite\":false,"
+            << "\"transactionCommitted\":" << (result.transactionCommitted ? "true" : "false") << ','
+            << "\"transactionRolledBack\":false,"
+            << "\"idempotent\":" << (result.idempotent ? "true" : "false") << ','
+            << "\"duplicateConfirmation\":" << (result.duplicateConfirmation ? "true" : "false") << ','
+            << "\"duplicateHandling\":\"SKIP_EXISTING_BY_DRAFT_ID\","
+            << "\"status\":" << jsonStringValue(result.duplicateConfirmation ? "DUPLICATE" : "OK") << ','
+            << "\"draftId\":" << result.draftId << ','
+            << "\"tradeExecutionGroupId\":" << result.executionGroupId << ','
+            << "\"tradeLogId\":" << result.tradeLogId << ','
+            << "\"auditLogId\":" << result.auditLogId << ','
+            << "\"executionGroupUid\":" << jsonStringValue(result.executionGroupUid) << ','
+            << "\"tradeLogUid\":" << jsonStringValue(result.tradeLogUid) << ','
+            << "\"allowlistTables\":[\"trade_execution_group\",\"trade_log\",\"audit_log\",\"trade_draft\"],"
+            << "\"forbiddenBehaviors\":[\"brokerOrder\",\"strategyExecute\",\"automaticTrading\",\"productionTradingUI\"],"
+            << "\"payloadPolicy\":{"
+            << "\"sanitized\":true,"
+            << "\"rawSqlExposed\":false,"
+            << "\"rawTradeLogPayloadExposed\":false,"
+            << "\"fullDraftPayloadExposed\":false,"
+            << "\"internalStackExposed\":false,"
+            << "\"sensitiveRawPayloadExposed\":false"
+            << "},"
+            << "\"brokerOrderSubmitted\":false,"
+            << "\"strategyExecuted\":false,"
+            << "\"automaticTrading\":false,"
+            << "\"productionTradingUiChanged\":false,"
+            << "\"issues\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+            << "\"fullDraftPayloadExposed\":false,\"internalStackExposed\":false,"
             << "\"sensitiveRawPayloadExposed\":false}"
             << "}";
     return successResponse(context, payload.str());

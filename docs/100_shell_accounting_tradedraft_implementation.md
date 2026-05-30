@@ -1,5 +1,9 @@
 # ShellAccounting TradeDraft Implementation
 
+TASK-150 update: TradeDraft creation remains unchanged. Confirmation is now
+implemented separately through `accounting.tradedraft.confirm`, and creation
+still does not write `trade_log` or `trade_execution_group`.
+
 ## TASK-148 Purpose
 
 TASK-148 implements ShellAccounting TradeDraft creation inside the DataService

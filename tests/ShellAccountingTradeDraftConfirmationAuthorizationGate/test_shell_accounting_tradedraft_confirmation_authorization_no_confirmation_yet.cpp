@@ -4,5 +4,14 @@ using namespace etfdt::tests::shell_accounting_tradedraft_confirmation_authoriza
 
 int main(int argc, char** argv)
 {
-    return containsAnyToken(dataServiceBoundaryText(sourceRoot(argc, argv)), confirmationImplementationTokens()) ? 1 : 0;
+    const auto text = dataServiceBoundaryText(sourceRoot(argc, argv));
+    const bool authorized = containsAllTokens(
+        text,
+        {"kActionAccountingTradeDraftConfirm",
+         "accounting.tradedraft.confirm",
+         "TASK-150_TRADEDRAFT_CONFIRM",
+         "ShellAccountingTradeDraftConfirmationRepository",
+         "handleAccountingTradeDraftConfirm"});
+    const bool forbidden = containsAnyToken(text, strategyOrBrokerTokens());
+    return authorized && !forbidden ? 0 : 1;
 }

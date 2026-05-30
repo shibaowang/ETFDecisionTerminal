@@ -226,8 +226,6 @@ std::vector<std::string> writeSqlForbiddenTokens()
 std::vector<std::string> tradeOrStrategyForbiddenTokens()
 {
     return {
-        "TradeDraft",
-        "createTradeDraft",
         "brokerOrder(",
         "placeOrder",
         "\"strategyExecute\"",

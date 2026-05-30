@@ -1096,3 +1096,17 @@ v0.1 草案。
 - Do not add production QML/startup changes, Shell/QML/Presenter draft write
   triggers, schema migration, strategy execution, broker order, trade execution,
   or trading UI.
+
+## TASK-148 ShellAccounting TradeDraft Implementation
+
+- TradeDraft creation is authorized only as `accounting.tradedraft.create`
+  inside the DataService boundary.
+- The required authorization token is `TASK-148_TRADEDRAFT_WRITE`.
+- TradeDraft writes are limited to `trade_draft` and a sanitized `audit_log`
+  event; audit failure must roll back the draft.
+- TradeDraft is not trade execution, not broker order, not strategy execution,
+  and not user confirmation.
+- Do not write `trade_log` or `trade_execution_group`.
+- Do not add production QML/startup changes, Shell/QML/Presenter draft write
+  triggers, schema migration, broker order, strategy execution, trade
+  confirmation, or trading UI.

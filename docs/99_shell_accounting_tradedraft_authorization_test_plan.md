@@ -153,3 +153,16 @@ This Test matrix is the required baseline for any future TradeDraft task.
 - [ ] audit behavior approved.
 - [ ] no trade execution tests ready.
 - [ ] no strategy / broker tests ready.
+
+## TASK-148 Post-Implementation Matrix
+
+TASK-148 updates this plan from no TradeDraft yet to authorized TradeDraft
+creation only. The post-implementation tests must cover
+`accounting.tradedraft.create`, `TASK-148_TRADEDRAFT_WRITE`, structured input
+validation, sanitized payloads, sanitized audit event, audit failure rollback,
+transaction rollback, duplicate handling, no `trade_log` write, no
+`trade_execution_group` write, no broker order, no strategy execution, no UI
+trigger, privacy, and rollback readiness.
+
+TradeDraft confirmation, trade execution, broker order, strategy-generated
+recommendation, and production trading UI remain out of scope.

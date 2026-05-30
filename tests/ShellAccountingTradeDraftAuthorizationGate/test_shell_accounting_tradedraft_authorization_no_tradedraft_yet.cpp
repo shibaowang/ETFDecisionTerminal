@@ -6,9 +6,22 @@ int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
     const auto production = dataServiceBoundaryText(root);
-    return containsAnyToken(production, draftImplementationTokens())
-            || containsAnyToken(production, draftWriteTokens())
-            || containsAnyToken(production, tradeExecutionTokens())
-        ? 1
-        : 0;
+    bool ok = containsAllTokens(
+        production,
+        {"kActionAccountingTradeDraftCreate",
+         "handleAccountingTradeDraftCreate",
+         "ShellAccountingTradeDraftRepository",
+         "TASK-148_TRADEDRAFT_WRITE",
+         "INSERT INTO trade_draft",
+         "INSERT INTO audit_log"});
+    ok &= !containsAnyToken(
+        production,
+        {"INSERT INTO trade_log",
+         "UPDATE trade_log",
+         "INSERT INTO trade_execution_group",
+         "UPDATE trade_execution_group",
+         "brokerOrder(",
+         "placeOrder",
+         "strategyExecute("});
+    return ok ? 0 : 1;
 }

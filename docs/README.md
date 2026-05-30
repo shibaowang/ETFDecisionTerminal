@@ -351,6 +351,14 @@
   records TASK-148 DataService-internal, authorized, audited TradeDraft
   creation without trade execution, strategy execution, broker order, or
   production trading UI.
+- ShellAccounting TradeDraft confirmation authorization gate:
+  [101_shell_accounting_tradedraft_confirmation_authorization_gate.md](101_shell_accounting_tradedraft_confirmation_authorization_gate.md)
+  defines the TASK-149 future confirmation / TradeLog write authorization
+  boundary.
+- ShellAccounting TradeDraft confirmation authorization test plan:
+  [102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md](102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md)
+  defines the TASK-149 DataService-only, audited, transactional,
+  no-broker/no-strategy confirmation test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

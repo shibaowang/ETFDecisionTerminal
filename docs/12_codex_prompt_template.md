@@ -1110,3 +1110,18 @@ v0.1 草案。
 - Do not add production QML/startup changes, Shell/QML/Presenter draft write
   triggers, schema migration, broker order, strategy execution, trade
   confirmation, or trading UI.
+
+## TASK-149 ShellAccounting TradeDraft Confirmation Authorization Gate
+
+- Future confirmation tasks must reference
+  `docs/101_shell_accounting_tradedraft_confirmation_authorization_gate.md`
+  and
+  `docs/102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md`.
+- TradeDraft confirmation implementation must be a separate explicitly
+  authorized TASK.
+- Confirmation is the high-risk boundary from draft to `trade_log`; it is not
+  broker order, not automatic trading, and not strategy execution.
+- Do not write `trade_log` or `trade_execution_group` in a gate-only task.
+- Do not modify TASK-148 TradeDraft creation behavior, production QML/startup,
+  schema, broker/order code, StrategyEngine behavior, or DataServiceClient
+  transport/API behavior.

@@ -166,3 +166,11 @@ trigger, privacy, and rollback readiness.
 
 TradeDraft confirmation, trade execution, broker order, strategy-generated
 recommendation, and production trading UI remain out of scope.
+
+## TASK-149 Confirmation Gate Status
+
+TASK-149 adds a separate confirmation / TradeLog write gate and test plan.
+The TASK-148 TradeDraft creation tests remain valid. Confirmation,
+`trade_log` write, `trade_execution_group` write, broker order, strategy
+execution, automatic trading, and production trading UI remain out of scope
+until a later implementation TASK.

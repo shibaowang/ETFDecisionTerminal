@@ -191,3 +191,12 @@ the only broker-order-related implementation. Real broker order, broker adapter,
 broker SDK, sandbox / paper trading broker calls, real placement, strategy
 execution, automatic trading, production QML changes, production startup
 changes, and schema changes remain unimplemented and unauthorized.
+
+## TASK-156 Real Broker Order Implementation Gate Update
+
+TASK-156 adds the real broker order implementation gate and test plan. TASK-154
+dry-run remains the only broker-order-related implementation. Real broker order
+placement, broker adapter implementation, broker SDK import/link/call, broker
+network calls, sandbox / paper trading broker calls, strategy execution,
+automatic trading, production QML changes, production startup changes,
+credentials, and schema changes remain unimplemented and unauthorized.

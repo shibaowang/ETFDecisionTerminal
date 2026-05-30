@@ -126,3 +126,12 @@ remains unchanged: it still writes `audit_log` only, does not call broker SDK,
 does not call sandbox or paper trading broker endpoints, does not place a real
 order, does not write `trade_log`, `trade_execution_group`, or `trade_draft`,
 does not execute strategy, and does not enable automatic trading.
+
+## TASK-156 Real Broker Order Implementation Gate
+
+TASK-156 adds the final implementation gate before any real broker placement
+work. This dry-run boundary remains unchanged: it is still DataService-only,
+writes `audit_log` only, returns dry-run / broker-disabled semantics, does not
+call broker SDKs or broker network endpoints, does not place real orders, does
+not execute strategy, does not enable automatic trading, does not modify
+production QML/startup, and does not modify schema.

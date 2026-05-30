@@ -196,3 +196,15 @@ trading, or order placement.
 - [ ] risk controls approved.
 - [ ] reconciliation plan approved.
 - [ ] rollback / incident containment approved.
+
+## TASK-156 Test Update
+
+TASK-156 adds `docs/112` / `docs/113` and
+`tests/ShellAccountingRealBrokerOrderImplementationGate`. The new gate keeps
+TASK-154 dry-run as the only allowed broker-order-related implementation while
+checking no real broker order, no broker adapter, no broker SDK, no broker
+network call, no credentials, no sandbox / paper broker call, no strategy
+execution, no automatic trading, no UI direct broker access, and complete
+documentation of dry-run preflight, confirmed-ledger input, final confirmation,
+independent authorization, sandbox / paper / real isolation, risk preflight,
+audit, reconciliation, kill switch, error mapping, and rollback policy.

@@ -396,6 +396,15 @@
   defines TASK-155 dry-run preflight, confirmed-ledger input, final
   confirmation, independent authorization, risk control, reconciliation, and
   rollback / incident containment probes.
+- ShellAccounting real broker order implementation gate:
+  [112_shell_accounting_real_broker_order_implementation_gate.md](112_shell_accounting_real_broker_order_implementation_gate.md)
+  defines the TASK-156 final gate before any real broker order implementation,
+  broker adapter, SDK import, or real placement work.
+- ShellAccounting real broker order implementation test plan:
+  [113_shell_accounting_real_broker_order_implementation_test_plan.md](113_shell_accounting_real_broker_order_implementation_test_plan.md)
+  defines TASK-156 static probes for no real order, no broker adapter, no SDK,
+  no broker network call, no credentials, no strategy execution, and no
+  automatic trading.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

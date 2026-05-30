@@ -1178,3 +1178,19 @@ v0.1 草案。
   automatic trading, direct order placement, schema migration, or a generic
   write escape hatch.
 - Future broker order / strategy execution tasks must be separately authorized.
+
+## TASK-153 ShellAccounting Broker Order Authorization Gate
+
+- Future broker order tasks must reference
+  `docs/107_shell_accounting_broker_order_authorization_gate.md` and
+  `docs/108_shell_accounting_broker_order_authorization_test_plan.md`.
+- TASK-153 is a gate only. It does not authorize broker order implementation,
+  broker adapters, broker SDK calls, StrategyEngine execution, automatic
+  trading, real order placement, production QML changes, production startup
+  changes, or schema migration.
+- Future broker order must be DataService-only, based on an already confirmed
+  TradeDraft / ledger fact, independently authorized, explicitly user-confirmed,
+  audited with sanitized payload, dry-run/rollback-ready, and disableable.
+- Broker order must not accept raw QML payload, must not bypass TASK-148 Draft
+  creation or TASK-150 Draft confirmation, and must not auto-trigger after
+  confirmation.

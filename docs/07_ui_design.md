@@ -644,3 +644,16 @@ SQLite, DataAccess, broker/order APIs, or StrategyEngine directly.
 The UI shows service errors, disabled state, and transport unavailable state
 instead of silent success. It remains a Draft / Ledger workflow, not broker
 order placement, strategy execution, automatic trading, or schema change.
+
+## TASK-153 Broker Order Authorization Gate
+
+TASK-153 adds the broker order authorization gate only. Production QML remains
+unchanged by this task: no broker order page, broker adapter call, place-order
+button, strategy execution control, or automatic trading trigger is added.
+
+Future broker order UI must be a separate task and must route only through the
+presenter/controller/adapter/DataService boundary. It must use an already
+confirmed Draft / ledger fact, require a distinct user confirmation and
+authorization token, support disabled / dry-run / rollback behavior, and avoid
+raw QML payload order placement, broker SDK calls from QML, StrategyEngine
+execution, and automatic trading.

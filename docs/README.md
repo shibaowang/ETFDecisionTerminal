@@ -376,6 +376,13 @@
   [106_shell_accounting_production_trading_ui_implementation.md](106_shell_accounting_production_trading_ui_implementation.md)
   records TASK-152 production QML Draft creation / confirmation UI routed only
   through the ShellAccounting presenter/controller/adapter/DataService boundary.
+- ShellAccounting broker order authorization gate:
+  [107_shell_accounting_broker_order_authorization_gate.md](107_shell_accounting_broker_order_authorization_gate.md)
+  defines the TASK-153 future broker order / order placement boundary.
+- ShellAccounting broker order authorization test plan:
+  [108_shell_accounting_broker_order_authorization_test_plan.md](108_shell_accounting_broker_order_authorization_test_plan.md)
+  defines the TASK-153 no-broker-yet, DataService-only, confirmed-ledger-input,
+  no-strategy/no-automatic-trading test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

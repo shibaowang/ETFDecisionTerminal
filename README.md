@@ -2460,3 +2460,13 @@ still not connected. No database writes, TradeDraft, trade suggestion, strategy
 execution, broker order, or trading UI are enabled. See
 `docs/81_shell_accounting_dataservice_readonly_facts_query_gate.md` and
 `docs/82_shell_accounting_dataservice_readonly_facts_query_test_plan.md`.
+
+## TASK-137 DataService Read-only Facts Query Implementation
+
+ShellAccounting now implements DataService-internal SELECT-only facts queries
+for `position.list`, `cash.summary`, `portfolio.pnl.summary`,
+`base_position.summary`, and `sniper_pool.summary`. The Shell / QML boundary
+still reads through DataService only; there is no direct SQLite or DataAccess
+access from Shell/QML, no AccountingEngine replay, no snapshot rebuild, no
+database writes, no TradeDraft, no trade suggestion, and no trading UI. See
+`docs/83_shell_accounting_dataservice_readonly_facts_query_implementation.md`.

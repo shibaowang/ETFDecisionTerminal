@@ -936,3 +936,18 @@ v0.1 草案。
 - facts query is not write path.
 - facts query is not AccountingEngine replay.
 - No TradeDraft / no trading UI.
+
+## TASK-137 ShellAccounting DataService Facts Query Implementation
+
+- DataService facts query implementation tasks must reference
+  `docs/81_shell_accounting_dataservice_readonly_facts_query_gate.md`,
+  `docs/82_shell_accounting_dataservice_readonly_facts_query_test_plan.md`, and
+  `docs/83_shell_accounting_dataservice_readonly_facts_query_implementation.md`.
+- Preserve the DataService-only read boundary. Shell, Presenter, and QML must
+  not bypass DataService to access SQLite or DataAccess.
+- Authorized facts queries are SELECT-only and limited to `position.list`,
+  `cash.summary`, `portfolio.pnl.summary`, `base_position.summary`, and
+  `sniper_pool.summary`.
+- Do not call AccountingEngine replay, `replayFromFacts`, snapshot rebuild,
+  correction, reversal, TradeDraft generation, trade suggestion, broker order,
+  strategy execution, or any write-enabled action without a separate task.

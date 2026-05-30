@@ -7,6 +7,7 @@ using namespace etfdt::tests::shell_accounting_dataservice_facts_query_gate;
 int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
+    const auto dataServiceSource = readTextFile(dataServiceActionsPath(root));
     const auto actionRegion = dataServiceAccountingActionRegion(root);
     if (actionRegion.empty()) {
         std::cerr << "could not locate DataService ShellAccounting action region\n";
@@ -20,27 +21,38 @@ int main(int argc, char** argv)
         }
     }
     for (const auto& token : {
-             "\"implemented\":false",
-             "\"dataSourceAccessed\":false",
-             "\"sqliteAccessed\":false",
-             "\"accountingEngineCalled\":false",
-             "NO_SQLITE_FACTS_QUERY",
-             "NO_ACCOUNTING_ENGINE_CALL",
+             "ShellAccountingReadOnlyFactsQuery",
+             "shellAccountingPayloadPrefix",
+             "shellAccountingEmptyPayload",
+             "shellAccountingQueryErrorPayload",
          }) {
         if (actionRegion.find(token) == std::string::npos) {
-            std::cerr << "current guard action region missing no-query token `" << token << "`\n";
+            std::cerr << "authorized read-only query region missing token `" << token << "`\n";
             return 1;
         }
     }
     for (const auto& token : {
-             "SELECT ",
+             "\\\"implemented\\\":true",
+             "\\\"dataSourceAccessed\\\":true",
+             "\\\"sqliteAccessed\\\":true",
+             "\\\"accountingEngineCalled\\\":false",
+             "\\\"snapshotRebuilt\\\":false",
+             "\\\"readOnly\\\":true",
+             "\\\"writeEnabled\\\":false",
+         }) {
+        if (dataServiceSource.find(token) == std::string::npos) {
+            std::cerr << "DataService action source missing read-only query payload token `" << token << "`\n";
+            return 1;
+        }
+    }
+    for (const auto& token : {
              "sqlite3_",
              "AccountingTradeFactReader",
              "AccountingReplayEngine",
              "replayFromFacts",
          }) {
         if (actionRegion.find(token) != std::string::npos) {
-            std::cerr << "current guard action region contains future query/replay token `" << token << "`\n";
+            std::cerr << "authorized read-only query region contains forbidden token `" << token << "`\n";
             return 1;
         }
     }

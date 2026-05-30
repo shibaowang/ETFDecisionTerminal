@@ -21,6 +21,13 @@ not connected to ShellAccounting actions. AccountingEngine replay is not
 connected to ShellAccounting actions. There are no database writes, TradeDraft,
 trade suggestions, or trading UI.
 
+TASK-137 update: the authorized DataService-internal read-only facts query
+implementation is now complete for `position.list`, `cash.summary`,
+`portfolio.pnl.summary`, `base_position.summary`, and `sniper_pool.summary`.
+The implementation remains SELECT-only, DataService-owned, no-write,
+no-snapshot-rebuild, and no-AccountingEngine-replay. Shell / Presenter / QML
+still do not directly access SQLite or DataAccess.
+
 ## DataService Facts Query Gate Summary
 
 Only explicit user authorization can start DataService facts query
@@ -35,6 +42,10 @@ DB, generate TradeDraft, execute strategy, or place orders. Facts query failure
 must map to unavailable / issue state and must not crash the app.
 
 facts query is not AccountingEngine replay.
+
+TASK-137 implementation completed the positive boundary: facts query exists
+only as an authorized read-only DataService implementation and remains outside
+write path, TradeDraft, trading action, snapshot rebuild, and replay scope.
 
 ## Required Pre-gates
 

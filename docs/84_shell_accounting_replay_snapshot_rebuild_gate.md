@@ -124,3 +124,10 @@ five existing ShellAccounting read-only actions. Snapshot rebuild is still not
 implemented, snapshot write is still not authorized, Shell/QML/Presenter still
 must not call AccountingEngine directly, and the TASK-137 read-only facts query
 remains the fallback if read-only replay is disabled.
+
+## TASK-140 Update
+
+TASK-140 adds the snapshot rebuild / snapshot write gate. TASK-139 read-only
+replay remains the fallback. Snapshot rebuild is still not implemented,
+snapshot write is still not authorized, and no TradeDraft, trade suggestion,
+strategy execution, broker order, or trading UI is authorized.

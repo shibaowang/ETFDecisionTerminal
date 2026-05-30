@@ -75,3 +75,10 @@ TASK-139 adds `shell_accounting_readonly_replay_*` implementation tests for Data
 ## Unauthorised Future Scope
 
 Snapshot rebuild, snapshot write authorization, AccountingEngine replay expansion beyond the read-only DataService boundary, real trade suggestions, TradeDraft generation, strategy execution, and broker order submission all require separate future tasks.
+
+## TASK-140 Update
+
+TASK-140 adds the snapshot rebuild / snapshot write gate. TASK-139 read-only
+replay remains the fallback. Snapshot rebuild/write is still not implemented,
+still requires separate explicit authorization, and still must not introduce
+TradeDraft, trade suggestion, strategy execution, broker order, or trading UI.

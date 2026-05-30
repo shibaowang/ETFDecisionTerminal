@@ -535,3 +535,10 @@ ShellAccounting read-only replay is now available inside the DataService
 boundary. The UI remains read-only, does not directly trigger replay, does not
 trigger snapshot rebuild/write, and still has no trading buttons. Shell/QML do
 not call AccountingEngine, SQLite, or DataAccess directly.
+
+## TASK-140 Snapshot Rebuild Write Gate
+
+The snapshot rebuild/write gate is added. The UI remains read-only, does not
+trigger snapshot rebuild or snapshot write, and does not display trading
+buttons. Future rebuild/write tasks must keep UI interaction separate from
+DataService-only snapshot coordination.

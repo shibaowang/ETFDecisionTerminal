@@ -2492,3 +2492,13 @@ rollback fallback. Snapshot rebuild/write remains unimplemented and there is no
 database write, TradeDraft, trade suggestion, strategy execution, broker order,
 or trading UI. See
 `docs/86_shell_accounting_readonly_replay_implementation.md`.
+
+## TASK-140 Snapshot Rebuild Write Gate
+
+ShellAccounting now has a snapshot rebuild / snapshot write gate and test plan.
+Snapshot rebuild is still not implemented, snapshot write is still not
+authorized, and TASK-139 read-only replay remains the fallback. There is still
+no TradeDraft, trade suggestion, strategy execution, broker order, order
+placement, or trading UI. See
+`docs/87_shell_accounting_snapshot_rebuild_write_gate.md` and
+`docs/88_shell_accounting_snapshot_rebuild_write_test_plan.md`.

@@ -175,6 +175,12 @@ def main() -> int:
     shell_accounting_readonly_replay_implementation_path = (
         root / "docs" / "86_shell_accounting_readonly_replay_implementation.md"
     )
+    shell_accounting_snapshot_rebuild_write_gate_path = (
+        root / "docs" / "87_shell_accounting_snapshot_rebuild_write_gate.md"
+    )
+    shell_accounting_snapshot_rebuild_write_test_plan_path = (
+        root / "docs" / "88_shell_accounting_snapshot_rebuild_write_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -228,6 +234,9 @@ def main() -> int:
     )
     shell_accounting_readonly_replay_implementation_cmake_path = (
         root / "tests" / "ShellAccountingReadOnlyReplayImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_snapshot_rebuild_write_gate_cmake_path = (
+        root / "tests" / "ShellAccountingSnapshotRebuildWriteGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1248,6 +1257,12 @@ def main() -> int:
     shell_accounting_readonly_replay_implementation = (
         shell_accounting_readonly_replay_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_snapshot_rebuild_write_gate = (
+        shell_accounting_snapshot_rebuild_write_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_snapshot_rebuild_write_test_plan = (
+        shell_accounting_snapshot_rebuild_write_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1295,6 +1310,9 @@ def main() -> int:
     )
     shell_accounting_readonly_replay_implementation_cmake = (
         shell_accounting_readonly_replay_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_snapshot_rebuild_write_gate_cmake = (
+        shell_accounting_snapshot_rebuild_write_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5760,6 +5778,87 @@ def main() -> int:
         "TASK-139" in shell_accounting_replay_snapshot_rebuild_gate
         and "TASK-139" in shell_accounting_replay_snapshot_rebuild_test_plan,
         "docs/84 docs/85 mention TASK-139",
+    )
+    require(
+        shell_accounting_snapshot_rebuild_write_gate_path.exists(),
+        "docs/87 snapshot rebuild write gate exists",
+    )
+    require(
+        shell_accounting_snapshot_rebuild_write_test_plan_path.exists(),
+        "docs/88 snapshot rebuild write test plan exists",
+    )
+    require(
+        "docs/87_shell_accounting_snapshot_rebuild_write_gate.md" in readme,
+        "README links docs/87",
+    )
+    require(
+        "docs/88_shell_accounting_snapshot_rebuild_write_test_plan.md" in readme,
+        "README links docs/88",
+    )
+    require(
+        "87_shell_accounting_snapshot_rebuild_write_gate.md" in docs_index,
+        "docs/README links docs/87",
+    )
+    require(
+        "88_shell_accounting_snapshot_rebuild_write_test_plan.md" in docs_index,
+        "docs/README links docs/88",
+    )
+    require("TASK-140" in shell_accounting_snapshot_rebuild_write_gate, "docs/87 mentions TASK-140")
+    require(
+        "Test Matrix" in shell_accounting_snapshot_rebuild_write_test_plan,
+        "docs/88 includes Test Matrix",
+    )
+    require("TASK-140" in codex_prompt_template, "docs/12 mentions TASK-140")
+    for ctest_name in [
+        "shell_accounting_snapshot_rebuild_write_gate",
+        "shell_accounting_snapshot_rebuild_write_no_rebuild_yet",
+        "shell_accounting_snapshot_rebuild_write_no_snapshot_write_yet",
+        "shell_accounting_snapshot_rebuild_write_dataservice_only_policy",
+        "shell_accounting_snapshot_rebuild_write_no_ui_triggered_write",
+        "shell_accounting_snapshot_rebuild_write_no_trade_or_strategy",
+        "shell_accounting_snapshot_rebuild_write_error_mapping_policy",
+        "shell_accounting_snapshot_rebuild_write_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_snapshot_rebuild_write_gate_cmake,
+            f"TASK-140 tests include {ctest_name}",
+        )
+    require(
+        "TradeDraft" not in shell_accounting_readonly_page
+        and "涔板叆" not in shell_accounting_readonly_page
+        and "鍗栧嚭" not in shell_accounting_readonly_page
+        and "涓嬪崟" not in shell_accounting_readonly_page,
+        "production QML has no new trading UI after TASK-140",
+    )
+    shell_and_qml_after_140 = "\n".join(
+        [
+            shell_accounting_readonly_page,
+            shell_accounting_presenter_source,
+            shell_accounting_controller_source,
+            shell_accounting_dataservice_adapter_source,
+            shell_accounting_dataservice_client_port_adapter_source,
+        ]
+    )
+    for forbidden_snapshot_token in [
+        "rebuildSnapshot",
+        "rebuildFromReplay",
+        "snapshot.rebuild",
+        "cash_snapshot",
+        "position_snapshot",
+        "portfolio_summary",
+        "SQLiteConnection",
+        "sqlite3",
+        "DataAccess/",
+    ]:
+        require(
+            forbidden_snapshot_token not in shell_and_qml_after_140,
+            f"Shell/QML avoids direct snapshot rebuild/write token {forbidden_snapshot_token} after TASK-140",
+        )
+    require(
+        "TASK-140" in shell_accounting_replay_snapshot_rebuild_gate
+        and "TASK-140" in shell_accounting_replay_snapshot_rebuild_test_plan
+        and "TASK-140" in shell_accounting_readonly_replay_implementation,
+        "docs/84 docs/85 docs/86 mention TASK-140",
     )
 
     require(

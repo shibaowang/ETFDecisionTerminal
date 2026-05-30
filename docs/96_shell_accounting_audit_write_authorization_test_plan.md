@@ -149,3 +149,14 @@ trade suggestions, strategy execution, or broker orders.
 - [ ] user explicitly authorized audit write implementation
 - [ ] user explicitly authorized audit payload fields
 - [ ] user explicitly authorized any schema migration, if needed
+
+## TASK-146 Post-Implementation Matrix
+
+TASK-146 implements `accounting.audit.write` as an authorized DataService-only
+audit write. The authorization gate now verifies that the write remains limited
+to TASK-144 snapshot write result input and the allowlist table `audit_log`.
+The matrix still requires checks for forbidden tables (`trade_log`,
+`trade_execution_group`, `trade_draft`), no production QML/startup trigger,
+transaction rollback, idempotency, duplicate handling, sanitized payload,
+privacy, no TradeDraft, no strategy, no broker order, full CTest, and transport
+50 repeat.

@@ -2562,3 +2562,13 @@ strategy execution, broker order, production QML changes, production startup
 changes, or trading UI. See
 `docs/95_shell_accounting_audit_write_authorization_gate.md` and
 `docs/96_shell_accounting_audit_write_authorization_test_plan.md`.
+
+## TASK-146 Audit Write Implementation
+
+ShellAccounting now has a DataService-internal `accounting.audit.write`
+implementation. It records sanitized audit events for TASK-144 snapshot write
+results only, requires `TASK-146_AUDIT_WRITE`, and writes only `audit_log`.
+It does not write `trade_log`, `trade_execution_group`, or `trade_draft`, and it
+does not modify production QML/startup, schema, TradeDraft, trade suggestions,
+strategy execution, broker orders, or trading UI. See
+`docs/97_shell_accounting_audit_write_implementation.md`.

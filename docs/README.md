@@ -336,6 +336,9 @@
   [96_shell_accounting_audit_write_authorization_test_plan.md](96_shell_accounting_audit_write_authorization_test_plan.md)
   defines the TASK-145 future sanitized, DataService-only, no-trade,
   rollback-ready audit write test matrix.
+- ShellAccounting audit write implementation:
+  [97_shell_accounting_audit_write_implementation.md](97_shell_accounting_audit_write_implementation.md)
+  records TASK-146 DataService-internal sanitized audit write to `audit_log`.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

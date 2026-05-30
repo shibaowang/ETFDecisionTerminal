@@ -1,0 +1,56 @@
+find_package(Qt6 COMPONENTS Core REQUIRED)
+
+add_library(ShellAccountingAuditWriteImplementationLib STATIC
+    ShellAccountingAuditWriteImplementation.cpp
+)
+target_include_directories(ShellAccountingAuditWriteImplementationLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${PROJECT_SOURCE_DIR}/tests/ShellAccountingSnapshotWriteImplementation
+)
+target_link_libraries(ShellAccountingAuditWriteImplementationLib
+    PUBLIC
+        ShellAccountingSnapshotWriteImplementationLib
+        ETFDecisionTerminal::DataServiceApi
+        Qt6::Core
+)
+target_compile_features(ShellAccountingAuditWriteImplementationLib PUBLIC cxx_std_17)
+
+function(add_shell_accounting_audit_write_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingAuditWriteImplementationLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(
+        NAME ${ctest_name}
+        COMMAND
+            ${target_name}
+            --source-root ${PROJECT_SOURCE_DIR}
+            --migration ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+    )
+    set_tests_properties(${ctest_name} PROPERTIES
+        ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+    )
+endfunction()
+
+add_shell_accounting_audit_write_test(AuditWriteImplementationTests test_shell_accounting_audit_write_implementation.cpp shell_accounting_audit_write_implementation)
+add_shell_accounting_audit_write_test(AuditWriteBoundaryTests test_shell_accounting_audit_write_dataservice_only_boundary.cpp shell_accounting_audit_write_dataservice_only_boundary)
+add_shell_accounting_audit_write_test(AuditWriteRequiresSnapshotTests test_shell_accounting_audit_write_requires_snapshot_write_result.cpp shell_accounting_audit_write_requires_snapshot_write_result)
+add_shell_accounting_audit_write_test(AuditWriteRequiresAuthorizationTests test_shell_accounting_audit_write_requires_authorization.cpp shell_accounting_audit_write_requires_authorization)
+add_shell_accounting_audit_write_test(AuditWriteSuccessTests test_shell_accounting_audit_write_success.cpp shell_accounting_audit_write_success)
+add_shell_accounting_audit_write_test(AuditWritePayloadSanitizedTests test_shell_accounting_audit_write_payload_sanitized.cpp shell_accounting_audit_write_payload_sanitized)
+add_shell_accounting_audit_write_test(AuditWriteNoRawSqlTests test_shell_accounting_audit_write_no_raw_sql.cpp shell_accounting_audit_write_no_raw_sql)
+add_shell_accounting_audit_write_test(AuditWriteNoRawTradeLogTests test_shell_accounting_audit_write_no_raw_trade_log_payload.cpp shell_accounting_audit_write_no_raw_trade_log_payload)
+add_shell_accounting_audit_write_test(AuditWriteNoFullSnapshotTests test_shell_accounting_audit_write_no_full_snapshot_payload.cpp shell_accounting_audit_write_no_full_snapshot_payload)
+add_shell_accounting_audit_write_test(AuditWriteRollbackTests test_shell_accounting_audit_write_transaction_rollback.cpp shell_accounting_audit_write_transaction_rollback)
+add_shell_accounting_audit_write_test(AuditWriteIdempotencyTests test_shell_accounting_audit_write_idempotency.cpp shell_accounting_audit_write_idempotency)
+add_shell_accounting_audit_write_test(AuditWriteDuplicateTests test_shell_accounting_audit_write_duplicate_event_handling.cpp shell_accounting_audit_write_duplicate_event_handling)
+add_shell_accounting_audit_write_test(AuditWriteNoTradeLogTests test_shell_accounting_audit_write_no_trade_log_write.cpp shell_accounting_audit_write_no_trade_log_write)
+add_shell_accounting_audit_write_test(AuditWriteNoTradeDraftTests test_shell_accounting_audit_write_no_trade_draft_write.cpp shell_accounting_audit_write_no_trade_draft_write)
+add_shell_accounting_audit_write_test(AuditWriteNoTradeTests test_shell_accounting_audit_write_no_trade_or_strategy.cpp shell_accounting_audit_write_no_trade_or_strategy)
+add_shell_accounting_audit_write_test(AuditWriteNoUiTriggerTests test_shell_accounting_audit_write_no_ui_trigger.cpp shell_accounting_audit_write_no_ui_trigger)
+add_shell_accounting_audit_write_test(AuditWritePrivacyTests test_shell_accounting_audit_write_privacy.cpp shell_accounting_audit_write_privacy)
+add_shell_accounting_audit_write_test(AuditWriteRollbackReadyTests test_shell_accounting_audit_write_rollback_ready.cpp shell_accounting_audit_write_rollback_ready)

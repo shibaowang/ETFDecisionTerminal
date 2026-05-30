@@ -53,6 +53,7 @@ add_library(ETFDataAccess STATIC
     src/MigrationRunner.cpp
     src/ReadOnlyRepositoryBase.cpp
     src/Repositories.cpp
+    src/ShellAccountingAuditWriteRepository.cpp
     src/ShellAccountingReadOnlyFactsQuery.cpp
     src/ShellAccountingSnapshotWriteRepository.cpp
     src/SQLiteConnection.cpp

@@ -580,3 +580,10 @@ trigger audit write, does not request audit authorization, and does not display
 trading buttons. Future audit write must remain behind the DataService boundary
 and must not create a UI audit trigger unless a later task explicitly
 authorizes one.
+
+## TASK-146 Audit Write Implementation
+
+Audit write is implemented only inside the DataService boundary. The UI remains
+read-only, does not trigger `accounting.audit.write`, does not request audit
+authorization, and does not display trading buttons. Audit write records a
+sanitized `audit_log` event for authorized snapshot write results only.

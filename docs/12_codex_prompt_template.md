@@ -1066,3 +1066,17 @@ v0.1 草案。
 - Do not add production QML/startup changes, Shell/QML/Presenter audit write
   triggers, schema migration, TradeDraft generation, trade suggestion, strategy
   execution, broker order, or trading UI.
+
+## TASK-146 ShellAccounting Audit Write Implementation
+
+- Audit write is authorized only as `accounting.audit.write` inside the
+  DataService boundary.
+- Input must come from TASK-144 snapshot write result with explicit
+  `TASK-146_AUDIT_WRITE` authorization.
+- The only allowed write table is `audit_log`.
+- Do not write `trade_log`, `trade_execution_group`, or `trade_draft`.
+- Keep sanitized payload, transaction rollback, idempotency, duplicate handling,
+  privacy, and no-partial-audit-write tests in place.
+- Do not add production QML/startup changes, Shell/QML/Presenter audit triggers,
+  schema migration, TradeDraft generation, trade suggestion, strategy execution,
+  broker order, or trading UI.

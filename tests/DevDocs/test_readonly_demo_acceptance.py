@@ -205,6 +205,9 @@ def main() -> int:
     shell_accounting_audit_write_authorization_test_plan_path = (
         root / "docs" / "96_shell_accounting_audit_write_authorization_test_plan.md"
     )
+    shell_accounting_audit_write_implementation_path = (
+        root / "docs" / "97_shell_accounting_audit_write_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -276,6 +279,9 @@ def main() -> int:
     )
     shell_accounting_audit_write_authorization_gate_cmake_path = (
         root / "tests" / "ShellAccountingAuditWriteAuthorizationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_audit_write_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingAuditWriteImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1326,6 +1332,9 @@ def main() -> int:
     shell_accounting_audit_write_authorization_test_plan = (
         shell_accounting_audit_write_authorization_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_audit_write_implementation = (
+        shell_accounting_audit_write_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1391,6 +1400,9 @@ def main() -> int:
     )
     shell_accounting_audit_write_authorization_gate_cmake = (
         shell_accounting_audit_write_authorization_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_audit_write_implementation_cmake = (
+        shell_accounting_audit_write_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6310,8 +6322,12 @@ def main() -> int:
         "handleAccountingSnapshotWrite"
     )
     snapshot_write_action_end = data_service_actions_source.find(
-        "handlePositionList", snapshot_write_action_begin
+        "handleAccountingAuditWrite", snapshot_write_action_begin
     )
+    if snapshot_write_action_end < 0:
+        snapshot_write_action_end = data_service_actions_source.find(
+            "handlePositionList", snapshot_write_action_begin
+        )
     require(
         snapshot_write_action_begin >= 0 and snapshot_write_action_end > snapshot_write_action_begin,
         "TASK-145 can isolate snapshot write action region",
@@ -6351,6 +6367,105 @@ def main() -> int:
         "TASK-145" in readme
         and "TASK-145" in docs_index,
         "README and docs index mention TASK-145",
+    )
+
+    require(
+        shell_accounting_audit_write_implementation_path.exists(),
+        "docs/97 audit write implementation exists",
+    )
+    require(
+        "docs/97_shell_accounting_audit_write_implementation.md" in readme,
+        "README links docs/97",
+    )
+    require(
+        "97_shell_accounting_audit_write_implementation.md" in docs_index,
+        "docs/README links docs/97",
+    )
+    require("TASK-146" in shell_accounting_audit_write_implementation, "docs/97 mentions TASK-146")
+    require("TASK-146" in shell_accounting_audit_write_authorization_gate, "docs/95 mentions TASK-146")
+    require("TASK-146" in shell_accounting_audit_write_authorization_test_plan, "docs/96 mentions TASK-146")
+    require("TASK-146" in codex_prompt_template, "docs/12 mentions TASK-146")
+    for required_doc_token in [
+        "accounting.audit.write",
+        "TASK-146_AUDIT_WRITE",
+        "audit_log",
+        "trade_log",
+        "trade_execution_group",
+        "trade_draft",
+        "rollback",
+        "no raw SQL",
+        "no raw trade_log",
+        "no full snapshot payload",
+        "no internal stack trace",
+    ]:
+        require(
+            required_doc_token in shell_accounting_audit_write_implementation,
+            f"docs/97 records {required_doc_token}",
+        )
+    for ctest_name in [
+        "shell_accounting_audit_write_implementation",
+        "shell_accounting_audit_write_dataservice_only_boundary",
+        "shell_accounting_audit_write_requires_snapshot_write_result",
+        "shell_accounting_audit_write_requires_authorization",
+        "shell_accounting_audit_write_success",
+        "shell_accounting_audit_write_payload_sanitized",
+        "shell_accounting_audit_write_no_raw_sql",
+        "shell_accounting_audit_write_no_raw_trade_log_payload",
+        "shell_accounting_audit_write_no_full_snapshot_payload",
+        "shell_accounting_audit_write_transaction_rollback",
+        "shell_accounting_audit_write_idempotency",
+        "shell_accounting_audit_write_duplicate_event_handling",
+        "shell_accounting_audit_write_no_trade_log_write",
+        "shell_accounting_audit_write_no_trade_draft_write",
+        "shell_accounting_audit_write_no_trade_or_strategy",
+        "shell_accounting_audit_write_no_ui_trigger",
+        "shell_accounting_audit_write_privacy",
+        "shell_accounting_audit_write_rollback_ready",
+    ]:
+        require(
+            ctest_name in shell_accounting_audit_write_implementation_cmake,
+            f"TASK-146 tests include {ctest_name}",
+        )
+    audit_write_repository_source = (
+        root / "libs" / "DataAccess" / "src" / "ShellAccountingAuditWriteRepository.cpp"
+    ).read_text(encoding="utf-8")
+    require(
+        "handleAccountingAuditWrite" in data_service_actions_source
+        and "TASK-146_AUDIT_WRITE" in data_service_actions_source
+        and "kActionAccountingAuditWrite" in dataservice_actions_header,
+        "DataService exposes authorized audit write handler and action",
+    )
+    require(
+        "kActionAccountingAuditWrite" in (root / "libs" / "DataServiceApi" / "src" / "WriteActionPolicy.cpp").read_text(
+            encoding="utf-8"
+        ),
+        "write action policy allowlists accounting.audit.write",
+    )
+    require(
+        "AuditLogRepository" in audit_write_repository_source
+        and "insertAuditLog" in audit_write_repository_source,
+        "audit write repository writes audit_log through AuditLogRepository",
+    )
+    for forbidden_table_write in [
+        "INSERT INTO trade_log",
+        "INSERT INTO trade_execution_group",
+        "INSERT INTO trade_draft",
+    ]:
+        require(
+            forbidden_table_write not in audit_write_repository_source,
+            f"audit write repository does not {forbidden_table_write}",
+        )
+    require(
+        "accounting.audit.write" not in qml_sources
+        and "TASK-146_AUDIT_WRITE" not in qml_sources
+        and "ShellAccountingAuditWriteRepository" not in qml_sources,
+        "production QML does not trigger TASK-146 audit write",
+    )
+    require(
+        "accounting.audit.write" not in production_startup_source
+        and "TASK-146_AUDIT_WRITE" not in production_startup_source
+        and "ShellAccountingAuditWriteRepository" not in production_startup_source,
+        "production startup does not trigger TASK-146 audit write",
     )
 
     require(

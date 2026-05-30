@@ -85,7 +85,10 @@ std::string snapshotWriteActionRegion(const std::filesystem::path& root)
 {
     const auto source = readTextFile(dataServiceActionsPath(root));
     const auto begin = source.find("etfdt::protocol::ProtocolResponse handleAccountingSnapshotWrite");
-    const auto end = source.find("etfdt::protocol::ProtocolResponse handlePositionList", begin);
+    auto end = source.find("etfdt::protocol::ProtocolResponse handleAccountingAuditWrite", begin);
+    if (end == std::string::npos) {
+        end = source.find("etfdt::protocol::ProtocolResponse handlePositionList", begin);
+    }
     if (begin == std::string::npos || end == std::string::npos || end <= begin) {
         return {};
     }

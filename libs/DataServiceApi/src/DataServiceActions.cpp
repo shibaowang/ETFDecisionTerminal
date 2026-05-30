@@ -3,6 +3,7 @@
 #include "AccountingEngine/AccountingReplayEngine.h"
 #include "DataAccess/AccountingTradeFactReader.h"
 #include "DataServiceApi/JsonBuilders.h"
+#include "DataAccess/ShellAccountingAuditWriteRepository.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "Protocol/Json.h"
@@ -178,6 +179,32 @@ std::optional<bool> extractJsonBoolField(
         return std::nullopt;
     }
     return match[1].str() == "true";
+}
+
+std::optional<int> extractJsonIntField(
+    const std::string& payloadJson,
+    const std::string& fieldName)
+{
+    const std::regex pattern(
+        "\"" + fieldName + "\"\\s*:\\s*(-?[0-9]+)",
+        std::regex::ECMAScript);
+
+    std::smatch match;
+    if (!std::regex_search(payloadJson, match, pattern) || match.size() < 2U) {
+        return std::nullopt;
+    }
+
+    try {
+        std::size_t parsed = 0;
+        const auto value = std::stoi(match[1].str(), &parsed, 10);
+        if (parsed != match[1].str().size()) {
+            return std::nullopt;
+        }
+        return value;
+    }
+    catch (...) {
+        return std::nullopt;
+    }
 }
 
 std::optional<std::string> extractJsonFragmentField(
@@ -744,6 +771,27 @@ etfdt::data_access::ShellAccountingSnapshotWriteBatch snapshotWriteBatchFromRepl
     }
 
     return batch;
+}
+
+etfdt::data_access::ShellAccountingAuditWriteRequest auditWriteRequestFromPayload(
+    const std::string& payloadJson,
+    std::string_view timestampUtc)
+{
+    etfdt::data_access::ShellAccountingAuditWriteRequest request;
+    request.accountId = parseOptionalInt64(extractJsonStringField(payloadJson, "accountId").value_or(""))
+                            .value_or(0);
+    request.portfolioId = parseOptionalInt64(extractJsonStringField(payloadJson, "portfolioId").value_or(""))
+                              .value_or(0);
+    request.snapshotBatchId = extractJsonStringField(payloadJson, "snapshotBatchId").value_or("");
+    request.sourceAction = extractJsonStringField(payloadJson, "sourceAction").value_or("");
+    request.sourceStatus = extractJsonStringField(payloadJson, "resultStatus").value_or("");
+    request.authorizationToken = extractJsonStringField(payloadJson, "authorization").value_or("");
+    request.sanitizedIssueCode = extractJsonStringField(payloadJson, "sanitizedIssueCode").value_or("NONE");
+    request.cashRows = extractJsonIntField(payloadJson, "cash_snapshot").value_or(0);
+    request.positionRows = extractJsonIntField(payloadJson, "position_snapshot").value_or(0);
+    request.portfolioSummaryRows = extractJsonIntField(payloadJson, "portfolio_summary").value_or(0);
+    request.createdAtUtc = std::string(timestampUtc);
+    return request;
 }
 
 void appendSnapshotRebuildPreview(
@@ -1584,6 +1632,128 @@ etfdt::protocol::ProtocolResponse handleAccountingSnapshotWrite(
             << "\"issues\":[],"
             << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
             << "\"internalStackExposed\":false}"
+            << "}";
+    return successResponse(context, payload.str());
+}
+
+etfdt::protocol::ProtocolResponse handleAccountingAuditWrite(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "accounting.audit.write payload must be a JSON object");
+    }
+
+    if (extractJsonBoolField(context.request.payloadJson, "auditWriteDisabled").value_or(false)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8002_PERMISSION_DENIED,
+            "accounting.audit.write is disabled by request");
+    }
+
+    const auto authorization =
+        extractJsonStringField(context.request.payloadJson, "authorization").value_or("");
+    if (authorization != "TASK-146_AUDIT_WRITE") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8001_AUTH_REQUIRED,
+            "accounting.audit.write requires TASK-146_AUDIT_WRITE authorization");
+    }
+
+    const auto source = extractJsonStringField(context.request.payloadJson, "source").value_or("");
+    if (source != "snapshotWriteResult") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.audit.write requires payload.source=snapshotWriteResult");
+    }
+
+    const auto sourceAction =
+        extractJsonStringField(context.request.payloadJson, "sourceAction").value_or("");
+    if (sourceAction != "accounting.snapshot.write") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.audit.write requires sourceAction=accounting.snapshot.write");
+    }
+
+    const auto resultStatus =
+        extractJsonStringField(context.request.payloadJson, "resultStatus").value_or("");
+    const auto snapshotWritten =
+        extractJsonBoolField(context.request.payloadJson, "snapshotWritten").value_or(false);
+    if (resultStatus != "OK" || !snapshotWritten) {
+        std::ostringstream payload;
+        payload << "{"
+                << "\"module\":\"accounting\","
+                << "\"action\":\"accounting.audit.write\","
+                << "\"implemented\":true,"
+                << "\"writeAuthorized\":true,"
+                << "\"auditWritten\":false,"
+                << "\"databaseWritten\":false,"
+                << "\"partialAuditWrite\":false,"
+                << "\"transactionRolledBack\":false,"
+                << "\"status\":\"SOURCE_WRITE_FAILED\","
+                << "\"issues\":[";
+        appendIssueObject(payload, "ERROR", "SOURCE_WRITE_FAILED",
+                          "Audit write requires a successful snapshot write result.", true);
+        payload << "],"
+                << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"fullSnapshotPayloadExposed\":false,\"internalStackExposed\":false},"
+                << "\"tradeLogModified\":false,"
+                << "\"tradeDraftGenerated\":false,"
+                << "\"tradeSuggestionGenerated\":false,"
+                << "\"strategyExecuted\":false,"
+                << "\"brokerOrderSubmitted\":false"
+                << "}";
+        return successResponse(context, payload.str());
+    }
+
+    auto request = auditWriteRequestFromPayload(context.request.payloadJson, context.request.timestampUtc);
+    etfdt::data_access::ShellAccountingAuditWriteRepository repository(connection);
+    auto writeResult = repository.writeSnapshotWriteAudit(request);
+    if (!writeResult) {
+        return errorResponse(context, writeResult);
+    }
+
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":\"accounting.audit.write\","
+            << "\"implemented\":true,"
+            << "\"writeAuthorized\":true,"
+            << "\"source\":\"snapshotWriteResult\","
+            << "\"input\":\"TASK-144 snapshot write result\","
+            << "\"authorization\":\"TASK-146_AUDIT_WRITE\","
+            << "\"auditWritten\":" << (writeResult.value().auditWritten ? "true" : "false") << ','
+            << "\"databaseWritten\":" << (writeResult.value().auditWritten ? "true" : "false") << ','
+            << "\"partialAuditWrite\":false,"
+            << "\"transactionCommitted\":" << (writeResult.value().transactionCommitted ? "true" : "false") << ','
+            << "\"transactionRolledBack\":false,"
+            << "\"idempotent\":" << (writeResult.value().idempotent ? "true" : "false") << ','
+            << "\"duplicateEvent\":" << (writeResult.value().duplicateEvent ? "true" : "false") << ','
+            << "\"duplicateHandling\":\"SKIP_EXISTING_BY_SOURCE_RESULT\","
+            << "\"status\":" << jsonStringValue(writeResult.value().duplicateEvent ? "DUPLICATE" : "OK") << ','
+            << "\"auditLogId\":" << writeResult.value().auditLogId << ','
+            << "\"allowlistTables\":[\"audit_log\"],"
+            << "\"forbiddenTables\":[\"trade_log\",\"trade_execution_group\",\"trade_draft\"],"
+            << "\"payloadPolicy\":{"
+            << "\"sanitized\":true,"
+            << "\"rawSqlExposed\":false,"
+            << "\"rawTradeLogPayloadExposed\":false,"
+            << "\"fullSnapshotPayloadExposed\":false,"
+            << "\"internalStackExposed\":false"
+            << "},"
+            << "\"tradeLogModified\":false,"
+            << "\"tradeDraftGenerated\":false,"
+            << "\"tradeSuggestionGenerated\":false,"
+            << "\"strategyExecuted\":false,"
+            << "\"brokerOrderSubmitted\":false,"
+            << "\"issues\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+            << "\"fullSnapshotPayloadExposed\":false,\"internalStackExposed\":false}"
             << "}";
     return successResponse(context, payload.str());
 }

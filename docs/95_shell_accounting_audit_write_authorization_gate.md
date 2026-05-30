@@ -165,3 +165,15 @@ TASK-130, TASK-131, TASK-132, TASK-133, TASK-134, TASK-135, TASK-136, TASK-137,
 TASK-138, TASK-139, TASK-140, TASK-141, TASK-142, TASK-143, TASK-144, full
 CTest, `transport_local_socket_echo` 50 repeat, clean git status, TASK-145 gate
 tests, and explicit user authorization.
+
+## TASK-146 Audit Write Implementation
+
+TASK-146 implements the authorized audit write boundary. The only authorized
+action is `accounting.audit.write`, the input must come from TASK-144 snapshot
+write result, and the required authorization token is `TASK-146_AUDIT_WRITE`.
+The only allowlist write table is `audit_log`. The TASK-145 authorization gate
+now checks this positive boundary while continuing to forbid `trade_log`,
+`trade_execution_group`, `trade_draft`, production QML/startup audit triggers,
+schema changes, raw SQL payloads, raw trade_log payloads, full snapshot
+payloads, internal stack traces, TradeDraft generation, trade suggestions,
+strategy execution, and broker order submission.

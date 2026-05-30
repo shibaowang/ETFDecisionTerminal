@@ -67,6 +67,11 @@ void registerDataServiceWriteActions(
             return handleAccountingSnapshotWrite(context, connection);
         });
     }
+    if (isWriteActionAllowed(kActionAccountingAuditWrite)) {
+        (void)dispatcher.registerAction(kActionAccountingAuditWrite, [&connection](const auto& context) {
+            return handleAccountingAuditWrite(context, connection);
+        });
+    }
 }
 
 }  // namespace etfdt::data_service_api

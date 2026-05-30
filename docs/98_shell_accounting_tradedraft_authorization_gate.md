@@ -128,3 +128,11 @@ TASK-148 may write only `trade_draft` and a sanitized `audit_log` event.
 `trade_log`, `trade_execution_group`, broker order, strategy execution,
 trade execution, production trading UI, and schema migration remain
 unauthorized.
+
+## TASK-149 Confirmation Gate Status
+
+TASK-149 adds the TradeDraft confirmation / TradeLog write authorization gate.
+TradeDraft creation remains authorized as TASK-148, but confirmation,
+`trade_log` write, `trade_execution_group` write, broker order, strategy
+execution, automatic trading, and production trading UI remain unimplemented
+and unauthorized.

@@ -2595,3 +2595,15 @@ write fails, and keeps duplicate requests idempotent. It does not write
 `trade_log` or `trade_execution_group`, does not modify production QML/startup
 or schema, and does not add trading UI. See
 `docs/100_shell_accounting_tradedraft_implementation.md`.
+
+## TASK-149 TradeDraft Confirmation Authorization Gate
+
+ShellAccounting now has a TradeDraft confirmation / TradeLog write
+authorization gate and test plan. Confirmation remains unimplemented,
+`trade_log` and `trade_execution_group` remain unwritten, and TASK-148
+TradeDraft creation behavior remains unchanged. Future confirmation must be
+DataService-only, explicitly authorized, audited, transactional, idempotent,
+and must not be treated as broker order, strategy execution, automatic
+trading, or production trading UI. See
+`docs/101_shell_accounting_tradedraft_confirmation_authorization_gate.md` and
+`docs/102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md`.

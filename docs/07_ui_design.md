@@ -604,3 +604,11 @@ still does not directly create TradeDraft, does not request
 `TASK-148_TRADEDRAFT_WRITE`, does not call `accounting.tradedraft.create`, and
 does not display buy, sell, order, broker, strategy, or confirmation controls.
 TradeDraft is not an order and is not trade execution.
+
+## TASK-149 TradeDraft Confirmation Authorization Gate
+
+The TradeDraft confirmation / TradeLog write authorization gate is added. The
+UI still does not confirm drafts, does not write `trade_log` or
+`trade_execution_group`, does not request confirmation authorization, and does
+not display buy, sell, order, broker, strategy, automatic trading, or trade
+confirmation controls.

@@ -156,3 +156,11 @@ TradeDraft confirmation, trade execution, trade_log writes,
 trade_execution_group writes, broker order, strategy-generated recommendation,
 production trading UI, and schema migration all require separate future TASK
 authorization.
+
+## TASK-149 Confirmation Gate Status
+
+TASK-149 adds the TradeDraft confirmation / TradeLog write authorization gate.
+TASK-148 TradeDraft creation behavior is unchanged. Confirmation,
+`trade_log` write, `trade_execution_group` write, broker order, strategy
+execution, automatic trading, production trading UI, and schema migration
+remain unimplemented and unauthorized.

@@ -1,0 +1,93 @@
+add_library(ShellAccountingTradeDraftConfirmationAuthorizationGateLib STATIC
+    ShellAccountingTradeDraftConfirmationAuthorizationGate.cpp
+    ShellAccountingTradeDraftConfirmationAuthorizationGate.h
+)
+
+target_compile_features(ShellAccountingTradeDraftConfirmationAuthorizationGateLib PUBLIC cxx_std_17)
+
+target_include_directories(ShellAccountingTradeDraftConfirmationAuthorizationGateLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+function(add_shell_accounting_tradedraft_confirmation_authorization_gate_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingTradeDraftConfirmationAuthorizationGateLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(NAME ${ctest_name} COMMAND ${target_name} --source-root ${PROJECT_SOURCE_DIR})
+endfunction()
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCAGateTests
+    test_shell_accounting_tradedraft_confirmation_authorization_gate.cpp
+    shell_accounting_tradedraft_confirmation_authorization_gate
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCANoConfirmationTests
+    test_shell_accounting_tradedraft_confirmation_authorization_no_confirmation_yet.cpp
+    shell_accounting_tradedraft_confirmation_authorization_no_confirmation_yet
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCANoTradeLogWriteTests
+    test_shell_accounting_tradedraft_confirmation_authorization_no_trade_log_write_yet.cpp
+    shell_accounting_tradedraft_confirmation_authorization_no_trade_log_write_yet
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCANoExecutionGroupWriteTests
+    test_shell_accounting_tradedraft_confirmation_authorization_no_execution_group_write_yet.cpp
+    shell_accounting_tradedraft_confirmation_authorization_no_execution_group_write_yet
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCADataServicePolicyTests
+    test_shell_accounting_tradedraft_confirmation_authorization_dataservice_only_policy.cpp
+    shell_accounting_tradedraft_confirmation_authorization_dataservice_only_policy
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCAInputPolicyTests
+    test_shell_accounting_tradedraft_confirmation_authorization_input_policy.cpp
+    shell_accounting_tradedraft_confirmation_authorization_input_policy
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCALedgerPolicyTests
+    test_shell_accounting_tradedraft_confirmation_authorization_ledger_policy.cpp
+    shell_accounting_tradedraft_confirmation_authorization_ledger_policy
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCAAuditPolicyTests
+    test_shell_accounting_tradedraft_confirmation_authorization_audit_policy.cpp
+    shell_accounting_tradedraft_confirmation_authorization_audit_policy
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCANoUiConfirmationTests
+    test_shell_accounting_tradedraft_confirmation_authorization_no_ui_triggered_confirmation.cpp
+    shell_accounting_tradedraft_confirmation_authorization_no_ui_triggered_confirmation
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCANoStrategyBrokerTests
+    test_shell_accounting_tradedraft_confirmation_authorization_no_strategy_or_broker.cpp
+    shell_accounting_tradedraft_confirmation_authorization_no_strategy_or_broker
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCAErrorMappingTests
+    test_shell_accounting_tradedraft_confirmation_authorization_error_mapping_policy.cpp
+    shell_accounting_tradedraft_confirmation_authorization_error_mapping_policy
+)
+
+add_shell_accounting_tradedraft_confirmation_authorization_gate_test(
+    TDCARollbackPolicyTests
+    test_shell_accounting_tradedraft_confirmation_authorization_rollback_policy.cpp
+    shell_accounting_tradedraft_confirmation_authorization_rollback_policy
+)

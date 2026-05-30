@@ -549,3 +549,10 @@ The snapshot rebuild implementation gate is added. The UI remains read-only,
 does not trigger snapshot rebuild, does not trigger snapshot write, and does
 not display trading buttons. Future rebuild work must stay inside the
 DataService boundary and expose only read-only, unavailable-safe state to UI.
+
+## TASK-142 Snapshot Rebuild Preview
+
+Snapshot rebuild preview is now available only inside the DataService read-only
+response boundary. The UI remains read-only, does not trigger preview
+calculation directly, does not trigger snapshot write, and does not display
+trading buttons.

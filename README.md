@@ -2513,3 +2513,13 @@ preview output only, and still has no database write, TradeDraft, trade
 suggestion, strategy execution, broker order, or trading UI. See
 `docs/89_shell_accounting_snapshot_rebuild_implementation_gate.md` and
 `docs/90_shell_accounting_snapshot_rebuild_implementation_test_plan.md`.
+
+## TASK-142 Snapshot Rebuild Preview
+
+ShellAccounting now has a DataService-internal snapshot rebuild preview. The
+preview is built from TASK-139 read-only replay and is returned as an in-memory
+`snapshotRebuildPreview` payload on read-only action responses. Snapshot write
+is still unimplemented and separately unauthorized. There is still no database
+write, TradeDraft, trade suggestion, strategy execution, broker order, or
+trading UI. See
+`docs/91_shell_accounting_snapshot_rebuild_implementation.md`.

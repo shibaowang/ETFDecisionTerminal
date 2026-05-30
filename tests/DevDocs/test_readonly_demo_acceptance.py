@@ -187,6 +187,9 @@ def main() -> int:
     shell_accounting_snapshot_rebuild_implementation_test_plan_path = (
         root / "docs" / "90_shell_accounting_snapshot_rebuild_implementation_test_plan.md"
     )
+    shell_accounting_snapshot_rebuild_preview_implementation_path = (
+        root / "docs" / "91_shell_accounting_snapshot_rebuild_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -246,6 +249,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_rebuild_implementation_gate_cmake_path = (
         root / "tests" / "ShellAccountingSnapshotRebuildImplementationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_snapshot_rebuild_preview_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingSnapshotRebuildImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1278,6 +1284,9 @@ def main() -> int:
     shell_accounting_snapshot_rebuild_implementation_test_plan = (
         shell_accounting_snapshot_rebuild_implementation_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_snapshot_rebuild_preview_implementation = (
+        shell_accounting_snapshot_rebuild_preview_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1331,6 +1340,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_rebuild_implementation_gate_cmake = (
         shell_accounting_snapshot_rebuild_implementation_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_snapshot_rebuild_preview_implementation_cmake = (
+        shell_accounting_snapshot_rebuild_preview_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -5957,6 +5969,61 @@ def main() -> int:
         "TASK-141" in shell_accounting_snapshot_rebuild_write_gate
         and "TASK-141" in shell_accounting_snapshot_rebuild_write_test_plan,
         "docs/87 docs/88 mention TASK-141",
+    )
+    require(
+        shell_accounting_snapshot_rebuild_preview_implementation_path.exists(),
+        "docs/91 snapshot rebuild implementation exists",
+    )
+    require(
+        "docs/91_shell_accounting_snapshot_rebuild_implementation.md" in readme,
+        "README links docs/91",
+    )
+    require(
+        "91_shell_accounting_snapshot_rebuild_implementation.md" in docs_index,
+        "docs/README links docs/91",
+    )
+    require("TASK-142" in shell_accounting_snapshot_rebuild_preview_implementation, "docs/91 mentions TASK-142")
+    require("TASK-142" in shell_accounting_snapshot_rebuild_implementation_gate, "docs/89 mentions TASK-142")
+    require("TASK-142" in shell_accounting_snapshot_rebuild_implementation_test_plan, "docs/90 mentions TASK-142")
+    require("TASK-142" in codex_prompt_template, "docs/12 mentions TASK-142")
+    require(
+        "snapshotRebuildPreview" in shell_accounting_snapshot_rebuild_preview_implementation,
+        "docs/91 documents preview payload",
+    )
+    for ctest_name in [
+        "shell_accounting_snapshot_rebuild_preview_implementation",
+        "shell_accounting_snapshot_rebuild_preview_dataservice_only_boundary",
+        "shell_accounting_snapshot_rebuild_preview_from_readonly_replay",
+        "shell_accounting_snapshot_rebuild_preview_position_snapshot_mapping",
+        "shell_accounting_snapshot_rebuild_preview_cash_snapshot_mapping",
+        "shell_accounting_snapshot_rebuild_preview_portfolio_summary_mapping",
+        "shell_accounting_snapshot_rebuild_preview_stale_input_mapping",
+        "shell_accounting_snapshot_rebuild_preview_inconsistent_facts_mapping",
+        "shell_accounting_snapshot_rebuild_preview_no_db_write",
+        "shell_accounting_snapshot_rebuild_preview_no_snapshot_write",
+        "shell_accounting_snapshot_rebuild_preview_no_trade_or_strategy",
+        "shell_accounting_snapshot_rebuild_preview_privacy",
+        "shell_accounting_snapshot_rebuild_preview_rollback_ready",
+    ]:
+        require(
+            ctest_name in shell_accounting_snapshot_rebuild_preview_implementation_cmake,
+            f"TASK-142 tests include {ctest_name}",
+        )
+    require(
+        "snapshotRebuildPreview" in data_service_actions_source
+        and '\\"snapshotRebuilt\\":false' in data_service_actions_source,
+        "DataService exposes preview while keeping snapshotRebuilt false",
+    )
+    require(
+        "INSERT INTO cash_snapshot" not in data_service_actions_source
+        and "INSERT INTO position_snapshot" not in data_service_actions_source
+        and "INSERT INTO portfolio_summary" not in data_service_actions_source,
+        "TASK-142 adds no snapshot write SQL",
+    )
+    require(
+        "TASK-142" in readme
+        and "TASK-142" in docs_index,
+        "README and docs index mention TASK-142",
     )
 
     require(

@@ -139,7 +139,10 @@ std::string readOnlyRegionText(const std::filesystem::path& root)
 {
     const auto source = dataServiceActionsText(root);
     const auto begin = source.find("ShellAccountingReplayAttempt runShellAccountingReadOnlyReplay");
-    const auto end = source.find("}  // namespace etfdt::data_service_api", begin);
+    auto end = source.find("struct AuditPayloadParseResult", begin);
+    if (end == std::string::npos) {
+        end = source.find("}  // namespace etfdt::data_service_api", begin);
+    }
     if (begin == std::string::npos || end == std::string::npos || end <= begin) {
         return {};
     }
@@ -304,8 +307,9 @@ std::vector<std::string> tradeOrStrategyTokens()
         "createTradeDraft",
         "brokerOrder(",
         "placeOrder",
-        "strategyExecute",
-        "executeStrategy",
+        "\"strategyExecute\"",
+        "strategyExecute(",
+        "executeStrategy(",
         "confirmTrade",
     };
 }

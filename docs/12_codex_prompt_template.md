@@ -1005,3 +1005,15 @@ v0.1 草案。
   suggestion, strategy execution, broker order, or trading UI.
 - TASK-139 read-only replay remains the fallback until a separate snapshot
   rebuild implementation is authorized and completed.
+
+## TASK-142 ShellAccounting Snapshot Rebuild Preview Implementation
+
+- Snapshot rebuild preview is implemented as a DataService-internal read-only
+  mapping from TASK-139 read-only replay to `snapshotRebuildPreview`.
+- Do not treat preview as snapshot write. `snapshotRebuilt` must remain false
+  until a separate write task is authorized.
+- Do not add production QML/startup changes, direct Shell/QML/Presenter
+  SQLite/DataAccess/AccountingEngine access, TradeDraft generation, trade
+  suggestion, strategy execution, broker order, or trading UI.
+- Future snapshot write tasks must reference TASK-140 through TASK-142 docs and
+  require separate explicit authorization.

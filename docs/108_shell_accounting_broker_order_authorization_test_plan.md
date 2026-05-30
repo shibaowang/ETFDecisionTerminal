@@ -156,3 +156,12 @@ behavior and adds static checks for no real broker order, no broker adapter, no
 broker SDK include / import / link, no sandbox or paper trading broker call, no
 real order placement, no StrategyEngine execution, no automatic trading, and no
 production QML direct broker access.
+
+## TASK-156 Test Update
+
+TASK-156 adds the final real broker order implementation gate before any future
+placement implementation. It keeps TASK-154 dry-run as the only allowed
+broker-order-related behavior and adds static checks for no real order
+placement, no broker adapter, no broker SDK, no broker network call, no
+credentials, no sandbox / paper broker call, no StrategyEngine execution, no
+automatic trading, and no QML / Presenter direct broker access.

@@ -675,3 +675,16 @@ require TASK-154 dry-run preflight, confirmed-ledger input, final user
 confirmation, independent authorization, kill switch, idempotency, sanitized
 audit, reconciliation, and incident rollback / containment before any real
 placement task is considered.
+
+## TASK-156 Real Broker Order Implementation Gate
+
+TASK-156 adds only the real broker order implementation gate. Production QML
+remains unchanged: no real broker order controls, broker adapter calls, broker
+SDK calls, sandbox / paper broker calls, real placement APIs, strategy
+execution controls, or automatic trading triggers are added.
+
+Future real broker order UI must still use the presenter/controller/adapter/
+DataService boundary, require successful dry-run preflight, confirmed-ledger
+input, final user confirmation, independent authorization, risk checks,
+idempotency, sanitized audit, reconciliation, kill switch, and rollback /
+incident containment before any real placement implementation is considered.

@@ -1227,3 +1227,22 @@ v0.1 草案。
 - Real broker order must not accept raw QML payload, must not bypass
   DataService, must not be triggered directly by Presenter or QML, and must not
   execute strategy or automatic trading.
+
+## TASK-156 ShellAccounting Real Broker Order Implementation Gate
+
+- Future real broker order implementation tasks must reference
+  `docs/112_shell_accounting_real_broker_order_implementation_gate.md` and
+  `docs/113_shell_accounting_real_broker_order_implementation_test_plan.md`.
+- TASK-156 is a gate only. It does not authorize real broker order
+  implementation, broker adapter implementation, broker SDK import/link/call,
+  sandbox broker call, paper broker call, broker network call, real order
+  placement, StrategyEngine execution, automatic trading, production QML
+  changes, production startup changes, credentials, or schema migration.
+- Future implementation must remain DataService-only, default-disabled,
+  independently authorized, dry-run-preflighted, final-user-confirmed,
+  risk-guarded, idempotent, audited, reconciled, kill-switchable, and
+  incident-containment-ready.
+- Future implementation must not accept raw QML order payloads, must not bypass
+  TASK-154 dry-run, TASK-150 confirmed ledger input, or TASK-152 user
+  confirmation, and must not introduce credentials or broker network calls into
+  tests.

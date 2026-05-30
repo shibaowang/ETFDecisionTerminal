@@ -2682,3 +2682,17 @@ authorization token, kill switch, idempotency key, sanitized audit,
 reconciliation policy, and incident rollback / containment. See
 `docs/110_shell_accounting_real_broker_order_authorization_gate.md` and
 `docs/111_shell_accounting_real_broker_order_authorization_test_plan.md`.
+
+## TASK-156 Real Broker Order Implementation Gate
+
+ShellAccounting now has the final implementation gate and test plan before any
+real broker order implementation can be considered. Real broker order remains
+unimplemented: there is no broker adapter, no broker SDK import/link/call, no
+broker network call, no sandbox or paper broker call, no real order placement,
+no StrategyEngine execution, no automatic trading, no production QML/startup
+change, and no schema change. Future implementation must remain DataService
+only, default-disabled, dry-run-preflighted, final-user-confirmed,
+independently authorized, risk-guarded, idempotent, audited, reconciled, and
+kill-switchable. See
+`docs/112_shell_accounting_real_broker_order_implementation_gate.md` and
+`docs/113_shell_accounting_real_broker_order_implementation_test_plan.md`.

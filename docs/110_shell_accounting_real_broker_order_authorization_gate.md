@@ -178,3 +178,13 @@ A future real broker order PR must include:
 - no schema migration unless separately authorized
 - full CTest, ShellAccounting gates, real broker order gate, broker dry-run
   tests, and transport 50-repeat results
+
+## TASK-156 Implementation Gate Update
+
+TASK-156 adds a dedicated real broker order implementation gate and test plan.
+TASK-155 remains the authorization boundary, while TASK-156 adds final static
+checks for no real order implementation, no broker adapter, no broker SDK, no
+broker network call, no sandbox / paper broker call, no credentials, no
+StrategyEngine execution, no automatic trading, and no QML / Presenter direct
+broker access. Real broker order placement remains unimplemented and requires a
+separate user-authorized implementation TASK.

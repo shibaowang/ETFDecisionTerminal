@@ -1194,3 +1194,18 @@ v0.1 草案。
 - Broker order must not accept raw QML payload, must not bypass TASK-148 Draft
   creation or TASK-150 Draft confirmation, and must not auto-trigger after
   confirmation.
+
+## TASK-154 ShellAccounting Broker Order Dry-run Implementation
+
+- Broker dry-run is authorized only as `accounting.broker_order.dry_run` inside
+  the DataService boundary.
+- The required authorization token is `TASK-154_BROKER_ORDER_DRY_RUN`.
+- Input must reference an already confirmed TradeDraft / ledger fact and must
+  not come from raw QML order payload.
+- The only allowed write table is `audit_log`, with sanitized dry-run audit
+  payload.
+- Do not write `trade_log`, `trade_execution_group`, `trade_draft`, or broker
+  real order status tables.
+- Do not call broker SDK, place a real order, execute strategy, enable
+  automatic trading, modify production QML/startup, or change schema.
+- Future real broker order placement must be separately authorized.

@@ -657,3 +657,11 @@ confirmed Draft / ledger fact, require a distinct user confirmation and
 authorization token, support disabled / dry-run / rollback behavior, and avoid
 raw QML payload order placement, broker SDK calls from QML, StrategyEngine
 execution, and automatic trading.
+
+## TASK-154 Broker Order Dry-run Boundary
+
+TASK-154 adds only a DataService dry-run boundary. The production UI remains
+unchanged and does not expose broker order controls, place-order buttons,
+broker SDK calls, StrategyEngine execution, automatic trading, or direct DB
+writes. Any future broker UI must stay separate from the dry-run backend
+boundary and keep explicit user confirmation.

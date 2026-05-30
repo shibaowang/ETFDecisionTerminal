@@ -82,6 +82,11 @@ void registerDataServiceWriteActions(
             return handleAccountingTradeDraftConfirm(context, connection);
         });
     }
+    if (isWriteActionAllowed(kActionAccountingBrokerOrderDryRun)) {
+        (void)dispatcher.registerAction(kActionAccountingBrokerOrderDryRun, [&connection](const auto& context) {
+            return handleAccountingBrokerOrderDryRun(context, connection);
+        });
+    }
 }
 
 }  // namespace etfdt::data_service_api

@@ -372,6 +372,10 @@
   [105_shell_accounting_production_trading_ui_authorization_test_plan.md](105_shell_accounting_production_trading_ui_authorization_test_plan.md)
   defines the TASK-151 no-QML-binding, DataService-only, user-confirmed,
   no-broker/no-strategy production trading UI test matrix.
+- ShellAccounting production trading UI implementation:
+  [106_shell_accounting_production_trading_ui_implementation.md](106_shell_accounting_production_trading_ui_implementation.md)
+  records TASK-152 production QML Draft creation / confirmation UI routed only
+  through the ShellAccounting presenter/controller/adapter/DataService boundary.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

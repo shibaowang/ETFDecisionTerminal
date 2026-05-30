@@ -53,6 +53,10 @@ public:
     void refreshPortfolioPnlSummary(const ShellAccountingServiceRequest& request);
     void refreshBasePositionSummary(const ShellAccountingServiceRequest& request);
     void refreshSniperPoolSummary(const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult createDraft(
+        const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult confirmDraft(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

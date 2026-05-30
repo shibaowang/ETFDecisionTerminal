@@ -97,6 +97,33 @@ void appendJsonIntField(
     needsComma = true;
 }
 
+void appendJsonInt64Field(
+    std::ostringstream& stream,
+    const char* name,
+    std::int64_t value,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":" << value;
+    needsComma = true;
+}
+
+void appendRiskFlags(
+    std::ostringstream& stream,
+    bool checked,
+    bool blocked,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << "\"riskFlags\":{\"checked\":" << (checked ? "true" : "false")
+           << ",\"blocked\":" << (blocked ? "true" : "false") << '}';
+    needsComma = true;
+}
+
 void appendRequestedOutputs(
     std::ostringstream& stream,
     const std::vector<std::string>& requestedOutputs,
@@ -141,6 +168,53 @@ std::string makePayloadJson(
     return stream.str();
 }
 
+std::string makeCreateDraftPayloadJson(const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(stream, "accountId", request.accountId, needsComma);
+    appendJsonStringField(stream, "portfolioId", request.portfolioId, needsComma);
+    appendJsonStringField(stream, "strategyId", request.strategyId, needsComma);
+    appendJsonStringField(stream, "strategyCode", request.strategyCode, needsComma);
+    appendJsonStringField(stream, "instrumentId", request.instrumentId, needsComma);
+    appendJsonStringField(stream, "instrumentCode", request.instrumentCode, needsComma);
+    appendJsonStringField(stream, "side", request.side, needsComma);
+    appendJsonInt64Field(stream, "quantity1e6", request.quantity1e6, needsComma);
+    appendJsonStringField(stream, "reason", request.reason, needsComma);
+    appendJsonStringField(stream, "source", request.source, needsComma);
+    appendJsonStringField(stream, "sourceSnapshotId", request.sourceSnapshotId, needsComma);
+    appendJsonStringField(stream, "sourceReplayId", request.sourceReplayId, needsComma);
+    appendRiskFlags(stream, request.riskChecked, request.riskBlocked, needsComma);
+    appendJsonStringField(stream, "authorization", request.authorization, needsComma);
+    appendJsonBoolField(stream, "tradeDraftDisabled", request.tradeDraftDisabled, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
+std::string makeConfirmDraftPayloadJson(const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonInt64Field(stream, "draftId", request.draftId, needsComma);
+    appendJsonStringField(stream, "accountId", request.accountId, needsComma);
+    appendJsonStringField(stream, "portfolioId", request.portfolioId, needsComma);
+    appendJsonStringField(stream, "strategyId", request.strategyId, needsComma);
+    appendJsonStringField(stream, "strategyCode", request.strategyCode, needsComma);
+    appendJsonStringField(stream, "instrumentId", request.instrumentId, needsComma);
+    appendJsonStringField(stream, "instrumentCode", request.instrumentCode, needsComma);
+    appendJsonStringField(stream, "side", request.side, needsComma);
+    appendJsonInt64Field(stream, "quantity1e6", request.quantity1e6, needsComma);
+    appendJsonStringField(stream, "source", request.source, needsComma);
+    appendJsonStringField(stream, "sourceSnapshotId", request.sourceSnapshotId, needsComma);
+    appendJsonStringField(stream, "sourceReplayId", request.sourceReplayId, needsComma);
+    appendJsonStringField(stream, "authorization", request.authorization, needsComma);
+    appendJsonBoolField(stream, "confirmationDisabled", request.confirmationDisabled, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
 ShellAccountingDataServiceClientRequest makeClientRequest(
     const ShellAccountingServiceRequest& request,
     const char* fallbackActionName)
@@ -148,6 +222,26 @@ ShellAccountingDataServiceClientRequest makeClientRequest(
     ShellAccountingDataServiceClientRequest clientRequest;
     clientRequest.actionName = request.actionName.empty() ? fallbackActionName : request.actionName;
     clientRequest.payloadJson = makePayloadJson(request, fallbackActionName);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeCreateDraftClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.tradedraft.create";
+    clientRequest.payloadJson = makeCreateDraftPayloadJson(request);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeConfirmDraftClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.tradedraft.confirm";
+    clientRequest.payloadJson = makeConfirmDraftPayloadJson(request);
     clientRequest.timeoutMs = request.timeoutMs;
     return clientRequest;
 }
@@ -176,7 +270,9 @@ ShellAccountingServiceResult mapClientResponse(
     result.transportError = response.transportError;
     result.protocolError = response.protocolError;
     result.domainError = response.domainError;
-    result.generatedTradeDraft = false;
+    result.generatedTradeDraft = result.actionName == "accounting.tradedraft.create"
+        && response.protocolSuccess && response.implemented
+        && (response.payloadStatus == "OK" || response.payloadStatus == "DUPLICATE");
     result.generatedTradeSuggestion = false;
     result.strategyExecuted = false;
     result.brokerOrderSubmitted = false;
@@ -251,6 +347,30 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchSniperPoolS
             "sniper_pool.summary");
     }
     return makeNotConnectedResult(request, "sniper_pool.summary");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::createDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callTradeDraftCreate(makeCreateDraftClientRequest(request)),
+            request,
+            "accounting.tradedraft.create");
+    }
+    return makeNotConnectedResult(request, "accounting.tradedraft.create");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::confirmDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callTradeDraftConfirm(makeConfirmDraftClientRequest(request)),
+            request,
+            "accounting.tradedraft.confirm");
+    }
+    return makeNotConnectedResult(request, "accounting.tradedraft.confirm");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

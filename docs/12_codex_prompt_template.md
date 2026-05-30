@@ -1162,3 +1162,19 @@ v0.1 草案。
 - Do not add broker order placement, StrategyEngine execution, automatic
   trading, direct QML DB writes, generic write escape hatches, or silent
   success behavior.
+
+## TASK-152 ShellAccounting Production Trading UI Implementation
+
+- Production trading UI is authorized only for Draft creation, Draft review,
+  and Draft confirmation through the ShellAccounting
+  presenter/controller/adapter/DataService boundary.
+- QML must not directly call DataServiceClient, SQLite, DataAccess, or database
+  write paths.
+- Draft creation must continue to use `TASK-148_TRADEDRAFT_WRITE`; Draft
+  confirmation must continue to use `TASK-150_TRADEDRAFT_CONFIRM`.
+- Confirmation requires an explicit user step and must show Draft-only versus
+  confirmed-ledger state.
+- Do not extend this UI into broker order placement, StrategyEngine execution,
+  automatic trading, direct order placement, schema migration, or a generic
+  write escape hatch.
+- Future broker order / strategy execution tasks must be separately authorized.

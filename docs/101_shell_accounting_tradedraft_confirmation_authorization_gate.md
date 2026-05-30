@@ -131,3 +131,12 @@ authorization token, draft input contract, ledger write contract, transaction
 plan, audit behavior, idempotency key, duplicate handling, no-broker evidence,
 no-strategy evidence, rollback strategy, schema impact evidence, and all gate
 test results.
+
+## TASK-152 Production Trading UI Implementation
+
+TASK-152 exposes authorized Draft creation and confirmation controls in
+production QML. The gate boundary remains: QML must route through
+presenter/controller/adapter/DataService, confirmation still requires
+`TASK-150_TRADEDRAFT_CONFIRM`, and broker order placement, StrategyEngine
+execution, automatic trading, direct QML ledger writes, and schema changes
+remain unauthorized.

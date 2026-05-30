@@ -158,3 +158,11 @@ strategies.
 - [ ] ledger write authorization token approved.
 - [ ] audit behavior approved.
 - [ ] no broker / no strategy tests ready.
+
+## TASK-152 Production Trading UI Implementation
+
+TASK-152 converts the future UI probe into an authorized UI-only probe:
+production QML may call presenter `createDraft` and `confirmDraft`, while action
+names and authorization tokens remain in ShellServices / DataService boundary
+code. QML direct DataServiceClient, SQLite/DataAccess, broker, StrategyEngine,
+automatic trading, and direct ledger writes remain forbidden.

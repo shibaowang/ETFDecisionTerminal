@@ -25,6 +25,7 @@ add_library(ETFShellServices STATIC
     include/ShellServices/ShellReadOnlyTableProxyModel.h
     include/ShellServices/ShellServices.h
     src/ShellAccountingDataServiceAdapter.cpp
+    src/ShellAccountingDataServiceClientPort.cpp
     src/ShellAccountingDataServiceClientPortAdapter.cpp
     src/ShellAccountingDisplayText.cpp
     src/ShellAccountingIssue.cpp
@@ -32,6 +33,7 @@ add_library(ETFShellServices STATIC
     src/ShellAccountingPresenter.cpp
     src/ShellAccountingQmlRegistration.cpp
     src/ShellAccountingReadOnlyController.cpp
+    src/ShellAccountingServiceAdapter.cpp
     src/ShellAccountingServiceTypes.cpp
     src/ShellAccountingState.cpp
     src/ShellAccountingStatusObject.cpp

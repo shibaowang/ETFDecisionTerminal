@@ -4,5 +4,10 @@ using namespace etfdt::tests::shell_accounting_production_trading_ui_authorizati
 
 int main(int argc, char** argv)
 {
-    return containsAnyToken(shellBoundaryText(sourceRoot(argc, argv)), draftConfirmBindingTokens()) ? 1 : 0;
+    const auto root = sourceRoot(argc, argv);
+    return containsAllTokens(shellBoundaryText(root), authorizedDraftConfirmBindingTokens()) &&
+            productionQmlText(root).find("accounting.tradedraft.confirm") == std::string::npos &&
+            productionQmlText(root).find("TASK-150_TRADEDRAFT_CONFIRM") == std::string::npos
+        ? 0
+        : 1;
 }

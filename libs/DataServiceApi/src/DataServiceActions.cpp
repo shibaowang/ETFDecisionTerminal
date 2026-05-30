@@ -9,6 +9,7 @@
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftConfirmationRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftRepository.h"
+#include "DataServiceApi/ShellAccountingBrokerOrderPortProvider.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
@@ -891,6 +892,44 @@ etfdt::data_access::ShellAccountingBrokerOrderDryRunRequest brokerOrderDryRunReq
     request.userConfirmed = extractJsonBoolField(payloadJson, "userConfirmed").value_or(false);
     request.requestedAtUtc = std::string(timestampUtc);
     return request;
+}
+
+etfdt::dataservice::ShellAccountingBrokerOrderRequest brokerOrderPortRequestFromDryRun(
+    const etfdt::data_access::ShellAccountingBrokerOrderDryRunRequest& request,
+    const etfdt::data_access::ShellAccountingBrokerOrderDryRunResult& result)
+{
+    etfdt::dataservice::ShellAccountingBrokerOrderRequest portRequest;
+    portRequest.accountId = std::to_string(request.accountId);
+    portRequest.portfolioId = std::to_string(request.portfolioId);
+    portRequest.sourceTradeDraftId = std::to_string(result.draftId);
+    portRequest.sourceLedgerId = std::to_string(result.tradeLogId);
+    portRequest.sourceDryRunId = std::to_string(result.auditLogId);
+    portRequest.userConfirmationId = request.userConfirmed ? "TASK-154_DRY_RUN_USER_CONFIRMED" : "";
+    portRequest.idempotencyKey = "broker-dry-run:" + std::to_string(result.tradeLogId);
+    portRequest.finalUserConfirmed = false;
+    portRequest.riskFlags = {"DRY_RUN_ONLY", "BROKER_DISABLED"};
+    return portRequest;
+}
+
+const char* brokerOrderStatusCode(etfdt::dataservice::ShellAccountingBrokerOrderStatus status) noexcept
+{
+    switch (status) {
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::Disabled:
+        return "DISABLED";
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::DryRunOnly:
+        return "DRY_RUN_ONLY";
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::Rejected:
+        return "REJECTED";
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::AcceptedPlaceholder:
+        return "ACCEPTED_PLACEHOLDER";
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::PendingPlaceholder:
+        return "PENDING_PLACEHOLDER";
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::UnknownStatePlaceholder:
+        return "UNKNOWN_STATE_PLACEHOLDER";
+    case etfdt::dataservice::ShellAccountingBrokerOrderStatus::Error:
+        return "ERROR";
+    }
+    return "ERROR";
 }
 
 void appendSnapshotRebuildPreview(
@@ -2147,6 +2186,8 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     }
 
     const auto& result = dryRunResult.value();
+    const auto brokerPortResponse = etfdt::dataservice::defaultShellAccountingBrokerOrderPort().submitOrderEnvelope(
+        brokerOrderPortRequestFromDryRun(request, result));
     std::ostringstream payload;
     payload << "{"
             << "\"module\":\"accounting\","
@@ -2163,6 +2204,11 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
             << "\"brokerSdkCalled\":false,"
             << "\"brokerOrderSubmitted\":false,"
             << "\"brokerOrderId\":null,"
+            << "\"brokerPortMode\":" << jsonStringValue(brokerPortResponse.brokerMode) << ','
+            << "\"brokerPortStatus\":" << jsonStringValue(brokerOrderStatusCode(brokerPortResponse.status)) << ','
+            << "\"brokerPortDisabled\":" << (brokerPortResponse.disabled ? "true" : "false") << ','
+            << "\"brokerPortDryRunOnly\":" << (brokerPortResponse.dryRunOnly ? "true" : "false") << ','
+            << "\"brokerPortErrorCode\":" << jsonStringValue(brokerPortResponse.errorCode) << ','
             << "\"strategyExecuted\":false,"
             << "\"automaticTrading\":false,"
             << "\"auditWritten\":" << (result.auditWritten ? "true" : "false") << ','

@@ -705,3 +705,10 @@ state, sandbox / paper / real broker mode controls, or real order placement.
 Future broker adapter implementation must remain behind the DataService
 boundary; QML and Presenter must not directly call a broker adapter, broker SDK,
 network endpoint, or strategy execution path.
+
+## TASK-159 Broker Adapter Disabled Wiring
+
+TASK-159 does not change production UI. The disabled/null broker adapter is
+wired only inside the DataService boundary. QML and Presenter still do not
+receive broker adapter objects, broker credentials, real broker order ids,
+sandbox / paper / real mode controls, or direct broker submission APIs.

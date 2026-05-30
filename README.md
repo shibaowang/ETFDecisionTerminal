@@ -2725,3 +2725,17 @@ cancellation, correction, strategy execution, automatic trading, and real order
 placement. See
 `docs/115_shell_accounting_broker_adapter_implementation_gate.md` and
 `docs/116_shell_accounting_broker_adapter_implementation_test_plan.md`.
+
+## TASK-159 Broker Adapter Disabled Wiring
+
+ShellAccounting now wires the disabled/null broker adapter into the DataService
+internal broker boundary. The default provider returns
+`DisabledShellAccountingBrokerOrderPort`, and `accounting.broker_order.dry_run`
+continues to report dry-run-only / broker-disabled semantics while exposing the
+internal disabled port status. This keeps fake adapters test-only and does not
+implement a real broker adapter, import a broker SDK, call sandbox / paper /
+real broker endpoints, place real orders, generate real broker order ids, add
+credentials, change production QML/startup, change TASK-148 / TASK-150 /
+TASK-152 / TASK-154 behavior, execute strategy, enable automatic trading, or
+modify schema. See
+`docs/117_shell_accounting_broker_adapter_disabled_wiring.md`.

@@ -1,0 +1,57 @@
+find_package(Qt6 COMPONENTS Core REQUIRED)
+
+add_library(ShellAccountingBrokerAdapterDisabledWiringLib STATIC
+    ShellAccountingBrokerAdapterDisabledWiring.cpp
+    ShellAccountingBrokerAdapterDisabledWiring.h
+)
+
+target_include_directories(ShellAccountingBrokerAdapterDisabledWiringLib
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(ShellAccountingBrokerAdapterDisabledWiringLib
+    PUBLIC
+        ETFDecisionTerminal::DataServiceApi
+        ShellAccountingBrokerOrderImplementationLib
+        Qt6::Core
+)
+
+target_compile_features(ShellAccountingBrokerAdapterDisabledWiringLib PUBLIC cxx_std_17)
+
+function(add_shell_accounting_broker_adapter_disabled_wiring_test target_name source_name ctest_name)
+    add_executable(${target_name} ${source_name})
+    target_link_libraries(${target_name}
+        PRIVATE
+            ShellAccountingBrokerAdapterDisabledWiringLib
+    )
+    target_compile_features(${target_name} PRIVATE cxx_std_17)
+    add_test(
+        NAME ${ctest_name}
+        COMMAND
+            ${target_name}
+            --source-root ${PROJECT_SOURCE_DIR}
+            --migration ${PROJECT_SOURCE_DIR}/migrations/001_initial_schema.sql
+    )
+    set_tests_properties(${ctest_name} PROPERTIES
+        ENVIRONMENT_MODIFICATION
+            "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>"
+    )
+endfunction()
+
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADWiringTests test_shell_accounting_broker_adapter_disabled_wiring.cpp shell_accounting_broker_adapter_disabled_wiring)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADDefaultTests test_shell_accounting_broker_adapter_disabled_default.cpp shell_accounting_broker_adapter_disabled_default)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADBoundaryTests test_shell_accounting_broker_adapter_disabled_dataservice_boundary.cpp shell_accounting_broker_adapter_disabled_dataservice_boundary)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADDryRunTests test_shell_accounting_broker_adapter_disabled_preserves_dry_run_behavior.cpp shell_accounting_broker_adapter_disabled_preserves_dry_run_behavior)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADFakeTests test_shell_accounting_broker_adapter_disabled_fake_test_only.cpp shell_accounting_broker_adapter_disabled_fake_test_only)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoSdkTests test_shell_accounting_broker_adapter_disabled_no_sdk.cpp shell_accounting_broker_adapter_disabled_no_sdk)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoNetworkTests test_shell_accounting_broker_adapter_disabled_no_network_call.cpp shell_accounting_broker_adapter_disabled_no_network_call)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoCredentialsTests test_shell_accounting_broker_adapter_disabled_no_credentials.cpp shell_accounting_broker_adapter_disabled_no_credentials)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoRealOrderIdTests test_shell_accounting_broker_adapter_disabled_no_real_order_id.cpp shell_accounting_broker_adapter_disabled_no_real_order_id)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoOrderPlacementTests test_shell_accounting_broker_adapter_disabled_no_order_placement.cpp shell_accounting_broker_adapter_disabled_no_order_placement)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoDatabaseWriteTests test_shell_accounting_broker_adapter_disabled_no_database_write.cpp shell_accounting_broker_adapter_disabled_no_database_write)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoQmlTests test_shell_accounting_broker_adapter_disabled_no_qml_exposure.cpp shell_accounting_broker_adapter_disabled_no_qml_exposure)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoPresenterTests test_shell_accounting_broker_adapter_disabled_no_presenter_exposure.cpp shell_accounting_broker_adapter_disabled_no_presenter_exposure)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoStrategyTests test_shell_accounting_broker_adapter_disabled_no_strategy_execution.cpp shell_accounting_broker_adapter_disabled_no_strategy_execution)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADNoAutoTradingTests test_shell_accounting_broker_adapter_disabled_no_auto_trading.cpp shell_accounting_broker_adapter_disabled_no_auto_trading)
+add_shell_accounting_broker_adapter_disabled_wiring_test(SABADRollbackTests test_shell_accounting_broker_adapter_disabled_rollback_policy.cpp shell_accounting_broker_adapter_disabled_rollback_policy)

@@ -265,6 +265,9 @@ def main() -> int:
     shell_accounting_broker_adapter_implementation_test_plan_path = (
         root / "docs" / "116_shell_accounting_broker_adapter_implementation_test_plan.md"
     )
+    shell_accounting_broker_adapter_disabled_wiring_path = (
+        root / "docs" / "117_shell_accounting_broker_adapter_disabled_wiring.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -375,6 +378,9 @@ def main() -> int:
     )
     shell_accounting_broker_adapter_implementation_gate_cmake_path = (
         root / "tests" / "ShellAccountingBrokerAdapterImplementationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_adapter_disabled_wiring_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerAdapterDisabledWiring" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1485,6 +1491,9 @@ def main() -> int:
     shell_accounting_broker_adapter_implementation_test_plan = (
         shell_accounting_broker_adapter_implementation_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_adapter_disabled_wiring = (
+        shell_accounting_broker_adapter_disabled_wiring_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1589,6 +1598,9 @@ def main() -> int:
     )
     shell_accounting_broker_adapter_implementation_gate_cmake = (
         shell_accounting_broker_adapter_implementation_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_adapter_disabled_wiring_cmake = (
+        shell_accounting_broker_adapter_disabled_wiring_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -7034,6 +7046,10 @@ def main() -> int:
         "docs/116 broker adapter implementation test plan exists",
     )
     require(
+        shell_accounting_broker_adapter_disabled_wiring_path.exists(),
+        "docs/117 broker adapter disabled wiring exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
@@ -7072,6 +7088,10 @@ def main() -> int:
     require(
         "docs/116_shell_accounting_broker_adapter_implementation_test_plan.md" in readme,
         "README links docs/116",
+    )
+    require(
+        "docs/117_shell_accounting_broker_adapter_disabled_wiring.md" in readme,
+        "README links docs/117",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7124,6 +7144,10 @@ def main() -> int:
     require(
         "116_shell_accounting_broker_adapter_implementation_test_plan.md" in docs_index,
         "docs/README links docs/116",
+    )
+    require(
+        "117_shell_accounting_broker_adapter_disabled_wiring.md" in docs_index,
+        "docs/README links docs/117",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -7196,10 +7220,22 @@ def main() -> int:
     require("Reconciliation Handoff Policy" in shell_accounting_broker_adapter_implementation_gate, "docs/115 documents reconciliation handoff")
     require("Cancellation / Correction Handoff Policy" in shell_accounting_broker_adapter_implementation_gate, "docs/115 documents cancellation handoff")
     require("Rollback / Kill Switch / Incident Containment Policy" in shell_accounting_broker_adapter_implementation_gate, "docs/115 documents rollback policy")
-    require("No Adapter Implementation Yet" in shell_accounting_broker_adapter_implementation_test_plan, "docs/116 checks no adapter implementation")
+    require("Disabled/Null Adapter Wiring Only" in shell_accounting_broker_adapter_implementation_test_plan, "docs/116 checks disabled/null adapter wiring only")
     require("No Broker SDK" in shell_accounting_broker_adapter_implementation_test_plan, "docs/116 checks no broker SDK")
     require("No Network Call" in shell_accounting_broker_adapter_implementation_test_plan, "docs/116 checks no network call")
     require("No Credentials" in shell_accounting_broker_adapter_implementation_test_plan, "docs/116 checks no credentials")
+    require("TASK-159" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 mentions TASK-159")
+    require("TASK-159" in codex_prompt_template, "docs/12 mentions TASK-159")
+    require("disabled/null broker adapter wiring" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents disabled wiring")
+    require("Default Disabled Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents default disabled")
+    require("DataService-Only Wiring Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents DataService-only wiring")
+    require("No Broker SDK Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents no SDK")
+    require("No Network Call Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents no network")
+    require("No Credentials Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents no credentials")
+    require("No Real Order ID Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents no real order id")
+    require("No Real Order Placement Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents no real order placement")
+    require("Fake Adapter Test-Only Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents fake test-only")
+    require("Dry-Run Compatibility Policy" in shell_accounting_broker_adapter_disabled_wiring, "docs/117 documents dry-run compatibility")
     require("TASK-153" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-153")
     require(
         "TASK-153" in shell_accounting_production_trading_ui_authorization_test_plan,
@@ -7388,6 +7424,28 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_adapter_implementation_gate_cmake,
             f"TASK-158 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_adapter_disabled_wiring",
+        "shell_accounting_broker_adapter_disabled_default",
+        "shell_accounting_broker_adapter_disabled_dataservice_boundary",
+        "shell_accounting_broker_adapter_disabled_preserves_dry_run_behavior",
+        "shell_accounting_broker_adapter_disabled_fake_test_only",
+        "shell_accounting_broker_adapter_disabled_no_sdk",
+        "shell_accounting_broker_adapter_disabled_no_network_call",
+        "shell_accounting_broker_adapter_disabled_no_credentials",
+        "shell_accounting_broker_adapter_disabled_no_real_order_id",
+        "shell_accounting_broker_adapter_disabled_no_order_placement",
+        "shell_accounting_broker_adapter_disabled_no_database_write",
+        "shell_accounting_broker_adapter_disabled_no_qml_exposure",
+        "shell_accounting_broker_adapter_disabled_no_presenter_exposure",
+        "shell_accounting_broker_adapter_disabled_no_strategy_execution",
+        "shell_accounting_broker_adapter_disabled_no_auto_trading",
+        "shell_accounting_broker_adapter_disabled_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_adapter_disabled_wiring_cmake,
+            f"TASK-159 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

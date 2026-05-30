@@ -421,6 +421,12 @@
   defines TASK-158 static probes for no adapter implementation yet, no SDK, no
   network call, no credentials, no QML / Presenter direct broker access, no
   real order id, reconciliation/cancellation handoff, and regression coverage.
+- ShellAccounting broker adapter disabled wiring:
+  [117_shell_accounting_broker_adapter_disabled_wiring.md](117_shell_accounting_broker_adapter_disabled_wiring.md)
+  records TASK-159 DataService-internal default wiring for the disabled/null
+  broker port, while preserving dry-run behavior and keeping fake adapters
+  test-only with no SDK, no network, no credentials, no real order id, and no
+  real placement.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

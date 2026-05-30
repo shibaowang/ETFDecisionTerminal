@@ -329,6 +329,13 @@
   [94_shell_accounting_snapshot_write_implementation.md](94_shell_accounting_snapshot_write_implementation.md)
   records TASK-144 DataService-internal snapshot write to the allowlist tables
   `cash_snapshot`, `position_snapshot`, and `portfolio_summary`.
+- ShellAccounting audit write authorization gate:
+  [95_shell_accounting_audit_write_authorization_gate.md](95_shell_accounting_audit_write_authorization_gate.md)
+  defines the TASK-145 future audit write authorization boundary.
+- ShellAccounting audit write authorization test plan:
+  [96_shell_accounting_audit_write_authorization_test_plan.md](96_shell_accounting_audit_write_authorization_test_plan.md)
+  defines the TASK-145 future sanitized, DataService-only, no-trade,
+  rollback-ready audit write test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

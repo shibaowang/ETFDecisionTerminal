@@ -199,6 +199,12 @@ def main() -> int:
     shell_accounting_snapshot_write_implementation_path = (
         root / "docs" / "94_shell_accounting_snapshot_write_implementation.md"
     )
+    shell_accounting_audit_write_authorization_gate_path = (
+        root / "docs" / "95_shell_accounting_audit_write_authorization_gate.md"
+    )
+    shell_accounting_audit_write_authorization_test_plan_path = (
+        root / "docs" / "96_shell_accounting_audit_write_authorization_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -267,6 +273,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_write_implementation_cmake_path = (
         root / "tests" / "ShellAccountingSnapshotWriteImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_audit_write_authorization_gate_cmake_path = (
+        root / "tests" / "ShellAccountingAuditWriteAuthorizationGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1311,6 +1320,12 @@ def main() -> int:
     shell_accounting_snapshot_write_implementation = (
         shell_accounting_snapshot_write_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_audit_write_authorization_gate = (
+        shell_accounting_audit_write_authorization_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_audit_write_authorization_test_plan = (
+        shell_accounting_audit_write_authorization_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1373,6 +1388,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_write_implementation_cmake = (
         shell_accounting_snapshot_write_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_audit_write_authorization_gate_cmake = (
+        shell_accounting_audit_write_authorization_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6217,6 +6235,122 @@ def main() -> int:
         "TASK-144" in readme
         and "TASK-144" in docs_index,
         "README and docs index mention TASK-144",
+    )
+
+    require(
+        shell_accounting_audit_write_authorization_gate_path.exists(),
+        "docs/95 audit write authorization gate exists",
+    )
+    require(
+        shell_accounting_audit_write_authorization_test_plan_path.exists(),
+        "docs/96 audit write authorization test plan exists",
+    )
+    require(
+        "docs/95_shell_accounting_audit_write_authorization_gate.md" in readme,
+        "README links docs/95",
+    )
+    require(
+        "docs/96_shell_accounting_audit_write_authorization_test_plan.md" in readme,
+        "README links docs/96",
+    )
+    require(
+        "95_shell_accounting_audit_write_authorization_gate.md" in docs_index,
+        "docs/README links docs/95",
+    )
+    require(
+        "96_shell_accounting_audit_write_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/96",
+    )
+    require("TASK-145" in shell_accounting_audit_write_authorization_gate, "docs/95 mentions TASK-145")
+    require("TASK-145" in shell_accounting_audit_write_authorization_test_plan, "docs/96 mentions TASK-145")
+    require("TASK-145" in codex_prompt_template, "docs/12 mentions TASK-145")
+    require("TASK-145" in shell_accounting_snapshot_write_authorization_gate, "docs/92 mentions TASK-145")
+    require("TASK-145" in shell_accounting_snapshot_write_authorization_test_plan, "docs/93 mentions TASK-145")
+    require("TASK-145" in shell_accounting_snapshot_write_implementation, "docs/94 mentions TASK-145")
+    require(
+        "audit write implementation must be a separate TASK" in shell_accounting_audit_write_authorization_gate,
+        "docs/95 keeps audit implementation separate",
+    )
+    require(
+        "DataService boundary" in shell_accounting_audit_write_authorization_gate,
+        "docs/95 records DataService audit boundary",
+    )
+    require(
+        "authorized DataService write action result" in shell_accounting_audit_write_authorization_gate,
+        "docs/95 records authorized write result input",
+    )
+    require(
+        "no raw SQL" in shell_accounting_audit_write_authorization_gate
+        and "no raw trade_log payload" in shell_accounting_audit_write_authorization_gate
+        and "no full snapshot payload" in shell_accounting_audit_write_authorization_gate
+        and "no internal stack trace" in shell_accounting_audit_write_authorization_gate,
+        "docs/95 records sanitized payload boundaries",
+    )
+    require(
+        "Test Matrix" in shell_accounting_audit_write_authorization_test_plan,
+        "docs/96 contains Test Matrix",
+    )
+    for ctest_name in [
+        "shell_accounting_audit_write_authorization_gate",
+        "shell_accounting_audit_write_authorization_no_audit_write_yet",
+        "shell_accounting_audit_write_authorization_dataservice_only_policy",
+        "shell_accounting_audit_write_authorization_snapshot_write_input_policy",
+        "shell_accounting_audit_write_authorization_payload_policy",
+        "shell_accounting_audit_write_authorization_forbidden_payload_policy",
+        "shell_accounting_audit_write_authorization_no_ui_triggered_audit",
+        "shell_accounting_audit_write_authorization_no_trade_or_strategy",
+        "shell_accounting_audit_write_authorization_error_mapping_policy",
+        "shell_accounting_audit_write_authorization_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_audit_write_authorization_gate_cmake,
+            f"TASK-145 tests include {ctest_name}",
+        )
+    snapshot_write_action_begin = data_service_actions_source.find(
+        "handleAccountingSnapshotWrite"
+    )
+    snapshot_write_action_end = data_service_actions_source.find(
+        "handlePositionList", snapshot_write_action_begin
+    )
+    require(
+        snapshot_write_action_begin >= 0 and snapshot_write_action_end > snapshot_write_action_begin,
+        "TASK-145 can isolate snapshot write action region",
+    )
+    snapshot_write_action_region = data_service_actions_source[
+        snapshot_write_action_begin:snapshot_write_action_end
+    ]
+    for forbidden_audit_token in [
+        "INSERT INTO audit_log",
+        "data.audit.append",
+        "accounting.audit.write",
+        "AuditLogRepository",
+        "ShellAccountingAuditWriteRepository",
+        "handleShellAccountingAuditWrite",
+    ]:
+        require(
+            forbidden_audit_token not in snapshot_write_action_region
+            and forbidden_audit_token not in snapshot_write_repository_source,
+            f"TASK-145 proves TASK-144 snapshot write has no {forbidden_audit_token}",
+        )
+    require(
+        "accounting.audit.write" not in qml_sources
+        and "data.audit.append" not in qml_sources
+        and "ShellAccountingAuditWriteRepository" not in qml_sources,
+        "production QML does not trigger audit write",
+    )
+    production_startup_source = (root / "apps" / "ETFDecisionShell" / "src" / "main.cpp").read_text(
+        encoding="utf-8"
+    )
+    require(
+        "accounting.audit.write" not in production_startup_source
+        and "data.audit.append" not in production_startup_source
+        and "ShellAccountingAuditWriteRepository" not in production_startup_source,
+        "production startup does not trigger audit write",
+    )
+    require(
+        "TASK-145" in readme
+        and "TASK-145" in docs_index,
+        "README and docs index mention TASK-145",
     )
 
     require(

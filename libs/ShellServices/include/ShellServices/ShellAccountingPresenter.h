@@ -6,6 +6,7 @@
 #include "ShellServices/ShellPositionListModel.h"
 
 #include <QObject>
+#include <QString>
 
 #include <memory>
 
@@ -15,6 +16,12 @@ class ShellAccountingPresenter final : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool readOnly READ readOnly)
     Q_PROPERTY(bool writeEnabled READ writeEnabled)
+    Q_PROPERTY(bool productionTradingUiEnabled READ productionTradingUiEnabled NOTIFY tradingUiStateChanged)
+    Q_PROPERTY(QString tradingUiStatus READ tradingUiStatus NOTIFY tradingUiStateChanged)
+    Q_PROPERTY(QString tradingUiIssue READ tradingUiIssue NOTIFY tradingUiStateChanged)
+    Q_PROPERTY(QString draftId READ draftId NOTIFY tradingUiStateChanged)
+    Q_PROPERTY(QString draftUid READ draftUid NOTIFY tradingUiStateChanged)
+    Q_PROPERTY(QString ledgerStatus READ ledgerStatus NOTIFY tradingUiStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -25,6 +32,12 @@ public:
     [[nodiscard]] bool tradeSuggestionEnabled() const noexcept;
     [[nodiscard]] bool strategyExecutionEnabled() const noexcept;
     [[nodiscard]] bool brokerSubmissionEnabled() const noexcept;
+    [[nodiscard]] bool productionTradingUiEnabled() const noexcept;
+    [[nodiscard]] QString tradingUiStatus() const;
+    [[nodiscard]] QString tradingUiIssue() const;
+    [[nodiscard]] QString draftId() const;
+    [[nodiscard]] QString draftUid() const;
+    [[nodiscard]] QString ledgerStatus() const;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -47,7 +60,20 @@ public:
     void refreshBasePositionSummary();
     void refreshSniperPoolSummary();
     void refreshAllReadOnly();
+    Q_INVOKABLE bool createDraft(
+        const QString& accountId,
+        const QString& portfolioId,
+        const QString& instrumentId,
+        const QString& instrumentCode,
+        const QString& side,
+        const QString& quantity,
+        const QString& reason);
+    Q_INVOKABLE bool confirmDraft();
+    Q_INVOKABLE void resetTradingUi();
     void reset();
+
+signals:
+    void tradingUiStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -59,12 +85,29 @@ private:
         const std::string& actionName,
         ShellAccountingViewState state,
         std::vector<ShellAccountingIssue> issues);
+    void applyTradingResult(const ShellAccountingServiceResult& result, bool confirming);
+    [[nodiscard]] ShellAccountingServiceRequest makeDraftCreateRequest(
+        const QString& accountId,
+        const QString& portfolioId,
+        const QString& instrumentId,
+        const QString& instrumentCode,
+        const QString& side,
+        const QString& quantity,
+        const QString& reason,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeDraftConfirmRequest(bool& valid) const;
 
     ShellAccountingStatusObject status_;
     ShellAccountingIssueListModel issues_;
     ShellPositionListModel positions_;
     std::shared_ptr<ShellAccountingReadOnlyController> controller_;
     bool privacyMode_ = false;
+    QString tradingUiStatus_ = QStringLiteral("READY");
+    QString tradingUiIssue_;
+    QString draftId_;
+    QString draftUid_;
+    QString ledgerStatus_ = QStringLiteral("NOT_CONFIRMED");
+    ShellAccountingServiceRequest lastDraftRequest_;
 };
 
 }  // namespace etfdt::shell_services

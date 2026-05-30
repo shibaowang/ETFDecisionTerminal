@@ -162,13 +162,23 @@ not confirm trades.
 
 TradeDraft confirmation, trade execution, trade_log writes,
 trade_execution_group writes, broker order, strategy-generated recommendation,
-production trading UI, and schema migration all require separate future TASK
-authorization.
+and schema migration all require separate future TASK authorization. TASK-152
+separately authorizes only the production Draft UI surface.
 
 ## TASK-149 Confirmation Gate Status
 
 TASK-149 adds the TradeDraft confirmation / TradeLog write authorization gate.
 TASK-148 TradeDraft creation behavior is unchanged. Confirmation,
 `trade_log` write, `trade_execution_group` write, broker order, strategy
-execution, automatic trading, production trading UI, and schema migration
-remain unimplemented and unauthorized.
+execution, automatic trading, and schema migration remain unimplemented and
+unauthorized.
+
+## TASK-152 Production Trading UI Implementation
+
+TASK-152 exposes the authorized production UI for Draft creation and
+confirmation through the ShellAccounting presenter/controller/adapter/DataService
+boundary. This does not change TradeDraft backend semantics:
+`accounting.tradedraft.create` remains draft-only with
+`TASK-148_TRADEDRAFT_WRITE`, and broker order placement, StrategyEngine
+execution, automatic trading, direct QML database writes, and schema changes
+remain unauthorized.

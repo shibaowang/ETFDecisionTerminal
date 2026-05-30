@@ -160,8 +160,6 @@ std::vector<std::string> uiConfirmationTriggerTokens()
 {
     return {
         "confirmTradeDraft",
-        "accounting.tradedraft.confirm",
-        "confirm draft button",
         "execute trade button",
         "buy button",
         "sell button",

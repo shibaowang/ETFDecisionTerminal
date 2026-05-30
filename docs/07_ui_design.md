@@ -633,3 +633,14 @@ and confirmation as separate user-visible steps, preserve explicit
 authorization tokens, show draft-only versus confirmed-ledger state clearly, and
 avoid broker order placement, strategy execution, automatic trading, direct QML
 database writes, and silent success.
+
+## TASK-152 Production Trading UI Implementation
+
+TASK-152 adds the minimal ShellAccounting production QML Draft workflow. The UI
+can create a Draft, show Draft-only review state, and confirm it only after a
+separate user review checkbox. QML still does not call DataServiceClient,
+SQLite, DataAccess, broker/order APIs, or StrategyEngine directly.
+
+The UI shows service errors, disabled state, and transport unavailable state
+instead of silent success. It remains a Draft / Ledger workflow, not broker
+order placement, strategy execution, automatic trading, or schema change.

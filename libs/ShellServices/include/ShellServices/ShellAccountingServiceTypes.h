@@ -2,6 +2,7 @@
 
 #include "ShellServices/ShellAccountingIssue.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,22 @@ struct ShellAccountingServiceRequest final {
     std::string calculationVersion;
     std::vector<std::string> requestedOutputs;
     int timeoutMs = 0;
+    std::string strategyId;
+    std::string strategyCode;
+    std::string instrumentId;
+    std::string instrumentCode;
+    std::string side;
+    std::int64_t quantity1e6 = 0;
+    std::string reason;
+    std::string source;
+    std::string sourceSnapshotId;
+    std::string sourceReplayId;
+    std::int64_t draftId = 0;
+    std::string authorization;
+    bool riskChecked = true;
+    bool riskBlocked = false;
+    bool tradeDraftDisabled = false;
+    bool confirmationDisabled = false;
 };
 
 struct ShellAccountingServiceResult final {

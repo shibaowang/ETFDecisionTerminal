@@ -4,5 +4,9 @@ using namespace etfdt::tests::shell_accounting_production_trading_ui_authorizati
 
 int main(int argc, char** argv)
 {
-    return containsAnyToken(productionQmlText(sourceRoot(argc, argv)), productionTradingUiTokens()) ? 1 : 0;
+    const auto qml = productionQmlText(sourceRoot(argc, argv));
+    return containsAllTokens(qml, authorizedTradingUiTokens()) &&
+            !containsAnyToken(qml, forbiddenTradingUiTokens())
+        ? 0
+        : 1;
 }

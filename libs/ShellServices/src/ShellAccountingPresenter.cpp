@@ -1,5 +1,11 @@
 #include "ShellServices/ShellAccountingPresenter.h"
 
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+
+#include <cmath>
 #include <string>
 #include <utility>
 #include <vector>
@@ -124,6 +130,42 @@ void appendIssues(
     target.insert(target.end(), source.begin(), source.end());
 }
 
+QString issueTextFromResult(const ShellAccountingServiceResult& result)
+{
+    if (!result.errors.empty()) {
+        return QString::fromStdString(result.errors.front().message);
+    }
+    if (!result.issues.empty()) {
+        return QString::fromStdString(result.issues.front().message);
+    }
+    if (!result.warnings.empty()) {
+        return QString::fromStdString(result.warnings.front().message);
+    }
+    if (!result.payloadStatus.empty() && result.payloadStatus != "OK") {
+        return QString::fromStdString(result.payloadStatus);
+    }
+    return {};
+}
+
+QJsonObject payloadObject(const ShellAccountingServiceResult& result)
+{
+    const auto document =
+        QJsonDocument::fromJson(QByteArray::fromStdString(result.rawPayload));
+    return document.isObject() ? document.object() : QJsonObject {};
+}
+
+QString stringField(const QJsonObject& object, const char* name)
+{
+    const auto value = object.value(QString::fromUtf8(name));
+    if (value.isString()) {
+        return value.toString();
+    }
+    if (value.isDouble()) {
+        return QString::number(static_cast<qint64>(value.toDouble()));
+    }
+    return {};
+}
+
 }  // namespace
 
 ShellAccountingPresenter::ShellAccountingPresenter(QObject* parent)
@@ -159,6 +201,36 @@ bool ShellAccountingPresenter::strategyExecutionEnabled() const noexcept
 bool ShellAccountingPresenter::brokerSubmissionEnabled() const noexcept
 {
     return false;
+}
+
+bool ShellAccountingPresenter::productionTradingUiEnabled() const noexcept
+{
+    return true;
+}
+
+QString ShellAccountingPresenter::tradingUiStatus() const
+{
+    return tradingUiStatus_;
+}
+
+QString ShellAccountingPresenter::tradingUiIssue() const
+{
+    return tradingUiIssue_;
+}
+
+QString ShellAccountingPresenter::draftId() const
+{
+    return draftId_;
+}
+
+QString ShellAccountingPresenter::draftUid() const
+{
+    return draftUid_;
+}
+
+QString ShellAccountingPresenter::ledgerStatus() const
+{
+    return ledgerStatus_;
 }
 
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
@@ -306,6 +378,82 @@ void ShellAccountingPresenter::refreshAllReadOnly()
     applyControllerState("accounting.refresh_all", aggregateState, std::move(aggregateIssues));
 }
 
+bool ShellAccountingPresenter::createDraft(
+    const QString& accountId,
+    const QString& portfolioId,
+    const QString& instrumentId,
+    const QString& instrumentCode,
+    const QString& side,
+    const QString& quantity,
+    const QString& reason)
+{
+    if (!controller_) {
+        tradingUiStatus_ = QStringLiteral("ERROR");
+        tradingUiIssue_ = QStringLiteral("Shell accounting controller is not configured.");
+        emit tradingUiStateChanged();
+        markControllerNotConfigured("accounting.tradedraft.create");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeDraftCreateRequest(
+        accountId,
+        portfolioId,
+        instrumentId,
+        instrumentCode,
+        side,
+        quantity,
+        reason,
+        valid);
+    if (!valid) {
+        emit tradingUiStateChanged();
+        return false;
+    }
+
+    const auto result = controller_->createDraft(request);
+    applyTradingResult(result, false);
+    syncFromController();
+    return tradingUiStatus_ == QStringLiteral("DRAFT_ONLY")
+        || tradingUiStatus_ == QStringLiteral("DRAFT_DUPLICATE");
+}
+
+bool ShellAccountingPresenter::confirmDraft()
+{
+    if (!controller_) {
+        tradingUiStatus_ = QStringLiteral("ERROR");
+        tradingUiIssue_ = QStringLiteral("Shell accounting controller is not configured.");
+        emit tradingUiStateChanged();
+        markControllerNotConfigured("accounting.tradedraft.confirm");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeDraftConfirmRequest(valid);
+    if (!valid) {
+        tradingUiStatus_ = QStringLiteral("INPUT_ERROR");
+        tradingUiIssue_ = QStringLiteral("Create and review a draft before confirmation.");
+        emit tradingUiStateChanged();
+        return false;
+    }
+
+    const auto result = controller_->confirmDraft(request);
+    applyTradingResult(result, true);
+    syncFromController();
+    return tradingUiStatus_ == QStringLiteral("CONFIRMED_LEDGER")
+        || tradingUiStatus_ == QStringLiteral("CONFIRM_DUPLICATE");
+}
+
+void ShellAccountingPresenter::resetTradingUi()
+{
+    tradingUiStatus_ = QStringLiteral("READY");
+    tradingUiIssue_.clear();
+    draftId_.clear();
+    draftUid_.clear();
+    ledgerStatus_ = QStringLiteral("NOT_CONFIRMED");
+    lastDraftRequest_ = {};
+    emit tradingUiStateChanged();
+}
+
 void ShellAccountingPresenter::reset()
 {
     controller_.reset();
@@ -314,6 +462,7 @@ void ShellAccountingPresenter::reset()
     issues_.clearIssues();
     positions_.clearRows();
     positions_.setPrivacyMode(false);
+    resetTradingUi();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -351,6 +500,117 @@ void ShellAccountingPresenter::applyControllerState(
     status_.applyStateSnapshot(
         snapshotFromControllerState(actionName, state, std::move(issues)));
     issues_.setIssues(std::move(issueRows));
+}
+
+void ShellAccountingPresenter::applyTradingResult(
+    const ShellAccountingServiceResult& result,
+    bool confirming)
+{
+    const auto payload = payloadObject(result);
+    const auto status = stringField(payload, "status");
+    const bool ok = result.protocolSuccess && result.implemented
+        && (status == QStringLiteral("OK") || status == QStringLiteral("DUPLICATE"));
+
+    if (!ok) {
+        tradingUiStatus_ = QStringLiteral("ERROR");
+        tradingUiIssue_ = issueTextFromResult(result);
+        if (tradingUiIssue_.isEmpty()) {
+            tradingUiIssue_ = confirming
+                ? QStringLiteral("Draft confirmation failed.")
+                : QStringLiteral("Draft creation failed.");
+        }
+        emit tradingUiStateChanged();
+        return;
+    }
+
+    tradingUiIssue_.clear();
+    if (confirming) {
+        ledgerStatus_ = QStringLiteral("CONFIRMED_LEDGER");
+        tradingUiStatus_ = status == QStringLiteral("DUPLICATE")
+            ? QStringLiteral("CONFIRM_DUPLICATE")
+            : QStringLiteral("CONFIRMED_LEDGER");
+    } else {
+        draftId_ = stringField(payload, "draftId");
+        draftUid_ = stringField(payload, "draftUid");
+        ledgerStatus_ = QStringLiteral("NOT_CONFIRMED");
+        tradingUiStatus_ = status == QStringLiteral("DUPLICATE")
+            ? QStringLiteral("DRAFT_DUPLICATE")
+            : QStringLiteral("DRAFT_ONLY");
+    }
+    emit tradingUiStateChanged();
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeDraftCreateRequest(
+    const QString& accountId,
+    const QString& portfolioId,
+    const QString& instrumentId,
+    const QString& instrumentCode,
+    const QString& side,
+    const QString& quantity,
+    const QString& reason,
+    bool& valid)
+{
+    valid = false;
+    tradingUiIssue_.clear();
+
+    const auto normalizedSide = side.trimmed().toUpper();
+    bool quantityOk = false;
+    const auto quantityValue = quantity.trimmed().toDouble(&quantityOk);
+    if (accountId.trimmed().isEmpty() || portfolioId.trimmed().isEmpty()
+        || instrumentId.trimmed().isEmpty() || instrumentCode.trimmed().isEmpty()
+        || reason.trimmed().isEmpty()) {
+        tradingUiStatus_ = QStringLiteral("INPUT_ERROR");
+        tradingUiIssue_ = QStringLiteral("Account, portfolio, instrument, quantity, and reason are required.");
+        return {};
+    }
+    if (normalizedSide != QStringLiteral("BUY") && normalizedSide != QStringLiteral("SELL")) {
+        tradingUiStatus_ = QStringLiteral("INPUT_ERROR");
+        tradingUiIssue_ = QStringLiteral("Side must be BUY or SELL.");
+        return {};
+    }
+    if (!quantityOk || quantityValue <= 0.0) {
+        tradingUiStatus_ = QStringLiteral("INPUT_ERROR");
+        tradingUiIssue_ = QStringLiteral("Quantity must be greater than zero.");
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.tradedraft.create";
+    request.accountId = accountId.trimmed().toStdString();
+    request.portfolioId = portfolioId.trimmed().toStdString();
+    request.strategyId = QStringLiteral("1001").toStdString();
+    request.strategyCode = QStringLiteral("TASK139").toStdString();
+    request.instrumentId = instrumentId.trimmed().toStdString();
+    request.instrumentCode = instrumentCode.trimmed().toStdString();
+    request.side = normalizedSide.toStdString();
+    request.quantity1e6 = static_cast<std::int64_t>(std::llround(quantityValue * 1000000.0));
+    request.reason = reason.trimmed().toStdString();
+    request.source = "snapshotRebuildPreview";
+    request.sourceSnapshotId = "task-144-snapshot-1001-1001-CNY";
+    request.authorization = "TASK-148_TRADEDRAFT_WRITE";
+    request.riskChecked = true;
+    request.riskBlocked = false;
+    request.timeoutMs = 2000;
+    lastDraftRequest_ = request;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeDraftConfirmRequest(bool& valid) const
+{
+    valid = false;
+    ShellAccountingServiceRequest request = lastDraftRequest_;
+    request.actionName = "accounting.tradedraft.confirm";
+    request.source = "existingTradeDraft";
+    request.authorization = "TASK-150_TRADEDRAFT_CONFIRM";
+    request.timeoutMs = 2000;
+    bool draftIdOk = false;
+    request.draftId = draftId_.toLongLong(&draftIdOk);
+    if (!draftIdOk || request.draftId <= 0) {
+        return request;
+    }
+    valid = true;
+    return request;
 }
 
 }  // namespace etfdt::shell_services

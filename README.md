@@ -2634,3 +2634,15 @@ user confirmation, and keep the read-only accounting page as rollback fallback.
 See
 `docs/104_shell_accounting_production_trading_ui_authorization_gate.md` and
 `docs/105_shell_accounting_production_trading_ui_authorization_test_plan.md`.
+
+## TASK-152 Production Trading UI Implementation
+
+ShellAccounting now exposes a minimal production QML Draft workflow. The UI
+can request Draft creation and explicit Draft confirmation only through the
+Presenter / Controller / Adapter / DataService boundary, preserving
+`TASK-148_TRADEDRAFT_WRITE` and `TASK-150_TRADEDRAFT_CONFIRM` backend
+authorization. It displays Draft-only, confirmed-ledger, disabled, transport,
+and error states without silent success. QML does not call DataServiceClient,
+SQLite, DataAccess, broker/order APIs, or StrategyEngine directly, and schema
+remains unchanged. See
+`docs/106_shell_accounting_production_trading_ui_implementation.md`.

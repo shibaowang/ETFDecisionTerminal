@@ -129,4 +129,13 @@ TASK-150 adds `tests/ShellAccountingTradeDraftConfirmationImplementation/` and v
 
 ## Future Work
 
-broker order / strategy execution / trading UI remain unauthorized. Broker order, strategy execution, automatic trading, and production trading UI require separate TASKs.
+broker order / strategy execution remain unauthorized. Broker order,
+strategy execution, and automatic trading require separate TASKs.
+
+## TASK-152 Production Trading UI Implementation
+
+TASK-152 implements the authorized production Draft UI. Confirmation still
+occurs only through `accounting.tradedraft.confirm` with
+`TASK-150_TRADEDRAFT_CONFIRM`; QML only calls the presenter boundary and does
+not directly write `trade_log` / `trade_execution_group`, call broker systems,
+execute StrategyEngine logic, enable automatic trading, or modify schema.

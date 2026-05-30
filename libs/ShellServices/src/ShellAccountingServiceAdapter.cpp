@@ -1,0 +1,51 @@
+#include "ShellServices/ShellAccountingServiceAdapter.h"
+
+namespace etfdt::shell_services {
+
+namespace {
+
+ShellAccountingServiceResult makeUnavailableDraftResult(
+    const ShellAccountingServiceRequest& request,
+    const char* fallbackAction,
+    const char* status)
+{
+    ShellAccountingServiceResult result;
+    result.actionName = request.actionName.empty() ? fallbackAction : request.actionName;
+    result.protocolSuccess = true;
+    result.implemented = false;
+    result.readOnly = false;
+    result.writeEnabled = false;
+    result.payloadStatus = status;
+    result.dataQualityStatus = "UNAVAILABLE";
+    result.domainError = true;
+    result.generatedTradeDraft = false;
+    result.generatedTradeSuggestion = false;
+    result.strategyExecuted = false;
+    result.brokerOrderSubmitted = false;
+    result.issues.push_back(
+        {status, "ERROR", "ShellAccounting draft UI adapter path is not configured.", true,
+         "ShellAccountingServiceAdapter"});
+    return result;
+}
+
+}  // namespace
+
+ShellAccountingServiceResult ShellAccountingServiceAdapter::createDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableDraftResult(
+        request,
+        "accounting.tradedraft.create",
+        "SHELL_ACCOUNTING_CREATE_DRAFT_ADAPTER_NOT_CONFIGURED");
+}
+
+ShellAccountingServiceResult ShellAccountingServiceAdapter::confirmDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableDraftResult(
+        request,
+        "accounting.tradedraft.confirm",
+        "SHELL_ACCOUNTING_CONFIRM_DRAFT_ADAPTER_NOT_CONFIGURED");
+}
+
+}  // namespace etfdt::shell_services

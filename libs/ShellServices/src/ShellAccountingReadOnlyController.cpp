@@ -200,6 +200,52 @@ void ShellAccountingReadOnlyController::refreshSniperPoolSummary(
     applyServiceResult(serviceAdapter_->fetchSniperPoolSummary(request));
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::createDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.tradedraft.create");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.tradedraft.create");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.tradedraft.create";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->createDraft(request);
+    applyServiceResult(result);
+    return result;
+}
+
+ShellAccountingServiceResult ShellAccountingReadOnlyController::confirmDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.tradedraft.confirm");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.tradedraft.confirm");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.tradedraft.confirm";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->confirmDraft(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

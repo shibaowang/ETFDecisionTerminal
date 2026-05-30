@@ -2,30 +2,36 @@
 
 ## Document Purpose
 
-TASK-151 defines the test plan for a future production trading UI implementation. This document does not implement production trading UI, QML TradeDraft bindings, broker order placement, strategy execution, automatic trading, or order submission.
+TASK-151 defines the test plan for production trading UI authorization. TASK-152
+has implemented the authorized production UI binding for Draft creation, Draft
+review, and Draft confirmation. This document still forbids broker order
+placement, strategy execution, automatic trading, direct QML database writes,
+and order submission.
 
 ## Test Matrix
 
-### A. No Production Trading UI Yet
+### A. Authorized Production Trading UI Only
 
-- production QML has no trading page
-- production QML has no trading component
+- production QML has the authorized ShellAccounting Draft section
+- production QML has create draft and confirm draft controls only
 - production QML has no buy button
 - production QML has no sell button
 - production QML has no order button
 - production QML has no confirm trade button
 
-### B. No QML TradeDraft Create Binding Yet
+### B. Authorized QML Draft Create Binding
 
-- no `accounting.tradedraft.create` binding in production QML
-- no `createTradeDraft` binding in production QML
+- QML calls presenter `createDraft`
+- ShellServices maps to `accounting.tradedraft.create`
+- ShellServices keeps `TASK-148_TRADEDRAFT_WRITE`
 - no `TASK-148_TRADEDRAFT_WRITE` token in production QML
 - no direct DataServiceClient draft call from QML
 
-### C. No QML TradeDraft Confirm Binding Yet
+### C. Authorized QML Draft Confirm Binding
 
-- no `accounting.tradedraft.confirm` binding in production QML
-- no `confirmTradeDraft` binding in production QML
+- QML calls presenter `confirmDraft`
+- ShellServices maps to `accounting.tradedraft.confirm`
+- ShellServices keeps `TASK-150_TRADEDRAFT_CONFIRM`
 - no `TASK-150_TRADEDRAFT_CONFIRM` token in production QML
 - no direct DataServiceClient confirmation call from QML
 
@@ -122,6 +128,7 @@ TASK-151 defines the test plan for a future production trading UI implementation
 - [ ] docs/104 merged.
 - [ ] docs/105 merged.
 - [ ] TASK-151 gate passes.
+- [ ] TASK-152 implementation passes.
 - [ ] TASK-150 confirmation tests pass.
 - [ ] full CTest passes.
 - [ ] transport 50 repeat passes.

@@ -47,6 +47,10 @@ public:
         const ShellAccountingDataServiceClientRequest& request) = 0;
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callSniperPoolSummary(
         const ShellAccountingDataServiceClientRequest& request) = 0;
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftCreate(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftConfirm(
+        const ShellAccountingDataServiceClientRequest& request);
 };
 
 }  // namespace etfdt::shell_services

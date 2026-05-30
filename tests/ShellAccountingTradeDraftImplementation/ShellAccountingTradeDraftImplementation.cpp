@@ -140,8 +140,6 @@ std::vector<std::string> strategyTokens()
 std::vector<std::string> shellDraftTriggerTokens()
 {
     return {
-        "accounting.tradedraft.create",
-        "TASK-148_TRADEDRAFT_WRITE",
         "ShellAccountingTradeDraftRepository",
         "createTradeDraft",
         "submitDraft",

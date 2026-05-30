@@ -12,11 +12,20 @@ TASK-119 through TASK-150 are complete. ShellAccounting production QML has a rea
 
 The backend can write the currently authorized tables through DataService-only paths: `cash_snapshot`, `position_snapshot`, `portfolio_summary`, `audit_log`, `trade_draft`, `trade_execution_group`, and `trade_log`.
 
-Production trading UI is still not implemented. QML does not create TradeDraft records, does not confirm TradeDraft records, does not call broker order APIs, does not execute strategy, does not automatically trade, and does not place orders.
+TASK-152 has implemented the authorized production trading UI. QML can request
+Draft creation and Draft confirmation only through the ShellAccounting
+presenter/controller/adapter/DataService boundary. QML still does not call
+DataServiceClient directly, does not write SQLite or DataAccess directly, does
+not call broker order APIs, does not execute strategy, does not automatically
+trade, and does not place orders.
 
 ## Future Production Trading UI Boundary
 
 Future production trading UI implementation must be a separate explicitly authorized TASK. The UI may only expose narrowly scoped TradeDraft creation / review / confirmation flows through the existing presenter/controller/adapter/DataService boundary. It must not write SQLite directly, bypass TradeDraft, bypass confirmation authorization, or transform raw UI payload into `trade_log` ledger facts.
+
+TASK-152 is the authorized implementation of that future UI boundary. Any
+additional UI expansion beyond Draft creation, review, and confirmation still
+requires a separate explicitly authorized TASK.
 
 Trading UI is not broker order placement. Trading UI is not automatic trading. Trading UI is not strategy execution. Trading UI is a guarded human workflow around draft creation, draft review, and explicit confirmation.
 

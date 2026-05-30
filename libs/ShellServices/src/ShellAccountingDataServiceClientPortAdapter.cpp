@@ -290,4 +290,38 @@ ShellAccountingDataServiceClientPortAdapter::callSniperPoolSummary(
     return mapClientResult(request, client_->sniperPoolSummary(request.payloadJson, request.timeoutMs));
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callTradeDraftCreate(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting port.",
+            true,
+            false);
+    }
+    return mapClientResult(
+        request,
+        client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callTradeDraftConfirm(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting port.",
+            true,
+            false);
+    }
+    return mapClientResult(
+        request,
+        client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
+}
+
 }  // namespace etfdt::shell_services

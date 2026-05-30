@@ -18,6 +18,10 @@ public:
         const ShellAccountingServiceRequest& request) = 0;
     virtual ShellAccountingServiceResult fetchSniperPoolSummary(
         const ShellAccountingServiceRequest& request) = 0;
+    virtual ShellAccountingServiceResult createDraft(
+        const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult confirmDraft(
+        const ShellAccountingServiceRequest& request);
 };
 
 }  // namespace etfdt::shell_services

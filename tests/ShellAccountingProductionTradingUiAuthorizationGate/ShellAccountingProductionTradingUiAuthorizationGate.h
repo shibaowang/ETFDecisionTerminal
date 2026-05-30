@@ -18,9 +18,10 @@ namespace etfdt::tests::shell_accounting_production_trading_ui_authorization_gat
 [[nodiscard]] std::string docs105Text(const std::filesystem::path& root);
 [[nodiscard]] bool containsAnyToken(const std::string& text, const std::vector<std::string>& tokens);
 [[nodiscard]] bool containsAllTokens(const std::string& text, const std::vector<std::string>& tokens);
-[[nodiscard]] std::vector<std::string> productionTradingUiTokens();
-[[nodiscard]] std::vector<std::string> draftCreateBindingTokens();
-[[nodiscard]] std::vector<std::string> draftConfirmBindingTokens();
+[[nodiscard]] std::vector<std::string> authorizedTradingUiTokens();
+[[nodiscard]] std::vector<std::string> forbiddenTradingUiTokens();
+[[nodiscard]] std::vector<std::string> authorizedDraftCreateBindingTokens();
+[[nodiscard]] std::vector<std::string> authorizedDraftConfirmBindingTokens();
 [[nodiscard]] std::vector<std::string> directDbWriteTokens();
 [[nodiscard]] std::vector<std::string> brokerOrStrategyTokens();
 

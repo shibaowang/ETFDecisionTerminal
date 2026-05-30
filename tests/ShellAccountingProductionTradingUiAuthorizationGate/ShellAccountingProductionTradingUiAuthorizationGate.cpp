@@ -118,15 +118,23 @@ bool containsAllTokens(const std::string& text, const std::vector<std::string>& 
     return true;
 }
 
-std::vector<std::string> productionTradingUiTokens()
+std::vector<std::string> authorizedTradingUiTokens()
 {
     return {
-        "accounting.tradedraft.create",
-        "accounting.tradedraft.confirm",
+        "objectName: \"shellAccountingTradingUiSection\"",
+        "objectName: \"shellAccountingCreateDraftButton\"",
+        "objectName: \"shellAccountingConfirmDraftButton\"",
+        "objectName: \"shellAccountingConfirmReviewCheckBox\"",
+        ".createDraft(",
+        ".confirmDraft(",
+    };
+}
+
+std::vector<std::string> forbiddenTradingUiTokens()
+{
+    return {
         "createTradeDraft",
         "confirmTradeDraft",
-        "TASK-148_TRADEDRAFT_WRITE",
-        "TASK-150_TRADEDRAFT_CONFIRM",
         "objectName: \"buyButton\"",
         "objectName: \"sellButton\"",
         "objectName: \"orderButton\"",
@@ -139,25 +147,23 @@ std::vector<std::string> productionTradingUiTokens()
     };
 }
 
-std::vector<std::string> draftCreateBindingTokens()
+std::vector<std::string> authorizedDraftCreateBindingTokens()
 {
     return {
         "accounting.tradedraft.create",
-        "createTradeDraft",
+        "createDraft",
         "TASK-148_TRADEDRAFT_WRITE",
         "callTradeDraftCreate",
-        "requestTradeDraftCreate",
     };
 }
 
-std::vector<std::string> draftConfirmBindingTokens()
+std::vector<std::string> authorizedDraftConfirmBindingTokens()
 {
     return {
         "accounting.tradedraft.confirm",
-        "confirmTradeDraft",
+        "confirmDraft",
         "TASK-150_TRADEDRAFT_CONFIRM",
         "callTradeDraftConfirm",
-        "requestTradeDraftConfirm",
     };
 }
 

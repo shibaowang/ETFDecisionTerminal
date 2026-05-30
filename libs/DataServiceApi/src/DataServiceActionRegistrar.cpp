@@ -57,13 +57,16 @@ void registerDataServiceWriteActions(
     etfdt::service_runtime::ActionDispatcher& dispatcher,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    if (!isWriteActionAllowed(kActionDataAuditAppend)) {
-        return;
+    if (isWriteActionAllowed(kActionDataAuditAppend)) {
+        (void)dispatcher.registerAction(kActionDataAuditAppend, [&connection](const auto& context) {
+            return handleDataAuditAppend(context, connection);
+        });
     }
-
-    (void)dispatcher.registerAction(kActionDataAuditAppend, [&connection](const auto& context) {
-        return handleDataAuditAppend(context, connection);
-    });
+    if (isWriteActionAllowed(kActionAccountingSnapshotWrite)) {
+        (void)dispatcher.registerAction(kActionAccountingSnapshotWrite, [&connection](const auto& context) {
+            return handleAccountingSnapshotWrite(context, connection);
+        });
+    }
 }
 
 }  // namespace etfdt::data_service_api

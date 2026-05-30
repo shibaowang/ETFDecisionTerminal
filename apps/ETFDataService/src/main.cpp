@@ -469,8 +469,9 @@ int serveDevAudit(
     }
 
     std::cout << "ETFDataService dev audit service listening on " << socketName << '\n';
-    std::cout << "Development preview: data.audit.append is the only enabled write action; "
-              << "it only writes audit_log.\n";
+    std::cout << "Development preview: enabled write actions are data.audit.append and "
+              << "accounting.snapshot.write; snapshot write is allowlisted to derived "
+              << "snapshot tables only.\n";
     const int exitCode = app.exec();
     host.close();
     return exitCode;

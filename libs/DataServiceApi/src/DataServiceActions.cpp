@@ -4,9 +4,11 @@
 #include "DataAccess/AccountingTradeFactReader.h"
 #include "DataServiceApi/JsonBuilders.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
+#include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
+#include <cmath>
 #include <optional>
 #include <regex>
 #include <sstream>
@@ -163,6 +165,21 @@ std::optional<std::string> extractJsonStringField(
     return decodeJsonString(match[1].str());
 }
 
+std::optional<bool> extractJsonBoolField(
+    const std::string& payloadJson,
+    const std::string& fieldName)
+{
+    const std::regex pattern(
+        "\"" + fieldName + "\"\\s*:\\s*(true|false)",
+        std::regex::ECMAScript);
+
+    std::smatch match;
+    if (!std::regex_search(payloadJson, match, pattern) || match.size() < 2U) {
+        return std::nullopt;
+    }
+    return match[1].str() == "true";
+}
+
 std::optional<std::string> extractJsonFragmentField(
     const std::string& payloadJson,
     const std::string& fieldName)
@@ -240,6 +257,43 @@ std::optional<std::int64_t> parseOptionalInt64(const std::string& value)
     catch (...) {
         return std::nullopt;
     }
+}
+
+std::int64_t parseNumericTextScaled(
+    std::string value,
+    int scale,
+    std::int64_t fallback = 0)
+{
+    value = trimCopy(value);
+    if (value.empty() || value == "UNAVAILABLE") {
+        return fallback;
+    }
+
+    const auto firstSpace = value.find(' ');
+    if (firstSpace != std::string::npos) {
+        value = value.substr(0, firstSpace);
+    }
+
+    try {
+        return static_cast<std::int64_t>(std::llround(std::stold(value) * scale));
+    }
+    catch (...) {
+        return fallback;
+    }
+}
+
+std::string snapshotUid(
+    const char* table,
+    std::int64_t accountId,
+    std::int64_t portfolioId,
+    const std::string& discriminator)
+{
+    std::ostringstream uid;
+    uid << "task-144-" << table << '-' << accountId << '-' << portfolioId;
+    if (!discriminator.empty()) {
+        uid << '-' << discriminator;
+    }
+    return uid.str();
 }
 
 bool isJsonObjectPayloadShape(const std::string& payloadJson)
@@ -619,6 +673,77 @@ std::vector<etfdt::accounting::CashSummaryDto> replayCashSummariesForPreview(
         summaries.push_back(result.cashSummary);
     }
     return summaries;
+}
+
+etfdt::data_access::ShellAccountingSnapshotWriteBatch snapshotWriteBatchFromReplay(
+    const etfdt::accounting::AccountingReplayResult& result,
+    const etfdt::data_access::ShellAccountingFactsQueryRequest& request,
+    std::string_view updatedAtUtc)
+{
+    etfdt::data_access::ShellAccountingSnapshotWriteBatch batch;
+    const auto fallbackAccountId = parseOptionalInt64(request.accountId).value_or(0);
+    const auto fallbackPortfolioId = parseOptionalInt64(request.portfolioId).value_or(0);
+
+    std::int64_t holdingCostCents = 0;
+    std::int64_t totalMarketValueCents = 0;
+    for (const auto& row : result.positionList.positions) {
+        const auto accountId = parseOptionalInt64(row.accountId).value_or(fallbackAccountId);
+        const auto portfolioId = parseOptionalInt64(row.portfolioId).value_or(fallbackPortfolioId);
+        const auto costAmountCents = parseNumericTextScaled(row.costAmountText, 100);
+        const auto marketValueCents = parseNumericTextScaled(row.marketValueText, 100);
+        holdingCostCents += costAmountCents;
+        totalMarketValueCents += marketValueCents;
+
+        etfdt::data_access::ShellAccountingPositionSnapshotWriteRow snapshot;
+        snapshot.uid = snapshotUid("position_snapshot", accountId, portfolioId, row.instrumentCode);
+        snapshot.accountId = accountId;
+        snapshot.portfolioId = portfolioId;
+        snapshot.actualCode = row.instrumentCode;
+        snapshot.quantity1e6 = parseNumericTextScaled(row.quantityText, 1000000);
+        snapshot.costAmountCents = costAmountCents;
+        snapshot.marketValueCents = marketValueCents;
+        snapshot.unrealizedPnlCents = parseNumericTextScaled(row.unrealizedPnlText, 100);
+        snapshot.updatedAtUtc = std::string(updatedAtUtc);
+        batch.positions.push_back(std::move(snapshot));
+    }
+
+    std::int64_t primaryCashBalanceCents = 0;
+    std::int64_t primaryAccountId = fallbackAccountId;
+    std::int64_t primaryPortfolioId = fallbackPortfolioId;
+    for (const auto& row : replayCashSummariesForPreview(result)) {
+        const auto accountId = parseOptionalInt64(row.accountId).value_or(fallbackAccountId);
+        const auto portfolioId = parseOptionalInt64(row.portfolioId).value_or(fallbackPortfolioId);
+        const auto cashBalanceCents = parseNumericTextScaled(row.cashBalanceText, 100);
+        if (batch.cash.empty()) {
+            primaryCashBalanceCents = cashBalanceCents;
+            primaryAccountId = accountId;
+            primaryPortfolioId = portfolioId;
+        }
+
+        etfdt::data_access::ShellAccountingCashSnapshotWriteRow snapshot;
+        snapshot.uid = snapshotUid("cash_snapshot", accountId, portfolioId, row.currency);
+        snapshot.accountId = accountId;
+        snapshot.portfolioId = portfolioId;
+        snapshot.cashBalanceCents = cashBalanceCents;
+        snapshot.updatedAtUtc = std::string(updatedAtUtc);
+        batch.cash.push_back(std::move(snapshot));
+    }
+
+    if (result.hasPortfolioPnl) {
+        etfdt::data_access::ShellAccountingPortfolioSummaryWriteRow summary;
+        summary.uid = snapshotUid("portfolio_summary", primaryAccountId, primaryPortfolioId, result.portfolioPnl.currency);
+        summary.accountId = primaryAccountId;
+        summary.portfolioId = parseOptionalInt64(result.portfolioPnl.portfolioId).value_or(primaryPortfolioId);
+        summary.totalAssetsCents = parseNumericTextScaled(result.portfolioPnl.totalAssetsText, 100);
+        summary.totalMarketValueCents = totalMarketValueCents;
+        summary.cashBalanceCents = primaryCashBalanceCents;
+        summary.holdingCostCents = holdingCostCents;
+        summary.totalPnlCents = parseNumericTextScaled(result.portfolioPnl.totalPnlText, 100);
+        summary.updatedAtUtc = std::string(updatedAtUtc);
+        batch.portfolioSummaries.push_back(std::move(summary));
+    }
+
+    return batch;
 }
 
 void appendSnapshotRebuildPreview(
@@ -1316,6 +1441,150 @@ etfdt::protocol::ProtocolResponse handleAccountingReplayPreview(
             << "]"
             << "}";
 
+    return successResponse(context, payload.str());
+}
+
+etfdt::protocol::ProtocolResponse handleAccountingSnapshotWrite(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    if (!isJsonObjectPayloadShape(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "accounting.snapshot.write payload must be a JSON object");
+    }
+
+    if (extractJsonBoolField(context.request.payloadJson, "snapshotWriteDisabled").value_or(false)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8002_PERMISSION_DENIED,
+            "accounting.snapshot.write is disabled by request");
+    }
+
+    const auto authorization =
+        extractJsonStringField(context.request.payloadJson, "authorization").value_or("");
+    if (authorization != "TASK-144_SNAPSHOT_WRITE") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E8001_AUTH_REQUIRED,
+            "accounting.snapshot.write requires TASK-144_SNAPSHOT_WRITE authorization");
+    }
+
+    const auto source = extractJsonStringField(context.request.payloadJson, "source").value_or("");
+    if (source != "snapshotRebuildPreview") {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.snapshot.write requires payload.source=snapshotRebuildPreview");
+    }
+
+    if (!shellAccountingReplayRequested(context.request.payloadJson)) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.snapshot.write requires payload.calculationMode=readonlyReplay");
+    }
+
+    const auto request = shellAccountingQueryRequest(context.request.payloadJson);
+    if (!parseOptionalInt64(request.accountId).has_value()
+        || !parseOptionalInt64(request.portfolioId).has_value()) {
+        return protocolErrorResponse(
+            context,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "accounting.snapshot.write requires numeric accountId and portfolioId");
+    }
+
+    const auto replay = runShellAccountingReadOnlyReplay(
+        connection,
+        "portfolio.pnl.summary",
+        context.request.payloadJson);
+    if (replay.queryFailed) {
+        std::ostringstream payload;
+        payload << "{"
+                << "\"module\":\"accounting\","
+                << "\"action\":\"accounting.snapshot.write\","
+                << "\"implemented\":true,"
+                << "\"writeAuthorized\":true,"
+                << "\"databaseWritten\":false,"
+                << "\"snapshotWritten\":false,"
+                << "\"partialWrite\":false,"
+                << "\"transactionRolledBack\":true,"
+                << "\"status\":\"PREVIEW_UNAVAILABLE\","
+                << "\"errorCode\":" << jsonStringValue(replay.queryErrorCode) << ','
+                << "\"issues\":[";
+        appendIssueObject(
+            payload,
+            "ERROR",
+            replay.queryErrorCode,
+            "Snapshot write preview input query failed.",
+            true);
+        payload << "],\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"internalStackExposed\":false}"
+                << "}";
+        return successResponse(context, payload.str());
+    }
+
+    if (!replay.requested || snapshotPreviewStatus(replay.result) != "READY") {
+        std::ostringstream payload;
+        payload << "{"
+                << "\"module\":\"accounting\","
+                << "\"action\":\"accounting.snapshot.write\","
+                << "\"implemented\":true,"
+                << "\"writeAuthorized\":true,"
+                << "\"databaseWritten\":false,"
+                << "\"snapshotWritten\":false,"
+                << "\"partialWrite\":false,"
+                << "\"transactionRolledBack\":false,"
+                << "\"status\":\"PREVIEW_UNAVAILABLE\","
+                << "\"issues\":" << replayIssuesJson(replay.result.issues) << ','
+                << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                << "\"internalStackExposed\":false}"
+                << "}";
+        return successResponse(context, payload.str());
+    }
+
+    etfdt::data_access::ShellAccountingSnapshotWriteRepository repository(connection);
+    auto batch = snapshotWriteBatchFromReplay(replay.result, request, context.request.timestampUtc);
+    auto writeResult = repository.writeSnapshotBatch(batch);
+    if (!writeResult) {
+        return errorResponse(context, writeResult);
+    }
+
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":\"accounting.snapshot.write\","
+            << "\"implemented\":true,"
+            << "\"writeAuthorized\":true,"
+            << "\"source\":\"snapshotRebuildPreview\","
+            << "\"input\":\"TASK-142 snapshotRebuildPreview\","
+            << "\"databaseWritten\":true,"
+            << "\"snapshotWritten\":true,"
+            << "\"partialWrite\":false,"
+            << "\"transactionCommitted\":"
+            << (writeResult.value().transactionCommitted ? "true" : "false") << ','
+            << "\"transactionRolledBack\":false,"
+            << "\"idempotent\":"
+            << (writeResult.value().idempotentUpsert ? "true" : "false") << ','
+            << "\"duplicateHandling\":\"UPSERT_BY_UID\","
+            << "\"status\":\"OK\","
+            << "\"allowlistTables\":[\"cash_snapshot\",\"position_snapshot\",\"portfolio_summary\"],"
+            << "\"forbiddenTables\":[\"trade_log\",\"trade_execution_group\",\"trade_draft\",\"audit_log\"],"
+            << "\"rowsWritten\":{"
+            << "\"cash_snapshot\":" << writeResult.value().cashRows << ','
+            << "\"position_snapshot\":" << writeResult.value().positionRows << ','
+            << "\"portfolio_summary\":" << writeResult.value().portfolioSummaryRows
+            << "},"
+            << "\"tradeLogModified\":false,"
+            << "\"tradeDraftGenerated\":false,"
+            << "\"tradeSuggestionGenerated\":false,"
+            << "\"strategyExecuted\":false,"
+            << "\"brokerOrderSubmitted\":false,"
+            << "\"issues\":[],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+            << "\"internalStackExposed\":false}"
+            << "}";
     return successResponse(context, payload.str());
 }
 

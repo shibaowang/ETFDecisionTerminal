@@ -1032,3 +1032,19 @@ v0.1 草案。
 - Do not add production QML/startup changes, direct Shell/QML/Presenter write
   triggers, schema migration, TradeDraft generation, trade suggestion, strategy
   execution, broker order, or trading UI.
+
+## TASK-144 ShellAccounting Snapshot Write Implementation
+
+- Snapshot write is authorized only as `accounting.snapshot.write` inside the
+  DataService boundary.
+- Input must come from TASK-142 `snapshotRebuildPreview` with explicit
+  `TASK-144_SNAPSHOT_WRITE` authorization.
+- The only allowed write tables are `cash_snapshot`, `position_snapshot`, and
+  `portfolio_summary`.
+- Do not write `trade_log`, `trade_execution_group`, `trade_draft`, or
+  `audit_log`.
+- Keep transaction rollback, idempotency, duplicate handling, privacy, and
+  no-partial-write tests in place.
+- Do not add production QML/startup changes, Shell/QML/Presenter write triggers,
+  schema migration, TradeDraft generation, trade suggestion, strategy execution,
+  broker order, or trading UI.

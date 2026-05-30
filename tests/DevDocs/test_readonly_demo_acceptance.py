@@ -196,6 +196,9 @@ def main() -> int:
     shell_accounting_snapshot_write_authorization_test_plan_path = (
         root / "docs" / "93_shell_accounting_snapshot_write_authorization_test_plan.md"
     )
+    shell_accounting_snapshot_write_implementation_path = (
+        root / "docs" / "94_shell_accounting_snapshot_write_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -261,6 +264,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_write_authorization_gate_cmake_path = (
         root / "tests" / "ShellAccountingSnapshotWriteAuthorizationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_snapshot_write_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingSnapshotWriteImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1302,6 +1308,9 @@ def main() -> int:
     shell_accounting_snapshot_write_authorization_test_plan = (
         shell_accounting_snapshot_write_authorization_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_snapshot_write_implementation = (
+        shell_accounting_snapshot_write_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1361,6 +1370,9 @@ def main() -> int:
     )
     shell_accounting_snapshot_write_authorization_gate_cmake = (
         shell_accounting_snapshot_write_authorization_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_snapshot_write_implementation_cmake = (
+        shell_accounting_snapshot_write_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6102,20 +6114,109 @@ def main() -> int:
             f"TASK-143 tests include {ctest_name}",
         )
     require(
-        "snapshotRebuildPreview" in data_service_actions_source
-        and "snapshot.write" not in data_service_actions_source,
-        "TASK-143 keeps preview without snapshot write action",
+        "handleAccountingSnapshotWrite" in data_service_actions_source
+        and "accounting.snapshot.write" in dataservice_actions_header
+        and "kActionAccountingSnapshotWrite" in dataservice_action_registrar,
+        "TASK-144 registers authorized snapshot write action",
     )
     require(
         "INSERT INTO cash_snapshot" not in data_service_actions_source
         and "INSERT INTO position_snapshot" not in data_service_actions_source
         and "INSERT INTO portfolio_summary" not in data_service_actions_source,
-        "TASK-143 adds no snapshot write SQL",
+        "TASK-144 keeps snapshot write SQL out of DataService action dispatcher",
     )
     require(
         "TASK-143" in readme
         and "TASK-143" in docs_index,
         "README and docs index mention TASK-143",
+    )
+    require(
+        shell_accounting_snapshot_write_implementation_path.exists(),
+        "docs/94 snapshot write implementation exists",
+    )
+    require(
+        shell_accounting_snapshot_write_implementation_cmake_path.exists(),
+        "TASK-144 snapshot write implementation CMake exists",
+    )
+    require(
+        "docs/94_shell_accounting_snapshot_write_implementation.md" in readme,
+        "README links docs/94",
+    )
+    require(
+        "94_shell_accounting_snapshot_write_implementation.md" in docs_index,
+        "docs/README links docs/94",
+    )
+    require("TASK-144" in shell_accounting_snapshot_write_implementation, "docs/94 mentions TASK-144")
+    require("TASK-144" in codex_prompt_template, "docs/12 mentions TASK-144")
+    require("TASK-144" in shell_accounting_snapshot_write_authorization_gate, "docs/92 mentions TASK-144")
+    require("TASK-144" in shell_accounting_snapshot_write_authorization_test_plan, "docs/93 mentions TASK-144")
+    require("accounting.snapshot.write" in shell_accounting_snapshot_write_implementation, "docs/94 records action")
+    require("TASK-144_SNAPSHOT_WRITE" in shell_accounting_snapshot_write_implementation, "docs/94 records authorization")
+    require("cash_snapshot" in shell_accounting_snapshot_write_implementation, "docs/94 records cash snapshot allowlist")
+    require("position_snapshot" in shell_accounting_snapshot_write_implementation, "docs/94 records position snapshot allowlist")
+    require("portfolio_summary" in shell_accounting_snapshot_write_implementation, "docs/94 records portfolio summary allowlist")
+    require("trade_log" in shell_accounting_snapshot_write_implementation, "docs/94 records forbidden trade_log")
+    require("audit_log" in shell_accounting_snapshot_write_implementation, "docs/94 records forbidden audit_log")
+    require("rollback" in shell_accounting_snapshot_write_implementation, "docs/94 includes rollback")
+    require("partial write forbidden" in shell_accounting_snapshot_write_implementation, "docs/94 forbids partial writes")
+    for ctest_name in [
+        "shell_accounting_snapshot_write_implementation",
+        "shell_accounting_snapshot_write_dataservice_only_boundary",
+        "shell_accounting_snapshot_write_requires_preview_input",
+        "shell_accounting_snapshot_write_cash_snapshot_success",
+        "shell_accounting_snapshot_write_position_snapshot_success",
+        "shell_accounting_snapshot_write_portfolio_summary_success",
+        "shell_accounting_snapshot_write_transaction_rollback",
+        "shell_accounting_snapshot_write_idempotency",
+        "shell_accounting_snapshot_write_duplicate_snapshot_handling",
+        "shell_accounting_snapshot_write_no_trade_log_write",
+        "shell_accounting_snapshot_write_no_trade_draft_write",
+        "shell_accounting_snapshot_write_no_audit_write",
+        "shell_accounting_snapshot_write_no_trade_or_strategy",
+        "shell_accounting_snapshot_write_no_ui_trigger",
+        "shell_accounting_snapshot_write_privacy",
+        "shell_accounting_snapshot_write_rollback_ready",
+    ]:
+        require(
+            ctest_name in shell_accounting_snapshot_write_implementation_cmake,
+            f"TASK-144 tests include {ctest_name}",
+        )
+    snapshot_write_repository_source = (
+        root / "libs" / "DataAccess" / "src" / "ShellAccountingSnapshotWriteRepository.cpp"
+    ).read_text(encoding="utf-8")
+    for allowed_insert in [
+        "INSERT INTO cash_snapshot",
+        "INSERT INTO position_snapshot",
+        "INSERT INTO portfolio_summary",
+    ]:
+        require(allowed_insert in snapshot_write_repository_source, f"TASK-144 repository writes {allowed_insert}")
+    for forbidden_insert in [
+        "INSERT INTO trade_log",
+        "INSERT INTO trade_execution_group",
+        "INSERT INTO trade_draft",
+        "INSERT INTO audit_log",
+        "data.audit.append",
+    ]:
+        require(
+            forbidden_insert not in snapshot_write_repository_source,
+            f"TASK-144 repository avoids {forbidden_insert}",
+        )
+    require(
+        "ShellAccountingSnapshotWriteRepository" not in qml_sources
+        and "accounting.snapshot.write" not in qml_sources,
+        "production QML does not trigger snapshot write",
+    )
+    require(
+        "ShellAccountingSnapshotWriteRepository"
+        not in (root / "apps" / "ETFDecisionShell" / "src" / "main.cpp").read_text(encoding="utf-8")
+        and "accounting.snapshot.write"
+        not in (root / "apps" / "ETFDecisionShell" / "src" / "main.cpp").read_text(encoding="utf-8"),
+        "production startup does not trigger snapshot write",
+    )
+    require(
+        "TASK-144" in readme
+        and "TASK-144" in docs_index,
+        "README and docs index mention TASK-144",
     )
 
     require(

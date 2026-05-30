@@ -15,6 +15,7 @@ constexpr const char* kActionDataOtcList = "data.otc.list";
 constexpr const char* kActionDataAuditAppend = "data.audit.append";
 constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
+constexpr const char* kActionAccountingSnapshotWrite = "accounting.snapshot.write";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
@@ -58,6 +59,10 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingReplayPreview(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingSnapshotWrite(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

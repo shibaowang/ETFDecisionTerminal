@@ -620,3 +620,16 @@ does not directly confirm drafts, does not write `trade_log` or
 `trade_execution_group`, does not call broker/order APIs, and does not expose
 trading buttons. Confirmation is an internal authorized ledger write, not an
 order placement or strategy execution surface.
+
+## TASK-151 Production Trading UI Authorization Gate
+
+TASK-151 adds the production trading UI authorization gate only. Production QML
+remains unchanged: no trading page, no buy / sell / order / confirm button, no
+TradeDraft create binding, and no TradeDraft confirm binding are added.
+
+Future production trading UI must route only through the
+presenter/controller/adapter/DataService boundary. It must keep draft creation
+and confirmation as separate user-visible steps, preserve explicit
+authorization tokens, show draft-only versus confirmed-ledger state clearly, and
+avoid broker order placement, strategy execution, automatic trading, direct QML
+database writes, and silent success.

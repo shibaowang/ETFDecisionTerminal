@@ -1143,3 +1143,22 @@ v0.1 草案。
   trading, and not production trading UI.
 - Do not modify production QML/startup, schema, broker/order code,
   StrategyEngine behavior, or DataServiceClient transport/API behavior.
+
+## TASK-151 ShellAccounting Production Trading UI Authorization Gate
+
+- Future production trading UI tasks must reference
+  `docs/104_shell_accounting_production_trading_ui_authorization_gate.md` and
+  `docs/105_shell_accounting_production_trading_ui_authorization_test_plan.md`.
+- TASK-151 is a gate only. It does not authorize production QML edits, trading
+  pages, buy / sell / order / confirm buttons, or QML bindings to
+  `accounting.tradedraft.create` / `accounting.tradedraft.confirm`.
+- Production UI may only route through presenter/controller/adapter/DataService
+  boundaries. QML must not directly call DataServiceClient, SQLite, DataAccess,
+  `trade_draft`, `trade_log`, or `trade_execution_group` writes.
+- TradeDraft create must keep `TASK-148_TRADEDRAFT_WRITE`; TradeDraft confirm
+  must keep `TASK-150_TRADEDRAFT_CONFIRM`.
+- Future UI must keep draft creation and confirmation as separate explicit user
+  steps and must show draft-only versus confirmed-ledger state.
+- Do not add broker order placement, StrategyEngine execution, automatic
+  trading, direct QML DB writes, generic write escape hatches, or silent
+  success behavior.

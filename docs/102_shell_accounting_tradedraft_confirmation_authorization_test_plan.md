@@ -7,6 +7,10 @@ evolve into authorized-confirmation-only checks, and the former no-`trade_log`
 / no-`trade_execution_group` checks evolve into confirmation-path-only atomic
 ledger write checks.
 
+TASK-151 update: production trading UI authorization is now gated separately.
+This plan continues to cover backend confirmation; production QML still has no
+TradeDraft create or confirm binding.
+
 ## Document Purpose
 
 TASK-149 defines the test plan for a future ShellAccounting TradeDraft

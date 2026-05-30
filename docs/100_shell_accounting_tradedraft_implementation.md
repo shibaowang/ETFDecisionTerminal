@@ -4,6 +4,10 @@ TASK-150 update: TradeDraft creation remains unchanged. Confirmation is now
 implemented separately through `accounting.tradedraft.confirm`, and creation
 still does not write `trade_log` or `trade_execution_group`.
 
+TASK-151 update: production trading UI authorization is now gated separately.
+Production QML still does not create TradeDraft records, confirm TradeDraft
+records, call broker/order APIs, execute strategy, or place orders.
+
 ## TASK-148 Purpose
 
 TASK-148 implements ShellAccounting TradeDraft creation inside the DataService

@@ -2620,3 +2620,17 @@ create duplicate ledger rows. This is not broker order placement, strategy
 execution, automatic trading, or production trading UI. Production QML/startup
 and schema remain unchanged. See
 `docs/103_shell_accounting_tradedraft_confirmation_implementation.md`.
+
+## TASK-151 Production Trading UI Authorization Gate
+
+ShellAccounting now has a production trading UI authorization gate and test
+plan. Production trading UI remains unimplemented: QML does not create or
+confirm TradeDraft records, does not bind `accounting.tradedraft.create` or
+`accounting.tradedraft.confirm`, does not call broker/order APIs, does not
+execute strategy, and does not place orders. Future UI must keep the
+presenter/controller/adapter/DataService boundary, preserve
+`TASK-148_TRADEDRAFT_WRITE` and `TASK-150_TRADEDRAFT_CONFIRM`, require explicit
+user confirmation, and keep the read-only accounting page as rollback fallback.
+See
+`docs/104_shell_accounting_production_trading_ui_authorization_gate.md` and
+`docs/105_shell_accounting_production_trading_ui_authorization_test_plan.md`.

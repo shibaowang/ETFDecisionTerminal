@@ -364,6 +364,14 @@
   records TASK-150 DataService-internal, authorized, audited, transactional
   confirmation into `trade_execution_group` / `trade_log` without broker order,
   strategy execution, automatic trading, or production trading UI.
+- ShellAccounting production trading UI authorization gate:
+  [104_shell_accounting_production_trading_ui_authorization_gate.md](104_shell_accounting_production_trading_ui_authorization_gate.md)
+  defines the TASK-151 future production trading UI boundary before QML exposes
+  TradeDraft creation or confirmation.
+- ShellAccounting production trading UI authorization test plan:
+  [105_shell_accounting_production_trading_ui_authorization_test_plan.md](105_shell_accounting_production_trading_ui_authorization_test_plan.md)
+  defines the TASK-151 no-QML-binding, DataService-only, user-confirmed,
+  no-broker/no-strategy production trading UI test matrix.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -226,6 +226,12 @@ def main() -> int:
     shell_accounting_tradedraft_confirmation_implementation_path = (
         root / "docs" / "103_shell_accounting_tradedraft_confirmation_implementation.md"
     )
+    shell_accounting_production_trading_ui_authorization_gate_path = (
+        root / "docs" / "104_shell_accounting_production_trading_ui_authorization_gate.md"
+    )
+    shell_accounting_production_trading_ui_authorization_test_plan_path = (
+        root / "docs" / "105_shell_accounting_production_trading_ui_authorization_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -312,6 +318,9 @@ def main() -> int:
     )
     shell_accounting_tradedraft_confirmation_implementation_cmake_path = (
         root / "tests" / "ShellAccountingTradeDraftConfirmationImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_production_trading_ui_authorization_gate_cmake_path = (
+        root / "tests" / "ShellAccountingProductionTradingUiAuthorizationGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1383,6 +1392,12 @@ def main() -> int:
     shell_accounting_tradedraft_confirmation_implementation = (
         shell_accounting_tradedraft_confirmation_implementation_path.read_text(encoding="utf-8")
     )
+    shell_accounting_production_trading_ui_authorization_gate = (
+        shell_accounting_production_trading_ui_authorization_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_production_trading_ui_authorization_test_plan = (
+        shell_accounting_production_trading_ui_authorization_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1463,6 +1478,9 @@ def main() -> int:
     )
     shell_accounting_tradedraft_confirmation_implementation_cmake = (
         shell_accounting_tradedraft_confirmation_implementation_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_production_trading_ui_authorization_gate_cmake = (
+        shell_accounting_production_trading_ui_authorization_gate_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6845,6 +6863,87 @@ def main() -> int:
         require(
             forbidden_confirmation_token not in confirmation_repository_source,
             f"TASK-150 repository avoids {forbidden_confirmation_token}",
+        )
+
+    require(
+        shell_accounting_production_trading_ui_authorization_gate_path.exists(),
+        "docs/104 production trading UI authorization gate exists",
+    )
+    require(
+        shell_accounting_production_trading_ui_authorization_test_plan_path.exists(),
+        "docs/105 production trading UI authorization test plan exists",
+    )
+    require(
+        "docs/104_shell_accounting_production_trading_ui_authorization_gate.md" in readme,
+        "README links docs/104",
+    )
+    require(
+        "docs/105_shell_accounting_production_trading_ui_authorization_test_plan.md" in readme,
+        "README links docs/105",
+    )
+    require(
+        "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
+        "docs/README links docs/104",
+    )
+    require(
+        "105_shell_accounting_production_trading_ui_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/105",
+    )
+    require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
+    require(
+        "Test Matrix" in shell_accounting_production_trading_ui_authorization_test_plan,
+        "docs/105 contains Test matrix",
+    )
+    require("TASK-151" in codex_prompt_template, "docs/12 mentions TASK-151")
+    require("TASK-151" in shell_accounting_tradedraft_implementation, "docs/100 mentions TASK-151")
+    require("TASK-151" in shell_accounting_tradedraft_confirmation_authorization_gate, "docs/101 mentions TASK-151")
+    require(
+        "TASK-151" in shell_accounting_tradedraft_confirmation_authorization_test_plan,
+        "docs/102 mentions TASK-151",
+    )
+    require(
+        "TASK-151" in shell_accounting_tradedraft_confirmation_implementation,
+        "docs/103 mentions TASK-151",
+    )
+    for ctest_name in [
+        "shell_accounting_production_trading_ui_authorization_gate",
+        "shell_accounting_production_trading_ui_authorization_no_ui_yet",
+        "shell_accounting_production_trading_ui_authorization_no_draft_create_binding",
+        "shell_accounting_production_trading_ui_authorization_no_draft_confirm_binding",
+        "shell_accounting_production_trading_ui_authorization_dataservice_only_policy",
+        "shell_accounting_production_trading_ui_authorization_user_confirmation_policy",
+        "shell_accounting_production_trading_ui_authorization_no_direct_db_write",
+        "shell_accounting_production_trading_ui_authorization_no_broker_or_strategy",
+        "shell_accounting_production_trading_ui_authorization_error_mapping_policy",
+        "shell_accounting_production_trading_ui_authorization_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_production_trading_ui_authorization_gate_cmake,
+            f"TASK-151 tests include {ctest_name}",
+        )
+    for qml_trading_ui_token in [
+        "accounting.tradedraft.create",
+        "accounting.tradedraft.confirm",
+        "createTradeDraft",
+        "confirmTradeDraft",
+        "TASK-148_TRADEDRAFT_WRITE",
+        "TASK-150_TRADEDRAFT_CONFIRM",
+        "objectName: \"buyButton\"",
+        "objectName: \"sellButton\"",
+        "objectName: \"orderButton\"",
+        "objectName: \"confirmTradeButton\"",
+        "text: \"Buy\"",
+        "text: \"Sell\"",
+        "text: \"Order\"",
+        "text: \"Confirm trade\"",
+        "brokerOrder(",
+        "placeOrder(",
+        "executeOrder(",
+        "strategyExecute(",
+    ]:
+        require(
+            qml_trading_ui_token not in qml_sources,
+            f"production QML does not add trading UI or TradeDraft binding token {qml_trading_ui_token}",
         )
 
     require(

@@ -14,6 +14,8 @@ namespace etfdt::tests::shell_accounting_tradedraft_authorization_gate {
 [[nodiscard]] std::string joinFiles(const std::vector<std::filesystem::path>& files);
 [[nodiscard]] std::string shellBoundaryText(const std::filesystem::path& root);
 [[nodiscard]] std::string dataServiceBoundaryText(const std::filesystem::path& root);
+[[nodiscard]] std::string tradeDraftCreationBoundaryText(const std::filesystem::path& root);
+[[nodiscard]] std::string tradeDraftConfirmationBoundaryText(const std::filesystem::path& root);
 [[nodiscard]] std::string docs98Text(const std::filesystem::path& root);
 [[nodiscard]] std::string docs99Text(const std::filesystem::path& root);
 [[nodiscard]] bool containsAnyToken(const std::string& text, const std::vector<std::string>& tokens);

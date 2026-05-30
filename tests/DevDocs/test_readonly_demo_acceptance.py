@@ -223,6 +223,9 @@ def main() -> int:
     shell_accounting_tradedraft_confirmation_authorization_test_plan_path = (
         root / "docs" / "102_shell_accounting_tradedraft_confirmation_authorization_test_plan.md"
     )
+    shell_accounting_tradedraft_confirmation_implementation_path = (
+        root / "docs" / "103_shell_accounting_tradedraft_confirmation_implementation.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -306,6 +309,9 @@ def main() -> int:
     )
     shell_accounting_tradedraft_confirmation_authorization_gate_cmake_path = (
         root / "tests" / "ShellAccountingTradeDraftConfirmationAuthorizationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_tradedraft_confirmation_implementation_cmake_path = (
+        root / "tests" / "ShellAccountingTradeDraftConfirmationImplementation" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1374,6 +1380,9 @@ def main() -> int:
     shell_accounting_tradedraft_confirmation_authorization_test_plan = (
         shell_accounting_tradedraft_confirmation_authorization_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_tradedraft_confirmation_implementation = (
+        shell_accounting_tradedraft_confirmation_implementation_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1451,6 +1460,9 @@ def main() -> int:
     )
     shell_accounting_tradedraft_confirmation_authorization_gate_cmake = (
         shell_accounting_tradedraft_confirmation_authorization_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_tradedraft_confirmation_implementation_cmake = (
+        shell_accounting_tradedraft_confirmation_implementation_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -6746,15 +6758,93 @@ def main() -> int:
             qml_confirmation_token not in qml_sources,
             f"production QML does not add confirmation/trading UI token {qml_confirmation_token}",
         )
-    for confirmation_forbidden_source_token in [
-        "confirmTradeDraft",
-        "accounting.tradedraft.confirm",
-        "handleAccountingTradeDraftConfirm",
-        "TradeDraftConfirmationRepository",
+    require(
+        shell_accounting_tradedraft_confirmation_implementation_path.exists(),
+        "docs/103 TradeDraft confirmation implementation exists",
+    )
+    require(
+        shell_accounting_tradedraft_confirmation_implementation_cmake_path.exists(),
+        "TASK-150 TradeDraft confirmation implementation tests exist",
+    )
+    require(
+        "docs/103_shell_accounting_tradedraft_confirmation_implementation.md" in readme,
+        "README links docs/103",
+    )
+    require(
+        "103_shell_accounting_tradedraft_confirmation_implementation.md" in docs_index,
+        "docs/README links docs/103",
+    )
+    require("TASK-150" in shell_accounting_tradedraft_confirmation_implementation, "docs/103 mentions TASK-150")
+    require("TASK-150" in shell_accounting_tradedraft_confirmation_authorization_gate, "docs/101 mentions TASK-150")
+    require(
+        "TASK-150" in shell_accounting_tradedraft_confirmation_authorization_test_plan,
+        "docs/102 mentions TASK-150",
+    )
+    require("TASK-150" in codex_prompt_template, "docs/12 mentions TASK-150")
+    for ctest_name in [
+        "shell_accounting_tradedraft_confirmation_implementation",
+        "shell_accounting_tradedraft_confirmation_dataservice_only_boundary",
+        "shell_accounting_tradedraft_confirmation_requires_authorization",
+        "shell_accounting_tradedraft_confirmation_disabled_mapping",
+        "shell_accounting_tradedraft_confirmation_success",
+        "shell_accounting_tradedraft_confirmation_draft_missing",
+        "shell_accounting_tradedraft_confirmation_already_confirmed",
+        "shell_accounting_tradedraft_confirmation_canceled_draft",
+        "shell_accounting_tradedraft_confirmation_stale_draft",
+        "shell_accounting_tradedraft_confirmation_invalid_payload",
+        "shell_accounting_tradedraft_confirmation_atomic_ledger_write",
+        "shell_accounting_tradedraft_confirmation_audit_event_required",
+        "shell_accounting_tradedraft_confirmation_audit_failure_rolls_back",
+        "shell_accounting_tradedraft_confirmation_transaction_rollback",
+        "shell_accounting_tradedraft_confirmation_idempotency",
+        "shell_accounting_tradedraft_confirmation_duplicate_handling",
+        "shell_accounting_tradedraft_confirmation_writes_trade_log",
+        "shell_accounting_tradedraft_confirmation_writes_execution_group",
+        "shell_accounting_tradedraft_confirmation_updates_draft_status",
+        "shell_accounting_tradedraft_confirmation_no_broker_order",
+        "shell_accounting_tradedraft_confirmation_no_strategy_execution",
+        "shell_accounting_tradedraft_confirmation_no_ui_trigger",
+        "shell_accounting_tradedraft_confirmation_privacy",
+        "shell_accounting_tradedraft_confirmation_rollback_ready",
     ]:
         require(
-            confirmation_forbidden_source_token not in production_write_scan,
-            f"production path does not implement {confirmation_forbidden_source_token}",
+            ctest_name in shell_accounting_tradedraft_confirmation_implementation_cmake,
+            f"TASK-150 tests include {ctest_name}",
+        )
+    confirmation_repository_source = (
+        root / "libs" / "DataAccess" / "src" / "ShellAccountingTradeDraftConfirmationRepository.cpp"
+    ).read_text(encoding="utf-8")
+    require(
+        "INSERT INTO trade_execution_group" in confirmation_repository_source
+        and "INSERT INTO trade_log" in confirmation_repository_source,
+        "TASK-150 repository writes execution group and trade_log",
+    )
+    require(
+        "UPDATE trade_draft SET status" in confirmation_repository_source,
+        "TASK-150 repository updates confirmed draft status",
+    )
+    require(
+        "AuditLogRepository" in confirmation_repository_source
+        and "insertAuditLog" in confirmation_repository_source,
+        "TASK-150 repository writes sanitized audit event",
+    )
+    require(
+        "accounting.tradedraft.confirm" in data_service_actions_source
+        and "TASK-150_TRADEDRAFT_CONFIRM" in data_service_actions_source,
+        "DataService action source wires TASK-150 confirmation",
+    )
+    for forbidden_confirmation_token in [
+        "BrokerAdapter",
+        "brokerOrder(",
+        "placeOrder(",
+        "executeOrder(",
+        "StrategyEngine::execute",
+        "strategyExecute(",
+        "autoTrading",
+    ]:
+        require(
+            forbidden_confirmation_token not in confirmation_repository_source,
+            f"TASK-150 repository avoids {forbidden_confirmation_token}",
         )
 
     require(

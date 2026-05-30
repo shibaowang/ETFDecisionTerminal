@@ -612,3 +612,11 @@ UI still does not confirm drafts, does not write `trade_log` or
 `trade_execution_group`, does not request confirmation authorization, and does
 not display buy, sell, order, broker, strategy, automatic trading, or trade
 confirmation controls.
+## TASK-150 ShellAccounting TradeDraft Confirmation
+
+ShellAccounting TradeDraft confirmation is implemented only inside the
+DataService boundary. The production UI remains read-only for accounting: it
+does not directly confirm drafts, does not write `trade_log` or
+`trade_execution_group`, does not call broker/order APIs, and does not expose
+trading buttons. Confirmation is an internal authorized ledger write, not an
+order placement or strategy execution surface.

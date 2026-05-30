@@ -89,6 +89,19 @@ std::string dataServiceBoundaryText(const std::filesystem::path& root)
     return joinFiles(result);
 }
 
+std::string tradeDraftCreationBoundaryText(const std::filesystem::path& root)
+{
+    return readTextFile(root / "libs" / "DataAccess" / "include" / "DataAccess" / "ShellAccountingTradeDraftRepository.h") +
+           readTextFile(root / "libs" / "DataAccess" / "src" / "ShellAccountingTradeDraftRepository.cpp");
+}
+
+std::string tradeDraftConfirmationBoundaryText(const std::filesystem::path& root)
+{
+    return readTextFile(root / "libs" / "DataAccess" / "include" / "DataAccess" /
+                        "ShellAccountingTradeDraftConfirmationRepository.h") +
+           readTextFile(root / "libs" / "DataAccess" / "src" / "ShellAccountingTradeDraftConfirmationRepository.cpp");
+}
+
 std::string docs98Text(const std::filesystem::path& root)
 {
     return readTextFile(root / "docs" / "98_shell_accounting_tradedraft_authorization_gate.md");
@@ -168,9 +181,8 @@ std::vector<std::string> tradeExecutionTokens()
         "brokerOrder(",
         "placeOrder",
         "executeOrder",
-        "confirmTrade",
-        "INSERT INTO trade_log",
-        "INSERT INTO trade_execution_group",
+        "BrokerAdapter",
+        "autoTrading",
     };
 }
 

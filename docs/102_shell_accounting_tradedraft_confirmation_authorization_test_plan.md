@@ -1,5 +1,12 @@
 # ShellAccounting TradeDraft Confirmation Authorization Test Plan
 
+TASK-150 update: post-implementation checks now require that confirmation is
+allowed only through the DataService-internal `accounting.tradedraft.confirm`
+path with `TASK-150_TRADEDRAFT_CONFIRM`. The former no-confirmation checks
+evolve into authorized-confirmation-only checks, and the former no-`trade_log`
+/ no-`trade_execution_group` checks evolve into confirmation-path-only atomic
+ledger write checks.
+
 ## Document Purpose
 
 TASK-149 defines the test plan for a future ShellAccounting TradeDraft

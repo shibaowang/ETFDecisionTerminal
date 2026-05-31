@@ -100,3 +100,7 @@ TASK-166 defines tests for a disabled-only internal broker runtime mode source. 
 ## TASK-167 Follow-Up Gate
 
 TASK-167 adds a gate-only test plan for a possible future sandbox runtime mode source. The TASK-166 disabled-only scaffold remains the runtime baseline: the default source still returns disabled, sandbox runtime remains disabled, external mode sources remain unauthorized, and no SDK/network/credentials/endpoint/order-placement/write/trading side effects are introduced.
+
+## TASK-168 Follow-Up Scaffold
+
+TASK-168 adds a direct-test sandbox runtime mode source scaffold. The TASK-166 disabled-only runtime baseline still holds: the default runtime source remains disabled-only, `DataServiceActions` does not wire the sandbox scaffold, `brokerPortDryRunOnly` remains true for the disabled/null provider, sandbox runtime remains disabled, and no external source, SDK, network, credentials, endpoint, order placement, write, strategy, or automatic trading side effects are introduced.

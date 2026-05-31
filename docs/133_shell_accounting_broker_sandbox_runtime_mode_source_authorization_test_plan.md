@@ -4,6 +4,8 @@
 
 TASK-167 defines the test plan for a future sandbox runtime mode source authorization boundary. This plan is gate-only: it does not implement sandbox runtime, sandbox mode source selection, sandbox adapter behavior, credentials, endpoints, SDK calls, network calls, order placement, reconciliation, cancellation, correction, strategy execution, or automatic trading.
 
+TASK-168 updates this boundary by authorizing only a direct-test sandbox runtime mode source scaffold. The scaffold is not runtime wiring, and sandbox runtime remains disabled.
+
 ## Test Matrix
 
 ### Docs And Index
@@ -15,9 +17,10 @@ TASK-167 defines the test plan for a future sandbox runtime mode source authoriz
 
 ### Current Disabled-Only Runtime Source
 
-- `ShellAccountingBrokerRuntimeModeSource` remains disabled-only.
+- `ShellAccountingBrokerRuntimeModeSource` may contain the TASK-168 direct-test sandbox scaffold.
 - `defaultShellAccountingBrokerRuntimeModeSource()` returns disabled.
 - `DataServiceActions` continues to use disabled-only source behavior and does not read external broker mode.
+- `DataServiceActions` does not instantiate or wire the TASK-168 sandbox scaffold.
 - Sandbox runtime remains disabled.
 - Sandbox direct selector access remains scaffold unavailable / not configured.
 - Paper and real runtime source remain unimplemented.
@@ -63,7 +66,7 @@ TASK-167 defines the test plan for a future sandbox runtime mode source authoriz
 
 ## Required Probes
 
-- Static production source scan for sandbox runtime mode source implementation.
+- Static production source scan allowing only the TASK-168 direct-test sandbox runtime mode source scaffold.
 - Static `DataServiceActions` scan for forbidden payload/QML/config/env/CLI/file/DB/secret-store source tokens.
 - Static runtime source scan proving disabled-only source behavior.
 - Runtime default source disabled probe.
@@ -87,7 +90,7 @@ TASK-167 defines the test plan for a future sandbox runtime mode source authoriz
 - [ ] TASK-167 gate tests pass.
 - [ ] TASK-166 disabled scaffold remains disabled-only.
 - [ ] TASK-165 authorization gate remains valid.
-- [ ] No sandbox runtime mode source implementation.
+- [ ] No sandbox runtime mode source wiring beyond the TASK-168 direct-test scaffold.
 - [ ] No sandbox runtime enablement.
 - [ ] No payload/QML/config/env/CLI/file/DB/secret-store mode source.
 - [ ] No broker SDK, network, endpoint, credentials, real broker order id, or order placement.

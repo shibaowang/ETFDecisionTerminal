@@ -16,6 +16,11 @@ public:
     [[nodiscard]] ShellAccountingBrokerOrderPortMode brokerOrderPortMode() const noexcept override;
 };
 
+class SandboxShellAccountingBrokerRuntimeModeSourceScaffold final : public ShellAccountingBrokerRuntimeModeSource {
+public:
+    [[nodiscard]] ShellAccountingBrokerOrderPortMode brokerOrderPortMode() const noexcept override;
+};
+
 [[nodiscard]] ShellAccountingBrokerRuntimeModeSource& defaultShellAccountingBrokerRuntimeModeSource() noexcept;
 
 }  // namespace etfdt::dataservice

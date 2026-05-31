@@ -1303,3 +1303,17 @@ order ids, order placement, database writes, audit writes, reconciliation,
 cancellation, correction, strategy execution, automatic trading, production
 QML/startup exposure, or schema changes unless a later task explicitly
 authorizes that exact scope.
+
+## TASK-162 Broker Sandbox Mode Selector Prompt Rule
+
+Future sandbox mode selector or factory tasks must reference docs/122 and
+docs/123. Keep the selector disabled-default and do not treat selector presence
+as runtime broker enablement. Sandbox mode may select only the TASK-161 scaffold
+until a later task authorizes usable sandbox behavior. Unknown, empty, paper,
+real, or unsupported modes must fail closed. Do not wire selector into
+production QML, startup, Presenter, Controller, or DataServiceActions runtime
+behavior unless explicitly authorized. Do not add broker SDKs, network calls,
+credential reads, usable credential examples, real broker order ids, order
+placement, database writes, audit writes, reconciliation, cancellation,
+correction, strategy execution, automatic trading, or schema changes unless a
+later task explicitly authorizes that exact scope.

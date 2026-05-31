@@ -447,6 +447,15 @@
   defines TASK-161 direct response checks, static scans, docs probes, TASK-160
   gate regression checks, and TASK-159/TASK-154 disabled / dry-run regression
   preservation.
+- ShellAccounting broker sandbox mode selector:
+  [122_shell_accounting_broker_sandbox_mode_selector.md](122_shell_accounting_broker_sandbox_mode_selector.md)
+  records TASK-162 disabled-default selector / factory behavior for disabled,
+  sandbox scaffold, and unsupported modes without runtime broker enablement.
+- ShellAccounting broker sandbox mode selector test plan:
+  [123_shell_accounting_broker_sandbox_mode_selector_test_plan.md](123_shell_accounting_broker_sandbox_mode_selector_test_plan.md)
+  defines TASK-162 selector response checks, DataServiceActions regression,
+  QML/startup exposure scans, and no SDK / no network / no credentials / no
+  order-placement probes.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -280,6 +280,12 @@ def main() -> int:
     shell_accounting_broker_sandbox_adapter_scaffold_test_plan_path = (
         root / "docs" / "121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md"
     )
+    shell_accounting_broker_sandbox_mode_selector_path = (
+        root / "docs" / "122_shell_accounting_broker_sandbox_mode_selector.md"
+    )
+    shell_accounting_broker_sandbox_mode_selector_test_plan_path = (
+        root / "docs" / "123_shell_accounting_broker_sandbox_mode_selector_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -399,6 +405,9 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_adapter_scaffold_cmake_path = (
         root / "tests" / "ShellAccountingBrokerSandboxAdapterScaffold" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_sandbox_mode_selector_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerSandboxModeSelector" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1524,6 +1533,12 @@ def main() -> int:
     shell_accounting_broker_sandbox_adapter_scaffold_test_plan = (
         shell_accounting_broker_sandbox_adapter_scaffold_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_sandbox_mode_selector = (
+        shell_accounting_broker_sandbox_mode_selector_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_mode_selector_test_plan = (
+        shell_accounting_broker_sandbox_mode_selector_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1637,6 +1652,9 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_adapter_scaffold_cmake = (
         shell_accounting_broker_sandbox_adapter_scaffold_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_mode_selector_cmake = (
+        shell_accounting_broker_sandbox_mode_selector_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -7102,6 +7120,14 @@ def main() -> int:
         "docs/121 broker sandbox adapter scaffold test plan exists",
     )
     require(
+        shell_accounting_broker_sandbox_mode_selector_path.exists(),
+        "docs/122 broker sandbox mode selector exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_mode_selector_test_plan_path.exists(),
+        "docs/123 broker sandbox mode selector test plan exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
@@ -7160,6 +7186,14 @@ def main() -> int:
     require(
         "docs/121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md" in readme,
         "README links docs/121",
+    )
+    require(
+        "docs/122_shell_accounting_broker_sandbox_mode_selector.md" in readme,
+        "README links docs/122",
+    )
+    require(
+        "docs/123_shell_accounting_broker_sandbox_mode_selector_test_plan.md" in readme,
+        "README links docs/123",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7232,6 +7266,14 @@ def main() -> int:
     require(
         "121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md" in docs_index,
         "docs/README links docs/121",
+    )
+    require(
+        "122_shell_accounting_broker_sandbox_mode_selector.md" in docs_index,
+        "docs/README links docs/122",
+    )
+    require(
+        "123_shell_accounting_broker_sandbox_mode_selector_test_plan.md" in docs_index,
+        "docs/README links docs/123",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -7346,6 +7388,19 @@ def main() -> int:
     require("No Strategy / Automatic Trading" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 forbids strategy/auto")
     require("Test Matrix" in shell_accounting_broker_sandbox_adapter_scaffold_test_plan, "docs/121 contains Test matrix")
     require("Required Probes" in shell_accounting_broker_sandbox_adapter_scaffold_test_plan, "docs/121 documents required probes")
+    require("TASK-162" in shell_accounting_broker_sandbox_mode_selector, "docs/122 mentions TASK-162")
+    require("TASK-162" in shell_accounting_broker_sandbox_mode_selector_test_plan, "docs/123 mentions TASK-162")
+    require("TASK-162" in codex_prompt_template, "docs/12 mentions TASK-162")
+    require("disabled-default selector" in shell_accounting_broker_sandbox_mode_selector, "docs/122 documents disabled-default selector")
+    require("not runtime broker enablement" in shell_accounting_broker_sandbox_mode_selector, "docs/122 says selector is not runtime broker enablement")
+    require("sandbox mode only selects TASK-161 scaffold" in shell_accounting_broker_sandbox_mode_selector, "docs/122 documents sandbox scaffold-only mode")
+    require("unknown mode fail closed" in shell_accounting_broker_sandbox_mode_selector, "docs/122 documents unknown fail-closed")
+    require("CI no-network" in shell_accounting_broker_sandbox_mode_selector, "docs/122 documents CI no-network")
+    require("credentials isolation" in shell_accounting_broker_sandbox_mode_selector, "docs/122 documents credentials isolation")
+    require("no real broker order id" in shell_accounting_broker_sandbox_mode_selector, "docs/122 forbids real broker order id")
+    require("no order placement" in shell_accounting_broker_sandbox_mode_selector, "docs/122 forbids order placement")
+    require("Test Matrix" in shell_accounting_broker_sandbox_mode_selector_test_plan, "docs/123 contains Test matrix")
+    require("Required Probes" in shell_accounting_broker_sandbox_mode_selector_test_plan, "docs/123 documents required probes")
     require("TASK-153" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-153")
     require(
         "TASK-153" in shell_accounting_production_trading_ui_authorization_test_plan,
@@ -7604,6 +7659,33 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_sandbox_adapter_scaffold_cmake,
             f"TASK-161 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_sandbox_mode_selector_compiles",
+        "shell_accounting_broker_sandbox_mode_selector_default_disabled",
+        "shell_accounting_broker_sandbox_mode_selector_unknown_fail_closed",
+        "shell_accounting_broker_sandbox_mode_selector_disabled_mode",
+        "shell_accounting_broker_sandbox_mode_selector_sandbox_scaffold_mode",
+        "shell_accounting_broker_sandbox_mode_selector_sandbox_success_false",
+        "shell_accounting_broker_sandbox_mode_selector_sandbox_no_broker_order_id",
+        "shell_accounting_broker_sandbox_mode_selector_default_provider_unchanged",
+        "shell_accounting_broker_sandbox_mode_selector_no_dataserviceactions_runtime_change",
+        "shell_accounting_broker_sandbox_mode_selector_no_qml_startup_presenter_exposure",
+        "shell_accounting_broker_sandbox_mode_selector_no_broker_sdk",
+        "shell_accounting_broker_sandbox_mode_selector_no_network",
+        "shell_accounting_broker_sandbox_mode_selector_no_credentials_read",
+        "shell_accounting_broker_sandbox_mode_selector_no_endpoint_or_secret_values",
+        "shell_accounting_broker_sandbox_mode_selector_no_database_write",
+        "shell_accounting_broker_sandbox_mode_selector_no_ledger_or_audit_write",
+        "shell_accounting_broker_sandbox_mode_selector_no_order_placement",
+        "shell_accounting_broker_sandbox_mode_selector_no_reconciliation_cancellation_correction",
+        "shell_accounting_broker_sandbox_mode_selector_no_strategy_or_auto_trading",
+        "shell_accounting_broker_sandbox_mode_selector_docs",
+        "shell_accounting_broker_sandbox_mode_selector_task160_161_regression",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_sandbox_mode_selector_cmake,
+            f"TASK-162 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

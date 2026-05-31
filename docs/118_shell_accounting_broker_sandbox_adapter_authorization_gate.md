@@ -71,3 +71,7 @@ Future sandbox adapter work must include a kill switch. Disabling sandbox mode m
 ## Future Implementation PR Requirements
 
 A future sandbox adapter implementation PR must reference docs/118 and docs/119, start from clean main, pass full CTest, pass transport 50 repeat, keep disabled default, prove sandbox / paper / real isolation, prove no real credential values are committed, prove CI no-network behavior, preserve DataService-only access, and explicitly state that real order placement remains unauthorized.
+
+## TASK-161 Scaffold Update
+
+TASK-161 adds a scaffold-only sandbox broker adapter class behind the existing DataServiceApi broker order port. The scaffold is not a usable broker adapter, is not wired as the default provider, returns sanitized not-configured / disabled / dry-run-only semantics, and still performs no broker SDK call, no broker network call, no credential read, no real broker order id generation, no order placement, no database write, no audit write, no strategy execution, and no automatic trading.

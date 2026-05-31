@@ -274,6 +274,12 @@ def main() -> int:
     shell_accounting_broker_sandbox_adapter_authorization_test_plan_path = (
         root / "docs" / "119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md"
     )
+    shell_accounting_broker_sandbox_adapter_scaffold_path = (
+        root / "docs" / "120_shell_accounting_broker_sandbox_adapter_scaffold.md"
+    )
+    shell_accounting_broker_sandbox_adapter_scaffold_test_plan_path = (
+        root / "docs" / "121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -390,6 +396,9 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_adapter_authorization_gate_cmake_path = (
         root / "tests" / "ShellAccountingBrokerSandboxAdapterAuthorizationGate" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_sandbox_adapter_scaffold_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerSandboxAdapterScaffold" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1509,6 +1518,12 @@ def main() -> int:
     shell_accounting_broker_sandbox_adapter_authorization_test_plan = (
         shell_accounting_broker_sandbox_adapter_authorization_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_sandbox_adapter_scaffold = (
+        shell_accounting_broker_sandbox_adapter_scaffold_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_adapter_scaffold_test_plan = (
+        shell_accounting_broker_sandbox_adapter_scaffold_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1619,6 +1634,9 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_adapter_authorization_gate_cmake = (
         shell_accounting_broker_sandbox_adapter_authorization_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_adapter_scaffold_cmake = (
+        shell_accounting_broker_sandbox_adapter_scaffold_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -7076,6 +7094,14 @@ def main() -> int:
         "docs/119 broker sandbox adapter authorization test plan exists",
     )
     require(
+        shell_accounting_broker_sandbox_adapter_scaffold_path.exists(),
+        "docs/120 broker sandbox adapter scaffold exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_adapter_scaffold_test_plan_path.exists(),
+        "docs/121 broker sandbox adapter scaffold test plan exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
@@ -7126,6 +7152,14 @@ def main() -> int:
     require(
         "docs/119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md" in readme,
         "README links docs/119",
+    )
+    require(
+        "docs/120_shell_accounting_broker_sandbox_adapter_scaffold.md" in readme,
+        "README links docs/120",
+    )
+    require(
+        "docs/121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md" in readme,
+        "README links docs/121",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7190,6 +7224,14 @@ def main() -> int:
     require(
         "119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md" in docs_index,
         "docs/README links docs/119",
+    )
+    require(
+        "120_shell_accounting_broker_sandbox_adapter_scaffold.md" in docs_index,
+        "docs/README links docs/120",
+    )
+    require(
+        "121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md" in docs_index,
+        "docs/README links docs/121",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -7292,6 +7334,18 @@ def main() -> int:
     require("No Strategy Execution / Automatic Trading Policy" in shell_accounting_broker_sandbox_adapter_authorization_gate, "docs/118 documents no strategy/auto")
     require("Sandbox Adapter Not Implemented Yet" in shell_accounting_broker_sandbox_adapter_authorization_test_plan, "docs/119 checks no sandbox adapter")
     require("Required Probes" in shell_accounting_broker_sandbox_adapter_authorization_test_plan, "docs/119 documents required probes")
+    require("TASK-161" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 mentions TASK-161")
+    require("TASK-161" in shell_accounting_broker_sandbox_adapter_scaffold_test_plan, "docs/121 mentions TASK-161")
+    require("TASK-161" in codex_prompt_template, "docs/12 mentions TASK-161")
+    require("not a usable broker adapter" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 documents scaffold-only adapter")
+    require("default provider remains disabled" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 documents disabled default")
+    require("CI no-network" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 documents CI no-network")
+    require("No Broker SDK / No Real Order Placement" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 forbids SDK/order placement")
+    require("No Database / Audit Write Policy" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 forbids DB/audit write")
+    require("No Reconciliation / Cancellation / Correction" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 forbids reconciliation/cancel/correction")
+    require("No Strategy / Automatic Trading" in shell_accounting_broker_sandbox_adapter_scaffold, "docs/120 forbids strategy/auto")
+    require("Test Matrix" in shell_accounting_broker_sandbox_adapter_scaffold_test_plan, "docs/121 contains Test matrix")
+    require("Required Probes" in shell_accounting_broker_sandbox_adapter_scaffold_test_plan, "docs/121 documents required probes")
     require("TASK-153" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-153")
     require(
         "TASK-153" in shell_accounting_production_trading_ui_authorization_test_plan,
@@ -7526,6 +7580,30 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_sandbox_adapter_authorization_gate_cmake,
             f"TASK-160 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_sandbox_adapter_scaffold_compiles",
+        "shell_accounting_broker_sandbox_adapter_scaffold_default_response",
+        "shell_accounting_broker_sandbox_adapter_scaffold_success_false",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_broker_order_id",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_order_placement",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_sqlite_write",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_ledger_or_audit_write",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_credentials_read",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_network",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_broker_sdk_dependency",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_endpoint_or_secret_values",
+        "shell_accounting_broker_sandbox_adapter_scaffold_default_disabled_provider_unchanged",
+        "shell_accounting_broker_sandbox_adapter_scaffold_dry_run_regression",
+        "shell_accounting_broker_sandbox_adapter_scaffold_task160_gate_regression",
+        "shell_accounting_broker_sandbox_adapter_scaffold_fake_test_only",
+        "shell_accounting_broker_sandbox_adapter_scaffold_no_qml_presenter_startup_exposure",
+        "shell_accounting_broker_sandbox_adapter_scaffold_docs",
+        "shell_accounting_broker_sandbox_adapter_scaffold_static_scan_scope",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_sandbox_adapter_scaffold_cmake,
+            f"TASK-161 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

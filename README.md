@@ -2753,3 +2753,19 @@ test-only scope, credential isolation, CI no-network policy, DataService-only
 broker adapter access, and fail-closed rollback requirements. See
 `docs/118_shell_accounting_broker_sandbox_adapter_authorization_gate.md` and
 `docs/119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md`.
+
+## TASK-161 Broker Sandbox Adapter Scaffold
+
+ShellAccounting now has a scaffold-only sandbox broker adapter class behind the
+existing DataServiceApi broker order port. The scaffold is not a usable broker
+adapter: it returns sanitized not-configured / disabled / dry-run-only
+semantics, returns no real broker order id, performs no order placement, reads
+no credentials, calls no broker network or SDK, writes no database table or
+audit row, and remains unwired from production QML/startup.
+
+The TASK-159 disabled/null provider remains the default provider, and TASK-154
+dry-run behavior remains unchanged. TASK-161 adds tests and docs for the
+scaffold-only boundary, CI no-network policy, credential isolation, no real
+order placement, and no strategy / automatic trading behavior. See
+`docs/120_shell_accounting_broker_sandbox_adapter_scaffold.md` and
+`docs/121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md`.

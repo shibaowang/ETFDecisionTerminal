@@ -78,6 +78,10 @@ Verify docs require disabling sandbox mode to fall back to the TASK-159 disabled
 - Forbidden broker SDK token scan.
 - Forbidden broker network token scan.
 - Forbidden credential value scan.
+
+## TASK-161 Scaffold Regression
+
+After TASK-161, the "no adapter yet" check evolves into "only scaffold adapter exists". The new scaffold tests must prove the scaffold is not wired as the default, returns not-configured / disabled / dry-run-only semantics, contains no broker SDK, no broker network call, no credential read, no usable endpoint or secret values, no real broker order id, no order placement, no database write, no audit write, no strategy execution, and no automatic trading.
 - No QML / Presenter direct adapter exposure scan.
 - TASK-154 dry-run preservation scan.
 - TASK-159 disabled provider preservation scan.

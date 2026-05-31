@@ -1291,3 +1291,15 @@ examples, broker SDKs, broker endpoints, broker network calls, real order ids,
 real order placement, reconciliation, cancellation, correction, strategy
 execution, or automatic trading unless a later task explicitly authorizes that
 specific implementation scope.
+
+## TASK-161 Broker Sandbox Adapter Scaffold Prompt Rule
+
+Future sandbox scaffold or adapter tasks must reference docs/120 and docs/121.
+The TASK-161 scaffold is not a usable broker adapter and must not become the
+default provider without a separate authorization task. Preserve the TASK-159
+disabled/null default and TASK-154 dry-run behavior. Do not add broker SDKs,
+broker network calls, credential reads, usable credential examples, real broker
+order ids, order placement, database writes, audit writes, reconciliation,
+cancellation, correction, strategy execution, automatic trading, production
+QML/startup exposure, or schema changes unless a later task explicitly
+authorizes that exact scope.

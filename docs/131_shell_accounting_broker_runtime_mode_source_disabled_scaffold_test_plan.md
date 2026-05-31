@@ -34,7 +34,7 @@ TASK-166 defines tests for a disabled-only internal broker runtime mode source. 
 - Broker dry-run remains disabled/null provider behavior.
 - `brokerPortMode` remains `disabled`.
 - `brokerPortDisabled` remains true.
-- `brokerPortDryRunOnly` remains false for the disabled/null provider.
+- brokerPortDryRunOnly remains true for the disabled/null provider.
 - `BROKER_ORDER_DISABLED` remains unchanged.
 - Direct sandbox selector access still returns scaffold unavailable behavior and is not runtime mode.
 - Unknown mode still fails closed.

@@ -63,3 +63,7 @@ Rollback is to remove the direct-test scaffold and keep the TASK-166 disabled-on
 ## Validation Summary
 
 TASK-168 tests prove direct scaffold behavior, default disabled runtime behavior, `DataServiceActions` non-wiring, no external mode source, no credentials or endpoint source, no broker SDK, no network, no real order id, no order placement, no database/audit/ledger write, no reconciliation/cancellation/correction, no strategy execution, no automatic trading, and no schema modification.
+
+## TASK-169 Follow-Up Gate
+
+TASK-169 adds a gate-only authorization boundary for a future sandbox runtime mode source selector. It does not implement a selector, does not modify runtime source production code, does not modify `DataServiceActions`, and does not enable sandbox runtime. The TASK-168 sandbox scaffold remains direct-test-only.

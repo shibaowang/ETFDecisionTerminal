@@ -101,3 +101,7 @@ TASK-168 defines tests for the sandbox runtime mode source scaffold. This test p
 - [ ] Full CTest passes.
 - [ ] Transport 50 passes.
 - [ ] Any future sandbox runtime enablement opens a separate TASK.
+
+## TASK-169 Follow-Up Gate
+
+TASK-169 adds a gate-only test plan for a future sandbox runtime mode source selector. The TASK-168 scaffold remains direct-test-only, the default runtime source remains disabled-only, `DataServiceActions` remains unwired from any selector, and sandbox runtime remains disabled.

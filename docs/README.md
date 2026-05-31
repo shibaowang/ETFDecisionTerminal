@@ -427,6 +427,15 @@
   broker port, while preserving dry-run behavior and keeping fake adapters
   test-only with no SDK, no network, no credentials, no real order id, and no
   real placement.
+- ShellAccounting broker sandbox adapter authorization gate:
+  [118_shell_accounting_broker_sandbox_adapter_authorization_gate.md](118_shell_accounting_broker_sandbox_adapter_authorization_gate.md)
+  defines TASK-160 sandbox adapter authorization, mode isolation, credential
+  isolation, CI no-network, DataService-only, and fail-closed policies.
+- ShellAccounting broker sandbox adapter authorization test plan:
+  [119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md](119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md)
+  defines TASK-160 static probes for no sandbox/paper/real adapter, no SDK, no
+  network call, no credential values, and TASK-159/TASK-154 regression
+  preservation.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

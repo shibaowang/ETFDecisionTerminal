@@ -10,6 +10,8 @@ This test plan defines the static and behavioral probes required before any futu
 
 Verify production code still contains only the TASK-157 port scaffold plus TASK-159 disabled/null adapter wiring, with no concrete sandbox, paper, or real broker adapter implementation.
 
+TASK-160 adds sandbox adapter authorization static checks. Those checks distinguish production source scans from docs/tests policy text so sandbox, paper, real, credentials, secrets, token, and network policy words in docs/tests are not treated as implementation.
+
 ### Disabled Default
 
 Verify docs and tests require every future adapter mode to default disabled, fail closed on missing mode/configuration/credentials, and preserve dry-run fallback.
@@ -102,6 +104,7 @@ Verify TASK-157 broker adapter interface tests, TASK-154 broker order dry-run te
 - [ ] TASK-157 interface scaffold still passes.
 - [ ] TASK-158 broker adapter implementation gate passes.
 - [ ] Only disabled/null adapter wiring exists in production code.
+- [ ] TASK-160 sandbox adapter authorization gate passes.
 - [ ] No broker SDK is imported or linked.
 - [ ] No broker network call is reachable in CI.
 - [ ] No credentials or secrets are committed.

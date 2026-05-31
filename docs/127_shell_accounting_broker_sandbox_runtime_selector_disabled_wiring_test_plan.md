@@ -68,3 +68,7 @@ Verify no production QML / startup / Presenter exposure, no broker SDK, no netwo
 - [ ] Full CTest passes.
 - [ ] transport_local_socket_echo 50 repeat passes.
 - [ ] git diff --check passes.
+
+## TASK-165 Follow-Up Gate
+
+TASK-165 adds a separate broker runtime mode source authorization gate. The TASK-164 tests remain the disabled-default selector wiring baseline and must continue to prove that no payload, QML, config, environment, command-line, file, database, or secret-store mode source is implemented.

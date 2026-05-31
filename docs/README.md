@@ -477,6 +477,13 @@
   defines TASK-164 static and runtime probes for disabled-default selector
   wiring, no external mode source, no sandbox runtime, and no SDK / network /
   credentials / order-placement side effects.
+- ShellAccounting broker runtime mode source authorization gate:
+  [128_shell_accounting_broker_runtime_mode_source_authorization_gate.md](128_shell_accounting_broker_runtime_mode_source_authorization_gate.md)
+  records TASK-165 gate-only policy for any future broker runtime mode source.
+- ShellAccounting broker runtime mode source authorization test plan:
+  [129_shell_accounting_broker_runtime_mode_source_authorization_test_plan.md](129_shell_accounting_broker_runtime_mode_source_authorization_test_plan.md)
+  defines TASK-165 static probes that keep mode source unimplemented and
+  sandbox runtime disabled.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

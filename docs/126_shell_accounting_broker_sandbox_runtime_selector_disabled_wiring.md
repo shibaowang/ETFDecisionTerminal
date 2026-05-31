@@ -61,3 +61,7 @@ Rollback is to return the dry-run path to directly using the TASK-159 disabled/n
 ## Unauthorized Follow-Up Scope
 
 Runtime mode source wiring, sandbox runtime enablement, credentials injection, sandbox adapter implementation, paper adapter implementation, real broker adapter implementation, broker SDK integration, order placement, broker order id storage, reconciliation, cancellation, correction, strategy execution, automatic trading, and schema changes remain separately unauthorized.
+
+## TASK-165 Follow-Up Gate
+
+TASK-165 adds a broker runtime mode source authorization gate after this disabled-default wiring. It does not implement mode source selection, does not enable sandbox runtime, and does not change the TASK-164 DataServiceActions disabled-default selector wiring.

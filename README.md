@@ -2820,3 +2820,19 @@ production QML/startup/schema change. See
 `docs/126_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring.md`
 and
 `docs/127_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring_test_plan.md`.
+
+## TASK-165 Broker Runtime Mode Source Authorization Gate
+
+TASK-165 adds a gate-only authorization boundary for a future broker runtime
+mode source. It does not implement a mode source, does not read
+payload/QML/config/env/command-line/file/database/secret-store values, and does
+not enable sandbox runtime. The TASK-164 disabled-default selector wiring
+remains unchanged.
+
+TASK-165 adds no broker SDK, network, credentials, endpoint, real broker order
+id, order placement, database write, audit write, ledger write,
+reconciliation, cancellation, correction, strategy execution, or automatic
+trading. See
+`docs/128_shell_accounting_broker_runtime_mode_source_authorization_gate.md`
+and
+`docs/129_shell_accounting_broker_runtime_mode_source_authorization_test_plan.md`.

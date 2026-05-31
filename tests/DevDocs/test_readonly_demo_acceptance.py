@@ -310,6 +310,12 @@ def main() -> int:
     shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan_path = (
         root / "docs" / "131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md"
     )
+    shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate_path = (
+        root / "docs" / "132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md"
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan_path = (
+        root / "docs" / "133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -444,6 +450,9 @@ def main() -> int:
     )
     shell_accounting_broker_runtime_mode_source_disabled_scaffold_cmake_path = (
         root / "tests" / "ShellAccountingBrokerRuntimeModeSourceDisabledScaffold" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_authorization_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerSandboxRuntimeModeSourceAuthorizationGate" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1599,6 +1608,12 @@ def main() -> int:
     shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan = (
         shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate = (
+        shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan = (
+        shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan_path.read_text(encoding="utf-8")
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1727,6 +1742,9 @@ def main() -> int:
     )
     shell_accounting_broker_runtime_mode_source_disabled_scaffold_cmake = (
         shell_accounting_broker_runtime_mode_source_disabled_scaffold_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_authorization_cmake = (
+        shell_accounting_broker_sandbox_runtime_mode_source_authorization_cmake_path.read_text(encoding="utf-8")
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -7232,6 +7250,14 @@ def main() -> int:
         "docs/131 broker runtime mode source disabled scaffold test plan exists",
     )
     require(
+        shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate_path.exists(),
+        "docs/132 broker sandbox runtime mode source authorization gate exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan_path.exists(),
+        "docs/133 broker sandbox runtime mode source authorization test plan exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
@@ -7330,6 +7356,14 @@ def main() -> int:
     require(
         "docs/131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md" in readme,
         "README links docs/131",
+    )
+    require(
+        "docs/132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md" in readme,
+        "README links docs/132",
+    )
+    require(
+        "docs/133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md" in readme,
+        "README links docs/133",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7442,6 +7476,14 @@ def main() -> int:
     require(
         "131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md" in docs_index,
         "docs/README links docs/131",
+    )
+    require(
+        "132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md" in docs_index,
+        "docs/README links docs/132",
+    )
+    require(
+        "133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/133",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -7747,6 +7789,36 @@ def main() -> int:
     require(
         "Required Probes" in shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan,
         "docs/131 contains Required Probes",
+    )
+    require(
+        "TASK-167" in shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate,
+        "docs/132 mentions TASK-167",
+    )
+    require(
+        "TASK-167" in shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan,
+        "docs/133 mentions TASK-167",
+    )
+    require("TASK-167" in codex_prompt_template, "docs/12 mentions TASK-167")
+    require(
+        "authorization gate only" in shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate,
+        "docs/132 documents gate-only scope",
+    )
+    require(
+        "does not implement sandbox mode source selection"
+        in shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate,
+        "docs/132 forbids sandbox mode source implementation",
+    )
+    require(
+        "Sandbox runtime is not enabled" in shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate,
+        "docs/132 keeps sandbox runtime disabled",
+    )
+    require(
+        "Test Matrix" in shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan,
+        "docs/133 contains Test matrix",
+    )
+    require(
+        "Required Probes" in shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan,
+        "docs/133 contains Required Probes",
     )
     require(
         "Required Probes" in shell_accounting_broker_sandbox_runtime_selector_disabled_wiring_test_plan,
@@ -8149,6 +8221,35 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_runtime_mode_source_disabled_scaffold_cmake,
             f"TASK-166 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_docs_index",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_sandbox_source_implementation",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_payload_mode_source",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_qml_presenter_controller_startup_source",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_config_env_cli_file_db_secret_source",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_runtime_source_disabled_only",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_default_source_disabled",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_sandbox_runtime_not_enabled",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_direct_sandbox_scaffold_unavailable",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_paper_real_not_implemented",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_broker_sdk",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_network_or_endpoint",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_credentials_or_secret_values",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_real_broker_order_id",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_order_placement",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_db_audit_ledger_write",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_reconciliation_cancellation_correction",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_no_strategy_or_auto_trading",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_task166_baseline",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_task165_baseline",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_docs_tests_policy_keywords_not_production",
+        "shell_accounting_broker_sandbox_runtime_mode_source_authorization_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_sandbox_runtime_mode_source_authorization_cmake,
+            f"TASK-167 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

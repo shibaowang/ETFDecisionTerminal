@@ -2852,3 +2852,18 @@ correction, strategy execution, or automatic trading. See
 `docs/130_shell_accounting_broker_runtime_mode_source_disabled_scaffold.md`
 and
 `docs/131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md`.
+
+## TASK-167 Broker Sandbox Runtime Mode Source Authorization Gate
+
+TASK-167 adds a gate-only boundary for a possible future sandbox runtime mode
+source. It does not implement sandbox mode source selection, does not enable
+sandbox runtime, and does not change the TASK-166 disabled-only source.
+
+The gate keeps payload/QML/config/env/command-line/file/database/secret-store
+mode sources unauthorized. It also keeps broker SDK, network, credentials,
+endpoint, real broker order id, order placement, DB/audit/ledger write,
+reconciliation, cancellation, correction, strategy execution, and automatic
+trading out of the runtime path. See
+`docs/132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md`
+and
+`docs/133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md`.

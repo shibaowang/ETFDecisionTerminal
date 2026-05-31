@@ -492,6 +492,12 @@
   [131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md](131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md)
   defines TASK-166 source, DataServiceActions, no external source, and no
   side-effect probes.
+- ShellAccounting broker sandbox runtime mode source authorization gate:
+  [132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md](132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md)
+  records TASK-167 gate-only policy for any future sandbox runtime mode source.
+- ShellAccounting broker sandbox runtime mode source authorization test plan:
+  [133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md](133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md)
+  defines TASK-167 static and runtime probes that keep sandbox runtime disabled.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

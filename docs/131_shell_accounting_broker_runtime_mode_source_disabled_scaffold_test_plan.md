@@ -96,3 +96,7 @@ TASK-166 defines tests for a disabled-only internal broker runtime mode source. 
 - [ ] TASK-165 and TASK-164 regression tests pass.
 - [ ] Full CTest passes.
 - [ ] Transport 50 passes.
+
+## TASK-167 Follow-Up Gate
+
+TASK-167 adds a gate-only test plan for a possible future sandbox runtime mode source. The TASK-166 disabled-only scaffold remains the runtime baseline: the default source still returns disabled, sandbox runtime remains disabled, external mode sources remain unauthorized, and no SDK/network/credentials/endpoint/order-placement/write/trading side effects are introduced.

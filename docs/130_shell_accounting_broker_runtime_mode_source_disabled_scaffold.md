@@ -65,3 +65,7 @@ TASK-166 tests cover source compilation, direct instantiation, default disabled 
 ## Unauthorized Future Scope
 
 Sandbox runtime, paper runtime, real runtime, external runtime mode source, broker credentials, broker endpoints, real broker SDK integration, real broker order placement, reconciliation, cancellation, correction, strategy execution, and automatic trading all require separate tasks and explicit authorization.
+
+## TASK-167 Follow-Up Gate
+
+TASK-167 adds a sandbox runtime mode source authorization gate only. It does not implement sandbox mode source selection, does not enable sandbox runtime, does not implement a sandbox adapter, and does not change the TASK-166 disabled-only source. Credentials, endpoints, SDK, network, real order placement, real broker order id storage, reconciliation, cancellation, correction, strategy execution, and automatic trading remain separately unauthorized.

@@ -1342,6 +1342,19 @@ network, credentials, endpoint, real broker order id, order placement,
 database/audit/ledger write, reconciliation, cancellation, correction, strategy
 execution, or automatic trading without separate explicit authorization.
 
+## TASK-167 Broker Sandbox Runtime Mode Source Authorization Gate Prompt Rule
+
+Future sandbox runtime mode source work must reference docs/132 and docs/133.
+TASK-167 itself is gate-only: do not implement a sandbox runtime mode source,
+do not enable sandbox runtime, do not change the TASK-166 disabled-only source,
+and do not read broker mode from payload, QML, config, environment, command
+line, files, database, or secret stores. A future mode source may only select
+mode and must not read credentials, endpoints, account data, order data, or
+broker payloads. Do not add SDK, network, real credentials, endpoint values,
+real broker order id, order placement, DB/audit/ledger write, reconciliation,
+cancellation, correction, strategy execution, or automatic trading without
+separate explicit authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

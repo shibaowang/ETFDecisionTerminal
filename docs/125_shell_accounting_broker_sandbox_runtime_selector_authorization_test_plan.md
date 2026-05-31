@@ -88,3 +88,7 @@ Verify TASK-160, TASK-161, and TASK-162 docs/tests remain valid and that policy 
 - [ ] transport_local_socket_echo 50 repeat passes.
 - [ ] git diff --check passes.
 - [ ] User explicitly authorizes future runtime selector wiring before implementation.
+
+## TASK-164 Baseline Update
+
+After TASK-164, this gate allows disabled-default selector wiring in DataServiceActions. The updated negative probe is no sandbox runtime mode source / no external mode source, not no selector reference at all. DataServiceActions may use `defaultShellAccountingBrokerOrderPortMode()` and `shellAccountingBrokerOrderPortForMode(mode)` only.

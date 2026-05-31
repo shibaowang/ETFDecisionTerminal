@@ -1330,3 +1330,17 @@ endpoint values, real broker order ids, order placement, database writes, audit
 writes, ledger writes, reconciliation, cancellation, correction, strategy
 execution, automatic trading, production QML/startup/Presenter exposure, or
 schema changes unless a later task explicitly authorizes that exact scope.
+
+## TASK-164 Broker Sandbox Runtime Selector Disabled Wiring Prompt Rule
+
+Future broker runtime selector work must reference docs/126 and docs/127 after
+TASK-164. DataServiceActions may use the selector only through
+`defaultShellAccountingBrokerOrderPortMode()` unless a later task explicitly
+authorizes a runtime mode source. Preserve disabled/null provider behavior,
+keep sandbox runtime disabled, and do not read broker mode from request
+payloads, QML, config, environment variables, command-line arguments, files,
+databases, or secret stores. Do not add broker SDKs, network calls,
+credentials, endpoint values, real broker order ids, order placement, database
+writes, audit writes, ledger writes, reconciliation, cancellation, correction,
+strategy execution, automatic trading, production QML/startup exposure, or
+schema changes unless a later task explicitly authorizes that exact scope.

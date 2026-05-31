@@ -64,3 +64,7 @@ Runtime selector wiring, runtime mode source, credentials injection, sandbox ada
 - `transport_local_socket_echo` 50 repeat passes.
 - `git status --short` is clean.
 - User explicitly authorizes runtime selector wiring.
+
+## TASK-164 Baseline Update
+
+TASK-164 completes disabled-default runtime selector wiring. The authorized post-TASK-164 state is: DataServiceActions may call `defaultShellAccountingBrokerOrderPortMode()` and `shellAccountingBrokerOrderPortForMode(mode)`, but no external runtime mode source is authorized. Sandbox runtime remains disabled, sandbox scaffold does not enter runtime, default behavior remains disabled/null provider behavior, and empty / unknown / paper / real modes still fail closed unless separately authorized.

@@ -104,3 +104,7 @@ Verify docs/118 through docs/121 remain valid and continue to describe authoriza
 - [ ] transport_local_socket_echo 50 repeat passes.
 - [ ] git diff --check passes.
 - [ ] No production QML, startup, schema, DataServiceActions runtime, broker SDK, network, credential, real broker order id, order placement, strategy, or automatic trading changes are introduced.
+
+## TASK-163 Follow-Up Gate
+
+TASK-163 adds a gate and test plan for future broker sandbox runtime selector wiring. TASK-162 selector tests remain the regression baseline: selector existence is not runtime broker enablement, and DataServiceActions runtime wiring remains separately authorized.

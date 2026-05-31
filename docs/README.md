@@ -456,6 +456,17 @@
   defines TASK-162 selector response checks, DataServiceActions regression,
   QML/startup exposure scans, and no SDK / no network / no credentials / no
   order-placement probes.
+- ShellAccounting broker sandbox runtime selector authorization gate:
+  [124_shell_accounting_broker_sandbox_runtime_selector_authorization_gate.md](124_shell_accounting_broker_sandbox_runtime_selector_authorization_gate.md)
+  defines TASK-163 future runtime selector wiring authorization boundaries:
+  default disabled, DataService-only, fail-closed unknown modes, no runtime
+  mode source, no credentials injection, no SDK/network/order placement, and
+  rollback to TASK-159 disabled provider.
+- ShellAccounting broker sandbox runtime selector authorization test plan:
+  [125_shell_accounting_broker_sandbox_runtime_selector_authorization_test_plan.md](125_shell_accounting_broker_sandbox_runtime_selector_authorization_test_plan.md)
+  defines TASK-163 static probes for no DataServiceActions runtime wiring, no
+  QML/startup/Presenter exposure, no SDK, no network, no credentials, no order
+  placement, and TASK-160/161/162 regression coverage.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

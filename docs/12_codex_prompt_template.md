@@ -1317,3 +1317,16 @@ credential reads, usable credential examples, real broker order ids, order
 placement, database writes, audit writes, reconciliation, cancellation,
 correction, strategy execution, automatic trading, or schema changes unless a
 later task explicitly authorizes that exact scope.
+
+## TASK-163 Broker Sandbox Runtime Selector Authorization Prompt Rule
+
+Future broker sandbox runtime selector wiring tasks must reference docs/124 and
+docs/125. TASK-163 itself is gate-only and does not connect the selector to
+`DataServiceActions` runtime. Keep runtime wiring separately authorized,
+DataService-only, default-disabled, CI no-network, credential-isolated, and
+fail-closed for empty / unknown / unsupported / paper / real modes. Do not add
+runtime mode sources, credentials injection, broker SDKs, network calls,
+endpoint values, real broker order ids, order placement, database writes, audit
+writes, ledger writes, reconciliation, cancellation, correction, strategy
+execution, automatic trading, production QML/startup/Presenter exposure, or
+schema changes unless a later task explicitly authorizes that exact scope.

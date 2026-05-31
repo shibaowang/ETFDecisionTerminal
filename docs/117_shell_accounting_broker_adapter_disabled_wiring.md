@@ -73,3 +73,7 @@ Rollback can disable broker adapter wiring by keeping the default provider bound
 ## Future Scope Requires Separate Tasks
 
 Sandbox adapter, paper adapter, real adapter, real order placement, broker order id storage, reconciliation, cancellation, correction, broker credentials, broker SDK integration, strategy execution, and automatic trading each require separate explicit authorization before implementation.
+
+## TASK-160 Sandbox Authorization Gate Update
+
+TASK-160 adds a sandbox broker adapter authorization gate and test plan. It does not change TASK-159 disabled/null wiring, does not implement a sandbox adapter, and does not authorize broker SDKs, broker network calls, real credentials, real broker order ids, real order placement, reconciliation, cancellation, correction, strategy execution, or automatic trading.

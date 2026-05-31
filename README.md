@@ -2739,3 +2739,17 @@ credentials, change production QML/startup, change TASK-148 / TASK-150 /
 TASK-152 / TASK-154 behavior, execute strategy, enable automatic trading, or
 modify schema. See
 `docs/117_shell_accounting_broker_adapter_disabled_wiring.md`.
+
+## TASK-160 Broker Sandbox Adapter Authorization Gate
+
+ShellAccounting now has a sandbox broker adapter authorization gate and test
+plan. TASK-160 is gate-only: it does not implement sandbox, paper, or real
+broker adapters; does not import broker SDKs; does not call broker networks; and
+does not place real orders. Disabled/null broker adapter wiring from TASK-159
+remains unchanged and remains the default.
+
+The gate documents sandbox / paper / real mode isolation, fake-adapter
+test-only scope, credential isolation, CI no-network policy, DataService-only
+broker adapter access, and fail-closed rollback requirements. See
+`docs/118_shell_accounting_broker_sandbox_adapter_authorization_gate.md` and
+`docs/119_shell_accounting_broker_sandbox_adapter_authorization_test_plan.md`.

@@ -1280,3 +1280,14 @@ replace the disabled provider with a live adapter, do not add broker SDK,
 network calls, credentials, real broker order ids, real placement, strategy
 execution, automatic trading, or schema changes unless the task explicitly
 authorizes that scope.
+
+## TASK-160 Broker Sandbox Adapter Authorization Prompt Rule
+
+Future sandbox broker adapter tasks must reference docs/118 and docs/119. Keep
+disabled/null as the default mode, keep sandbox / paper / real modes isolated,
+keep fake adapters test-only, and keep broker adapter access DataService-only.
+Do not commit real credentials, secrets, tokens, keys, password values, usable
+examples, broker SDKs, broker endpoints, broker network calls, real order ids,
+real order placement, reconciliation, cancellation, correction, strategy
+execution, or automatic trading unless a later task explicitly authorizes that
+specific implementation scope.

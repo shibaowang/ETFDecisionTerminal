@@ -10,6 +10,8 @@ TASK-119 through TASK-157 are prerequisites. TASK-154 provides a broker order dr
 
 TASK-159 update: DataServiceApi now wires the disabled/null broker port as the default internal provider. The implementation gate's no-adapter-yet check has evolved to allow only disabled/null adapter wiring. Concrete sandbox, paper, and real adapter implementations remain forbidden.
 
+TASK-160 update: a sandbox broker adapter authorization gate now exists. It is documentation and test-only guard work. Sandbox, paper, and real adapter implementations remain forbidden until a future implementation task explicitly authorizes one of those modes.
+
 ## TASK-157 Interface Scaffold Complete
 
 The only production broker-facing type currently allowed is the abstract port scaffold from TASK-157. It is an interface boundary and disabled/null adapter, not a concrete broker adapter implementation. Future implementation work must preserve this separation: interface ownership can stay in DataServiceApi, while real adapter wiring must be separately authorized and default disabled.

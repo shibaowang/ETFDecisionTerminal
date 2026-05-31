@@ -68,3 +68,7 @@ Rollback is to keep using the TASK-159 disabled/null provider. Disabling or remo
 ## Unauthorized Follow-Up Scope
 
 Runtime sandbox enablement, broker credential injection, endpoint configuration, paper / real adapters, broker SDK integration, order placement, broker order id storage, reconciliation, cancellation, correction, strategy execution, automatic trading, and real broker order implementation must each be separately authorized.
+
+## TASK-163 Follow-Up Gate
+
+TASK-163 adds the broker sandbox runtime selector authorization gate. Runtime selector wiring remains unimplemented after TASK-163. TASK-162 selector behavior remains disabled-default and test-only unless a later task explicitly authorizes DataService runtime wiring.

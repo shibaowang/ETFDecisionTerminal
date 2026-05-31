@@ -2785,3 +2785,21 @@ or audit writes, no reconciliation / cancellation / correction, no strategy
 execution, no automatic trading, and no production QML/startup changes. See
 `docs/122_shell_accounting_broker_sandbox_mode_selector.md` and
 `docs/123_shell_accounting_broker_sandbox_mode_selector_test_plan.md`.
+
+## TASK-163 Broker Sandbox Runtime Selector Authorization Gate
+
+ShellAccounting now has a gate for future broker sandbox runtime selector
+wiring. TASK-163 is gate-only: it does not connect the TASK-162 selector to
+`DataServiceActions`, does not enable sandbox runtime, does not replace the
+TASK-159 disabled/null provider, and does not modify production QML, startup,
+Presenter, Controller, ShellServices, ShellCore, schema, or broker behavior.
+
+The gate requires future runtime selector wiring to be separately authorized,
+DataService-only, default-disabled, CI no-network, credential-isolated, and
+fail-closed for empty / unknown / unsupported / paper / real modes. It adds no
+broker SDK, network calls, credentials, endpoints, real broker order ids, order
+placement, database / audit / ledger writes, reconciliation, cancellation,
+correction, strategy execution, or automatic trading. See
+`docs/124_shell_accounting_broker_sandbox_runtime_selector_authorization_gate.md`
+and
+`docs/125_shell_accounting_broker_sandbox_runtime_selector_authorization_test_plan.md`.

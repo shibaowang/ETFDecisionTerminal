@@ -1331,6 +1331,17 @@ writes, ledger writes, reconciliation, cancellation, correction, strategy
 execution, automatic trading, production QML/startup/Presenter exposure, or
 schema changes unless a later task explicitly authorizes that exact scope.
 
+## TASK-165 Broker Runtime Mode Source Authorization Gate Prompt Rule
+
+Future broker runtime mode source tasks must reference docs/128 and docs/129.
+TASK-165 itself is gate-only: do not implement runtime mode source selection,
+do not enable sandbox runtime, do not change DataServiceActions disabled-default
+wiring, and do not read broker mode from payload, QML, config, environment,
+command line, files, database, or secret stores. Do not add broker SDK,
+network, credentials, endpoint, real broker order id, order placement,
+database/audit/ledger write, reconciliation, cancellation, correction, strategy
+execution, or automatic trading without separate explicit authorization.
+
 ## TASK-164 Broker Sandbox Runtime Selector Disabled Wiring Prompt Rule
 
 Future broker runtime selector work must reference docs/126 and docs/127 after

@@ -5,6 +5,7 @@ add_library(ETFDataServiceApi STATIC
     src/JsonBuilders.cpp
     src/ShellAccountingBrokerOrderPort.cpp
     src/ShellAccountingBrokerOrderPortProvider.cpp
+    src/ShellAccountingBrokerSandboxOrderPortScaffold.cpp
     src/WriteActionPolicy.cpp
 )
 

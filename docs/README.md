@@ -436,6 +436,17 @@
   defines TASK-160 static probes for no sandbox/paper/real adapter, no SDK, no
   network call, no credential values, and TASK-159/TASK-154 regression
   preservation.
+- ShellAccounting broker sandbox adapter scaffold:
+  [120_shell_accounting_broker_sandbox_adapter_scaffold.md](120_shell_accounting_broker_sandbox_adapter_scaffold.md)
+  records TASK-161 scaffold-only sandbox broker adapter behavior: not a usable
+  broker adapter, not default-wired, CI no-network, no credentials, no real
+  broker order id, no order placement, no database write, and no strategy or
+  automatic trading.
+- ShellAccounting broker sandbox adapter scaffold test plan:
+  [121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md](121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md)
+  defines TASK-161 direct response checks, static scans, docs probes, TASK-160
+  gate regression checks, and TASK-159/TASK-154 disabled / dry-run regression
+  preservation.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

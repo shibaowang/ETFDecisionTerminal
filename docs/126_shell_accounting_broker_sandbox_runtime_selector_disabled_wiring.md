@@ -65,3 +65,7 @@ Runtime mode source wiring, sandbox runtime enablement, credentials injection, s
 ## TASK-165 Follow-Up Gate
 
 TASK-165 adds a broker runtime mode source authorization gate after this disabled-default wiring. It does not implement mode source selection, does not enable sandbox runtime, and does not change the TASK-164 DataServiceActions disabled-default selector wiring.
+
+## TASK-166 Follow-Up Scaffold
+
+TASK-166 adds a disabled-only internal broker runtime mode source. `DataServiceActions` may obtain the broker mode from that source, but the source only returns disabled and the selected provider remains the TASK-159 disabled/null provider. External runtime mode source, sandbox runtime, SDK/network/credentials/endpoint, real broker order id, order placement, database/audit/ledger write, reconciliation, cancellation, correction, strategy execution, and automatic trading remain unauthorized.

@@ -484,6 +484,14 @@
   [129_shell_accounting_broker_runtime_mode_source_authorization_test_plan.md](129_shell_accounting_broker_runtime_mode_source_authorization_test_plan.md)
   defines TASK-165 static probes that keep mode source unimplemented and
   sandbox runtime disabled.
+- ShellAccounting broker runtime mode source disabled scaffold:
+  [130_shell_accounting_broker_runtime_mode_source_disabled_scaffold.md](130_shell_accounting_broker_runtime_mode_source_disabled_scaffold.md)
+  records TASK-166 disabled-only internal source wiring with no external
+  runtime source and no sandbox runtime.
+- ShellAccounting broker runtime mode source disabled scaffold test plan:
+  [131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md](131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md)
+  defines TASK-166 source, DataServiceActions, no external source, and no
+  side-effect probes.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

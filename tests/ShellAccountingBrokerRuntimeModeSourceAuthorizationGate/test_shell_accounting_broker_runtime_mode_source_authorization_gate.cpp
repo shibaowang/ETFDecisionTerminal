@@ -233,8 +233,9 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     }
 
     if (caseName == "dataserviceactions_default_mode_only") {
-        return containsAllTokens(actions, {"ShellAccountingBrokerOrderPortModeSelector.h",
-                                          "defaultShellAccountingBrokerOrderPortMode()",
+        return containsAllTokens(actions, {"ShellAccountingBrokerRuntimeModeSource.h",
+                                          "defaultShellAccountingBrokerRuntimeModeSource()",
+                                          ".brokerOrderPortMode()",
                                           "shellAccountingBrokerOrderPortForMode(brokerPortMode)"}) &&
                containsNoTokens(actions, {"shellAccountingBrokerOrderPortForMode(\"sandbox\")",
                                           "shellAccountingBrokerOrderPortForMode(\"paper\")",
@@ -317,7 +318,7 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
                                             "ShellAccountingBrokerSandboxModeSelector",
                                             "ShellAccountingBrokerSandboxRuntimeSelectorAuthorizationGate",
                                             "ShellAccountingBrokerSandboxRuntimeSelectorDisabledWiring"}) &&
-               containsAllTokens(docs, {"TASK-160 through TASK-164", "TASK-164 disabled-default selector wiring"});
+               containsAllTokens(docs, {"TASK-160 through TASK-164", "disabled-default selector wiring"});
     }
 
     if (caseName == "docs_tests_policy_keywords_not_production") {

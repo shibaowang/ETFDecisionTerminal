@@ -266,8 +266,9 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     }
 
     if (caseName == "disabled_default_runtime_wiring_only") {
-        return containsAllTokens(dataServiceActions, {"ShellAccountingBrokerOrderPortModeSelector.h",
-                                                     "defaultShellAccountingBrokerOrderPortMode()",
+        return containsAllTokens(dataServiceActions, {"ShellAccountingBrokerRuntimeModeSource.h",
+                                                     "defaultShellAccountingBrokerRuntimeModeSource()",
+                                                     ".brokerOrderPortMode()",
                                                      "shellAccountingBrokerOrderPortForMode(brokerPortMode)"}) &&
                containsNoTokens(dataServiceActions, {"shellAccountingBrokerOrderPortForMode(\"sandbox\")",
                                                      "shellAccountingBrokerOrderPortForMode(\"paper\")",

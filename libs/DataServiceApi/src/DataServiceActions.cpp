@@ -9,7 +9,7 @@
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftConfirmationRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftRepository.h"
-#include "DataServiceApi/ShellAccountingBrokerOrderPortModeSelector.h"
+#include "DataServiceApi/ShellAccountingBrokerRuntimeModeSource.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
@@ -2186,7 +2186,8 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     }
 
     const auto& result = dryRunResult.value();
-    const auto brokerPortMode = etfdt::dataservice::defaultShellAccountingBrokerOrderPortMode();
+    const auto brokerPortMode =
+        etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode();
     const auto brokerPortResponse =
         etfdt::dataservice::shellAccountingBrokerOrderPortForMode(brokerPortMode).submitOrderEnvelope(
             brokerOrderPortRequestFromDryRun(request, result));

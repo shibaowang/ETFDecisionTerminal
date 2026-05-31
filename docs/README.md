@@ -467,6 +467,16 @@
   defines TASK-163 static probes for no DataServiceActions runtime wiring, no
   QML/startup/Presenter exposure, no SDK, no network, no credentials, no order
   placement, and TASK-160/161/162 regression coverage.
+- ShellAccounting broker sandbox runtime selector disabled wiring:
+  [126_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring.md](126_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring.md)
+  records TASK-164 DataServiceActions broker dry-run selector wiring through
+  `defaultShellAccountingBrokerOrderPortMode()` only, preserving disabled/null
+  provider runtime behavior and keeping sandbox runtime unavailable.
+- ShellAccounting broker sandbox runtime selector disabled wiring test plan:
+  [127_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring_test_plan.md](127_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring_test_plan.md)
+  defines TASK-164 static and runtime probes for disabled-default selector
+  wiring, no external mode source, no sandbox runtime, and no SDK / network /
+  credentials / order-placement side effects.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

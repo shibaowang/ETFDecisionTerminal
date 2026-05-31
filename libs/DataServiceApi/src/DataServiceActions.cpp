@@ -9,7 +9,7 @@
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftConfirmationRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftRepository.h"
-#include "DataServiceApi/ShellAccountingBrokerOrderPortProvider.h"
+#include "DataServiceApi/ShellAccountingBrokerOrderPortModeSelector.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
@@ -2186,8 +2186,10 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     }
 
     const auto& result = dryRunResult.value();
-    const auto brokerPortResponse = etfdt::dataservice::defaultShellAccountingBrokerOrderPort().submitOrderEnvelope(
-        brokerOrderPortRequestFromDryRun(request, result));
+    const auto brokerPortMode = etfdt::dataservice::defaultShellAccountingBrokerOrderPortMode();
+    const auto brokerPortResponse =
+        etfdt::dataservice::shellAccountingBrokerOrderPortForMode(brokerPortMode).submitOrderEnvelope(
+            brokerOrderPortRequestFromDryRun(request, result));
     std::ostringstream payload;
     payload << "{"
             << "\"module\":\"accounting\","

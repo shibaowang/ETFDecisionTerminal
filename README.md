@@ -2803,3 +2803,20 @@ correction, strategy execution, or automatic trading. See
 `docs/124_shell_accounting_broker_sandbox_runtime_selector_authorization_gate.md`
 and
 `docs/125_shell_accounting_broker_sandbox_runtime_selector_authorization_test_plan.md`.
+
+## TASK-164 Broker Sandbox Runtime Selector Disabled Wiring
+
+ShellAccounting now wires the broker dry-run path through the TASK-162 selector,
+but only with `defaultShellAccountingBrokerOrderPortMode()`. The default mode is
+still disabled, so runtime behavior remains equivalent to the TASK-159
+disabled/null provider. This is not sandbox runtime enablement.
+
+TASK-164 adds no runtime mode source, no request/QML/config/env/command-line
+mode read, no sandbox / paper / real runtime selection, no broker SDK, no
+network calls, no credentials or endpoints, no real broker order id, no order
+placement, no database / audit / ledger write, no reconciliation /
+cancellation / correction, no strategy execution, no automatic trading, and no
+production QML/startup/schema change. See
+`docs/126_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring.md`
+and
+`docs/127_shell_accounting_broker_sandbox_runtime_selector_disabled_wiring_test_plan.md`.

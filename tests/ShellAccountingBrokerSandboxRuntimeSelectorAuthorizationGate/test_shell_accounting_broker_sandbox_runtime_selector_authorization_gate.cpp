@@ -159,11 +159,17 @@ std::string task160To162DocsText(const std::filesystem::path& root)
            readTextFile(root / "docs" / "123_shell_accounting_broker_sandbox_mode_selector_test_plan.md");
 }
 
-std::vector<std::string> selectorRuntimeWiringTokens()
+std::vector<std::string> selectorExposureTokens()
 {
     return {"ShellAccountingBrokerOrderPortModeSelector", "shellAccountingBrokerOrderPortForMode",
-            "defaultShellAccountingBrokerOrderPortMode", "broker sandbox runtime selector",
-            "brokerRuntimeMode", "sandboxRuntimeMode"};
+            "defaultShellAccountingBrokerOrderPortMode", "brokerRuntimeMode", "sandboxRuntimeMode"};
+}
+
+std::vector<std::string> externalRuntimeModeSourceTokens()
+{
+    return {"brokerRuntimeMode", "sandboxRuntimeMode", "runtimeBrokerMode",
+            "extractJsonStringField(context.request.payloadJson, \"broker", "getenv(", "qgetenv(",
+            "QSettings", "commandLineMode", "credentialStore", "secretManager"};
 }
 
 std::vector<std::string> brokerSdkTokens()
@@ -259,8 +265,14 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
                containsAllTokens(prompt, {"TASK-163", "docs/124", "docs/125"});
     }
 
-    if (caseName == "no_dataserviceactions_runtime_wiring") {
-        return containsNoTokens(dataServiceActions, selectorRuntimeWiringTokens());
+    if (caseName == "disabled_default_runtime_wiring_only") {
+        return containsAllTokens(dataServiceActions, {"ShellAccountingBrokerOrderPortModeSelector.h",
+                                                     "defaultShellAccountingBrokerOrderPortMode()",
+                                                     "shellAccountingBrokerOrderPortForMode(brokerPortMode)"}) &&
+               containsNoTokens(dataServiceActions, {"shellAccountingBrokerOrderPortForMode(\"sandbox\")",
+                                                     "shellAccountingBrokerOrderPortForMode(\"paper\")",
+                                                     "shellAccountingBrokerOrderPortForMode(\"real\")"}) &&
+               containsNoTokens(dataServiceActions, externalRuntimeModeSourceTokens());
     }
 
     if (caseName == "default_provider_disabled") {
@@ -276,11 +288,11 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
 
     if (caseName == "selector_not_in_startup") {
         const auto startup = readTextFile(root / "apps" / "ETFDecisionShell" / "src" / "main.cpp");
-        return containsNoTokens(startup, selectorRuntimeWiringTokens());
+        return containsNoTokens(startup, selectorExposureTokens());
     }
 
     if (caseName == "no_qml_presenter_exposure") {
-        return containsNoTokens(productionUiAndShell, selectorRuntimeWiringTokens()) &&
+        return containsNoTokens(productionUiAndShell, selectorExposureTokens()) &&
                containsNoTokens(productionUiAndShell, {"brokerRuntimeMode", "brokerCredential", "brokerEndpoint"});
     }
 
@@ -329,8 +341,8 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
 
     if (caseName == "docs_tests_policy_keywords_not_production") {
         return containsAllTokens(docs, {"credentials injection", "broker SDK", "order placement"}) &&
-               containsNoTokens(dataServiceActions, selectorRuntimeWiringTokens()) &&
-               containsNoTokens(productionUiAndShell, selectorRuntimeWiringTokens());
+               containsNoTokens(dataServiceActions, externalRuntimeModeSourceTokens()) &&
+               containsNoTokens(productionUiAndShell, selectorExposureTokens());
     }
 
     if (caseName == "future_runtime_wiring_requires_new_task") {

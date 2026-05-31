@@ -1342,6 +1342,19 @@ network, credentials, endpoint, real broker order id, order placement,
 database/audit/ledger write, reconciliation, cancellation, correction, strategy
 execution, or automatic trading without separate explicit authorization.
 
+## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
+
+Future broker runtime mode source work must reference docs/130 and docs/131
+after TASK-166. The only authorized source is disabled-only:
+`defaultShellAccountingBrokerRuntimeModeSource()` may return a source whose
+`brokerOrderPortMode()` is disabled, and `DataServiceActions` may pass that
+mode to `shellAccountingBrokerOrderPortForMode(brokerPortMode)`. Do not read
+mode from payload, QML, config, environment, command line, files, database, or
+secret stores. Do not enable sandbox, paper, or real runtime. Do not add SDK,
+network, credentials, endpoint, real broker order id, order placement,
+database/audit/ledger write, reconciliation, cancellation, correction, strategy
+execution, or automatic trading without separate explicit authorization.
+
 ## TASK-164 Broker Sandbox Runtime Selector Disabled Wiring Prompt Rule
 
 Future broker runtime selector work must reference docs/126 and docs/127 after

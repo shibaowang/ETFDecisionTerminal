@@ -2836,3 +2836,19 @@ trading. See
 `docs/128_shell_accounting_broker_runtime_mode_source_authorization_gate.md`
 and
 `docs/129_shell_accounting_broker_runtime_mode_source_authorization_test_plan.md`.
+
+## TASK-166 Broker Runtime Mode Source Disabled Scaffold
+
+TASK-166 adds the internal disabled-only broker runtime mode source scaffold.
+The source only returns disabled mode and `DataServiceActions` uses it before
+calling `shellAccountingBrokerOrderPortForMode(brokerPortMode)`, preserving the
+TASK-159 disabled/null provider behavior.
+
+TASK-166 does not implement an external runtime mode source, does not enable
+sandbox runtime, does not add SDK/network/credentials/endpoint values, does not
+create a real broker order id, does not place orders, does not write database,
+audit, or ledger tables, and does not add reconciliation, cancellation,
+correction, strategy execution, or automatic trading. See
+`docs/130_shell_accounting_broker_runtime_mode_source_disabled_scaffold.md`
+and
+`docs/131_shell_accounting_broker_runtime_mode_source_disabled_scaffold_test_plan.md`.

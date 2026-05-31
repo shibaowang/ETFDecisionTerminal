@@ -1,6 +1,6 @@
 #include "ShellAccountingBrokerOrderImplementation.h"
 
-#include "DataServiceApi/ShellAccountingBrokerOrderPortModeSelector.h"
+#include "DataServiceApi/ShellAccountingBrokerRuntimeModeSource.h"
 
 #include <QJsonObject>
 
@@ -257,14 +257,16 @@ bool runCase(const std::filesystem::path& root, const std::filesystem::path& mig
     }
 
     if (caseName == "uses_selector") {
-        return containsAllTokens(dataServiceActions, {"ShellAccountingBrokerOrderPortModeSelector.h",
-                                                     "defaultShellAccountingBrokerOrderPortMode()",
+        return containsAllTokens(dataServiceActions, {"ShellAccountingBrokerRuntimeModeSource.h",
+                                                     "defaultShellAccountingBrokerRuntimeModeSource()",
+                                                     ".brokerOrderPortMode()",
                                                      "shellAccountingBrokerOrderPortForMode(brokerPortMode)"});
     }
 
     if (caseName == "default_mode_only") {
         return containsAllTokens(dataServiceActions, {"const auto brokerPortMode",
-                                                     "defaultShellAccountingBrokerOrderPortMode()"}) &&
+                                                     "defaultShellAccountingBrokerRuntimeModeSource()",
+                                                     ".brokerOrderPortMode()"}) &&
                containsNoTokens(dataServiceActions, externalModeSourceTokens());
     }
 

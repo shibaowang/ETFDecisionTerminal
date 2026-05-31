@@ -72,3 +72,7 @@ Verify no production QML / startup / Presenter exposure, no broker SDK, no netwo
 ## TASK-165 Follow-Up Gate
 
 TASK-165 adds a separate broker runtime mode source authorization gate. The TASK-164 tests remain the disabled-default selector wiring baseline and must continue to prove that no payload, QML, config, environment, command-line, file, database, or secret-store mode source is implemented.
+
+## TASK-166 Follow-Up Scaffold
+
+TASK-166 evolves the disabled-default baseline so `DataServiceActions` can obtain disabled mode through `defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()`. The runtime selector disabled wiring tests must continue to prove the mode is disabled, sandbox runtime is not enabled, external sources are absent, and no SDK/network/credentials/endpoint/order-placement/write/trading side effects are introduced.

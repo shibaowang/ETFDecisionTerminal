@@ -5,12 +5,14 @@ using namespace etfdt::tests::shell_accounting_broker_sandbox_mode_selector;
 int main(int argc, char** argv)
 {
     const auto actions = dataServiceActionsText(sourceRoot(argc, argv));
-    return expect(actions.find("ShellAccountingBrokerOrderPortModeSelector.h") != std::string::npos,
-                  "DataServiceActions must include the disabled-default mode selector") &&
-            expect(actions.find("defaultShellAccountingBrokerOrderPortMode()") != std::string::npos,
-                   "DataServiceActions must use the disabled default mode") &&
+    return expect(actions.find("ShellAccountingBrokerRuntimeModeSource.h") != std::string::npos,
+                  "DataServiceActions must include the disabled-only runtime mode source") &&
+            expect(actions.find("defaultShellAccountingBrokerRuntimeModeSource()") != std::string::npos,
+                   "DataServiceActions must use the disabled-only runtime mode source") &&
+            expect(actions.find(".brokerOrderPortMode()") != std::string::npos,
+                   "DataServiceActions must obtain mode from the disabled-only source") &&
             expect(actions.find("shellAccountingBrokerOrderPortForMode(brokerPortMode)") != std::string::npos,
-                   "DataServiceActions must select the port from the disabled default mode") &&
+                   "DataServiceActions must select the port from the disabled-only source mode") &&
             expect(actions.find("shellAccountingBrokerOrderPortForMode(\"sandbox\")") == std::string::npos,
                    "DataServiceActions must not select sandbox mode at runtime") &&
             expect(actions.find("shellAccountingBrokerOrderPortForMode(\"paper\")") == std::string::npos,

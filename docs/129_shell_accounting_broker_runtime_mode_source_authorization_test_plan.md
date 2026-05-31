@@ -2,7 +2,7 @@
 
 ## Document Purpose
 
-TASK-165 defines tests for future broker runtime mode source authorization. This test plan does not implement mode source selection, sandbox runtime, credentials injection, endpoint configuration, broker SDK integration, or order placement.
+TASK-165 defines tests for future broker runtime mode source authorization. TASK-166 has since added a disabled-only internal source scaffold. This test plan does not authorize external mode source selection, sandbox runtime, credentials injection, endpoint configuration, broker SDK integration, or order placement.
 
 ## Test Matrix
 
@@ -52,6 +52,7 @@ TASK-165 defines tests for future broker runtime mode source authorization. This
 ### Regression
 
 - TASK-160 through TASK-164 docs and tests remain valid.
+- TASK-166 disabled-only source tests pass while external mode source remains unauthorized.
 - Full CTest passes.
 - Transport echo passes 50 repeats.
 - `git diff --check` passes.

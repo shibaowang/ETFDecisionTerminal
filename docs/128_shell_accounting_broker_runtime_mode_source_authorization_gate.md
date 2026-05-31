@@ -2,7 +2,7 @@
 
 ## Document Purpose
 
-TASK-165 defines the authorization gate for a future ShellAccounting broker runtime mode source. This document does not implement a runtime mode source, does not read broker mode from any runtime input, does not enable sandbox runtime, and does not change the TASK-164 disabled-default selector wiring.
+TASK-165 defines the authorization gate for a future ShellAccounting broker runtime mode source. TASK-166 has since added a disabled-only internal source scaffold. This document still does not authorize any external runtime mode source, does not read broker mode from any runtime input, does not enable sandbox runtime, and does not change the disabled-default selector semantics.
 
 Static gate summary phrases: runtime mode source authorization gate; mode source not implemented; sandbox runtime remains disabled; DataService-only future boundary; default disabled provider remains active; CI no-network; credentials isolation; rollback to TASK-159 disabled/null provider; no real broker order id; no order placement.
 
@@ -12,10 +12,13 @@ Static gate summary phrases: runtime mode source authorization gate; mode source
 - TASK-160 through TASK-163 established broker dry-run, sandbox adapter, mode selector, and runtime selector authorization gates.
 - TASK-164 wired DataServiceActions to the selector only through `defaultShellAccountingBrokerOrderPortMode()` and `shellAccountingBrokerOrderPortForMode(brokerPortMode)`.
 - TASK-165 adds no mode source and no sandbox runtime enablement.
+- TASK-166 adds a disabled-only internal source that returns disabled mode and keeps the default disabled provider active.
 
 ## Future Runtime Mode Source Boundary
 
 Future runtime mode source work must be separately authorized. It must be DataService-only, allowlist-based, fail closed, testable, and rollback-ready. The default must remain disabled unless a later task explicitly authorizes a non-disabled runtime source and its operational boundary.
+
+TASK-166 is not that future external source. It only allows `DataServiceActions` to obtain the same disabled mode through a disabled-only internal source before calling `shellAccountingBrokerOrderPortForMode(brokerPortMode)`.
 
 Unknown, empty, unsupported, paper, and real values must fail closed. The policy is: sandbox runtime still requires a separate task. Sandbox may only be enabled by a later task that separately authorizes sandbox runtime behavior, sandbox adapter behavior, credentials isolation, and CI-safe test coverage.
 

@@ -93,3 +93,7 @@ Verify implementation scans are scoped to production source while docs and tests
 - [ ] git diff --check passes.
 - [ ] No production QML or startup changes.
 - [ ] No broker SDK, network, credential, real order placement, or database write is introduced.
+
+## TASK-162 Selector Regression
+
+After TASK-162, scaffold tests remain valid and the new selector tests must prove sandbox mode only selects `ShellAccountingBrokerSandboxOrderPortScaffold`, the default provider remains disabled, unsupported modes fail closed, DataServiceActions runtime behavior is unchanged, and no broker SDK, network, credentials, real broker order id, order placement, database write, audit write, strategy execution, or automatic trading is introduced.

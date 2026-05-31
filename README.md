@@ -2769,3 +2769,19 @@ scaffold-only boundary, CI no-network policy, credential isolation, no real
 order placement, and no strategy / automatic trading behavior. See
 `docs/120_shell_accounting_broker_sandbox_adapter_scaffold.md` and
 `docs/121_shell_accounting_broker_sandbox_adapter_scaffold_test_plan.md`.
+
+## TASK-162 Broker Sandbox Mode Selector
+
+ShellAccounting now has a disabled-default broker order port mode selector /
+factory boundary. The selector can explicitly choose disabled mode, sandbox
+scaffold mode, or unsupported mode in tests. It is not runtime broker
+enablement: the default provider remains TASK-159 disabled/null, DataService
+runtime actions are unchanged, and sandbox mode only returns the TASK-161
+not-configured / unavailable / dry-run-only scaffold.
+
+TASK-162 adds no broker SDK, no network calls, no credential reads or usable
+credential examples, no real broker order id, no order placement, no database
+or audit writes, no reconciliation / cancellation / correction, no strategy
+execution, no automatic trading, and no production QML/startup changes. See
+`docs/122_shell_accounting_broker_sandbox_mode_selector.md` and
+`docs/123_shell_accounting_broker_sandbox_mode_selector_test_plan.md`.

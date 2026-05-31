@@ -78,3 +78,7 @@ Rollback is the current default: keep TASK-159 disabled/null provider active. Re
 ## Unauthorized Follow-Up Scope
 
 Real sandbox runtime wiring, credential injection, endpoint configuration, broker SDK integration, order placement, broker order id storage, reconciliation, cancellation, correction, strategy execution, automatic trading, and real broker order implementation must each be separately authorized.
+
+## TASK-162 Selector Update
+
+TASK-162 adds a disabled-default selector / factory boundary for explicit test selection of disabled mode, sandbox scaffold mode, and unsupported mode. The selector is not runtime broker enablement, is not wired into production startup or DataServiceActions, and does not replace the TASK-159 disabled/null default provider. Sandbox mode still selects only this TASK-161 scaffold and remains not configured / unavailable / dry-run-only.

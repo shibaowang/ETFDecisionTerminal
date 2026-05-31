@@ -8,12 +8,15 @@ The current runtime source remains disabled-only. Broker dry-run continues to us
 
 Static gate summary: TASK-167 does not implement sandbox mode source selection; Sandbox runtime is not enabled; no real credential values; no broker SDK; no network; no endpoint; no real broker order id; no order placement.
 
+TASK-168 follow-up: a direct-test sandbox runtime mode source scaffold is now authorized. That scaffold is not runtime enablement, `DataServiceActions` is not wired to it, and sandbox runtime remains disabled.
+
 ## Current Status
 
 - TASK-166 added `ShellAccountingBrokerRuntimeModeSource` as a disabled-only internal source.
 - `defaultShellAccountingBrokerRuntimeModeSource()` still returns disabled mode.
 - `DataServiceActions` must not read broker mode from payload, QML, config, environment, command line, files, database rows, or secret stores.
 - Sandbox runtime is not enabled.
+- TASK-168 may add a directly instantiated sandbox source scaffold for tests only.
 - Sandbox direct selector access remains scaffold unavailable / not configured and is not runtime mode.
 - Paper and real runtime sources remain unauthorized.
 
@@ -40,7 +43,7 @@ Sandbox runtime mode source is not sandbox adapter implementation. The following
 
 ## Forbidden Current Behavior
 
-TASK-167 does not allow production source to add a sandbox runtime source, payload mode source, QML mode source, config source, environment source, command-line source, file source, database source, or secret-store source.
+TASK-167 does not allow production runtime wiring for a sandbox runtime source, payload mode source, QML mode source, config source, environment source, command-line source, file source, database source, or secret-store source. TASK-168 only permits the explicitly named direct-test scaffold.
 
 TASK-167 adds no broker SDK, no network call, no URL, no host, no port, no endpoint, no credentials, no token, no key, no password, no secret value, no real broker order id, no real order placement, no DB write, no audit write, no ledger write, no reconciliation, no cancellation, no correction, no strategy execution, and no automatic trading.
 

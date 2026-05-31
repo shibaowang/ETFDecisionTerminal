@@ -8,6 +8,12 @@ DisabledShellAccountingBrokerRuntimeModeSource::brokerOrderPortMode() const noex
     return ShellAccountingBrokerOrderPortMode::Disabled;
 }
 
+ShellAccountingBrokerOrderPortMode
+SandboxShellAccountingBrokerRuntimeModeSourceScaffold::brokerOrderPortMode() const noexcept
+{
+    return ShellAccountingBrokerOrderPortMode::Sandbox;
+}
+
 ShellAccountingBrokerRuntimeModeSource& defaultShellAccountingBrokerRuntimeModeSource() noexcept
 {
     static DisabledShellAccountingBrokerRuntimeModeSource source;

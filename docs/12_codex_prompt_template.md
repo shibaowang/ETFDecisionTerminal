@@ -1355,6 +1355,19 @@ real broker order id, order placement, DB/audit/ledger write, reconciliation,
 cancellation, correction, strategy execution, or automatic trading without
 separate explicit authorization.
 
+## TASK-168 Broker Sandbox Runtime Mode Source Scaffold Prompt Rule
+
+Future sandbox runtime mode source work after TASK-168 must reference docs/134
+and docs/135. TASK-168 authorizes only a directly testable scaffold class that
+returns sandbox mode; it does not authorize runtime enablement. Keep
+`defaultShellAccountingBrokerRuntimeModeSource()` disabled-only, keep
+`DataServiceActions` unwired from the sandbox scaffold, and do not read broker
+mode from payload, QML, config, environment, command line, files, database, or
+secret stores. Do not add SDK, network, credentials, endpoint values, real
+broker order id, order placement, database/audit/ledger writes, reconciliation,
+cancellation, correction, strategy execution, or automatic trading without a
+separate explicit task.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

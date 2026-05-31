@@ -2867,3 +2867,19 @@ trading out of the runtime path. See
 `docs/132_shell_accounting_broker_sandbox_runtime_mode_source_authorization_gate.md`
 and
 `docs/133_shell_accounting_broker_sandbox_runtime_mode_source_authorization_test_plan.md`.
+
+## TASK-168 Broker Sandbox Runtime Mode Source Scaffold
+
+TASK-168 adds a directly testable sandbox runtime mode source scaffold. This is
+a scaffold, not runtime enablement: direct tests may instantiate
+`SandboxShellAccountingBrokerRuntimeModeSourceScaffold`, but
+`defaultShellAccountingBrokerRuntimeModeSource()` remains disabled-only and
+`DataServiceActions` is not wired to sandbox runtime.
+
+TASK-168 does not add payload/QML/config/env/command-line/file/database/secret
+store mode sources, broker SDK, network, credentials, endpoint, real broker
+order id, order placement, DB/audit/ledger write, reconciliation,
+cancellation, correction, strategy execution, or automatic trading. See
+`docs/134_shell_accounting_broker_sandbox_runtime_mode_source_scaffold.md`
+and
+`docs/135_shell_accounting_broker_sandbox_runtime_mode_source_scaffold_test_plan.md`.

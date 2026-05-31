@@ -149,9 +149,8 @@ std::string docsText(const std::filesystem::path& root)
 
 std::vector<std::string> sandboxRuntimeImplementationTokens()
 {
-    return {"SandboxRuntimeModeSource", "defaultShellAccountingBrokerSandboxRuntimeModeSource",
-            "SandboxShellAccountingBrokerRuntimeModeSource", "sandboxRuntimeMode",
-            "runtimeSandboxMode", "brokerPortMode = \"sandbox\""};
+    return {"defaultShellAccountingBrokerSandboxRuntimeModeSource",
+            "sandboxRuntimeMode", "runtimeSandboxMode", "brokerPortMode = \"sandbox\""};
 }
 
 std::vector<std::string> payloadModeTokens()
@@ -259,7 +258,11 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     }
 
     if (caseName == "no_sandbox_source_implementation") {
-        return containsNoTokens(actions + "\n" + runtimeSource, sandboxRuntimeImplementationTokens());
+        return containsAllTokens(runtimeSource,
+                                 {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
+                                  "ShellAccountingBrokerOrderPortMode::Sandbox"}) &&
+               containsNoTokens(actions + "\n" + runtimeSource, sandboxRuntimeImplementationTokens()) &&
+               containsNoTokens(actions, {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold"});
     }
 
     if (caseName == "no_payload_mode_source") {
@@ -280,9 +283,9 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
 
     if (caseName == "runtime_source_disabled_only") {
         return containsAllTokens(runtimeSource, {"DisabledShellAccountingBrokerRuntimeModeSource",
-                                                "ShellAccountingBrokerOrderPortMode::Disabled"}) &&
-               containsNoTokens(runtimeSource, {"ShellAccountingBrokerOrderPortMode::Sandbox",
-                                                "ShellAccountingBrokerOrderPortMode::Unsupported",
+                                                "ShellAccountingBrokerOrderPortMode::Disabled",
+                                                "SandboxShellAccountingBrokerRuntimeModeSourceScaffold"}) &&
+               containsNoTokens(runtimeSource, {"ShellAccountingBrokerOrderPortMode::Unsupported",
                                                 "shellAccountingBrokerOrderPortModeFromString"});
     }
 

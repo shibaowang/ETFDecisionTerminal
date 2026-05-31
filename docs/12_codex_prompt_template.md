@@ -1368,6 +1368,21 @@ broker order id, order placement, database/audit/ledger writes, reconciliation,
 cancellation, correction, strategy execution, or automatic trading without a
 separate explicit task.
 
+## TASK-169 Broker Sandbox Runtime Mode Source Selector Authorization Prompt Rule
+
+Future sandbox runtime mode source selector work must reference docs/136 and
+docs/137. TASK-169 itself is gate-only: do not implement a selector, do not
+modify `ShellAccountingBrokerRuntimeModeSource.h/.cpp`, do not modify
+`DataServiceActions`, and do not enable sandbox runtime. Keep the TASK-168
+sandbox scaffold direct-test-only and keep the default runtime source
+disabled-only. A future selector must not read mode from payload, QML, config,
+environment, command line, files, database, or secret stores, and must not carry
+credentials, endpoints, account data, order data, or broker payloads. Do not
+add SDK, network, real credentials, endpoint values, real broker order id,
+order placement, DB/audit/ledger write, reconciliation, cancellation,
+correction, strategy execution, or automatic trading without a separate
+explicit task.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

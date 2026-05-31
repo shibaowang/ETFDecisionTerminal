@@ -2883,3 +2883,19 @@ cancellation, correction, strategy execution, or automatic trading. See
 `docs/134_shell_accounting_broker_sandbox_runtime_mode_source_scaffold.md`
 and
 `docs/135_shell_accounting_broker_sandbox_runtime_mode_source_scaffold_test_plan.md`.
+
+## TASK-169 Broker Sandbox Runtime Mode Source Selector Authorization Gate
+
+TASK-169 adds a gate-only boundary for a possible future sandbox runtime mode
+source selector. It does not implement a selector, does not modify
+`ShellAccountingBrokerRuntimeModeSource.h/.cpp`, does not modify
+`DataServiceActions`, and does not enable sandbox runtime.
+
+The TASK-168 sandbox source scaffold remains direct-test-only. The default
+runtime source remains disabled-only, external mode sources remain unauthorized,
+and broker SDK, network, credentials, endpoint, real broker order id, order
+placement, DB/audit/ledger write, reconciliation, cancellation, correction,
+strategy execution, and automatic trading remain out of scope. See
+`docs/136_shell_accounting_broker_sandbox_runtime_mode_source_selector_authorization_gate.md`
+and
+`docs/137_shell_accounting_broker_sandbox_runtime_mode_source_selector_authorization_test_plan.md`.

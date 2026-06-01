@@ -615,6 +615,17 @@
   [165_shell_accounting_manual_entry_persistence_authorization_test_plan.md](165_shell_accounting_manual_entry_persistence_authorization_test_plan.md)
   defines TASK-183 static probes for no repository, no DB writes, no schema,
   no QML/startup drift, no broker, and future persistence task splitting.
+- ShellAccounting manual entry repository scaffold authorization gate:
+  [166_shell_accounting_manual_entry_repository_scaffold_authorization_gate.md](166_shell_accounting_manual_entry_repository_scaffold_authorization_gate.md)
+  records TASK-184 gate-only policy for a future manual entry DataAccess
+  repository scaffold while keeping repository headers/sources, DataAccess
+  code, DataServiceActions, DB writes, schema, QML/startup, broker, and
+  automatic trading unchanged.
+- ShellAccounting manual entry repository scaffold authorization test plan:
+  [167_shell_accounting_manual_entry_repository_scaffold_authorization_test_plan.md](167_shell_accounting_manual_entry_repository_scaffold_authorization_test_plan.md)
+  defines TASK-184 static probes for no repository scaffold, no repository
+  header/source, no SQL/SQLite writes, no DataAccess CMake drift, retained
+  TASK-182 validation-only semantics, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

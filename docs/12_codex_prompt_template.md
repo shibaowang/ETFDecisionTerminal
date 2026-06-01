@@ -1614,6 +1614,25 @@ must remain separately authorized. Broker sandbox new capability work remains
 paused and existing broker / real broker / no-network / no-credentials /
 no-order-placement gates must remain present and passing.
 
+## TASK-184 Manual Entry Repository Scaffold Authorization Gate Prompt Rule
+
+Future work after TASK-184 must reference docs/166 and docs/167. TASK-184 is a
+manual entry repository scaffold authorization gate only. It does not authorize
+repository scaffold implementation, repository header/source creation,
+DataAccess production code changes, DataAccess CMake changes, DataServiceActions
+changes, TASK-178 validation code changes, SQLite writes, `trade_log`, cash
+facts, cash ledger, audit, ledger writes, schema changes, replay, read models,
+production QML, startup, Presenter, Controller, StrategyEngine, MarketEngine,
+TradeDraft, suggestions, broker SDK, network, credentials, endpoints, real
+order placement, or automatic trading.
+
+Future repository scaffold work must be DataService-only and validation-first,
+must define only interface / command / result boundaries, and must keep
+repository implementation and write implementation in separately authorized
+tasks. Broker sandbox new capability remains paused; existing broker disabled,
+real broker, no-network, no-credentials, no-order-placement, and
+no-automatic-trading gates must remain retained and passing.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

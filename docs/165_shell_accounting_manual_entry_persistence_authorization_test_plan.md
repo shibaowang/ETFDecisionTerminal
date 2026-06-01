@@ -105,6 +105,8 @@ real order placement, or automatic trading.
 
 - [ ] docs/164 merged.
 - [ ] docs/165 merged.
+- [ ] TASK-184 docs/166 and docs/167 merged as the repository scaffold
+  authorization gate.
 - [ ] README, docs/README, and docs/12 register TASK-183.
 - [ ] docs/162 and docs/163 mention the TASK-183 persistence gate.
 - [ ] DataServiceActions.cpp is not changed by TASK-183.
@@ -132,3 +134,11 @@ real order placement, or automatic trading.
 - [ ] `transport_local_socket_echo` 50 repeat passes.
 - [ ] `git diff --check` passes.
 - [ ] `git status --short` is clean.
+
+## TASK-184 Regression Note
+
+TASK-184 adds a repository scaffold authorization gate but still does not
+implement a repository scaffold, repository header/source, repository
+implementation, write implementation, DataAccess CMake registration, SQL,
+SQLite writes, or schema changes. TASK-182 validation-only responses must still
+return `writeImplemented=false` and no persistent ids.

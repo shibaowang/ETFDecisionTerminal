@@ -3104,3 +3104,21 @@ endpoint, order placement, or automatic trading. Broker sandbox new capability
 work remains paused and existing broker gates remain required. See
 `docs/158_shell_accounting_manual_entry_dataservice_action_scaffold.md` and
 `docs/159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md`.
+
+## TASK-181 Manual Entry DataService Action Implementation Authorization Gate
+
+TASK-181 adds only the authorization gate for a future manual entry DataService
+action implementation. It does not implement payload parsing, validation wiring,
+repositories, SQLite writes, `trade_log`, cash facts, audit, ledger writes,
+AccountingEngine replay, production QML, startup, broker SDK, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+The TASK-180 scaffold actions continue to return unavailable / not implemented /
+disabled scaffold responses. Future implementation must be split into separate
+tasks: payload parsing plus TASK-178 validation wiring with no DB write,
+repository and persistence authorization, manual transaction write, manual cash
+movement write, and then replay/read-model/UI work. Broker sandbox new
+capability work remains paused, and existing broker gates remain required. See
+`docs/160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md`
+and
+`docs/161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md`.

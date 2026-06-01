@@ -589,6 +589,16 @@
   defines TASK-180 probes for dispatcher registration, disabled response
   semantics, no repository, no DB writes, no QML/startup drift, and broker gate
   retention.
+- ShellAccounting manual entry DataService action implementation authorization gate:
+  [160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md](160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md)
+  records TASK-181 gate-only policy for future manual entry DataService action
+  implementation without modifying action handlers, repositories, schema, QML,
+  replay, broker, network, credentials, or automatic trading.
+- ShellAccounting manual entry DataService action implementation authorization test plan:
+  [161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md](161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md)
+  defines TASK-181 static probes that keep TASK-180 disabled scaffold semantics
+  and require later payload parsing, validation wiring, repositories, writes,
+  replay, and UI work to remain separately authorized.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

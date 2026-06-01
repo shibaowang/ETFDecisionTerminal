@@ -59,6 +59,8 @@ real order placement.
 
 - TASK-179 authorization gate evolves to allow only disabled action
   scaffold registration.
+- TASK-181 adds the future implementation authorization gate while preserving
+  TASK-180 disabled scaffold semantics.
 - TASK-178 validation scaffold remains pure in-memory.
 - TASK-177 MVP authorization gate remains valid.
 - Existing broker / real broker / no-network / no-credentials /
@@ -92,6 +94,8 @@ real order placement.
 - [ ] Manual transaction action scaffold is registered.
 - [ ] Manual cash movement action scaffold is registered.
 - [ ] Both actions return disabled scaffold responses.
+- [ ] TASK-181 implementation authorization gate passes without changing
+      production action implementation.
 - [ ] No database write exists.
 - [ ] No DataAccess write repository exists.
 - [ ] No schema migration is changed or added.

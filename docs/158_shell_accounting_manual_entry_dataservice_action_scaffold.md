@@ -101,6 +101,7 @@ correction, strategy execution, strategy suggestions, or automatic trading.
 
 Separate tasks are required for:
 
+- DataService manual entry implementation authorization gate;
 - DataService manual entry implementation;
 - DataAccess manual transaction write repository;
 - DataAccess manual cash movement write repository;
@@ -110,6 +111,12 @@ Separate tasks are required for:
 - trading suggestions;
 - broker sandbox capability work;
 - real broker order placement.
+
+TASK-181 adds the future DataService action implementation authorization gate.
+It still does not implement action writes, does not modify
+`DataServiceActions.cpp`, `DataServiceActions.h`, or
+`DataServiceActionRegistrar.cpp`, does not add repositories, and does not
+change the TASK-180 disabled scaffold response semantics.
 
 ## Rollback Policy
 

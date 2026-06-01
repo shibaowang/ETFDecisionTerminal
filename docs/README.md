@@ -552,6 +552,16 @@
 - ShellAccounting broker sandbox runtime enablement state disabled wiring test plan:
   [151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md](151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md)
   defines TASK-176 probes proving broker dry-run behavior remains disabled-only.
+- ShellAccounting manual transaction and cash movement MVP authorization gate:
+  [152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md](152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md)
+  records TASK-177 gate-only policy for pivoting back to local manual
+  accounting records and assisted decision MVP work while broker sandbox new
+  capability development is paused.
+- ShellAccounting manual transaction and cash movement MVP authorization test plan:
+  [153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md](153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md)
+  defines TASK-177 static probes for no production implementation, no schema
+  change, no broker SDK, no network, no credentials, no order placement, and
+  retained broker safety gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

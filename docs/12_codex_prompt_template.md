@@ -1481,6 +1481,24 @@ DB/audit/ledger writes, reconciliation, cancellation, correction, strategy
 execution, automatic trading, or schema changes without separate explicit
 authorization.
 
+## TASK-177 Manual Transaction and Cash Movement MVP Authorization Gate Prompt Rule
+
+Future local assisted decision MVP work after TASK-177 must reference docs/152
+and docs/153. broker sandbox new capability development is paused, while
+existing broker, real-broker, no-network, no-credentials, no-order-placement,
+disabled-runtime, and sandbox-disabled gates must keep passing. The MVP
+priority is manual buy/sell records, deposit/withdraw records,
+TradeLog/cash-facts/position-replay stability, daily holdings/cash/PnL page
+usability, index retracement golden-tower and sniper suggestions,
+on-exchange/off-exchange buy/sell suggestions, and local backup/export/
+verification/package readiness. Do not add production QML, startup
+registration, Presenter/Controller behavior, DataServiceActions manual entry
+actions, DataAccess manual write repositories, AccountingEngine manual replay
+behavior, StrategyEngine or MarketEngine implementation, TradeDraft or
+suggestion implementation, broker SDK, network, credentials, endpoints, real
+broker order ids, order placement, automatic trading, or schema changes without
+separate explicit authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -10168,6 +10168,109 @@ def main() -> int:
     require("DataService" not in accounting_replay_assertion_source, "assertion source does not call DataService")
     require("SQLite" not in accounting_replay_minimal_source, "minimal engine source does not access SQLite")
     require("DataService" not in accounting_replay_minimal_source, "minimal engine source does not call DataService")
+
+    shell_accounting_manual_mvp_gate_path = root / "docs" / "152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md"
+    shell_accounting_manual_mvp_test_plan_path = root / "docs" / "153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md"
+    shell_accounting_manual_mvp_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualTransactionCashMovementMvpAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_mvp_gate_path.exists(), "docs/152 exists")
+    require(shell_accounting_manual_mvp_test_plan_path.exists(), "docs/153 exists")
+    require(shell_accounting_manual_mvp_cmake_path.exists(), "TASK-177 CTest CMake exists")
+
+    shell_accounting_manual_mvp_gate = shell_accounting_manual_mvp_gate_path.read_text(encoding="utf-8")
+    shell_accounting_manual_mvp_test_plan = shell_accounting_manual_mvp_test_plan_path.read_text(encoding="utf-8")
+    shell_accounting_manual_mvp_cmake = shell_accounting_manual_mvp_cmake_path.read_text(encoding="utf-8")
+
+    require(
+        "docs/152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md" in readme,
+        "README links docs/152",
+    )
+    require(
+        "docs/153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md" in readme,
+        "README links docs/153",
+    )
+    require(
+        "152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md" in docs_index,
+        "docs/README links docs/152",
+    )
+    require(
+        "153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/153",
+    )
+    require("TASK-177" in codex_prompt_template, "docs/12 registers TASK-177")
+    require("TASK-177" in shell_accounting_manual_mvp_gate, "docs/152 mentions TASK-177")
+    require("Test Matrix" in shell_accounting_manual_mvp_test_plan, "docs/153 contains Test Matrix")
+    require("Required Probes" in shell_accounting_manual_mvp_test_plan, "docs/153 contains Required Probes")
+    require("Manual buy and sell records" in shell_accounting_manual_mvp_gate, "docs/152 documents manual buy/sell priority")
+    require("Deposit and withdraw records" in shell_accounting_manual_mvp_gate, "docs/152 documents deposit/withdraw priority")
+    require("TradeLog, cash facts, and position replay stability" in shell_accounting_manual_mvp_gate, "docs/152 documents replay stability priority")
+    require("Daily holdings, cash, and PnL page usability" in shell_accounting_manual_mvp_gate, "docs/152 documents page usability priority")
+    require("golden-tower" in shell_accounting_manual_mvp_gate, "docs/152 documents golden-tower suggestions")
+    require("sniper suggestions" in shell_accounting_manual_mvp_gate, "docs/152 documents sniper suggestions")
+    require("On-exchange and off-exchange" in shell_accounting_manual_mvp_gate, "docs/152 documents exchange suggestion priority")
+    require("Local backup, export, verification, and package readiness" in shell_accounting_manual_mvp_gate, "docs/152 documents backup/export priority")
+    require("Broker sandbox new capability development is paused" in shell_accounting_manual_mvp_gate, "docs/152 pauses broker sandbox new capability development")
+    require("existing broker safety gates" in shell_accounting_manual_mvp_gate, "docs/152 keeps existing broker gates")
+    require("ShellAccountingManualTransactionCashMovementMvpAuthorizationGate" in tests_cmake, "tests/CMake includes TASK-177 gate")
+
+    task177_ctests = [
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_docs",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_docs_index",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_prompt_template",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_priority_shift",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_broker_pause_policy",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_migration_not_modified",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_new_migration",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_production_qml_manual_ui",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_startup_registration",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_dataserviceactions_manual_entry_action",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_dataaccess_manual_write_repository",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_accountingengine_manual_replay",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_strategy_market_impl",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_broker_sdk",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_network_endpoint",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_credentials_secret_values",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_real_broker_order_id",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_real_order_placement",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_automatic_trading",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_tradedraft_or_suggestion_impl",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_existing_broker_gates_retained",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_no_gate_weakening_or_skip",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_policy_keywords_docs_tests_only",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_task176_baseline_retained",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_dataservice_only_future_write_policy",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_qml_presenter_no_direct_db_policy",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_manual_trade_scope_documented",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_cash_movement_scope_documented",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_future_task_split_documented",
+        "shell_accounting_manual_transaction_cash_movement_mvp_authorization_rollback_policy",
+    ]
+    for ctest_name in task177_ctests:
+        require(ctest_name in shell_accounting_manual_mvp_cmake, f"TASK-177 CTest exists: {ctest_name}")
+
+    production_qml = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (root / "apps" / "ETFDecisionShell" / "qml").rglob("*.qml")
+    )
+    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI")
+    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI")
+    require("recordDeposit" not in production_qml, "production QML has no deposit record binding")
+    require("recordWithdraw" not in production_qml, "production QML has no withdraw record binding")
+    require("manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action")
+    require("cash_movement" not in dataservice_actions_source, "DataServiceActions has no cash movement action")
+    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository")
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository")
+    require("broker SDK" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan keeps broker SDK scan")
+    require("No network client, endpoint, host, port, or URL" in shell_accounting_manual_mvp_gate, "TASK-177 gate blocks network endpoints")
+    require("No credentials, secrets, tokens, keys, passwords" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks credentials")
+    require("No real broker order id" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks real broker order id")
+    require("No real order placement" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks real order placement")
+    require("No automatic trading" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks automatic trading")
+    require("No TradeDraft or suggestion implementation" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks TradeDraft/suggestion implementation")
     return 0
 
 

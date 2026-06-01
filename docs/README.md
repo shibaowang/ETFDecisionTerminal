@@ -599,6 +599,14 @@
   defines TASK-181 static probes that keep TASK-180 disabled scaffold semantics
   and require later payload parsing, validation wiring, repositories, writes,
   replay, and UI work to remain separately authorized.
+- ShellAccounting manual entry DataService action validation wiring:
+  [162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md](162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md)
+  records TASK-182 payload parsing plus TASK-178 validator wiring for the
+  existing manual entry actions while keeping persistence unavailable.
+- ShellAccounting manual entry DataService action validation wiring test plan:
+  [163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md](163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md)
+  defines TASK-182 dispatcher, validation-only response, no-write, no-UI, and
+  broker-gate regression probes.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

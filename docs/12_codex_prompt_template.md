@@ -1567,13 +1567,30 @@ production QML, startup, Presenter, Controller, AccountingEngine replay,
 StrategyEngine, MarketEngine, TradeDraft, suggestions, broker SDK, network,
 credentials, endpoints, real order placement, or automatic trading.
 
-The TASK-180 scaffold actions must continue to return unavailable / not
-implemented / disabled scaffold responses until a later task separately
-authorizes payload parsing plus TASK-178 validation wiring. Repository,
-persistence, replay, read model, and UI work must each remain separately
-authorized. Broker sandbox new capability work remains paused and existing
-broker disabled / fail-closed / no-real-order / no-network / no-credentials /
-no-order-placement gates must remain present and passing.
+After TASK-182, the TASK-180 scaffold actions may parse payloads and run
+TASK-178 validators, but only as validation-only unavailable /
+write-not-implemented responses. Repository, persistence, replay, read model,
+and UI work must each remain separately authorized. Broker sandbox new
+capability work remains paused and existing broker disabled / fail-closed /
+no-real-order / no-network / no-credentials / no-order-placement gates must
+remain present and passing.
+
+## TASK-182 Manual Entry DataService Action Validation Wiring Prompt Rule
+
+Future work after TASK-182 must reference docs/162 and docs/163. TASK-182
+authorizes only payload parsing plus TASK-178 validation wiring for
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`. Valid payloads may be marked
+`validationAccepted=true`, but the actions must still return write not
+implemented / unavailable and must not report persistence success or persistent
+ids.
+
+Do not add DataAccess write repositories, SQLite writes, `trade_log`, cash
+facts, cash ledger, audit, ledger writes, schema changes, production QML,
+startup, Presenter, Controller, AccountingEngine replay, StrategyEngine,
+MarketEngine, TradeDraft, suggestions, broker SDK, network, credentials,
+endpoints, real order placement, or automatic trading without separate explicit
+authorization.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

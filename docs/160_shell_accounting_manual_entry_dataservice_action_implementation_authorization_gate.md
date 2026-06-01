@@ -48,7 +48,12 @@ Future implementation must be split into separately authorized tasks:
 5. AccountingEngine replay, read model, snapshot, and UI work as separate
    tasks.
 
-TASK-181 authorizes none of these implementation stages.
+TASK-181 authorizes none of these implementation stages. TASK-182 completed the
+first stage only: payload parsing and TASK-178 validation wiring in the
+DataService handlers. That TASK-182 wiring is validation-only and still does
+not authorize repositories, persistence, SQLite writes, `trade_log`, cash
+facts, audit, ledger, UI, replay, broker, network, credentials, endpoints, or
+automatic trading.
 
 ## Validation Wiring Boundary
 
@@ -124,8 +129,10 @@ Future implementation must fail explicitly for:
 - credentials rejected;
 - no silent success.
 
-Until an authorized implementation task changes this, the TASK-180 scaffold
-response remains unavailable / not implemented / disabled.
+After TASK-182, valid manual entry payloads may return validation accepted, but
+the response must remain unavailable / write not implemented. Invalid payloads
+must return stable validation issues. No TASK-182 response may report
+persistence success or a durable id.
 
 ## Privacy Policy
 

@@ -265,16 +265,18 @@ void testNoStartupRegistration(const Harness& harness)
 
 void testNoDataServiceActionsManualEntryAction(const Harness& harness)
 {
-    requireNoTokensInFiles({harness.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"}, {
-        "accounting.manual_transaction",
-        "accounting.cash_movement",
-        "manualTransaction",
-        "manualCashMovement",
-        "recordManualBuy",
-        "recordManualSell",
-        "recordDeposit",
-        "recordWithdraw",
-    }, "DataServiceActions manual entry action");
+    const auto source = readFile(harness.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
+    require(!contains(source, "accounting.manual_transaction"), "DataServiceActions must not use raw manual transaction action string");
+    require(!contains(source, "accounting.cash_movement"), "DataServiceActions must not use deprecated cash movement action string");
+    require(contains(source, "manualEntryValidationOnlyResponse"), "DataServiceActions may contain TASK-182 validation-only manual entry action");
+    require(contains(source, "validateManualTransactionEntry"), "DataServiceActions may contain TASK-182 manual transaction validation wiring");
+    require(contains(source, "validateManualCashMovement"), "DataServiceActions may contain TASK-182 manual cash validation wiring");
+    require(!contains(source, "insertManualTransaction"), "DataServiceActions must not implement manual transaction write");
+    require(!contains(source, "insertCashMovement"), "DataServiceActions must not implement manual cash write");
+    require(!contains(source, "recordManualBuy"), "DataServiceActions must not expose manual buy write shortcut");
+    require(!contains(source, "recordManualSell"), "DataServiceActions must not expose manual sell write shortcut");
+    require(!contains(source, "recordDeposit"), "DataServiceActions must not expose deposit write shortcut");
+    require(!contains(source, "recordWithdraw"), "DataServiceActions must not expose withdrawal write shortcut");
 }
 
 void testNoDataAccessManualWriteRepository(const Harness& harness)

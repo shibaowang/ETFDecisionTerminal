@@ -3122,3 +3122,21 @@ capability work remains paused, and existing broker gates remain required. See
 `docs/160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md`
 and
 `docs/161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md`.
+
+## TASK-182 Manual Entry DataService Action Validation Wiring
+
+TASK-182 wires the existing manual entry DataService actions to structured
+payload parsing and the TASK-178 validators. `accounting.manual_transaction.create`
+now validates manual transaction DTO fields, and
+`accounting.manual_cash_movement.create` validates manual cash movement DTO
+fields. Both actions remain validation-only: accepted validation still returns
+write-not-implemented / unavailable, `validationOnly=true`, and explicit false
+write flags.
+
+TASK-182 does not add repositories, does not write SQLite, `trade_log`, cash
+facts, audit, or ledger records, does not return persistent ids, does not modify
+schema, production QML, startup, replay, TradeDraft, suggestions, broker SDK,
+network, credentials, endpoint, order placement, or automatic trading. See
+`docs/162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md`
+and
+`docs/163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md`.

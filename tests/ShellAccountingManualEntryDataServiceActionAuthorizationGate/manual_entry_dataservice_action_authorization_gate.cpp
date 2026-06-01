@@ -219,9 +219,10 @@ void testDataServiceActionsUnmodified(const Harness& h)
     const auto text = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     requireContains(text, "handleAccountingManualEntryTransactionCreate", "DataServiceActions TASK-180 scaffold");
     requireContains(text, "handleAccountingManualEntryCashMovementCreate", "DataServiceActions TASK-180 scaffold");
-    requireContains(text, "manualEntryActionScaffoldResponse", "DataServiceActions TASK-180 scaffold");
-    requireContains(text, "MANUAL_TRANSACTION_ENTRY_NOT_IMPLEMENTED", "DataServiceActions TASK-180 scaffold");
-    requireContains(text, "MANUAL_CASH_MOVEMENT_NOT_IMPLEMENTED", "DataServiceActions TASK-180 scaffold");
+    requireContains(text, "manualEntryValidationOnlyResponse", "DataServiceActions TASK-182 validation wiring");
+    requireContains(text, "validateManualTransactionEntry", "DataServiceActions TASK-182 validation wiring");
+    requireContains(text, "validateManualCashMovement", "DataServiceActions TASK-182 validation wiring");
+    requireContains(text, "VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED", "DataServiceActions TASK-182 validation wiring");
     require(!contains(text, "insertManualTransaction"), "DataServiceActions must not implement manual transaction write");
     require(!contains(text, "insertCashMovement"), "DataServiceActions must not implement manual cash write");
 }

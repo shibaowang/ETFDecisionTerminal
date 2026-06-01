@@ -1426,6 +1426,18 @@ endpoints, real broker order ids, order placement, DB/audit/ledger writes,
 reconciliation, cancellation, correction, strategy execution, automatic
 trading, and schema changes require separate explicit authorization.
 
+## TASK-173 Broker Sandbox Runtime Mode Enablement Authorization Gate Prompt Rule
+
+Future sandbox runtime mode enablement work after TASK-173 must reference
+docs/144 and docs/145. TASK-173 is gate-only: do not modify
+`DataServiceActions.cpp`, do not modify `ShellAccountingBrokerRuntimeModeSource.h/.cpp`,
+and do not enable sandbox runtime. Keep TASK-172 disabled-default selector
+wiring driven only by the default disabled source. Do not add external mode
+sources, credentials providers, endpoint providers, sandbox adapters, broker
+SDK, network, real order placement, real broker order id storage,
+reconciliation, cancellation, correction, strategy execution, automatic
+trading, or schema changes without separate explicit authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

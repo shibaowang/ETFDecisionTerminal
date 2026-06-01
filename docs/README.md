@@ -528,6 +528,12 @@
 - ShellAccounting broker sandbox runtime mode source selector disabled wiring test plan:
   [143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md](143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md)
   defines TASK-172 probes for default-source-driven selector wiring and disabled/null provider behavior.
+- ShellAccounting broker sandbox runtime mode enablement authorization gate:
+  [144_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_gate.md](144_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_gate.md)
+  records TASK-173 gate-only policy for future sandbox runtime enablement.
+- ShellAccounting broker sandbox runtime mode enablement authorization test plan:
+  [145_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan.md](145_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan.md)
+  defines TASK-173 static and runtime probes that keep sandbox runtime disabled.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

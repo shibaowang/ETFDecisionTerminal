@@ -3026,3 +3026,26 @@ strategy execution, no automatic trading, and no schema change. See
 `docs/150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md`
 and
 `docs/151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md`.
+
+## TASK-177 Manual Transaction and Cash Movement MVP Authorization Gate
+
+TASK-177 pivots ShellAccounting planning back to the local assisted decision
+MVP while keeping all existing broker safety gates intact. The next priority
+sequence is manual buy/sell records, deposit/withdraw records,
+TradeLog/cash-facts/position-replay stability, daily holdings/cash/PnL page
+usability, index retracement golden-tower and sniper suggestions,
+on-exchange/off-exchange buy/sell suggestions, and local backup/export/
+verification/package readiness.
+
+This is gate-only. Broker sandbox new capability development is paused, but
+existing broker, real-broker, no-network, no-credentials, no-order-placement,
+disabled-runtime, and sandbox-disabled tests remain required. TASK-177 adds no
+manual transaction UI, no startup registration, no DataService action, no
+DataAccess write repository, no AccountingEngine replay behavior change, no
+StrategyEngine or MarketEngine implementation, no TradeDraft or suggestion
+implementation, no broker SDK, no network, no credentials, no endpoint, no real
+broker order id, no order placement, no automatic trading, and no schema
+change. See
+`docs/152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md`
+and
+`docs/153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md`.

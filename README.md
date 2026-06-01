@@ -3159,3 +3159,26 @@ repository implementation, manual transaction write, manual cash movement
 write, replay/read-model, and UI tasks. See
 `docs/164_shell_accounting_manual_entry_persistence_authorization_gate.md` and
 `docs/165_shell_accounting_manual_entry_persistence_authorization_test_plan.md`.
+
+## TASK-184 Manual Entry Repository Scaffold Authorization Gate
+
+TASK-184 adds only the authorization gate for a future manual entry DataAccess
+repository scaffold. It defines the future boundary for manual transaction and
+manual cash movement repository interface / command / result mapping, while
+explicitly not implementing a repository scaffold, not adding repository
+headers or sources, not modifying DataAccess production code or CMake, not
+modifying DataServiceActions, not writing SQLite, not modifying schema, and not
+changing production QML, startup, Presenter, Controller, replay, StrategyEngine,
+MarketEngine, TradeDraft, suggestions, broker SDK, network, credentials,
+endpoints, real order placement, or automatic trading.
+
+TASK-182 validation wiring remains validation-only: valid payloads still return
+write-not-implemented / unavailable, `writeImplemented=false`, and no
+persistent ids. Future repository scaffold, repository implementation, write
+implementation, replay/read-model, and UI work must remain separate tasks.
+Broker sandbox new capability remains paused, and existing broker disabled,
+real broker, no-network, no-credentials, no-order-placement, and
+no-automatic-trading gates remain retained and passing. See
+`docs/166_shell_accounting_manual_entry_repository_scaffold_authorization_gate.md`
+and
+`docs/167_shell_accounting_manual_entry_repository_scaffold_authorization_test_plan.md`.

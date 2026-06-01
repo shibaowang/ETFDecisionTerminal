@@ -154,3 +154,18 @@ Future manual entry persistence must be split into separate tasks:
 Each task must restate no broker, no network, no credentials, no endpoint, no
 real order placement, no automatic trading, no schema drift, transaction,
 rollback, idempotency, audit, and privacy boundaries.
+
+## TASK-184 Follow-Up Gate
+
+TASK-184 adds the future manual entry repository scaffold authorization gate in
+docs/166 and docs/167. TASK-183 remains persistence authorization only:
+repository scaffold, repository header/source files, DataAccess production code
+changes, DataAccess CMake changes, repository implementation, and write
+implementation are still not implemented.
+
+TASK-182 validation wiring remains the fallback and continues to return
+validation accepted plus write not implemented with `writeImplemented=false`
+and no persistent ids. Broker sandbox new capability remains paused, and
+existing broker disabled, real broker, no-network, no-credentials,
+no-order-placement, and no-automatic-trading gates must remain retained and
+passing.

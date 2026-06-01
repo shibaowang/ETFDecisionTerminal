@@ -123,7 +123,7 @@ std::string handlerBody(const std::string& source, const std::string& functionNa
 
 std::string manualScaffoldHelperBody(const Harness& h)
 {
-    return handlerBody(dataServiceActions(h), "manualEntryActionScaffoldResponse");
+    return handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
 }
 
 std::string manualTransactionHandlerBody(const Harness& h)
@@ -155,7 +155,13 @@ etfdt::protocol::MessageEnvelope envelope(std::string action)
     request.to = etfdt::protocol::ServiceName::ETFDataService;
     request.action = std::move(action);
     request.timestampUtc = "2026-06-01T12:00:00Z";
-    request.payloadJson = R"({"accountId":"ui-raw-payload-must-not-write"})";
+    if (request.action == etfdt::data_service_api::kActionAccountingManualTransactionCreate) {
+        request.payloadJson =
+            R"({"accountId":"acct-1","portfolioId":"pf-1","securityCode":"ETF-001","tradeSide":"Buy","quantityUnits":100,"priceAmountMinor":1234,"grossAmountMinor":123400,"feeAmountMinor":10,"taxAmountMinor":0,"occurredAt":"2026-06-01T12:00:00Z","sourceMemo":"validation only"})";
+    } else {
+        request.payloadJson =
+            R"({"accountId":"acct-1","portfolioId":"pf-1","movementType":"Deposit","amountMinor":50000,"occurredAt":"2026-06-01T12:00:00Z","sourceMemo":"validation only"})";
+    }
     return request;
 }
 
@@ -169,16 +175,20 @@ etfdt::protocol::ProtocolResponse dispatchScaffoldAction(const std::string& acti
 
 void requireDisabledResponse(const etfdt::protocol::ProtocolResponse& response, const std::string& reason)
 {
-    require(!response.success, "manual entry implementation gate requires fail-closed scaffold");
+    (void)reason;
+    require(!response.success, "manual entry implementation gate requires fail-closed validation-only response");
     require(response.errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "manual entry scaffold must return E9001_SERVICE_UNAVAILABLE");
+        "manual entry validation-only accepted response must return E9001_SERVICE_UNAVAILABLE");
     requireContains(response.payloadJson, "\"implemented\":false", "scaffold payload");
+    requireContains(response.payloadJson, "\"validationOnly\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"validationAccepted\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"writeImplemented\":false", "scaffold payload");
     requireContains(response.payloadJson, "\"manualEntryEnabled\":false", "scaffold payload");
     requireContains(response.payloadJson, "\"writeEnabled\":false", "scaffold payload");
     requireContains(response.payloadJson, "\"databaseWritten\":false", "scaffold payload");
     requireContains(response.payloadJson, "\"repositoryCalled\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"status\":\"DISABLED_SCAFFOLD\"", "scaffold payload");
-    requireContains(response.payloadJson, reason, "scaffold payload");
+    requireContains(response.payloadJson, "\"status\":\"VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED\"", "scaffold payload");
+    requireContains(response.payloadJson, "MANUAL_ENTRY_VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED", "scaffold payload");
 }
 
 void testDocs(const Harness& h)
@@ -188,11 +198,11 @@ void testDocs(const Harness& h)
     requireAll(doc160, {
         "TASK-181",
         "gate-only",
-        "does not implement either action",
+        "TASK-182 completed the",
         "`DataServiceActions.cpp`",
         "`DataServiceActions.h`",
         "`DataServiceActionRegistrar.cpp`",
-        "TASK-180 scaffold actions must continue to return",
+        "validation-only",
         "Payload parsing plus TASK-178 validation wiring",
         "must not write a database",
         "Manual transaction implementation is not broker order placement",
@@ -203,8 +213,8 @@ void testDocs(const Harness& h)
         "TASK-181",
         "Test Matrix",
         "Required Probes",
-        "Production source unchanged",
-        "TASK-180 scaffold semantics retained",
+        "Production source evolution",
+        "TASK-180 scaffold semantics evolved by TASK-182",
         "No persistence expansion",
         "No broker / network / credentials / automatic trading",
     }, "docs/161");
@@ -229,8 +239,8 @@ void testPromptTemplate(const Harness& h)
         "docs/161",
         "future implementation authorization gate only",
         "Do not modify",
-        "unavailable / not",
-        "implemented / disabled scaffold responses",
+        "validation-only unavailable",
+        "write-not-implemented responses",
     }, "docs/12");
 }
 
@@ -238,8 +248,8 @@ void testDataServiceActionsCppUnmodified(const Harness& h)
 {
     const auto source = dataServiceActions(h);
     requireNotContains(source, "TASK-181", "DataServiceActions.cpp");
-    requireNotContains(manualTransactionHandlerBody(h), "validateManual", "manual transaction handler");
-    requireNotContains(manualCashMovementHandlerBody(h), "validateManual", "manual cash movement handler");
+    requireContains(manualTransactionHandlerBody(h), "validateManualTransactionEntry", "manual transaction handler");
+    requireContains(manualCashMovementHandlerBody(h), "validateManualCashMovement", "manual cash movement handler");
 }
 
 void testDataServiceActionsHUnmodified(const Harness& h)
@@ -281,10 +291,12 @@ void testNoSuccessImplementation(const Harness& h)
 
 void testNoPayloadToWritePath(const Harness& h)
 {
-    requireNotContains(manualTransactionHandlerBody(h), "payloadJson", "manual transaction handler");
-    requireNotContains(manualCashMovementHandlerBody(h), "payloadJson", "manual cash movement handler");
-    requireNotContains(manualTransactionHandlerBody(h), "parse", "manual transaction handler");
-    requireNotContains(manualCashMovementHandlerBody(h), "parse", "manual cash movement handler");
+    requireContains(manualTransactionHandlerBody(h), "payloadJson", "manual transaction handler");
+    requireContains(manualCashMovementHandlerBody(h), "payloadJson", "manual cash movement handler");
+    requireNotContains(manualTransactionHandlerBody(h), "Repository", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "Repository", "manual cash movement handler");
+    requireNotContains(manualTransactionHandlerBody(h), "INSERT", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "INSERT", "manual cash movement handler");
 }
 
 void testNoSqliteWrite(const Harness& h)

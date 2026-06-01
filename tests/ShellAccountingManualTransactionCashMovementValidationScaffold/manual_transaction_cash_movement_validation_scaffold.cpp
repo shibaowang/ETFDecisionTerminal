@@ -347,12 +347,13 @@ void testValidationNoCredentialsRuntimeSource(const Harness& h)
 
 void testDataServiceActionsUnmodified(const Harness& h)
 {
-    requireNoTokens({h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"}, {
-        "accounting.manual_transaction",
-        "accounting.cash_movement",
-        "validateManualTransactionEntry",
-        "validateManualCashMovement",
-    }, "DataServiceActions manual action");
+    const auto source = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
+    require(!contains(source, "accounting.manual_transaction"), "DataServiceActions must not use raw manual transaction action string");
+    require(!contains(source, "accounting.cash_movement"), "DataServiceActions must not use deprecated cash movement action string");
+    requireContains(source, "validateManualTransactionEntry", "DataServiceActions TASK-182 manual transaction validation wiring");
+    requireContains(source, "validateManualCashMovement", "DataServiceActions TASK-182 manual cash validation wiring");
+    require(!contains(source, "insertManualTransaction"), "DataServiceActions must not implement manual transaction write");
+    require(!contains(source, "insertCashMovement"), "DataServiceActions must not implement manual cash write");
 }
 
 void testSchemaUnmodified(const Harness& h)

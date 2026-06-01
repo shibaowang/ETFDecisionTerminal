@@ -11,8 +11,10 @@
 #include "DataAccess/ShellAccountingTradeDraftRepository.h"
 #include "DataServiceApi/ShellAccountingBrokerRuntimeModeSource.h"
 #include "DataServiceApi/ShellAccountingBrokerSandboxRuntimeEnablement.h"
+#include "DataServiceApi/ShellAccountingManualTransactionCashMovementValidation.h"
 #include "Protocol/Json.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <optional>
@@ -2258,16 +2260,123 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     return successResponse(context, payload.str());
 }
 
-etfdt::protocol::ProtocolResponse manualEntryActionScaffoldResponse(
-    const etfdt::service_runtime::ActionContext& context,
-    std::string_view actionName,
-    std::string_view reasonCode)
+bool isManualEntryJsonObjectPayload(const std::string& payloadJson)
+{
+    const std::string trimmedPayload = trimCopy(payloadJson);
+    return etfdt::protocol::isLikelyJsonObjectOrArray(payloadJson) && !trimmedPayload.empty()
+        && trimmedPayload.front() == '{' && trimmedPayload.back() == '}';
+}
+
+std::string normalizedManualEntryEnumValue(std::string value)
+{
+    value = trimCopy(value);
+    std::transform(value.begin(), value.end(), value.begin(), [](unsigned char ch) {
+        return static_cast<char>(std::tolower(ch));
+    });
+    return value;
+}
+
+ShellAccountingManualTradeSide manualTradeSideFromPayload(const std::string& payloadJson)
+{
+    const auto value =
+        normalizedManualEntryEnumValue(extractJsonStringField(payloadJson, "tradeSide").value_or(""));
+    if (value == "buy") {
+        return ShellAccountingManualTradeSide::Buy;
+    }
+    if (value == "sell") {
+        return ShellAccountingManualTradeSide::Sell;
+    }
+    return ShellAccountingManualTradeSide::Unknown;
+}
+
+ShellAccountingManualCashMovementType manualCashMovementTypeFromPayload(const std::string& payloadJson)
+{
+    const auto value =
+        normalizedManualEntryEnumValue(extractJsonStringField(payloadJson, "movementType").value_or(""));
+    if (value == "deposit") {
+        return ShellAccountingManualCashMovementType::Deposit;
+    }
+    if (value == "withdrawal") {
+        return ShellAccountingManualCashMovementType::Withdrawal;
+    }
+    return ShellAccountingManualCashMovementType::Unknown;
+}
+
+ShellAccountingManualTransactionEntry manualTransactionEntryFromPayload(const std::string& payloadJson)
+{
+    ShellAccountingManualTransactionEntry entry;
+    entry.accountId = extractJsonStringField(payloadJson, "accountId").value_or("");
+    entry.portfolioId = extractJsonStringField(payloadJson, "portfolioId").value_or("");
+    entry.securityCode = extractJsonStringField(payloadJson, "securityCode").value_or("");
+    entry.tradeSide = manualTradeSideFromPayload(payloadJson);
+    entry.quantityUnits = extractJsonInt64OrStringField(payloadJson, "quantityUnits");
+    entry.priceAmountMinor = extractJsonInt64OrStringField(payloadJson, "priceAmountMinor");
+    entry.grossAmountMinor = extractJsonInt64OrStringField(payloadJson, "grossAmountMinor");
+    entry.feeAmountMinor = extractJsonInt64OrStringField(payloadJson, "feeAmountMinor");
+    entry.taxAmountMinor = extractJsonInt64OrStringField(payloadJson, "taxAmountMinor");
+    entry.occurredAt = extractJsonStringField(payloadJson, "occurredAt").value_or("");
+    entry.sourceMemo = extractJsonStringField(payloadJson, "sourceMemo").value_or("");
+    return entry;
+}
+
+ShellAccountingManualCashMovementEntry manualCashMovementEntryFromPayload(const std::string& payloadJson)
+{
+    ShellAccountingManualCashMovementEntry entry;
+    entry.accountId = extractJsonStringField(payloadJson, "accountId").value_or("");
+    entry.portfolioId = extractJsonStringField(payloadJson, "portfolioId").value_or("");
+    entry.movementType = manualCashMovementTypeFromPayload(payloadJson);
+    entry.amountMinor = extractJsonInt64OrStringField(payloadJson, "amountMinor");
+    entry.occurredAt = extractJsonStringField(payloadJson, "occurredAt").value_or("");
+    entry.sourceMemo = extractJsonStringField(payloadJson, "sourceMemo").value_or("");
+    return entry;
+}
+
+ShellAccountingManualEntryValidationResult manualEntryPayloadShapeRejected()
+{
+    ShellAccountingManualEntryValidationResult result;
+    result.accepted = false;
+    result.issues.push_back(ShellAccountingManualEntryValidationIssue{
+        "PAYLOAD_JSON_OBJECT_REQUIRED",
+        "Payload must be a JSON object.",
+        "payload",
+    });
+    return result;
+}
+
+std::string manualEntryValidationIssuesJson(const ShellAccountingManualEntryValidationResult& result)
 {
     std::ostringstream payload;
+    payload << '[';
+    bool first = true;
+    for (const auto& issue : result.issues) {
+        if (!first) {
+            payload << ',';
+        }
+        payload << "{"
+                << "\"code\":" << jsonStringValue(issue.code) << ','
+                << "\"field\":" << jsonStringValue(issue.field) << ','
+                << "\"message\":" << jsonStringValue(issue.message)
+                << "}";
+        first = false;
+    }
+    payload << ']';
+    return payload.str();
+}
+
+etfdt::protocol::ProtocolResponse manualEntryValidationOnlyResponse(
+    const etfdt::service_runtime::ActionContext& context,
+    std::string_view actionName,
+    const ShellAccountingManualEntryValidationResult& validation)
+{
+    std::ostringstream payload;
+    const bool accepted = validation.valid();
     payload << "{"
             << "\"module\":\"accounting\","
             << "\"action\":" << jsonStringValue(actionName) << ','
             << "\"implemented\":false,"
+            << "\"validationOnly\":true,"
+            << "\"validationAccepted\":" << (accepted ? "true" : "false") << ','
+            << "\"writeImplemented\":false,"
             << "\"manualEntryEnabled\":false,"
             << "\"writeEnabled\":false,"
             << "\"databaseWritten\":false,"
@@ -2286,18 +2395,34 @@ etfdt::protocol::ProtocolResponse manualEntryActionScaffoldResponse(
             << "\"endpointAccessed\":false,"
             << "\"realOrderPlacement\":false,"
             << "\"automaticTrading\":false,"
-            << "\"status\":\"DISABLED_SCAFFOLD\","
-            << "\"reason\":" << jsonStringValue(reasonCode) << ','
-            << "\"errorCode\":" << jsonStringValue(reasonCode) << ','
-            << "\"message\":\"Manual entry DataService action is registered as a disabled scaffold only.\""
+            << "\"status\":"
+            << jsonStringValue(
+                   accepted ? "VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED" : "VALIDATION_REJECTED")
+            << ','
+            << "\"reason\":"
+            << jsonStringValue(
+                   accepted ? "MANUAL_ENTRY_VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED"
+                            : "MANUAL_ENTRY_VALIDATION_FAILED")
+            << ','
+            << "\"errorCode\":"
+            << jsonStringValue(
+                   accepted ? "MANUAL_ENTRY_WRITE_NOT_IMPLEMENTED" : "MANUAL_ENTRY_VALIDATION_FAILED")
+            << ','
+            << "\"issues\":" << manualEntryValidationIssuesJson(validation) << ','
+            << "\"message\":"
+            << jsonStringValue(
+                   accepted ? "Manual entry payload validation passed; write implementation is not available."
+                            : "Manual entry payload validation failed.")
             << "}";
 
     etfdt::protocol::ProtocolResponse response;
     response.msgId = context.request.msgId;
     response.traceId = context.request.traceId;
     response.success = false;
-    response.errorCode = etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
-    response.errorMessage = "Manual entry DataService action is not implemented";
+    response.errorCode = accepted ? etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE
+                                  : etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
+    response.errorMessage = accepted ? "Manual entry write implementation is not available"
+                                     : "Manual entry payload validation failed";
     response.payloadJson = payload.str();
     return response;
 }
@@ -2307,10 +2432,14 @@ etfdt::protocol::ProtocolResponse handleAccountingManualEntryTransactionCreate(
     etfdt::data_access::SQLiteConnection& connection)
 {
     (void)connection;
-    return manualEntryActionScaffoldResponse(
+    const auto validation =
+        isManualEntryJsonObjectPayload(context.request.payloadJson)
+            ? validateManualTransactionEntry(manualTransactionEntryFromPayload(context.request.payloadJson))
+            : manualEntryPayloadShapeRejected();
+    return manualEntryValidationOnlyResponse(
         context,
         kActionAccountingManualTransactionCreate,
-        "MANUAL_TRANSACTION_ENTRY_NOT_IMPLEMENTED");
+        validation);
 }
 
 etfdt::protocol::ProtocolResponse handleAccountingManualEntryCashMovementCreate(
@@ -2318,10 +2447,14 @@ etfdt::protocol::ProtocolResponse handleAccountingManualEntryCashMovementCreate(
     etfdt::data_access::SQLiteConnection& connection)
 {
     (void)connection;
-    return manualEntryActionScaffoldResponse(
+    const auto validation =
+        isManualEntryJsonObjectPayload(context.request.payloadJson)
+            ? validateManualCashMovement(manualCashMovementEntryFromPayload(context.request.payloadJson))
+            : manualEntryPayloadShapeRejected();
+    return manualEntryValidationOnlyResponse(
         context,
         kActionAccountingManualCashMovementCreate,
-        "MANUAL_CASH_MOVEMENT_NOT_IMPLEMENTED");
+        validation);
 }
 
 etfdt::protocol::ProtocolResponse handlePositionList(

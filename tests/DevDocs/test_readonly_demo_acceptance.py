@@ -10571,8 +10571,8 @@ def main() -> int:
     require('"manual_cash_movement.create"' in dataservice_actions_header, "DataServiceActions.h registers manual cash movement action")
     require("handleAccountingManualEntryTransactionCreate" in dataservice_actions_source, "DataServiceActions has manual transaction scaffold handler")
     require("handleAccountingManualEntryCashMovementCreate" in dataservice_actions_source, "DataServiceActions has manual cash movement scaffold handler")
-    require("MANUAL_TRANSACTION_ENTRY_NOT_IMPLEMENTED" in dataservice_actions_source, "manual transaction scaffold returns stable reason")
-    require("MANUAL_CASH_MOVEMENT_NOT_IMPLEMENTED" in dataservice_actions_source, "manual cash movement scaffold returns stable reason")
+    require("VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED" in dataservice_actions_source, "manual entry actions return validation-only write-not-implemented status")
+    require("MANUAL_ENTRY_VALIDATION_FAILED" in dataservice_actions_source, "manual entry actions return stable validation failure reason")
     require('\\"databaseWritten\\":false' in dataservice_actions_source, "manual scaffold declares no DB write")
     require('\\"repositoryCalled\\":false' in dataservice_actions_source, "manual scaffold declares no repository call")
     require("kActionAccountingManualTransactionCreate" in dataservice_action_registrar, "registrar registers manual transaction scaffold")
@@ -10674,18 +10674,18 @@ def main() -> int:
         "docs/12 describes TASK-181 as gate-only",
     )
     require(
-        "does not implement either action" in shell_accounting_manual_action_implementation_gate_doc,
-        "docs/160 blocks action implementation",
+        "TASK-182 completed the" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 records TASK-182 validation-only evolution",
     )
     require(
         "`DataServiceActions.cpp`" in shell_accounting_manual_action_implementation_gate_doc
         and "`DataServiceActions.h`" in shell_accounting_manual_action_implementation_gate_doc
         and "`DataServiceActionRegistrar.cpp`" in shell_accounting_manual_action_implementation_gate_doc,
-        "docs/160 blocks DataServiceActions.cpp changes",
+        "docs/160 records DataServiceActions.cpp boundary",
     )
     require(
-        "TASK-180 scaffold actions must continue to return" in shell_accounting_manual_action_implementation_gate_doc,
-        "docs/160 preserves TASK-180 scaffold response",
+        "validation-only" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 preserves validation-only response",
     )
     require(
         "Payload parsing plus TASK-178 validation wiring" in shell_accounting_manual_action_implementation_gate_doc,
@@ -10718,7 +10718,8 @@ def main() -> int:
     require("TASK-181" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-181 implementation marker")
     require("TASK-181" not in dataservice_actions_header, "DataServiceActions.h has no TASK-181 implementation marker")
     require("TASK-181" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-181 implementation marker")
-    require("validateManual" not in dataservice_actions_source, "DataServiceActions has no TASK-181 validation wiring")
+    require("validateManualTransactionEntry" in dataservice_actions_source, "DataServiceActions wires manual transaction validation after TASK-182")
+    require("validateManualCashMovement" in dataservice_actions_source, "DataServiceActions wires manual cash movement validation after TASK-182")
     require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-181")
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-181")
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-181")
@@ -10766,6 +10767,84 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_manual_action_implementation_gate_cmake,
             f"TASK-181 CTest exists: {ctest_name}",
+        )
+
+    shell_accounting_manual_action_validation_wiring_doc_path = (
+        root / "docs" / "162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md"
+    )
+    shell_accounting_manual_action_validation_wiring_plan_path = (
+        root / "docs" / "163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md"
+    )
+    shell_accounting_manual_action_validation_wiring_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryDataServiceActionValidationWiring"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_action_validation_wiring_doc_path.exists(), "docs/162 exists")
+    require(shell_accounting_manual_action_validation_wiring_plan_path.exists(), "docs/163 exists")
+    require(shell_accounting_manual_action_validation_wiring_cmake_path.exists(), "TASK-182 tests CMake exists")
+
+    shell_accounting_manual_action_validation_wiring_doc = (
+        shell_accounting_manual_action_validation_wiring_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_action_validation_wiring_plan = (
+        shell_accounting_manual_action_validation_wiring_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_action_validation_wiring_cmake = (
+        shell_accounting_manual_action_validation_wiring_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md" in readme,
+        "README links docs/162",
+    )
+    require(
+        "docs/163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md" in readme,
+        "README links docs/163",
+    )
+    require(
+        "162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md" in docs_index,
+        "docs/README links docs/162",
+    )
+    require(
+        "163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md" in docs_index,
+        "docs/README links docs/163",
+    )
+    require("TASK-182" in codex_prompt_template, "docs/12 registers TASK-182")
+    require("TASK-182" in shell_accounting_manual_action_validation_wiring_doc, "docs/162 mentions TASK-182")
+    require("Test Matrix" in shell_accounting_manual_action_validation_wiring_plan, "docs/163 contains Test Matrix")
+    require("Required Probes" in shell_accounting_manual_action_validation_wiring_plan, "docs/163 contains Required Probes")
+    require("validationOnly=true" in shell_accounting_manual_action_validation_wiring_doc, "docs/162 documents validation-only responses")
+    require("VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED" in shell_accounting_manual_action_validation_wiring_doc, "docs/162 documents write-not-implemented status")
+    require("No SQLite write is added" in shell_accounting_manual_action_validation_wiring_plan, "docs/163 blocks SQLite writes")
+    require("No broker SDK" in shell_accounting_manual_action_validation_wiring_plan, "docs/163 blocks broker SDK")
+
+    task182_ctests = [
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_dataservice_only_boundary",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_manual_transaction_success",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_manual_cash_movement_success",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_trade_side_validation",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_cash_movement_type_validation",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_missing_required_fields",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_numeric_validation",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_sensitive_memo_validation",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_non_object_payload_rejected",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_validation_accepted_write_not_implemented",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_database_write",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_trade_log_or_cash_fact_write",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_audit_or_ledger_write",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_repository_or_replay",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_tradedraft_suggestion_broker",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_network_credentials_endpoint",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_no_persistent_ids",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_existing_action_names_retained",
+        "shell_accounting_manual_entry_dataservice_action_validation_wiring_broker_gates_retained",
+    ]
+    for ctest_name in task182_ctests:
+        require(
+            ctest_name in shell_accounting_manual_action_validation_wiring_cmake,
+            f"TASK-182 CTest exists: {ctest_name}",
         )
     return 0
 

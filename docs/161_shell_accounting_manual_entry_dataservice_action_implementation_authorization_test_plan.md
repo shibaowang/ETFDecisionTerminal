@@ -17,29 +17,32 @@ parsing, repositories, writes, replay, UI, broker access, or automatic trading.
   authorization gate.
 - Gate documentation defines the future implementation split.
 
-### B. Production source unchanged
+### B. Production source evolution
 
-- `DataServiceActions.cpp` is not changed for TASK-181.
+- `DataServiceActions.cpp` was allowed to evolve in TASK-182 only for payload
+  parsing and TASK-178 validation wiring.
 - `DataServiceActions.h` is not changed for TASK-181.
 - `DataServiceActionRegistrar.cpp` is not changed for TASK-181.
 - TASK-178 validation production source remains pure in-memory.
-- No production C++ manual entry implementation is added.
+- No production C++ manual entry persistence implementation is added.
 
-### C. TASK-180 scaffold semantics retained
+### C. TASK-180 scaffold semantics evolved by TASK-182
 
-- Manual transaction scaffold still returns unavailable / disabled scaffold.
-- Manual cash movement scaffold still returns unavailable / disabled scaffold.
-- Scaffold responses do not return `success=true`.
-- Scaffold responses do not write SQLite.
-- Scaffold responses do not write `trade_log`.
-- Scaffold responses do not write cash facts or cash ledger records.
-- Scaffold responses do not write audit or ledger records.
-- Scaffold responses do not call a repository.
-- Scaffold responses do not call AccountingEngine replay.
+- Manual transaction action now validates payloads but still returns
+  unavailable / write not implemented for accepted validation.
+- Manual cash movement action now validates payloads but still returns
+  unavailable / write not implemented for accepted validation.
+- Validation responses do not return `success=true` for persistence.
+- Validation responses do not write SQLite.
+- Validation responses do not write `trade_log`.
+- Validation responses do not write cash facts or cash ledger records.
+- Validation responses do not write audit or ledger records.
+- Validation responses do not call a repository.
+- Validation responses do not call AccountingEngine replay.
 
 ### D. No persistence expansion
 
-- No payload-to-write path is added.
+- Payload parsing exists only for validation and must not become a write path.
 - No DataAccess write repository is added.
 - No DB write path is added.
 - `migrations/001_initial_schema.sql` is not modified.
@@ -105,11 +108,13 @@ parsing, repositories, writes, replay, UI, broker access, or automatic trading.
 - [ ] docs/160 merged.
 - [ ] docs/161 merged.
 - [ ] README, docs/README, and docs/12 register TASK-181.
-- [ ] `DataServiceActions.cpp` is not modified by TASK-181.
+- [ ] `DataServiceActions.cpp` changes remain limited to TASK-182 validation
+  wiring.
 - [ ] `DataServiceActions.h` is not modified by TASK-181.
 - [ ] `DataServiceActionRegistrar.cpp` is not modified by TASK-181.
-- [ ] TASK-180 scaffold actions remain unavailable / disabled.
-- [ ] No action implementation exists.
+- [ ] TASK-180 scaffold actions have evolved only into validation-only
+  unavailable / write-not-implemented responses.
+- [ ] No persistence implementation exists.
 - [ ] No payload-to-write path exists.
 - [ ] No DataAccess write repository exists.
 - [ ] No database, trade log, cash facts, audit, or ledger writes exist.

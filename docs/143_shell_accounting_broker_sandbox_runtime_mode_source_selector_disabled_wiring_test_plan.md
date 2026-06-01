@@ -87,3 +87,7 @@ This plan defines tests for TASK-172 disabled-default selector wiring in `DataSe
 - [ ] Broker disabled / broker order / real broker order gates pass.
 - [ ] Full CTest passes.
 - [ ] transport 50 repeat passes.
+
+TASK-173 adds the sandbox runtime mode enablement authorization gate. This does
+not enable sandbox runtime and does not change the TASK-172 disabled-default
+selector wiring test expectations.

@@ -49,3 +49,8 @@ Rollback is to remove the disabled-default selector call and return directly to 
 ## Future Implementation Requirements
 
 Any future sandbox runtime enablement, external mode source, credentials provider, endpoint provider, paper or real runtime source, real broker order id storage, reconciliation, cancellation, correction, broker SDK, network, order placement, strategy execution, automatic trading, or schema change must open a separate TASK and reference docs/142 and docs/143.
+
+TASK-173 adds the sandbox runtime mode enablement authorization gate. It does
+not change TASK-172 behavior: selector input remains the default disabled
+source, sandbox runtime remains disabled, and future enablement still requires a
+separate implementation TASK.

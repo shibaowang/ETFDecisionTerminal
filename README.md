@@ -2952,3 +2952,21 @@ correction, strategy execution, automatic trading, or schema change. See
 `docs/142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md`
 and
 `docs/143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md`.
+
+## TASK-173 Broker Sandbox Runtime Mode Enablement Authorization Gate
+
+TASK-173 adds a gate-only authorization boundary for any future task that may
+enable sandbox runtime mode. It does not modify `DataServiceActions.cpp`, does
+not modify `ShellAccountingBrokerRuntimeModeSource.h/.cpp`, and does not enable
+sandbox runtime.
+
+TASK-172 remains limited to disabled-default selector wiring. Future sandbox
+runtime enablement, external mode sources, credentials providers, endpoint
+providers, sandbox adapter implementation, real broker order id storage,
+reconciliation, cancellation, correction, broker SDK, network, order placement,
+strategy execution, and automatic trading still require separate TASK
+authorization. CI continues to enforce no-network, no-credentials, and
+no-real-order-placement policy. See
+`docs/144_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_gate.md`
+and
+`docs/145_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan.md`.

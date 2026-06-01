@@ -2887,9 +2887,8 @@ and
 ## TASK-169 Broker Sandbox Runtime Mode Source Selector Authorization Gate
 
 TASK-169 adds a gate-only boundary for a possible future sandbox runtime mode
-source selector. It does not implement a selector, does not modify
-`ShellAccountingBrokerRuntimeModeSource.h/.cpp`, does not modify
-`DataServiceActions`, and does not enable sandbox runtime.
+source selector. TASK-170 adds the direct-test-only selector scaffold, still
+without modifying `DataServiceActions` or enabling sandbox runtime.
 
 The TASK-168 sandbox source scaffold remains direct-test-only. The default
 runtime source remains disabled-only, external mode sources remain unauthorized,
@@ -2899,3 +2898,22 @@ strategy execution, and automatic trading remain out of scope. See
 `docs/136_shell_accounting_broker_sandbox_runtime_mode_source_selector_authorization_gate.md`
 and
 `docs/137_shell_accounting_broker_sandbox_runtime_mode_source_selector_authorization_test_plan.md`.
+
+## TASK-170 Broker Sandbox Runtime Mode Source Selector Scaffold
+
+TASK-170 adds `shellAccountingBrokerRuntimeModeSourceForMode` as a directly
+testable selector scaffold. The function accepts only an explicit
+`ShellAccountingBrokerOrderPortMode`: disabled returns the disabled runtime mode
+source, sandbox returns the TASK-168 sandbox source scaffold, and unsupported or
+unknown values fail closed to disabled.
+
+This is not runtime wiring. `defaultShellAccountingBrokerRuntimeModeSource()`
+remains disabled-only, `DataServiceActions` is not modified, sandbox runtime
+remains disabled, and the TASK-168 sandbox source scaffold remains direct-test
+only. No payload/QML/config/env/command-line/file/database/secret-store mode
+source, broker SDK, network, credentials, endpoint, real broker order id, order
+placement, DB/audit/ledger write, reconciliation, cancellation, correction,
+strategy execution, automatic trading, or schema change is added. See
+`docs/138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md`
+and
+`docs/139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md`.

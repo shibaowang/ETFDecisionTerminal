@@ -540,6 +540,12 @@
 - ShellAccounting broker sandbox runtime enablement state scaffold test plan:
   [147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md](147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md)
   defines TASK-174 probes proving the scaffold is not connected to runtime.
+- ShellAccounting broker sandbox runtime enablement state wiring authorization gate:
+  [148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md](148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md)
+  records TASK-175 gate-only policy for future enablement state wiring.
+- ShellAccounting broker sandbox runtime enablement state wiring authorization test plan:
+  [149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md](149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md)
+  defines TASK-175 probes proving no runtime wiring has been implemented.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

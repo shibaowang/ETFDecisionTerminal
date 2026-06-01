@@ -52,6 +52,8 @@ Real credentials, secrets, tokens, keys, passwords, endpoints, and usable exampl
 
 Future sandbox runtime enablement, sandbox adapter implementation, external mode source, credentials provider, endpoint provider, real broker order id storage, reconciliation, cancellation, correction, broker SDK, network, order placement, strategy execution, automatic trading, and schema changes still require separate TASK authorization.
 
+TASK-175 adds a gate-only authorization boundary for future enablement state wiring. It does not wire this scaffold into `DataServiceActions.cpp`, does not modify the scaffold production code, and does not enable sandbox runtime.
+
 ## Rollback Policy
 
 Rollback is to remove the enablement state scaffold and keep TASK-172 disabled-default selector wiring plus TASK-166 disabled-only runtime source behavior. Rollback must not enable sandbox runtime or affect TradeDraft, confirmation, broker dry-run, audit, ledger, UI, or broker order behavior.

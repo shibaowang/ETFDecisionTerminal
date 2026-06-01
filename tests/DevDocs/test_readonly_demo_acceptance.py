@@ -362,6 +362,14 @@ def main() -> int:
     shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan_path = (
         root / "docs" / "147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md"
     )
+    shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate_path = (
+        root / "docs" / "148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md"
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan_path = (
+        root
+        / "docs"
+        / "149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -523,6 +531,12 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_cmake_path = (
         root / "tests" / "ShellAccountingBrokerSandboxRuntimeEnablementStateScaffold" / "CMakeLists.txt"
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingBrokerSandboxRuntimeEnablementStateWiringAuthorizationGate"
+        / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1738,6 +1752,16 @@ def main() -> int:
     shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan = (
         shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan_path.read_text(encoding="utf-8")
     )
+    shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate = (
+        shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate_path.read_text(
+            encoding="utf-8"
+        )
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan = (
+        shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan_path.read_text(
+            encoding="utf-8"
+        )
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1898,6 +1922,11 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_cmake = (
         shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake = (
+        shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake_path.read_text(
+            encoding="utf-8"
+        )
     )
     shell_accounting_qml_registration_header = shell_accounting_qml_registration_header_path.read_text(encoding="utf-8")
     shell_accounting_qml_registration_source = shell_accounting_qml_registration_source_path.read_text(encoding="utf-8")
@@ -7467,8 +7496,20 @@ def main() -> int:
         "docs/147 broker sandbox runtime enablement state scaffold test plan exists",
     )
     require(
+        shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate_path.exists(),
+        "docs/148 broker sandbox runtime enablement state wiring authorization gate exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan_path.exists(),
+        "docs/149 broker sandbox runtime enablement state wiring authorization test plan exists",
+    )
+    require(
         shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_cmake_path.exists(),
         "TASK-174 broker sandbox runtime enablement state scaffold CMake exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake_path.exists(),
+        "TASK-175 broker sandbox runtime enablement state wiring authorization CMake exists",
     )
     require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
@@ -7636,6 +7677,14 @@ def main() -> int:
     require(
         "docs/147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md" in readme,
         "README links docs/147",
+    )
+    require(
+        "docs/148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md" in readme,
+        "README links docs/148",
+    )
+    require(
+        "docs/149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md" in readme,
+        "README links docs/149",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7815,6 +7864,14 @@ def main() -> int:
     require(
         "147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md" in docs_index,
         "docs/README links docs/147",
+    )
+    require(
+        "148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md" in docs_index,
+        "docs/README links docs/148",
+    )
+    require(
+        "149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/149",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -8333,6 +8390,41 @@ def main() -> int:
     require(
         "TASK-174" in shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan,
         "docs/145 mentions TASK-174",
+    )
+    require(
+        "TASK-175" in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate,
+        "docs/148 mentions TASK-175",
+    )
+    require(
+        "TASK-175" in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan,
+        "docs/149 mentions TASK-175",
+    )
+    require("TASK-175" in codex_prompt_template, "docs/12 mentions TASK-175")
+    require(
+        "does not implement runtime wiring"
+        in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate,
+        "docs/148 forbids runtime wiring implementation",
+    )
+    require(
+        "does not modify `DataServiceActions.cpp`"
+        in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate,
+        "docs/148 forbids DataServiceActions changes",
+    )
+    require(
+        "Test Matrix" in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan,
+        "docs/149 contains Test matrix",
+    )
+    require(
+        "Required Probes" in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan,
+        "docs/149 contains Required Probes",
+    )
+    require(
+        "TASK-175" in shell_accounting_broker_sandbox_runtime_enablement_state_scaffold,
+        "docs/146 mentions TASK-175",
+    )
+    require(
+        "TASK-175" in shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan,
+        "docs/147 mentions TASK-175",
     )
     require(
         "TASK-173" in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring,
@@ -9030,6 +9122,47 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_cmake,
             f"TASK-174 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_docs",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_docs_index",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_dataserviceactions_not_wired",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_dataserviceactions_no_enablement_state_read",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_dataserviceactions_disabled_default_wiring",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_dataserviceactions_sandbox_paper_real",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_enablement_source_unmodified",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_runtime_source_unmodified",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_default_enabled_false",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_default_available_false",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_default_fail_closed_true",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_default_state_stable",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_sandbox_runtime_not_enabled",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_selector_direct_test_only",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_direct_sandbox_selector_unavailable",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_sandbox_adapter_not_implemented",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_paper_real_not_implemented",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_unknown_blank_fail_closed",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_external_mode_source",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_credentials_endpoint_account_order",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_broker_sdk",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_network_endpoint",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_credentials_secret_values",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_real_order_id",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_order_placement",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_db_audit_ledger_write",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_reconciliation_cancellation_correction",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_no_strategy_auto_trading",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_schema_not_modified",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_task174_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_task173_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_task172_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_task166_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_docs_tests_policy_keywords_not_production",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake,
+            f"TASK-175 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

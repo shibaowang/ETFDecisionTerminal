@@ -2988,3 +2988,22 @@ strategy execution, automatic trading, or schema change. See
 `docs/146_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold.md`
 and
 `docs/147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md`.
+
+## TASK-175 Broker Sandbox Runtime Enablement State Wiring Authorization Gate
+
+TASK-175 adds a gate-only boundary for any future task that may wire the
+TASK-174 enablement state scaffold into `DataServiceActions.cpp`. It does not
+modify `DataServiceActions.cpp`, does not modify
+`ShellAccountingBrokerSandboxRuntimeEnablement.h/.cpp`, and does not enable
+sandbox runtime.
+
+Future wiring must be separately authorized and may only start by reading the
+default disabled, unavailable, fail-closed state without changing the existing
+disabled/null provider response. Sandbox runtime enablement, external mode
+sources, credentials providers, endpoint providers, sandbox adapter
+implementation, real broker order id storage, reconciliation, cancellation,
+correction, broker SDK, network, order placement, strategy execution, automatic
+trading, and schema changes still require separate TASK authorization. See
+`docs/148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md`
+and
+`docs/149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md`.

@@ -52,6 +52,7 @@ TASK-174 defines tests for the direct-test-only sandbox runtime enablement state
 ### E. Regression
 
 - TASK-173 enablement authorization gate evolves to allow the TASK-174 disabled state scaffold.
+- TASK-175 adds only a future wiring authorization gate; TASK-174 remains direct-test-only.
 - TASK-172 disabled-default selector wiring remains valid.
 - TASK-166 disabled source baseline remains valid.
 - Broker disabled / broker order / real broker order gates pass.

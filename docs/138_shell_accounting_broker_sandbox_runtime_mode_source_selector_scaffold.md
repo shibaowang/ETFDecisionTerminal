@@ -4,15 +4,15 @@
 
 TASK-170 adds a directly testable broker runtime mode source selector scaffold. It is not runtime enablement, does not wire the selector into `DataServiceActions`, and does not change production QML, startup, Presenter, Controller, broker SDK, network, credentials, order placement, database write, audit write, ledger write, reconciliation, cancellation, correction, strategy execution, automatic trading, or schema behavior.
 
-TASK-171 adds a wiring authorization gate after this scaffold. Runtime wiring remains unimplemented, `DataServiceActions.cpp` is not wired, and the selector scaffold remains direct-test-only.
+TASK-171 adds a wiring authorization gate after this scaffold. TASK-172 then wires `DataServiceActions.cpp` to the selector using only the disabled default source mode. The selector scaffold remains direct-test-only for sandbox, and sandbox runtime remains disabled.
 
 ## Current Status
 
 TASK-169 authorized a future selector boundary. TASK-170 implements only the scaffold needed for direct tests: `shellAccountingBrokerRuntimeModeSourceForMode`.
 
 - `defaultShellAccountingBrokerRuntimeModeSource()` remains disabled-only.
-- `ShellAccountingBrokerRuntimeModeSourceForMode` behavior is not wired into runtime callers.
-- `DataServiceActions.cpp` continues to use the disabled default runtime source.
+- `ShellAccountingBrokerRuntimeModeSourceForMode` behavior is wired into `DataServiceActions.cpp` only through disabled-default selector wiring after TASK-172.
+- `DataServiceActions.cpp` continues to be driven only by the disabled default runtime source.
 - The TASK-168 sandbox runtime mode source scaffold remains direct-test-only.
 - Sandbox runtime remains disabled.
 - Paper and real runtime mode sources remain unimplemented.
@@ -27,7 +27,7 @@ The scaffold maps modes as follows:
 - `Sandbox` returns the TASK-168 sandbox runtime mode source scaffold.
 - `Unsupported` and any unknown enum value fail closed to the disabled-only runtime mode source.
 
-This scaffold is direct-test-only. A later runtime wiring task must be separately authorized before any production caller may use it.
+The sandbox path through this scaffold is direct-test-only. TASK-172 allows production `DataServiceActions.cpp` to use the selector only with the disabled default source mode.
 
 ## Default Runtime Policy
 
@@ -35,7 +35,7 @@ The default runtime source remains disabled-only. TASK-170 does not alter the be
 
 ## DataServiceActions Policy
 
-`DataServiceActions.cpp` is not modified by this task and must not call the selector scaffold. Runtime broker mode source selection remains disabled-only through the existing default source.
+`DataServiceActions.cpp` is not modified by TASK-170. TASK-172 may call the selector scaffold only with `defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()`. Runtime broker mode source selection remains disabled-only through the existing default source.
 
 ## No External Mode Source Policy
 

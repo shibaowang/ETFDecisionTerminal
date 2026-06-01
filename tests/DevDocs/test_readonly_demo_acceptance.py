@@ -344,6 +344,12 @@ def main() -> int:
         / "docs"
         / "141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md"
     )
+    shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_path = (
+        root / "docs" / "142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md"
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan_path = (
+        root / "docs" / "143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -496,6 +502,9 @@ def main() -> int:
         / "tests"
         / "ShellAccountingBrokerSandboxRuntimeModeSourceSelectorWiringAuthorizationGate"
         / "CMakeLists.txt"
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_cmake_path = (
+        root / "tests" / "ShellAccountingBrokerSandboxRuntimeModeSourceSelectorDisabledWiring" / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
         root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingQmlRegistration.h"
@@ -1689,6 +1698,14 @@ def main() -> int:
             encoding="utf-8"
         )
     )
+    shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring = (
+        shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan = (
+        shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan_path.read_text(
+            encoding="utf-8"
+        )
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1836,6 +1853,11 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_cmake = (
         shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_cmake_path.read_text(
+            encoding="utf-8"
+        )
+    )
+    shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_cmake = (
+        shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_cmake_path.read_text(
             encoding="utf-8"
         )
     )
@@ -7383,6 +7405,14 @@ def main() -> int:
         "docs/141 broker sandbox runtime mode source selector wiring authorization test plan exists",
     )
     require(
+        shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_path.exists(),
+        "docs/142 broker sandbox runtime mode source selector disabled wiring exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan_path.exists(),
+        "docs/143 broker sandbox runtime mode source selector disabled wiring test plan exists",
+    )
+    require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
         "README links docs/107",
     )
@@ -7523,6 +7553,15 @@ def main() -> int:
         "docs/141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md"
         in readme,
         "README links docs/141",
+    )
+    require(
+        "docs/142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md" in readme,
+        "README links docs/142",
+    )
+    require(
+        "docs/143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md"
+        in readme,
+        "README links docs/143",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7677,6 +7716,15 @@ def main() -> int:
         "141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md"
         in docs_index,
         "docs/README links docs/141",
+    )
+    require(
+        "142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md" in docs_index,
+        "docs/README links docs/142",
+    )
+    require(
+        "143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md"
+        in docs_index,
+        "docs/README links docs/143",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -8118,6 +8166,27 @@ def main() -> int:
     require(
         "Required Probes" in shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan,
         "docs/141 contains Required Probes",
+    )
+    require(
+        "TASK-172" in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring,
+        "docs/142 mentions TASK-172",
+    )
+    require(
+        "TASK-172" in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan,
+        "docs/143 mentions TASK-172",
+    )
+    require("TASK-172" in codex_prompt_template, "docs/12 mentions TASK-172")
+    require(
+        "disabled-default selector wiring" in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring,
+        "docs/142 documents disabled-default wiring",
+    )
+    require(
+        "Test Matrix" in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan,
+        "docs/143 contains Test matrix",
+    )
+    require(
+        "Required Probes" in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan,
+        "docs/143 contains Required Probes",
     )
     require(
         "Required Probes" in shell_accounting_broker_sandbox_runtime_selector_disabled_wiring_test_plan,
@@ -8630,7 +8699,7 @@ def main() -> int:
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_unknown_fail_closed",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_no_runtime_injection_api",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_default_source_still_disabled",
-        "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_dataserviceactions_not_wired",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_dataserviceactions_disabled_default_wiring",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_runtime_dry_run_disabled_provider",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_runtime_broker_port_mode_disabled",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_runtime_broker_port_disabled_true",
@@ -8664,7 +8733,7 @@ def main() -> int:
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_gate",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_docs_index",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_task170_docs_updated",
-        "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_dataserviceactions_not_wired",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_dataserviceactions_disabled_default_wiring_authorized",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_no_runtime_mode_source_inputs",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_runtime_source_code_unchanged",
         "shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_selector_scaffold_exists",
@@ -8691,6 +8760,43 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_cmake,
             f"TASK-171 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_docs",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_docs_index",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_dataserviceactions_calls_selector",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_selector_uses_default_mode",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_sandbox_paper_real_input",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_payload_mode_source",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_external_mode_source",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_sensitive_mode_source",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_default_runtime_source_disabled",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_selected_source_disabled",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_runtime_disabled_provider",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_broker_port_mode_disabled",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_broker_port_disabled_true",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_broker_port_dry_run_only_true",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_sandbox_scaffold_direct_test_only",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_direct_sandbox_selector_unavailable",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_sandbox_runtime_not_enabled",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_paper_real_not_implemented",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_broker_sdk",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_network_endpoint",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_credentials_secret_values",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_real_order_id",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_order_placement",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_db_audit_ledger_write",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_reconciliation_cancellation_correction",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_no_strategy_auto_trading",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_schema_not_modified",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_task171_gate_evolved",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_task170_scaffold_still_valid",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_task166_disabled_still_valid",
+        "shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_cmake,
+            f"TASK-172 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

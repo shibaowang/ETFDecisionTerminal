@@ -6,6 +6,8 @@ TASK-171 is an authorization gate-only task for future wiring of the TASK-170 ru
 
 This gate exists to keep the next implementation step narrow: a future wiring task must be separately authorized, and its first permitted step may only be disabled-default selector wiring unless another explicit TASK authorizes sandbox runtime mode source enablement.
 
+TASK-172 implements that first permitted step: disabled-default selector wiring in `DataServiceActions`. It does not enable sandbox runtime and does not add external mode sources.
+
 ## Current Status
 
 - TASK-166 established the disabled-only runtime mode source baseline.
@@ -16,6 +18,7 @@ This gate exists to keep the next implementation step narrow: a future wiring ta
 - `DataServiceActions.cpp` is not wired to the selector scaffold.
 - Sandbox runtime remains disabled.
 - Paper and real runtime mode sources remain unimplemented.
+- TASK-172 later wires `DataServiceActions.cpp` to the selector scaffold using only the disabled default source mode.
 
 ## Future Wiring Boundary
 
@@ -23,11 +26,13 @@ Future runtime mode source selector wiring must be implemented in a separate TAS
 
 The first future wiring step may only use disabled-default selector wiring. It must not infer sandbox from payload, QML, config, environment, command line, files, database, or secret stores. Sandbox runtime enablement requires a separate explicit TASK after wiring authorization.
 
+After TASK-172, production `DataServiceActions.cpp` may call `shellAccountingBrokerRuntimeModeSourceForMode(defaultBrokerPortMode)`, where `defaultBrokerPortMode` comes only from `defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()`.
+
 Unknown, blank, unsupported, paper, and real modes must fail closed to disabled or to an explicit unavailable/error result. No path may silently infer sandbox, paper, or real mode.
 
 ## DataServiceActions Policy
 
-`DataServiceActions.cpp` must remain unchanged by TASK-171. It must not call `shellAccountingBrokerRuntimeModeSourceForMode`, must not read external runtime mode sources, and must continue to use the existing disabled default runtime mode source.
+`DataServiceActions.cpp` remains unchanged by TASK-171 itself. TASK-172 authorizes only disabled-default selector wiring. It must not read external runtime mode sources, and it must continue to be driven by the existing disabled default runtime mode source.
 
 Future wiring may only happen through `DataServiceActions` after explicit authorization. It must be allowlisted, statically scannable, and testable.
 

@@ -274,15 +274,18 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
         const auto docs139 = readTextFile(root / "docs" /
                                           "139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md");
         return containsAllTokens(docs138 + "\n" + docs139,
-                                 {"TASK-171", "wiring authorization gate",
-                                  "direct-test-only", "runtime wiring remains unimplemented"});
+                                 {"TASK-171", "wiring authorization gate", "TASK-172",
+                                  "disabled-default selector wiring", "direct-test-only"});
     }
 
-    if (caseName == "dataserviceactions_not_wired") {
-        return containsAllTokens(actions, {"defaultShellAccountingBrokerRuntimeModeSource()",
-                                          "shellAccountingBrokerOrderPortForMode(brokerPortMode)"}) &&
-               containsNoTokens(actions, {"shellAccountingBrokerRuntimeModeSourceForMode",
-                                         "SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
+    if (caseName == "dataserviceactions_disabled_default_wiring_authorized") {
+        return containsAllTokens(actions,
+                                 {"const auto defaultBrokerPortMode =",
+                                  "defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()",
+                                  "shellAccountingBrokerRuntimeModeSourceForMode(",
+                                  "defaultBrokerPortMode)",
+                                  "shellAccountingBrokerOrderPortForMode(brokerPortMode)"}) &&
+               containsNoTokens(actions, {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
                                          "ShellAccountingBrokerOrderPortMode::Sandbox",
                                          "shellAccountingBrokerOrderPortForMode(\"sandbox\")"});
     }
@@ -314,8 +317,10 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
 
     if (caseName == "selector_direct_test_only") {
         return containsAllTokens(header, {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold"}) &&
-               containsNoTokens(actions + "\n" + shell, {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
-                                                        "shellAccountingBrokerRuntimeModeSourceForMode"});
+               containsNoTokens(actions + "\n" + shell,
+                                {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
+                                 "ShellAccountingBrokerOrderPortMode::Sandbox",
+                                 "shellAccountingBrokerOrderPortForMode(\"sandbox\")"});
     }
 
     if (caseName == "default_runtime_source_disabled") {
@@ -403,8 +408,8 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
         const auto docs138 = readTextFile(root / "docs" /
                                           "138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md");
         return containsAllTokens(cmake, {"ShellAccountingBrokerSandboxRuntimeModeSourceSelectorScaffold"}) &&
-               containsAllTokens(docs138, {"TASK-171", "direct-test-only",
-                                          "`DataServiceActions.cpp` is not wired"});
+               containsAllTokens(docs138, {"TASK-172", "direct-test-only",
+                                          "disabled-default selector wiring"});
     }
 
     if (caseName == "task169_gate_still_valid") {
@@ -426,8 +431,10 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     if (caseName == "docs_tests_policy_keywords_not_production") {
         return containsAllTokens(docs, {"runtime mode source selector", "credentials", "endpoint",
                                        "broker SDK", "order placement"}) &&
-               containsNoTokens(actions, {"shellAccountingBrokerRuntimeModeSourceForMode",
-                                         "brokerRuntimeModeSourceSelector"}) &&
+               containsAllTokens(actions, {"shellAccountingBrokerRuntimeModeSourceForMode",
+                                          "defaultBrokerPortMode"}) &&
+               containsNoTokens(actions, {"brokerRuntimeModeSourceSelector",
+                                         "ShellAccountingBrokerOrderPortMode::Sandbox"}) &&
                containsNoTokens(shell, {"runtimeModeSourceSelector", "brokerRuntimeModeSourceSelector"});
     }
 

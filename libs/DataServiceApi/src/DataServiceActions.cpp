@@ -2186,8 +2186,11 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     }
 
     const auto& result = dryRunResult.value();
-    const auto brokerPortMode =
+    const auto defaultBrokerPortMode =
         etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode();
+    const auto brokerPortMode = etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(
+                                    defaultBrokerPortMode)
+                                    .brokerOrderPortMode();
     const auto brokerPortResponse =
         etfdt::dataservice::shellAccountingBrokerOrderPortForMode(brokerPortMode).submitOrderEnvelope(
             brokerOrderPortRequestFromDryRun(request, result));

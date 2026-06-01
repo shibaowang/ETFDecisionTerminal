@@ -145,10 +145,10 @@ std::string shellPathText(const std::filesystem::path& root)
 std::string docsText(const std::filesystem::path& root)
 {
     return readTextFile(root / "docs" /
-                        "138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md") +
+                        "142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md") +
            "\n" +
            readTextFile(root / "docs" /
-                        "139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md");
+                        "143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md");
 }
 
 std::string productionBrokerSourceText(const std::filesystem::path& root)
@@ -157,19 +157,19 @@ std::string productionBrokerSourceText(const std::filesystem::path& root)
            dataServiceActionsText(root) + "\n" + orderPortSelectorText(root);
 }
 
-std::vector<std::string> externalModeTokens()
-{
-    return {"getenv(", "qgetenv(", "QSettings", "commandLine", "readModeFile",
-            "loadModeFile", "modeConfig", "modeSetting", "secretManager",
-            "credentialStore", "databaseBrokerMode", "runtimeModeFile"};
-}
-
 std::vector<std::string> payloadModeTokens()
 {
     return {"extractJsonStringField(context.request.payloadJson, \"brokerMode\"",
             "extractJsonStringField(context.request.payloadJson, \"brokerPortMode\"",
             "extractJsonStringField(context.request.payloadJson, \"sandboxMode\"",
             "extractJsonStringField(context.request.payloadJson, \"runtimeMode\""};
+}
+
+std::vector<std::string> externalModeTokens()
+{
+    return {"getenv(", "qgetenv(", "QSettings", "commandLine", "readModeFile",
+            "loadModeFile", "modeConfig", "modeSetting", "secretManager",
+            "credentialStore", "databaseBrokerMode", "runtimeModeFile"};
 }
 
 std::vector<std::string> sensitiveTokens()
@@ -215,8 +215,8 @@ std::vector<std::string> orderPlacementTokens()
 std::vector<std::string> writeTokens()
 {
     return {"INSERT ", "UPDATE ", "DELETE ", "REPLACE ", "CREATE ", "DROP ", "ALTER ",
-            "sqlite3_exec", "QSqlQuery", "audit_log", "trade_log", "trade_execution_group",
-            "trade_draft"};
+            "sqlite3_exec", "QSqlQuery", "trade_log", "trade_execution_group", "trade_draft",
+            "broker_order_real_status"};
 }
 
 std::vector<std::string> reconciliationTokens()
@@ -239,140 +239,114 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     const auto source = runtimeSourceText(root);
     const auto actions = dataServiceActionsText(root);
     const auto shell = shellPathText(root);
-    const auto productionBroker = productionBrokerSourceText(root);
     const auto docs = docsText(root);
+    const auto productionBroker = productionBrokerSourceText(root);
 
     if (caseName == "docs") {
         return expect(std::filesystem::exists(
                           root / "docs" /
-                          "138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md"),
-                      "docs/138 exists") &&
+                          "142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md"),
+                      "docs/142 exists") &&
                expect(std::filesystem::exists(
                           root / "docs" /
-                          "139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md"),
-                      "docs/139 exists") &&
-               containsAllTokens(docs, {"TASK-170", "direct-test selector scaffold",
-                                        "not runtime enablement", "Sandbox runtime remains disabled"});
+                          "143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md"),
+                      "docs/143 exists") &&
+               containsAllTokens(docs, {"TASK-172", "disabled-default selector wiring",
+                                        "not sandbox runtime enablement"});
     }
 
     if (caseName == "docs_index") {
         const auto readme = readTextFile(root / "README.md");
         const auto docsIndex = readTextFile(root / "docs" / "README.md");
         const auto prompt = readTextFile(root / "docs" / "12_codex_prompt_template.md");
-        return containsAllTokens(readme, {"docs/138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md",
-                                          "docs/139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md"}) &&
-               containsAllTokens(docsIndex, {"138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md",
-                                             "139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md"}) &&
-               containsAllTokens(prompt, {"TASK-170", "docs/138", "docs/139"});
+        return containsAllTokens(readme, {"docs/142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md",
+                                          "docs/143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md"}) &&
+               containsAllTokens(docsIndex, {"142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md",
+                                             "143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md"}) &&
+               containsAllTokens(prompt, {"TASK-172", "docs/142", "docs/143"});
     }
 
-    if (caseName == "header_declares_selector") {
-        return containsAllTokens(header, {"shellAccountingBrokerRuntimeModeSourceForMode",
-                                          "ShellAccountingBrokerOrderPortMode mode"});
+    if (caseName == "dataserviceactions_calls_selector") {
+        return containsAllTokens(actions, {"shellAccountingBrokerRuntimeModeSourceForMode",
+                                          "defaultBrokerPortMode",
+                                          "brokerOrderPortMode()"});
     }
 
-    if (caseName == "source_defines_selector") {
-        return containsAllTokens(source, {"shellAccountingBrokerRuntimeModeSourceForMode",
-                                          "ShellAccountingBrokerOrderPortMode::Sandbox",
-                                          "return defaultShellAccountingBrokerRuntimeModeSource();"});
-    }
-
-    if (caseName == "disabled_returns_disabled") {
-        return expect(etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled)
-                          .brokerOrderPortMode() ==
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled,
-                      "disabled mode returns disabled source");
-    }
-
-    if (caseName == "sandbox_returns_sandbox") {
-        return expect(etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Sandbox)
-                          .brokerOrderPortMode() ==
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Sandbox,
-                      "sandbox mode returns sandbox scaffold source");
-    }
-
-    if (caseName == "unsupported_fail_closed") {
-        return expect(etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Unsupported)
-                          .brokerOrderPortMode() ==
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled,
-                      "unsupported mode fails closed to disabled");
-    }
-
-    if (caseName == "unknown_fail_closed") {
-        return expect(etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(
-                          static_cast<etfdt::dataservice::ShellAccountingBrokerOrderPortMode>(999))
-                          .brokerOrderPortMode() ==
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled,
-                      "unknown mode fails closed to disabled");
-    }
-
-    if (caseName == "no_runtime_injection_api") {
-        return containsNoTokens(header + "\n" + source,
-                                {"setShellAccountingBrokerRuntimeModeSource",
-                                 "registerShellAccountingBrokerRuntimeModeSource",
-                                 "overrideShellAccountingBrokerRuntimeModeSource",
-                                 "ShellAccountingBrokerRuntimeModeSourceRegistry",
-                                 "globalShellAccountingBrokerRuntimeModeSource"});
-    }
-
-    if (caseName == "default_source_still_disabled") {
-        return expect(etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource()
-                          .brokerOrderPortMode() ==
-                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled,
-                      "default runtime mode source remains disabled");
-    }
-
-    if (caseName == "dataserviceactions_disabled_default_wiring") {
+    if (caseName == "selector_uses_default_mode") {
         return containsAllTokens(actions,
                                  {"const auto defaultBrokerPortMode =",
                                   "defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()",
                                   "shellAccountingBrokerRuntimeModeSourceForMode(",
                                   "defaultBrokerPortMode)",
-                                  "shellAccountingBrokerOrderPortForMode(brokerPortMode)"}) &&
-               containsNoTokens(actions, {"ShellAccountingBrokerOrderPortMode::Sandbox",
-                                         "SandboxShellAccountingBrokerRuntimeModeSourceScaffold"});
+                                  ".brokerOrderPortMode()"});
     }
 
-    if (caseName == "runtime_dry_run_disabled_provider") {
-        return containsAllTokens(actions, {"brokerPortMode",
-                                          "defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()",
-                                          "brokerPortDryRunOnly"});
+    if (caseName == "no_sandbox_paper_real_input") {
+        return containsNoTokens(actions, {"ShellAccountingBrokerOrderPortMode::Sandbox",
+                                         "ShellAccountingBrokerOrderPortMode::Paper",
+                                         "ShellAccountingBrokerOrderPortMode::Real",
+                                         "shellAccountingBrokerOrderPortForMode(\"sandbox\")",
+                                         "shellAccountingBrokerRuntimeModeSourceForMode(\"sandbox\")"});
     }
 
-    if (caseName == "runtime_broker_port_mode_disabled") {
+    if (caseName == "no_payload_mode_source") {
+        return containsNoTokens(actions, payloadModeTokens());
+    }
+
+    if (caseName == "no_external_mode_source") {
+        return containsNoTokens(actions + "\n" + header + "\n" + source, externalModeTokens()) &&
+               containsNoTokens(shell, {"brokerRuntimeMode", "sandboxRuntimeMode",
+                                       "RuntimeModeSourceSelector"});
+    }
+
+    if (caseName == "no_sensitive_mode_source") {
+        return containsNoTokens(actions + "\n" + header + "\n" + source, sensitiveTokens());
+    }
+
+    if (caseName == "default_runtime_source_disabled") {
         return expect(etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource()
                           .brokerOrderPortMode() ==
-                          etfdt::dataservice::defaultShellAccountingBrokerOrderPortMode(),
-                      "runtime broker port mode remains disabled");
+                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled,
+                      "default runtime source remains disabled");
     }
 
-    if (caseName == "runtime_broker_port_disabled_true") {
+    if (caseName == "selected_source_disabled") {
+        const auto defaultMode = etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource()
+                                     .brokerOrderPortMode();
+        return expect(etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(defaultMode)
+                          .brokerOrderPortMode() ==
+                          etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Disabled,
+                      "selected source from default mode remains disabled");
+    }
+
+    if (caseName == "runtime_disabled_provider" || caseName == "broker_port_disabled_true" ||
+        caseName == "broker_port_dry_run_only_true" || caseName == "broker_port_mode_disabled") {
+        const auto defaultMode = etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource()
+                                     .brokerOrderPortMode();
+        const auto selectedMode =
+            etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(defaultMode)
+                .brokerOrderPortMode();
         etfdt::dataservice::ShellAccountingBrokerOrderRequest request;
-        const auto response = etfdt::dataservice::shellAccountingBrokerOrderPortForMode(
-                                  etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource()
-                                      .brokerOrderPortMode())
-                                  .submitOrderEnvelope(request);
-        return expect(response.disabled, "runtime broker port remains disabled");
+        const auto response =
+            etfdt::dataservice::shellAccountingBrokerOrderPortForMode(selectedMode)
+                .submitOrderEnvelope(request);
+        if (caseName == "runtime_disabled_provider") {
+            return expect(!response.success, "disabled provider does not submit") &&
+                   expect(response.errorCode == "BROKER_ORDER_DISABLED", "disabled code preserved");
+        }
+        if (caseName == "broker_port_mode_disabled") {
+            return expect(response.brokerMode == "disabled", "broker port mode remains disabled");
+        }
+        if (caseName == "broker_port_disabled_true") {
+            return expect(response.disabled, "broker port disabled remains true");
+        }
+        return expect(response.dryRunOnly, "broker port dry-run-only remains true");
     }
 
-    if (caseName == "runtime_broker_port_dry_run_only_true") {
-        etfdt::dataservice::ShellAccountingBrokerOrderRequest request;
-        const auto response = etfdt::dataservice::shellAccountingBrokerOrderPortForMode(
-                                  etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource()
-                                      .brokerOrderPortMode())
-                                  .submitOrderEnvelope(request);
-        return expect(response.dryRunOnly, "runtime broker port remains dry-run only");
-    }
-
-    if (caseName == "sandbox_source_direct_test_only") {
+    if (caseName == "sandbox_scaffold_direct_test_only") {
         return containsAllTokens(header, {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold"}) &&
-               containsNoTokens(actions + "\n" + shell,
-                                {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
-                                 "ShellAccountingBrokerOrderPortMode::Sandbox",
-                                 "shellAccountingBrokerOrderPortForMode(\"sandbox\")"});
+               containsNoTokens(actions + "\n" + shell, {"SandboxShellAccountingBrokerRuntimeModeSourceScaffold",
+                                                        "ShellAccountingBrokerOrderPortMode::Sandbox"});
     }
 
     if (caseName == "direct_sandbox_selector_unavailable") {
@@ -390,25 +364,14 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
                       "direct sandbox selector unavailable code");
     }
 
-    if (caseName == "no_payload_source") {
-        return containsNoTokens(header + "\n" + source + "\n" + actions, payloadModeTokens());
+    if (caseName == "sandbox_runtime_not_enabled") {
+        return containsAllTokens(docs, {"Sandbox runtime remains disabled",
+                                       "direct-test-only"}) &&
+               containsNoTokens(actions, {"brokerPortMode = \"sandbox\"",
+                                         "shellAccountingBrokerOrderPortForMode(\"sandbox\")"});
     }
 
-    if (caseName == "no_qml_startup_presenter_controller_source") {
-        return containsNoTokens(shell, {"shellAccountingBrokerRuntimeModeSourceForMode",
-                                       "brokerRuntimeMode", "sandboxRuntimeMode",
-                                       "RuntimeModeSourceSelector"});
-    }
-
-    if (caseName == "no_config_env_cli_file_db_secret_source") {
-        return containsNoTokens(header + "\n" + source + "\n" + actions, externalModeTokens());
-    }
-
-    if (caseName == "no_credentials_endpoint_account_order_data") {
-        return containsNoTokens(header + "\n" + source + "\n" + actions, sensitiveTokens());
-    }
-
-    if (caseName == "paper_real_sources_not_implemented") {
+    if (caseName == "paper_real_not_implemented") {
         return expect(etfdt::dataservice::shellAccountingBrokerOrderPortModeFromString("paper") ==
                           etfdt::dataservice::ShellAccountingBrokerOrderPortMode::Unsupported,
                       "paper remains unsupported") &&
@@ -442,7 +405,8 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     }
 
     if (caseName == "no_db_audit_ledger_write") {
-        return containsNoTokens(header + "\n" + source + "\n" + orderPortSelectorText(root), writeTokens()) &&
+        return containsNoTokens(header + "\n" + source + "\n" + orderPortSelectorText(root),
+                                writeTokens()) &&
                containsAllTokens(docs, {"database write", "audit write", "ledger write"});
     }
 
@@ -459,22 +423,19 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
         return containsAllTokens(migration, {"trade_log", "trade_draft", "audit_log"});
     }
 
-    if (caseName == "task169_gate_still_valid") {
-        const auto cmake = readTextFile(root / "tests" / "CMakeLists.txt");
-        const auto docs136 = readTextFile(root / "docs" /
-                                          "136_shell_accounting_broker_sandbox_runtime_mode_source_selector_authorization_gate.md");
-        return containsAllTokens(cmake, {"ShellAccountingBrokerSandboxRuntimeModeSourceSelectorAuthorizationGate"}) &&
-               containsAllTokens(docs136, {"TASK-170", "direct-test-only selector scaffold",
-                                          "DataServiceActions"});
+    if (caseName == "task171_gate_evolved") {
+        const auto docs140 = readTextFile(root / "docs" /
+                                          "140_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_gate.md");
+        return containsAllTokens(docs140, {"TASK-172", "disabled-default selector wiring",
+                                          "does not enable sandbox runtime"});
     }
 
-    if (caseName == "task168_scaffold_still_valid") {
+    if (caseName == "task170_scaffold_still_valid") {
         const auto cmake = readTextFile(root / "tests" / "CMakeLists.txt");
-        const auto docs134 = readTextFile(root / "docs" /
-                                          "134_shell_accounting_broker_sandbox_runtime_mode_source_scaffold.md");
-        return containsAllTokens(cmake, {"ShellAccountingBrokerSandboxRuntimeModeSourceScaffold"}) &&
-               containsAllTokens(docs134, {"TASK-169", "direct-test-only",
-                                          "default runtime source remains disabled-only"});
+        const auto docs138 = readTextFile(root / "docs" /
+                                          "138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md");
+        return containsAllTokens(cmake, {"ShellAccountingBrokerSandboxRuntimeModeSourceSelectorScaffold"}) &&
+               containsAllTokens(docs138, {"direct-test-only", "shellAccountingBrokerRuntimeModeSourceForMode"});
     }
 
     if (caseName == "task166_disabled_still_valid") {
@@ -486,8 +447,8 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     }
 
     if (caseName == "rollback_policy") {
-        return containsAllTokens(docs, {"Rollback", "disabled-only",
-                                       "does not wire the scaffold into runtime"});
+        return containsAllTokens(docs, {"Rollback", "TASK-166 disabled-only source",
+                                       "TASK-159 disabled/null provider"});
     }
 
     std::cerr << "unknown case `" << caseName << "`\n";

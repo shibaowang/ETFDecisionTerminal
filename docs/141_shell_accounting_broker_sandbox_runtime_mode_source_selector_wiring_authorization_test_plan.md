@@ -4,6 +4,8 @@
 
 This plan defines the TASK-171 gate tests for future wiring of the TASK-170 selector scaffold into `DataServiceActions`. It does not implement runtime wiring, does not modify `DataServiceActions.cpp`, does not enable sandbox runtime, and does not add external mode sources.
 
+TASK-172 evolves this gate to allow only disabled-default selector wiring in `DataServiceActions`. Sandbox runtime, external mode sources, broker SDK, network, credentials, endpoint, order placement, and schema changes remain unauthorized.
+
 ## Test Matrix
 
 ### Documentation And Indexing
@@ -17,7 +19,7 @@ This plan defines the TASK-171 gate tests for future wiring of the TASK-170 sele
 
 ### Wiring Isolation
 
-- `DataServiceActions.cpp` does not call `shellAccountingBrokerRuntimeModeSourceForMode`.
+- `DataServiceActions.cpp` may call `shellAccountingBrokerRuntimeModeSourceForMode` only with `defaultBrokerPortMode` from `defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode()`.
 - `DataServiceActions.cpp` does not read payload, QML, config, environment, command-line, file, database, or secret-store runtime mode sources.
 - `ShellAccountingBrokerRuntimeModeSource.h/.cpp` still contain the TASK-170 selector scaffold.
 - The selector scaffold remains direct-test-only.
@@ -41,6 +43,7 @@ This plan defines the TASK-171 gate tests for future wiring of the TASK-170 sele
 ### Regression
 
 - TASK-170 selector scaffold semantics remain valid.
+- TASK-171 authorization gate semantics remain valid after evolving to allow disabled-default selector wiring.
 - TASK-169 authorization gate semantics remain valid.
 - TASK-166 disabled source baseline remains valid.
 - TASK-165 through TASK-162 broker selector regressions pass.
@@ -50,7 +53,7 @@ This plan defines the TASK-171 gate tests for future wiring of the TASK-170 sele
 
 ## Required Probes
 
-- Static `DataServiceActions.cpp` scan proving no selector runtime wiring.
+- Static `DataServiceActions.cpp` scan proving only disabled-default selector wiring.
 - Static external-source scan for payload, QML, config, environment, command-line, file, database, and secret-store mode tokens.
 - Static production source scan for broker SDK, network, endpoint, credentials, order id, order placement, writes, reconciliation, cancellation, correction, strategy, and automatic trading.
 - Direct runtime probes proving the default source remains disabled and sandbox selector remains unavailable / not configured.
@@ -62,7 +65,7 @@ This plan defines the TASK-171 gate tests for future wiring of the TASK-170 sele
 - [ ] docs/140 merged.
 - [ ] docs/141 merged.
 - [ ] TASK-171 tests pass.
-- [ ] `DataServiceActions.cpp` remains unwired from `shellAccountingBrokerRuntimeModeSourceForMode`.
+- [ ] `DataServiceActions.cpp` uses only disabled-default selector wiring.
 - [ ] `ShellAccountingBrokerRuntimeModeSource.h/.cpp` are not modified by TASK-171.
 - [ ] Default runtime source remains disabled-only.
 - [ ] TASK-170 selector scaffold remains direct-test-only.

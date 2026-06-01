@@ -2935,3 +2935,20 @@ trading, and schema changes remain out of scope. See
 `docs/140_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_gate.md`
 and
 `docs/141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md`.
+
+## TASK-172 Broker Sandbox Runtime Mode Source Selector Disabled Wiring
+
+TASK-172 wires the TASK-170 selector scaffold into the broker dry-run path using
+only the mode from `defaultShellAccountingBrokerRuntimeModeSource()`. Because
+the default source remains disabled-only, runtime behavior remains equivalent to
+the disabled/null broker provider: `brokerPortMode` is `disabled`,
+`brokerPortDisabled` is true, and `brokerPortDryRunOnly` is true.
+
+TASK-172 does not enable sandbox runtime and does not read broker mode from
+payload, QML, config, environment, command line, files, database, or secret
+stores. It adds no SDK, network, credentials, endpoint, real broker order id,
+order placement, DB/audit/ledger write, reconciliation, cancellation,
+correction, strategy execution, automatic trading, or schema change. See
+`docs/142_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring.md`
+and
+`docs/143_shell_accounting_broker_sandbox_runtime_mode_source_selector_disabled_wiring_test_plan.md`.

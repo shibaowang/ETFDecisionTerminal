@@ -3067,3 +3067,22 @@ required. See
 `docs/154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md`
 and
 `docs/155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md`.
+
+## TASK-179 Manual Entry DataService Action Authorization Gate
+
+TASK-179 adds only the authorization gate for future manual entry DataService
+actions. It documents the future boundary for manual buy/sell record actions
+and deposit/withdraw cash movement actions, while explicitly not implementing
+any action, action name, dispatcher handler, repository, SQLite write, schema
+change, production QML, startup wiring, AccountingEngine replay behavior,
+TradeDraft, suggestion, broker SDK, network endpoint, credential source, real
+order placement, or automatic trading.
+
+Future manual entry actions must remain DataService-only, validate through the
+TASK-178 DTO / validation scaffold or an authorized successor, and move write
+repository, replay, read model, and UI work into separate implementation tasks.
+Broker sandbox new capability work remains paused and existing broker gates
+remain required. See
+`docs/156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md`
+and
+`docs/157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md`.

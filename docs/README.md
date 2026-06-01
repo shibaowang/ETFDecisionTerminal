@@ -571,6 +571,15 @@
   defines TASK-178 direct validation and static boundary probes proving no
   DataService action, repository, schema, QML, broker, network, credential, or
   order-placement expansion.
+- ShellAccounting manual entry DataService action authorization gate:
+  [156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md](156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md)
+  records TASK-179 gate-only policy for future DataService manual buy/sell and
+  deposit/withdraw actions without implementing actions or writes.
+- ShellAccounting manual entry DataService action authorization test plan:
+  [157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md](157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md)
+  defines TASK-179 static probes for no DataServiceActions change, no action
+  names, no repositories, no DB writes, no schema/QML/startup drift, and broker
+  gate retention.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

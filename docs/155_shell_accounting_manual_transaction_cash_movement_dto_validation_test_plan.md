@@ -17,6 +17,8 @@ and automatic trading.
 - docs/155 exists and contains this test matrix.
 - README, docs/README, and docs/12 register TASK-178.
 - docs/152 and docs/153 state that TASK-178 adds DTO / validation scaffold only.
+- docs/156 and docs/157 are the follow-up TASK-179 DataService action
+  authorization gate and test plan.
 
 ### B. DTO / Validation Presence
 
@@ -89,6 +91,10 @@ and automatic trading.
 - Automatic trading scan.
 - Existing broker gate retention scan.
 - Rollback documentation probe.
+
+TASK-179 is the follow-up authorization gate for future DataService manual
+entry actions. It must not change the TASK-178 validation scaffold into a
+runtime action, repository, or write path.
 
 ## Go / No-Go Checklist
 

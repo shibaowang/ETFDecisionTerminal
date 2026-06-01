@@ -10,6 +10,7 @@
 #include "DataAccess/ShellAccountingTradeDraftConfirmationRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftRepository.h"
 #include "DataServiceApi/ShellAccountingBrokerRuntimeModeSource.h"
+#include "DataServiceApi/ShellAccountingBrokerSandboxRuntimeEnablement.h"
 #include "Protocol/Json.h"
 
 #include <cctype>
@@ -2186,6 +2187,12 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     }
 
     const auto& result = dryRunResult.value();
+    const auto& sandboxEnablementState =
+        etfdt::dataservice::defaultShellAccountingBrokerSandboxRuntimeEnablementState();
+    const auto sandboxEnablementDisabledFailClosed = !sandboxEnablementState.enabled
+                                                    && !sandboxEnablementState.available
+                                                    && sandboxEnablementState.failClosed;
+    (void)sandboxEnablementDisabledFailClosed;
     const auto defaultBrokerPortMode =
         etfdt::dataservice::defaultShellAccountingBrokerRuntimeModeSource().brokerOrderPortMode();
     const auto brokerPortMode = etfdt::dataservice::shellAccountingBrokerRuntimeModeSourceForMode(

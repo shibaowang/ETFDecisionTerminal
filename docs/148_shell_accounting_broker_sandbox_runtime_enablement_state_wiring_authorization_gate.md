@@ -108,3 +108,17 @@ Future wiring requires:
 - `transport_local_socket_echo` 50-repeat passing.
 - Clean git status.
 - Explicit user authorization for a new implementation TASK.
+
+## TASK-176 Evolution
+
+TASK-176 has implemented the only wiring authorized by this gate:
+`DataServiceActions.cpp` may read the default disabled, unavailable,
+fail-closed enablement state. TASK-176 still does not enable sandbox runtime,
+does not modify `ShellAccountingBrokerSandboxRuntimeEnablement.h/.cpp`, does
+not modify `ShellAccountingBrokerRuntimeModeSource.h/.cpp`, does not add
+request or response fields, and does not change the disabled/null broker dry-run
+response. Future sandbox runtime enablement, external mode sources,
+credentials, endpoints, sandbox adapters, real broker order ids, order
+placement, reconciliation, cancellation, correction, strategy execution,
+automatic trading, and schema changes still require separate TASK
+authorization.

@@ -4,6 +4,8 @@
 
 TASK-170 adds a directly testable broker runtime mode source selector scaffold. It is not runtime enablement, does not wire the selector into `DataServiceActions`, and does not change production QML, startup, Presenter, Controller, broker SDK, network, credentials, order placement, database write, audit write, ledger write, reconciliation, cancellation, correction, strategy execution, automatic trading, or schema behavior.
 
+TASK-171 adds a wiring authorization gate after this scaffold. Runtime wiring remains unimplemented, `DataServiceActions.cpp` is not wired, and the selector scaffold remains direct-test-only.
+
 ## Current Status
 
 TASK-169 authorized a future selector boundary. TASK-170 implements only the scaffold needed for direct tests: `shellAccountingBrokerRuntimeModeSourceForMode`.
@@ -56,3 +58,5 @@ Rollback is to continue using `defaultShellAccountingBrokerRuntimeModeSource()`,
 ## Future Implementation Requirements
 
 Any future runtime selector wiring, sandbox adapter implementation, credentials provider, endpoint provider, real broker order id storage, reconciliation, cancellation, correction, strategy execution, automatic trading, or real broker order placement must open a separate TASK and reference docs/138 and docs/139.
+
+Future DataServiceActions selector wiring must also reference docs/140 and docs/141. The first future wiring step may only be disabled-default selector wiring unless a separate TASK explicitly authorizes sandbox runtime mode source enablement.

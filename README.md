@@ -2917,3 +2917,21 @@ strategy execution, automatic trading, or schema change is added. See
 `docs/138_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold.md`
 and
 `docs/139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md`.
+
+## TASK-171 Broker Sandbox Runtime Mode Source Selector Wiring Authorization Gate
+
+TASK-171 adds a gate-only boundary for a future task that may wire the TASK-170
+selector scaffold into `DataServiceActions`. It does not implement runtime
+wiring, does not modify `DataServiceActions`, does not modify runtime source
+production code, and does not enable sandbox runtime.
+
+The next implementation step remains separately authorized and may only start
+with disabled-default selector wiring unless another TASK explicitly authorizes
+sandbox runtime mode source enablement. Payload/QML/config/env/command-line/file
+/database/secret-store mode sources remain unauthorized, and SDK, network,
+credentials, endpoint, real broker order id, order placement, DB/audit/ledger
+write, reconciliation, cancellation, correction, strategy execution, automatic
+trading, and schema changes remain out of scope. See
+`docs/140_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_gate.md`
+and
+`docs/141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md`.

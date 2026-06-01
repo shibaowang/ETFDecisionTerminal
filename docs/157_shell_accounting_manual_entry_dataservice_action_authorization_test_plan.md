@@ -18,13 +18,17 @@ placement.
 - docs/154 and docs/155 record that TASK-179 is only a future DataService
   action authorization gate.
 
-### B. No DataService Runtime Action
+### B. TASK-180 Scaffold-Only DataService Runtime Action
 
-- `DataServiceActions.cpp` is not modified for manual entries.
-- No manual transaction action name is added.
-- No cash movement action name is added.
-- No manual entry dispatcher handler is registered.
-- ServiceRuntime / action dispatcher routing does not add manual entry routes.
+- TASK-179 originally had no DataService runtime action.
+- TASK-180 allows only disabled scaffold action registration.
+- `accounting.manual_transaction.create` may be registered as disabled
+  scaffold.
+- `accounting.manual_cash_movement.create` may be registered as disabled
+  scaffold.
+- No write implementation, repository call, SQLite write, replay, TradeDraft,
+  suggestion, broker, network, credentials, endpoint, order placement, or
+  automatic trading behavior is allowed.
 
 ### C. No Production Write Path
 
@@ -76,7 +80,7 @@ placement.
 - Documentation registration scan.
 - Forbidden action token scan.
 - Dispatcher route scan.
-- DataServiceActions scan.
+- DataServiceActions scaffold scan.
 - DataAccess repository scan.
 - No write SQL scan.
 - No migration scan.
@@ -100,6 +104,7 @@ placement.
 - [ ] docs/157 merged.
 - [ ] README, docs/README, and docs/12 register TASK-179.
 - [ ] TASK-179 DataService action authorization gate passes.
+- [ ] TASK-180 action scaffold tests pass.
 - [ ] TASK-178 validation scaffold tests pass.
 - [ ] TASK-177 MVP authorization gate passes.
 - [ ] Broker disabled, broker order, and real broker gates pass.

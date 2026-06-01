@@ -36,6 +36,12 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionAccountingReplayPreview, [&connection](const auto& context) {
         return handleAccountingReplayPreview(context, connection);
     });
+    (void)dispatcher.registerAction(kActionAccountingManualTransactionCreate, [&connection](const auto& context) {
+        return handleAccountingManualEntryTransactionCreate(context, connection);
+    });
+    (void)dispatcher.registerAction(kActionAccountingManualCashMovementCreate, [&connection](const auto& context) {
+        return handleAccountingManualEntryCashMovementCreate(context, connection);
+    });
     (void)dispatcher.registerAction(kActionPositionList, [&connection](const auto& context) {
         return handlePositionList(context, connection);
     });

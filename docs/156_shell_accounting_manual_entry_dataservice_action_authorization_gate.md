@@ -13,8 +13,11 @@ dispatcher handler, does not write a database, does not modify schema, does not
 modify QML or startup, does not add a repository, and does not connect broker
 code.
 
-TASK-179 does not modify `DataServiceActions.cpp`.
-TASK-179 does not register a dispatcher handler.
+TASK-179 itself did not modify `DataServiceActions.cpp` and did not register a
+dispatcher handler. TASK-180 now evolves this gate: it allows only DataService action scaffold registration for manual entry actions and still does not
+authorize write implementation.
+
+TASK-180 still does not authorize write implementation.
 
 ## Current State
 
@@ -42,7 +45,13 @@ implementation task. Future scope may include:
 - DataService-only writes to authorized trade log, cash facts, or cash ledger
   boundaries.
 
-TASK-179 does not add these action names and does not register these handlers.
+TASK-179 did not add these action names and did not register these handlers.
+TASK-179 does not add these action names.
+TASK-180 may register disabled scaffold handlers for
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`, but those handlers must return
+unavailable / not implemented / disabled scaffold responses and must not write
+or call repositories.
 
 ## DataService-Only Write Policy
 
@@ -76,13 +85,14 @@ updates, and production UI must be advanced by separate authorized tasks.
 
 ## Forbidden Policy
 
-TASK-179 forbids:
+TASK-179 forbids, except for the TASK-180 scaffold-only evolution:
 
 - modifying `migrations/001_initial_schema.sql` or adding migrations;
 - modifying production QML or startup;
 - modifying Presenter / Controller behavior;
-- modifying `DataServiceActions.cpp`;
-- adding DataService action names or dispatcher handlers;
+- modifying `DataServiceActions.cpp` for write implementation;
+- adding DataService action names or dispatcher handlers beyond the TASK-180
+  disabled scaffold actions;
 - changing ServiceRuntime action routing;
 - adding DataAccess production write repositories;
 - changing AccountingEngine production replay;

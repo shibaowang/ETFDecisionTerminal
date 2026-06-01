@@ -3086,3 +3086,21 @@ remain required. See
 `docs/156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md`
 and
 `docs/157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md`.
+
+## TASK-180 Manual Entry DataService Action Scaffold
+
+TASK-180 registers disabled scaffold DataService actions for local manual
+transaction and cash movement entry:
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`. The dispatcher can resolve both
+actions, but each handler only returns unavailable / not implemented /
+disabled scaffold semantics.
+
+TASK-180 does not implement writes, does not add a DataAccess repository, does
+not write SQLite, `trade_log`, cash facts, audit, or ledger records, does not
+modify schema, production QML, startup, AccountingEngine replay, StrategyEngine,
+MarketEngine, TradeDraft, suggestions, broker SDK, network, credentials,
+endpoint, order placement, or automatic trading. Broker sandbox new capability
+work remains paused and existing broker gates remain required. See
+`docs/158_shell_accounting_manual_entry_dataservice_action_scaffold.md` and
+`docs/159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md`.

@@ -141,18 +141,18 @@ void testDocs(const Harness& h)
     requireAllTokens(doc156(h), {
         "TASK-179",
         "DataService action authorization gate-only",
-        "does not implement any DataService action",
-        "does not modify `DataServiceActions.cpp`",
-        "does not add an action name",
-        "does not register a dispatcher handler",
+        "TASK-180",
+        "allows only DataService action scaffold registration",
+        "still does not authorize write implementation",
         "does not write a database",
         "does not modify schema",
     }, "docs/156");
     requireAllTokens(doc157(h), {
         "TASK-179",
+        "TASK-180",
         "Test Matrix",
         "Required Probes",
-        "No DataService Runtime Action",
+        "Scaffold-Only DataService Runtime Action",
         "No Production Write Path",
     }, "docs/157");
 }
@@ -174,9 +174,9 @@ void testPromptTemplate(const Harness& h)
         "TASK-179",
         "docs/156",
         "docs/157",
-        "DataService action authorization gate only",
-        "do not implement DataService actions",
-        "do not modify `DataServiceActions.cpp`",
+        "TASK-180 evolves that rule",
+        "disabled DataService action scaffold registration",
+        "still does not authorize write implementation",
     }, "docs/12");
 }
 
@@ -216,53 +216,39 @@ void testBrokerPausePolicy(const Harness& h)
 
 void testDataServiceActionsUnmodified(const Harness& h)
 {
-    requireNoTokens({h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"}, {
-        "accounting.manual_transaction",
-        "accounting.cash_movement",
-        "manual.entry",
-        "manualTransaction",
-        "manualCashMovement",
-        "recordManualBuy",
-        "recordManualSell",
-        "recordDeposit",
-        "recordWithdraw",
-        "validateManualTransactionEntry",
-        "validateManualCashMovement",
-    }, "DataServiceActions manual entry action");
+    const auto text = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
+    requireContains(text, "handleAccountingManualEntryTransactionCreate", "DataServiceActions TASK-180 scaffold");
+    requireContains(text, "handleAccountingManualEntryCashMovementCreate", "DataServiceActions TASK-180 scaffold");
+    requireContains(text, "manualEntryActionScaffoldResponse", "DataServiceActions TASK-180 scaffold");
+    requireContains(text, "MANUAL_TRANSACTION_ENTRY_NOT_IMPLEMENTED", "DataServiceActions TASK-180 scaffold");
+    requireContains(text, "MANUAL_CASH_MOVEMENT_NOT_IMPLEMENTED", "DataServiceActions TASK-180 scaffold");
+    require(!contains(text, "insertManualTransaction"), "DataServiceActions must not implement manual transaction write");
+    require(!contains(text, "insertCashMovement"), "DataServiceActions must not implement manual cash write");
 }
 
 void testNoManualActionName(const Harness& h)
 {
-    requireNoTokens({h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"}, {
-        "\"accounting.manual",
-        "\"accounting.cash_movement",
-        "\"accounting.manual_transaction",
-        "\"manual.transaction",
-        "\"manual.cash",
-    }, "manual entry action name");
+    const auto header = readFile(h.root / "libs" / "DataServiceApi" / "include" / "DataServiceApi" / "DataServiceActions.h");
+    requireContains(header, "\"accounting.\"", "manual entry scaffold action prefix");
+    requireContains(header, "\"manual_transaction.create\"", "manual transaction scaffold action name");
+    requireContains(header, "\"manual_cash_movement.create\"", "manual cash movement scaffold action name");
 }
 
 void testNoDispatcherHandler(const Harness& h)
 {
-    requireNoTokens({
-        h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActionRegistrar.cpp",
-        h.root / "libs" / "DataServiceApi" / "include" / "DataServiceApi" / "DataServiceActionRegistrar.h",
-    }, {
-        "manualTransaction",
-        "manualCashMovement",
-        "accounting.manual",
-        "accounting.cash_movement",
-    }, "manual entry dispatcher handler");
+    const auto registrar = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActionRegistrar.cpp");
+    requireContains(registrar, "kActionAccountingManualTransactionCreate", "manual transaction scaffold dispatcher handler");
+    requireContains(registrar, "kActionAccountingManualCashMovementCreate", "manual cash movement scaffold dispatcher handler");
+    requireContains(registrar, "handleAccountingManualEntryTransactionCreate", "manual transaction scaffold dispatcher handler");
+    requireContains(registrar, "handleAccountingManualEntryCashMovementCreate", "manual cash movement scaffold dispatcher handler");
 }
 
 void testNoServiceRuntimeRoute(const Harness& h)
 {
-    requireNoTokens(shellRuntimeFiles(h), {
+    requireNoTokens(filesUnder(h.root / "libs" / "ServiceRuntime"), {
         "manual.entry.route",
         "manualTransactionRoute",
         "manualCashMovementRoute",
-        "accounting.manual_transaction",
-        "accounting.cash_movement",
     }, "manual entry ServiceRuntime route");
 }
 

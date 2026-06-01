@@ -10446,21 +10446,24 @@ def main() -> int:
         "docs/156 blocks DataService action implementation",
     )
     require(
-        "does not modify `DataServiceActions.cpp`" in shell_accounting_manual_action_gate,
-        "docs/156 blocks DataServiceActions change",
+        "TASK-180" in shell_accounting_manual_action_gate,
+        "docs/156 records TASK-180 scaffold-only evolution",
     )
     require(
-        "does not add an action name" in shell_accounting_manual_action_gate,
-        "docs/156 blocks action names",
+        "allows only DataService action scaffold registration" in shell_accounting_manual_action_gate,
+        "docs/156 allows only scaffold action registration",
     )
     require(
-        "does not register a dispatcher handler" in shell_accounting_manual_action_gate,
-        "docs/156 blocks dispatcher handlers",
+        "still does not authorize write implementation" in shell_accounting_manual_action_gate,
+        "docs/156 still blocks write implementation",
     )
     require("DataService is the only future write boundary" in shell_accounting_manual_action_gate, "docs/156 documents DataService-only boundary")
     require("TASK-178 DTO / validation scaffold" in shell_accounting_manual_action_gate, "docs/156 requires TASK-178 validation")
     require("Broker sandbox new capability development remains paused" in shell_accounting_manual_action_gate, "docs/156 keeps broker sandbox pause")
-    require("No DataService Runtime Action" in shell_accounting_manual_action_plan, "docs/157 covers no runtime action")
+    require(
+        "Scaffold-Only DataService Runtime Action" in shell_accounting_manual_action_plan,
+        "docs/157 covers TASK-180 scaffold-only runtime action",
+    )
     require("No Production Write Path" in shell_accounting_manual_action_plan, "docs/157 covers no write path")
     require("No Schema / UI / Replay Drift" in shell_accounting_manual_action_plan, "docs/157 covers no schema UI replay drift")
     require("TASK-179 follows this scaffold" in shell_accounting_manual_validation_doc, "docs/154 records TASK-179 follow-up")
@@ -10511,6 +10514,110 @@ def main() -> int:
     ]
     for ctest_name in task179_ctests:
         require(ctest_name in shell_accounting_manual_action_cmake, f"TASK-179 CTest exists: {ctest_name}")
+
+    shell_accounting_manual_action_scaffold_doc_path = (
+        root / "docs" / "158_shell_accounting_manual_entry_dataservice_action_scaffold.md"
+    )
+    shell_accounting_manual_action_scaffold_plan_path = (
+        root / "docs" / "159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md"
+    )
+    shell_accounting_manual_action_scaffold_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryDataServiceActionScaffold"
+        / "CMakeLists.txt"
+    )
+    dataservice_actions_header = (
+        root / "libs" / "DataServiceApi" / "include" / "DataServiceApi" / "DataServiceActions.h"
+    ).read_text(encoding="utf-8")
+    dataservice_action_registrar = (
+        root / "libs" / "DataServiceApi" / "src" / "DataServiceActionRegistrar.cpp"
+    ).read_text(encoding="utf-8")
+    require(shell_accounting_manual_action_scaffold_doc_path.exists(), "docs/158 exists")
+    require(shell_accounting_manual_action_scaffold_plan_path.exists(), "docs/159 exists")
+    require(shell_accounting_manual_action_scaffold_cmake_path.exists(), "TASK-180 tests CMake exists")
+
+    shell_accounting_manual_action_scaffold_doc = shell_accounting_manual_action_scaffold_doc_path.read_text(encoding="utf-8")
+    shell_accounting_manual_action_scaffold_plan = shell_accounting_manual_action_scaffold_plan_path.read_text(encoding="utf-8")
+    shell_accounting_manual_action_scaffold_cmake = shell_accounting_manual_action_scaffold_cmake_path.read_text(encoding="utf-8")
+
+    require(
+        "docs/158_shell_accounting_manual_entry_dataservice_action_scaffold.md" in readme,
+        "README links docs/158",
+    )
+    require(
+        "docs/159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md" in readme,
+        "README links docs/159",
+    )
+    require(
+        "158_shell_accounting_manual_entry_dataservice_action_scaffold.md" in docs_index,
+        "docs/README links docs/158",
+    )
+    require(
+        "159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md" in docs_index,
+        "docs/README links docs/159",
+    )
+    require("TASK-180" in codex_prompt_template, "docs/12 registers TASK-180")
+    require("TASK-180" in shell_accounting_manual_action_scaffold_doc, "docs/158 mentions TASK-180")
+    require("Test Matrix" in shell_accounting_manual_action_scaffold_plan, "docs/159 contains Test Matrix")
+    require("Required Probes" in shell_accounting_manual_action_scaffold_plan, "docs/159 contains Required Probes")
+    require("DataService action scaffold" in shell_accounting_manual_action_scaffold_doc, "docs/158 states action scaffold")
+    require("unavailable / not implemented / disabled scaffold" in shell_accounting_manual_action_scaffold_doc, "docs/158 states disabled scaffold")
+    require("does not write a database" in shell_accounting_manual_action_scaffold_doc, "docs/158 blocks DB writes")
+    require("does not add a DataAccess repository" in shell_accounting_manual_action_scaffold_doc, "docs/158 blocks repository")
+    require("does not modify production QML" in shell_accounting_manual_action_scaffold_doc, "docs/158 blocks QML")
+    require('"accounting."' in dataservice_actions_header, "DataServiceActions.h registers accounting action prefix")
+    require('"manual_transaction.create"' in dataservice_actions_header, "DataServiceActions.h registers manual transaction action")
+    require('"manual_cash_movement.create"' in dataservice_actions_header, "DataServiceActions.h registers manual cash movement action")
+    require("handleAccountingManualEntryTransactionCreate" in dataservice_actions_source, "DataServiceActions has manual transaction scaffold handler")
+    require("handleAccountingManualEntryCashMovementCreate" in dataservice_actions_source, "DataServiceActions has manual cash movement scaffold handler")
+    require("MANUAL_TRANSACTION_ENTRY_NOT_IMPLEMENTED" in dataservice_actions_source, "manual transaction scaffold returns stable reason")
+    require("MANUAL_CASH_MOVEMENT_NOT_IMPLEMENTED" in dataservice_actions_source, "manual cash movement scaffold returns stable reason")
+    require('\\"databaseWritten\\":false' in dataservice_actions_source, "manual scaffold declares no DB write")
+    require('\\"repositoryCalled\\":false' in dataservice_actions_source, "manual scaffold declares no repository call")
+    require("kActionAccountingManualTransactionCreate" in dataservice_action_registrar, "registrar registers manual transaction scaffold")
+    require("kActionAccountingManualCashMovementCreate" in dataservice_action_registrar, "registrar registers manual cash movement scaffold")
+    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-180")
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-180")
+    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-180")
+    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-180")
+
+    task180_ctests = [
+        "shell_accounting_manual_entry_dataservice_action_scaffold_docs",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_docs_index",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_prompt_template",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_manual_transaction_action_registered",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_manual_cash_movement_action_registered",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_manual_transaction_handler_disabled",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_manual_cash_movement_handler_disabled",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_dispatcher_returns_unavailable",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_sqlite_write",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_trade_log_write",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_cash_fact_write",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_audit_ledger_write",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_repository_call",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_accountingengine_replay",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_tradedraft",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_suggestion",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_broker",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_network_endpoint",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_credentials_secret_values",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_real_order_placement",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_automatic_trading",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_schema_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_new_migration",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_production_qml_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_startup_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_dataaccess_write_repository",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_strategy_market_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_authorization_gate_evolved",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_validation_scaffold_still_pure",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_task177_gate_still_valid",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_existing_broker_gates_retained",
+        "shell_accounting_manual_entry_dataservice_action_scaffold_no_gate_weakening_or_skip",
+    ]
+    for ctest_name in task180_ctests:
+        require(ctest_name in shell_accounting_manual_action_scaffold_cmake, f"TASK-180 CTest exists: {ctest_name}")
     return 0
 
 

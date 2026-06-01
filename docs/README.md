@@ -546,6 +546,12 @@
 - ShellAccounting broker sandbox runtime enablement state wiring authorization test plan:
   [149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md](149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md)
   defines TASK-175 probes proving no runtime wiring has been implemented.
+- ShellAccounting broker sandbox runtime enablement state disabled wiring:
+  [150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md](150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md)
+  records TASK-176 disabled/fail-closed enablement-state wiring in DataServiceActions.
+- ShellAccounting broker sandbox runtime enablement state disabled wiring test plan:
+  [151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md](151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md)
+  defines TASK-176 probes proving broker dry-run behavior remains disabled-only.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

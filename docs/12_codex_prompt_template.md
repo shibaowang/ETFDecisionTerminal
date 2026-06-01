@@ -1465,6 +1465,22 @@ DB/audit/ledger writes, reconciliation, cancellation, correction, strategy
 execution, automatic trading, or schema changes without separate explicit
 authorization.
 
+## TASK-176 Broker Sandbox Runtime Enablement State Disabled Wiring Prompt Rule
+
+Future broker sandbox runtime enablement work after TASK-176 must reference
+docs/150 and docs/151. TASK-176 only permits `DataServiceActions.cpp` to read
+`defaultShellAccountingBrokerSandboxRuntimeEnablementState()` as a disabled,
+unavailable, fail-closed guard. It must not write that state into the response,
+must not add request or response fields, must not enable sandbox runtime, and
+must not change `brokerPortMode`, `brokerPortDisabled`,
+`brokerPortDryRunOnly`, or `BROKER_ORDER_DISABLED` behavior. Keep selector
+runtime driven by the disabled default source. Do not add external mode sources,
+payload/QML/config/env/CLI/file/DB/secret-store mode reads, credentials,
+endpoints, broker SDK, network, real broker order ids, order placement,
+DB/audit/ledger writes, reconciliation, cancellation, correction, strategy
+execution, automatic trading, or schema changes without separate explicit
+authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

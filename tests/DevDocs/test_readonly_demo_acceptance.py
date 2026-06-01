@@ -370,6 +370,14 @@ def main() -> int:
         / "docs"
         / "149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md"
     )
+    shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_path = (
+        root / "docs" / "150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md"
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan_path = (
+        root
+        / "docs"
+        / "151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md"
+    )
     shell_accounting_qml_static_gate_cmake_path = (
         root / "tests" / "ShellAccountingQmlStaticGate" / "CMakeLists.txt"
     )
@@ -536,6 +544,12 @@ def main() -> int:
         root
         / "tests"
         / "ShellAccountingBrokerSandboxRuntimeEnablementStateWiringAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingBrokerSandboxRuntimeEnablementStateDisabledWiring"
         / "CMakeLists.txt"
     )
     shell_accounting_qml_registration_header_path = (
@@ -1762,6 +1776,14 @@ def main() -> int:
             encoding="utf-8"
         )
     )
+    shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring = (
+        shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan = (
+        shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan_path.read_text(
+            encoding="utf-8"
+        )
+    )
     shell_accounting_qml_static_gate_cmake = shell_accounting_qml_static_gate_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_binding_smoke_cmake = shell_accounting_qml_binding_smoke_cmake_path.read_text(encoding="utf-8")
     shell_accounting_qml_smoke_runtime_cmake = shell_accounting_qml_smoke_runtime_cmake_path.read_text(encoding="utf-8")
@@ -1925,6 +1947,11 @@ def main() -> int:
     )
     shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake = (
         shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake_path.read_text(
+            encoding="utf-8"
+        )
+    )
+    shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_cmake = (
+        shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_cmake_path.read_text(
             encoding="utf-8"
         )
     )
@@ -7504,12 +7531,24 @@ def main() -> int:
         "docs/149 broker sandbox runtime enablement state wiring authorization test plan exists",
     )
     require(
+        shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_path.exists(),
+        "docs/150 broker sandbox runtime enablement state disabled wiring exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan_path.exists(),
+        "docs/151 broker sandbox runtime enablement state disabled wiring test plan exists",
+    )
+    require(
         shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_cmake_path.exists(),
         "TASK-174 broker sandbox runtime enablement state scaffold CMake exists",
     )
     require(
         shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake_path.exists(),
         "TASK-175 broker sandbox runtime enablement state wiring authorization CMake exists",
+    )
+    require(
+        shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_cmake_path.exists(),
+        "TASK-176 broker sandbox runtime enablement state disabled wiring CMake exists",
     )
     require(
         "docs/107_shell_accounting_broker_order_authorization_gate.md" in readme,
@@ -7685,6 +7724,14 @@ def main() -> int:
     require(
         "docs/149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md" in readme,
         "README links docs/149",
+    )
+    require(
+        "docs/150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md" in readme,
+        "README links docs/150",
+    )
+    require(
+        "docs/151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md" in readme,
+        "README links docs/151",
     )
     require(
         "104_shell_accounting_production_trading_ui_authorization_gate.md" in docs_index,
@@ -7872,6 +7919,14 @@ def main() -> int:
     require(
         "149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md" in docs_index,
         "docs/README links docs/149",
+    )
+    require(
+        "150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md" in docs_index,
+        "docs/README links docs/150",
+    )
+    require(
+        "151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md" in docs_index,
+        "docs/README links docs/151",
     )
     require("TASK-151" in shell_accounting_production_trading_ui_authorization_gate, "docs/104 mentions TASK-151")
     require(
@@ -8417,6 +8472,32 @@ def main() -> int:
     require(
         "Required Probes" in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan,
         "docs/149 contains Required Probes",
+    )
+    require(
+        "TASK-176" in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring,
+        "docs/150 mentions TASK-176",
+    )
+    require(
+        "TASK-176" in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan,
+        "docs/151 mentions TASK-176",
+    )
+    require("TASK-176" in codex_prompt_template, "docs/12 mentions TASK-176")
+    require(
+        "defaultShellAccountingBrokerSandboxRuntimeEnablementState"
+        in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring,
+        "docs/150 documents default enablement state read",
+    )
+    require(
+        "brokerPortDryRunOnly" in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring,
+        "docs/150 preserves brokerPortDryRunOnly",
+    )
+    require(
+        "Test Matrix" in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan,
+        "docs/151 contains Test matrix",
+    )
+    require(
+        "Required Probes" in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan,
+        "docs/151 contains Required Probes",
     )
     require(
         "TASK-175" in shell_accounting_broker_sandbox_runtime_enablement_state_scaffold,
@@ -9163,6 +9244,51 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_cmake,
             f"TASK-175 tests include {ctest_name}",
+        )
+    for ctest_name in [
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_docs",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_docs_index",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_dataserviceactions_reads_default_state",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_dataserviceactions_reads_only_default_state",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_dataserviceactions_no_response_field",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_dataserviceactions_no_request_field",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_dataserviceactions_disabled_default_selector",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_dataserviceactions_sandbox_paper_real",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_enablement_source_unmodified",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_runtime_source_unmodified",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_default_enabled_false",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_default_available_false",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_default_fail_closed_true",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_default_state_stable",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_broker_response_disabled",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_broker_port_mode_disabled",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_broker_port_disabled_true",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_broker_port_dry_run_only_true",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_sandbox_runtime_not_enabled",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_selector_direct_test_only",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_direct_sandbox_selector_unavailable",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_sandbox_adapter_not_implemented",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_paper_real_not_implemented",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_external_mode_source",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_credentials_endpoint_account_order",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_broker_sdk",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_network_endpoint",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_credentials_secret_values",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_real_order_id",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_order_placement",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_db_audit_ledger_write",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_reconciliation_cancellation_correction",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_no_strategy_auto_trading",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_schema_not_modified",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_task175_evolved",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_task174_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_task172_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_task166_still_valid",
+        "shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_rollback_policy",
+    ]:
+        require(
+            ctest_name in shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_cmake,
+            f"TASK-176 tests include {ctest_name}",
         )
     for required_qml_trading_ui_token in [
         "objectName: \"shellAccountingTradingUiSection\"",

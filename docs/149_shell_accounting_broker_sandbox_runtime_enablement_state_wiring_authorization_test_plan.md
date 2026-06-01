@@ -97,3 +97,15 @@ This plan does not implement runtime wiring, sandbox runtime enablement, externa
 - [ ] Full CTest passes.
 - [ ] `transport_local_socket_echo` 50 repeat passes.
 - [ ] User explicitly authorizes a future runtime wiring implementation TASK before the scaffold is connected to runtime.
+
+## TASK-176 Evolution
+
+TASK-176 evolves this plan from "no `DataServiceActions.cpp` wiring" to "only
+disabled/fail-closed default enablement-state wiring." The evolved probes must
+allow `DataServiceActions.cpp` to include
+`ShellAccountingBrokerSandboxRuntimeEnablement.h` and read
+`defaultShellAccountingBrokerSandboxRuntimeEnablementState()`, while continuing
+to forbid sandbox runtime enablement, response changes, external mode sources,
+credentials, endpoints, SDKs, network calls, order placement, writes,
+reconciliation, cancellation, correction, strategy execution, automatic
+trading, and schema changes.

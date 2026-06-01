@@ -256,9 +256,15 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
     }
 
     if (caseName == "dataserviceactions_not_modified" || caseName == "dataserviceactions_not_wired") {
-        return containsNoTokens(actions, {"ShellAccountingBrokerSandboxRuntimeEnablement",
-                                         "defaultShellAccountingBrokerSandboxRuntimeEnablementState",
-                                         "BROKER_SANDBOX_RUNTIME_DISABLED"});
+        return containsAllTokens(actions, {"ShellAccountingBrokerSandboxRuntimeEnablement.h",
+                                          "defaultShellAccountingBrokerSandboxRuntimeEnablementState",
+                                          "!sandboxEnablementState.enabled",
+                                          "!sandboxEnablementState.available",
+                                          "sandboxEnablementState.failClosed"}) &&
+               containsNoTokens(actions, {"ShellAccountingBrokerOrderPortMode::Sandbox",
+                                         "ShellAccountingBrokerOrderPortMode::Paper",
+                                         "ShellAccountingBrokerOrderPortMode::Real",
+                                         "sandboxRuntimeEnabled"});
     }
 
     if (caseName == "dataserviceactions_disabled_default_wiring") {
@@ -301,8 +307,9 @@ bool runCase(const std::filesystem::path& root, const std::string& caseName)
 
     if (caseName == "sandbox_runtime_not_enabled") {
         return containsAllTokens(docs, {"not connected to", "runtime", "sandbox runtime remains disabled"}) &&
-               containsNoTokens(actions, {"BROKER_SANDBOX_RUNTIME_DISABLED",
-                                         "defaultShellAccountingBrokerSandboxRuntimeEnablementState"});
+               containsNoTokens(actions, {"ShellAccountingBrokerOrderPortMode::Sandbox",
+                                         "ShellAccountingBrokerOrderPortMode::Paper",
+                                         "ShellAccountingBrokerOrderPortMode::Real"});
     }
 
     if (caseName == "selector_direct_test_only") {

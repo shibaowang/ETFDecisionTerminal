@@ -3007,3 +3007,22 @@ trading, and schema changes still require separate TASK authorization. See
 `docs/148_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_gate.md`
 and
 `docs/149_shell_accounting_broker_sandbox_runtime_enablement_state_wiring_authorization_test_plan.md`.
+
+## TASK-176 Broker Sandbox Runtime Enablement State Disabled Wiring
+
+TASK-176 wires the TASK-174 sandbox runtime enablement state into
+`DataServiceActions.cpp` in disabled/fail-closed form only. The broker dry-run
+path reads `defaultShellAccountingBrokerSandboxRuntimeEnablementState()` and
+keeps the default state disabled, unavailable, and fail-closed.
+
+This does not enable sandbox runtime and does not change broker dry-run
+response semantics. `brokerPortMode` remains `disabled`,
+`brokerPortDisabled` remains `true`, `brokerPortDryRunOnly` remains `true`, and
+the runtime selector remains driven only by the disabled default source. TASK-176
+adds no response fields, no external mode source, no SDK, no network, no
+credentials, no endpoint, no real broker order id, no order placement, no
+DB/audit/ledger write, no reconciliation, no cancellation, no correction, no
+strategy execution, no automatic trading, and no schema change. See
+`docs/150_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring.md`
+and
+`docs/151_shell_accounting_broker_sandbox_runtime_enablement_state_disabled_wiring_test_plan.md`.

@@ -935,6 +935,7 @@ def main() -> int:
     dataservice_actions_header_path = root / "libs" / "DataServiceApi" / "include" / "DataServiceApi" / "DataServiceActions.h"
     dataservice_actions_source_path = root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"
     dataservice_action_registrar_path = root / "libs" / "DataServiceApi" / "src" / "DataServiceActionRegistrar.cpp"
+    dataservice_api_cmake_path = root / "libs" / "DataServiceApi" / "CMakeLists.txt"
     dataservice_client_header_path = root / "libs" / "DataServiceClient" / "include" / "DataServiceClient" / "DataServiceClient.h"
     dataservice_client_source_path = root / "libs" / "DataServiceClient" / "src" / "DataServiceClient.cpp"
     dataservice_readonly_test_path = root / "tests" / "DataService" / "test_dataservice_readonly_actions.cpp"
@@ -1297,6 +1298,7 @@ def main() -> int:
     require(dataservice_actions_header_path.exists(), "DataServiceActions header exists")
     require(dataservice_actions_source_path.exists(), "DataServiceActions source exists")
     require(dataservice_action_registrar_path.exists(), "DataService action registrar source exists")
+    require(dataservice_api_cmake_path.exists(), "DataServiceApi CMake exists")
     require(dataservice_client_header_path.exists(), "DataServiceClient header exists")
     require(dataservice_client_source_path.exists(), "DataServiceClient source exists")
     require(dataservice_readonly_test_path.exists(), "DataService read-only action test exists")
@@ -2055,6 +2057,7 @@ def main() -> int:
     dataservice_actions_header = dataservice_actions_header_path.read_text(encoding="utf-8")
     dataservice_actions_source = dataservice_actions_source_path.read_text(encoding="utf-8")
     dataservice_action_registrar = dataservice_action_registrar_path.read_text(encoding="utf-8")
+    dataservice_api_cmake = dataservice_api_cmake_path.read_text(encoding="utf-8")
     dataservice_client_header = dataservice_client_header_path.read_text(encoding="utf-8")
     dataservice_client_source = dataservice_client_source_path.read_text(encoding="utf-8")
     dataservice_readonly_test = dataservice_readonly_test_path.read_text(encoding="utf-8")
@@ -10271,6 +10274,132 @@ def main() -> int:
     require("No real order placement" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks real order placement")
     require("No automatic trading" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks automatic trading")
     require("No TradeDraft or suggestion implementation" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks TradeDraft/suggestion implementation")
+
+    shell_accounting_manual_validation_doc_path = root / "docs" / "154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md"
+    shell_accounting_manual_validation_plan_path = root / "docs" / "155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md"
+    shell_accounting_manual_validation_header_path = (
+        root
+        / "libs"
+        / "DataServiceApi"
+        / "include"
+        / "DataServiceApi"
+        / "ShellAccountingManualTransactionCashMovementValidation.h"
+    )
+    shell_accounting_manual_validation_source_path = (
+        root
+        / "libs"
+        / "DataServiceApi"
+        / "src"
+        / "ShellAccountingManualTransactionCashMovementValidation.cpp"
+    )
+    shell_accounting_manual_validation_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualTransactionCashMovementValidationScaffold"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_validation_doc_path.exists(), "docs/154 exists")
+    require(shell_accounting_manual_validation_plan_path.exists(), "docs/155 exists")
+    require(shell_accounting_manual_validation_header_path.exists(), "TASK-178 validation header exists")
+    require(shell_accounting_manual_validation_source_path.exists(), "TASK-178 validation source exists")
+    require(shell_accounting_manual_validation_cmake_path.exists(), "TASK-178 validation tests CMake exists")
+
+    shell_accounting_manual_validation_doc = shell_accounting_manual_validation_doc_path.read_text(encoding="utf-8")
+    shell_accounting_manual_validation_plan = shell_accounting_manual_validation_plan_path.read_text(encoding="utf-8")
+    shell_accounting_manual_validation_header = shell_accounting_manual_validation_header_path.read_text(encoding="utf-8")
+    shell_accounting_manual_validation_source = shell_accounting_manual_validation_source_path.read_text(encoding="utf-8")
+    shell_accounting_manual_validation_cmake = shell_accounting_manual_validation_cmake_path.read_text(encoding="utf-8")
+
+    require(
+        "docs/154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md" in readme,
+        "README links docs/154",
+    )
+    require(
+        "docs/155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md" in readme,
+        "README links docs/155",
+    )
+    require(
+        "154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md" in docs_index,
+        "docs/README links docs/154",
+    )
+    require(
+        "155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md" in docs_index,
+        "docs/README links docs/155",
+    )
+    require("TASK-178" in codex_prompt_template, "docs/12 registers TASK-178")
+    require("TASK-178" in shell_accounting_manual_validation_doc, "docs/154 mentions TASK-178")
+    require("Test Matrix" in shell_accounting_manual_validation_plan, "docs/155 contains Test Matrix")
+    require("Required Probes" in shell_accounting_manual_validation_plan, "docs/155 contains Required Probes")
+    require("DTO / validation scaffold" in shell_accounting_manual_validation_doc, "docs/154 states DTO validation scaffold")
+    require("does not write SQLite" in shell_accounting_manual_validation_doc, "docs/154 blocks SQLite writes")
+    require("does not add a DataService action" in shell_accounting_manual_validation_doc, "docs/154 blocks DataService action")
+    require("does not add a DataAccess repository" in shell_accounting_manual_validation_doc, "docs/154 blocks repository")
+    require("does not modify AccountingEngine replay" in shell_accounting_manual_validation_doc, "docs/154 blocks replay change")
+    require("does not modify production QML" in shell_accounting_manual_validation_doc, "docs/154 blocks QML change")
+    require("does not modify migrations" in shell_accounting_manual_validation_doc, "docs/154 blocks migration change")
+    require("Broker sandbox new capability development remains paused" in shell_accounting_manual_mvp_gate, "docs/152 records broker pause through TASK-178")
+    require("TASK-178 is the next allowed step" in shell_accounting_manual_mvp_test_plan, "docs/153 records TASK-178 evolution")
+    require("ShellAccountingManualTransactionCashMovementValidation.cpp" in dataservice_api_cmake, "DataServiceApi CMake includes TASK-178 validation source")
+    require("ShellAccountingManualTransactionEntry" in shell_accounting_manual_validation_header, "validation header declares transaction DTO")
+    require("ShellAccountingManualCashMovementEntry" in shell_accounting_manual_validation_header, "validation header declares cash DTO")
+    require("ShellAccountingManualTradeSide" in shell_accounting_manual_validation_header, "validation header declares trade side enum")
+    require("ShellAccountingManualCashMovementType" in shell_accounting_manual_validation_header, "validation header declares cash movement enum")
+    require("validateManualTransactionEntry" in shell_accounting_manual_validation_header, "validation header declares transaction validation")
+    require("validateManualCashMovement" in shell_accounting_manual_validation_header, "validation header declares cash validation")
+    require("double" not in shell_accounting_manual_validation_header, "validation header does not use double fact amounts")
+    require("SQLite" not in shell_accounting_manual_validation_source, "validation source does not access SQLite")
+    require("trade_log" not in shell_accounting_manual_validation_source, "validation source does not write trade_log")
+    require("audit_log" not in shell_accounting_manual_validation_source, "validation source does not write audit_log")
+    require("TradeDraft" not in shell_accounting_manual_validation_source, "validation source does not create TradeDraft")
+    require("QNetwork" not in shell_accounting_manual_validation_source, "validation source does not access network")
+    require("getenv" not in shell_accounting_manual_validation_source, "validation source does not read environment credentials")
+    require("accounting.manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action after TASK-178")
+    require("accounting.cash_movement" not in dataservice_actions_source, "DataServiceActions has no cash movement action after TASK-178")
+    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-178")
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-178")
+    require("ShellAccountingManualTransactionCashMovementValidationScaffold" in tests_cmake, "tests/CMake includes TASK-178 validation scaffold")
+
+    task178_ctests = [
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_docs",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_docs_index",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_prompt_template",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_header_exists",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_source_exists",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_cmake_registered",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_buy_valid",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_sell_valid",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_deposit_valid",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_withdrawal_valid",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_invalid_trade_side",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_invalid_cash_type",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_quantity_positive",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_price_positive",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_gross_positive",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_fee_tax_non_negative",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_cash_amount_positive",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_required_ids",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_occurred_at_required",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_sensitive_memo_policy",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_sqlite_access",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_trade_log_write",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_cash_fact_write",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_audit_ledger_write",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_tradedraft",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_broker",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_network_endpoint",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_credentials_runtime_source",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_dataserviceactions_unmodified",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_schema_unmodified",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_production_qml_unmodified",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_startup_unmodified",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_dataaccess_write_repository",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_accountingengine_replay_unmodified",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_strategy_market_unmodified",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_existing_broker_gates_retained",
+        "shell_accounting_manual_transaction_cash_movement_validation_scaffold_no_gate_weakening_or_skip",
+    ]
+    for ctest_name in task178_ctests:
+        require(ctest_name in shell_accounting_manual_validation_cmake, f"TASK-178 CTest exists: {ctest_name}")
     return 0
 
 

@@ -3049,3 +3049,21 @@ change. See
 `docs/152_shell_accounting_manual_transaction_cash_movement_mvp_authorization_gate.md`
 and
 `docs/153_shell_accounting_manual_transaction_cash_movement_mvp_authorization_test_plan.md`.
+
+## TASK-178 Manual Transaction and Cash Movement DTO Validation Scaffold
+
+TASK-178 adds only the in-memory DTO / validation scaffold for manual buy/sell
+records and deposit/withdraw records. The scaffold lives in DataServiceApi as
+`ShellAccountingManualTransactionCashMovementValidation.h/.cpp` and validates
+structured local inputs without adding a DataService action or write path.
+
+The task does not write SQLite, does not modify `DataServiceActions.cpp`, does
+not add a DataAccess repository, does not modify AccountingEngine replay, does
+not modify production QML or startup, does not modify migrations, does not
+implement TradeDraft or suggestions, and does not add broker SDK, network,
+credentials, endpoints, real order placement, or automatic trading. Broker
+sandbox new capability work remains paused and existing broker gates remain
+required. See
+`docs/154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md`
+and
+`docs/155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md`.

@@ -9,6 +9,9 @@ implementation, production UI, schema change, broker access, network,
 credentials, real order placement, automatic trading, TradeDraft generation, or
 suggestion implementation is added in this task.
 
+TASK-178 is the next allowed step and adds only DTO / validation scaffold. It
+does not change the TASK-177 no-runtime-write boundary.
+
 ## Test Matrix
 
 ### A. Documentation and Priority Shift

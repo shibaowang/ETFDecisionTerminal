@@ -1411,6 +1411,21 @@ endpoints, real broker order ids, order placement, DB/audit/ledger writes,
 reconciliation, cancellation, correction, strategy execution, automatic
 trading, or schema changes without separate explicit authorization.
 
+## TASK-172 Broker Sandbox Runtime Mode Source Selector Disabled Wiring Prompt Rule
+
+Future broker runtime mode source work after TASK-172 must reference docs/142
+and docs/143. TASK-172 authorizes only disabled-default selector wiring in
+`DataServiceActions`: read `defaultShellAccountingBrokerRuntimeModeSource()
+.brokerOrderPortMode()`, pass that value to
+`shellAccountingBrokerRuntimeModeSourceForMode(defaultBrokerPortMode)`, then
+use the selected source mode for `shellAccountingBrokerOrderPortForMode`.
+Do not pass Sandbox, Paper, Real, payload fields, QML state, config,
+environment, command-line values, files, database values, or secret-store values
+into the selector. Do not enable sandbox runtime. SDK, network, credentials,
+endpoints, real broker order ids, order placement, DB/audit/ledger writes,
+reconciliation, cancellation, correction, strategy execution, automatic
+trading, and schema changes require separate explicit authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

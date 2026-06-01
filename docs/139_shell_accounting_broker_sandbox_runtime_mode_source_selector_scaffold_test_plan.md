@@ -4,7 +4,7 @@
 
 This plan defines tests for the TASK-170 direct-test runtime mode source selector scaffold. It does not authorize runtime wiring, sandbox runtime enablement, external mode sources, broker SDK, network, credentials, endpoint, real broker order id storage, order placement, database write, audit write, ledger write, reconciliation, cancellation, correction, strategy execution, automatic trading, or schema changes.
 
-TASK-171 adds a wiring authorization gate, but runtime wiring remains unimplemented and the TASK-170 selector scaffold remains direct-test-only.
+TASK-171 adds a wiring authorization gate. TASK-172 later implements only disabled-default selector wiring, while the TASK-170 sandbox selector path remains direct-test-only.
 
 ## Test Matrix
 
@@ -29,7 +29,7 @@ TASK-171 adds a wiring authorization gate, but runtime wiring remains unimplemen
 ### Runtime Isolation
 
 - `defaultShellAccountingBrokerRuntimeModeSource()` remains disabled-only.
-- `DataServiceActions.cpp` does not call the selector scaffold.
+- `DataServiceActions.cpp` calls the selector scaffold only with the disabled default source mode.
 - Runtime dry-run remains disabled/null-provider behavior.
 - Runtime broker port mode remains disabled.
 - Runtime `brokerPortDisabled` remains true.
@@ -58,7 +58,7 @@ TASK-171 adds a wiring authorization gate, but runtime wiring remains unimplemen
 ### Regression
 
 - TASK-169 authorization gate semantics remain valid while allowing the TASK-170 direct-test selector scaffold.
-- TASK-171 wiring authorization gate semantics remain valid while keeping runtime wiring disabled.
+- TASK-171 wiring authorization gate semantics remain valid after allowing disabled-default selector wiring.
 - TASK-168 scaffold semantics remain valid.
 - TASK-166 disabled scaffold semantics remain valid.
 - TASK-165 through TASK-162 broker selector regressions pass.

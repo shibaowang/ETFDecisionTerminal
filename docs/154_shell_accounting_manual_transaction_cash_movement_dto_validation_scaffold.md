@@ -107,6 +107,7 @@ The validation scaffold is pure in-memory code. It must not:
 
 Later tasks must separately authorize:
 
+- DataService manual entry action authorization gates.
 - DataService manual transaction actions.
 - DataService cash movement actions.
 - DataAccess manual write repositories.
@@ -117,6 +118,11 @@ Later tasks must separately authorize:
 
 Real broker integration, automatic trading, and real order placement remain out
 of scope and still require separate authorization.
+
+TASK-179 follows this scaffold by adding only a DataService action
+authorization gate for future manual entries. TASK-179 does not implement
+manual entry DataService actions, does not modify `DataServiceActions.cpp`, and
+does not write a database.
 
 ## Privacy Policy
 

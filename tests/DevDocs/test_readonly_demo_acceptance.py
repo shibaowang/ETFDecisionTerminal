@@ -10400,6 +10400,117 @@ def main() -> int:
     ]
     for ctest_name in task178_ctests:
         require(ctest_name in shell_accounting_manual_validation_cmake, f"TASK-178 CTest exists: {ctest_name}")
+
+    shell_accounting_manual_action_gate_path = (
+        root / "docs" / "156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md"
+    )
+    shell_accounting_manual_action_plan_path = (
+        root / "docs" / "157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md"
+    )
+    shell_accounting_manual_action_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryDataServiceActionAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_action_gate_path.exists(), "docs/156 exists")
+    require(shell_accounting_manual_action_plan_path.exists(), "docs/157 exists")
+    require(shell_accounting_manual_action_cmake_path.exists(), "TASK-179 tests CMake exists")
+
+    shell_accounting_manual_action_gate = shell_accounting_manual_action_gate_path.read_text(encoding="utf-8")
+    shell_accounting_manual_action_plan = shell_accounting_manual_action_plan_path.read_text(encoding="utf-8")
+    shell_accounting_manual_action_cmake = shell_accounting_manual_action_cmake_path.read_text(encoding="utf-8")
+
+    require(
+        "docs/156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md" in readme,
+        "README links docs/156",
+    )
+    require(
+        "docs/157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md" in readme,
+        "README links docs/157",
+    )
+    require(
+        "156_shell_accounting_manual_entry_dataservice_action_authorization_gate.md" in docs_index,
+        "docs/README links docs/156",
+    )
+    require(
+        "157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/157",
+    )
+    require("TASK-179" in codex_prompt_template, "docs/12 registers TASK-179")
+    require("TASK-179" in shell_accounting_manual_action_gate, "docs/156 mentions TASK-179")
+    require("Test Matrix" in shell_accounting_manual_action_plan, "docs/157 contains Test Matrix")
+    require("Required Probes" in shell_accounting_manual_action_plan, "docs/157 contains Required Probes")
+    require(
+        "does not implement any DataService action" in shell_accounting_manual_action_gate,
+        "docs/156 blocks DataService action implementation",
+    )
+    require(
+        "does not modify `DataServiceActions.cpp`" in shell_accounting_manual_action_gate,
+        "docs/156 blocks DataServiceActions change",
+    )
+    require(
+        "does not add an action name" in shell_accounting_manual_action_gate,
+        "docs/156 blocks action names",
+    )
+    require(
+        "does not register a dispatcher handler" in shell_accounting_manual_action_gate,
+        "docs/156 blocks dispatcher handlers",
+    )
+    require("DataService is the only future write boundary" in shell_accounting_manual_action_gate, "docs/156 documents DataService-only boundary")
+    require("TASK-178 DTO / validation scaffold" in shell_accounting_manual_action_gate, "docs/156 requires TASK-178 validation")
+    require("Broker sandbox new capability development remains paused" in shell_accounting_manual_action_gate, "docs/156 keeps broker sandbox pause")
+    require("No DataService Runtime Action" in shell_accounting_manual_action_plan, "docs/157 covers no runtime action")
+    require("No Production Write Path" in shell_accounting_manual_action_plan, "docs/157 covers no write path")
+    require("No Schema / UI / Replay Drift" in shell_accounting_manual_action_plan, "docs/157 covers no schema UI replay drift")
+    require("TASK-179 follows this scaffold" in shell_accounting_manual_validation_doc, "docs/154 records TASK-179 follow-up")
+    require("TASK-179 is the follow-up authorization gate" in shell_accounting_manual_validation_plan, "docs/155 records TASK-179 follow-up")
+    require("ShellAccountingManualEntryDataServiceActionAuthorizationGate" in tests_cmake, "tests/CMake includes TASK-179 gate")
+    require("accounting.manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action after TASK-179")
+    require("accounting.cash_movement" not in dataservice_actions_source, "DataServiceActions has no cash movement action after TASK-179")
+    require("manual.entry" not in dataservice_actions_source, "DataServiceActions has no manual entry action after TASK-179")
+    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-179")
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-179")
+    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-179")
+    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-179")
+
+    task179_ctests = [
+        "shell_accounting_manual_entry_dataservice_action_authorization_docs",
+        "shell_accounting_manual_entry_dataservice_action_authorization_docs_index",
+        "shell_accounting_manual_entry_dataservice_action_authorization_prompt_template",
+        "shell_accounting_manual_entry_dataservice_action_authorization_action_boundary_docs",
+        "shell_accounting_manual_entry_dataservice_action_authorization_future_task_split",
+        "shell_accounting_manual_entry_dataservice_action_authorization_broker_pause_policy",
+        "shell_accounting_manual_entry_dataservice_action_authorization_dataserviceactions_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_manual_action_name",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_dispatcher_handler",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_service_runtime_route",
+        "shell_accounting_manual_entry_dataservice_action_authorization_validation_scaffold_pure",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_dataaccess_write_repository",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_cash_fact_write",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_dataservice_action_authorization_schema_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_new_migration",
+        "shell_accounting_manual_entry_dataservice_action_authorization_production_qml_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_authorization_startup_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_authorization_accountingengine_replay_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_authorization_strategy_market_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_tradedraft_suggestion",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_broker_sdk",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_credentials_secret_values",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_real_broker_order_id",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_real_order_placement",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_dataservice_action_authorization_existing_broker_gates_retained",
+        "shell_accounting_manual_entry_dataservice_action_authorization_no_gate_weakening_or_skip",
+        "shell_accounting_manual_entry_dataservice_action_authorization_task178_validation_still_valid",
+        "shell_accounting_manual_entry_dataservice_action_authorization_task177_gate_still_valid",
+    ]
+    for ctest_name in task179_ctests:
+        require(ctest_name in shell_accounting_manual_action_cmake, f"TASK-179 CTest exists: {ctest_name}")
     return 0
 
 

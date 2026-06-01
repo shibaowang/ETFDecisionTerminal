@@ -1516,6 +1516,26 @@ real order placement, strategy execution, automatic trading, reconciliation,
 cancellation, correction, or schema changes without separate explicit
 authorization.
 
+## TASK-179 Manual Entry DataService Action Authorization Gate Prompt Rule
+
+Future manual entry DataService action work after TASK-179 must reference
+docs/156 and docs/157. TASK-179 is a DataService action authorization gate only:
+do not implement DataService actions, do not add action names, do not register
+dispatcher handlers, do not modify `DataServiceActions.cpp`, and do not change
+ServiceRuntime routing. Future manual buy/sell and deposit/withdraw actions
+must remain DataService-only, must validate through the TASK-178 DTO /
+validation scaffold or an authorized successor, and must keep repository,
+AccountingEngine replay, read model, and UI changes in separate authorized
+tasks. Do not write SQLite, `trade_log`, cash facts, cash ledger, audit, or
+other ledger rows, do not add DataAccess write repositories, do not modify
+production QML, startup, Presenter, Controller, migrations, StrategyEngine, or
+MarketEngine, and do not add TradeDraft, trading suggestions, broker SDK,
+network, credentials, endpoints, real broker order ids, real order placement,
+automatic trading, reconciliation, cancellation, correction, or schema changes
+without separate explicit authorization. Broker sandbox new capability
+development remains paused and existing broker / real broker / no-network /
+no-credentials / no-order-placement gates must remain present and passing.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

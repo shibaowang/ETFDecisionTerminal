@@ -1519,22 +1519,40 @@ authorization.
 ## TASK-179 Manual Entry DataService Action Authorization Gate Prompt Rule
 
 Future manual entry DataService action work after TASK-179 must reference
-docs/156 and docs/157. TASK-179 is a DataService action authorization gate only:
-do not implement DataService actions, do not add action names, do not register
-dispatcher handlers, do not modify `DataServiceActions.cpp`, and do not change
-ServiceRuntime routing. Future manual buy/sell and deposit/withdraw actions
-must remain DataService-only, must validate through the TASK-178 DTO /
-validation scaffold or an authorized successor, and must keep repository,
-AccountingEngine replay, read model, and UI changes in separate authorized
-tasks. Do not write SQLite, `trade_log`, cash facts, cash ledger, audit, or
-other ledger rows, do not add DataAccess write repositories, do not modify
-production QML, startup, Presenter, Controller, migrations, StrategyEngine, or
-MarketEngine, and do not add TradeDraft, trading suggestions, broker SDK,
-network, credentials, endpoints, real broker order ids, real order placement,
-automatic trading, reconciliation, cancellation, correction, or schema changes
-without separate explicit authorization. Broker sandbox new capability
-development remains paused and existing broker / real broker / no-network /
-no-credentials / no-order-placement gates must remain present and passing.
+docs/156 and docs/157. TASK-179 was a DataService action authorization gate
+only. TASK-180 evolves that rule by allowing only disabled DataService action
+scaffold registration; it still does not authorize write implementation,
+repositories, replay integration, read model updates, or UI. Future manual
+buy/sell and deposit/withdraw actions must remain DataService-only, must
+validate through the TASK-178 DTO / validation scaffold or an authorized
+successor, and must keep repository, AccountingEngine replay, read model, and
+UI changes in separate authorized tasks. Do not write SQLite, `trade_log`, cash
+facts, cash ledger, audit, or other ledger rows, do not add DataAccess write
+repositories, do not modify production QML, startup, Presenter, Controller,
+migrations, StrategyEngine, or MarketEngine, and do not add TradeDraft, trading
+suggestions, broker SDK, network, credentials, endpoints, real broker order
+ids, real order placement, automatic trading, reconciliation, cancellation,
+correction, or schema changes without separate explicit authorization. Broker
+sandbox new capability development remains paused and existing broker / real
+broker / no-network / no-credentials / no-order-placement gates must remain
+present and passing.
+
+## TASK-180 Manual Entry DataService Action Scaffold Prompt Rule
+
+Future work after TASK-180 must reference docs/158 and docs/159. TASK-180 is a
+manual entry DataService action scaffold only: it may register
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`, but each handler must return
+unavailable / not implemented / disabled scaffold semantics. Do not implement
+manual entry writes, do not add DataAccess write repositories, do not write
+SQLite, `trade_log`, cash facts, audit, or ledger records, do not modify
+migrations, production QML, startup, Presenter, Controller, AccountingEngine
+replay, StrategyEngine, MarketEngine, TradeDraft, suggestions, broker SDK,
+network, credentials, endpoint, real order placement, or automatic trading.
+Broker sandbox new capability development remains paused and existing broker
+gates must remain present and passing.
+
+TASK-180 allows disabled DataService action scaffold registration only.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

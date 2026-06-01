@@ -577,9 +577,18 @@
   deposit/withdraw actions without implementing actions or writes.
 - ShellAccounting manual entry DataService action authorization test plan:
   [157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md](157_shell_accounting_manual_entry_dataservice_action_authorization_test_plan.md)
-  defines TASK-179 static probes for no DataServiceActions change, no action
-  names, no repositories, no DB writes, no schema/QML/startup drift, and broker
-  gate retention.
+  defines TASK-179 static probes and the TASK-180 scaffold-only evolution:
+  action names may be registered as disabled scaffolds, while repositories, DB
+  writes, schema/QML/startup drift, and broker changes remain forbidden.
+- ShellAccounting manual entry DataService action scaffold:
+  [158_shell_accounting_manual_entry_dataservice_action_scaffold.md](158_shell_accounting_manual_entry_dataservice_action_scaffold.md)
+  records TASK-180 disabled DataService action registration for manual
+  transaction and cash movement entries without any write implementation.
+- ShellAccounting manual entry DataService action scaffold test plan:
+  [159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md](159_shell_accounting_manual_entry_dataservice_action_scaffold_test_plan.md)
+  defines TASK-180 probes for dispatcher registration, disabled response
+  semantics, no repository, no DB writes, no QML/startup drift, and broker gate
+  retention.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -2258,6 +2258,72 @@ etfdt::protocol::ProtocolResponse handleAccountingBrokerOrderDryRun(
     return successResponse(context, payload.str());
 }
 
+etfdt::protocol::ProtocolResponse manualEntryActionScaffoldResponse(
+    const etfdt::service_runtime::ActionContext& context,
+    std::string_view actionName,
+    std::string_view reasonCode)
+{
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":" << jsonStringValue(actionName) << ','
+            << "\"implemented\":false,"
+            << "\"manualEntryEnabled\":false,"
+            << "\"writeEnabled\":false,"
+            << "\"databaseWritten\":false,"
+            << "\"tradeLogWritten\":false,"
+            << "\"cashFactsWritten\":false,"
+            << "\"cashLedgerWritten\":false,"
+            << "\"auditWritten\":false,"
+            << "\"ledgerWritten\":false,"
+            << "\"repositoryCalled\":false,"
+            << "\"accountingReplayCalled\":false,"
+            << "\"tradeDraftGenerated\":false,"
+            << "\"tradeSuggestionGenerated\":false,"
+            << "\"brokerSdkCalled\":false,"
+            << "\"networkAccessed\":false,"
+            << "\"credentialsAccessed\":false,"
+            << "\"endpointAccessed\":false,"
+            << "\"realOrderPlacement\":false,"
+            << "\"automaticTrading\":false,"
+            << "\"status\":\"DISABLED_SCAFFOLD\","
+            << "\"reason\":" << jsonStringValue(reasonCode) << ','
+            << "\"errorCode\":" << jsonStringValue(reasonCode) << ','
+            << "\"message\":\"Manual entry DataService action is registered as a disabled scaffold only.\""
+            << "}";
+
+    etfdt::protocol::ProtocolResponse response;
+    response.msgId = context.request.msgId;
+    response.traceId = context.request.traceId;
+    response.success = false;
+    response.errorCode = etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+    response.errorMessage = "Manual entry DataService action is not implemented";
+    response.payloadJson = payload.str();
+    return response;
+}
+
+etfdt::protocol::ProtocolResponse handleAccountingManualEntryTransactionCreate(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+    return manualEntryActionScaffoldResponse(
+        context,
+        kActionAccountingManualTransactionCreate,
+        "MANUAL_TRANSACTION_ENTRY_NOT_IMPLEMENTED");
+}
+
+etfdt::protocol::ProtocolResponse handleAccountingManualEntryCashMovementCreate(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)connection;
+    return manualEntryActionScaffoldResponse(
+        context,
+        kActionAccountingManualCashMovementCreate,
+        "MANUAL_CASH_MOVEMENT_NOT_IMPLEMENTED");
+}
+
 etfdt::protocol::ProtocolResponse handlePositionList(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)

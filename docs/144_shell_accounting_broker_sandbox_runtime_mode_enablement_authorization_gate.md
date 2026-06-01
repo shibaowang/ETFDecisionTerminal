@@ -54,3 +54,7 @@ Rollback is to keep TASK-172 disabled-default selector wiring or remove the sele
 ## Future Implementation Requirements
 
 Any future sandbox runtime enablement must open a separate TASK, reference docs/144 and docs/145, preserve fail-closed behavior, and include static gates proving no unauthorized payload, QML, config, environment, command line, file, database, or secret-store mode source is introduced.
+
+TASK-174 adds only a direct-test-only enablement state scaffold whose default
+state is disabled, unavailable, and fail-closed. It does not connect that state
+to runtime and does not enable sandbox runtime.

@@ -534,6 +534,12 @@
 - ShellAccounting broker sandbox runtime mode enablement authorization test plan:
   [145_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan.md](145_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan.md)
   defines TASK-173 static and runtime probes that keep sandbox runtime disabled.
+- ShellAccounting broker sandbox runtime enablement state scaffold:
+  [146_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold.md](146_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold.md)
+  records TASK-174 direct-test-only disabled/unavailable/fail-closed state scaffold.
+- ShellAccounting broker sandbox runtime enablement state scaffold test plan:
+  [147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md](147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md)
+  defines TASK-174 probes proving the scaffold is not connected to runtime.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

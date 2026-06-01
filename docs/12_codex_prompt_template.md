@@ -1438,6 +1438,18 @@ SDK, network, real order placement, real broker order id storage,
 reconciliation, cancellation, correction, strategy execution, automatic
 trading, or schema changes without separate explicit authorization.
 
+## TASK-174 Broker Sandbox Runtime Enablement State Scaffold Prompt Rule
+
+Future sandbox runtime enablement state work after TASK-174 must reference
+docs/146 and docs/147. TASK-174 authorizes only a direct-test-only
+disabled/unavailable/fail-closed state scaffold. Do not modify
+`DataServiceActions.cpp`, do not modify `ShellAccountingBrokerRuntimeModeSource.h/.cpp`,
+do not connect the scaffold to runtime, and do not enable sandbox runtime. Do
+not add external mode sources, credentials or endpoint reads, broker SDK,
+network, real order placement, real broker order id storage, DB/audit/ledger
+writes, reconciliation, cancellation, correction, strategy execution, automatic
+trading, or schema changes without separate explicit authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

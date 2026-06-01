@@ -86,3 +86,7 @@ TASK-173 defines the test-only gate for future ShellAccounting broker sandbox ru
 - [ ] Full CTest passes.
 - [ ] transport_local_socket_echo 50 repeat passes.
 - [ ] User explicitly authorizes a future sandbox runtime enablement TASK before any runtime enablement implementation begins.
+
+TASK-174 adds only a disabled/unavailable/fail-closed enablement state scaffold.
+The TASK-173 gate evolves to allow that scaffold while continuing to prohibit
+sandbox runtime enablement and external mode sources.

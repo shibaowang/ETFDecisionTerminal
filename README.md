@@ -2970,3 +2970,21 @@ no-real-order-placement policy. See
 `docs/144_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_gate.md`
 and
 `docs/145_shell_accounting_broker_sandbox_runtime_mode_enablement_authorization_test_plan.md`.
+
+## TASK-174 Broker Sandbox Runtime Enablement State Scaffold
+
+TASK-174 adds a direct-test-only sandbox runtime enablement state scaffold in
+DataServiceApi. The default state is disabled, unavailable, and fail-closed:
+`enabled=false`, `available=false`, `failClosed=true`, `runtimeMode` is
+`sandbox_runtime_disabled`, and `errorCode` is
+`BROKER_SANDBOX_RUNTIME_DISABLED`.
+
+TASK-174 does not modify `DataServiceActions.cpp`, does not modify
+`ShellAccountingBrokerRuntimeModeSource.h/.cpp`, does not connect the state
+scaffold to runtime, and does not enable sandbox runtime. It adds no external
+mode source, SDK, network, credentials, endpoint, real broker order id, order
+placement, DB/audit/ledger write, reconciliation, cancellation, correction,
+strategy execution, automatic trading, or schema change. See
+`docs/146_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold.md`
+and
+`docs/147_shell_accounting_broker_sandbox_runtime_enablement_state_scaffold_test_plan.md`.

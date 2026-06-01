@@ -1499,6 +1499,23 @@ suggestion implementation, broker SDK, network, credentials, endpoints, real
 broker order ids, order placement, automatic trading, or schema changes without
 separate explicit authorization.
 
+## TASK-178 Manual Transaction and Cash Movement DTO Validation Scaffold Prompt Rule
+
+Future manual transaction and cash movement work after TASK-178 must reference
+docs/154 and docs/155. TASK-178 authorizes only in-memory DTO / validation
+scaffold in DataServiceApi. This is an in-memory DTO / validation scaffold
+boundary. Do not add DataService actions, do not modify
+`DataServiceActions.cpp`, do not add DataAccess write repositories, do not write
+SQLite, cash facts, audit, ledger, `trade_log`, or snapshots, do not modify
+AccountingEngine replay, do not modify production QML, startup, Presenter, or
+Controller behavior, and do not modify migrations. Follow-up TASKs must
+separately authorize DataService actions, repositories, AccountingEngine replay
+integration, and UI. Broker sandbox new capability development remains paused;
+do not add broker SDK, network, credentials, endpoints, real broker order ids,
+real order placement, strategy execution, automatic trading, reconciliation,
+cancellation, correction, or schema changes without separate explicit
+authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -562,6 +562,15 @@
   defines TASK-177 static probes for no production implementation, no schema
   change, no broker SDK, no network, no credentials, no order placement, and
   retained broker safety gates.
+- ShellAccounting manual transaction and cash movement DTO validation scaffold:
+  [154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md](154_shell_accounting_manual_transaction_cash_movement_dto_validation_scaffold.md)
+  records TASK-178 in-memory DTO and validation scaffold for manual buy/sell
+  and deposit/withdraw inputs.
+- ShellAccounting manual transaction and cash movement DTO validation test plan:
+  [155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md](155_shell_accounting_manual_transaction_cash_movement_dto_validation_test_plan.md)
+  defines TASK-178 direct validation and static boundary probes proving no
+  DataService action, repository, schema, QML, broker, network, credential, or
+  order-placement expansion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

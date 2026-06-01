@@ -20,6 +20,11 @@ QML, strategy suggestions, TradeDraft generation, broker access, network calls,
 credentials, endpoints, real order placement, automatic trading, or schema
 changes.
 
+TASK-178 follows this gate by adding only an in-memory DTO / validation
+scaffold. TASK-178 still does not add runtime writes, DataService actions,
+DataAccess repositories, AccountingEngine replay integration, QML, startup
+wiring, broker access, or schema changes.
+
 ## Current State
 
 TASK-176 completed disabled/fail-closed sandbox runtime enablement-state wiring
@@ -29,6 +34,8 @@ keeps the disabled/null provider semantics intact.
 Broker sandbox new capability development is paused for this MVP pivot. Existing
 broker, real-broker, no-network, no-credentials, no-order-placement, and
 disabled-runtime gates remain active and must keep passing.
+
+Broker sandbox new capability development remains paused through TASK-178.
 
 The application currently has ShellAccounting read-only views, accounting
 replay, snapshot write, audit write, TradeDraft creation, TradeDraft

@@ -9,6 +9,7 @@ add_library(ETFDataServiceApi STATIC
     src/ShellAccountingBrokerRuntimeModeSource.cpp
     src/ShellAccountingBrokerSandboxRuntimeEnablement.cpp
     src/ShellAccountingBrokerSandboxOrderPortScaffold.cpp
+    src/ShellAccountingManualTransactionCashMovementValidation.cpp
     src/WriteActionPolicy.cpp
 )
 

@@ -1450,6 +1450,21 @@ network, real order placement, real broker order id storage, DB/audit/ledger
 writes, reconciliation, cancellation, correction, strategy execution, automatic
 trading, or schema changes without separate explicit authorization.
 
+## TASK-175 Broker Sandbox Runtime Enablement State Wiring Authorization Gate Prompt Rule
+
+Future sandbox runtime enablement state wiring work after TASK-175 must
+reference docs/148 and docs/149. TASK-175 is gate-only: do not modify
+`DataServiceActions.cpp`, do not modify
+`ShellAccountingBrokerSandboxRuntimeEnablement.h/.cpp`, do not connect the
+enablement state to runtime, and do not enable sandbox runtime. A future wiring
+implementation must be separately authorized and may only start by reading the
+default disabled/fail-closed state while preserving disabled/null provider
+behavior. Do not add external mode sources, credentials or endpoint reads,
+broker SDK, network, real order placement, real broker order id storage,
+DB/audit/ledger writes, reconciliation, cancellation, correction, strategy
+execution, automatic trading, or schema changes without separate explicit
+authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

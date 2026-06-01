@@ -516,6 +516,12 @@
 - ShellAccounting broker sandbox runtime mode source selector scaffold test plan:
   [139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md](139_shell_accounting_broker_sandbox_runtime_mode_source_selector_scaffold_test_plan.md)
   defines TASK-170 probes for explicit mode selection, fail-closed behavior, and no runtime wiring.
+- ShellAccounting broker sandbox runtime mode source selector wiring authorization gate:
+  [140_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_gate.md](140_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_gate.md)
+  records TASK-171 gate-only policy for future DataServiceActions selector wiring.
+- ShellAccounting broker sandbox runtime mode source selector wiring authorization test plan:
+  [141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md](141_shell_accounting_broker_sandbox_runtime_mode_source_selector_wiring_authorization_test_plan.md)
+  defines TASK-171 probes that keep runtime wiring and sandbox runtime disabled.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

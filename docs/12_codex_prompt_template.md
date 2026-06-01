@@ -1397,6 +1397,20 @@ order ids, order placement, DB/audit/ledger writes, reconciliation,
 cancellation, correction, strategy execution, automatic trading, and schema
 changes require separate explicit authorization.
 
+## TASK-171 Broker Sandbox Runtime Mode Source Selector Wiring Authorization Gate Prompt Rule
+
+Future DataServiceActions selector wiring work after TASK-171 must reference
+docs/140 and docs/141. TASK-171 is gate-only: it does not implement runtime
+wiring, does not modify `DataServiceActions`, does not modify
+`ShellAccountingBrokerRuntimeModeSource.h/.cpp`, and does not enable sandbox
+runtime. A future wiring task may only start with disabled-default selector
+wiring unless another explicit TASK authorizes sandbox runtime mode source
+enablement. Do not read mode from payload, QML, config, environment, command
+line, files, database, or secret stores. Do not add SDK, network, credentials,
+endpoints, real broker order ids, order placement, DB/audit/ledger writes,
+reconciliation, cancellation, correction, strategy execution, automatic
+trading, or schema changes without separate explicit authorization.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

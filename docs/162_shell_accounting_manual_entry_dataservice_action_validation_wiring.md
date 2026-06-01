@@ -128,3 +128,8 @@ authorize repository design, transaction policy, rollback policy, idempotency,
 duplicate handling, audit policy, schema compatibility, and write targets.
 Manual transaction persistence, manual cash movement persistence, UI exposure,
 replay, snapshot, broker, and automatic trading remain outside TASK-182.
+
+TASK-183 adds the future manual entry persistence authorization gate. It keeps
+TASK-182 validation wiring as the fallback: valid payloads still return
+validation accepted plus write not implemented, no persistent ids, and no
+database writes. TASK-183 does not implement persistence.

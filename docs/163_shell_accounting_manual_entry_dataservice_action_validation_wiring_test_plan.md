@@ -119,3 +119,8 @@ network, credentials, endpoints, real order placement, or automatic trading.
 - [ ] `transport_local_socket_echo` 50 repeat passes.
 - [ ] `git diff --check` passes.
 - [ ] `git status --short` is clean.
+
+TASK-183 adds the future manual entry persistence authorization gate. TASK-182
+validation wiring remains validation-only after that gate: valid payloads still
+return `writeImplemented=false`, no persistent ids, and no database, `trade_log`,
+cash facts, audit, or ledger writes.

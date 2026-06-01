@@ -10618,6 +10618,155 @@ def main() -> int:
     ]
     for ctest_name in task180_ctests:
         require(ctest_name in shell_accounting_manual_action_scaffold_cmake, f"TASK-180 CTest exists: {ctest_name}")
+
+    shell_accounting_manual_action_implementation_gate_doc_path = (
+        root
+        / "docs"
+        / "160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md"
+    )
+    shell_accounting_manual_action_implementation_gate_plan_path = (
+        root
+        / "docs"
+        / "161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md"
+    )
+    shell_accounting_manual_action_implementation_gate_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_action_implementation_gate_doc_path.exists(), "docs/160 exists")
+    require(shell_accounting_manual_action_implementation_gate_plan_path.exists(), "docs/161 exists")
+    require(shell_accounting_manual_action_implementation_gate_cmake_path.exists(), "TASK-181 tests CMake exists")
+
+    shell_accounting_manual_action_implementation_gate_doc = (
+        shell_accounting_manual_action_implementation_gate_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_action_implementation_gate_plan = (
+        shell_accounting_manual_action_implementation_gate_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_action_implementation_gate_cmake = (
+        shell_accounting_manual_action_implementation_gate_cmake_path.read_text(encoding="utf-8")
+    )
+
+    require(
+        "docs/160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md" in readme,
+        "README links docs/160",
+    )
+    require(
+        "docs/161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md" in readme,
+        "README links docs/161",
+    )
+    require(
+        "160_shell_accounting_manual_entry_dataservice_action_implementation_authorization_gate.md" in docs_index,
+        "docs/README links docs/160",
+    )
+    require(
+        "161_shell_accounting_manual_entry_dataservice_action_implementation_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/161",
+    )
+    require("TASK-181" in codex_prompt_template, "docs/12 registers TASK-181")
+    require("TASK-181" in shell_accounting_manual_action_implementation_gate_doc, "docs/160 mentions TASK-181")
+    require("Test Matrix" in shell_accounting_manual_action_implementation_gate_plan, "docs/161 contains Test Matrix")
+    require("Required Probes" in shell_accounting_manual_action_implementation_gate_plan, "docs/161 contains Required Probes")
+    require(
+        "future implementation authorization gate only" in codex_prompt_template,
+        "docs/12 describes TASK-181 as gate-only",
+    )
+    require(
+        "does not implement either action" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 blocks action implementation",
+    )
+    require(
+        "`DataServiceActions.cpp`" in shell_accounting_manual_action_implementation_gate_doc
+        and "`DataServiceActions.h`" in shell_accounting_manual_action_implementation_gate_doc
+        and "`DataServiceActionRegistrar.cpp`" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 blocks DataServiceActions.cpp changes",
+    )
+    require(
+        "TASK-180 scaffold actions must continue to return" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 preserves TASK-180 scaffold response",
+    )
+    require(
+        "Payload parsing plus TASK-178 validation wiring" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 defines future validation wiring stage",
+    )
+    require(
+        "must not write a database" in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 blocks DB writes",
+    )
+    require(
+        "Manual transaction implementation is not broker order placement"
+        in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 separates manual transaction from broker order",
+    )
+    require(
+        "Broker sandbox new capability work remains paused"
+        in shell_accounting_manual_action_implementation_gate_doc,
+        "docs/160 keeps broker sandbox paused",
+    )
+    require(
+        "TASK-181 adds the future DataService action implementation authorization gate"
+        in shell_accounting_manual_action_scaffold_doc,
+        "docs/158 references TASK-181",
+    )
+    require(
+        "TASK-181 adds the future implementation authorization gate"
+        in shell_accounting_manual_action_scaffold_plan,
+        "docs/159 references TASK-181",
+    )
+    require("TASK-181" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-181 implementation marker")
+    require("TASK-181" not in dataservice_actions_header, "DataServiceActions.h has no TASK-181 implementation marker")
+    require("TASK-181" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-181 implementation marker")
+    require("validateManual" not in dataservice_actions_source, "DataServiceActions has no TASK-181 validation wiring")
+    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-181")
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-181")
+    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-181")
+    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-181")
+
+    task181_ctests = [
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_docs",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_docs_index",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_prompt_template",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_registrar_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_transaction_scaffold_disabled",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_cash_scaffold_disabled",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_success_implementation",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_payload_to_write_path",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_cash_fact_write",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_repository_call",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_dataaccess_write_repository",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_accountingengine_replay",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_validation_scaffold_still_pure",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_schema_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_new_migration",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_production_qml_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_startup_unmodified",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_strategy_market_change",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_tradedraft",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_suggestion",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_broker",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_credentials_secret_values",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_real_order_placement",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_task180_scaffold_still_valid",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_task179_gate_still_valid",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_task178_validation_still_valid",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_task177_gate_still_valid",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_existing_broker_gates_retained",
+        "shell_accounting_manual_entry_dataservice_action_implementation_authorization_no_gate_weakening_or_skip",
+    ]
+    for ctest_name in task181_ctests:
+        require(
+            ctest_name in shell_accounting_manual_action_implementation_gate_cmake,
+            f"TASK-181 CTest exists: {ctest_name}",
+        )
     return 0
 
 

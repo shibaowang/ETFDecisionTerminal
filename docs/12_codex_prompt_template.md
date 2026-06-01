@@ -1554,6 +1554,27 @@ gates must remain present and passing.
 
 TASK-180 allows disabled DataService action scaffold registration only.
 
+## TASK-181 Manual Entry DataService Action Implementation Authorization Gate Prompt Rule
+
+Future work after TASK-181 must reference docs/160 and docs/161. TASK-181 is a
+future implementation authorization gate only. Do not modify
+`DataServiceActions.cpp`, `DataServiceActions.h`, or
+`DataServiceActionRegistrar.cpp` unless a later implementation task explicitly
+authorizes it. Do not implement manual entry writes, do not parse payloads into
+persistent facts, do not add DataAccess write repositories, do not write SQLite,
+`trade_log`, cash facts, audit, or ledger records, and do not modify migrations,
+production QML, startup, Presenter, Controller, AccountingEngine replay,
+StrategyEngine, MarketEngine, TradeDraft, suggestions, broker SDK, network,
+credentials, endpoints, real order placement, or automatic trading.
+
+The TASK-180 scaffold actions must continue to return unavailable / not
+implemented / disabled scaffold responses until a later task separately
+authorizes payload parsing plus TASK-178 validation wiring. Repository,
+persistence, replay, read model, and UI work must each remain separately
+authorized. Broker sandbox new capability work remains paused and existing
+broker disabled / fail-closed / no-real-order / no-network / no-credentials /
+no-order-placement gates must remain present and passing.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

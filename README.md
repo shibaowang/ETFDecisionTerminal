@@ -3140,3 +3140,22 @@ network, credentials, endpoint, order placement, or automatic trading. See
 `docs/162_shell_accounting_manual_entry_dataservice_action_validation_wiring.md`
 and
 `docs/163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md`.
+
+## TASK-183 Manual Entry Persistence Authorization Gate
+
+TASK-183 adds only the authorization gate for future manual entry persistence.
+It defines the future boundary for persisting validated manual buy / sell
+records and deposit / withdrawal cash movement records, while explicitly not
+implementing repositories, SQLite writes, `trade_log`, cash facts, audit,
+ledger writes, replay, read models, UI, schema changes, broker SDK, network,
+credentials, endpoints, real order placement, or automatic trading.
+
+TASK-182 validation wiring remains validation-only: valid payloads still return
+write-not-implemented / unavailable, `writeImplemented=false`, and no
+persistent ids. Future persistence must be DataService-only, validation-first,
+repository-boundary based, transactional, rollback-capable, idempotent,
+auditable, privacy-sanitized, and separately split across repository scaffold,
+repository implementation, manual transaction write, manual cash movement
+write, replay/read-model, and UI tasks. See
+`docs/164_shell_accounting_manual_entry_persistence_authorization_gate.md` and
+`docs/165_shell_accounting_manual_entry_persistence_authorization_test_plan.md`.

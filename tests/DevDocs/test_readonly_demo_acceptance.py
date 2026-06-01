@@ -10846,6 +10846,155 @@ def main() -> int:
             ctest_name in shell_accounting_manual_action_validation_wiring_cmake,
             f"TASK-182 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_persistence_gate_doc_path = (
+        root / "docs" / "164_shell_accounting_manual_entry_persistence_authorization_gate.md"
+    )
+    shell_accounting_manual_entry_persistence_gate_plan_path = (
+        root / "docs" / "165_shell_accounting_manual_entry_persistence_authorization_test_plan.md"
+    )
+    shell_accounting_manual_entry_persistence_gate_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryPersistenceAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_entry_persistence_gate_doc_path.exists(), "docs/164 exists")
+    require(shell_accounting_manual_entry_persistence_gate_plan_path.exists(), "docs/165 exists")
+    require(shell_accounting_manual_entry_persistence_gate_cmake_path.exists(), "TASK-183 tests CMake exists")
+
+    shell_accounting_manual_entry_persistence_gate_doc = (
+        shell_accounting_manual_entry_persistence_gate_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_persistence_gate_plan = (
+        shell_accounting_manual_entry_persistence_gate_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_persistence_gate_cmake = (
+        shell_accounting_manual_entry_persistence_gate_cmake_path.read_text(encoding="utf-8")
+    )
+
+    require(
+        "docs/164_shell_accounting_manual_entry_persistence_authorization_gate.md" in readme,
+        "README links docs/164",
+    )
+    require(
+        "docs/165_shell_accounting_manual_entry_persistence_authorization_test_plan.md" in readme,
+        "README links docs/165",
+    )
+    require(
+        "164_shell_accounting_manual_entry_persistence_authorization_gate.md" in docs_index,
+        "docs/README links docs/164",
+    )
+    require(
+        "165_shell_accounting_manual_entry_persistence_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/165",
+    )
+    require("TASK-183" in codex_prompt_template, "docs/12 registers TASK-183")
+    require("TASK-183" in shell_accounting_manual_entry_persistence_gate_doc, "docs/164 mentions TASK-183")
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_persistence_gate_plan,
+        "docs/165 contains Test Matrix",
+    )
+    require(
+        "Required Probes" in shell_accounting_manual_entry_persistence_gate_plan,
+        "docs/165 contains Required Probes",
+    )
+    require(
+        "does not implement persistence" in shell_accounting_manual_entry_persistence_gate_doc,
+        "docs/164 says TASK-183 is gate-only",
+    )
+    require(
+        "DataServiceActions.cpp" in shell_accounting_manual_entry_persistence_gate_doc,
+        "docs/164 names DataServiceActions.cpp non-change",
+    )
+    require(
+        "writeImplemented=false" in shell_accounting_manual_entry_persistence_gate_doc,
+        "docs/164 preserves TASK-182 write-not-implemented semantics",
+    )
+    require(
+        "No DataAccess write repository" in shell_accounting_manual_entry_persistence_gate_plan,
+        "docs/165 blocks DataAccess write repositories",
+    )
+    require(
+        "No broker SDK" in shell_accounting_manual_entry_persistence_gate_plan,
+        "docs/165 blocks broker SDK",
+    )
+    require(
+        "No automatic trading" in shell_accounting_manual_entry_persistence_gate_plan,
+        "docs/165 blocks automatic trading",
+    )
+    require(
+        "TASK-183" in shell_accounting_manual_action_validation_wiring_doc,
+        "docs/162 records TASK-183 persistence gate",
+    )
+    require(
+        "TASK-183" in shell_accounting_manual_action_validation_wiring_plan,
+        "docs/163 records TASK-183 persistence gate",
+    )
+    require("TASK-183" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-183 marker")
+    require("TASK-183" not in dataservice_actions_header, "DataServiceActions.h has no TASK-183 marker")
+    require("TASK-183" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-183 marker")
+    require(
+        "ManualEntryPersistenceRepository" not in dataaccess_cmake,
+        "DataAccess CMake has no manual entry persistence repository after TASK-183",
+    )
+    require(
+        "ManualTransactionWriteRepository" not in dataaccess_cmake,
+        "DataAccess CMake has no manual transaction write repository after TASK-183",
+    )
+    require(
+        "ManualCashMovementWriteRepository" not in dataaccess_cmake,
+        "DataAccess CMake has no manual cash movement write repository after TASK-183",
+    )
+    require("manualEntryPersistence" not in production_qml, "production QML has no manual entry persistence UI")
+    require("persistManualTransaction" not in production_qml, "production QML has no manual transaction persistence UI")
+    require("persistManualCashMovement" not in production_qml, "production QML has no manual cash movement persistence UI")
+
+    task183_ctests = [
+        "shell_accounting_manual_entry_persistence_authorization_gate",
+        "shell_accounting_manual_entry_persistence_authorization_docs",
+        "shell_accounting_manual_entry_persistence_authorization_docs_index_prompt",
+        "shell_accounting_manual_entry_persistence_authorization_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_registrar_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_validation_code_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_transaction_write_not_implemented",
+        "shell_accounting_manual_entry_persistence_authorization_cash_write_not_implemented",
+        "shell_accounting_manual_entry_persistence_authorization_no_persistent_ids",
+        "shell_accounting_manual_entry_persistence_authorization_no_dataaccess_write_repository",
+        "shell_accounting_manual_entry_persistence_authorization_no_manual_persistence_repository",
+        "shell_accounting_manual_entry_persistence_authorization_no_sql",
+        "shell_accounting_manual_entry_persistence_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_persistence_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_persistence_authorization_no_cash_fact_write",
+        "shell_accounting_manual_entry_persistence_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_persistence_authorization_schema_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_no_new_migration",
+        "shell_accounting_manual_entry_persistence_authorization_production_qml_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_startup_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_presenter_controller_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_accountingengine_replay_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_strategy_market_unmodified",
+        "shell_accounting_manual_entry_persistence_authorization_no_tradedraft_suggestion",
+        "shell_accounting_manual_entry_persistence_authorization_no_broker_sdk",
+        "shell_accounting_manual_entry_persistence_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_persistence_authorization_no_credentials",
+        "shell_accounting_manual_entry_persistence_authorization_no_real_order_id",
+        "shell_accounting_manual_entry_persistence_authorization_no_real_order_placement",
+        "shell_accounting_manual_entry_persistence_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_persistence_authorization_task182_still_valid",
+        "shell_accounting_manual_entry_persistence_authorization_task181_still_valid",
+        "shell_accounting_manual_entry_persistence_authorization_task180_still_valid",
+        "shell_accounting_manual_entry_persistence_authorization_task178_still_pure",
+        "shell_accounting_manual_entry_persistence_authorization_task177_still_valid",
+        "shell_accounting_manual_entry_persistence_authorization_broker_gates_retained",
+        "shell_accounting_manual_entry_persistence_authorization_future_split_documented",
+    ]
+    for ctest_name in task183_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_persistence_gate_cmake,
+            f"TASK-183 CTest exists: {ctest_name}",
+        )
     return 0
 
 

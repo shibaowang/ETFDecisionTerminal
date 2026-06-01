@@ -607,6 +607,14 @@
   [163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md](163_shell_accounting_manual_entry_dataservice_action_validation_wiring_test_plan.md)
   defines TASK-182 dispatcher, validation-only response, no-write, no-UI, and
   broker-gate regression probes.
+- ShellAccounting manual entry persistence authorization gate:
+  [164_shell_accounting_manual_entry_persistence_authorization_gate.md](164_shell_accounting_manual_entry_persistence_authorization_gate.md)
+  records TASK-183 gate-only policy for future manual transaction and cash
+  movement persistence while keeping TASK-182 validation-only responses.
+- ShellAccounting manual entry persistence authorization test plan:
+  [165_shell_accounting_manual_entry_persistence_authorization_test_plan.md](165_shell_accounting_manual_entry_persistence_authorization_test_plan.md)
+  defines TASK-183 static probes for no repository, no DB writes, no schema,
+  no QML/startup drift, no broker, and future persistence task splitting.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

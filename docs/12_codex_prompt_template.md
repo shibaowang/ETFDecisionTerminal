@@ -1592,6 +1592,28 @@ MarketEngine, TradeDraft, suggestions, broker SDK, network, credentials,
 endpoints, real order placement, or automatic trading without separate explicit
 authorization.
 
+## TASK-183 Manual Entry Persistence Authorization Gate Prompt Rule
+
+Future work after TASK-183 must reference docs/164 and docs/165. TASK-183 is a
+manual entry persistence authorization gate only. It does not authorize
+repository implementation, SQLite writes, `trade_log`, cash facts, cash ledger,
+audit, ledger writes, schema changes, replay, read models, production QML,
+startup, Presenter, Controller, StrategyEngine, MarketEngine, TradeDraft,
+suggestions, broker SDK, network, credentials, endpoints, real order placement,
+or automatic trading.
+
+TASK-182 validation wiring must remain validation-only until a later write
+implementation task explicitly authorizes persistence. Valid manual transaction
+and manual cash movement payloads may pass validation, but must still report
+`writeImplemented=false` and must not return persistent ids. Future persistence
+must be DataService-only, validation-first, repository-boundary based,
+transactional, rollback-capable, idempotent, duplicate-safe, auditable, and
+privacy-sanitized. Repository scaffold, repository implementation, manual
+transaction write, manual cash movement write, replay/read-model, and UI work
+must remain separately authorized. Broker sandbox new capability work remains
+paused and existing broker / real broker / no-network / no-credentials /
+no-order-placement gates must remain present and passing.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

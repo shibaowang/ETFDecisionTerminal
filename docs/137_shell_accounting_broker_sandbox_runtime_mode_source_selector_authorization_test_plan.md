@@ -2,7 +2,7 @@
 
 ## Document Purpose
 
-TASK-169 defines tests for the future sandbox runtime mode source selector authorization boundary. This test plan is gate-only: it does not implement a selector, does not enable sandbox runtime, does not wire the TASK-168 scaffold into `DataServiceActions`, and does not add external mode sources.
+TASK-169 defines tests for the future sandbox runtime mode source selector authorization boundary. TASK-170 later adds a direct-test-only selector scaffold. This plan remains focused on authorization boundaries: sandbox runtime is not enabled, the TASK-168 scaffold is not wired into `DataServiceActions`, and no external mode sources are added.
 
 ## Test Matrix
 
@@ -13,10 +13,10 @@ TASK-169 defines tests for the future sandbox runtime mode source selector autho
 - README, docs/README, and docs/12 index TASK-169.
 - docs/134 and docs/135 mention TASK-169 as a future selector authorization gate.
 
-### No Selector Implementation Yet
+### Selector Implementation Boundary
 
-- Production source has no runtime mode source selector implementation.
-- `ShellAccountingBrokerRuntimeModeSource.h/.cpp` are not modified by TASK-169.
+- Production source may contain only the TASK-170 direct-test selector scaffold.
+- `ShellAccountingBrokerRuntimeModeSource.h/.cpp` remain unwired from runtime callers.
 - `DataServiceActions.cpp` is not wired to a sandbox source selector.
 - `defaultShellAccountingBrokerRuntimeModeSource()` returns disabled.
 - Sandbox runtime remains disabled.
@@ -31,9 +31,9 @@ TASK-169 defines tests for the future sandbox runtime mode source selector autho
 ### Future Selector Policy
 
 - Unknown, blank, unsupported, paper, and real modes must fail closed to disabled or explicit unavailable/error.
-- Future selector may only choose explicitly authorized sources.
-- Future selector must not read payload, QML, config, environment, command line, files, database rows, or secret stores.
-- Future selector must not carry credentials, endpoints, account data, order data, portfolio data, or broker payloads.
+- The direct-test selector may only choose explicitly authorized sources.
+- The direct-test selector must not read payload, QML, config, environment, command line, files, database rows, or secret stores.
+- The direct-test selector must not carry credentials, endpoints, account data, order data, portfolio data, or broker payloads.
 
 ### No Broker Side Effects
 
@@ -61,8 +61,8 @@ TASK-169 defines tests for the future sandbox runtime mode source selector autho
 
 ## Required Probes
 
-- Static production source scan for selector implementation tokens.
-- Static runtime source scan proving no selector class or factory.
+- Static production source scan allowing only the TASK-170 direct-test selector scaffold.
+- Static runtime source scan proving no runtime selector wiring.
 - Static `DataServiceActions` scan proving no sandbox selector wiring.
 - Runtime default source disabled probe.
 - Direct TASK-168 scaffold probe.
@@ -85,8 +85,8 @@ TASK-169 defines tests for the future sandbox runtime mode source selector autho
 - [ ] docs/136 merged.
 - [ ] docs/137 merged.
 - [ ] TASK-169 gate tests pass.
-- [ ] No runtime mode source selector implementation.
-- [ ] `ShellAccountingBrokerRuntimeModeSource.h/.cpp` unchanged by TASK-169.
+- [ ] Only the TASK-170 direct-test selector scaffold is present.
+- [ ] `ShellAccountingBrokerRuntimeModeSource.h/.cpp` remain unwired from runtime callers.
 - [ ] `DataServiceActions.cpp` does not wire a sandbox selector.
 - [ ] Default runtime source remains disabled-only.
 - [ ] TASK-168 sandbox scaffold remains direct-test-only.
@@ -97,4 +97,4 @@ TASK-169 defines tests for the future sandbox runtime mode source selector autho
 - [ ] No reconciliation, cancellation, correction, strategy execution, or automatic trading.
 - [ ] Full CTest passes.
 - [ ] Transport 50 passes.
-- [ ] Any future selector implementation opens a separate TASK.
+- [ ] Any future selector runtime wiring opens a separate TASK.

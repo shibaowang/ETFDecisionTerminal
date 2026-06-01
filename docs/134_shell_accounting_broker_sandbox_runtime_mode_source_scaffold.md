@@ -67,3 +67,7 @@ TASK-168 tests prove direct scaffold behavior, default disabled runtime behavior
 ## TASK-169 Follow-Up Gate
 
 TASK-169 adds a gate-only authorization boundary for a future sandbox runtime mode source selector. It does not implement a selector, does not modify runtime source production code, does not modify `DataServiceActions`, and does not enable sandbox runtime. The TASK-168 sandbox scaffold remains direct-test-only.
+
+## TASK-170 Follow-Up Scaffold
+
+TASK-170 adds a direct-test-only runtime mode source selector scaffold. It may select the disabled source or this TASK-168 sandbox scaffold from an explicit enum, but it is not wired into runtime and `DataServiceActions` still does not use the sandbox source scaffold.

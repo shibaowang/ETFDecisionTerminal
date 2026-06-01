@@ -23,4 +23,7 @@ public:
 
 [[nodiscard]] ShellAccountingBrokerRuntimeModeSource& defaultShellAccountingBrokerRuntimeModeSource() noexcept;
 
+[[nodiscard]] ShellAccountingBrokerRuntimeModeSource& shellAccountingBrokerRuntimeModeSourceForMode(
+    ShellAccountingBrokerOrderPortMode mode) noexcept;
+
 }  // namespace etfdt::dataservice

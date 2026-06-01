@@ -1371,17 +1371,31 @@ separate explicit task.
 ## TASK-169 Broker Sandbox Runtime Mode Source Selector Authorization Prompt Rule
 
 Future sandbox runtime mode source selector work must reference docs/136 and
-docs/137. TASK-169 itself is gate-only: do not implement a selector, do not
-modify `ShellAccountingBrokerRuntimeModeSource.h/.cpp`, do not modify
-`DataServiceActions`, and do not enable sandbox runtime. Keep the TASK-168
-sandbox scaffold direct-test-only and keep the default runtime source
-disabled-only. A future selector must not read mode from payload, QML, config,
+docs/137. TASK-169 itself is gate-only. TASK-170 later authorizes only a
+direct-test selector scaffold in `ShellAccountingBrokerRuntimeModeSource.h/.cpp`;
+do not wire it into `DataServiceActions`, and do not enable sandbox runtime.
+Keep the TASK-168 sandbox scaffold direct-test-only and keep the default runtime
+source disabled-only. A selector must not read mode from payload, QML, config,
 environment, command line, files, database, or secret stores, and must not carry
-credentials, endpoints, account data, order data, or broker payloads. Do not
-add SDK, network, real credentials, endpoint values, real broker order id,
-order placement, DB/audit/ledger write, reconciliation, cancellation,
-correction, strategy execution, or automatic trading without a separate
-explicit task.
+credentials, endpoints, account data, order data, or broker payloads. Do not add
+SDK, network, real credentials, endpoint values, real broker order id, order
+placement, DB/audit/ledger write, reconciliation, cancellation, correction,
+strategy execution, or automatic trading without a separate explicit task.
+
+## TASK-170 Broker Sandbox Runtime Mode Source Selector Scaffold Prompt Rule
+
+Future sandbox runtime mode source selector work after TASK-170 must reference
+docs/138 and docs/139. TASK-170 authorizes only
+`shellAccountingBrokerRuntimeModeSourceForMode(ShellAccountingBrokerOrderPortMode)`
+as a direct-test scaffold. It may select disabled or the TASK-168 sandbox
+scaffold from an explicit enum and must fail closed to disabled for unsupported
+or unknown modes. Do not read mode from payload, QML, config, environment,
+command line, files, database, or secret stores. Do not wire the selector into
+`DataServiceActions`, do not change `defaultShellAccountingBrokerRuntimeModeSource()`,
+and do not enable sandbox runtime. SDK, network, credentials, endpoints, real
+order ids, order placement, DB/audit/ledger writes, reconciliation,
+cancellation, correction, strategy execution, automatic trading, and schema
+changes require separate explicit authorization.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

@@ -20,4 +20,14 @@ ShellAccountingBrokerRuntimeModeSource& defaultShellAccountingBrokerRuntimeModeS
     return source;
 }
 
+ShellAccountingBrokerRuntimeModeSource& shellAccountingBrokerRuntimeModeSourceForMode(
+    ShellAccountingBrokerOrderPortMode mode) noexcept
+{
+    if (mode == ShellAccountingBrokerOrderPortMode::Sandbox) {
+        static SandboxShellAccountingBrokerRuntimeModeSourceScaffold source;
+        return source;
+    }
+    return defaultShellAccountingBrokerRuntimeModeSource();
+}
+
 }  // namespace etfdt::dataservice

@@ -733,6 +733,17 @@
   defines TASK-195 static probes for the NOT NULL foreign-key contract,
   required future dual-write policy, no schema drift, no repository
   implementation, no runtime write path, and retained broker gates.
+- ShellAccounting manual cash movement repository dual-write implementation:
+  [188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md](188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md)
+  records TASK-196 DataAccess-only Deposit / Withdrawal repository dual-write
+  for `trade_log` + `cash_adjustment`, while keeping DataServiceActions, QML,
+  replay, audit, ledger, broker, network, credentials, real order, and
+  automatic trading unchanged.
+- ShellAccounting manual cash movement repository dual-write implementation test plan:
+  [189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md](189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md)
+  defines TASK-196 direct SQLite repository tests for 001 + 002 migrations,
+  linkage, idempotency, rollback, sanitization, DataAccess-only boundaries, and
+  retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

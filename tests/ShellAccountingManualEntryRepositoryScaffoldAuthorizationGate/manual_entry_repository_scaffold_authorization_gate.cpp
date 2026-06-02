@@ -347,7 +347,7 @@ void testDataAccessCMakeUnmodified(const Harness& h)
     const auto cmake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
     requireNotContains(cmake, "TASK-184", "DataAccess CMake");
     requireContains(cmake, "ShellAccountingManualTransactionRepository.cpp", "DataAccess CMake TASK-192 repository");
-    requireNotContains(cmake, "ManualCashMovementRepository", "DataAccess CMake");
+    requireContains(cmake, "ShellAccountingManualCashMovementRepository.cpp", "DataAccess CMake TASK-196 repository");
     requireContains(cmake, "ShellAccountingManualEntryRepositoryScaffold.cpp", "DataAccess CMake TASK-185 scaffold");
 }
 
@@ -397,7 +397,6 @@ void testNoManualRepositoryScaffold(const Harness& h)
                 h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualEntryRepositoryScaffold.cpp"),
         "TASK-185 scaffold source must exist");
     requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
-        "ManualCashMovementRepository",
         "ManualEntryWriteRepository",
         "ManualTransactionWriteRepository",
         "ManualCashMovementWriteRepository",
@@ -411,7 +410,6 @@ void testNoRepositoryHeadersSources(const Harness& h)
     for (const auto& file : filesUnder(h.root / "libs" / "DataAccess")) {
         const auto filename = file.filename().string();
         for (const auto& token : {
-                 "ManualCashMovementRepository",
                  "ManualEntryPersistence",
                  "ManualTransactionWriteRepository",
                  "ManualCashMovementWriteRepository",

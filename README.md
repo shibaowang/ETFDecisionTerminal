@@ -3412,3 +3412,28 @@ schema migration TASK must explicitly authorize standalone cash_adjustment. See
 `docs/186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md`
 and
 `docs/187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md`.
+
+## TASK-196 Manual Cash Movement Repository Dual-Write Implementation
+
+TASK-196 implements the DataAccess-only ShellAccounting manual cash movement
+repository dual-write for Deposit / Withdrawal records. The repository writes
+`trade_log` + `cash_adjustment` in one transaction and sets
+`cash_adjustment.trade_log_id` to the inserted `trade_log.id`; it also links
+`trade_log.cash_adjustment_uid` and `cash_adjustment.trade_log_uid`.
+
+TASK-196 does not modify migrations, does not add a migration or schema file,
+does not modify TASK-192 manual transaction repository behavior, does not modify
+DataServiceActions, does not wire runtime DataService writes, does not modify
+production QML/startup, does not write `audit_log` or ledger rows, does not call
+AccountingEngine replay, and does not add broker SDK, network, credentials,
+endpoint, real order placement, or automatic trading.
+
+The implementation is exercised only by direct repository tests against a
+temporary SQLite database initialized with migrations 001 + 002. Future
+DataService action write wiring, replay/read-model/UI integration, audit write,
+ledger policy, and broker work remain separate authorization tasks. Broker
+sandbox new capability development remains paused, and existing broker gates
+remain retained. See
+`docs/188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md`
+and
+`docs/189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md`.

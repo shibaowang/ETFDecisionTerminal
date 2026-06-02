@@ -190,14 +190,14 @@ def main() -> int:
     require(not any(path.startswith("libs/StrategyEngine/") or path.startswith("libs/MarketEngine/") for path in changes),
             "StrategyEngine / MarketEngine must not change")
 
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake must not add cash movement repository")
+    require("ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake, "TASK-196 DataAccess CMake registers cash movement repository")
     dataaccess_prod_text = joined(
         root,
         files_under(root / "libs" / "DataAccess" / "include", {".h", ".hpp"})
         + files_under(root / "libs" / "DataAccess" / "src", {".cpp", ".cc", ".cxx"}),
     )
-    require("ShellAccountingManualCashMovementRepository" not in dataaccess_prod_text,
-            "manual cash movement repository implementation must not exist")
+    require("ShellAccountingManualCashMovementRepository" in dataaccess_prod_text,
+            "TASK-196 manual cash movement repository implementation must exist")
     require("ManualCashMovementWriteRepository" not in dataaccess_prod_text,
             "manual cash movement write repository implementation must not exist")
 
@@ -205,7 +205,7 @@ def main() -> int:
     dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", dataservice_shell_diff, re.IGNORECASE) is None,
             "TASK-194 must not add DataService/Shell runtime DML")
-    for token in ["INSERT INTO cash_adjustment", "INSERT INTO audit_log", "ledgerId", "auditLogId"]:
+    for token in ["INSERT INTO audit_log", "ledgerId", "auditLogId"]:
         require(token not in production_diff, f"TASK-194 must not add runtime token {token}")
     for token in ["sqlite3_exec", "SQLite::Statement", "prepareStatement", "executeWrite"]:
         require(token not in dataservice_shell_diff, f"TASK-194 must not add SQLite runtime write token {token}")

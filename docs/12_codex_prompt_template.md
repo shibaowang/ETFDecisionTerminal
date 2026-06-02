@@ -1331,6 +1331,22 @@ writes, ledger writes, reconciliation, cancellation, correction, strategy
 execution, automatic trading, production QML/startup/Presenter exposure, or
 schema changes unless a later task explicitly authorizes that exact scope.
 
+## TASK-196 Manual Cash Movement Repository Dual-Write Prompt Rule
+
+Future manual cash movement follow-up work must reference docs/188 and
+docs/189 after TASK-196. TASK-196 authorizes only DataAccess-only repository
+dual-write for Deposit / Withdrawal via `trade_log` + `cash_adjustment` direct
+tests. It does not authorize DataServiceActions runtime write wiring, QML,
+startup, Presenter, Controller, replay/read-model, audit write, ledger write,
+broker SDK, network, credentials, endpoints, real order placement, or automatic
+trading.
+
+Under the current schema, cash_adjustment-only write remains invalid because
+`cash_adjustment.trade_log_id` is `NOT NULL` and references `trade_log(id)`.
+Any future DataService write action, UI exposure, replay integration, audit
+policy, ledger policy, standalone cash_adjustment schema change, broker work,
+or automatic trading must be separately authorized.
+
 ## TASK-165 Broker Runtime Mode Source Authorization Gate Prompt Rule
 
 Future broker runtime mode source tasks must reference docs/128 and docs/129.

@@ -164,17 +164,25 @@ def main() -> int:
         assert_not_changed(changes, protected)
     require(not any(path.startswith("migrations/") for path in changes), "TASK-195 must not modify migrations")
     require(not any(path.endswith(".sql") for path in changes), "TASK-195 must not add schema or SQL files")
-    require(not any(path.startswith("libs/DataAccess/") for path in changes), "TASK-195 must not add DataAccess implementation")
+    allowed_task196_dataaccess = {
+        "libs/DataAccess/CMakeLists.txt",
+        "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+        "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    }
+    require(
+        not any(path.startswith("libs/DataAccess/") and path not in allowed_task196_dataaccess for path in changes),
+        "TASK-195/TASK-196 alignment only allows the authorized DataAccess manual cash movement repository",
+    )
     require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "TASK-195 must not modify production QML")
     require(not any(path.startswith("libs/AccountingEngine/") for path in changes), "TASK-195 must not modify AccountingEngine")
 
-    require("ShellAccountingManualCashMovementRepository.cpp" not in dataaccess_cmake, "DataAccess CMake must not add cash movement repository")
+    require("ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake, "DataAccess CMake registers TASK-196 cash movement repository")
     dataaccess_text = joined(
         files_under(root / "libs" / "DataAccess" / "include", {".h", ".hpp"})
         + files_under(root / "libs" / "DataAccess" / "src", {".cpp", ".cc", ".cxx"})
     )
-    require("ShellAccountingManualCashMovementRepository" not in dataaccess_text, "manual cash movement repository implementation must not exist")
-    require("ManualCashMovementWriteRepository" not in dataaccess_text, "manual cash movement write repository implementation must not exist")
+    require("ShellAccountingManualCashMovementRepository" in dataaccess_text, "TASK-196 manual cash movement repository implementation must exist")
+    require("ManualCashMovementWriteRepository" not in dataaccess_text, "unauthorized manual cash movement write repository name must not exist")
 
     production_diff = diff_text(root, "libs", "apps")
     dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")

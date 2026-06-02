@@ -352,7 +352,7 @@ void testNoDataAccessWriteRepository(const Harness& h)
 {
     const auto dataAccessCMake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
     requireContains(dataAccessCMake, "ShellAccountingManualTransactionRepository.cpp", "DataAccess CMake TASK-192 repository");
-    requireNotContains(dataAccessCMake, "ManualCashMovementRepository", "DataAccess CMake");
+    requireContains(dataAccessCMake, "ShellAccountingManualCashMovementRepository.cpp", "DataAccess CMake TASK-196 repository");
     requireNotContains(dataAccessCMake, "ManualEntryPersistence", "DataAccess CMake");
 }
 

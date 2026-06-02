@@ -103,6 +103,8 @@ SQL, does not write SQLite, and does not modify schema.
 
 - [ ] docs/172 merged.
 - [ ] docs/173 merged.
+- [ ] TASK-188 schema gap authorization gate passes before future schema
+      implementation.
 - [ ] TASK-187 schema adequacy review gate tests pass.
 - [ ] TASK-186 repository implementation authorization tests pass.
 - [ ] TASK-185 repository scaffold tests pass.

@@ -206,6 +206,12 @@ policy in a separately authorized task.
 Future repository implementation must also be separately authorized after
 schema adequacy is resolved.
 
+TASK-188 adds the follow-up manual entry schema gap authorization gate. It
+still does not modify schema, does not add a migration, does not add a schema
+file, does not implement repository writes, does not execute SQL, and does not
+write a database. TASK-188 defines only the future schema gap resolution
+authorization boundary.
+
 Future DataService action write implementation, replay integration, UI changes,
 or manual entry read-model changes must be separately authorized.
 

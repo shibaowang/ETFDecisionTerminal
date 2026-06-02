@@ -657,6 +657,16 @@
   defines TASK-187 static probes for schema source-of-truth review, manual
   transaction and cash movement adequacy evidence/gaps, no schema drift, no
   repository implementation, and retained broker gates.
+- ShellAccounting manual entry schema gap authorization gate:
+  [174_shell_accounting_manual_entry_schema_gap_authorization_gate.md](174_shell_accounting_manual_entry_schema_gap_authorization_gate.md)
+  records TASK-188 gate-only policy for future manual entry schema gap
+  resolution while keeping schema, migrations, repository writes, and broker
+  capabilities unchanged.
+- ShellAccounting manual entry schema gap authorization test plan:
+  [175_shell_accounting_manual_entry_schema_gap_authorization_test_plan.md](175_shell_accounting_manual_entry_schema_gap_authorization_test_plan.md)
+  defines TASK-188 static probes for future schema implementation boundaries,
+  no schema drift, no DataService action drift, no repository implementation,
+  no SQL/SQLite writes, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

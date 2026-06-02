@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+from pathlib import Path
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def require_contains(text: str, token: str, context: str) -> None:
+    require(token in text, f"{context} missing `{token}`")
+
+
+def require_not_contains(text: str, token: str, context: str) -> None:
+    require(token not in text, f"{context} unexpectedly contains `{token}`")
+
+
+def changed_paths(root: Path) -> set[str]:
+    completed = subprocess.run(
+        ["git", "diff", "--name-only", "main"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+
+    readme = read(root / "README.md")
+    docs_index = read(root / "docs" / "README.md")
+    prompt = read(root / "docs" / "12_codex_prompt_template.md")
+    doc194 = read(root / "docs" / "194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md")
+    doc195 = read(root / "docs" / "195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md")
+    doc196_path = root / "docs" / "196_shell_accounting_manual_entry_qml_presenter_implementation.md"
+    doc197_path = root / "docs" / "197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md"
+    tests_cmake = read(root / "tests" / "CMakeLists.txt")
+    devdocs = read(root / "tests" / "DevDocs" / "test_readonly_demo_acceptance.py")
+    qml = read(root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml")
+    presenter_h = read(root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingPresenter.h")
+    presenter_cpp = read(root / "libs" / "ShellServices" / "src" / "ShellAccountingPresenter.cpp")
+    controller_h = read(root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingReadOnlyController.h")
+    controller_cpp = read(root / "libs" / "ShellServices" / "src" / "ShellAccountingReadOnlyController.cpp")
+    adapter_h = read(root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingServiceAdapter.h")
+    adapter_cpp = read(root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceAdapter.cpp")
+    port_h = read(root / "libs" / "ShellServices" / "include" / "ShellServices" / "ShellAccountingDataServiceClientPort.h")
+    port_adapter = read(root / "libs" / "ShellServices" / "src" / "ShellAccountingDataServiceClientPortAdapter.cpp")
+
+    require(doc196_path.exists(), "docs/196 exists")
+    require(doc197_path.exists(), "docs/197 exists")
+    doc196 = read(doc196_path)
+    doc197 = read(doc197_path)
+
+    for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
+        require_contains(text, "TASK-200", context)
+    require_contains(readme, "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md", "README")
+    require_contains(readme, "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md", "README")
+    require_contains(docs_index, "196_shell_accounting_manual_entry_qml_presenter_implementation.md", "docs/README")
+    require_contains(docs_index, "197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md", "docs/README")
+    require_contains(tests_cmake, "ShellAccountingManualEntryQmlPresenterImplementation", "tests/CMakeLists")
+
+    for token in [
+        "TASK-200",
+        "submitManualTransaction",
+        "submitManualCashMovement",
+        "accounting.manual_transaction.create",
+        "accounting.manual_cash_movement.create",
+        "does not modify migrations",
+        "does not modify DataServiceActions",
+        "does not modify DataAccess repositories",
+        "does not trigger AccountingEngine replay",
+        "does not add broker SDKs",
+        "real order placement",
+        "automatic trading",
+    ]:
+        require_contains(doc196, token, "docs/196")
+    for token in ["Test Matrix", "Required Probes", "Go / No-Go Checklist", "TASK-199 authorization gate passes"]:
+        require_contains(doc197, token, "docs/197")
+    require_contains(doc194, "TASK-200 Implementation Update", "docs/194")
+    require_contains(doc195, "TASK-200 Implementation Update", "docs/195")
+
+    for token in [
+        "shellAccountingManualEntrySection",
+        "shellAccountingSubmitManualTransactionButton",
+        "shellAccountingSubmitManualCashMovementButton",
+        "shellAccountingManualEntryStatusText",
+        "shellAccountingManualEntryIssueText",
+        "submitManualTransaction(",
+        "submitManualCashMovement(",
+    ]:
+        require_contains(qml, token, "ShellAccountingReadOnlyPage.qml")
+    for token in ["DataServiceClient", "SQLite", "DataAccess", "INSERT INTO", "UPDATE ", "DELETE FROM", "REPLACE INTO"]:
+        require_not_contains(qml, token, "production QML")
+    for token in ["brokerOrder", "placeOrder", "StrategyEngine", "automaticTrading", "realOrderId"]:
+        require_not_contains(qml, token, "production QML")
+
+    for token in [
+        "Q_PROPERTY(bool manualEntryBusy",
+        "Q_PROPERTY(QString lastManualEntryStatus",
+        "Q_PROPERTY(QString lastManualEntryIssue",
+        "Q_PROPERTY(QString lastManualEntryResult",
+        "Q_INVOKABLE bool submitManualTransaction",
+        "Q_INVOKABLE bool submitManualCashMovement",
+        "manualEntryStateChanged",
+    ]:
+        require_contains(presenter_h, token, "ShellAccountingPresenter.h")
+    for token in [
+        "makeManualTransactionRequest",
+        "makeManualCashMovementRequest",
+        "controller_->submitManualTransaction",
+        "controller_->submitManualCashMovement",
+        "accounting.manual_transaction.create",
+        "accounting.manual_cash_movement.create",
+        "databaseWritten",
+        "tradeLogWritten",
+        "cashAdjustmentWritten",
+    ]:
+        require_contains(presenter_cpp, token, "ShellAccountingPresenter.cpp")
+    for token in ["submitManualTransaction", "submitManualCashMovement"]:
+        require_contains(controller_h, token, "ShellAccountingReadOnlyController.h")
+        require_contains(controller_cpp, token, "ShellAccountingReadOnlyController.cpp")
+        require_contains(adapter_h, token, "ShellAccountingServiceAdapter.h")
+    for token in ["callManualTransactionCreate", "callManualCashMovementCreate"]:
+        require_contains(adapter_cpp, token, "ShellAccountingDataServiceAdapter.cpp")
+        require_contains(port_h, token, "ShellAccountingDataServiceClientPort.h")
+        require_contains(port_adapter, token, "ShellAccountingDataServiceClientPortAdapter.cpp")
+
+    changes = changed_paths(root)
+    allowed = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md",
+        "docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md",
+        "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md",
+        "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
+        "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+        "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+        "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+        "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
+        "tests/CMakeLists.txt",
+        "tests/DevDocs/test_readonly_demo_acceptance.py",
+        "tests/ShellAccountingProductionQmlBindingGate/ShellAccountingProductionQmlBindingGate.cpp",
+        "tests/ShellAccountingProductionQmlBindingImplementation/ShellAccountingProductionQmlBindingImplementation.cpp",
+        "tests/ShellAccountingPresenterLifecycleGate/ShellAccountingPresenterLifecycleGate.cpp",
+        "tests/ShellAccountingPresenterLifecycleImplementation/ShellAccountingPresenterLifecycleImplementation.cpp",
+        "tests/ShellAccountingRealDataAdapterGate/ShellAccountingRealDataAdapterGate.cpp",
+        "tests/ShellAccountingRealDataAdapterImplementation/ShellAccountingRealDataAdapterImplementation.cpp",
+        "tests/ShellAccountingManualTransactionCashMovementMvpAuthorizationGate/manual_transaction_cash_movement_mvp_authorization_gate.cpp",
+        "tests/ShellAccountingManualTransactionCashMovementValidationScaffold/manual_transaction_cash_movement_validation_scaffold.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionScaffold/manual_entry_dataservice_action_scaffold.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate/manual_entry_dataservice_action_implementation_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryPersistenceAuthorizationGate/manual_entry_persistence_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
+        "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    }
+    unexpected = sorted(path for path in changes if path not in allowed)
+    require(not unexpected, "TASK-200 changed unauthorized paths: " + ", ".join(unexpected))
+    for forbidden in [
+        "migrations/",
+        "libs/DataAccess/",
+        "libs/AccountingEngine/",
+        "libs/StrategyEngine/",
+        "libs/MarketEngine/",
+    ]:
+        require(not any(path.startswith(forbidden) for path in changes), f"TASK-200 must not change {forbidden}")
+    for forbidden in [
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
+        "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+        "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+        "apps/ETFDecisionShell/src/main.cpp",
+    ]:
+        require(forbidden not in changes, f"TASK-200 must not change {forbidden}")
+
+    for token in [
+        "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md",
+        "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
+        "shell_accounting_manual_entry_qml_presenter_implementation",
+        "submitManualTransaction",
+        "submitManualCashMovement",
+    ]:
+        require_contains(devdocs, token, "DevDocs acceptance")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

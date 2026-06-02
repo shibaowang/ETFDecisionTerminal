@@ -154,8 +154,6 @@ std::vector<std::string> forbiddenWriteTradeTokens()
         "audit_log write",
         "data.audit.append",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
         "createTradeDraft",
         "brokerOrder(",
         "strategyExecute(",

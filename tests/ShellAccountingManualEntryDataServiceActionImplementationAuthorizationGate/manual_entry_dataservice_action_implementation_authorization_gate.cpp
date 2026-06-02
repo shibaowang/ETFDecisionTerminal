@@ -404,8 +404,6 @@ void testNoNewMigration(const Harness& h)
 void testProductionQmlUnmodified(const Harness& h)
 {
     requireNoTokens(filesUnder(h.root / "apps" / "ETFDecisionShell" / "qml"), {
-        "manualTransaction",
-        "manualCashMovement",
         "manualBuy",
         "manualSell",
         "recordDeposit",

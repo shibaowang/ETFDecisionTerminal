@@ -51,6 +51,10 @@ public:
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftConfirm(
         const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callManualTransactionCreate(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callManualCashMovementCreate(
+        const ShellAccountingDataServiceClientRequest& request);
 };
 
 }  // namespace etfdt::shell_services

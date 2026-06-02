@@ -3512,3 +3512,24 @@ work must remain separately authorized. See
 `docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md`
 and
 `docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md`.
+
+## TASK-200 Manual Entry QML Presenter Implementation
+
+TASK-200 implements the separately authorized ShellAccounting manual entry QML /
+Presenter wiring. Production ShellAccounting QML now exposes minimal manual
+transaction and manual cash movement forms that call only the existing
+DataService actions through Presenter / Controller / adapter boundaries:
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`.
+
+The UI shows explicit busy/status/issue/result state, including safe
+DataService write flags such as `databaseWritten`, `tradeLogWritten`,
+`cashAdjustmentWritten`, and duplicate / idempotent state when available.
+
+TASK-200 does not modify migrations, DataServiceActions,
+DataServiceActionRegistrar, DataAccess repositories, production startup,
+AccountingEngine replay, StrategyEngine, MarketEngine, broker code, network,
+credentials, endpoints, real order placement, or automatic trading. QML,
+Presenter, and Controller do not directly access SQLite or DataAccess. See
+`docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md` and
+`docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md`.

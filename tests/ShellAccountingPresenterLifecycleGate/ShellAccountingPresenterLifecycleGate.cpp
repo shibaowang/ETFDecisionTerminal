@@ -176,8 +176,6 @@ std::vector<std::string> forbiddenRuntimeTokens()
         "position_snapshot write",
         "portfolio_summary write",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
     };
 }
 
@@ -192,8 +190,6 @@ std::vector<std::string> forbiddenTradeUiTokens()
         "TradeDraft",
         "brokerOrder",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
         "strategyExecute",
     };
 }

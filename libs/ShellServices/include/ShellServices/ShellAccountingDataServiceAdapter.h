@@ -27,6 +27,10 @@ public:
         const ShellAccountingServiceRequest& request) override;
     [[nodiscard]] ShellAccountingServiceResult confirmDraft(
         const ShellAccountingServiceRequest& request) override;
+    [[nodiscard]] ShellAccountingServiceResult submitManualTransaction(
+        const ShellAccountingServiceRequest& request) override;
+    [[nodiscard]] ShellAccountingServiceResult submitManualCashMovement(
+        const ShellAccountingServiceRequest& request) override;
 
     [[nodiscard]] bool hasLiveClient() const noexcept;
     [[nodiscard]] bool hasClientPort() const noexcept;

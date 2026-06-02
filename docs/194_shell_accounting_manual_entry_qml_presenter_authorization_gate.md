@@ -98,3 +98,17 @@ It must prove DataService-only UI routing, structured validation, sanitized
 response mapping, no direct DB access, no broker / network / credentials /
 endpoint capability, no real order placement, no automatic trading, and
 retained TASK-198 / TASK-196 / TASK-192 regression behavior.
+
+## TASK-200 Implementation Update
+
+TASK-200 implements the separately authorized manual entry QML / Presenter
+wiring. The gate now permits the TASK-200 production ShellAccounting page,
+Presenter, Controller, adapter, and test changes that route manual transaction
+and manual cash movement submissions through DataService actions only.
+
+TASK-200 still does not authorize production startup changes, DataServiceActions
+changes, DataServiceActionRegistrar changes, repository changes, migration
+changes, direct SQLite access from QML / Presenter / Controller, AccountingEngine
+replay or read model refresh, audit or ledger writes from ShellServices,
+TradeDraft or suggestion expansion, broker SDKs, network calls, credentials,
+endpoints, real order placement, or automatic trading.

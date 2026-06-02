@@ -246,6 +246,52 @@ ShellAccountingServiceResult ShellAccountingReadOnlyController::confirmDraft(
     return result;
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::submitManualTransaction(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.manual_transaction.create");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.manual_transaction.create");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.manual_transaction.create";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->submitManualTransaction(request);
+    applyServiceResult(result);
+    return result;
+}
+
+ShellAccountingServiceResult ShellAccountingReadOnlyController::submitManualCashMovement(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.manual_cash_movement.create");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.manual_cash_movement.create");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.manual_cash_movement.create";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->submitManualCashMovement(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

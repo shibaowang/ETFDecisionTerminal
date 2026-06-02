@@ -168,8 +168,6 @@ std::vector<std::string> tradeUiTokens()
         "submitOrder",
         "executeStrategy",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
     };
 }
 

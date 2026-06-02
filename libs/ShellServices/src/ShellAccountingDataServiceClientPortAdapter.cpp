@@ -324,4 +324,38 @@ ShellAccountingDataServiceClientPortAdapter::callTradeDraftConfirm(
         client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callManualTransactionCreate(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting port.",
+            true,
+            false);
+    }
+    return mapClientResult(
+        request,
+        client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callManualCashMovementCreate(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting port.",
+            true,
+            false);
+    }
+    return mapClientResult(
+        request,
+        client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
+}
+
 }  // namespace etfdt::shell_services

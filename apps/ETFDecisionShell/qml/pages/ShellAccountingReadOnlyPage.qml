@@ -288,6 +288,351 @@ Rectangle {
                     }
                 }
             }
+
+            Rectangle {
+                objectName: "shellAccountingManualEntrySection"
+                width: parent.width
+                height: 530
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 12
+
+                    Text {
+                        objectName: "shellAccountingManualEntryTitle"
+                        width: parent.width
+                        text: "Manual entry"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualTransactionAccountInput
+                            objectName: "shellAccountingManualTransactionAccountInput"
+                            width: 108
+                            placeholderText: "Account"
+                            text: "1001"
+                        }
+
+                        TextField {
+                            id: manualTransactionPortfolioInput
+                            objectName: "shellAccountingManualTransactionPortfolioInput"
+                            width: 108
+                            placeholderText: "Portfolio"
+                            text: "1001"
+                        }
+
+                        TextField {
+                            id: manualTransactionInstrumentInput
+                            objectName: "shellAccountingManualTransactionInstrumentInput"
+                            width: 108
+                            placeholderText: "Instrument"
+                            text: "1001"
+                        }
+
+                        TextField {
+                            id: manualTransactionSecurityInput
+                            objectName: "shellAccountingManualTransactionSecurityInput"
+                            width: 108
+                            placeholderText: "Security"
+                            text: "159509"
+                        }
+
+                        ComboBox {
+                            id: manualTransactionSideInput
+                            objectName: "shellAccountingManualTransactionSideInput"
+                            width: 108
+                            model: ["BUY", "SELL"]
+                        }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualTransactionQuantityInput
+                            objectName: "shellAccountingManualTransactionQuantityInput"
+                            width: 108
+                            placeholderText: "Quantity"
+                            text: "1000000"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                        }
+
+                        TextField {
+                            id: manualTransactionPriceInput
+                            objectName: "shellAccountingManualTransactionPriceInput"
+                            width: 108
+                            placeholderText: "Price minor"
+                            text: "20100"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                        }
+
+                        TextField {
+                            id: manualTransactionGrossInput
+                            objectName: "shellAccountingManualTransactionGrossInput"
+                            width: 108
+                            placeholderText: "Gross minor"
+                            text: "20100"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                        }
+
+                        TextField {
+                            id: manualTransactionFeeInput
+                            objectName: "shellAccountingManualTransactionFeeInput"
+                            width: 108
+                            placeholderText: "Fee minor"
+                            text: "100"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                        }
+
+                        TextField {
+                            id: manualTransactionTaxInput
+                            objectName: "shellAccountingManualTransactionTaxInput"
+                            width: 108
+                            placeholderText: "Tax minor"
+                            text: "20"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                        }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualTransactionOccurredAtInput
+                            objectName: "shellAccountingManualTransactionOccurredAtInput"
+                            width: 176
+                            placeholderText: "Occurred at"
+                            text: "2026-06-02T12:34:56Z"
+                        }
+
+                        TextField {
+                            id: manualTransactionMemoInput
+                            objectName: "shellAccountingManualTransactionMemoInput"
+                            width: 190
+                            placeholderText: "Memo"
+                            text: "manual ui transaction"
+                        }
+
+                        TextField {
+                            id: manualTransactionRequestInput
+                            objectName: "shellAccountingManualTransactionRequestInput"
+                            width: 170
+                            placeholderText: "Request id"
+                            text: "task-200-manual-transaction"
+                        }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualTransactionIdempotencyInput
+                            objectName: "shellAccountingManualTransactionIdempotencyInput"
+                            width: 248
+                            placeholderText: "Idempotency key"
+                            text: "task-200-manual-transaction-key"
+                        }
+
+                        Button {
+                            objectName: "shellAccountingSubmitManualTransactionButton"
+                            text: "Submit transaction"
+                            enabled: root.presenterAvailable && !accountingPresenter.manualEntryBusy
+                            onClicked: accountingPresenter.submitManualTransaction(
+                                manualTransactionAccountInput.text,
+                                manualTransactionPortfolioInput.text,
+                                manualTransactionInstrumentInput.text,
+                                manualTransactionSecurityInput.text,
+                                manualTransactionSideInput.currentText,
+                                manualTransactionQuantityInput.text,
+                                manualTransactionPriceInput.text,
+                                manualTransactionGrossInput.text,
+                                manualTransactionFeeInput.text,
+                                manualTransactionTaxInput.text,
+                                manualTransactionOccurredAtInput.text,
+                                manualTransactionMemoInput.text,
+                                manualTransactionRequestInput.text,
+                                manualTransactionIdempotencyInput.text)
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: "#e5eaf2"
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualCashAccountInput
+                            objectName: "shellAccountingManualCashAccountInput"
+                            width: 118
+                            placeholderText: "Account"
+                            text: "1001"
+                        }
+
+                        TextField {
+                            id: manualCashPortfolioInput
+                            objectName: "shellAccountingManualCashPortfolioInput"
+                            width: 118
+                            placeholderText: "Portfolio"
+                            text: "1001"
+                        }
+
+                        ComboBox {
+                            id: manualCashMovementTypeInput
+                            objectName: "shellAccountingManualCashMovementTypeInput"
+                            width: 132
+                            model: ["Deposit", "Withdrawal"]
+                        }
+
+                        TextField {
+                            id: manualCashAmountInput
+                            objectName: "shellAccountingManualCashAmountInput"
+                            width: 118
+                            placeholderText: "Amount minor"
+                            text: "12345"
+                            inputMethodHints: Qt.ImhDigitsOnly
+                        }
+
+                        TextField {
+                            id: manualCashCurrencyInput
+                            objectName: "shellAccountingManualCashCurrencyInput"
+                            width: 82
+                            placeholderText: "Currency"
+                            text: "CNY"
+                        }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualCashOccurredAtInput
+                            objectName: "shellAccountingManualCashOccurredAtInput"
+                            width: 176
+                            placeholderText: "Occurred at"
+                            text: "2026-06-02T12:34:56Z"
+                        }
+
+                        TextField {
+                            id: manualCashMemoInput
+                            objectName: "shellAccountingManualCashMemoInput"
+                            width: 174
+                            placeholderText: "Memo"
+                            text: "manual ui cash"
+                        }
+
+                        TextField {
+                            id: manualCashReferenceInput
+                            objectName: "shellAccountingManualCashReferenceInput"
+                            width: 168
+                            placeholderText: "Reference"
+                            text: "bank-ref-task-200"
+                        }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        TextField {
+                            id: manualCashRequestInput
+                            objectName: "shellAccountingManualCashRequestInput"
+                            width: 196
+                            placeholderText: "Request id"
+                            text: "task-200-manual-cash"
+                        }
+
+                        TextField {
+                            id: manualCashIdempotencyInput
+                            objectName: "shellAccountingManualCashIdempotencyInput"
+                            width: 224
+                            placeholderText: "Idempotency key"
+                            text: "task-200-manual-cash-key"
+                        }
+
+                        Button {
+                            objectName: "shellAccountingSubmitManualCashMovementButton"
+                            text: "Submit cash"
+                            enabled: root.presenterAvailable && !accountingPresenter.manualEntryBusy
+                            onClicked: accountingPresenter.submitManualCashMovement(
+                                manualCashAccountInput.text,
+                                manualCashPortfolioInput.text,
+                                manualCashMovementTypeInput.currentText,
+                                manualCashAmountInput.text,
+                                manualCashCurrencyInput.text,
+                                manualCashOccurredAtInput.text,
+                                manualCashMemoInput.text,
+                                manualCashReferenceInput.text,
+                                manualCashRequestInput.text,
+                                manualCashIdempotencyInput.text)
+                        }
+                    }
+
+                    Rectangle {
+                        objectName: "shellAccountingManualEntryStatusPanel"
+                        width: parent.width
+                        height: 92
+                        radius: 8
+                        color: "#f8fbff"
+                        border.color: "#d9e3f2"
+
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 6
+
+                            Text {
+                                objectName: "shellAccountingManualEntryStatusText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Manual entry status: " + accountingPresenter.lastManualEntryStatus
+                                    : "Manual entry status: unavailable"
+                                color: "#18202f"
+                                font.pixelSize: 13
+                                font.bold: true
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingManualEntryResultText"
+                                width: parent.width
+                                text: root.presenterAvailable ? accountingPresenter.lastManualEntryResult : ""
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingManualEntryIssueText"
+                                width: parent.width
+                                text: root.presenterAvailable ? accountingPresenter.lastManualEntryIssue : ""
+                                color: "#9a3412"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                visible: text.length > 0
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

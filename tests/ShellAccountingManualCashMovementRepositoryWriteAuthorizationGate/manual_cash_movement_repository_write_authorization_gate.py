@@ -200,8 +200,42 @@ def main() -> int:
     changes = changed_paths(root)
     require(not any(path.startswith("migrations/") for path in changes), "TASK-194 must not modify migrations")
     require(not any(path.endswith(".sql") for path in changes), "TASK-194 must not add schema or SQL files")
-    require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "production QML must not change")
-    require(not any("Presenter" in path or "Controller" in path for path in changes), "Presenter / Controller must not change")
+    allowed_task200_qml = {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}
+    unexpected_qml_changes = [
+        path for path in changes
+        if path.startswith("apps/ETFDecisionShell/qml/") and path not in allowed_task200_qml
+    ]
+    require(
+        not unexpected_qml_changes,
+        "TASK-194/TASK-200 must not modify unauthorized production QML: "
+        + ", ".join(unexpected_qml_changes),
+    )
+    allowed_task200_presenter_controller = {
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+        "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+        "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+        "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
+    }
+    unexpected_presenter_controller_changes = [
+        path for path in changes
+        if path not in allowed_task200_presenter_controller
+        and (path.startswith("apps/") or path.startswith("libs/"))
+        and ("Presenter" in path or "Controller" in path)
+    ]
+    require(
+        not unexpected_presenter_controller_changes,
+        "TASK-194/TASK-200 must not modify unauthorized Presenter / Controller: "
+        + ", ".join(unexpected_presenter_controller_changes),
+    )
     require(not any(path.startswith("libs/AccountingEngine/") for path in changes), "AccountingEngine must not change")
     require(not any(path.startswith("libs/StrategyEngine/") or path.startswith("libs/MarketEngine/") for path in changes),
             "StrategyEngine / MarketEngine must not change")

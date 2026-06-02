@@ -22,6 +22,10 @@ public:
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult confirmDraft(
         const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult submitManualTransaction(
+        const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult submitManualCashMovement(
+        const ShellAccountingServiceRequest& request);
 };
 
 }  // namespace etfdt::shell_services

@@ -773,6 +773,15 @@
   defines TASK-199 static probes for no production QML/startup/Presenter drift,
   no direct SQLite/DataAccess access, no broker/network/credentials, and
   retained TASK-198 / repository / broker regressions.
+- ShellAccounting manual entry QML Presenter implementation:
+  [196_shell_accounting_manual_entry_qml_presenter_implementation.md](196_shell_accounting_manual_entry_qml_presenter_implementation.md)
+  records TASK-200 production ShellAccounting manual entry UI and Presenter /
+  Controller / adapter wiring through DataService actions only.
+- ShellAccounting manual entry QML Presenter implementation test plan:
+  [197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md](197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md)
+  defines TASK-200 static probes for QML bindings, Presenter invokables,
+  Controller / adapter boundary, no DataServiceActions or repository drift, no
+  direct DB access, and retained broker regressions.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

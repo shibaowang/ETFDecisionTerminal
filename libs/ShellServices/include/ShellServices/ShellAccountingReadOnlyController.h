@@ -57,6 +57,10 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult confirmDraft(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult submitManualTransaction(
+        const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult submitManualCashMovement(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

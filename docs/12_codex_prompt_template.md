@@ -1874,6 +1874,22 @@ DataService responses and safe errors. Future readback / refresh / replay,
 audit write, ledger policy, broker capability, and automatic trading work must
 remain separately authorized.
 
+## TASK-200 Manual Entry QML Presenter Implementation Prompt Rule
+
+Future manual entry UI work after TASK-200 must reference docs/196 and docs/197.
+TASK-200 authorizes only production ShellAccounting QML and ShellServices
+Presenter / Controller / adapter wiring for manual transaction and manual cash
+movement submissions through `accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`.
+
+Do not use TASK-200 as authorization to modify migrations, modify
+DataServiceActions or DataServiceActionRegistrar, modify DataAccess
+repositories, write SQLite directly from QML / Presenter / Controller, trigger
+AccountingEngine replay or read model refresh, write audit or ledger rows from
+ShellServices, add TradeDraft or suggestion expansion, add broker SDKs, add
+network calls, add credentials or endpoints, place real orders, store real
+broker order ids, or enable automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

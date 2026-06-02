@@ -108,6 +108,8 @@ broker, and does not add automatic trading.
 
 - [ ] docs/166 merged.
 - [ ] docs/167 merged.
+- [ ] TASK-185 docs/168 and docs/169 merged as the disabled repository
+  scaffold implementation.
 - [ ] README, docs/README, and docs/12 register TASK-184.
 - [ ] docs/164 and docs/165 mention the TASK-184 repository scaffold gate.
 - [ ] DataServiceActions.cpp is not changed by TASK-184.
@@ -139,3 +141,12 @@ broker, and does not add automatic trading.
 - [ ] `transport_local_socket_echo` 50 repeat passes.
 - [ ] `git diff --check` passes.
 - [ ] `git status --short` is clean.
+
+## TASK-185 Regression Note
+
+TASK-185 evolves this authorization gate by allowing only
+`ShellAccountingManualEntryRepositoryScaffold` command DTOs, result DTO, and
+disabled scaffold methods. It still forbids repository write implementation,
+SQL execution, SQLite writes, DataServiceActions behavior changes, persistent
+ids, schema changes, QML/startup changes, replay, broker, network,
+credentials, endpoints, real order placement, and automatic trading.

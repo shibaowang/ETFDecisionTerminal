@@ -139,3 +139,16 @@ tasks:
 Each task must restate no broker, no network, no credentials, no endpoint, no
 real order placement, no automatic trading, no schema drift, transaction,
 rollback, idempotency, audit, and privacy boundaries.
+
+## TASK-185 Authorized Scaffold Evolution
+
+TASK-185 implements the first authorized disabled repository scaffold after this
+gate. The allowed scaffold is limited to command DTOs, a result DTO, and
+disabled `persistManualTransaction(...)` / `persistManualCashMovement(...)`
+methods in `ShellAccountingManualEntryRepositoryScaffold`.
+
+TASK-185 still does not authorize repository write implementation, SQL
+execution, SQLite writes, `trade_log`, cash facts, cash ledger, audit, ledger,
+persistent ids, DataServiceActions changes, QML/startup changes, replay,
+broker, network, credentials, endpoints, real order placement, or automatic
+trading.

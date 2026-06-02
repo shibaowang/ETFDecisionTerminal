@@ -1633,6 +1633,22 @@ tasks. Broker sandbox new capability remains paused; existing broker disabled,
 real broker, no-network, no-credentials, no-order-placement, and
 no-automatic-trading gates must remain retained and passing.
 
+## TASK-185 Manual Entry Repository Scaffold Prompt Rule
+
+Future work after TASK-185 must reference docs/168 and docs/169. TASK-185 adds
+only the disabled DataAccess repository scaffold for manual transaction and
+manual cash movement persistence. It does not authorize repository write
+implementation, DataService action write implementation, SQL execution, SQLite
+writes, `trade_log`, cash facts, cash ledger, audit, ledger writes, schema
+changes, replay, read models, production QML, startup, Presenter, Controller,
+StrategyEngine, MarketEngine, TradeDraft, suggestions, broker SDK, network,
+credentials, endpoints, real order placement, or automatic trading.
+
+The scaffold result must remain disabled / write-not-implemented and must not
+return persistent ids. TASK-182 validation wiring must continue to return
+`writeImplemented=false` until a later DataService action write implementation
+task explicitly authorizes persistence.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -272,6 +272,7 @@ void testDocs(const Harness& h)
         "No repository header/source",
         "No broker SDK",
         "No automatic trading",
+        "TASK-185",
     }, "docs/167 required plan");
 }
 
@@ -294,6 +295,7 @@ void testDocsIndexPrompt(const Harness& h)
         "167_shell_accounting_manual_entry_repository_scaffold_authorization_test_plan.md",
         "docs/README");
     requireContains(prompt, "TASK-184", "docs/12");
+    requireContains(prompt, "TASK-185", "docs/12");
     requireContains(prompt, "repository scaffold authorization gate only", "docs/12 TASK-184 rule");
     requireContains(doc164, "TASK-184", "docs/164 TASK-184 follow-up");
     requireContains(doc165, "TASK-184", "docs/165 TASK-184 follow-up");
@@ -344,9 +346,9 @@ void testDataAccessCMakeUnmodified(const Harness& h)
 {
     const auto cmake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
     requireNotContains(cmake, "TASK-184", "DataAccess CMake");
-    requireNotContains(cmake, "ManualEntryRepository", "DataAccess CMake");
     requireNotContains(cmake, "ManualTransactionRepository", "DataAccess CMake");
     requireNotContains(cmake, "ManualCashMovementRepository", "DataAccess CMake");
+    requireContains(cmake, "ShellAccountingManualEntryRepositoryScaffold.cpp", "DataAccess CMake TASK-185 scaffold");
 }
 
 void testTransactionWriteNotImplemented(const Harness&)
@@ -387,16 +389,22 @@ void testNoDataAccessWriteRepository(const Harness& h)
 
 void testNoManualRepositoryScaffold(const Harness& h)
 {
+    require(fs::exists(
+                h.root / "libs" / "DataAccess" / "include" / "DataAccess"
+                / "ShellAccountingManualEntryRepositoryScaffold.h"),
+        "TASK-185 scaffold header must exist");
+    require(fs::exists(
+                h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualEntryRepositoryScaffold.cpp"),
+        "TASK-185 scaffold source must exist");
     requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
-        "ManualEntryRepository",
         "ManualTransactionRepository",
         "ManualCashMovementRepository",
-        "ManualEntryRepositoryScaffold",
-        "ManualTransactionCommand",
-        "ManualCashMovementCommand",
-        "persistManualTransaction",
-        "persistManualCashMovement",
-    }, "DataAccess manual repository scaffold scan");
+        "ManualEntryWriteRepository",
+        "ManualTransactionWriteRepository",
+        "ManualCashMovementWriteRepository",
+        "executeManualTransactionWrite",
+        "executeManualCashMovementWrite",
+    }, "DataAccess manual repository implementation scan");
 }
 
 void testNoRepositoryHeadersSources(const Harness& h)
@@ -404,10 +412,11 @@ void testNoRepositoryHeadersSources(const Harness& h)
     for (const auto& file : filesUnder(h.root / "libs" / "DataAccess")) {
         const auto filename = file.filename().string();
         for (const auto& token : {
-                 "ManualEntryRepository",
                  "ManualTransactionRepository",
                  "ManualCashMovementRepository",
                  "ManualEntryPersistence",
+                 "ManualTransactionWriteRepository",
+                 "ManualCashMovementWriteRepository",
              }) {
             requireNotContains(filename, token, "DataAccess repository filename scan");
         }
@@ -416,7 +425,20 @@ void testNoRepositoryHeadersSources(const Harness& h)
 
 void testNoDataAccessCMakeRegistration(const Harness& h)
 {
-    testDataAccessCMakeUnmodified(h);
+    const auto cmake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
+    requireContains(cmake, "ShellAccountingManualEntryRepositoryScaffold.cpp", "DataAccess CMake TASK-185 scaffold");
+    requireNotContains(cmake, "ManualTransactionWriteRepository", "DataAccess CMake");
+    requireNotContains(cmake, "ManualCashMovementWriteRepository", "DataAccess CMake");
+    requireNotContains(cmake, "ManualEntryPersistenceRepository", "DataAccess CMake");
+}
+
+void testNoRepositoryWriteImplementationTokens(const Harness& h)
+{
+    requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
+        "ManualEntryPersistenceRepository",
+        "ManualTransactionCommand",
+        "ManualCashMovementCommand",
+    }, "DataAccess manual repository implementation token scan");
 }
 
 void testNoSql(const Harness& h)

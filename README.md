@@ -3221,3 +3221,24 @@ separate schema authorization TASK is required before any migration work.
 See `docs/170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md`
 and
 `docs/171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md`.
+
+## TASK-187 Manual Entry Schema Adequacy Review Gate
+
+TASK-187 adds a gate-only schema adequacy review for future manual entry
+repository implementation. It reviews `migrations/001_initial_schema.sql` as
+the source of truth and records that existing `trade_execution_group`,
+`trade_log`, `cash_adjustment`, and `audit_log` tables provide partial support
+for manual transaction and manual cash movement facts, but explicit gaps remain
+around tax, idempotency keys, request tracing, and occurred-at mapping.
+
+TASK-187 does not modify schema, does not add a migration, does not implement
+repository writes, does not execute SQL, does not write SQLite, does not modify
+DataServiceActions, does not modify TASK-185 scaffold code, and does not
+modify QML, startup, replay, broker, strategy, or automatic trading code.
+
+Because schema gaps were found, a future schema authorization TASK is required
+before enabling manual entry repository write implementation unless a later
+authorized review documents a complete lossless mapping using existing fields.
+See `docs/172_shell_accounting_manual_entry_schema_adequacy_review_gate.md`
+and
+`docs/173_shell_accounting_manual_entry_schema_adequacy_review_test_plan.md`.

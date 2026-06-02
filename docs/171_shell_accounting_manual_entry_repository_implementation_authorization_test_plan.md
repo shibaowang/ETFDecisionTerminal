@@ -100,4 +100,6 @@ integration, strategy execution, or automatic trading.
 - [ ] `transport_local_socket_echo` passes 50 repeats.
 - [ ] User explicitly authorizes future repository implementation.
 - [ ] User explicitly authorizes any schema task if schema is insufficient.
+- [ ] TASK-187 schema adequacy review gate passes before any future manual
+  entry repository write implementation starts.
 

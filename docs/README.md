@@ -647,6 +647,16 @@
   defines TASK-186 static probes for no repository implementation, no SQL,
   no SQLite writes, no schema drift, no DataService action drift, and retained
   broker gates.
+- ShellAccounting manual entry schema adequacy review gate:
+  [172_shell_accounting_manual_entry_schema_adequacy_review_gate.md](172_shell_accounting_manual_entry_schema_adequacy_review_gate.md)
+  records TASK-187 review-only schema adequacy findings against
+  `migrations/001_initial_schema.sql` for future manual transaction and manual
+  cash movement repository implementation.
+- ShellAccounting manual entry schema adequacy review test plan:
+  [173_shell_accounting_manual_entry_schema_adequacy_review_test_plan.md](173_shell_accounting_manual_entry_schema_adequacy_review_test_plan.md)
+  defines TASK-187 static probes for schema source-of-truth review, manual
+  transaction and cash movement adequacy evidence/gaps, no schema drift, no
+  repository implementation, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

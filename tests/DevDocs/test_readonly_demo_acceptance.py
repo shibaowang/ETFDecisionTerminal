@@ -11536,6 +11536,150 @@ def main() -> int:
             ctest_name in shell_accounting_manual_entry_repository_implementation_authorization_cmake,
             f"TASK-186 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_schema_adequacy_review_doc_path = (
+        root / "docs" / "172_shell_accounting_manual_entry_schema_adequacy_review_gate.md"
+    )
+    shell_accounting_manual_entry_schema_adequacy_review_plan_path = (
+        root / "docs" / "173_shell_accounting_manual_entry_schema_adequacy_review_test_plan.md"
+    )
+    shell_accounting_manual_entry_schema_adequacy_review_cmake_path = (
+        root / "tests" / "ShellAccountingManualEntrySchemaAdequacyReviewGate" / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_entry_schema_adequacy_review_doc_path.exists(), "docs/172 exists")
+    require(shell_accounting_manual_entry_schema_adequacy_review_plan_path.exists(), "docs/173 exists")
+    require(
+        shell_accounting_manual_entry_schema_adequacy_review_cmake_path.exists(),
+        "TASK-187 tests CMake exists",
+    )
+    shell_accounting_manual_entry_schema_adequacy_review_doc = (
+        shell_accounting_manual_entry_schema_adequacy_review_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_adequacy_review_plan = (
+        shell_accounting_manual_entry_schema_adequacy_review_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_adequacy_review_cmake = (
+        shell_accounting_manual_entry_schema_adequacy_review_cmake_path.read_text(encoding="utf-8")
+    )
+    initial_schema = (root / "migrations" / "001_initial_schema.sql").read_text(encoding="utf-8")
+    require(
+        "docs/172_shell_accounting_manual_entry_schema_adequacy_review_gate.md" in readme,
+        "README links docs/172",
+    )
+    require(
+        "docs/173_shell_accounting_manual_entry_schema_adequacy_review_test_plan.md" in readme,
+        "README links docs/173",
+    )
+    require(
+        "172_shell_accounting_manual_entry_schema_adequacy_review_gate.md" in docs_index,
+        "docs/README links docs/172",
+    )
+    require(
+        "173_shell_accounting_manual_entry_schema_adequacy_review_test_plan.md" in docs_index,
+        "docs/README links docs/173",
+    )
+    require("TASK-187" in codex_prompt_template, "docs/12 registers TASK-187")
+    require("TASK-187" in shell_accounting_manual_entry_schema_adequacy_review_doc, "docs/172 mentions TASK-187")
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_schema_adequacy_review_plan,
+        "docs/173 contains Test Matrix",
+    )
+    for token, message in [
+        ("schema adequacy review gate only", "docs/172 states review-only"),
+        ("migrations/001_initial_schema.sql", "docs/172 names initial schema"),
+        ("source of truth", "docs/172 states source of truth"),
+        ("Manual transaction schema adequacy outcome", "docs/172 reviews transaction adequacy"),
+        ("Manual cash movement schema adequacy outcome", "docs/172 reviews cash movement adequacy"),
+        ("Audit policy schema review", "docs/172 reviews audit policy"),
+        ("Idempotency / duplicate handling schema review", "docs/172 reviews idempotency policy"),
+        ("Privacy / memo sanitization schema review", "docs/172 reviews privacy policy"),
+        ("future schema authorization TASK is required", "docs/172 requires schema authorization follow-up"),
+        ("does not modify schema", "docs/172 forbids current schema changes"),
+        ("does not add a migration", "docs/172 forbids current migrations"),
+        ("does not implement a repository write path", "docs/172 forbids repository implementation"),
+        ("does not execute SQL", "docs/172 forbids SQL execution"),
+        ("broker sandbox new capability development remains paused", "docs/172 keeps broker sandbox paused"),
+    ]:
+        require(token in shell_accounting_manual_entry_schema_adequacy_review_doc, message)
+    for token, message in [
+        ("CREATE TABLE IF NOT EXISTS trade_execution_group", "schema has trade_execution_group"),
+        ("CREATE TABLE IF NOT EXISTS trade_log", "schema has trade_log"),
+        ("CREATE TABLE IF NOT EXISTS cash_adjustment", "schema has cash_adjustment"),
+        ("CREATE TABLE IF NOT EXISTS audit_log", "schema has audit_log"),
+        ("'MANUAL'", "schema has MANUAL source"),
+        ("'BUY'", "schema has BUY action"),
+        ("'SELL'", "schema has SELL action"),
+        ("'CASH_IN'", "schema has CASH_IN action"),
+        ("'CASH_OUT'", "schema has CASH_OUT action"),
+        ("manual_entry INTEGER NOT NULL DEFAULT 0", "schema has manual_entry flag"),
+    ]:
+        require(token in initial_schema, message)
+    for forbidden, message in [
+        ("TASK-187", "initial schema has no TASK-187 marker"),
+        ("idempotency_key", "initial schema has no idempotency_key"),
+        ("tax_cents", "initial schema has no tax_cents"),
+        ("occurred_at_utc", "initial schema has no occurred_at_utc"),
+    ]:
+        require(forbidden not in initial_schema, message)
+    require("TASK-187" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-187 marker")
+    require("TASK-187" not in dataservice_actions_header, "DataServiceActions.h has no TASK-187 marker")
+    require("TASK-187" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-187 marker")
+    require("TASK-187" not in shell_accounting_manual_validation_header, "TASK-178 validation header has no TASK-187 marker")
+    require("TASK-187" not in shell_accounting_manual_validation_source, "TASK-178 validation source has no TASK-187 marker")
+    require("TASK-187" not in shell_accounting_manual_entry_repository_scaffold_header, "TASK-185 scaffold header has no TASK-187 marker")
+    require("TASK-187" not in shell_accounting_manual_entry_repository_scaffold_source, "TASK-185 scaffold source has no TASK-187 marker")
+    for forbidden in [
+        "ManualEntryImplementationRepository",
+        "ManualEntryWriteRepository",
+        "ManualEntryPersistenceRepository",
+        "ManualTransactionWriteRepository",
+        "ManualCashMovementWriteRepository",
+    ]:
+        require(
+            forbidden not in dataaccess_cmake,
+            f"TASK-187 did not register repository implementation token {forbidden}",
+        )
+    task187_ctests = [
+        "shell_accounting_manual_entry_schema_adequacy_review_gate",
+        "shell_accounting_manual_entry_schema_adequacy_review_docs",
+        "shell_accounting_manual_entry_schema_adequacy_review_docs_index_prompt",
+        "shell_accounting_manual_entry_schema_adequacy_review_source_of_truth",
+        "shell_accounting_manual_entry_schema_adequacy_review_transaction_evidence",
+        "shell_accounting_manual_entry_schema_adequacy_review_transaction_gaps",
+        "shell_accounting_manual_entry_schema_adequacy_review_cash_evidence",
+        "shell_accounting_manual_entry_schema_adequacy_review_cash_gaps",
+        "shell_accounting_manual_entry_schema_adequacy_review_audit_policy",
+        "shell_accounting_manual_entry_schema_adequacy_review_idempotency_policy",
+        "shell_accounting_manual_entry_schema_adequacy_review_privacy_policy",
+        "shell_accounting_manual_entry_schema_adequacy_review_schema_gap_followup",
+        "shell_accounting_manual_entry_schema_adequacy_review_schema_unmodified",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_new_migration",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_schema_file",
+        "shell_accounting_manual_entry_schema_adequacy_review_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_schema_adequacy_review_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_schema_adequacy_review_registrar_unmodified",
+        "shell_accounting_manual_entry_schema_adequacy_review_validation_code_unmodified",
+        "shell_accounting_manual_entry_schema_adequacy_review_scaffold_unmodified",
+        "shell_accounting_manual_entry_schema_adequacy_review_scaffold_disabled",
+        "shell_accounting_manual_entry_schema_adequacy_review_task182_write_not_implemented",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_repository_implementation",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_sql_added",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_sqlite_write",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_trade_log_write",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_cash_fact_write",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_audit_ledger_write",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_broker_sdk",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_network_endpoint",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_credentials",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_real_order_placement",
+        "shell_accounting_manual_entry_schema_adequacy_review_no_automatic_trading",
+        "shell_accounting_manual_entry_schema_adequacy_review_broker_gates_retained",
+    ]
+    for ctest_name in task187_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_schema_adequacy_review_cmake,
+            f"TASK-187 CTest exists: {ctest_name}",
+        )
     return 0
 
 

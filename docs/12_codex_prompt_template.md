@@ -1666,6 +1666,21 @@ idempotency, duplicate handling, audit, privacy, and failure atomicity policies.
 If schema is insufficient, open a separate schema authorization TASK before
 modifying migrations.
 
+## TASK-187 Manual Entry Schema Adequacy Review Gate Prompt Rule
+
+Future work after TASK-187 must reference docs/172 and docs/173. TASK-187 is a
+schema adequacy review gate only. It reviews `migrations/001_initial_schema.sql`
+as the source of truth for future manual transaction and manual cash movement
+repository implementation. It does not authorize schema changes, migrations,
+repository implementation, SQL execution, SQLite writes, DataServiceActions
+changes, TASK-185 scaffold changes, TASK-178 validation production code
+changes, QML/startup changes, AccountingEngine replay changes, StrategyEngine
+or MarketEngine changes, TradeDraft or suggestion implementation, broker SDK,
+network, credentials, endpoints, real order placement, or automatic trading.
+Because TASK-187 found schema gaps, a future schema authorization TASK is
+required before write enablement unless a later authorized review documents a
+complete lossless mapping using existing fields.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

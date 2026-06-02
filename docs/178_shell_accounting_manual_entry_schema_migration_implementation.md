@@ -103,3 +103,17 @@ TASK-190 does not authorize:
 - broker SDK / network / credential / endpoint integration
 - real order placement
 - automatic trading
+
+## TASK-191 Post-Migration Gate
+
+TASK-191 adds the manual entry repository implementation post-migration
+authorization gate after this TASK-190 migration is present. TASK-191 still
+does not implement repository writes, does not modify
+`migrations/001_initial_schema.sql`, does not modify
+`migrations/002_shell_accounting_manual_entry_schema.sql`, does not change
+DataServiceActions, and does not execute runtime SQL or write SQLite.
+
+Future repository implementation must remain a separate TASK and must use the
+TASK-190 schema fields through a DataAccess repository boundary. Future
+DataService action write implementation, replay, read model, and UI work must
+also remain separately authorized.

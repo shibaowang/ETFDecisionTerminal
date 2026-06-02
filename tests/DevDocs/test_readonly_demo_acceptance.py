@@ -12163,6 +12163,156 @@ def main() -> int:
             ctest_name in shell_accounting_manual_entry_schema_migration_cmake,
             f"TASK-190 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_repository_post_migration_doc_path = (
+        root
+        / "docs"
+        / "180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md"
+    )
+    shell_accounting_manual_entry_repository_post_migration_plan_path = (
+        root
+        / "docs"
+        / "181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md"
+    )
+    shell_accounting_manual_entry_repository_post_migration_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_entry_repository_post_migration_doc_path.exists(), "docs/180 exists")
+    require(shell_accounting_manual_entry_repository_post_migration_plan_path.exists(), "docs/181 exists")
+    require(
+        shell_accounting_manual_entry_repository_post_migration_cmake_path.exists(),
+        "TASK-191 tests CMake exists",
+    )
+    shell_accounting_manual_entry_repository_post_migration_doc = (
+        shell_accounting_manual_entry_repository_post_migration_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_repository_post_migration_plan = (
+        shell_accounting_manual_entry_repository_post_migration_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_repository_post_migration_cmake = (
+        shell_accounting_manual_entry_repository_post_migration_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md"
+        in readme,
+        "README links docs/180",
+    )
+    require(
+        "docs/181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md"
+        in readme,
+        "README links docs/181",
+    )
+    require(
+        "180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md"
+        in docs_index,
+        "docs/README links docs/180",
+    )
+    require(
+        "181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md"
+        in docs_index,
+        "docs/README links docs/181",
+    )
+    require("TASK-191" in codex_prompt_template, "docs/12 registers TASK-191")
+    for token, message in [
+        ("TASK-191", "docs/180 mentions TASK-191"),
+        ("repository implementation post-migration authorization gate only", "docs/180 states gate-only"),
+        ("TASK-190 completed the manual entry schema migration implementation", "docs/180 references TASK-190"),
+        ("migrations/002_shell_accounting_manual_entry_schema.sql", "docs/180 references migration 002"),
+        ("does not implement a repository", "docs/180 blocks repository implementation"),
+        ("does not modify DataServiceActions", "docs/180 blocks DataServiceActions changes"),
+        ("does not execute runtime SQL", "docs/180 blocks runtime SQL"),
+        ("does not write SQLite", "docs/180 blocks SQLite writes"),
+        ("Future repository implementation must be a separate TASK", "docs/180 separates repository implementation"),
+        ("DataService action write implementation must remain a separate TASK", "docs/180 separates DataService write implementation"),
+        ("DataAccess repository boundary", "docs/180 requires DataAccess boundary"),
+        ("must not scatter SQL in DataService action handlers", "docs/180 blocks scattered SQL"),
+        ("trade_log.request_id", "docs/180 maps trade_log request_id"),
+        ("trade_log.idempotency_key", "docs/180 maps trade_log idempotency_key"),
+        ("trade_log.occurred_at_utc", "docs/180 maps trade_log occurred_at_utc"),
+        ("trade_log.tax_cents", "docs/180 maps trade_log tax_cents"),
+        ("trade_log.source_memo_sanitized", "docs/180 maps sanitized memo"),
+        ("cash_adjustment.request_id", "docs/180 maps cash request_id"),
+        ("cash_adjustment.idempotency_key", "docs/180 maps cash idempotency_key"),
+        ("cash_adjustment.trade_log_uid", "docs/180 maps cash trade_log_uid"),
+        ("audit_log.payload_classification", "docs/180 maps audit payload classification"),
+        ("audit_log.redaction_status", "docs/180 maps audit redaction status"),
+        ("transaction boundary for manual transaction write", "docs/180 defines transaction boundary"),
+        ("idempotency behavior on duplicate idempotency_key", "docs/180 defines duplicate idempotency"),
+        ("Broker sandbox new capability development remains paused", "docs/180 keeps broker sandbox paused"),
+    ]:
+        require(token in shell_accounting_manual_entry_repository_post_migration_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/181 contains Test Matrix"),
+        ("Required Probes", "docs/181 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/181 contains Go / No-Go Checklist"),
+        ("No repository implementation is added", "docs/181 blocks repository implementation"),
+        ("No runtime SQL / SQLite write is added", "docs/181 blocks runtime write"),
+        ("Existing broker / real broker / no-network / no-credentials", "docs/181 retains broker gates"),
+    ]:
+        require(token in shell_accounting_manual_entry_repository_post_migration_plan, message)
+    task191_ctests = [
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_docs",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_docs_index_prompt",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task190_migration_exists",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_authorization_only",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_repository_current_scope",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_migration_modification",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_future_repository_separate_task",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_future_dataservice_write_separate_task",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_dataaccess_boundary",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_scattered_sql",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_manual_transaction_mapping",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_manual_cash_mapping",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_audit_mapping",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_transaction_idempotency_policy",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_initial_schema_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task190_migration_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_new_migration",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_schema_file",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task190_columns_indexes_retained",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_registrar_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_validation_code_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_scaffold_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_scaffold_disabled",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task182_validation_only",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_repository_implementation",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_runtime_sql",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_cash_adjustment_write",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_production_qml_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_startup_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_presenter_controller_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_accountingengine_replay_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_strategy_market_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_tradedraft_suggestion",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_broker_sdk",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_credentials",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_real_order",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task190_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task189_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task188_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task187_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task186_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task185_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task182_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_task177_still_valid",
+        "shell_accounting_manual_entry_repository_implementation_post_migration_authorization_broker_gates_retained",
+    ]
+    for ctest_name in task191_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_repository_post_migration_cmake,
+            f"TASK-191 CTest exists: {ctest_name}",
+        )
     return 0
 
 

@@ -38,6 +38,11 @@ Current TASK-182 DataService validation wiring remains validation-only and
 write-not-implemented. Current DataServiceActions handlers do not contain
 manual entry repository SQL.
 
+TASK-192 implements manual transaction repository write for manual BUY / SELL
+entries only. That implementation is DataAccess-only and direct-test-only. It
+does not implement manual cash movement write, does not modify DataService
+actions, and does not authorize runtime DataService write wiring.
+
 ## Future Repository Implementation Boundary
 
 Future repository implementation must be a separate TASK. That future TASK may
@@ -173,3 +178,7 @@ A future repository implementation PR must reference this document and
 It must prove the TASK-190 migration fields are used, keep DataService write
 wiring in a separate TASK, and preserve all broker / network / credentials /
 real-order safety gates.
+
+After TASK-192, future manual cash movement repository write remains a separate
+TASK. Future DataService action write implementation also remains a separate
+TASK and must not scatter SQL in action handlers.

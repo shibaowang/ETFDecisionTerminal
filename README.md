@@ -3338,3 +3338,26 @@ remains paused, and existing broker safety gates remain retained. See
 `docs/180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md`
 and
 `docs/181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md`.
+
+## TASK-192 Manual Transaction Repository Write Implementation
+
+TASK-192 implements the DataAccess-only manual transaction repository write
+implementation for ShellAccounting manual BUY / SELL entries. It writes
+manual transaction facts to `trade_execution_group` and `trade_log` through
+direct repository tests using a temporary SQLite database with migrations 001
+and 002 applied.
+
+TASK-192 does not modify `migrations/001_initial_schema.sql` or
+`migrations/002_shell_accounting_manual_entry_schema.sql`, does not add a new
+migration or schema file, does not implement manual cash movement write, does
+not modify DataServiceActions, does not wire runtime DataService writes, does
+not modify production QML/startup, does not write `cash_adjustment` or
+`audit_log`, does not call AccountingEngine replay, and does not add broker,
+network, credentials, real order, or automatic trading capability.
+
+Future manual cash movement repository write, DataService action write wiring,
+read model / replay / UI integration, audit integration, and broker work remain
+separate authorization tasks. See
+`docs/182_shell_accounting_manual_transaction_repository_write_implementation.md`
+and
+`docs/183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md`.

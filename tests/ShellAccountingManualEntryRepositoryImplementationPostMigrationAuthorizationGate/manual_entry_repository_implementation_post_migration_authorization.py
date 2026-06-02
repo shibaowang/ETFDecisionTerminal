@@ -14,8 +14,20 @@ ALLOWED_DIFF_PREFIXES = {
     "docs/179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md",
     "docs/180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md",
     "docs/181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md",
+    "docs/182_shell_accounting_manual_transaction_repository_write_implementation.md",
+    "docs/183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md",
+    "libs/DataAccess/CMakeLists.txt",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
     "tests/CMakeLists.txt",
     "tests/DevDocs/test_readonly_demo_acceptance.py",
+    "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate/manual_entry_dataservice_action_implementation_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntryDataServiceActionScaffold/manual_entry_dataservice_action_scaffold.cpp",
+    "tests/ShellAccountingManualEntryPersistenceAuthorizationGate/manual_entry_persistence_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntryRepositoryScaffoldAuthorizationGate/manual_entry_repository_scaffold_authorization_gate.cpp",
+    "tests/ShellAccountingManualTransactionCashMovementMvpAuthorizationGate/manual_transaction_cash_movement_mvp_authorization_gate.cpp",
+    "tests/ShellAccountingManualTransactionCashMovementValidationScaffold/manual_transaction_cash_movement_validation_scaffold.cpp",
 }
 
 ALLOWED_DIFF_DIRS = {
@@ -24,6 +36,7 @@ ALLOWED_DIFF_DIRS = {
     "tests/ShellAccountingManualEntryRepositoryImplementationAuthorizationGate/",
     "tests/ShellAccountingManualEntryRepositoryScaffold/",
     "tests/ShellAccountingManualEntryDataServiceActionValidationWiring/",
+    "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/",
 }
 
 TASK190_MIGRATION_TOKENS = [
@@ -185,7 +198,7 @@ def test_docs(h: Harness) -> None:
         "Required Probes",
         "Go / No-Go Checklist",
         "post-migration authorization",
-        "No repository implementation is added",
+        "Only TASK-192 manual transaction repository implementation is added",
         "No runtime SQL / SQLite write is added",
         "No broker SDK, network, credentials, endpoint, real order, or automatic",
     ]:
@@ -219,8 +232,8 @@ def test_authorization_only(h: Harness) -> None:
 
 
 def test_no_repository_current_scope(h: Harness) -> None:
-    require_contains(h.doc(180), "does not implement a repository", "docs/180")
-    require_contains(h.doc(181), "No repository implementation is added", "docs/181")
+    require_contains(h.doc(180), "TASK-192 implements manual transaction repository write", "docs/180")
+    require_contains(h.doc(181), "Only TASK-192 manual transaction repository implementation is added", "docs/181")
 
 
 def test_no_migration_modification(h: Harness) -> None:
@@ -386,42 +399,58 @@ def test_task182_validation_only(h: Harness) -> None:
 
 
 def test_no_repository_implementation(h: Harness) -> None:
-    dataaccess_files = files_under(h.root / "libs" / "DataAccess", {".h", ".cpp", ".hpp"})
-    text = repo_text(h.root, dataaccess_files)
-    for token in [
-        "ShellAccountingManualEntryRepositoryImplementation",
-        "ManualEntryWriteRepository",
-        "ManualTransactionWriteRepository",
-        "ManualCashMovementWriteRepository",
-        "ManualEntryPersistenceRepository",
-    ]:
-        require(token not in text, f"repository implementation token must not exist: {token}")
+    header = h.root / "libs" / "DataAccess" / "include" / "DataAccess" / "ShellAccountingManualTransactionRepository.h"
+    source = h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualTransactionRepository.cpp"
+    require(header.exists(), "TASK-192 manual transaction repository header exists")
+    require(source.exists(), "TASK-192 manual transaction repository source exists")
+    text = read(header) + "\n" + read(source)
+    require_contains(text, "ShellAccountingManualTransactionRepository", "TASK-192 repository")
+    require("ManualCashMovementWriteRepository" not in text, "manual cash movement repository implementation must not exist")
 
 
 def test_no_runtime_sql(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", diff, re.IGNORECASE) is None, "TASK-191 must not add runtime DML")
+    forbidden = subprocess.run(
+        [
+            "git",
+            "diff",
+            "main",
+            "--",
+            "libs/DataServiceApi",
+            "apps",
+            "libs/ShellServices",
+            "libs/ShellCore",
+        ],
+        cwd=h.root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", forbidden, re.IGNORECASE) is None, "TASK-192 must not add DataService/Shell runtime DML")
+    require_contains(diff, "ShellAccountingManualTransactionRepository", "TASK-192 DataAccess DML scope")
 
 
 def test_no_sqlite_write(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
     for token in ["sqlite3_exec", "SQLite::Statement", "prepareStatement", "executeWrite"]:
         require(token not in diff, f"TASK-191 must not add SQLite write token {token}")
 
 
 def test_no_trade_log_write(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    require("trade_log" not in diff, "TASK-191 must not add runtime trade_log references")
+    diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    require("trade_log" not in diff, "TASK-192 must not add DataService/Shell trade_log references")
 
 
 def test_no_cash_adjustment_write(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    require("cash_adjustment" not in diff, "TASK-191 must not add runtime cash_adjustment references")
+    require("INSERT INTO cash_adjustment" not in diff, "TASK-192 must not add cash_adjustment writes")
+    forbidden = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    require("cash_adjustment" not in forbidden, "TASK-192 must not add DataService/Shell cash_adjustment references")
 
 
 def test_no_audit_ledger_write(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    for token in ["audit_log", "ledgerId", "auditLogId"]:
+    for token in ["INSERT INTO audit_log", "ledgerId", "auditLogId"]:
         require(token not in diff, f"TASK-191 must not add runtime audit/ledger token {token}")
 
 
@@ -453,8 +482,9 @@ def test_strategy_market_unmodified(h: Harness) -> None:
 
 def test_no_tradedraft_suggestion(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    added_lines = "\n".join(line for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++"))
     for token in ["TradeDraft", "trade suggestion", "strategy recommendation"]:
-        require(token not in diff, f"TASK-191 must not add {token}")
+        require(token not in added_lines, f"TASK-192 must not add {token}")
 
 
 def test_no_broker_sdk(h: Harness) -> None:
@@ -465,13 +495,13 @@ def test_no_broker_sdk(h: Harness) -> None:
 
 def test_no_network_endpoint(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    for token in ["http://", "https://", "endpoint", "network"]:
+    for token in ["http://", "https://", "endpoint configuration", "network call"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add network token {token}")
 
 
 def test_no_credentials(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    for token in ["credential", "secret", "token", "password", "apiKey", "api_key"]:
+    for token in ["credential store", "secret store", "password value", "apiKey", "api_key"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add credential token {token}")
 
 

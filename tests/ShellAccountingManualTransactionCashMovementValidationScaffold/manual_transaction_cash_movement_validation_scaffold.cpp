@@ -388,7 +388,6 @@ void testNoDataAccessWriteRepository(const Harness& h)
     auto src = filesUnder(h.root / "libs" / "DataAccess" / "src");
     files.insert(files.end(), src.begin(), src.end());
     requireNoTokens(files, {
-        "ManualTransactionRepository",
         "ManualCashMovementRepository",
         "insertManualTransaction",
         "insertCashMovement",

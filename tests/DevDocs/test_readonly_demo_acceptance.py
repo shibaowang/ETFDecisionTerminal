@@ -11680,6 +11680,156 @@ def main() -> int:
             ctest_name in shell_accounting_manual_entry_schema_adequacy_review_cmake,
             f"TASK-187 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_schema_gap_authorization_doc_path = (
+        root / "docs" / "174_shell_accounting_manual_entry_schema_gap_authorization_gate.md"
+    )
+    shell_accounting_manual_entry_schema_gap_authorization_plan_path = (
+        root / "docs" / "175_shell_accounting_manual_entry_schema_gap_authorization_test_plan.md"
+    )
+    shell_accounting_manual_entry_schema_gap_authorization_cmake_path = (
+        root / "tests" / "ShellAccountingManualEntrySchemaGapAuthorizationGate" / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_entry_schema_gap_authorization_doc_path.exists(), "docs/174 exists")
+    require(shell_accounting_manual_entry_schema_gap_authorization_plan_path.exists(), "docs/175 exists")
+    require(
+        shell_accounting_manual_entry_schema_gap_authorization_cmake_path.exists(),
+        "TASK-188 tests CMake exists",
+    )
+    shell_accounting_manual_entry_schema_gap_authorization_doc = (
+        shell_accounting_manual_entry_schema_gap_authorization_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_gap_authorization_plan = (
+        shell_accounting_manual_entry_schema_gap_authorization_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_gap_authorization_cmake = (
+        shell_accounting_manual_entry_schema_gap_authorization_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/174_shell_accounting_manual_entry_schema_gap_authorization_gate.md" in readme,
+        "README links docs/174",
+    )
+    require(
+        "docs/175_shell_accounting_manual_entry_schema_gap_authorization_test_plan.md" in readme,
+        "README links docs/175",
+    )
+    require(
+        "174_shell_accounting_manual_entry_schema_gap_authorization_gate.md" in docs_index,
+        "docs/README links docs/174",
+    )
+    require(
+        "175_shell_accounting_manual_entry_schema_gap_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/175",
+    )
+    require("TASK-188" in codex_prompt_template, "docs/12 registers TASK-188")
+    require("TASK-188" in shell_accounting_manual_entry_schema_gap_authorization_doc, "docs/174 mentions TASK-188")
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_schema_gap_authorization_plan,
+        "docs/175 contains Test Matrix",
+    )
+    for token, message in [
+        ("schema gap authorization gate-only", "docs/174 states authorization-only"),
+        ("migrations/001_initial_schema.sql", "docs/174 names initial schema"),
+        ("source of truth", "docs/174 states source of truth"),
+        ("does not modify schema", "docs/174 forbids current schema changes"),
+        ("does not add a migration", "docs/174 forbids current migrations"),
+        ("does not add a schema file", "docs/174 forbids current schema files"),
+        ("does not implement repository implementation", "docs/174 forbids repository implementation"),
+        ("does not write a database", "docs/174 forbids database writes"),
+        ("does not execute SQL", "docs/174 forbids SQL execution"),
+        ("does not modify DataServiceActions", "docs/174 forbids DataServiceActions changes"),
+        ("Future schema implementation must add an independent migration file", "docs/174 requires independent migration"),
+        ("must not directly edit", "docs/174 forbids direct initial schema edits"),
+        ("`request_id` for request trace", "docs/174 documents request_id gap"),
+        ("`idempotency_key` for idempotent writes", "docs/174 documents idempotency gap"),
+        ("`occurred_at_utc` for business event time", "docs/174 documents occurred_at gap"),
+        ("`tax_cents` or equivalent lossless tax amount field", "docs/174 documents tax gap"),
+        ("`movement_type` stable mapping", "docs/174 documents movement type mapping"),
+        ("`cash_adjustment` / `trade_log` transaction linkage", "docs/174 documents cash linkage"),
+        ("audit request trace", "docs/174 documents audit request trace"),
+        ("payload classification", "docs/174 documents payload classification"),
+        ("redaction status", "docs/174 documents redaction status"),
+        ("partial write rollback", "docs/174 documents rollback"),
+        ("Future repository implementation may continue only after schema gaps are resolved", "docs/174 gates repository implementation"),
+        ("Broker sandbox new capability development remains paused", "docs/174 keeps broker sandbox paused"),
+        ("no-network", "docs/174 retains no-network gate"),
+        ("no-credentials", "docs/174 retains no-credentials gate"),
+        ("no-order-placement", "docs/174 retains no-order-placement gate"),
+    ]:
+        require(token in shell_accounting_manual_entry_schema_gap_authorization_doc, message)
+    for forbidden, message in [
+        ("TASK-188", "initial schema has no TASK-188 marker"),
+        ("manual_entry_schema_gap", "initial schema has no TASK-188 schema marker"),
+        ("idempotency_key", "initial schema still has no idempotency_key"),
+        ("tax_cents", "initial schema still has no tax_cents"),
+        ("occurred_at_utc", "initial schema still has no occurred_at_utc"),
+    ]:
+        require(forbidden not in initial_schema, message)
+    require("TASK-188" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-188 marker")
+    require("TASK-188" not in dataservice_actions_header, "DataServiceActions.h has no TASK-188 marker")
+    require("TASK-188" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-188 marker")
+    require("TASK-188" not in shell_accounting_manual_validation_header, "TASK-178 validation header has no TASK-188 marker")
+    require("TASK-188" not in shell_accounting_manual_validation_source, "TASK-178 validation source has no TASK-188 marker")
+    require("TASK-188" not in shell_accounting_manual_entry_repository_scaffold_header, "TASK-185 scaffold header has no TASK-188 marker")
+    require("TASK-188" not in shell_accounting_manual_entry_repository_scaffold_source, "TASK-185 scaffold source has no TASK-188 marker")
+    for forbidden in [
+        "ManualEntryImplementationRepository",
+        "ManualEntryWriteRepository",
+        "ManualEntryPersistenceRepository",
+        "ManualTransactionWriteRepository",
+        "ManualCashMovementWriteRepository",
+    ]:
+        require(
+            forbidden not in dataaccess_cmake,
+            f"TASK-188 did not register repository implementation token {forbidden}",
+        )
+    task188_ctests = [
+        "shell_accounting_manual_entry_schema_gap_authorization_gate",
+        "shell_accounting_manual_entry_schema_gap_authorization_docs",
+        "shell_accounting_manual_entry_schema_gap_authorization_docs_index_prompt",
+        "shell_accounting_manual_entry_schema_gap_authorization_source_of_truth",
+        "shell_accounting_manual_entry_schema_gap_authorization_authorization_only",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_schema_current_scope",
+        "shell_accounting_manual_entry_schema_gap_authorization_future_migration_policy",
+        "shell_accounting_manual_entry_schema_gap_authorization_transaction_gap_policy",
+        "shell_accounting_manual_entry_schema_gap_authorization_cash_gap_policy",
+        "shell_accounting_manual_entry_schema_gap_authorization_audit_rollback_privacy_policy",
+        "shell_accounting_manual_entry_schema_gap_authorization_repository_wait_policy",
+        "shell_accounting_manual_entry_schema_gap_authorization_schema_unmodified",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_new_migration",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_schema_file",
+        "shell_accounting_manual_entry_schema_gap_authorization_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_schema_gap_authorization_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_schema_gap_authorization_registrar_unmodified",
+        "shell_accounting_manual_entry_schema_gap_authorization_validation_code_unmodified",
+        "shell_accounting_manual_entry_schema_gap_authorization_scaffold_unmodified",
+        "shell_accounting_manual_entry_schema_gap_authorization_scaffold_disabled",
+        "shell_accounting_manual_entry_schema_gap_authorization_task182_validation_only",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_repository_implementation",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_sql_added",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_cash_fact_write",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_broker_sdk",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_credentials",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_real_order_placement",
+        "shell_accounting_manual_entry_schema_gap_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_schema_gap_authorization_broker_policy",
+        "shell_accounting_manual_entry_schema_gap_authorization_task187_still_valid",
+        "shell_accounting_manual_entry_schema_gap_authorization_task186_still_valid",
+        "shell_accounting_manual_entry_schema_gap_authorization_task185_still_valid",
+        "shell_accounting_manual_entry_schema_gap_authorization_task182_still_valid",
+        "shell_accounting_manual_entry_schema_gap_authorization_task178_still_pure",
+        "shell_accounting_manual_entry_schema_gap_authorization_task177_still_valid",
+        "shell_accounting_manual_entry_schema_gap_authorization_broker_gates_retained",
+    ]
+    for ctest_name in task188_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_schema_gap_authorization_cmake,
+            f"TASK-188 CTest exists: {ctest_name}",
+        )
     return 0
 
 

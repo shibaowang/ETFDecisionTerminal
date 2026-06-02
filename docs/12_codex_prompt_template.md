@@ -1681,6 +1681,23 @@ Because TASK-187 found schema gaps, a future schema authorization TASK is
 required before write enablement unless a later authorized review documents a
 complete lossless mapping using existing fields.
 
+## TASK-188 Manual Entry Schema Gap Authorization Gate Prompt Rule
+
+Future work after TASK-188 must reference docs/174 and docs/175. TASK-188 is a
+schema gap authorization gate only. It documents future candidate schema design
+for manual transaction request trace / idempotency, manual cash movement
+request trace / idempotency, and audit / rollback / privacy support. TASK-188
+does not authorize modifying `migrations/001_initial_schema.sql`, adding a
+migration, adding a schema file, implementing repository writes, executing SQL,
+writing SQLite, changing DataServiceActions, changing TASK-178 validation
+production code, changing TASK-185 repository scaffold code, changing
+QML/startup, changing AccountingEngine replay, changing StrategyEngine or
+MarketEngine, adding TradeDraft or suggestion implementation, adding broker
+SDK, adding network calls, adding credentials or endpoints, placing real
+orders, or enabling automatic trading. Future schema implementation must be a
+separately authorized TASK, must add an independent migration file, and must
+not directly edit `migrations/001_initial_schema.sql`.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

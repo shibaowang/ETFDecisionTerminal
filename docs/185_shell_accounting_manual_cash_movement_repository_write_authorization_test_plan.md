@@ -18,7 +18,11 @@ repository write and does not write a database.
 - docs/184 states authorization-only and gate-only.
 - docs/184 states the current task does not implement cash movement repository write.
 - docs/184 states the current task does not modify TASK-192 repository behavior.
+- docs/184 states current schema blocks cash_adjustment-only write.
 - docs/184 states future cash movement repository implementation must be a separate TASK.
+- docs/184 states future implementation must dual-write `trade_log` and
+  `cash_adjustment`, unless a separate schema migration authorizes standalone
+  cash_adjustment.
 - docs/184 states future DataService write implementation must be a separate TASK.
 
 ### Mapping Boundary
@@ -26,9 +30,13 @@ repository write and does not write a database.
 - Cash adjustment mapping includes request_id, idempotency_key,
   occurred_at_utc, source_memo_sanitized, trade_log_uid, amount_cents, and
   adjustment_type.
-- Trade log cash fact mapping includes request_id, idempotency_key,
+- Trade log cash fact mapping includes request_id and is required under the
+  current schema; it also includes idempotency_key,
   occurred_at_utc, cash_adjustment_uid, trade_source, manual_entry,
   amount_cents, net_cash_impact_cents, and source_memo_sanitized.
+- `cash_adjustment.trade_log_id` must point to `trade_log.id`.
+- `trade_log.cash_adjustment_uid` must match cash_adjustment uid / linkage
+  policy or be explicitly mapped.
 - Deposit and Withdrawal policy is documented.
 - Adjustment must be explicit and must fail closed unless separately
   authorized.
@@ -38,7 +46,9 @@ repository write and does not write a database.
 ### Transaction / Rollback / Idempotency
 
 - Future implementation must define a transaction boundary for
-  `cash_adjustment` only or `cash_adjustment` + `trade_log` dual write.
+  `cash_adjustment` + `trade_log` dual write under the current schema.
+- cash_adjustment-only write is blocked unless a future schema migration
+  separately authorizes standalone cash_adjustment.
 - Rollback and failure atomicity must be documented.
 - Duplicate idempotency_key behavior and unique index conflict handling must be
   documented.

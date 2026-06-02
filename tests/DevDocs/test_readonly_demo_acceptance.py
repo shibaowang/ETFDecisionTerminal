@@ -12502,6 +12502,91 @@ def main() -> int:
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake still has no cash movement repository")
     require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI for TASK-194")
     require("broker SDK" in shell_accounting_manual_mvp_test_plan, "historic broker gate text remains available")
+
+    shell_accounting_manual_cash_movement_schema_contract_doc_path = (
+        root / "docs" / "186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md"
+    )
+    shell_accounting_manual_cash_movement_schema_contract_plan_path = (
+        root / "docs" / "187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md"
+    )
+    shell_accounting_manual_cash_movement_schema_contract_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualCashMovementSchemaContractAlignmentGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_cash_movement_schema_contract_doc_path.exists(), "docs/186 exists")
+    require(shell_accounting_manual_cash_movement_schema_contract_plan_path.exists(), "docs/187 exists")
+    require(shell_accounting_manual_cash_movement_schema_contract_cmake_path.exists(), "TASK-195 tests CMake exists")
+    shell_accounting_manual_cash_movement_schema_contract_doc = (
+        shell_accounting_manual_cash_movement_schema_contract_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_cash_movement_schema_contract_plan = (
+        shell_accounting_manual_cash_movement_schema_contract_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_cash_movement_schema_contract_cmake = (
+        shell_accounting_manual_cash_movement_schema_contract_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md" in readme,
+        "README links docs/186",
+    )
+    require(
+        "docs/187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md" in readme,
+        "README links docs/187",
+    )
+    require(
+        "186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md" in docs_index,
+        "docs/README links docs/186",
+    )
+    require(
+        "187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md" in docs_index,
+        "docs/README links docs/187",
+    )
+    require("TASK-195" in codex_prompt_template, "docs/12 registers TASK-195")
+    for token, message in [
+        ("TASK-195", "docs/186 mentions TASK-195"),
+        ("schema-contract alignment gate-only", "docs/186 states gate-only"),
+        ("cash_adjustment.trade_log_id INTEGER NOT NULL", "docs/186 records NOT NULL trade_log_id"),
+        ("FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)", "docs/186 records trade_log FK"),
+        ("current schema blocks cash_adjustment-only write", "docs/186 blocks standalone cash_adjustment"),
+        ("must not use a cash_adjustment-only design", "docs/186 rejects cash_adjustment-only design"),
+        ("write `trade_log` cash movement fact", "docs/186 requires trade_log fact"),
+        ("write `cash_adjustment`", "docs/186 requires cash_adjustment fact"),
+        ("atomic transaction", "docs/186 requires atomic dual-write"),
+        ("rollback on any failure", "docs/186 requires rollback"),
+        ("no partial facts", "docs/186 blocks partial facts"),
+        ("Future DataService action write wiring must be a separate TASK", "docs/186 separates DataService write wiring"),
+        ("Broker sandbox new capability development remains paused", "docs/186 keeps broker paused"),
+    ]:
+        require(token in shell_accounting_manual_cash_movement_schema_contract_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/187 contains Test Matrix"),
+        ("Required Probes", "docs/187 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/187 contains Go / No-Go Checklist"),
+        ("trade_log_id INTEGER NOT NULL", "docs/187 checks NOT NULL trade_log_id"),
+        ("FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)", "docs/187 checks FK"),
+        ("future implementation must dual-write", "docs/187 requires dual-write"),
+        ("No manual cash movement repository implementation is added", "docs/187 blocks repository implementation"),
+        ("Broker disabled / broker order / real broker gates pass", "docs/187 keeps broker gates"),
+    ]:
+        require(token in shell_accounting_manual_cash_movement_schema_contract_plan, message)
+    require(
+        "shell_accounting_manual_cash_movement_schema_contract_alignment_gate"
+        in shell_accounting_manual_cash_movement_schema_contract_cmake,
+        "TASK-195 CTest exists",
+    )
+    require(
+        "trade_log_id INTEGER NOT NULL" in initial_schema,
+        "initial schema still has NOT NULL trade_log_id contract",
+    )
+    require(
+        "FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)" in initial_schema,
+        "initial schema still has trade_log_id foreign key contract",
+    )
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake still has no cash movement repository after TASK-195")
+    require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-195")
+    require("ShellAccountingManualCashMovementSchemaContractAlignmentGate" in tests_cmake, "TASK-195 test directory registered")
     return 0
 
 

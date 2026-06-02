@@ -3366,9 +3366,10 @@ and
 
 TASK-194 adds a gate-only authorization boundary for future ShellAccounting
 manual cash movement repository write implementation. It defines the future
-DataAccess repository boundary, cash_adjustment mapping, optional trade_log
-cash fact mapping, movement type policy, transaction / rollback / idempotency
-policy, and privacy / memo sanitization policy.
+DataAccess repository boundary, cash_adjustment mapping, required trade_log
+cash fact linkage under the current schema contract, movement type policy,
+transaction / rollback / idempotency policy, and privacy / memo sanitization
+policy.
 
 TASK-194 does not implement manual cash movement repository write, does not
 modify TASK-192 manual transaction repository behavior, does not modify
@@ -3379,11 +3380,35 @@ does not modify TASK-178 validation code, does not modify migrations 001 or
 rows.
 
 Future manual cash movement repository implementation must be a separate TASK,
-and future DataService action write implementation must be a separate TASK.
-Replay, read model, UI, audit integration, broker, network, credentials,
-endpoint, real order, and automatic trading work remain separately authorized.
-Broker sandbox new capability development remains paused, and existing broker
-gates remain retained. See
+and the current schema does not support cash_adjustment-only writes because
+`cash_adjustment.trade_log_id` is a NOT NULL foreign key to `trade_log.id`.
+Future repository implementation must either atomically dual-write `trade_log`
+and `cash_adjustment`, or a future schema migration TASK must separately
+authorize standalone cash_adjustment. Future DataService action write
+implementation must be a separate TASK. Replay, read model, UI, audit
+integration, broker, network, credentials, endpoint, real order, and automatic
+trading work remain separately authorized. Broker sandbox new capability
+development remains paused, and existing broker gates remain retained. See
 `docs/184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md`
 and
 `docs/185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md`.
+
+## TASK-195 Manual Cash Movement Schema Contract Alignment Gate
+
+TASK-195 adds a schema-contract alignment gate after confirming that
+`cash_adjustment.trade_log_id` is `NOT NULL` and references `trade_log(id)` in
+`migrations/001_initial_schema.sql`. This gate records that the current schema
+blocks cash_adjustment-only repository writes.
+
+TASK-195 is gate-only. It does not implement a manual cash movement repository,
+does not modify migrations, does not modify DataServiceActions, does not write
+`cash_adjustment`, `trade_log`, `audit_log`, or ledger rows, and does not add
+QML, replay, broker, network, credentials, endpoint, real order, or automatic
+trading capability.
+
+Future manual cash movement repository implementation must use an atomic
+`trade_log` + `cash_adjustment` dual-write under the current schema, or a future
+schema migration TASK must explicitly authorize standalone cash_adjustment. See
+`docs/186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md`
+and
+`docs/187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md`.

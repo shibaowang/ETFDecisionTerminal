@@ -134,14 +134,12 @@ Existing schema has partial support for future manual deposit / withdraw facts:
   provide unique row identity.
 
 The current schema is not sufficient to authorize manual cash movement write
-implementation yet because these schema gaps must be resolved:
-The current schema has gaps for manual cash movement requests.
-There is no explicit `request_id` column for manual cash movement request tracing.
+implementation yet because these manual cash movement requests schema gaps
+must be resolved:
 
 - There is no explicit `idempotency_key` column or unique index for manual cash
   movement requests.
-- There is no explicit `request_id` column for manual cash movement request
-  tracing.
+- There is no explicit `request_id` column for manual cash movement request tracing.
 - There is no dedicated `occurred_at_utc` field for the business event time.
 - The relationship between `trade_log` cash events and `cash_adjustment` must
   be defined transactionally before writing.
@@ -174,9 +172,8 @@ Idempotency / duplicate handling schema review gaps remain:
   `idempotency_key` column for manual transaction or manual cash movement
   writes.
 - Existing `uid` uniqueness is row identity, not request idempotency.
-- Existing indexes on `trade_log`, `trade_execution_group`, and `audit_log` do
-  not provide manual entry duplicate request handling.
-Existing indexes do not provide manual entry duplicate request handling.
+- Existing indexes on `trade_log`, `trade_execution_group`, and `audit_log`
+  do not provide manual entry duplicate request handling.
 
 Privacy / memo sanitization schema review:
 
@@ -202,11 +199,9 @@ Because this review found schema gaps, a future schema authorization TASK is
 required before enabling repository write implementation unless a later
 authorized review documents a complete lossless mapping using existing fields.
 
-That future schema authorization TASK must not directly edit
-`migrations/001_initial_schema.sql`; it must add an explicit migration or
-otherwise follow the repository migration policy in a separately authorized
-task.
-The future schema authorization TASK must not directly edit `migrations/001_initial_schema.sql`.
+That future schema authorization TASK must not directly edit `migrations/001_initial_schema.sql`;
+it must add an explicit migration or otherwise follow the repository migration
+policy in a separately authorized task.
 
 Future repository implementation must also be separately authorized after
 schema adequacy is resolved.
@@ -239,8 +234,7 @@ The first phase still does not connect a real broker, does not enable automatic
 trading, and does not place real orders.
 
 Broker sandbox new capability development remains paused. Pausing broker
-sandbox work does not remove existing broker gates.
-broker sandbox new capability development remains paused.
+sandbox work does not remove existing broker gates; the broker sandbox new capability development remains paused policy remains unchanged.
 
 Existing broker disabled, fail-closed, no-real-order, no-network,
 no-credentials, and no-order-placement gates must remain present and passing.

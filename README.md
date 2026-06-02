@@ -3296,3 +3296,24 @@ no-order-placement gates remain retained. See
 `docs/176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md`
 and
 `docs/177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md`.
+
+## TASK-190 Manual Entry Schema Migration Implementation
+
+TASK-190 implements the manual entry schema migration authorized by TASK-189. It
+adds the independent DDL-only migration
+`migrations/002_shell_accounting_manual_entry_schema.sql` and leaves
+`migrations/001_initial_schema.sql` unchanged.
+
+The migration adds request tracing, idempotency, occurred-at mapping, sanitized
+memo, tax, linkage, payload classification, and redaction-support columns to
+the existing `trade_log`, `cash_adjustment`, and `audit_log` tables, plus stable
+indexes for request, idempotency, and linkage lookup.
+
+TASK-190 does not implement manual entry repository writes, DataService write
+implementation, runtime SQL execution, SQLite runtime writes, replay changes,
+production QML/startup changes, TradeDraft or suggestion implementation, broker
+SDKs, network calls, credentials, endpoints, real orders, or automatic trading.
+Broker sandbox new capability development remains paused, and existing broker
+safety gates remain retained. See
+`docs/178_shell_accounting_manual_entry_schema_migration_implementation.md` and
+`docs/179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md`.

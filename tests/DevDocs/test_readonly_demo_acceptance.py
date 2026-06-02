@@ -11992,6 +11992,177 @@ def main() -> int:
             ctest_name in shell_accounting_manual_entry_schema_implementation_authorization_cmake,
             f"TASK-189 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_schema_migration_doc_path = (
+        root / "docs" / "178_shell_accounting_manual_entry_schema_migration_implementation.md"
+    )
+    shell_accounting_manual_entry_schema_migration_plan_path = (
+        root / "docs" / "179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md"
+    )
+    shell_accounting_manual_entry_schema_migration_cmake_path = (
+        root / "tests" / "ShellAccountingManualEntrySchemaMigrationImplementation" / "CMakeLists.txt"
+    )
+    shell_accounting_manual_entry_schema_migration_file_path = (
+        root / "migrations" / "002_shell_accounting_manual_entry_schema.sql"
+    )
+    require(shell_accounting_manual_entry_schema_migration_doc_path.exists(), "docs/178 exists")
+    require(shell_accounting_manual_entry_schema_migration_plan_path.exists(), "docs/179 exists")
+    require(shell_accounting_manual_entry_schema_migration_cmake_path.exists(), "TASK-190 tests CMake exists")
+    require(shell_accounting_manual_entry_schema_migration_file_path.exists(), "TASK-190 migration exists")
+    shell_accounting_manual_entry_schema_migration_doc = (
+        shell_accounting_manual_entry_schema_migration_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_migration_plan = (
+        shell_accounting_manual_entry_schema_migration_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_migration_cmake = (
+        shell_accounting_manual_entry_schema_migration_cmake_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_migration_sql = (
+        shell_accounting_manual_entry_schema_migration_file_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/178_shell_accounting_manual_entry_schema_migration_implementation.md" in readme,
+        "README links docs/178",
+    )
+    require(
+        "docs/179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md" in readme,
+        "README links docs/179",
+    )
+    require(
+        "178_shell_accounting_manual_entry_schema_migration_implementation.md" in docs_index,
+        "docs/README links docs/178",
+    )
+    require(
+        "179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/179",
+    )
+    require("TASK-190" in codex_prompt_template, "docs/12 registers TASK-190")
+    require("TASK-190" in shell_accounting_manual_entry_schema_migration_doc, "docs/178 mentions TASK-190")
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_schema_migration_plan,
+        "docs/179 contains Test Matrix",
+    )
+    for token, message in [
+        ("migrations/002_shell_accounting_manual_entry_schema.sql", "docs/178 names migration 002"),
+        ("migrations/001_initial_schema.sql` unchanged", "docs/178 keeps initial schema unchanged"),
+        ("schema-only", "docs/178 states schema-only scope"),
+        ("does not implement a manual entry repository", "docs/178 blocks repository implementation"),
+        ("does not add a DataService write implementation", "docs/178 blocks DataService writes"),
+        ("does not execute runtime SQL", "docs/178 blocks runtime SQL"),
+        ("does not write SQLite at runtime", "docs/178 blocks runtime SQLite writes"),
+        ("Broker sandbox new capability development remains paused", "docs/178 keeps broker sandbox paused"),
+        ("no-real-order", "docs/178 retains no-real-order gate"),
+        ("no-network", "docs/178 retains no-network gate"),
+        ("no-credentials", "docs/178 retains no-credentials gate"),
+        ("no-order-placement", "docs/178 retains no-order-placement gate"),
+        ("forward-fix migration", "docs/178 documents forward-fix policy"),
+    ]:
+        require(token in shell_accounting_manual_entry_schema_migration_doc, message)
+    for token, message in [
+        ("DDL-only", "docs/179 checks DDL-only"),
+        ("PRAGMA table_info", "docs/179 checks PRAGMA table_info"),
+        ("sqlite_master", "docs/179 checks sqlite_master"),
+        ("No repository implementation is added", "docs/179 blocks repository implementation"),
+        ("No DataService write implementation is added", "docs/179 blocks DataService writes"),
+        ("No broker SDK, network, credentials, endpoint, real order, or automatic", "docs/179 blocks broker expansion"),
+    ]:
+        require(token in shell_accounting_manual_entry_schema_migration_plan, message)
+    for token, message in [
+        ("ALTER TABLE trade_log ADD COLUMN request_id TEXT", "migration adds trade_log request_id"),
+        ("ALTER TABLE trade_log ADD COLUMN idempotency_key TEXT", "migration adds trade_log idempotency_key"),
+        ("ALTER TABLE trade_log ADD COLUMN occurred_at_utc TEXT", "migration adds trade_log occurred_at_utc"),
+        ("ALTER TABLE trade_log ADD COLUMN tax_cents INTEGER NOT NULL DEFAULT 0", "migration adds trade_log tax_cents"),
+        ("ALTER TABLE trade_log ADD COLUMN source_memo_sanitized TEXT", "migration adds trade_log source_memo_sanitized"),
+        ("ALTER TABLE trade_log ADD COLUMN cash_adjustment_uid TEXT", "migration adds trade_log cash_adjustment_uid"),
+        ("ALTER TABLE cash_adjustment ADD COLUMN request_id TEXT", "migration adds cash_adjustment request_id"),
+        ("ALTER TABLE cash_adjustment ADD COLUMN idempotency_key TEXT", "migration adds cash_adjustment idempotency_key"),
+        ("ALTER TABLE cash_adjustment ADD COLUMN occurred_at_utc TEXT", "migration adds cash_adjustment occurred_at_utc"),
+        ("ALTER TABLE cash_adjustment ADD COLUMN source_memo_sanitized TEXT", "migration adds cash_adjustment source_memo_sanitized"),
+        ("ALTER TABLE cash_adjustment ADD COLUMN trade_log_uid TEXT", "migration adds cash_adjustment trade_log_uid"),
+        ("ALTER TABLE audit_log ADD COLUMN request_id TEXT", "migration adds audit_log request_id"),
+        ("ALTER TABLE audit_log ADD COLUMN idempotency_key TEXT", "migration adds audit_log idempotency_key"),
+        ("ALTER TABLE audit_log ADD COLUMN payload_classification TEXT", "migration adds audit_log payload_classification"),
+        ("ALTER TABLE audit_log ADD COLUMN redaction_status TEXT", "migration adds audit_log redaction_status"),
+        ("idx_trade_log_manual_request_id", "migration adds trade_log request index"),
+        ("ux_trade_log_manual_idempotency_key", "migration adds trade_log idempotency index"),
+        ("idx_cash_adjustment_manual_request_id", "migration adds cash_adjustment request index"),
+        ("ux_cash_adjustment_manual_idempotency_key", "migration adds cash_adjustment idempotency index"),
+        ("idx_audit_log_manual_request_id", "migration adds audit_log request index"),
+        ("idx_audit_log_manual_idempotency_key", "migration adds audit_log idempotency index"),
+    ]:
+        require(token in shell_accounting_manual_entry_schema_migration_sql, message)
+    for forbidden in ["INSERT", "UPDATE", "DELETE", "REPLACE", "DROP TABLE", "RENAME TO"]:
+        require(forbidden not in shell_accounting_manual_entry_schema_migration_sql.upper(), f"TASK-190 migration has no {forbidden}")
+    for token in [
+        "TASK-190",
+        "002_shell_accounting_manual_entry_schema",
+        "idempotency_key",
+        "tax_cents",
+    ]:
+        require(token not in initial_schema, f"initial schema remains unchanged for {token}")
+    require("TASK-190" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-190 marker")
+    require("TASK-190" not in dataservice_actions_header, "DataServiceActions.h has no TASK-190 marker")
+    require("TASK-190" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-190 marker")
+    require("TASK-190" not in shell_accounting_manual_validation_header, "TASK-178 validation header has no TASK-190 marker")
+    require("TASK-190" not in shell_accounting_manual_validation_source, "TASK-178 validation source has no TASK-190 marker")
+    require("TASK-190" not in shell_accounting_manual_entry_repository_scaffold_header, "TASK-185 scaffold header has no TASK-190 marker")
+    require("TASK-190" not in shell_accounting_manual_entry_repository_scaffold_source, "TASK-185 scaffold source has no TASK-190 marker")
+    task190_ctests = [
+        "shell_accounting_manual_entry_schema_migration_implementation_gate",
+        "shell_accounting_manual_entry_schema_migration_implementation_docs",
+        "shell_accounting_manual_entry_schema_migration_implementation_docs_index_prompt",
+        "shell_accounting_manual_entry_schema_migration_implementation_migration_file_exists",
+        "shell_accounting_manual_entry_schema_migration_implementation_initial_schema_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_single_migration_file",
+        "shell_accounting_manual_entry_schema_migration_implementation_stable_filename",
+        "shell_accounting_manual_entry_schema_migration_implementation_ddl_only",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_dml",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_drop_table",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_destructive_rename",
+        "shell_accounting_manual_entry_schema_migration_implementation_trade_log_alter",
+        "shell_accounting_manual_entry_schema_migration_implementation_cash_adjustment_alter",
+        "shell_accounting_manual_entry_schema_migration_implementation_audit_log_alter",
+        "shell_accounting_manual_entry_schema_migration_implementation_trade_log_columns",
+        "shell_accounting_manual_entry_schema_migration_implementation_cash_adjustment_columns",
+        "shell_accounting_manual_entry_schema_migration_implementation_audit_log_columns",
+        "shell_accounting_manual_entry_schema_migration_implementation_trade_log_indexes",
+        "shell_accounting_manual_entry_schema_migration_implementation_cash_adjustment_indexes",
+        "shell_accounting_manual_entry_schema_migration_implementation_audit_log_indexes",
+        "shell_accounting_manual_entry_schema_migration_implementation_sqlite_apply_001_002",
+        "shell_accounting_manual_entry_schema_migration_implementation_pragma_trade_log_columns",
+        "shell_accounting_manual_entry_schema_migration_implementation_pragma_cash_adjustment_columns",
+        "shell_accounting_manual_entry_schema_migration_implementation_pragma_audit_log_columns",
+        "shell_accounting_manual_entry_schema_migration_implementation_sqlite_master_indexes",
+        "shell_accounting_manual_entry_schema_migration_implementation_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_registrar_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_validation_code_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_scaffold_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_scaffold_disabled",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_repository_implementation",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_runtime_sql_write",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_runtime_trade_cash_audit_ledger_write",
+        "shell_accounting_manual_entry_schema_migration_implementation_production_qml_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_startup_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_presenter_controller_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_accountingengine_replay_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_strategy_market_unmodified",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_tradedraft_suggestion",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_broker_sdk",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_network_endpoint",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_credentials",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_real_order",
+        "shell_accounting_manual_entry_schema_migration_implementation_no_automatic_trading",
+        "shell_accounting_manual_entry_schema_migration_implementation_task189_evolved",
+        "shell_accounting_manual_entry_schema_migration_implementation_prior_gates_retained",
+        "shell_accounting_manual_entry_schema_migration_implementation_broker_gates_retained",
+    ]
+    for ctest_name in task190_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_schema_migration_cmake,
+            f"TASK-190 CTest exists: {ctest_name}",
+        )
     return 0
 
 

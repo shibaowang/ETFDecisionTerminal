@@ -678,6 +678,17 @@
   migration id / rollback / compatibility policy, no schema drift, no
   DataService action drift, no repository implementation, no SQL/SQLite
   writes, and retained broker gates.
+- ShellAccounting manual entry schema migration implementation:
+  [178_shell_accounting_manual_entry_schema_migration_implementation.md](178_shell_accounting_manual_entry_schema_migration_implementation.md)
+  records TASK-190 schema-only implementation of the independent
+  `migrations/002_shell_accounting_manual_entry_schema.sql` migration while
+  keeping `migrations/001_initial_schema.sql`, repository writes, DataService
+  writes, QML, replay, and broker capabilities unchanged.
+- ShellAccounting manual entry schema migration implementation test plan:
+  [179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md](179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md)
+  defines TASK-190 probes for DDL-only migration content, SQLite application,
+  `PRAGMA table_info`, `sqlite_master` index checks, no runtime write path, and
+  retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

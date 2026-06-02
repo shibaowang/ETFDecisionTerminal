@@ -10589,10 +10589,13 @@ def main() -> int:
     require('"manual_cash_movement.create"' in dataservice_actions_header, "DataServiceActions.h registers manual cash movement action")
     require("handleAccountingManualEntryTransactionCreate" in dataservice_actions_source, "DataServiceActions has manual transaction scaffold handler")
     require("handleAccountingManualEntryCashMovementCreate" in dataservice_actions_source, "DataServiceActions has manual cash movement scaffold handler")
-    require("VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED" in dataservice_actions_source, "manual entry actions return validation-only write-not-implemented status")
+    require("manualEntryValidationRejectedResponse" in dataservice_actions_source, "manual entry actions keep validation-first rejection response")
+    require("manualTransactionWriteResponse" in dataservice_actions_source, "manual entry actions map manual transaction write response")
+    require("manualCashMovementWriteResponse" in dataservice_actions_source, "manual entry actions map manual cash movement write response")
     require("MANUAL_ENTRY_VALIDATION_FAILED" in dataservice_actions_source, "manual entry actions return stable validation failure reason")
     require('\\"databaseWritten\\":false' in dataservice_actions_source, "manual scaffold declares no DB write")
-    require('\\"repositoryCalled\\":false' in dataservice_actions_source, "manual scaffold declares no repository call")
+    require("persistManualTransaction" in dataservice_actions_source, "manual transaction action now calls repository after validation")
+    require("persistManualCashMovement" in dataservice_actions_source, "manual cash movement action now calls repository after validation")
     require("kActionAccountingManualTransactionCreate" in dataservice_action_registrar, "registrar registers manual transaction scaffold")
     require("kActionAccountingManualCashMovementCreate" in dataservice_action_registrar, "registrar registers manual cash movement scaffold")
     require(
@@ -12713,9 +12716,9 @@ def main() -> int:
     for token, message in [
         ("TASK-197", "docs/190 mentions TASK-197"),
         ("DataService write wiring authorization gate-only", "docs/190 states authorization-only"),
-        ("does not implement DataService runtime write wiring", "docs/190 blocks write wiring"),
-        ("does not modify `DataServiceActions.cpp`", "docs/190 protects DataServiceActions.cpp"),
-        ("does not modify `DataServiceActions.h`", "docs/190 protects DataServiceActions.h"),
+        ("TASK-198 has now evolved the authorized path", "docs/190 records TASK-198 evolution"),
+        ("did not modify `DataServiceActions.cpp`", "docs/190 records TASK-197 DataServiceActions boundary"),
+        ("did not modify `DataServiceActions.h`", "docs/190 records TASK-197 DataServiceActions.h boundary"),
         ("does not modify `DataServiceActionRegistrar.cpp`", "docs/190 protects registrar"),
         ("accounting.manual_transaction.create", "docs/190 records manual transaction action"),
         ("accounting.manual_cash_movement.create", "docs/190 records manual cash movement action"),
@@ -12735,9 +12738,9 @@ def main() -> int:
         ("Test Matrix", "docs/191 contains Test Matrix"),
         ("Required Probes", "docs/191 contains Required Probes"),
         ("Go / No-Go Checklist", "docs/191 contains Go / No-Go Checklist"),
-        ("DataServiceActions.cpp is not modified", "docs/191 protects DataServiceActions.cpp"),
-        ("TASK-182 validation wiring still returns `writeImplemented=false`", "docs/191 keeps validation-only"),
-        ("DataService action response still does not return persistent id", "docs/191 blocks persistent ids"),
+        ("DataServiceActions.cpp is modified only for TASK-198 repository wiring", "docs/191 allows TASK-198 wiring"),
+        ("TASK-182 validation-first behavior is retained", "docs/191 keeps validation-first"),
+        ("sanitized local repository write results", "docs/191 requires sanitized write response"),
         ("No broker SDK", "docs/191 blocks broker SDK"),
         ("No network or endpoint", "docs/191 blocks network"),
         ("No credentials", "docs/191 blocks credentials"),
@@ -12753,6 +12756,71 @@ def main() -> int:
         "ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate" in tests_cmake,
         "TASK-197 test directory registered",
     )
+
+    task198_doc_path = root / "docs" / "192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md"
+    task198_plan_path = root / "docs" / "193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md"
+    task198_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryDataServiceWriteWiringImplementation"
+        / "CMakeLists.txt"
+    )
+    require(task198_doc_path.exists(), "docs/192 exists")
+    require(task198_plan_path.exists(), "docs/193 exists")
+    require(task198_cmake_path.exists(), "TASK-198 tests CMake exists")
+    task198_doc = task198_doc_path.read_text(encoding="utf-8")
+    task198_plan = task198_plan_path.read_text(encoding="utf-8")
+    task198_cmake = task198_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md" in readme,
+        "README links docs/192",
+    )
+    require(
+        "docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md" in readme,
+        "README links docs/193",
+    )
+    require(
+        "192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md" in docs_index,
+        "docs/README links docs/192",
+    )
+    require(
+        "193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/193",
+    )
+    require("TASK-198" in codex_prompt_template, "docs/12 registers TASK-198")
+    for token, message in [
+        ("TASK-198 implements ShellAccounting manual entry DataService write wiring", "docs/192 states implementation"),
+        ("validation-first", "docs/192 keeps validation-first"),
+        ("ShellAccountingManualTransactionRepository", "docs/192 references manual transaction repository"),
+        ("ShellAccountingManualCashMovementRepository", "docs/192 references manual cash movement repository"),
+        ("does not add migrations", "docs/192 blocks migrations"),
+        ("does not modify production QML or startup", "docs/192 blocks QML/startup"),
+        ("does not write `audit_log` or ledger rows", "docs/192 blocks audit/ledger"),
+        ("Broker sandbox new capability development remains paused", "docs/192 keeps broker paused"),
+    ]:
+        require(token in task198_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/193 contains Test Matrix"),
+        ("Required Probes", "docs/193 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/193 contains Go / No-Go Checklist"),
+        ("Valid manual transaction payloads call `ShellAccountingManualTransactionRepository`", "docs/193 tests transaction repo call"),
+        ("Valid manual cash movement payloads call `ShellAccountingManualCashMovementRepository`", "docs/193 tests cash repo call"),
+        ("does not scatter SQL", "docs/193 blocks scattered SQL"),
+        ("Duplicate idempotency keys return stable idempotent responses", "docs/193 covers idempotency"),
+        ("No broker / network / credentials / endpoint / real order / automatic trading", "docs/193 retains broker boundary"),
+    ]:
+        require(token in task198_plan, message)
+    require(
+        "shell_accounting_manual_entry_dataservice_write_wiring_implementation" in task198_cmake,
+        "TASK-198 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryDataServiceWriteWiringImplementation" in tests_cmake,
+        "TASK-198 test directory registered",
+    )
+    require("persistManualTransaction" in dataservice_actions_source, "DataServiceActions wires manual transaction repository after TASK-198")
+    require("persistManualCashMovement" in dataservice_actions_source, "DataServiceActions wires manual cash repository after TASK-198")
+    require("INSERT INTO" not in dataservice_actions_source, "DataServiceActions still has no scattered INSERT after TASK-198")
     require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI after TASK-197")
     require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-197")
     return 0

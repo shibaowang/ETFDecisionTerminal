@@ -3,11 +3,11 @@
 ## Document Purpose
 
 This document defines the TASK-197 test plan for the manual entry DataService
-write wiring authorization gate. It covers documentation consistency and static
-boundaries only. It does not implement DataService runtime write wiring,
-repository calls from DataServiceActions, UI, replay, audit write, ledger write,
-broker, network, credentials, endpoint, real order placement, or automatic
-trading.
+write wiring authorization gate. TASK-198 has evolved the gate to allow only the
+authorized DataService runtime write wiring through the TASK-192 and TASK-196
+repositories. UI, replay, audit write, ledger write, broker, network,
+credentials, endpoint, real order placement, and automatic trading remain out of
+scope.
 
 ## Test Matrix
 
@@ -18,10 +18,10 @@ trading.
 - README, docs/README, and docs/12 register TASK-197.
 - docs/188 and docs/189 record that TASK-197 adds the DataService write wiring
   authorization gate while keeping TASK-196 DataAccess-only repository semantics.
-- docs/190 is authorization-only.
-- docs/190 states the current task does not modify DataServiceActions.
-- docs/190 states the current task does not wire repositories.
-- docs/190 states future DataService wiring must be a separate TASK.
+- docs/190 records TASK-197 as authorization-only.
+- docs/190 states TASK-198 implements the separately authorized wiring.
+- docs/190 states DataServiceActions may call only repository boundaries.
+- docs/190 states DataService wiring must stay validation-first.
 - docs/190 states future wiring uses the TASK-192 manual transaction repository.
 - docs/190 states future wiring uses the TASK-196 manual cash movement
   repository.
@@ -32,7 +32,7 @@ trading.
 
 ### Protected Production Files
 
-- DataServiceActions.cpp is not modified.
+- DataServiceActions.cpp is modified only for TASK-198 repository wiring.
 - DataServiceActions.h is not modified.
 - DataServiceActionRegistrar.cpp is not modified.
 - TASK-178 validation production code is not modified.
@@ -44,20 +44,23 @@ trading.
 - AccountingEngine replay is not modified.
 - StrategyEngine and MarketEngine are not modified.
 
-### Validation-Only Runtime Semantics
+### Validation-First Repository Runtime Semantics
 
-- TASK-182 validation wiring still returns `writeImplemented=false`.
-- Valid manual transaction payload still does not write database through the
-  DataService action.
-- Valid manual cash movement payload still does not write database through the
-  DataService action.
-- DataService action response still does not return persistent id.
-- DataServiceActions does not call `ShellAccountingManualTransactionRepository`.
-- DataServiceActions does not call `ShellAccountingManualCashMovementRepository`.
+- TASK-182 validation-first behavior is retained.
+- Valid manual transaction payload writes through
+  `ShellAccountingManualTransactionRepository`.
+- Valid manual cash movement payload writes through
+  `ShellAccountingManualCashMovementRepository`.
+- Invalid payloads still do not write database rows.
+- DataService action responses return sanitized local repository write results.
+- DataServiceActions calls only `ShellAccountingManualTransactionRepository`.
+- DataServiceActions calls only `ShellAccountingManualCashMovementRepository`.
 - DataServiceApi does not add runtime SQL insert / update / delete / replace.
 - DataServiceApi does not add SQLite runtime write path.
-- DataService action does not write `trade_log`, `cash_adjustment`, `audit_log`,
-  or ledger rows.
+- DataService action writes only through the repository boundary. Manual
+  transaction may write `trade_log` / `trade_execution_group`; manual cash
+  movement may write `trade_log` / `cash_adjustment`. It still does not write
+  `audit_log` or ledger rows.
 
 ### Forbidden Integrations
 
@@ -95,9 +98,10 @@ trading.
 - Forbidden production QML / startup / Presenter / Controller scan.
 - Validation-only DataService response probe.
 - No persistent id response probe.
-- No repository call in DataServiceActions probe.
+- Repository-only boundary in DataServiceActions probe.
 - No runtime SQL / SQLite write probe.
-- No trade_log / cash_adjustment / audit / ledger DataService action write probe.
+- Repository-mediated trade_log / cash_adjustment write probe.
+- No audit / ledger DataService action write probe.
 - No replay / read model / UI probe.
 - No TradeDraft / suggestion probe.
 - No broker / network / credentials / endpoint / real order / automatic trading
@@ -112,7 +116,7 @@ trading.
 - [ ] TASK-197 gate tests pass.
 - [ ] TASK-196 repository tests pass.
 - [ ] TASK-192 repository tests pass.
-- [ ] TASK-182 validation wiring tests pass.
+- [ ] TASK-182 validation-first wiring tests pass.
 - [ ] TASK-195 gate tests pass.
 - [ ] TASK-194 gate tests pass.
 - [ ] Broker gates pass.

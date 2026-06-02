@@ -3465,3 +3465,31 @@ authorized. See
 `docs/190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md`
 and
 `docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md`.
+
+## TASK-198 Manual Entry DataService Write Wiring Implementation
+
+TASK-198 implements ShellAccounting manual entry DataService write wiring for
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`. The actions remain validation-first
+and call only the already authorized DataAccess repositories after validation
+succeeds.
+
+Manual transaction writes go through
+`ShellAccountingManualTransactionRepository` and write `trade_execution_group`
++ `trade_log`. Manual cash movement writes go through
+`ShellAccountingManualCashMovementRepository` and write `trade_log` +
+`cash_adjustment`. DataService responses now return sanitized local write
+results with repository write, idempotency, duplicate, and safe error mapping
+flags.
+
+TASK-198 does not modify migrations, does not add schema files, does not modify
+DataServiceActionRegistrar, does not modify TASK-178 validation production code,
+does not modify TASK-192 or TASK-196 repositories, does not scatter SQL in
+DataServiceActions, does not modify production QML/startup or
+Presenter/Controller behavior, does not trigger AccountingEngine replay, does
+not write `audit_log` or ledger rows, does not add TradeDraft or suggestion
+implementation, does not add broker SDK, network, credentials, or endpoint
+capability, does not place real orders, and does not add automatic trading. See
+`docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md`
+and
+`docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md`.

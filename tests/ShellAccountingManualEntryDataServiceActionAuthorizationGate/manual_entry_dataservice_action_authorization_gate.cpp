@@ -219,10 +219,13 @@ void testDataServiceActionsUnmodified(const Harness& h)
     const auto text = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     requireContains(text, "handleAccountingManualEntryTransactionCreate", "DataServiceActions TASK-180 scaffold");
     requireContains(text, "handleAccountingManualEntryCashMovementCreate", "DataServiceActions TASK-180 scaffold");
-    requireContains(text, "manualEntryValidationOnlyResponse", "DataServiceActions TASK-182 validation wiring");
+    requireContains(text, "manualEntryValidationRejectedResponse", "DataServiceActions validation-first rejection wiring");
     requireContains(text, "validateManualTransactionEntry", "DataServiceActions TASK-182 validation wiring");
     requireContains(text, "validateManualCashMovement", "DataServiceActions TASK-182 validation wiring");
-    requireContains(text, "VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED", "DataServiceActions TASK-182 validation wiring");
+    requireContains(text, "ShellAccountingManualTransactionRepository repository(connection)", "DataServiceActions TASK-198 manual transaction wiring");
+    requireContains(text, "ShellAccountingManualCashMovementRepository repository(connection)", "DataServiceActions TASK-198 manual cash movement wiring");
+    requireContains(text, "persistManualTransaction", "DataServiceActions TASK-198 manual transaction write");
+    requireContains(text, "persistManualCashMovement", "DataServiceActions TASK-198 manual cash movement write");
     require(!contains(text, "insertManualTransaction"), "DataServiceActions must not implement manual transaction write");
     require(!contains(text, "insertCashMovement"), "DataServiceActions must not implement manual cash write");
 }
@@ -313,7 +316,8 @@ void testNoCashFactWrite(const Harness& h)
         "insertManualCashFact",
         "appendManualCashFact",
         "manualCashLedgerWrite",
-        "manualCashMovementWrite",
+        "cashFactsWritten\":true",
+        "cashLedgerWritten\":true",
     }, "manual entry cash facts write");
 }
 

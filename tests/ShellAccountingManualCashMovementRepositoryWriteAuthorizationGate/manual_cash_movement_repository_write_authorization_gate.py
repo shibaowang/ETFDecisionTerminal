@@ -59,6 +59,23 @@ def assert_not_changed(root: Path, relative_path: str) -> None:
     require(normalized not in changed_paths(root), f"{relative_path} must not be changed by TASK-194")
 
 
+def function_body(source: str, function_name: str) -> str:
+    start = source.find(function_name + "(")
+    require(start >= 0, f"{function_name} must exist")
+    brace = source.find("{", start)
+    require(brace >= 0, f"{function_name} body must start")
+    depth = 0
+    for index in range(brace, len(source)):
+        char = source[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return source[brace : index + 1]
+    raise AssertionError(f"{function_name} body must end")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-root", required=True)
@@ -169,7 +186,6 @@ def main() -> int:
     protected_paths = [
         "migrations/001_initial_schema.sql",
         "migrations/002_shell_accounting_manual_entry_schema.sql",
-        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
         "libs/DataServiceApi/include/DataServiceApi/ShellAccountingManualTransactionCashMovementValidation.h",
@@ -201,6 +217,25 @@ def main() -> int:
     require("ManualCashMovementWriteRepository" not in dataaccess_prod_text,
             "manual cash movement write repository implementation must not exist")
 
+    dataservice_actions = read(root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp")
+    require_contains(
+        dataservice_actions,
+        "ShellAccountingManualCashMovementRepository repository(connection)",
+        "TASK-198 DataServiceActions manual cash movement wiring",
+    )
+    require_contains(
+        dataservice_actions,
+        "ShellAccountingManualTransactionRepository repository(connection)",
+        "TASK-198 DataServiceActions manual transaction wiring",
+    )
+    for handler in [
+        function_body(dataservice_actions, "handleAccountingManualEntryTransactionCreate"),
+        function_body(dataservice_actions, "handleAccountingManualEntryCashMovementCreate"),
+    ]:
+        require("executeStatement" not in handler, "TASK-198 DataServiceActions handler must not execute SQL directly")
+        require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", handler, re.IGNORECASE) is None,
+                "TASK-198 DataServiceActions handler must not contain direct DML")
+
     production_diff = diff_text(root, "libs", "apps")
     dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", dataservice_shell_diff, re.IGNORECASE) is None,
@@ -209,7 +244,6 @@ def main() -> int:
         require(token not in production_diff, f"TASK-194 must not add runtime token {token}")
     for token in ["sqlite3_exec", "SQLite::Statement", "prepareStatement", "executeWrite"]:
         require(token not in dataservice_shell_diff, f"TASK-194 must not add SQLite runtime write token {token}")
-    require("cash_adjustment" not in dataservice_shell_diff, "TASK-194 must not add DataService/Shell cash_adjustment references")
 
     added_lines = "\n".join(
         line for line in production_diff.splitlines() if line.startswith("+") and not line.startswith("+++")

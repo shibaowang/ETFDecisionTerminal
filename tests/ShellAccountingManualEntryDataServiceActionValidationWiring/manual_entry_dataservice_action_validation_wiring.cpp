@@ -177,22 +177,18 @@ std::string validManualCashMovementPayload(std::string movementType = "Deposit")
 
 void requireValidationAcceptedWriteNotImplemented(const etfdt::protocol::ProtocolResponse& response)
 {
-    require(!response.success, "validation-only action must fail closed");
-    require(response.errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "accepted validation must still return service unavailable");
+    require(!response.success, "validation-first action without fixture database must fail safely");
     requireAll(response.payloadJson, {
-        "\"validationOnly\":true",
+        "\"validationOnly\":false",
         "\"validationAccepted\":true",
-        "\"writeImplemented\":false",
-        "\"writeEnabled\":false",
+        "\"writeImplemented\":true",
+        "\"writeEnabled\":true",
         "\"databaseWritten\":false",
-        "\"tradeLogWritten\":false",
         "\"cashFactsWritten\":false",
         "\"auditWritten\":false",
         "\"ledgerWritten\":false",
-        "\"status\":\"VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED\"",
-        "\"issues\":[]",
-    }, "accepted validation payload");
+        "\"repositoryCalled\":true",
+    }, "accepted validation-first payload");
 }
 
 void requireValidationRejected(
@@ -203,9 +199,9 @@ void requireValidationRejected(
     require(response.errorCode == etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
         "invalid validation must return validation-style error");
     requireAll(response.payloadJson, {
-        "\"validationOnly\":true",
+        "\"validationOnly\":false",
         "\"validationAccepted\":false",
-        "\"writeImplemented\":false",
+        "\"writeImplemented\":true",
         "\"databaseWritten\":false",
         "\"status\":\"VALIDATION_REJECTED\"",
     }, "rejected validation payload");
@@ -223,7 +219,9 @@ void testValidationWiring(const Harness& h)
         "manualCashMovementEntryFromPayload",
         "validateManualTransactionEntry",
         "validateManualCashMovement",
-        "manualEntryValidationOnlyResponse",
+        "manualEntryValidationRejectedResponse",
+        "manualTransactionWriteResponse",
+        "manualCashMovementWriteResponse",
     }, "DataServiceActions validation wiring");
 }
 
@@ -234,8 +232,8 @@ void testDataServiceOnlyBoundary(const Harness& h)
     const auto cash = functionBody(source, "handleAccountingManualEntryCashMovementCreate");
     requireContains(transaction, "validateManualTransactionEntry", "manual transaction handler");
     requireContains(cash, "validateManualCashMovement", "manual cash movement handler");
-    requireNotContains(transaction, "Repository", "manual transaction handler");
-    requireNotContains(cash, "Repository", "manual cash movement handler");
+    requireContains(transaction, "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(cash, "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
     requireNotContains(transaction, "executeSql", "manual transaction handler");
     requireNotContains(cash, "executeSql", "manual cash movement handler");
 }
@@ -333,15 +331,14 @@ void testValidationAcceptedWriteNotImplemented()
         validManualCashMovementPayload());
     requireValidationAcceptedWriteNotImplemented(response);
     requireNotContains(response.payloadJson, "\"persistentId\"", "manual entry validation response");
-    requireNotContains(response.payloadJson, "\"tradeLogId\"", "manual entry validation response");
     requireNotContains(response.payloadJson, "\"cashMovementId\"", "manual entry validation response");
 }
 
 void testNoDatabaseWrite(const Harness& h)
 {
     const auto source = dataServiceActions(h);
-    const auto helper = functionBody(source, "manualEntryValidationOnlyResponse");
-    requireContains(helper, "\"databaseWritten\\\":false", "validation response helper");
+    const auto helper = functionBody(source, "manualEntryValidationRejectedResponse");
+    requireContains(helper, "\"databaseWritten\\\":false", "validation rejected response helper");
     requireNotContains(functionBody(source, "handleAccountingManualEntryTransactionCreate"), "INSERT", "transaction handler");
     requireNotContains(functionBody(source, "handleAccountingManualEntryCashMovementCreate"), "INSERT", "cash handler");
 }
@@ -349,16 +346,15 @@ void testNoDatabaseWrite(const Harness& h)
 void testNoTradeLogOrCashFactWrite(const Harness& h)
 {
     const auto source = dataServiceActions(h);
-    const auto helper = functionBody(source, "manualEntryValidationOnlyResponse");
-    requireContains(helper, "\"tradeLogWritten\\\":false", "validation response helper");
-    requireContains(helper, "\"cashFactsWritten\\\":false", "validation response helper");
-    requireNotContains(functionBody(source, "handleAccountingManualEntryTransactionCreate"), "trade_log", "transaction handler");
+    const auto helper = functionBody(source, "manualEntryValidationRejectedResponse");
+    requireContains(helper, "\"tradeLogWritten\\\":false", "validation rejected response helper");
+    requireContains(helper, "\"cashFactsWritten\\\":false", "validation rejected response helper");
     requireNotContains(functionBody(source, "handleAccountingManualEntryCashMovementCreate"), "cash_facts", "cash handler");
 }
 
 void testNoAuditOrLedgerWrite(const Harness& h)
 {
-    const auto helper = functionBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto helper = functionBody(dataServiceActions(h), "manualEntryValidationRejectedResponse");
     requireContains(helper, "\"auditWritten\\\":false", "validation response helper");
     requireContains(helper, "\"ledgerWritten\\\":false", "validation response helper");
 }
@@ -368,15 +364,15 @@ void testNoRepositoryOrReplay(const Harness& h)
     const auto source = dataServiceActions(h);
     const auto transaction = functionBody(source, "handleAccountingManualEntryTransactionCreate");
     const auto cash = functionBody(source, "handleAccountingManualEntryCashMovementCreate");
-    requireNotContains(transaction, "Repository", "manual transaction handler");
-    requireNotContains(cash, "Repository", "manual cash movement handler");
+    requireContains(transaction, "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(cash, "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
     requireNotContains(transaction, "runShellAccountingReadOnlyReplay", "manual transaction handler");
     requireNotContains(cash, "runShellAccountingReadOnlyReplay", "manual cash movement handler");
 }
 
 void testNoTradeDraftSuggestionBroker(const Harness& h)
 {
-    const auto helper = functionBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto helper = functionBody(dataServiceActions(h), "manualEntryValidationRejectedResponse");
     requireContains(helper, "\"tradeDraftGenerated\\\":false", "validation response helper");
     requireContains(helper, "\"tradeSuggestionGenerated\\\":false", "validation response helper");
     requireContains(helper, "\"brokerSdkCalled\\\":false", "validation response helper");
@@ -385,7 +381,7 @@ void testNoTradeDraftSuggestionBroker(const Harness& h)
 
 void testNoNetworkCredentialsEndpoint(const Harness& h)
 {
-    const auto helper = functionBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto helper = functionBody(dataServiceActions(h), "manualEntryValidationRejectedResponse");
     requireContains(helper, "\"networkAccessed\\\":false", "validation response helper");
     requireContains(helper, "\"credentialsAccessed\\\":false", "validation response helper");
     requireContains(helper, "\"endpointAccessed\\\":false", "validation response helper");

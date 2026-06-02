@@ -209,17 +209,17 @@ etfdt::protocol::ProtocolResponse dispatchManualAction(const std::string& action
 
 void requireValidationOnlyResponse(const etfdt::protocol::ProtocolResponse& response)
 {
-    require(!response.success, "manual entry action must remain fail-closed for validation-only payload");
+    require(!response.success, "manual entry action must fail safely without an opened database");
     requireAll(response.payloadJson, {
-        "\"validationOnly\":true",
+        "\"validationOnly\":false",
         "\"validationAccepted\":true",
-        "\"writeImplemented\":false",
+        "\"writeImplemented\":true",
         "\"databaseWritten\":false",
-        "\"tradeLogWritten\":false",
-        "\"cashFactsWritten\":false",
+        "\"repositoryCalled\":true",
+        "\"repositoryWrite\":false",
         "\"auditWritten\":false",
         "\"ledgerWritten\":false",
-    }, "TASK-182 validation response");
+    }, "TASK-198 DataService repository write response");
 }
 
 void testGate(const Harness& h)

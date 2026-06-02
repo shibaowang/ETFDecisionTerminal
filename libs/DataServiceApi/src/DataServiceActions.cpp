@@ -5,6 +5,8 @@
 #include "DataServiceApi/JsonBuilders.h"
 #include "DataAccess/ShellAccountingAuditWriteRepository.h"
 #include "DataAccess/ShellAccountingBrokerOrderDryRunRepository.h"
+#include "DataAccess/ShellAccountingManualCashMovementRepository.h"
+#include "DataAccess/ShellAccountingManualTransactionRepository.h"
 #include "DataAccess/ShellAccountingReadOnlyFactsQuery.h"
 #include "DataAccess/ShellAccountingSnapshotWriteRepository.h"
 #include "DataAccess/ShellAccountingTradeDraftConfirmationRepository.h"
@@ -2319,6 +2321,17 @@ ShellAccountingManualTransactionEntry manualTransactionEntryFromPayload(const st
     return entry;
 }
 
+std::string manualTradeSideText(ShellAccountingManualTradeSide side)
+{
+    if (side == ShellAccountingManualTradeSide::Buy) {
+        return "BUY";
+    }
+    if (side == ShellAccountingManualTradeSide::Sell) {
+        return "SELL";
+    }
+    return "UNKNOWN";
+}
+
 ShellAccountingManualCashMovementEntry manualCashMovementEntryFromPayload(const std::string& payloadJson)
 {
     ShellAccountingManualCashMovementEntry entry;
@@ -2329,6 +2342,58 @@ ShellAccountingManualCashMovementEntry manualCashMovementEntryFromPayload(const 
     entry.occurredAt = extractJsonStringField(payloadJson, "occurredAt").value_or("");
     entry.sourceMemo = extractJsonStringField(payloadJson, "sourceMemo").value_or("");
     return entry;
+}
+
+std::string manualCashMovementTypeText(ShellAccountingManualCashMovementType type)
+{
+    if (type == ShellAccountingManualCashMovementType::Deposit) {
+        return "Deposit";
+    }
+    if (type == ShellAccountingManualCashMovementType::Withdrawal) {
+        return "Withdrawal";
+    }
+    return "Unknown";
+}
+
+etfdt::data_access::ShellAccountingManualTransactionWriteCommand manualTransactionCommandFromPayload(
+    const std::string& payloadJson)
+{
+    const auto entry = manualTransactionEntryFromPayload(payloadJson);
+    etfdt::data_access::ShellAccountingManualTransactionWriteCommand command;
+    command.accountId = extractJsonInt64OrStringField(payloadJson, "accountId");
+    command.portfolioId = extractJsonInt64OrStringField(payloadJson, "portfolioId");
+    command.instrumentId = extractJsonInt64OrStringField(payloadJson, "instrumentId");
+    command.securityCode = entry.securityCode;
+    command.tradeSide = manualTradeSideText(entry.tradeSide);
+    command.quantityUnits = entry.quantityUnits;
+    command.priceAmountMinor = entry.priceAmountMinor;
+    command.grossAmountMinor = entry.grossAmountMinor;
+    command.feeAmountMinor = entry.feeAmountMinor;
+    command.taxAmountMinor = entry.taxAmountMinor;
+    command.occurredAtUtc = entry.occurredAt;
+    command.sourceMemo = entry.sourceMemo;
+    command.requestId = extractJsonStringField(payloadJson, "requestId").value_or("");
+    command.idempotencyKey = extractJsonStringField(payloadJson, "idempotencyKey").value_or("");
+    return command;
+}
+
+etfdt::data_access::ShellAccountingManualCashMovementWriteCommand manualCashMovementCommandFromPayload(
+    const std::string& payloadJson)
+{
+    const auto entry = manualCashMovementEntryFromPayload(payloadJson);
+    etfdt::data_access::ShellAccountingManualCashMovementWriteCommand command;
+    command.accountId = extractJsonInt64OrStringField(payloadJson, "accountId");
+    command.portfolioId = extractJsonInt64OrStringField(payloadJson, "portfolioId");
+    command.movementType = manualCashMovementTypeText(entry.movementType);
+    command.amountMinor = entry.amountMinor;
+    command.currencyCode = extractJsonStringField(payloadJson, "currency").value_or("");
+    command.occurredAtUtc = entry.occurredAt;
+    command.sourceMemo = entry.sourceMemo;
+    command.sourceReference = extractJsonStringField(payloadJson, "sourceReference")
+                                  .value_or(extractJsonStringField(payloadJson, "externalReference").value_or(""));
+    command.requestId = extractJsonStringField(payloadJson, "requestId").value_or("");
+    command.idempotencyKey = extractJsonStringField(payloadJson, "idempotencyKey").value_or("");
+    return command;
 }
 
 ShellAccountingManualEntryValidationResult manualEntryPayloadShapeRejected()
@@ -2363,29 +2428,49 @@ std::string manualEntryValidationIssuesJson(const ShellAccountingManualEntryVali
     return payload.str();
 }
 
-etfdt::protocol::ProtocolResponse manualEntryValidationOnlyResponse(
+std::string manualEntryRepositoryIssuesJson(const std::vector<std::string>& issues)
+{
+    std::ostringstream payload;
+    payload << '[';
+    bool first = true;
+    for (const auto& issue : issues) {
+        if (!first) {
+            payload << ',';
+        }
+        payload << "{"
+                << "\"code\":" << jsonStringValue(issue) << ','
+                << "\"field\":\"repository\","
+                << "\"message\":" << jsonStringValue(issue)
+                << "}";
+        first = false;
+    }
+    payload << ']';
+    return payload.str();
+}
+
+etfdt::protocol::ProtocolResponse manualEntryValidationRejectedResponse(
     const etfdt::service_runtime::ActionContext& context,
     std::string_view actionName,
     const ShellAccountingManualEntryValidationResult& validation)
 {
     std::ostringstream payload;
-    const bool accepted = validation.valid();
     payload << "{"
             << "\"module\":\"accounting\","
             << "\"action\":" << jsonStringValue(actionName) << ','
-            << "\"implemented\":false,"
-            << "\"validationOnly\":true,"
-            << "\"validationAccepted\":" << (accepted ? "true" : "false") << ','
-            << "\"writeImplemented\":false,"
-            << "\"manualEntryEnabled\":false,"
+            << "\"implemented\":true,"
+            << "\"validationOnly\":false,"
+            << "\"validationAccepted\":false,"
+            << "\"writeImplemented\":true,"
+            << "\"manualEntryEnabled\":true,"
             << "\"writeEnabled\":false,"
             << "\"databaseWritten\":false,"
             << "\"tradeLogWritten\":false,"
+            << "\"cashAdjustmentWritten\":false,"
             << "\"cashFactsWritten\":false,"
             << "\"cashLedgerWritten\":false,"
             << "\"auditWritten\":false,"
             << "\"ledgerWritten\":false,"
-            << "\"repositoryCalled\":false,"
+            << "\"repositoryWrite\":false,"
             << "\"accountingReplayCalled\":false,"
             << "\"tradeDraftGenerated\":false,"
             << "\"tradeSuggestionGenerated\":false,"
@@ -2395,34 +2480,142 @@ etfdt::protocol::ProtocolResponse manualEntryValidationOnlyResponse(
             << "\"endpointAccessed\":false,"
             << "\"realOrderPlacement\":false,"
             << "\"automaticTrading\":false,"
-            << "\"status\":"
-            << jsonStringValue(
-                   accepted ? "VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED" : "VALIDATION_REJECTED")
-            << ','
-            << "\"reason\":"
-            << jsonStringValue(
-                   accepted ? "MANUAL_ENTRY_VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED"
-                            : "MANUAL_ENTRY_VALIDATION_FAILED")
-            << ','
-            << "\"errorCode\":"
-            << jsonStringValue(
-                   accepted ? "MANUAL_ENTRY_WRITE_NOT_IMPLEMENTED" : "MANUAL_ENTRY_VALIDATION_FAILED")
-            << ','
+            << "\"status\":\"VALIDATION_REJECTED\","
+            << "\"reason\":\"MANUAL_ENTRY_VALIDATION_FAILED\","
+            << "\"errorCode\":\"MANUAL_ENTRY_VALIDATION_FAILED\","
             << "\"issues\":" << manualEntryValidationIssuesJson(validation) << ','
-            << "\"message\":"
-            << jsonStringValue(
-                   accepted ? "Manual entry payload validation passed; write implementation is not available."
-                            : "Manual entry payload validation failed.")
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawPayloadExposed\":false,"
+            << "\"credentialsExposed\":false,\"endpointExposed\":false,\"internalStackExposed\":false},"
+            << "\"message\":\"Manual entry payload validation failed before repository write.\""
             << "}";
 
     etfdt::protocol::ProtocolResponse response;
     response.msgId = context.request.msgId;
     response.traceId = context.request.traceId;
     response.success = false;
-    response.errorCode = accepted ? etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE
-                                  : etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
-    response.errorMessage = accepted ? "Manual entry write implementation is not available"
-                                     : "Manual entry payload validation failed";
+    response.errorCode = etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
+    response.errorMessage = "Manual entry payload validation failed";
+    response.payloadJson = payload.str();
+    return response;
+}
+
+etfdt::protocol::ProtocolResponse manualTransactionWriteResponse(
+    const etfdt::service_runtime::ActionContext& context,
+    bool validationAccepted,
+    const etfdt::data_access::ShellAccountingManualTransactionWriteResult& result)
+{
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":" << jsonStringValue(kActionAccountingManualTransactionCreate) << ','
+            << "\"implemented\":true,"
+            << "\"validationOnly\":false,"
+            << "\"validationAccepted\":" << (validationAccepted ? "true" : "false") << ','
+            << "\"writeImplemented\":true,"
+            << "\"manualEntryEnabled\":true,"
+            << "\"writeEnabled\":true,"
+            << "\"databaseWritten\":" << (result.databaseWritten ? "true" : "false") << ','
+            << "\"repositoryWrite\":" << (result.success ? "true" : "false") << ','
+            << "\"repositoryCalled\":true,"
+            << "\"tradeExecutionGroupWritten\":" << (result.tradeExecutionGroupWritten ? "true" : "false") << ','
+            << "\"tradeLogWritten\":" << (result.tradeLogWritten ? "true" : "false") << ','
+            << "\"cashAdjustmentWritten\":false,"
+            << "\"cashFactsWritten\":false,"
+            << "\"cashLedgerWritten\":false,"
+            << "\"auditWritten\":false,"
+            << "\"ledgerWritten\":false,"
+            << "\"accountingReplayCalled\":false,"
+            << "\"tradeDraftGenerated\":false,"
+            << "\"tradeSuggestionGenerated\":false,"
+            << "\"brokerSdkCalled\":false,"
+            << "\"networkAccessed\":false,"
+            << "\"credentialsAccessed\":false,"
+            << "\"endpointAccessed\":false,"
+            << "\"realOrderPlacement\":false,"
+            << "\"automaticTrading\":false,"
+            << "\"transactionCommitted\":" << (result.transactionCommitted ? "true" : "false") << ','
+            << "\"idempotent\":" << (result.idempotentReplay ? "true" : "false") << ','
+            << "\"duplicate\":" << (result.duplicate ? "true" : "false") << ','
+            << "\"status\":" << jsonStringValue(result.status) << ','
+            << "\"tradeLogUid\":" << jsonStringValue(result.tradeLogUid) << ','
+            << "\"tradeExecutionGroupUid\":" << jsonStringValue(result.tradeExecutionGroupUid) << ','
+            << "\"requestId\":" << jsonStringValue(result.requestId) << ','
+            << "\"idempotencyKey\":" << jsonStringValue(result.idempotencyKey) << ','
+            << "\"allowlistTables\":[\"trade_log\",\"trade_execution_group\"],"
+            << "\"forbiddenWrites\":[\"cash_adjustment\",\"audit_log\",\"ledger\",\"trade_draft\"],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawPayloadExposed\":false,"
+            << "\"credentialsExposed\":false,\"endpointExposed\":false,\"internalStackExposed\":false},"
+            << "\"issues\":" << manualEntryRepositoryIssuesJson(result.issues)
+            << "}";
+
+    etfdt::protocol::ProtocolResponse response;
+    response.msgId = context.request.msgId;
+    response.traceId = context.request.traceId;
+    response.success = result.success;
+    if (!result.success) {
+        response.errorCode = result.errorCode;
+        response.errorMessage = "Manual transaction repository write failed safely";
+    }
+    response.payloadJson = payload.str();
+    return response;
+}
+
+etfdt::protocol::ProtocolResponse manualCashMovementWriteResponse(
+    const etfdt::service_runtime::ActionContext& context,
+    bool validationAccepted,
+    const etfdt::data_access::ShellAccountingManualCashMovementWriteResult& result)
+{
+    std::ostringstream payload;
+    payload << "{"
+            << "\"module\":\"accounting\","
+            << "\"action\":" << jsonStringValue(kActionAccountingManualCashMovementCreate) << ','
+            << "\"implemented\":true,"
+            << "\"validationOnly\":false,"
+            << "\"validationAccepted\":" << (validationAccepted ? "true" : "false") << ','
+            << "\"writeImplemented\":true,"
+            << "\"manualEntryEnabled\":true,"
+            << "\"writeEnabled\":true,"
+            << "\"databaseWritten\":" << (result.databaseWritten ? "true" : "false") << ','
+            << "\"repositoryWrite\":" << (result.success ? "true" : "false") << ','
+            << "\"repositoryCalled\":true,"
+            << "\"tradeLogWritten\":" << (result.tradeLogWritten ? "true" : "false") << ','
+            << "\"cashAdjustmentWritten\":" << (result.cashAdjustmentWritten ? "true" : "false") << ','
+            << "\"cashFactsWritten\":false,"
+            << "\"cashLedgerWritten\":false,"
+            << "\"auditWritten\":false,"
+            << "\"ledgerWritten\":false,"
+            << "\"accountingReplayCalled\":false,"
+            << "\"tradeDraftGenerated\":false,"
+            << "\"tradeSuggestionGenerated\":false,"
+            << "\"brokerSdkCalled\":false,"
+            << "\"networkAccessed\":false,"
+            << "\"credentialsAccessed\":false,"
+            << "\"endpointAccessed\":false,"
+            << "\"realOrderPlacement\":false,"
+            << "\"automaticTrading\":false,"
+            << "\"transactionCommitted\":" << (result.transactionCommitted ? "true" : "false") << ','
+            << "\"idempotent\":" << (result.idempotentReplay ? "true" : "false") << ','
+            << "\"duplicate\":" << (result.duplicate ? "true" : "false") << ','
+            << "\"status\":" << jsonStringValue(result.status) << ','
+            << "\"tradeLogUid\":" << jsonStringValue(result.tradeLogUid) << ','
+            << "\"cashAdjustmentUid\":" << jsonStringValue(result.cashAdjustmentUid) << ','
+            << "\"requestId\":" << jsonStringValue(result.requestId) << ','
+            << "\"idempotencyKey\":" << jsonStringValue(result.idempotencyKey) << ','
+            << "\"allowlistTables\":[\"trade_log\",\"cash_adjustment\"],"
+            << "\"forbiddenWrites\":[\"audit_log\",\"ledger\",\"trade_draft\"],"
+            << "\"privacy\":{\"rawSqlExposed\":false,\"rawPayloadExposed\":false,"
+            << "\"credentialsExposed\":false,\"endpointExposed\":false,\"internalStackExposed\":false},"
+            << "\"issues\":" << manualEntryRepositoryIssuesJson(result.issues)
+            << "}";
+
+    etfdt::protocol::ProtocolResponse response;
+    response.msgId = context.request.msgId;
+    response.traceId = context.request.traceId;
+    response.success = result.success;
+    if (!result.success) {
+        response.errorCode = result.errorCode;
+        response.errorMessage = "Manual cash movement repository write failed safely";
+    }
     response.payloadJson = payload.str();
     return response;
 }
@@ -2431,30 +2624,44 @@ etfdt::protocol::ProtocolResponse handleAccountingManualEntryTransactionCreate(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
     const auto validation =
         isManualEntryJsonObjectPayload(context.request.payloadJson)
             ? validateManualTransactionEntry(manualTransactionEntryFromPayload(context.request.payloadJson))
             : manualEntryPayloadShapeRejected();
-    return manualEntryValidationOnlyResponse(
+    if (!validation.valid()) {
+        return manualEntryValidationRejectedResponse(
+            context,
+            kActionAccountingManualTransactionCreate,
+            validation);
+    }
+
+    etfdt::data_access::ShellAccountingManualTransactionRepository repository(connection);
+    return manualTransactionWriteResponse(
         context,
-        kActionAccountingManualTransactionCreate,
-        validation);
+        true,
+        repository.persistManualTransaction(manualTransactionCommandFromPayload(context.request.payloadJson)));
 }
 
 etfdt::protocol::ProtocolResponse handleAccountingManualEntryCashMovementCreate(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection)
 {
-    (void)connection;
     const auto validation =
         isManualEntryJsonObjectPayload(context.request.payloadJson)
             ? validateManualCashMovement(manualCashMovementEntryFromPayload(context.request.payloadJson))
             : manualEntryPayloadShapeRejected();
-    return manualEntryValidationOnlyResponse(
+    if (!validation.valid()) {
+        return manualEntryValidationRejectedResponse(
+            context,
+            kActionAccountingManualCashMovementCreate,
+            validation);
+    }
+
+    etfdt::data_access::ShellAccountingManualCashMovementRepository repository(connection);
+    return manualCashMovementWriteResponse(
         context,
-        kActionAccountingManualCashMovementCreate,
-        validation);
+        true,
+        repository.persistManualCashMovement(manualCashMovementCommandFromPayload(context.request.payloadJson)));
 }
 
 etfdt::protocol::ProtocolResponse handlePositionList(

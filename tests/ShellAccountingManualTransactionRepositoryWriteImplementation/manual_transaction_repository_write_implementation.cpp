@@ -121,6 +121,26 @@ void requireAll(const std::string& text, const std::vector<std::string>& tokens,
     }
 }
 
+std::string functionBody(const std::string& source, const std::string& functionName)
+{
+    const auto start = source.find(functionName + "(");
+    require(start != std::string::npos, functionName + " must exist");
+    const auto brace = source.find('{', start);
+    require(brace != std::string::npos, functionName + " body must start");
+    int depth = 0;
+    for (std::size_t i = brace; i < source.size(); ++i) {
+        if (source[i] == '{') {
+            ++depth;
+        } else if (source[i] == '}') {
+            --depth;
+            if (depth == 0) {
+                return source.substr(brace, i - brace + 1U);
+            }
+        }
+    }
+    throw std::runtime_error(functionName + " body must end");
+}
+
 std::vector<fs::path> filesUnder(const fs::path& root)
 {
     std::vector<fs::path> files;
@@ -368,10 +388,15 @@ void testDataServiceActionsUnmodified(const Harness& h)
     const auto source = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     const auto header = readFile(h.root / "libs" / "DataServiceApi" / "include" / "DataServiceApi" / "DataServiceActions.h");
     const auto registrar = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActionRegistrar.cpp");
-    for (const auto& text : {source, header, registrar}) {
+    for (const auto& text : {header, registrar}) {
         requireNotContains(text, "ShellAccountingManualTransactionRepository", "DataServiceActions boundary");
         requireNotContains(text, "persistManualTransaction", "DataServiceActions boundary");
     }
+    requireContains(source, "ShellAccountingManualTransactionRepository repository(connection)",
+        "TASK-198 DataServiceActions wiring");
+    requireNotContains(functionBody(source, "handleAccountingManualEntryTransactionCreate"),
+        "executeStatement",
+        "TASK-198 manual transaction handler");
 }
 
 void testValidationCodeUnmodified(const Harness& h)
@@ -399,9 +424,11 @@ void testDataAccessOnly(const Harness& h)
 
 void testNotInDataServiceApi(const Harness& h)
 {
-    requireNotContains(joinFiles(filesUnder(h.root / "libs" / "DataServiceApi")),
-        "ShellAccountingManualTransactionRepository",
-        "DataServiceApi scan");
+    const auto actions = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
+    requireContains(actions, "ShellAccountingManualTransactionRepository", "TASK-198 DataServiceApi wiring");
+    requireNotContains(functionBody(actions, "handleAccountingManualEntryTransactionCreate"),
+        "INSERT",
+        "TASK-198 manual transaction handler");
 }
 
 void testNotInShell(const Harness& h)
@@ -690,8 +717,8 @@ void testTask190StillValid(const Harness& h)
 void testTask182ValidationOnly(const Harness& h)
 {
     requireContains(readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"),
-        "\"writeImplemented\\\":false",
-        "TASK-182 DataService validation-only response");
+        "\"writeImplemented\\\":true",
+        "TASK-198 DataService repository write response");
 }
 
 void testTask178ValidationRetained(const Harness& h)

@@ -272,9 +272,15 @@ void testNoDataServiceActionsManualEntryAction(const Harness& harness)
     const auto source = readFile(harness.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     require(!contains(source, "accounting.manual_transaction"), "DataServiceActions must not use raw manual transaction action string");
     require(!contains(source, "accounting.cash_movement"), "DataServiceActions must not use deprecated cash movement action string");
-    require(contains(source, "manualEntryValidationOnlyResponse"), "DataServiceActions may contain TASK-182 validation-only manual entry action");
+    require(contains(source, "manualEntryValidationRejectedResponse"), "DataServiceActions keeps validation-first rejection path");
     require(contains(source, "validateManualTransactionEntry"), "DataServiceActions may contain TASK-182 manual transaction validation wiring");
     require(contains(source, "validateManualCashMovement"), "DataServiceActions may contain TASK-182 manual cash validation wiring");
+    require(contains(source, "ShellAccountingManualTransactionRepository repository(connection)"),
+        "DataServiceActions may contain TASK-198 manual transaction repository wiring");
+    require(contains(source, "ShellAccountingManualCashMovementRepository repository(connection)"),
+        "DataServiceActions may contain TASK-198 manual cash movement repository wiring");
+    require(contains(source, "persistManualTransaction"), "DataServiceActions may call TASK-192 repository through TASK-198 wiring");
+    require(contains(source, "persistManualCashMovement"), "DataServiceActions may call TASK-196 repository through TASK-198 wiring");
     require(!contains(source, "insertManualTransaction"), "DataServiceActions must not implement manual transaction write");
     require(!contains(source, "insertCashMovement"), "DataServiceActions must not implement manual cash write");
     require(!contains(source, "recordManualBuy"), "DataServiceActions must not expose manual buy write shortcut");

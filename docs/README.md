@@ -667,6 +667,17 @@
   defines TASK-188 static probes for future schema implementation boundaries,
   no schema drift, no DataService action drift, no repository implementation,
   no SQL/SQLite writes, and retained broker gates.
+- ShellAccounting manual entry schema implementation authorization gate:
+  [176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md](176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md)
+  records TASK-189 gate-only policy for future manual entry schema
+  implementation while keeping schema, migrations, repository writes, and
+  broker capabilities unchanged.
+- ShellAccounting manual entry schema implementation authorization test plan:
+  [177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md](177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md)
+  defines TASK-189 static probes for independent migration authorization,
+  migration id / rollback / compatibility policy, no schema drift, no
+  DataService action drift, no repository implementation, no SQL/SQLite
+  writes, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

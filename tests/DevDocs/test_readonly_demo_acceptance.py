@@ -11830,6 +11830,168 @@ def main() -> int:
             ctest_name in shell_accounting_manual_entry_schema_gap_authorization_cmake,
             f"TASK-188 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_schema_implementation_authorization_doc_path = (
+        root / "docs" / "176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md"
+    )
+    shell_accounting_manual_entry_schema_implementation_authorization_plan_path = (
+        root / "docs" / "177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md"
+    )
+    shell_accounting_manual_entry_schema_implementation_authorization_cmake_path = (
+        root / "tests" / "ShellAccountingManualEntrySchemaImplementationAuthorizationGate" / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_entry_schema_implementation_authorization_doc_path.exists(), "docs/176 exists")
+    require(shell_accounting_manual_entry_schema_implementation_authorization_plan_path.exists(), "docs/177 exists")
+    require(
+        shell_accounting_manual_entry_schema_implementation_authorization_cmake_path.exists(),
+        "TASK-189 tests CMake exists",
+    )
+    shell_accounting_manual_entry_schema_implementation_authorization_doc = (
+        shell_accounting_manual_entry_schema_implementation_authorization_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_implementation_authorization_plan = (
+        shell_accounting_manual_entry_schema_implementation_authorization_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_schema_implementation_authorization_cmake = (
+        shell_accounting_manual_entry_schema_implementation_authorization_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md" in readme,
+        "README links docs/176",
+    )
+    require(
+        "docs/177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md" in readme,
+        "README links docs/177",
+    )
+    require(
+        "176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md" in docs_index,
+        "docs/README links docs/176",
+    )
+    require(
+        "177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/177",
+    )
+    require("TASK-189" in codex_prompt_template, "docs/12 registers TASK-189")
+    require("TASK-189" in shell_accounting_manual_entry_schema_implementation_authorization_doc, "docs/176 mentions TASK-189")
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_schema_implementation_authorization_plan,
+        "docs/177 contains Test Matrix",
+    )
+    require(
+        "TASK-189" in shell_accounting_manual_entry_schema_gap_authorization_doc,
+        "docs/174 mentions TASK-189 follow-up",
+    )
+    require(
+        "TASK-189 schema implementation authorization gate" in shell_accounting_manual_entry_schema_gap_authorization_plan,
+        "docs/175 references TASK-189 gate",
+    )
+    for token, message in [
+        ("schema implementation authorization gate-only", "docs/176 states authorization-only"),
+        ("migrations/001_initial_schema.sql", "docs/176 names initial schema"),
+        ("source of truth", "docs/176 states source of truth"),
+        ("does not modify schema", "docs/176 forbids current schema changes"),
+        ("does not add a migration", "docs/176 forbids current migrations"),
+        ("does not add a schema file", "docs/176 forbids current schema files"),
+        ("does not implement repository implementation", "docs/176 forbids repository implementation"),
+        ("does not write a database", "docs/176 forbids database writes"),
+        ("does not execute SQL", "docs/176 forbids SQL execution"),
+        ("does not modify DataServiceActions", "docs/176 forbids DataServiceActions changes"),
+        ("independent migration file", "docs/176 requires independent migration"),
+        ("must not directly edit", "docs/176 forbids direct initial schema edits"),
+        ("migration filename / id policy", "docs/176 documents migration id policy"),
+        ("rollback / forward-fix policy", "docs/176 documents rollback policy"),
+        ("compatibility with existing CTest and read-only demo", "docs/176 documents compatibility"),
+        ("manual transaction trace / idempotency fields", "docs/176 documents transaction trace categories"),
+        ("manual transaction `request_id`", "docs/176 documents transaction request_id"),
+        ("manual transaction `idempotency_key`", "docs/176 documents transaction idempotency_key"),
+        ("manual transaction tax amount support", "docs/176 documents tax category"),
+        ("manual cash movement trace / idempotency fields", "docs/176 documents cash trace categories"),
+        ("manual cash movement type mapping support", "docs/176 documents movement type mapping"),
+        ("cash adjustment / trade_log linkage support", "docs/176 documents cash linkage"),
+        ("audit trace / payload classification / redaction support", "docs/176 documents audit privacy category"),
+        ("failure atomicity / rollback policy support", "docs/176 documents rollback support"),
+        ("Future repository implementation may continue only after the schema gaps are resolved", "docs/176 gates repository implementation"),
+        ("Broker sandbox new capability development remains paused", "docs/176 keeps broker sandbox paused"),
+        ("no-network", "docs/176 retains no-network gate"),
+        ("no-credentials", "docs/176 retains no-credentials gate"),
+        ("no-order-placement", "docs/176 retains no-order-placement gate"),
+    ]:
+        require(token in shell_accounting_manual_entry_schema_implementation_authorization_doc, message)
+    for forbidden, message in [
+        ("TASK-189", "initial schema has no TASK-189 marker"),
+        ("manual_entry_schema_implementation", "initial schema has no TASK-189 schema marker"),
+        ("idempotency_key", "initial schema still has no idempotency_key"),
+        ("tax_cents", "initial schema still has no tax_cents"),
+        ("occurred_at_utc", "initial schema still has no occurred_at_utc"),
+    ]:
+        require(forbidden not in initial_schema, message)
+    require("TASK-189" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-189 marker")
+    require("TASK-189" not in dataservice_actions_header, "DataServiceActions.h has no TASK-189 marker")
+    require("TASK-189" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-189 marker")
+    require("TASK-189" not in shell_accounting_manual_validation_header, "TASK-178 validation header has no TASK-189 marker")
+    require("TASK-189" not in shell_accounting_manual_validation_source, "TASK-178 validation source has no TASK-189 marker")
+    require("TASK-189" not in shell_accounting_manual_entry_repository_scaffold_header, "TASK-185 scaffold header has no TASK-189 marker")
+    require("TASK-189" not in shell_accounting_manual_entry_repository_scaffold_source, "TASK-185 scaffold source has no TASK-189 marker")
+    for forbidden in [
+        "ManualEntryImplementationRepository",
+        "ManualEntryWriteRepository",
+        "ManualEntryPersistenceRepository",
+        "ManualTransactionWriteRepository",
+        "ManualCashMovementWriteRepository",
+    ]:
+        require(
+            forbidden not in dataaccess_cmake,
+            f"TASK-189 did not register repository implementation token {forbidden}",
+        )
+    task189_ctests = [
+        "shell_accounting_manual_entry_schema_implementation_authorization_gate",
+        "shell_accounting_manual_entry_schema_implementation_authorization_docs",
+        "shell_accounting_manual_entry_schema_implementation_authorization_docs_index_prompt",
+        "shell_accounting_manual_entry_schema_implementation_authorization_source_of_truth",
+        "shell_accounting_manual_entry_schema_implementation_authorization_authorization_only",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_schema_current_scope",
+        "shell_accounting_manual_entry_schema_implementation_authorization_future_migration_readiness",
+        "shell_accounting_manual_entry_schema_implementation_authorization_future_migration_candidate_categories",
+        "shell_accounting_manual_entry_schema_implementation_authorization_manual_transaction_categories",
+        "shell_accounting_manual_entry_schema_implementation_authorization_manual_cash_categories",
+        "shell_accounting_manual_entry_schema_implementation_authorization_audit_privacy_categories",
+        "shell_accounting_manual_entry_schema_implementation_authorization_repository_wait_policy",
+        "shell_accounting_manual_entry_schema_implementation_authorization_schema_unmodified",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_new_migration",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_schema_file",
+        "shell_accounting_manual_entry_schema_implementation_authorization_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_schema_implementation_authorization_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_schema_implementation_authorization_registrar_unmodified",
+        "shell_accounting_manual_entry_schema_implementation_authorization_validation_code_unmodified",
+        "shell_accounting_manual_entry_schema_implementation_authorization_scaffold_unmodified",
+        "shell_accounting_manual_entry_schema_implementation_authorization_scaffold_disabled",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task182_validation_only",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_repository_implementation",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_sql_added",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_cash_fact_write",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_broker_sdk",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_credentials",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_real_order_placement",
+        "shell_accounting_manual_entry_schema_implementation_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_schema_implementation_authorization_broker_policy",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task188_still_valid",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task187_still_valid",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task186_still_valid",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task185_still_valid",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task182_still_valid",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task178_still_pure",
+        "shell_accounting_manual_entry_schema_implementation_authorization_task177_still_valid",
+        "shell_accounting_manual_entry_schema_implementation_authorization_broker_gates_retained",
+    ]
+    for ctest_name in task189_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_schema_implementation_authorization_cmake,
+            f"TASK-189 CTest exists: {ctest_name}",
+        )
     return 0
 
 

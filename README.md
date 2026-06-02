@@ -3268,3 +3268,31 @@ disabled, fail-closed, no-real-order, no-network, no-credentials, and
 no-order-placement gates remain retained. See
 `docs/174_shell_accounting_manual_entry_schema_gap_authorization_gate.md` and
 `docs/175_shell_accounting_manual_entry_schema_gap_authorization_test_plan.md`.
+
+## TASK-189 Manual Entry Schema Implementation Authorization Gate
+
+TASK-189 adds a gate-only authorization boundary for future manual entry schema
+implementation. It follows TASK-188 and defines readiness rules for an
+independent migration file, migration id, rollback / forward-fix policy,
+compatibility, idempotency, manual transaction candidate fields, manual cash
+movement candidate fields, and audit / rollback / privacy categories.
+
+TASK-189 does not modify `migrations/001_initial_schema.sql`, does not add a
+migration, does not add a schema file, does not implement repository writes,
+does not execute SQL, does not write SQLite, and does not modify
+DataServiceActions, TASK-178 validation production code, TASK-185 repository
+scaffold code, QML, startup, replay, broker, strategy, or automatic trading
+code.
+
+Future schema implementation must be separately authorized, must add an
+independent migration file, and must not directly edit
+`migrations/001_initial_schema.sql`. Future repository implementation and
+DataService write implementation must remain separate tasks and must wait until
+schema gaps are resolved or a lossless mapping is separately authorized.
+
+Broker sandbox new capability development remains paused, and existing broker
+disabled, fail-closed, no-real-order, no-network, no-credentials, and
+no-order-placement gates remain retained. See
+`docs/176_shell_accounting_manual_entry_schema_implementation_authorization_gate.md`
+and
+`docs/177_shell_accounting_manual_entry_schema_implementation_authorization_test_plan.md`.

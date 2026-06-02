@@ -1,77 +1,72 @@
-# ShellAccounting Manual Entry Schema Gap Authorization Test Plan
+# ShellAccounting Manual Entry Schema Implementation Authorization Test Plan
 
 ## Document Purpose
 
-TASK-188 defines the test plan for a future manual entry schema gap resolution
+TASK-189 defines the test plan for a future manual entry schema implementation
 authorization boundary. This document does not implement schema changes,
-migrations, repository writes, SQL execution, SQLite writes, broker
-integration, network calls, credentials, endpoints, real order placement, or
-automatic trading.
+migrations, schema files, repository writes, SQL execution, SQLite writes,
+broker integration, network calls, credentials, endpoints, real order
+placement, or automatic trading.
 
 ## Test Matrix
 
 A. Documentation and indexing
 
-- docs/174 exists.
-- docs/175 exists.
-- README links docs/174 and docs/175.
-- docs/README links docs/174 and docs/175.
-- docs/12 registers TASK-188.
-- docs/174 states schema gap authorization-only.
-- docs/174 states `migrations/001_initial_schema.sql` remains source of truth.
+- docs/176 exists.
+- docs/177 exists.
+- README links docs/176 and docs/177.
+- docs/README links docs/176 and docs/177.
+- docs/12 registers TASK-189.
+- docs/176 states schema implementation authorization-only.
+- docs/176 states `migrations/001_initial_schema.sql` remains source of truth.
 
-B. Schema boundary
+B. Schema implementation authorization boundary
 
-- TASK-188 does not modify `migrations/001_initial_schema.sql`.
-- TASK-188 does not add a migration.
-- TASK-188 does not add a schema file.
+- TASK-189 does not modify `migrations/001_initial_schema.sql`.
+- TASK-189 does not add a migration.
+- TASK-189 does not add a schema file.
+- TASK-189 does not add tables, columns, indexes, or constraints.
 - Future schema implementation must add an independent migration file.
 - Future schema implementation must not directly edit
   `migrations/001_initial_schema.sql`.
+- Future schema implementation must declare migration id / rollback /
+  compatibility policy.
 - Future schema implementation must be separately authorized.
 
-C. Manual transaction gaps
+C. Manual transaction candidate categories
 
-- docs/174 lists `request_id`.
-- docs/174 lists `idempotency_key`.
-- docs/174 lists `occurred_at_utc`.
-- docs/174 lists `tax_cents` or equivalent lossless tax mapping.
-- docs/174 lists manual transaction duplicate handling.
-- docs/174 lists transaction boundary between manual transaction write and
-  audit write.
-- docs/174 lists memo / sourceMemo sanitization.
+- docs/176 lists manual transaction trace / idempotency fields.
+- docs/176 lists `request_id`.
+- docs/176 lists `idempotency_key`.
+- docs/176 lists occurredAt / `occurred_at_utc`.
+- docs/176 lists tax amount support / `tax_cents`.
+- docs/176 lists duplicate handling constraints.
 
-D. Manual cash movement gaps
+D. Manual cash movement candidate categories
 
-- docs/174 lists `request_id`.
-- docs/174 lists `idempotency_key`.
-- docs/174 lists `occurred_at_utc`.
-- docs/174 lists `movement_type` stable mapping.
-- docs/174 lists `cash_adjustment` / `trade_log` transaction linkage.
-- docs/174 lists whether all manual cash movements require both `trade_log`
-  and `cash_adjustment`.
-- docs/174 lists cash movement duplicate handling.
-- docs/174 lists cash movement write and audit write transaction boundary.
-- docs/174 lists memo / sourceMemo sanitization.
+- docs/176 lists manual cash movement trace / idempotency fields.
+- docs/176 lists `request_id`.
+- docs/176 lists `idempotency_key`.
+- docs/176 lists occurredAt / `occurred_at_utc`.
+- docs/176 lists movement type mapping support.
+- docs/176 lists cash adjustment / trade_log linkage support.
 
-E. Audit / rollback / privacy gaps
+E. Audit / rollback / privacy candidate categories
 
-- docs/174 lists audit request trace.
-- docs/174 lists audit idempotency.
-- docs/174 lists payload classification.
-- docs/174 lists redaction status.
-- docs/174 lists sanitized payload policy.
-- docs/174 lists failure atomicity.
-- docs/174 lists partial write rollback.
-- docs/174 lists sanitized memo and source reference policy.
+- docs/176 lists audit trace.
+- docs/176 lists payload classification.
+- docs/176 lists redaction support.
+- docs/176 lists failure atomicity.
+- docs/176 lists rollback policy support.
+- docs/176 lists sanitized memo / source reference support.
 
 F. Production boundary
 
-- DataServiceActions.cpp is not modified by TASK-188.
-- DataServiceActions.h is not modified by TASK-188.
-- DataServiceActionRegistrar.cpp is not modified by TASK-188.
-- TASK-178 validation production code is not modified by TASK-188.
-- TASK-185 repository scaffold header/source are not modified by TASK-188.
+- DataServiceActions.cpp is not modified by TASK-189.
+- DataServiceActions.h is not modified by TASK-189.
+- DataServiceActionRegistrar.cpp is not modified by TASK-189.
+- TASK-178 validation production code is not modified by TASK-189.
+- TASK-185 repository scaffold header/source are not modified by TASK-189.
 - TASK-185 scaffold remains disabled and write-not-implemented.
 - TASK-182 validation wiring remains validation-only with `writeImplemented=false`.
 - No repository implementation is added.
@@ -96,6 +91,7 @@ G. Trading and broker safety
 
 H. Regression
 
+- TASK-188 schema gap authorization tests pass.
 - TASK-187 schema adequacy review tests pass.
 - TASK-186 repository implementation authorization tests pass.
 - TASK-185 repository scaffold tests pass.
@@ -131,11 +127,10 @@ H. Regression
 
 ## Go / No-Go Checklist
 
-- [ ] docs/174 merged.
-- [ ] docs/175 merged.
-- [ ] TASK-189 schema implementation authorization gate merged before any
-      future schema implementation.
-- [ ] README, docs/README, and docs/12 register TASK-188.
+- [ ] docs/176 merged.
+- [ ] docs/177 merged.
+- [ ] README, docs/README, and docs/12 register TASK-189.
+- [ ] TASK-189 schema implementation authorization gate tests pass.
 - [ ] TASK-188 schema gap authorization gate tests pass.
 - [ ] TASK-187 schema adequacy review tests pass.
 - [ ] TASK-186 repository implementation authorization tests pass.

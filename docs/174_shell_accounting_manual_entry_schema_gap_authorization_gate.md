@@ -169,6 +169,12 @@ Future schema implementation must be a separately authorized TASK. It must add
 an independent migration file and must not directly edit
 `migrations/001_initial_schema.sql`.
 
+TASK-189 adds the manual entry schema implementation authorization gate. It is
+still gate-only: it does not modify schema, add a migration, add a schema file,
+implement repository writes, execute SQL, write SQLite, or change
+DataServiceActions. Schema implementation remains unimplemented until a later
+separately authorized migration task.
+
 Future repository implementation, DataService action write implementation,
 AccountingEngine replay integration, production UI work, TradeDraft work,
 broker work, strategy work, automatic trading, and real order placement must

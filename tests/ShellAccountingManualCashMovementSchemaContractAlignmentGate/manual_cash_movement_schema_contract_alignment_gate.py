@@ -189,7 +189,16 @@ def main() -> int:
         not any(path.startswith("libs/DataAccess/") and path not in allowed_task196_dataaccess for path in changes),
         "TASK-195/TASK-196 alignment only allows the authorized DataAccess manual cash movement repository",
     )
-    require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "TASK-195 must not modify production QML")
+    allowed_task200_qml = {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}
+    unexpected_qml_changes = [
+        path for path in changes
+        if path.startswith("apps/ETFDecisionShell/qml/") and path not in allowed_task200_qml
+    ]
+    require(
+        not unexpected_qml_changes,
+        "TASK-195/TASK-200 must not modify unauthorized production QML: "
+        + ", ".join(unexpected_qml_changes),
+    )
     require(not any(path.startswith("libs/AccountingEngine/") for path in changes), "TASK-195 must not modify AccountingEngine")
 
     dataservice_actions = read(root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp")

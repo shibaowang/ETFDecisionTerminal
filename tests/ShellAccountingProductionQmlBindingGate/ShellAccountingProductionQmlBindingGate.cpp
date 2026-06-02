@@ -169,8 +169,6 @@ std::vector<std::string> forbiddenRuntimeAccessTokens()
         "position_snapshot",
         "portfolio_summary",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
     };
 }
 

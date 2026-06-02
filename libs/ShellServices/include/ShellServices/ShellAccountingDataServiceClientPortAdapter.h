@@ -35,6 +35,10 @@ public:
         const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callTradeDraftConfirm(
         const ShellAccountingDataServiceClientRequest& request) override;
+    [[nodiscard]] ShellAccountingDataServiceClientResponse callManualTransactionCreate(
+        const ShellAccountingDataServiceClientRequest& request) override;
+    [[nodiscard]] ShellAccountingDataServiceClientResponse callManualCashMovementCreate(
+        const ShellAccountingDataServiceClientRequest& request) override;
 
 private:
     std::shared_ptr<etfdt::data_service_client::DataServiceClient> client_;

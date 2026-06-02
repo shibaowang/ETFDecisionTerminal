@@ -166,6 +166,31 @@ QString stringField(const QJsonObject& object, const char* name)
     return {};
 }
 
+bool boolField(const QJsonObject& object, const char* name)
+{
+    const auto value = object.value(QString::fromUtf8(name));
+    return value.isBool() && value.toBool();
+}
+
+bool positiveIntegerText(const QString& text)
+{
+    bool ok = false;
+    const auto value = text.trimmed().toLongLong(&ok);
+    return ok && value > 0;
+}
+
+bool nonNegativeIntegerText(const QString& text)
+{
+    bool ok = false;
+    const auto value = text.trimmed().toLongLong(&ok);
+    return ok && value >= 0;
+}
+
+std::string trimmedStdString(const QString& text)
+{
+    return text.trimmed().toStdString();
+}
+
 }  // namespace
 
 ShellAccountingPresenter::ShellAccountingPresenter(QObject* parent)
@@ -231,6 +256,26 @@ QString ShellAccountingPresenter::draftUid() const
 QString ShellAccountingPresenter::ledgerStatus() const
 {
     return ledgerStatus_;
+}
+
+bool ShellAccountingPresenter::manualEntryBusy() const noexcept
+{
+    return manualEntryBusy_;
+}
+
+QString ShellAccountingPresenter::lastManualEntryStatus() const
+{
+    return lastManualEntryStatus_;
+}
+
+QString ShellAccountingPresenter::lastManualEntryIssue() const
+{
+    return lastManualEntryIssue_;
+}
+
+QString ShellAccountingPresenter::lastManualEntryResult() const
+{
+    return lastManualEntryResult_;
 }
 
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
@@ -454,6 +499,117 @@ void ShellAccountingPresenter::resetTradingUi()
     emit tradingUiStateChanged();
 }
 
+bool ShellAccountingPresenter::submitManualTransaction(
+    const QString& accountId,
+    const QString& portfolioId,
+    const QString& instrumentId,
+    const QString& securityCode,
+    const QString& side,
+    const QString& quantityUnits,
+    const QString& priceAmountMinor,
+    const QString& grossAmountMinor,
+    const QString& feeAmountMinor,
+    const QString& taxAmountMinor,
+    const QString& occurredAt,
+    const QString& sourceMemo,
+    const QString& requestId,
+    const QString& idempotencyKey)
+{
+    if (!controller_) {
+        markManualEntryInputError(QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.manual_transaction.create");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeManualTransactionRequest(
+        accountId,
+        portfolioId,
+        instrumentId,
+        securityCode,
+        side,
+        quantityUnits,
+        priceAmountMinor,
+        grossAmountMinor,
+        feeAmountMinor,
+        taxAmountMinor,
+        occurredAt,
+        sourceMemo,
+        requestId,
+        idempotencyKey,
+        valid);
+    if (!valid) {
+        return false;
+    }
+
+    manualEntryBusy_ = true;
+    lastManualEntryStatus_ = QStringLiteral("SUBMITTING");
+    lastManualEntryIssue_.clear();
+    emit manualEntryStateChanged();
+    const auto result = controller_->submitManualTransaction(request);
+    manualEntryBusy_ = false;
+    applyManualEntryResult(result, QStringLiteral("Manual transaction write failed."));
+    syncFromController();
+    return lastManualEntryStatus_ == QStringLiteral("OK")
+        || lastManualEntryStatus_ == QStringLiteral("DUPLICATE");
+}
+
+bool ShellAccountingPresenter::submitManualCashMovement(
+    const QString& accountId,
+    const QString& portfolioId,
+    const QString& movementType,
+    const QString& amountMinor,
+    const QString& currency,
+    const QString& occurredAt,
+    const QString& sourceMemo,
+    const QString& sourceReference,
+    const QString& requestId,
+    const QString& idempotencyKey)
+{
+    if (!controller_) {
+        markManualEntryInputError(QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.manual_cash_movement.create");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeManualCashMovementRequest(
+        accountId,
+        portfolioId,
+        movementType,
+        amountMinor,
+        currency,
+        occurredAt,
+        sourceMemo,
+        sourceReference,
+        requestId,
+        idempotencyKey,
+        valid);
+    if (!valid) {
+        return false;
+    }
+
+    manualEntryBusy_ = true;
+    lastManualEntryStatus_ = QStringLiteral("SUBMITTING");
+    lastManualEntryIssue_.clear();
+    emit manualEntryStateChanged();
+    const auto result = controller_->submitManualCashMovement(request);
+    manualEntryBusy_ = false;
+    applyManualEntryResult(result, QStringLiteral("Manual cash movement write failed."));
+    syncFromController();
+    return lastManualEntryStatus_ == QStringLiteral("OK")
+        || lastManualEntryStatus_ == QStringLiteral("DUPLICATE");
+}
+
+void ShellAccountingPresenter::resetManualEntryUi()
+{
+    manualEntryBusy_ = false;
+    lastManualEntryStatus_ = QStringLiteral("READY");
+    lastManualEntryIssue_.clear();
+    lastManualEntryResult_.clear();
+    emit manualEntryStateChanged();
+}
+
 void ShellAccountingPresenter::reset()
 {
     controller_.reset();
@@ -463,6 +619,7 @@ void ShellAccountingPresenter::reset()
     positions_.clearRows();
     positions_.setPrivacyMode(false);
     resetTradingUi();
+    resetManualEntryUi();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -540,6 +697,47 @@ void ShellAccountingPresenter::applyTradingResult(
     emit tradingUiStateChanged();
 }
 
+void ShellAccountingPresenter::applyManualEntryResult(
+    const ShellAccountingServiceResult& result,
+    const QString& fallback)
+{
+    const auto payload = payloadObject(result);
+    const auto status = stringField(payload, "status");
+    const bool idempotent = boolField(payload, "idempotent") || boolField(payload, "duplicate");
+    const bool ok = result.protocolSuccess && result.implemented
+        && (status == QStringLiteral("OK") || status == QStringLiteral("DUPLICATE"));
+
+    if (!ok) {
+        lastManualEntryStatus_ = status.isEmpty() ? QStringLiteral("ERROR") : status;
+        lastManualEntryIssue_ = issueTextFromResult(result);
+        if (lastManualEntryIssue_.isEmpty()) {
+            lastManualEntryIssue_ = fallback;
+        }
+        lastManualEntryResult_.clear();
+        emit manualEntryStateChanged();
+        return;
+    }
+
+    lastManualEntryStatus_ = idempotent ? QStringLiteral("DUPLICATE") : QStringLiteral("OK");
+    lastManualEntryIssue_.clear();
+    lastManualEntryResult_ = QStringLiteral(
+        "databaseWritten=%1 tradeLogWritten=%2 cashAdjustmentWritten=%3 idempotent=%4")
+        .arg(boolField(payload, "databaseWritten") ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(boolField(payload, "tradeLogWritten") ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(boolField(payload, "cashAdjustmentWritten") ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(idempotent ? QStringLiteral("true") : QStringLiteral("false"));
+    emit manualEntryStateChanged();
+}
+
+void ShellAccountingPresenter::markManualEntryInputError(const QString& message)
+{
+    manualEntryBusy_ = false;
+    lastManualEntryStatus_ = QStringLiteral("INPUT_ERROR");
+    lastManualEntryIssue_ = message;
+    lastManualEntryResult_.clear();
+    emit manualEntryStateChanged();
+}
+
 ShellAccountingServiceRequest ShellAccountingPresenter::makeDraftCreateRequest(
     const QString& accountId,
     const QString& portfolioId,
@@ -609,6 +807,115 @@ ShellAccountingServiceRequest ShellAccountingPresenter::makeDraftConfirmRequest(
     if (!draftIdOk || request.draftId <= 0) {
         return request;
     }
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeManualTransactionRequest(
+    const QString& accountId,
+    const QString& portfolioId,
+    const QString& instrumentId,
+    const QString& securityCode,
+    const QString& side,
+    const QString& quantityUnits,
+    const QString& priceAmountMinor,
+    const QString& grossAmountMinor,
+    const QString& feeAmountMinor,
+    const QString& taxAmountMinor,
+    const QString& occurredAt,
+    const QString& sourceMemo,
+    const QString& requestId,
+    const QString& idempotencyKey,
+    bool& valid)
+{
+    valid = false;
+    const auto normalizedSide = side.trimmed().toUpper();
+    if (accountId.trimmed().isEmpty() || portfolioId.trimmed().isEmpty()
+        || instrumentId.trimmed().isEmpty() || securityCode.trimmed().isEmpty()
+        || occurredAt.trimmed().isEmpty() || sourceMemo.trimmed().isEmpty()
+        || requestId.trimmed().isEmpty() || idempotencyKey.trimmed().isEmpty()) {
+        markManualEntryInputError(QStringLiteral(
+            "Account, portfolio, instrument, security, occurredAt, memo, requestId, and idempotencyKey are required."));
+        return {};
+    }
+    if (normalizedSide != QStringLiteral("BUY") && normalizedSide != QStringLiteral("SELL")) {
+        markManualEntryInputError(QStringLiteral("Manual transaction side must be BUY or SELL."));
+        return {};
+    }
+    if (!positiveIntegerText(quantityUnits) || !positiveIntegerText(priceAmountMinor)
+        || !positiveIntegerText(grossAmountMinor) || !nonNegativeIntegerText(feeAmountMinor)
+        || !nonNegativeIntegerText(taxAmountMinor)) {
+        markManualEntryInputError(QStringLiteral(
+            "Quantity, price, and gross amount must be positive; fee and tax must be zero or greater."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.manual_transaction.create";
+    request.accountId = trimmedStdString(accountId);
+    request.portfolioId = trimmedStdString(portfolioId);
+    request.instrumentId = trimmedStdString(instrumentId);
+    request.securityCode = trimmedStdString(securityCode);
+    request.tradeSide = normalizedSide == QStringLiteral("BUY") ? "Buy" : "Sell";
+    request.quantityUnits = trimmedStdString(quantityUnits);
+    request.priceAmountMinor = trimmedStdString(priceAmountMinor);
+    request.grossAmountMinor = trimmedStdString(grossAmountMinor);
+    request.feeAmountMinor = trimmedStdString(feeAmountMinor);
+    request.taxAmountMinor = trimmedStdString(taxAmountMinor);
+    request.occurredAt = trimmedStdString(occurredAt);
+    request.sourceMemo = trimmedStdString(sourceMemo);
+    request.requestId = trimmedStdString(requestId);
+    request.idempotencyKey = trimmedStdString(idempotencyKey);
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeManualCashMovementRequest(
+    const QString& accountId,
+    const QString& portfolioId,
+    const QString& movementType,
+    const QString& amountMinor,
+    const QString& currency,
+    const QString& occurredAt,
+    const QString& sourceMemo,
+    const QString& sourceReference,
+    const QString& requestId,
+    const QString& idempotencyKey,
+    bool& valid)
+{
+    valid = false;
+    const auto normalizedType = movementType.trimmed();
+    if (accountId.trimmed().isEmpty() || portfolioId.trimmed().isEmpty()
+        || currency.trimmed().isEmpty() || occurredAt.trimmed().isEmpty()
+        || sourceMemo.trimmed().isEmpty() || sourceReference.trimmed().isEmpty()
+        || requestId.trimmed().isEmpty() || idempotencyKey.trimmed().isEmpty()) {
+        markManualEntryInputError(QStringLiteral(
+            "Account, portfolio, currency, occurredAt, memo, reference, requestId, and idempotencyKey are required."));
+        return {};
+    }
+    if (normalizedType != QStringLiteral("Deposit") && normalizedType != QStringLiteral("Withdrawal")) {
+        markManualEntryInputError(QStringLiteral("Cash movement type must be Deposit or Withdrawal."));
+        return {};
+    }
+    if (!positiveIntegerText(amountMinor)) {
+        markManualEntryInputError(QStringLiteral("Cash movement amount must be greater than zero."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.manual_cash_movement.create";
+    request.accountId = trimmedStdString(accountId);
+    request.portfolioId = trimmedStdString(portfolioId);
+    request.movementType = trimmedStdString(normalizedType);
+    request.amountMinor = trimmedStdString(amountMinor);
+    request.currency = currency.trimmed().toUpper().toStdString();
+    request.occurredAt = trimmedStdString(occurredAt);
+    request.sourceMemo = trimmedStdString(sourceMemo);
+    request.sourceReference = trimmedStdString(sourceReference);
+    request.requestId = trimmedStdString(requestId);
+    request.idempotencyKey = trimmedStdString(idempotencyKey);
+    request.timeoutMs = 2000;
     valid = true;
     return request;
 }

@@ -35,6 +35,21 @@ struct ShellAccountingServiceRequest final {
     bool riskBlocked = false;
     bool tradeDraftDisabled = false;
     bool confirmationDisabled = false;
+    std::string securityCode;
+    std::string tradeSide;
+    std::string quantityUnits;
+    std::string priceAmountMinor;
+    std::string grossAmountMinor;
+    std::string feeAmountMinor;
+    std::string taxAmountMinor;
+    std::string occurredAt;
+    std::string sourceMemo;
+    std::string requestId;
+    std::string idempotencyKey;
+    std::string movementType;
+    std::string amountMinor;
+    std::string currency;
+    std::string sourceReference;
 };
 
 struct ShellAccountingServiceResult final {

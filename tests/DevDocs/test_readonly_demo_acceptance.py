@@ -5989,8 +5989,6 @@ def main() -> int:
         "brokerOrder",
         "strategyExecute",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
     ]:
         require(
             forbidden_trade_ui_token not in shell_accounting_readonly_page,
@@ -6137,8 +6135,6 @@ def main() -> int:
         "audit_log write",
         "data.audit.append",
         "confirmTrade",
-        "manualEntry",
-        "cashAdjustment",
         "createTradeDraft",
         "strategyExecute",
         "writeEnabled: true",
@@ -10259,8 +10255,8 @@ def main() -> int:
         path.read_text(encoding="utf-8")
         for path in (root / "apps" / "ETFDecisionShell" / "qml").rglob("*.qml")
     )
-    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI")
-    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI")
+    require("submitManualTransaction" in production_qml, "production QML has authorized manual transaction Presenter binding after TASK-200")
+    require("submitManualCashMovement" in production_qml, "production QML has authorized manual cash Presenter binding after TASK-200")
     require("recordDeposit" not in production_qml, "production QML has no deposit record binding")
     require("recordWithdraw" not in production_qml, "production QML has no withdraw record binding")
     require("manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action")
@@ -10492,8 +10488,8 @@ def main() -> int:
         "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-179",
     )
-    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-179")
-    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-179")
+    require("submitManualTransaction" in production_qml, "production QML has authorized manual transaction Presenter binding after TASK-200")
+    require("submitManualCashMovement" in production_qml, "production QML has authorized manual cash Presenter binding after TASK-200")
 
     task179_ctests = [
         "shell_accounting_manual_entry_dataservice_action_authorization_docs",
@@ -10606,8 +10602,8 @@ def main() -> int:
         "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-180",
     )
-    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-180")
-    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-180")
+    require("submitManualTransaction" in production_qml, "production QML has authorized manual transaction Presenter binding after TASK-200")
+    require("submitManualCashMovement" in production_qml, "production QML has authorized manual cash Presenter binding after TASK-200")
 
     task180_ctests = [
         "shell_accounting_manual_entry_dataservice_action_scaffold_docs",
@@ -10755,8 +10751,8 @@ def main() -> int:
         "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-181",
     )
-    require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-181")
-    require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-181")
+    require("submitManualTransaction" in production_qml, "production QML has authorized manual transaction Presenter binding after TASK-200")
+    require("submitManualCashMovement" in production_qml, "production QML has authorized manual cash Presenter binding after TASK-200")
 
     task181_ctests = [
         "shell_accounting_manual_entry_dataservice_action_implementation_authorization_docs",
@@ -12521,7 +12517,7 @@ def main() -> int:
         "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-194",
     )
-    require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI for TASK-194")
+    require("submitManualTransaction" in production_qml, "production QML has authorized manual transaction Presenter binding after TASK-200")
     require("broker SDK" in shell_accounting_manual_mvp_test_plan, "historic broker gate text remains available")
 
     shell_accounting_manual_cash_movement_schema_contract_doc_path = (
@@ -12609,7 +12605,7 @@ def main() -> int:
         "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers only TASK-196 manual cash movement repository after TASK-196",
     )
-    require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-195")
+    require("submitManualCashMovement" in production_qml, "production QML has authorized manual cash Presenter binding after TASK-200")
     require("ShellAccountingManualCashMovementSchemaContractAlignmentGate" in tests_cmake, "TASK-195 test directory registered")
 
     task196_doc_path = root / "docs" / "188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md"
@@ -12821,8 +12817,6 @@ def main() -> int:
     require("persistManualTransaction" in dataservice_actions_source, "DataServiceActions wires manual transaction repository after TASK-198")
     require("persistManualCashMovement" in dataservice_actions_source, "DataServiceActions wires manual cash repository after TASK-198")
     require("INSERT INTO" not in dataservice_actions_source, "DataServiceActions still has no scattered INSERT after TASK-198")
-    require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI after TASK-197")
-    require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-197")
 
     task199_doc_path = root / "docs" / "194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md"
     task199_plan_path = root / "docs" / "195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md"
@@ -12900,10 +12894,76 @@ def main() -> int:
         "ShellAccountingManualEntryQmlPresenterAuthorizationGate" in tests_cmake,
         "TASK-199 test directory registered",
     )
-    require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI after TASK-199")
-    require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-199")
-    require("accounting.manual_transaction.create" not in production_qml, "production QML still does not bind manual transaction action after TASK-199")
-    require("accounting.manual_cash_movement.create" not in production_qml, "production QML still does not bind manual cash movement action after TASK-199")
+    task200_doc_path = root / "docs" / "196_shell_accounting_manual_entry_qml_presenter_implementation.md"
+    task200_plan_path = root / "docs" / "197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md"
+    task200_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryQmlPresenterImplementation"
+        / "CMakeLists.txt"
+    )
+    require(task200_doc_path.exists(), "docs/196 exists")
+    require(task200_plan_path.exists(), "docs/197 exists")
+    require(task200_cmake_path.exists(), "TASK-200 tests CMake exists")
+    task200_doc = task200_doc_path.read_text(encoding="utf-8")
+    task200_plan = task200_plan_path.read_text(encoding="utf-8")
+    task200_cmake = task200_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md" in readme,
+        "README links docs/196",
+    )
+    require(
+        "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md" in readme,
+        "README links docs/197",
+    )
+    require(
+        "196_shell_accounting_manual_entry_qml_presenter_implementation.md" in docs_index,
+        "docs/README links docs/196",
+    )
+    require(
+        "197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/197",
+    )
+    require("TASK-200" in codex_prompt_template, "docs/12 registers TASK-200")
+    for token, message in [
+        ("TASK-200 implements", "docs/196 states implementation"),
+        ("submitManualTransaction", "docs/196 references manual transaction invokable"),
+        ("submitManualCashMovement", "docs/196 references manual cash movement invokable"),
+        ("accounting.manual_transaction.create", "docs/196 references manual transaction action"),
+        ("accounting.manual_cash_movement.create", "docs/196 references manual cash action"),
+        ("does not modify migrations", "docs/196 blocks migrations"),
+        ("does not modify DataServiceActions", "docs/196 blocks DataServiceActions"),
+        ("does not modify DataAccess repositories", "docs/196 blocks repositories"),
+        ("does not trigger AccountingEngine replay", "docs/196 blocks replay"),
+        ("real order placement", "docs/196 blocks real orders"),
+        ("automatic trading", "docs/196 blocks automatic trading"),
+    ]:
+        require(token in task200_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/197 contains Test Matrix"),
+        ("Required Probes", "docs/197 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/197 contains Go / No-Go Checklist"),
+        ("QML manual entry binding scan", "docs/197 scans QML bindings"),
+        ("Presenter invokable and property scan", "docs/197 scans Presenter"),
+        ("DataServiceActions no-drift scan", "docs/197 protects DataServiceActions"),
+        ("Broker / network / credentials / endpoint scan", "docs/197 protects broker/network"),
+    ]:
+        require(token in task200_plan, message)
+    require(
+        "shell_accounting_manual_entry_qml_presenter_implementation" in task200_cmake,
+        "TASK-200 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryQmlPresenterImplementation" in tests_cmake,
+        "TASK-200 test directory registered",
+    )
+    require("submitManualTransaction" in production_qml, "production QML has authorized manual transaction Presenter binding after TASK-200")
+    require("submitManualCashMovement" in production_qml, "production QML has authorized manual cash Presenter binding after TASK-200")
+    require("DataServiceClient" not in shell_accounting_readonly_page, "ShellAccounting QML does not call DataServiceClient after TASK-200")
+    require("SQLite" not in shell_accounting_readonly_page, "ShellAccounting QML does not access SQLite after TASK-200")
+    require("DataAccess" not in shell_accounting_readonly_page, "ShellAccounting QML does not access DataAccess after TASK-200")
+    require("brokerOrder" not in shell_accounting_readonly_page, "ShellAccounting QML has no broker order after TASK-200")
+    require("automaticTrading" not in shell_accounting_readonly_page, "ShellAccounting QML has no automatic trading after TASK-200")
     return 0
 
 

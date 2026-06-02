@@ -4,7 +4,7 @@ namespace etfdt::shell_services {
 
 namespace {
 
-ShellAccountingServiceResult makeUnavailableDraftResult(
+ShellAccountingServiceResult makeUnavailableWriteResult(
     const ShellAccountingServiceRequest& request,
     const char* fallbackAction,
     const char* status)
@@ -23,7 +23,7 @@ ShellAccountingServiceResult makeUnavailableDraftResult(
     result.strategyExecuted = false;
     result.brokerOrderSubmitted = false;
     result.issues.push_back(
-        {status, "ERROR", "ShellAccounting draft UI adapter path is not configured.", true,
+        {status, "ERROR", "ShellAccounting write UI adapter path is not configured.", true,
          "ShellAccountingServiceAdapter"});
     return result;
 }
@@ -33,7 +33,7 @@ ShellAccountingServiceResult makeUnavailableDraftResult(
 ShellAccountingServiceResult ShellAccountingServiceAdapter::createDraft(
     const ShellAccountingServiceRequest& request)
 {
-    return makeUnavailableDraftResult(
+    return makeUnavailableWriteResult(
         request,
         "accounting.tradedraft.create",
         "SHELL_ACCOUNTING_CREATE_DRAFT_ADAPTER_NOT_CONFIGURED");
@@ -42,10 +42,28 @@ ShellAccountingServiceResult ShellAccountingServiceAdapter::createDraft(
 ShellAccountingServiceResult ShellAccountingServiceAdapter::confirmDraft(
     const ShellAccountingServiceRequest& request)
 {
-    return makeUnavailableDraftResult(
+    return makeUnavailableWriteResult(
         request,
         "accounting.tradedraft.confirm",
         "SHELL_ACCOUNTING_CONFIRM_DRAFT_ADAPTER_NOT_CONFIGURED");
+}
+
+ShellAccountingServiceResult ShellAccountingServiceAdapter::submitManualTransaction(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableWriteResult(
+        request,
+        "accounting.manual_transaction.create",
+        "SHELL_ACCOUNTING_MANUAL_TRANSACTION_ADAPTER_NOT_CONFIGURED");
+}
+
+ShellAccountingServiceResult ShellAccountingServiceAdapter::submitManualCashMovement(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableWriteResult(
+        request,
+        "accounting.manual_cash_movement.create",
+        "SHELL_ACCOUNTING_MANUAL_CASH_MOVEMENT_ADAPTER_NOT_CONFIGURED");
 }
 
 }  // namespace etfdt::shell_services

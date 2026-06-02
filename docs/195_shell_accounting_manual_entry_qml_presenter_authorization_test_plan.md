@@ -116,3 +116,17 @@ placement, or automatic trading.
 - [ ] Full CTest passes.
 - [ ] git diff --check passes.
 - [ ] git status is clean.
+
+## TASK-200 Implementation Update
+
+After TASK-200, this authorization gate allows the specific production
+ShellAccounting QML page and ShellServices Presenter / Controller / adapter
+changes needed to call `accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create` through the DataService boundary.
+
+The gate continues to forbid production startup changes, DataServiceActions
+changes, DataServiceActionRegistrar changes, repository changes, migration
+changes, direct SQLite or DataAccess access from QML / Presenter / Controller,
+AccountingEngine replay, read model refresh, audit or ledger writes from
+ShellServices, broker SDKs, network calls, credentials, endpoints, real order
+placement, and automatic trading.

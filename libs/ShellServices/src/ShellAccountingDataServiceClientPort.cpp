@@ -43,4 +43,22 @@ ShellAccountingDataServiceClientPort::callTradeDraftConfirm(
         "SHELL_ACCOUNTING_CONFIRM_DRAFT_PORT_NOT_CONFIGURED");
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callManualTransactionCreate(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    return makeUnavailablePortResponse(
+        request,
+        "SHELL_ACCOUNTING_MANUAL_TRANSACTION_PORT_NOT_CONFIGURED");
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callManualCashMovementCreate(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    return makeUnavailablePortResponse(
+        request,
+        "SHELL_ACCOUNTING_MANUAL_CASH_MOVEMENT_PORT_NOT_CONFIGURED");
+}
+
 }  // namespace etfdt::shell_services

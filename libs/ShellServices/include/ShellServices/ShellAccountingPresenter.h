@@ -22,6 +22,10 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString draftId READ draftId NOTIFY tradingUiStateChanged)
     Q_PROPERTY(QString draftUid READ draftUid NOTIFY tradingUiStateChanged)
     Q_PROPERTY(QString ledgerStatus READ ledgerStatus NOTIFY tradingUiStateChanged)
+    Q_PROPERTY(bool manualEntryBusy READ manualEntryBusy NOTIFY manualEntryStateChanged)
+    Q_PROPERTY(QString lastManualEntryStatus READ lastManualEntryStatus NOTIFY manualEntryStateChanged)
+    Q_PROPERTY(QString lastManualEntryIssue READ lastManualEntryIssue NOTIFY manualEntryStateChanged)
+    Q_PROPERTY(QString lastManualEntryResult READ lastManualEntryResult NOTIFY manualEntryStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -38,6 +42,10 @@ public:
     [[nodiscard]] QString draftId() const;
     [[nodiscard]] QString draftUid() const;
     [[nodiscard]] QString ledgerStatus() const;
+    [[nodiscard]] bool manualEntryBusy() const noexcept;
+    [[nodiscard]] QString lastManualEntryStatus() const;
+    [[nodiscard]] QString lastManualEntryIssue() const;
+    [[nodiscard]] QString lastManualEntryResult() const;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -70,10 +78,38 @@ public:
         const QString& reason);
     Q_INVOKABLE bool confirmDraft();
     Q_INVOKABLE void resetTradingUi();
+    Q_INVOKABLE bool submitManualTransaction(
+        const QString& accountId,
+        const QString& portfolioId,
+        const QString& instrumentId,
+        const QString& securityCode,
+        const QString& side,
+        const QString& quantityUnits,
+        const QString& priceAmountMinor,
+        const QString& grossAmountMinor,
+        const QString& feeAmountMinor,
+        const QString& taxAmountMinor,
+        const QString& occurredAt,
+        const QString& sourceMemo,
+        const QString& requestId,
+        const QString& idempotencyKey);
+    Q_INVOKABLE bool submitManualCashMovement(
+        const QString& accountId,
+        const QString& portfolioId,
+        const QString& movementType,
+        const QString& amountMinor,
+        const QString& currency,
+        const QString& occurredAt,
+        const QString& sourceMemo,
+        const QString& sourceReference,
+        const QString& requestId,
+        const QString& idempotencyKey);
+    Q_INVOKABLE void resetManualEntryUi();
     void reset();
 
 signals:
     void tradingUiStateChanged();
+    void manualEntryStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -86,6 +122,8 @@ private:
         ShellAccountingViewState state,
         std::vector<ShellAccountingIssue> issues);
     void applyTradingResult(const ShellAccountingServiceResult& result, bool confirming);
+    void applyManualEntryResult(const ShellAccountingServiceResult& result, const QString& fallback);
+    void markManualEntryInputError(const QString& message);
     [[nodiscard]] ShellAccountingServiceRequest makeDraftCreateRequest(
         const QString& accountId,
         const QString& portfolioId,
@@ -96,6 +134,34 @@ private:
         const QString& reason,
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeDraftConfirmRequest(bool& valid) const;
+    [[nodiscard]] ShellAccountingServiceRequest makeManualTransactionRequest(
+        const QString& accountId,
+        const QString& portfolioId,
+        const QString& instrumentId,
+        const QString& securityCode,
+        const QString& side,
+        const QString& quantityUnits,
+        const QString& priceAmountMinor,
+        const QString& grossAmountMinor,
+        const QString& feeAmountMinor,
+        const QString& taxAmountMinor,
+        const QString& occurredAt,
+        const QString& sourceMemo,
+        const QString& requestId,
+        const QString& idempotencyKey,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeManualCashMovementRequest(
+        const QString& accountId,
+        const QString& portfolioId,
+        const QString& movementType,
+        const QString& amountMinor,
+        const QString& currency,
+        const QString& occurredAt,
+        const QString& sourceMemo,
+        const QString& sourceReference,
+        const QString& requestId,
+        const QString& idempotencyKey,
+        bool& valid);
 
     ShellAccountingStatusObject status_;
     ShellAccountingIssueListModel issues_;
@@ -107,6 +173,10 @@ private:
     QString draftId_;
     QString draftUid_;
     QString ledgerStatus_ = QStringLiteral("NOT_CONFIRMED");
+    bool manualEntryBusy_ = false;
+    QString lastManualEntryStatus_ = QStringLiteral("READY");
+    QString lastManualEntryIssue_;
+    QString lastManualEntryResult_;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

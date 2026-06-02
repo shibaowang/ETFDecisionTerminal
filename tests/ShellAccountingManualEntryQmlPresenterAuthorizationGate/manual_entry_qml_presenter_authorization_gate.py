@@ -184,11 +184,44 @@ def main() -> int:
         "docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md",
         "docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md",
         "docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md",
+        "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md",
+        "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
+        "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+        "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+        "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+        "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingProductionQmlBindingGate/ShellAccountingProductionQmlBindingGate.cpp",
+        "tests/ShellAccountingProductionQmlBindingImplementation/ShellAccountingProductionQmlBindingImplementation.cpp",
+        "tests/ShellAccountingPresenterLifecycleGate/ShellAccountingPresenterLifecycleGate.cpp",
+        "tests/ShellAccountingPresenterLifecycleImplementation/ShellAccountingPresenterLifecycleImplementation.cpp",
+        "tests/ShellAccountingRealDataAdapterGate/ShellAccountingRealDataAdapterGate.cpp",
+        "tests/ShellAccountingRealDataAdapterImplementation/ShellAccountingRealDataAdapterImplementation.cpp",
+        "tests/ShellAccountingManualTransactionCashMovementMvpAuthorizationGate/manual_transaction_cash_movement_mvp_authorization_gate.cpp",
+        "tests/ShellAccountingManualTransactionCashMovementValidationScaffold/manual_transaction_cash_movement_validation_scaffold.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionScaffold/manual_entry_dataservice_action_scaffold.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate/manual_entry_dataservice_action_implementation_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryPersistenceAuthorizationGate/manual_entry_persistence_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
+        "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
         "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     require(not unexpected, "TASK-199 changed unauthorized paths: " + ", ".join(unexpected))
@@ -209,13 +242,46 @@ def main() -> int:
     ]
     for path in protected_paths:
         assert_not_changed(changes, path)
-    require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "TASK-199 must not modify production QML")
-    require(not any(path.startswith("libs/ShellServices/") for path in changes), "TASK-199 must not modify ShellServices Presenter/Controller")
+    allowed_task200_qml = {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}
+    unexpected_qml_changes = [
+        path for path in changes
+        if path.startswith("apps/ETFDecisionShell/qml/") and path not in allowed_task200_qml
+    ]
+    require(
+        not unexpected_qml_changes,
+        "TASK-199/TASK-200 must not modify unauthorized production QML: "
+        + ", ".join(unexpected_qml_changes),
+    )
+    allowed_task200_shellservices = {
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+        "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+        "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+        "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
+    }
+    unexpected_shellservices_changes = [
+        path for path in changes
+        if path.startswith("libs/ShellServices/") and path not in allowed_task200_shellservices
+    ]
+    require(
+        not unexpected_shellservices_changes,
+        "TASK-199/TASK-200 must not modify unauthorized ShellServices files: "
+        + ", ".join(unexpected_shellservices_changes),
+    )
     production_presenter_controller_changes = [
         path
-        for path in changes
-        if (
-            path.startswith("apps/ETFDecisionShell/")
+      for path in changes
+      if path not in allowed_task200_shellservices
+      if (
+          path.startswith("apps/ETFDecisionShell/")
             or path.startswith("libs/ShellServices/")
             or path.startswith("libs/ShellCore/")
         )
@@ -234,10 +300,6 @@ def main() -> int:
 
     production_qml = joined(files_under(root / "apps" / "ETFDecisionShell" / "qml"))
     for token in [
-        "manualTransaction",
-        "manualCashMovement",
-        "accounting.manual_transaction.create",
-        "accounting.manual_cash_movement.create",
         "ManualTransactionRepository",
         "ManualCashMovementRepository",
         "INSERT INTO",
@@ -257,11 +319,6 @@ def main() -> int:
         "DELETE FROM",
         "REPLACE INTO",
         "qmlRegisterType",
-        "ManualTransactionForm",
-        "ManualCashMovementForm",
-        "manualTransactionForm",
-        "manualCashMovementForm",
-        "DataServiceClient",
         "ShellAccountingManualTransactionRepository",
         "ShellAccountingManualCashMovementRepository",
         "brokerOrder",
@@ -296,9 +353,12 @@ def main() -> int:
     for token in [
         "docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md",
         "docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md",
+        "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md",
+        "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
         "shell_accounting_manual_entry_qml_presenter_authorization",
-        "production QML still has no manual transaction UI after TASK-199",
-        "production QML still has no manual cash movement UI after TASK-199",
+        "shell_accounting_manual_entry_qml_presenter_implementation",
+        "submitManualTransaction",
+        "submitManualCashMovement",
     ]:
         require_contains(devdocs, token, "DevDocs acceptance")
 

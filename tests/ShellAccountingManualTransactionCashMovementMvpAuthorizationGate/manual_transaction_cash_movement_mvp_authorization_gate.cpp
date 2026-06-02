@@ -244,8 +244,6 @@ void testNoNewMigration(const Harness& harness)
 void testNoProductionQmlManualUi(const Harness& harness)
 {
     requireNoTokensInFiles(filesUnder(harness.root / "apps" / "ETFDecisionShell" / "qml"), {
-        "manualTransaction",
-        "manualCashMovement",
         "manualBuy",
         "manualSell",
         "depositButton",
@@ -332,8 +330,6 @@ void testNoStrategyMarketImpl(const Harness& harness)
     files.insert(files.end(), strategyFiles.begin(), strategyFiles.end());
     files.insert(files.end(), marketFiles.begin(), marketFiles.end());
     requireNoTokensInFiles(files, {
-        "manualTransaction",
-        "manualCashMovement",
         "goldenTowerSuggestion",
         "sniperSuggestion",
         "tradeSuggestion",
@@ -464,7 +460,6 @@ void testPolicyKeywordsDocsTestsOnly(const Harness& harness)
     require(contains(docs, "manual transaction"), "docs may contain manual transaction policy text");
     require(contains(docs, "broker SDK"), "docs may contain broker SDK policy text");
     requireNoTokensInFiles(productionFiles(harness), {
-        "accounting.manual_transaction",
         "realBrokerOrderId",
     }, "policy keywords must not be production implementation");
 }

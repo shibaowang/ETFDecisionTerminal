@@ -215,6 +215,48 @@ std::string makeConfirmDraftPayloadJson(const ShellAccountingServiceRequest& req
     return stream.str();
 }
 
+std::string makeManualTransactionPayloadJson(const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(stream, "accountId", request.accountId, needsComma);
+    appendJsonStringField(stream, "portfolioId", request.portfolioId, needsComma);
+    appendJsonStringField(stream, "instrumentId", request.instrumentId, needsComma);
+    appendJsonStringField(stream, "securityCode", request.securityCode, needsComma);
+    appendJsonStringField(stream, "tradeSide", request.tradeSide, needsComma);
+    appendJsonStringField(stream, "quantityUnits", request.quantityUnits, needsComma);
+    appendJsonStringField(stream, "priceAmountMinor", request.priceAmountMinor, needsComma);
+    appendJsonStringField(stream, "grossAmountMinor", request.grossAmountMinor, needsComma);
+    appendJsonStringField(stream, "feeAmountMinor", request.feeAmountMinor, needsComma);
+    appendJsonStringField(stream, "taxAmountMinor", request.taxAmountMinor, needsComma);
+    appendJsonStringField(stream, "occurredAt", request.occurredAt, needsComma);
+    appendJsonStringField(stream, "sourceMemo", request.sourceMemo, needsComma);
+    appendJsonStringField(stream, "requestId", request.requestId, needsComma);
+    appendJsonStringField(stream, "idempotencyKey", request.idempotencyKey, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
+std::string makeManualCashMovementPayloadJson(const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(stream, "accountId", request.accountId, needsComma);
+    appendJsonStringField(stream, "portfolioId", request.portfolioId, needsComma);
+    appendJsonStringField(stream, "movementType", request.movementType, needsComma);
+    appendJsonStringField(stream, "amountMinor", request.amountMinor, needsComma);
+    appendJsonStringField(stream, "currency", request.currency, needsComma);
+    appendJsonStringField(stream, "occurredAt", request.occurredAt, needsComma);
+    appendJsonStringField(stream, "sourceMemo", request.sourceMemo, needsComma);
+    appendJsonStringField(stream, "sourceReference", request.sourceReference, needsComma);
+    appendJsonStringField(stream, "requestId", request.requestId, needsComma);
+    appendJsonStringField(stream, "idempotencyKey", request.idempotencyKey, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
 ShellAccountingDataServiceClientRequest makeClientRequest(
     const ShellAccountingServiceRequest& request,
     const char* fallbackActionName)
@@ -242,6 +284,26 @@ ShellAccountingDataServiceClientRequest makeConfirmDraftClientRequest(
     ShellAccountingDataServiceClientRequest clientRequest;
     clientRequest.actionName = "accounting.tradedraft.confirm";
     clientRequest.payloadJson = makeConfirmDraftPayloadJson(request);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeManualTransactionClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.manual_transaction.create";
+    clientRequest.payloadJson = makeManualTransactionPayloadJson(request);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeManualCashMovementClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.manual_cash_movement.create";
+    clientRequest.payloadJson = makeManualCashMovementPayloadJson(request);
     clientRequest.timeoutMs = request.timeoutMs;
     return clientRequest;
 }
@@ -371,6 +433,30 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::confirmDraft(
             "accounting.tradedraft.confirm");
     }
     return makeNotConnectedResult(request, "accounting.tradedraft.confirm");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::submitManualTransaction(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callManualTransactionCreate(makeManualTransactionClientRequest(request)),
+            request,
+            "accounting.manual_transaction.create");
+    }
+    return makeNotConnectedResult(request, "accounting.manual_transaction.create");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::submitManualCashMovement(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callManualCashMovementCreate(makeManualCashMovementClientRequest(request)),
+            request,
+            "accounting.manual_cash_movement.create");
+    }
+    return makeNotConnectedResult(request, "accounting.manual_cash_movement.create");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

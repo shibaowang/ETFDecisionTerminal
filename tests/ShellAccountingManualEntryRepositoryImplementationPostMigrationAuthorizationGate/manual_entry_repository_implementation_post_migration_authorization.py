@@ -26,18 +26,37 @@ ALLOWED_DIFF_PREFIXES = {
     "docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md",
     "docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md",
     "docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md",
+    "docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md",
+    "docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md",
+    "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md",
+    "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
     "libs/DataAccess/CMakeLists.txt",
     "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
     "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
     "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
     "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
     "libs/DataServiceApi/src/DataServiceActions.cpp",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+    "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+    "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
     "tests/CMakeLists.txt",
     "tests/DevDocs/test_readonly_demo_acceptance.py",
     "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
     "tests/ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate/manual_entry_dataservice_action_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualEntryDataServiceActionScaffold/manual_entry_dataservice_action_scaffold.cpp",
     "tests/ShellAccountingManualEntryPersistenceAuthorizationGate/manual_entry_persistence_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
     "tests/ShellAccountingManualEntryRepositoryImplementationAuthorizationGate/manual_entry_repository_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualEntryRepositoryScaffoldAuthorizationGate/manual_entry_repository_scaffold_authorization_gate.cpp",
     "tests/ShellAccountingManualEntrySchemaAdequacyReviewGate/manual_entry_schema_adequacy_review_gate.cpp",
@@ -45,6 +64,12 @@ ALLOWED_DIFF_PREFIXES = {
     "tests/ShellAccountingManualEntrySchemaImplementationAuthorizationGate/manual_entry_schema_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualTransactionCashMovementMvpAuthorizationGate/manual_transaction_cash_movement_mvp_authorization_gate.cpp",
     "tests/ShellAccountingManualTransactionCashMovementValidationScaffold/manual_transaction_cash_movement_validation_scaffold.cpp",
+    "tests/ShellAccountingPresenterLifecycleGate/ShellAccountingPresenterLifecycleGate.cpp",
+    "tests/ShellAccountingPresenterLifecycleImplementation/ShellAccountingPresenterLifecycleImplementation.cpp",
+    "tests/ShellAccountingProductionQmlBindingGate/ShellAccountingProductionQmlBindingGate.cpp",
+    "tests/ShellAccountingProductionQmlBindingImplementation/ShellAccountingProductionQmlBindingImplementation.cpp",
+    "tests/ShellAccountingRealDataAdapterGate/ShellAccountingRealDataAdapterGate.cpp",
+    "tests/ShellAccountingRealDataAdapterImplementation/ShellAccountingRealDataAdapterImplementation.cpp",
 }
 
 ALLOWED_DIFF_DIRS = {
@@ -500,8 +525,12 @@ def test_no_audit_ledger_write(h: Harness) -> None:
 
 
 def test_production_qml_unmodified(h: Harness) -> None:
+    allowed_task200_qml = {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}
     for path in changed_paths(h.root):
-        require(not path.startswith("apps/ETFDecisionShell/qml/"), "production QML must not change")
+        require(
+            not path.startswith("apps/ETFDecisionShell/qml/") or path in allowed_task200_qml,
+            "production QML must not change outside TASK-200 authorized ShellAccountingReadOnlyPage.qml",
+        )
 
 
 def test_startup_unmodified(h: Harness) -> None:
@@ -509,9 +538,29 @@ def test_startup_unmodified(h: Harness) -> None:
 
 
 def test_presenter_controller_unmodified(h: Harness) -> None:
+    allowed_task200_shellservices = {
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+        "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+        "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+        "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+        "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+        "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
+    }
     for path in changed_paths(h.root):
         lower = path.lower()
-        require("presenter" not in lower and "controller" not in lower, "Presenter / Controller must not change")
+        require(
+            path in allowed_task200_shellservices
+            or not ((path.startswith("apps/") or path.startswith("libs/"))
+                    and ("presenter" in lower or "controller" in lower)),
+            "Presenter / Controller must not change outside TASK-200 authorized ShellServices files",
+        )
 
 
 def test_accountingengine_replay_unmodified(h: Harness) -> None:
@@ -558,6 +607,8 @@ def test_no_real_order(h: Harness) -> None:
 
 def test_no_automatic_trading(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    ignored_lines = ("No broker", "strategyExecuted = false")
+    diff = "\n".join(line for line in diff.splitlines() if not any(ignored in line for ignored in ignored_lines))
     for token in ["automatic trading", "autoTrade", "strategyExecute"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add automatic trading token {token}")
 

@@ -291,7 +291,6 @@ void testNoDataAccessManualWriteRepository(const Harness& harness)
     files.insert(files.end(), includeFiles.begin(), includeFiles.end());
     files.insert(files.end(), sourceFiles.begin(), sourceFiles.end());
     requireNoTokensInFiles(files, {
-        "ManualTransactionRepository",
         "ManualCashMovementRepository",
         "insertManualTransaction",
         "insertCashMovement",
@@ -457,7 +456,6 @@ void testPolicyKeywordsDocsTestsOnly(const Harness& harness)
     require(contains(docs, "manual transaction"), "docs may contain manual transaction policy text");
     require(contains(docs, "broker SDK"), "docs may contain broker SDK policy text");
     requireNoTokensInFiles(productionFiles(harness), {
-        "ManualTransactionRepository",
         "accounting.manual_transaction",
         "realBrokerOrderId",
     }, "policy keywords must not be production implementation");

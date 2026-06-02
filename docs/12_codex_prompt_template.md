@@ -1750,6 +1750,19 @@ boundary, must use the TASK-190 schema fields, and must not scatter SQL in
 DataService action handlers. Future DataService action write implementation,
 replay, read model, and UI work must remain separately authorized.
 
+## TASK-192 Manual Transaction Repository Write Implementation Prompt Rule
+
+Future work after TASK-192 must reference docs/182 and docs/183. TASK-192
+authorizes only DataAccess direct repository write implementation for
+ShellAccounting manual BUY / SELL transactions. It does not authorize manual
+cash movement write, DataServiceActions changes, DataService action write
+wiring, production QML/startup changes, Presenter / Controller changes,
+AccountingEngine replay integration, read model integration, audit write,
+TradeDraft or suggestion implementation, broker SDKs, network calls,
+credentials, endpoint values, real order placement, or automatic trading.
+Future manual cash movement repository write and future DataService write
+wiring must remain separate TASKs.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

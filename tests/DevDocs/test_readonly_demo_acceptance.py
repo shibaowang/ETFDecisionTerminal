@@ -10265,7 +10265,10 @@ def main() -> int:
     require("recordWithdraw" not in production_qml, "production QML has no withdraw record binding")
     require("manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action")
     require("cash_movement" not in dataservice_actions_source, "DataServiceActions has no cash movement action")
-    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository")
+    require(
+        "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-192 manual transaction repository",
+    )
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository")
     require("broker SDK" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan keeps broker SDK scan")
     require("No network client, endpoint, host, port, or URL" in shell_accounting_manual_mvp_gate, "TASK-177 gate blocks network endpoints")
@@ -10355,7 +10358,10 @@ def main() -> int:
     require("getenv" not in shell_accounting_manual_validation_source, "validation source does not read environment credentials")
     require("accounting.manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action after TASK-178")
     require("accounting.cash_movement" not in dataservice_actions_source, "DataServiceActions has no cash movement action after TASK-178")
-    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-178")
+    require(
+        "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-192 manual transaction repository after TASK-178",
+    )
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-178")
     require("ShellAccountingManualTransactionCashMovementValidationScaffold" in tests_cmake, "tests/CMake includes TASK-178 validation scaffold")
 
@@ -10472,7 +10478,10 @@ def main() -> int:
     require("accounting.manual_transaction" not in dataservice_actions_source, "DataServiceActions has no manual transaction action after TASK-179")
     require("accounting.cash_movement" not in dataservice_actions_source, "DataServiceActions has no cash movement action after TASK-179")
     require("manual.entry" not in dataservice_actions_source, "DataServiceActions has no manual entry action after TASK-179")
-    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-179")
+    require(
+        "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-192 manual transaction repository after TASK-179",
+    )
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-179")
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-179")
     require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-179")
@@ -10577,7 +10586,10 @@ def main() -> int:
     require('\\"repositoryCalled\\":false' in dataservice_actions_source, "manual scaffold declares no repository call")
     require("kActionAccountingManualTransactionCreate" in dataservice_action_registrar, "registrar registers manual transaction scaffold")
     require("kActionAccountingManualCashMovementCreate" in dataservice_action_registrar, "registrar registers manual cash movement scaffold")
-    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-180")
+    require(
+        "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-192 manual transaction repository after TASK-180",
+    )
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-180")
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-180")
     require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-180")
@@ -10720,7 +10732,10 @@ def main() -> int:
     require("TASK-181" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-181 implementation marker")
     require("validateManualTransactionEntry" in dataservice_actions_source, "DataServiceActions wires manual transaction validation after TASK-182")
     require("validateManualCashMovement" in dataservice_actions_source, "DataServiceActions wires manual cash movement validation after TASK-182")
-    require("ManualTransactionRepository" not in dataaccess_cmake, "DataAccess CMake has no manual transaction repository after TASK-181")
+    require(
+        "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-192 manual transaction repository after TASK-181",
+    )
     require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-181")
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-181")
     require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-181")
@@ -11106,8 +11121,8 @@ def main() -> int:
         "DataAccess CMake registers TASK-185 manual entry repository scaffold",
     )
     require(
-        "ManualTransactionRepository" not in dataaccess_cmake,
-        "DataAccess CMake has no manual transaction repository after TASK-184",
+        "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-192 manual transaction repository after TASK-184",
     )
     require(
         "ManualCashMovementRepository" not in dataaccess_cmake,
@@ -12248,8 +12263,8 @@ def main() -> int:
         ("Test Matrix", "docs/181 contains Test Matrix"),
         ("Required Probes", "docs/181 contains Required Probes"),
         ("Go / No-Go Checklist", "docs/181 contains Go / No-Go Checklist"),
-        ("No repository implementation is added", "docs/181 blocks repository implementation"),
-        ("No runtime SQL / SQLite write is added", "docs/181 blocks runtime write"),
+        ("Only TASK-192 manual transaction repository implementation is added", "docs/181 allows only TASK-192 repository implementation"),
+        ("No runtime SQL / SQLite write is added outside DataAccess direct", "docs/181 blocks runtime write outside repository"),
         ("Existing broker / real broker / no-network / no-credentials", "docs/181 retains broker gates"),
     ]:
         require(token in shell_accounting_manual_entry_repository_post_migration_plan, message)
@@ -12312,6 +12327,96 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_manual_entry_repository_post_migration_cmake,
             f"TASK-191 CTest exists: {ctest_name}",
+        )
+
+    shell_accounting_manual_transaction_repository_write_doc_path = (
+        root / "docs" / "182_shell_accounting_manual_transaction_repository_write_implementation.md"
+    )
+    shell_accounting_manual_transaction_repository_write_plan_path = (
+        root / "docs" / "183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md"
+    )
+    shell_accounting_manual_transaction_repository_write_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualTransactionRepositoryWriteImplementation"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_transaction_repository_write_doc_path.exists(), "docs/182 exists")
+    require(shell_accounting_manual_transaction_repository_write_plan_path.exists(), "docs/183 exists")
+    require(shell_accounting_manual_transaction_repository_write_cmake_path.exists(), "TASK-192 tests CMake exists")
+    shell_accounting_manual_transaction_repository_write_doc = (
+        shell_accounting_manual_transaction_repository_write_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_transaction_repository_write_plan = (
+        shell_accounting_manual_transaction_repository_write_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_transaction_repository_write_cmake = (
+        shell_accounting_manual_transaction_repository_write_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/182_shell_accounting_manual_transaction_repository_write_implementation.md" in readme,
+        "README links docs/182",
+    )
+    require(
+        "docs/183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md" in readme,
+        "README links docs/183",
+    )
+    require(
+        "182_shell_accounting_manual_transaction_repository_write_implementation.md" in docs_index,
+        "docs/README links docs/182",
+    )
+    require(
+        "183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/183",
+    )
+    require("TASK-192" in codex_prompt_template, "docs/12 registers TASK-192")
+    for token, message in [
+        ("TASK-192", "docs/182 mentions TASK-192"),
+        ("manual transaction repository write implementation", "docs/182 states implementation"),
+        ("manual BUY / SELL", "docs/182 scopes BUY/SELL"),
+        ("DataAccess repository", "docs/182 states DataAccess boundary"),
+        ("direct repository tests", "docs/182 states direct tests"),
+        ("does not implement manual cash movement", "docs/182 blocks cash movement"),
+        ("does not modify DataServiceActions", "docs/182 blocks DataServiceActions"),
+        ("does not write `audit_log`", "docs/182 blocks audit write"),
+        ("does not call broker", "docs/182 blocks broker"),
+        ("trade_execution_group", "docs/182 maps execution group"),
+        ("trade_log", "docs/182 maps trade_log"),
+        ("source_memo_sanitized", "docs/182 maps sanitized memo"),
+        ("duplicate result", "docs/182 documents duplicate handling"),
+        ("Broker sandbox new capability development remains paused", "docs/182 keeps broker sandbox paused"),
+    ]:
+        require(token in shell_accounting_manual_transaction_repository_write_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/183 contains Test Matrix"),
+        ("Required Probes", "docs/183 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/183 contains Go / No-Go Checklist"),
+        ("manual BUY command writes successfully", "docs/183 covers BUY"),
+        ("manual SELL command writes successfully", "docs/183 covers SELL"),
+        ("duplicate idempotencyKey", "docs/183 covers idempotency"),
+        ("rollback / failure case", "docs/183 covers rollback"),
+        ("repository does not write `cash_adjustment`", "docs/183 blocks cash_adjustment"),
+        ("repository does not write `audit_log`", "docs/183 blocks audit_log"),
+    ]:
+        require(token in shell_accounting_manual_transaction_repository_write_plan, message)
+    task192_ctests = [
+        "shell_accounting_manual_transaction_repository_write_implementation_docs",
+        "shell_accounting_manual_transaction_repository_write_implementation_manual_buy_success",
+        "shell_accounting_manual_transaction_repository_write_implementation_manual_sell_success",
+        "shell_accounting_manual_transaction_repository_write_implementation_duplicate_idempotency_no_extra_log",
+        "shell_accounting_manual_transaction_repository_write_implementation_transaction_failure_no_partial_rows",
+        "shell_accounting_manual_transaction_repository_write_implementation_no_cash_adjustment_write",
+        "shell_accounting_manual_transaction_repository_write_implementation_no_audit_log_write",
+        "shell_accounting_manual_transaction_repository_write_implementation_no_broker",
+        "shell_accounting_manual_transaction_repository_write_implementation_no_network_endpoint",
+        "shell_accounting_manual_transaction_repository_write_implementation_no_real_order",
+        "shell_accounting_manual_transaction_repository_write_implementation_no_automatic_trading",
+        "shell_accounting_manual_transaction_repository_write_implementation_broker_gates_retained",
+    ]
+    for ctest_name in task192_ctests:
+        require(
+            ctest_name in shell_accounting_manual_transaction_repository_write_cmake,
+            f"TASK-192 CTest exists: {ctest_name}",
         )
     return 0
 

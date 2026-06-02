@@ -3,10 +3,11 @@
 ## Document Purpose
 
 This document defines the TASK-191 test plan for the manual entry repository
-implementation post-migration authorization gate. It verifies that TASK-190
-schema migration support is present while repository implementation, runtime
-SQL, SQLite writes, DataService write wiring, UI, broker, network, credentials,
-real order placement, and automatic trading remain out of scope.
+implementation post-migration authorization gate. After TASK-192, the plan
+allows the DataAccess-only manual transaction repository write implementation
+for manual BUY / SELL entries while still verifying that manual cash movement
+write, DataService write wiring, UI, broker, network, credentials, real order
+placement, and automatic trading remain out of scope.
 
 ## Test Matrix
 
@@ -52,10 +53,12 @@ real order placement, and automatic trading remain out of scope.
 - TASK-185 repository scaffold header/source remain unmodified by TASK-191.
 - TASK-185 scaffold remains disabled / write-not-implemented.
 - TASK-182 validation wiring remains `writeImplemented=false`.
-- No repository implementation is added.
-- No runtime SQL INSERT / UPDATE / DELETE / REPLACE is added.
-- No SQLite runtime write is added.
-- No runtime `trade_log` write is added.
+- The only repository implementation added is the TASK-192 DataAccess-only
+  manual transaction repository write implementation.
+- Runtime SQL INSERT / UPDATE / DELETE / REPLACE is not added outside the
+  DataAccess repository implementation.
+- SQLite runtime write is not added outside direct repository tests.
+- Runtime `trade_log` write is not added through DataService actions.
 - No runtime `cash_adjustment` / cash facts / cash ledger write is added.
 - No runtime `audit_log` / ledger write is added.
 - Production QML / startup / Presenter / Controller remain unmodified.
@@ -68,6 +71,8 @@ real order placement, and automatic trading remain out of scope.
 ### Regression
 
 - TASK-190 migration implementation semantics remain valid.
+- TASK-192 manual transaction repository write implementation semantics remain
+  limited to DataAccess direct tests.
 - TASK-189 schema implementation authorization semantics remain valid.
 - TASK-188 schema gap authorization semantics remain valid.
 - TASK-187 schema adequacy review semantics remain valid.
@@ -85,8 +90,9 @@ real order placement, and automatic trading remain out of scope.
 - Git diff path probe against main.
 - Forbidden migration and schema file probe.
 - TASK-190 migration column and index probe.
-- Forbidden repository implementation token scan.
-- Forbidden runtime SQL / SQLite write scan.
+- Authorized TASK-192 repository implementation token scan.
+- Forbidden runtime SQL / SQLite write scan outside DataAccess direct
+  repository implementation.
 - Forbidden broker / network / credentials / endpoint / order scan.
 - Broker gate retention probe.
 
@@ -99,9 +105,10 @@ real order placement, and automatic trading remain out of scope.
 - [ ] `migrations/001_initial_schema.sql` is unchanged.
 - [ ] `migrations/002_shell_accounting_manual_entry_schema.sql` is unchanged.
 - [ ] No new migration or schema file is added.
-- [ ] No repository implementation is added.
+- [ ] Only TASK-192 manual transaction repository implementation is added.
 - [ ] No DataService write implementation is added.
-- [ ] No runtime SQL / SQLite write is added.
+- [ ] No runtime SQL / SQLite write is added outside DataAccess direct
+  repository implementation.
 - [ ] No broker SDK, network, credentials, endpoint, real order, or automatic
   trading is added.
 - [ ] TASK-191 gate tests pass.

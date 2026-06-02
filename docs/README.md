@@ -700,6 +700,17 @@
   defines TASK-191 static probes for repository mapping boundaries,
   transaction / rollback / idempotency policy, no runtime write path, no
   migration drift, and retained broker gates.
+- ShellAccounting manual transaction repository write implementation:
+  [182_shell_accounting_manual_transaction_repository_write_implementation.md](182_shell_accounting_manual_transaction_repository_write_implementation.md)
+  records TASK-192 DataAccess-only manual BUY / SELL repository write
+  implementation while keeping manual cash movement, DataService write wiring,
+  UI, replay, broker, network, credentials, real order, and automatic trading
+  out of scope.
+- ShellAccounting manual transaction repository write implementation test plan:
+  [183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md](183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md)
+  defines TASK-192 direct SQLite repository write tests for BUY / SELL,
+  TASK-190 field mapping, idempotency, rollback, sanitized memo, no audit /
+  cash movement write, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

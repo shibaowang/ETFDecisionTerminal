@@ -351,7 +351,7 @@ void testNoPersistentIds(const Harness&)
 void testNoDataAccessWriteRepository(const Harness& h)
 {
     const auto dataAccessCMake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
-    requireNotContains(dataAccessCMake, "ManualTransactionRepository", "DataAccess CMake");
+    requireContains(dataAccessCMake, "ShellAccountingManualTransactionRepository.cpp", "DataAccess CMake TASK-192 repository");
     requireNotContains(dataAccessCMake, "ManualCashMovementRepository", "DataAccess CMake");
     requireNotContains(dataAccessCMake, "ManualEntryPersistence", "DataAccess CMake");
 }

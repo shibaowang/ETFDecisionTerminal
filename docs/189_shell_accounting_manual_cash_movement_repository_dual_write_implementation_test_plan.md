@@ -89,6 +89,8 @@ endpoint, real order placement, or automatic trading.
 - TASK-195 schema contract alignment tests pass.
 - TASK-194 authorization gate tests pass.
 - TASK-192 manual transaction repository write tests pass.
+- TASK-197 DataService write wiring authorization gate tests pass when that gate
+  is present.
 - TASK-190 migration implementation tests pass.
 - TASK-182 DataService validation-only wiring tests pass.
 - TASK-178 validation scaffold tests pass.
@@ -118,6 +120,7 @@ endpoint, real order placement, or automatic trading.
 - [ ] docs/188 exists.
 - [ ] docs/189 exists.
 - [ ] TASK-196 tests pass.
+- [ ] TASK-197 gate tests pass when present.
 - [ ] TASK-195 gate tests pass.
 - [ ] TASK-194 gate tests pass.
 - [ ] TASK-192 manual transaction repository tests pass.

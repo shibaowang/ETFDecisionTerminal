@@ -744,6 +744,16 @@
   defines TASK-196 direct SQLite repository tests for 001 + 002 migrations,
   linkage, idempotency, rollback, sanitization, DataAccess-only boundaries, and
   retained broker gates.
+- ShellAccounting manual entry DataService write wiring authorization gate:
+  [190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md](190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md)
+  records TASK-197 gate-only policy for future DataService runtime write wiring
+  through TASK-192 / TASK-196 repositories while keeping current actions
+  validation-only.
+- ShellAccounting manual entry DataService write wiring authorization test plan:
+  [191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md](191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md)
+  defines TASK-197 static probes for no DataServiceActions drift, no runtime
+  SQL/SQLite writes, no persistent ids, retained validation-only semantics, and
+  retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -3437,3 +3437,31 @@ remain retained. See
 `docs/188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md`
 and
 `docs/189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md`.
+
+## TASK-197 Manual Entry DataService Write Wiring Authorization Gate
+
+TASK-197 adds a gate-only authorization boundary for future ShellAccounting
+manual entry DataService runtime write wiring. It covers the future evolution of
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create` from validation-only responses into
+DataService calls through the already authorized DataAccess repositories.
+
+TASK-197 does not modify DataServiceActions, DataServiceActionRegistrar,
+TASK-178 validation code, TASK-192 manual transaction repository, TASK-196
+manual cash movement repository, migrations, production QML/startup,
+Presenter/Controller, AccountingEngine replay, StrategyEngine, MarketEngine, or
+broker code. It does not wire repository runtime writes, execute runtime SQL,
+write `trade_log`, `cash_adjustment`, `audit_log`, or ledger rows through a
+DataService action, return persistent ids from DataService actions, place real
+orders, or add automatic trading.
+
+Future DataService write wiring must be a separate TASK, remain
+validation-first, call only DataAccess repositories through repository
+boundaries, avoid scattered SQL in DataServiceActions, preserve idempotency and
+rollback semantics, and return sanitized local write results. Future
+replay/read-model/UI, audit write, ledger policy, broker, reconciliation,
+cancellation, correction, and automatic trading work remain separately
+authorized. See
+`docs/190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md`
+and
+`docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md`.

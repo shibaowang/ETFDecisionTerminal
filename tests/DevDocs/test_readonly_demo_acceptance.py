@@ -10269,7 +10269,10 @@ def main() -> int:
         "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-192 manual transaction repository",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository",
+    )
     require("broker SDK" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan keeps broker SDK scan")
     require("No network client, endpoint, host, port, or URL" in shell_accounting_manual_mvp_gate, "TASK-177 gate blocks network endpoints")
     require("No credentials, secrets, tokens, keys, passwords" in shell_accounting_manual_mvp_test_plan, "TASK-177 plan blocks credentials")
@@ -10362,7 +10365,10 @@ def main() -> int:
         "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-192 manual transaction repository after TASK-178",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-178")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-178",
+    )
     require("ShellAccountingManualTransactionCashMovementValidationScaffold" in tests_cmake, "tests/CMake includes TASK-178 validation scaffold")
 
     task178_ctests = [
@@ -10482,7 +10488,10 @@ def main() -> int:
         "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-192 manual transaction repository after TASK-179",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-179")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-179",
+    )
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-179")
     require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-179")
 
@@ -10590,7 +10599,10 @@ def main() -> int:
         "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-192 manual transaction repository after TASK-180",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-180")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-180",
+    )
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-180")
     require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-180")
 
@@ -10736,7 +10748,10 @@ def main() -> int:
         "ShellAccountingManualTransactionRepository.cpp" in dataaccess_cmake,
         "DataAccess CMake registers TASK-192 manual transaction repository after TASK-181",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake has no manual cash movement repository after TASK-181")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-181",
+    )
     require("manualTransaction" not in production_qml, "production QML has no manual transaction UI after TASK-181")
     require("manualCashMovement" not in production_qml, "production QML has no manual cash movement UI after TASK-181")
 
@@ -11125,8 +11140,8 @@ def main() -> int:
         "DataAccess CMake registers TASK-192 manual transaction repository after TASK-184",
     )
     require(
-        "ManualCashMovementRepository" not in dataaccess_cmake,
-        "DataAccess CMake has no manual cash movement repository after TASK-184",
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-184",
     )
     require("manualEntryRepository" not in production_qml, "production QML has no manual entry repository UI")
     require("ManualEntryRepository" not in production_qml, "production QML has no manual entry repository component")
@@ -12499,7 +12514,10 @@ def main() -> int:
         in shell_accounting_manual_cash_movement_repository_gate_cmake,
         "TASK-194 CTest exists",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake still has no cash movement repository")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-196 manual cash movement repository after TASK-194",
+    )
     require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI for TASK-194")
     require("broker SDK" in shell_accounting_manual_mvp_test_plan, "historic broker gate text remains available")
 
@@ -12584,9 +12602,82 @@ def main() -> int:
         "FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)" in initial_schema,
         "initial schema still has trade_log_id foreign key contract",
     )
-    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake still has no cash movement repository after TASK-195")
+    require(
+        "ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers only TASK-196 manual cash movement repository after TASK-196",
+    )
     require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-195")
     require("ShellAccountingManualCashMovementSchemaContractAlignmentGate" in tests_cmake, "TASK-195 test directory registered")
+
+    task196_doc_path = root / "docs" / "188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md"
+    task196_plan_path = root / "docs" / "189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md"
+    task196_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualCashMovementRepositoryDualWriteImplementation"
+        / "CMakeLists.txt"
+    )
+    require(task196_doc_path.exists(), "docs/188 exists")
+    require(task196_plan_path.exists(), "docs/189 exists")
+    require(task196_cmake_path.exists(), "TASK-196 tests CMake exists")
+    task196_doc = task196_doc_path.read_text(encoding="utf-8")
+    task196_plan = task196_plan_path.read_text(encoding="utf-8")
+    task196_cmake = task196_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md" in readme,
+        "README links docs/188",
+    )
+    require(
+        "docs/189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md" in readme,
+        "README links docs/189",
+    )
+    require(
+        "188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md" in docs_index,
+        "docs/README links docs/188",
+    )
+    require(
+        "189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/189",
+    )
+    require("TASK-196" in codex_prompt_template, "docs/12 registers TASK-196")
+    for token, message in [
+        ("TASK-196", "docs/188 mentions TASK-196"),
+        ("manual cash movement repository dual-write implementation", "docs/188 states implementation"),
+        ("trade_log + cash_adjustment", "docs/188 states dual-write"),
+        ("DataAccess-only", "docs/188 states DataAccess-only"),
+        ("direct repository tests", "docs/188 states direct tests"),
+        ("does not modify DataServiceActions", "docs/188 keeps DataServiceActions unchanged"),
+        ("does not write audit_log", "docs/188 forbids audit write"),
+        ("does not write ledger", "docs/188 forbids ledger write"),
+        ("does not call broker", "docs/188 forbids broker"),
+        ("Broker sandbox new capability development remains paused", "docs/188 keeps broker paused"),
+    ]:
+        require(token in task196_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/189 contains Test Matrix"),
+        ("Direct SQLite Repository Write", "docs/189 contains direct SQLite section"),
+        ("Deposit command writes successfully", "docs/189 covers Deposit"),
+        ("Withdrawal command writes successfully", "docs/189 covers Withdrawal"),
+        ("Duplicate non-empty idempotencyKey", "docs/189 covers duplicate idempotency"),
+        ("rollback / failure case", "docs/189 covers rollback"),
+        ("Broker disabled", "docs/189 covers broker gates"),
+    ]:
+        require(token in task196_plan, message)
+    require(
+        "deposit_success"
+        in task196_cmake,
+        "TASK-196 Deposit CTest exists",
+    )
+    require(
+        "withdrawal_success"
+        in task196_cmake,
+        "TASK-196 Withdrawal CTest exists",
+    )
+    require(
+        "ShellAccountingManualCashMovementRepositoryDualWriteImplementation" in tests_cmake,
+        "TASK-196 test directory registered",
+    )
+    require("ManualCashMovementRepository" not in production_qml, "production QML still has no direct manual cash movement repository")
     return 0
 
 

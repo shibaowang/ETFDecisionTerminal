@@ -90,3 +90,13 @@ repository write and does not write a database.
 - [ ] transport_local_socket_echo repeat 50 passes.
 - [ ] git diff --check passes.
 - [ ] git status is clean.
+
+## TASK-196 Follow-Up
+
+TASK-196 implements the DataAccess-only manual cash movement repository
+dual-write that TASK-195 identified as required. The TASK-195 schema contract
+alignment tests must therefore evolve from "no repository implementation" to
+"only the authorized DataAccess direct-test repository implementation is
+allowed." The contract remains unchanged: cash_adjustment-only write is still
+blocked, and DataServiceActions, QML, replay, audit, ledger, broker, network,
+credentials, real order, and automatic trading work remain unauthorized.

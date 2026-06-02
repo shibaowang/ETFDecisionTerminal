@@ -133,3 +133,14 @@ repository write and does not write a database.
 - [ ] git status is clean.
 - [ ] User separately authorizes any future manual cash movement repository
   implementation.
+
+## TASK-196 Follow-Up
+
+TASK-196 separately authorizes and implements the DataAccess-only manual cash
+movement repository dual-write. The TASK-194 authorization gate tests must
+therefore evolve so the forbidden manual cash movement repository
+implementation probe allows only
+`ShellAccountingManualCashMovementRepository` in DataAccess and continues to
+forbid DataServiceActions runtime write wiring, QML/startup changes, audit or
+ledger writes, broker SDK, network, credentials, endpoint, real order placement,
+and automatic trading.

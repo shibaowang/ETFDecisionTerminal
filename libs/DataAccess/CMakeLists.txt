@@ -56,6 +56,7 @@ add_library(ETFDataAccess STATIC
     src/ShellAccountingAuditWriteRepository.cpp
     src/ShellAccountingBrokerOrderDryRunRepository.cpp
     src/ShellAccountingManualEntryRepositoryScaffold.cpp
+    src/ShellAccountingManualCashMovementRepository.cpp
     src/ShellAccountingManualTransactionRepository.cpp
     src/ShellAccountingReadOnlyFactsQuery.cpp
     src/ShellAccountingSnapshotWriteRepository.cpp

@@ -144,3 +144,17 @@ migration authorization for standalone cash_adjustment. Future DataService
 action write implementation must be separately authorized. Future replay, read
 model, UI integration, audit integration, and broker work must remain separate
 authorization tasks.
+
+## TASK-196 Follow-Up
+
+TASK-196 implements DataAccess-only manual cash movement repository dual-write
+for Deposit / Withdrawal records. It is the separately authorized repository
+implementation described by this gate, and it writes only through direct
+repository tests. It does not modify DataServiceActions, does not add
+DataService runtime write wiring, does not modify QML/startup, does not write
+`audit_log` or ledger rows, and does not add broker, network, credentials,
+endpoint, real order placement, or automatic trading.
+
+The TASK-194 gate therefore evolves from "manual cash movement repository
+implementation must not exist" to "only the TASK-196 DataAccess direct-test
+dual-write repository implementation is allowed."

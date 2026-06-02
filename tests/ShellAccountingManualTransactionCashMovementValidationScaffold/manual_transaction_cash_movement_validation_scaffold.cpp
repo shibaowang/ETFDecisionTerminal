@@ -387,8 +387,10 @@ void testNoDataAccessWriteRepository(const Harness& h)
     std::vector<fs::path> files = filesUnder(h.root / "libs" / "DataAccess" / "include");
     auto src = filesUnder(h.root / "libs" / "DataAccess" / "src");
     files.insert(files.end(), src.begin(), src.end());
+    // TASK-196 authorizes ShellAccountingManualCashMovementRepository as a
+    // DataAccess-only direct repository. This legacy validation gate still
+    // blocks older runtime/scaffold write escape hatches.
     requireNoTokens(files, {
-        "ManualCashMovementRepository",
         "insertManualTransaction",
         "insertCashMovement",
     }, "DataAccess manual write repository");

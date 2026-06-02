@@ -273,8 +273,10 @@ void testNoDataAccessWriteRepository(const Harness& h)
     std::vector<fs::path> files = filesUnder(h.root / "libs" / "DataAccess" / "include");
     auto src = filesUnder(h.root / "libs" / "DataAccess" / "src");
     files.insert(files.end(), src.begin(), src.end());
+    // TASK-196 authorizes ShellAccountingManualCashMovementRepository as a
+    // DataAccess-only direct-test repository; DataService action write wiring
+    // remains forbidden by this gate.
     requireNoTokens(files, {
-        "ManualCashMovementRepository",
         "ManualEntryWriteRepository",
         "ManualEntryPersistenceRepository",
         "ManualTransactionWriteRepository",

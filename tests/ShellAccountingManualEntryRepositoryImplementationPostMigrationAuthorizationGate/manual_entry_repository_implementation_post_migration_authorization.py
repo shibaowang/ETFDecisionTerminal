@@ -18,8 +18,14 @@ ALLOWED_DIFF_PREFIXES = {
     "docs/183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md",
     "docs/184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md",
     "docs/185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md",
+    "docs/186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md",
+    "docs/187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md",
+    "docs/188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md",
+    "docs/189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md",
     "libs/DataAccess/CMakeLists.txt",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
     "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
     "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
     "tests/CMakeLists.txt",
     "tests/DevDocs/test_readonly_demo_acceptance.py",
@@ -39,6 +45,9 @@ ALLOWED_DIFF_DIRS = {
     "tests/ShellAccountingManualEntryRepositoryScaffold/",
     "tests/ShellAccountingManualEntryDataServiceActionValidationWiring/",
     "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/",
+    "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/",
+    "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/",
+    "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/",
 }
 
 TASK190_MIGRATION_TOKENS = [
@@ -448,7 +457,8 @@ def test_no_trade_log_write(h: Harness) -> None:
 
 def test_no_cash_adjustment_write(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    require("INSERT INTO cash_adjustment" not in diff, "TASK-192 must not add cash_adjustment writes")
+    repository_source = read(h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualCashMovementRepository.cpp")
+    require("INSERT INTO cash_adjustment" in repository_source, "TASK-196 must add DataAccess-only cash_adjustment write")
     forbidden = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
     require("cash_adjustment" not in forbidden, "TASK-192 must not add DataService/Shell cash_adjustment references")
 

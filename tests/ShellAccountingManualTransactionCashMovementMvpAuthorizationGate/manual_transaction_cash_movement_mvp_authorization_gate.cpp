@@ -290,8 +290,10 @@ void testNoDataAccessManualWriteRepository(const Harness& harness)
     auto sourceFiles = filesUnder(harness.root / "libs" / "DataAccess" / "src");
     files.insert(files.end(), includeFiles.begin(), includeFiles.end());
     files.insert(files.end(), sourceFiles.begin(), sourceFiles.end());
+    // TASK-196 authorizes ShellAccountingManualCashMovementRepository as a
+    // DataAccess-only direct-test repository. This legacy gate keeps blocking
+    // older write escape-hatch names and runtime manual cash shortcuts.
     requireNoTokensInFiles(files, {
-        "ManualCashMovementRepository",
         "insertManualTransaction",
         "insertCashMovement",
         "manual_transaction",

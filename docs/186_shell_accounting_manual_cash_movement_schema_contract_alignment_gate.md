@@ -106,3 +106,15 @@ paths:
 
 No future task may assume cash_adjustment-only write is valid under the current
 schema.
+
+## TASK-196 Follow-Up
+
+TASK-196 implements DataAccess-only manual cash movement repository dual-write
+for Deposit / Withdrawal records. That implementation follows this schema
+contract by writing `trade_log` and `cash_adjustment` in one transaction and by
+setting `cash_adjustment.trade_log_id` to the inserted `trade_log.id`.
+
+TASK-196 still does not authorize DataServiceActions runtime write wiring,
+production QML/startup changes, Presenter / Controller changes, AccountingEngine
+replay, audit write, ledger write, broker SDK, network, credentials, endpoint,
+real order placement, or automatic trading.

@@ -43,6 +43,15 @@ entries only. That implementation is DataAccess-only and direct-test-only. It
 does not implement manual cash movement write, does not modify DataService
 actions, and does not authorize runtime DataService write wiring.
 
+TASK-193 aligns this TASK-191 post-migration gate after TASK-192 is merged into
+main. The gate now allows the already authorized
+`ShellAccountingManualTransactionRepository` DataAccess-only write to
+`trade_execution_group` and `trade_log`, while still treating DataServiceActions
+runtime write, manual cash movement write, `cash_adjustment` write, `audit_log`
+write, ledger write, QML/startup/Presenter/Controller wiring, replay,
+TradeDraft or suggestion generation, broker SDK, network, credentials,
+endpoint, real order, and automatic trading as forbidden.
+
 ## Future Repository Implementation Boundary
 
 Future repository implementation must be a separate TASK. That future TASK may

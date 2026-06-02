@@ -9,6 +9,12 @@ for manual BUY / SELL entries while still verifying that manual cash movement
 write, DataService write wiring, UI, broker, network, credentials, real order
 placement, and automatic trading remain out of scope.
 
+TASK-193 aligns the post-migration gate after TASK-192 is present on main. The
+no-runtime-SQL probe checks that DataService/Shell runtime paths do not add DML,
+and separately verifies that the only authorized repository DML remains inside
+`ShellAccountingManualTransactionRepository` for `trade_execution_group` and
+`trade_log`.
+
 ## Test Matrix
 
 ### Documentation And Indexing

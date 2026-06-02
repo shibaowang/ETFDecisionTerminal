@@ -409,7 +409,6 @@ def test_no_repository_implementation(h: Harness) -> None:
 
 
 def test_no_runtime_sql(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
     forbidden = subprocess.run(
         [
             "git",
@@ -427,7 +426,11 @@ def test_no_runtime_sql(h: Harness) -> None:
         text=True,
     ).stdout
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", forbidden, re.IGNORECASE) is None, "TASK-192 must not add DataService/Shell runtime DML")
-    require_contains(diff, "ShellAccountingManualTransactionRepository", "TASK-192 DataAccess DML scope")
+    repository_source = read(h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualTransactionRepository.cpp")
+    require_contains(repository_source, "INSERT INTO trade_execution_group", "TASK-192 DataAccess DML scope")
+    require_contains(repository_source, "INSERT INTO trade_log", "TASK-192 DataAccess DML scope")
+    require("INSERT INTO cash_adjustment" not in repository_source, "TASK-192 must not add manual cash movement write")
+    require("INSERT INTO audit_log" not in repository_source, "TASK-192 must not add audit write")
 
 
 def test_no_sqlite_write(h: Harness) -> None:

@@ -637,6 +637,16 @@
   defines TASK-185 tests for command DTOs, result DTOs, disabled scaffold
   methods, no persistent ids, no writes, no DataService action drift, and
   retained broker gates.
+- ShellAccounting manual entry repository implementation authorization gate:
+  [170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md](170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md)
+  records TASK-186 gate-only policy for future manual entry DataAccess
+  repository implementation while keeping the TASK-185 scaffold disabled and
+  no-write.
+- ShellAccounting manual entry repository implementation authorization test plan:
+  [171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md](171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md)
+  defines TASK-186 static probes for no repository implementation, no SQL,
+  no SQLite writes, no schema drift, no DataService action drift, and retained
+  broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

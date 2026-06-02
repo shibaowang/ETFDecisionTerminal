@@ -114,6 +114,8 @@ automatic trading.
 - [ ] docs/169 merged.
 - [ ] README, docs/README, and docs/12 register TASK-185.
 - [ ] docs/166 and docs/167 record the TASK-185 disabled scaffold evolution.
+- [ ] TASK-186 repository implementation authorization gate passes before any
+  future write repository implementation starts.
 - [ ] Scaffold header/source merged.
 - [ ] DataAccess CMake registers the scaffold source.
 - [ ] Scaffold methods return disabled / write-not-implemented results.

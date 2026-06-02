@@ -11372,6 +11372,170 @@ def main() -> int:
             ctest_name in shell_accounting_manual_entry_repository_scaffold_cmake,
             f"TASK-185 CTest exists: {ctest_name}",
         )
+
+    shell_accounting_manual_entry_repository_implementation_authorization_doc_path = (
+        root
+        / "docs"
+        / "170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md"
+    )
+    shell_accounting_manual_entry_repository_implementation_authorization_plan_path = (
+        root
+        / "docs"
+        / "171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md"
+    )
+    shell_accounting_manual_entry_repository_implementation_authorization_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryRepositoryImplementationAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(
+        shell_accounting_manual_entry_repository_implementation_authorization_doc_path.exists(),
+        "docs/170 exists",
+    )
+    require(
+        shell_accounting_manual_entry_repository_implementation_authorization_plan_path.exists(),
+        "docs/171 exists",
+    )
+    require(
+        shell_accounting_manual_entry_repository_implementation_authorization_cmake_path.exists(),
+        "TASK-186 tests CMake exists",
+    )
+    shell_accounting_manual_entry_repository_implementation_authorization_doc = (
+        shell_accounting_manual_entry_repository_implementation_authorization_doc_path.read_text(
+            encoding="utf-8"
+        )
+    )
+    shell_accounting_manual_entry_repository_implementation_authorization_plan = (
+        shell_accounting_manual_entry_repository_implementation_authorization_plan_path.read_text(
+            encoding="utf-8"
+        )
+    )
+    shell_accounting_manual_entry_repository_implementation_authorization_cmake = (
+        shell_accounting_manual_entry_repository_implementation_authorization_cmake_path.read_text(
+            encoding="utf-8"
+        )
+    )
+    require(
+        "docs/170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md"
+        in readme,
+        "README links docs/170",
+    )
+    require(
+        "docs/171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md"
+        in readme,
+        "README links docs/171",
+    )
+    require(
+        "170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md"
+        in docs_index,
+        "docs/README links docs/170",
+    )
+    require(
+        "171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md"
+        in docs_index,
+        "docs/README links docs/171",
+    )
+    require("TASK-186" in codex_prompt_template, "docs/12 registers TASK-186")
+    require(
+        "TASK-186" in shell_accounting_manual_entry_repository_implementation_authorization_doc,
+        "docs/170 mentions TASK-186",
+    )
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_repository_implementation_authorization_plan,
+        "docs/171 contains Test Matrix",
+    )
+    require(
+        "authorization gate only"
+        in shell_accounting_manual_entry_repository_implementation_authorization_doc,
+        "docs/170 states gate-only",
+    )
+    require(
+        "does not implement a repository write path"
+        in shell_accounting_manual_entry_repository_implementation_authorization_doc,
+        "docs/170 forbids current repository write implementation",
+    )
+    require(
+        "separate schema authorization TASK"
+        in shell_accounting_manual_entry_repository_implementation_authorization_doc,
+        "docs/170 requires separate schema authorization",
+    )
+    require(
+        "repository boundary"
+        in shell_accounting_manual_entry_repository_implementation_authorization_doc,
+        "docs/170 requires repository boundary",
+    )
+    require(
+        "no-network"
+        in shell_accounting_manual_entry_repository_implementation_authorization_doc,
+        "docs/170 preserves no-network broker gate",
+    )
+    require(
+        "TASK-186" not in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 scaffold header has no TASK-186 marker",
+    )
+    require(
+        "TASK-186" not in shell_accounting_manual_entry_repository_scaffold_source,
+        "TASK-185 scaffold source has no TASK-186 marker",
+    )
+    require("TASK-186" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-186 marker")
+    require("TASK-186" not in dataservice_actions_header, "DataServiceActions.h has no TASK-186 marker")
+    require("TASK-186" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-186 marker")
+    require(
+        "TASK-186" not in shell_accounting_manual_validation_header,
+        "TASK-178 validation header has no TASK-186 marker",
+    )
+    require(
+        "TASK-186" not in shell_accounting_manual_validation_source,
+        "TASK-178 validation source has no TASK-186 marker",
+    )
+    for forbidden in [
+        "ManualEntryImplementationRepository",
+        "ManualEntryWriteRepository",
+        "ManualEntryPersistenceRepository",
+        "ManualTransactionWriteRepository",
+        "ManualCashMovementWriteRepository",
+        "insertManualTransaction",
+        "insertCashMovement",
+        "executeManualTransactionWrite",
+        "executeManualCashMovementWrite",
+    ]:
+        require(
+            forbidden not in dataaccess_cmake,
+            f"TASK-186 did not register repository implementation token {forbidden}",
+        )
+    task186_ctests = [
+        "shell_accounting_manual_entry_repository_implementation_authorization_gate",
+        "shell_accounting_manual_entry_repository_implementation_authorization_docs",
+        "shell_accounting_manual_entry_repository_implementation_authorization_docs_index_prompt",
+        "shell_accounting_manual_entry_repository_implementation_authorization_scaffold_header_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_scaffold_source_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_scaffold_write_implemented_false",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_repository_implementation",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_sql",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_sqlite_write",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_trade_log_write",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_cash_fact_write",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_audit_ledger_write",
+        "shell_accounting_manual_entry_repository_implementation_authorization_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_registrar_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_validation_code_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_task182_validation_only",
+        "shell_accounting_manual_entry_repository_implementation_authorization_schema_unmodified",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_new_migration",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_broker_sdk",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_network_endpoint",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_credentials",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_real_order_placement",
+        "shell_accounting_manual_entry_repository_implementation_authorization_no_automatic_trading",
+        "shell_accounting_manual_entry_repository_implementation_authorization_broker_gates_retained",
+    ]
+    for ctest_name in task186_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_repository_implementation_authorization_cmake,
+            f"TASK-186 CTest exists: {ctest_name}",
+        )
     return 0
 
 

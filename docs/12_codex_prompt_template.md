@@ -1855,6 +1855,25 @@ broker SDKs, add network calls, add credentials or endpoints, place real
 orders, store broker order ids, or enable automatic trading. SQL must remain in
 DataAccess repositories; DataServiceActions must not scatter direct SQL.
 
+## TASK-199 Manual Entry QML Presenter Authorization Gate Prompt Rule
+
+Future manual entry QML / Presenter work after TASK-199 must reference docs/194
+and docs/195. TASK-199 is a gate-only authorization task and does not implement
+UI, modify production QML/startup, modify Presenter or Controller behavior,
+modify DataServiceActions, modify repositories, modify migrations, write
+SQLite directly, trigger AccountingEngine replay, write audit or ledger rows,
+add broker SDKs, add network calls, add credentials or endpoints, place real
+orders, or enable automatic trading.
+
+Future UI implementation must be separately authorized, must route manual
+transaction and manual cash movement submissions only through
+`accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`, must not call DataAccess or SQLite
+directly from QML / Presenter / Controller, and must display only sanitized
+DataService responses and safe errors. Future readback / refresh / replay,
+audit write, ledger policy, broker capability, and automatic trading work must
+remain separately authorized.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -1698,6 +1698,26 @@ orders, or enabling automatic trading. Future schema implementation must be a
 separately authorized TASK, must add an independent migration file, and must
 not directly edit `migrations/001_initial_schema.sql`.
 
+## TASK-189 Manual Entry Schema Implementation Authorization Gate Prompt Rule
+
+Future work after TASK-189 must reference docs/176 and docs/177. TASK-189 is a
+schema implementation authorization gate only. It defines future migration
+readiness, migration filename / id policy, rollback / forward-fix policy,
+compatibility policy, manual transaction candidate categories, manual cash
+movement candidate categories, and audit / rollback / privacy candidate
+categories. TASK-189 does not authorize modifying
+`migrations/001_initial_schema.sql`, adding a migration, adding a schema file,
+adding tables / columns / indexes / constraints, implementing repository
+writes, executing SQL, writing SQLite, changing DataServiceActions, changing
+TASK-178 validation production code, changing TASK-185 repository scaffold
+code, changing QML/startup, changing AccountingEngine replay, changing
+StrategyEngine or MarketEngine, adding TradeDraft or suggestion
+implementation, adding broker SDK, adding network calls, adding credentials or
+endpoints, placing real orders, or enabling automatic trading. Future schema
+implementation must be a separately authorized TASK, must add an independent
+migration file, must declare migration id / rollback / compatibility policy,
+and must not directly edit `migrations/001_initial_schema.sql`.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

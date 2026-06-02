@@ -626,6 +626,17 @@
   defines TASK-184 static probes for no repository scaffold, no repository
   header/source, no SQL/SQLite writes, no DataAccess CMake drift, retained
   TASK-182 validation-only semantics, and retained broker gates.
+- ShellAccounting manual entry repository scaffold:
+  [168_shell_accounting_manual_entry_repository_scaffold.md](168_shell_accounting_manual_entry_repository_scaffold.md)
+  records TASK-185 disabled DataAccess repository scaffold types and methods
+  for future manual transaction and cash movement persistence without enabling
+  SQL, SQLite writes, DataService action behavior, QML, broker, network, or
+  automatic trading.
+- ShellAccounting manual entry repository scaffold test plan:
+  [169_shell_accounting_manual_entry_repository_scaffold_test_plan.md](169_shell_accounting_manual_entry_repository_scaffold_test_plan.md)
+  defines TASK-185 tests for command DTOs, result DTOs, disabled scaffold
+  methods, no persistent ids, no writes, no DataService action drift, and
+  retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

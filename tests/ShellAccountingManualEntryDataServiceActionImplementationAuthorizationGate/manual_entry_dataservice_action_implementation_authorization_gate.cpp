@@ -344,7 +344,10 @@ void testNoDataAccessWriteRepository(const Harness& h)
     requireNoTokens(files, {
         "ManualTransactionRepository",
         "ManualCashMovementRepository",
-        "ManualEntryRepository",
+        "ManualEntryWriteRepository",
+        "ManualEntryPersistenceRepository",
+        "ManualTransactionWriteRepository",
+        "ManualCashMovementWriteRepository",
         "insertManualTransaction",
         "insertCashMovement",
         "manual_transaction",

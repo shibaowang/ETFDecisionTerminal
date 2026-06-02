@@ -11102,8 +11102,8 @@ def main() -> int:
         "TASK-178 validation source has no TASK-184 marker",
     )
     require(
-        "ManualEntryRepository" not in dataaccess_cmake,
-        "DataAccess CMake has no manual entry repository scaffold after TASK-184",
+        "ShellAccountingManualEntryRepositoryScaffold.cpp" in dataaccess_cmake,
+        "DataAccess CMake registers TASK-185 manual entry repository scaffold",
     )
     require(
         "ManualTransactionRepository" not in dataaccess_cmake,
@@ -11166,6 +11166,211 @@ def main() -> int:
         require(
             ctest_name in shell_accounting_manual_entry_repository_scaffold_gate_cmake,
             f"TASK-184 CTest exists: {ctest_name}",
+        )
+
+    shell_accounting_manual_entry_repository_scaffold_doc_path = (
+        root / "docs" / "168_shell_accounting_manual_entry_repository_scaffold.md"
+    )
+    shell_accounting_manual_entry_repository_scaffold_plan_path = (
+        root / "docs" / "169_shell_accounting_manual_entry_repository_scaffold_test_plan.md"
+    )
+    shell_accounting_manual_entry_repository_scaffold_header_path = (
+        root
+        / "libs"
+        / "DataAccess"
+        / "include"
+        / "DataAccess"
+        / "ShellAccountingManualEntryRepositoryScaffold.h"
+    )
+    shell_accounting_manual_entry_repository_scaffold_source_path = (
+        root / "libs" / "DataAccess" / "src" / "ShellAccountingManualEntryRepositoryScaffold.cpp"
+    )
+    shell_accounting_manual_entry_repository_scaffold_cmake_path = (
+        root / "tests" / "ShellAccountingManualEntryRepositoryScaffold" / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_entry_repository_scaffold_doc_path.exists(), "docs/168 exists")
+    require(shell_accounting_manual_entry_repository_scaffold_plan_path.exists(), "docs/169 exists")
+    require(shell_accounting_manual_entry_repository_scaffold_header_path.exists(), "TASK-185 scaffold header exists")
+    require(shell_accounting_manual_entry_repository_scaffold_source_path.exists(), "TASK-185 scaffold source exists")
+    require(shell_accounting_manual_entry_repository_scaffold_cmake_path.exists(), "TASK-185 tests CMake exists")
+
+    shell_accounting_manual_entry_repository_scaffold_doc = (
+        shell_accounting_manual_entry_repository_scaffold_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_repository_scaffold_plan = (
+        shell_accounting_manual_entry_repository_scaffold_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_repository_scaffold_header = (
+        shell_accounting_manual_entry_repository_scaffold_header_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_repository_scaffold_source = (
+        shell_accounting_manual_entry_repository_scaffold_source_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_entry_repository_scaffold_cmake = (
+        shell_accounting_manual_entry_repository_scaffold_cmake_path.read_text(encoding="utf-8")
+    )
+
+    require(
+        "docs/168_shell_accounting_manual_entry_repository_scaffold.md" in readme,
+        "README links docs/168",
+    )
+    require(
+        "docs/169_shell_accounting_manual_entry_repository_scaffold_test_plan.md" in readme,
+        "README links docs/169",
+    )
+    require(
+        "168_shell_accounting_manual_entry_repository_scaffold.md" in docs_index,
+        "docs/README links docs/168",
+    )
+    require(
+        "169_shell_accounting_manual_entry_repository_scaffold_test_plan.md" in docs_index,
+        "docs/README links docs/169",
+    )
+    require("TASK-185" in codex_prompt_template, "docs/12 registers TASK-185")
+    require("TASK-185" in shell_accounting_manual_entry_repository_scaffold_doc, "docs/168 mentions TASK-185")
+    require(
+        "Test Matrix" in shell_accounting_manual_entry_repository_scaffold_plan,
+        "docs/169 contains Test Matrix",
+    )
+    require(
+        "ShellAccountingManualEntryRepositoryScaffold" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 scaffold class exists",
+    )
+    require(
+        "ShellAccountingManualTransactionPersistenceCommand" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 transaction command DTO exists",
+    )
+    require(
+        "ShellAccountingManualCashMovementPersistenceCommand" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 cash command DTO exists",
+    )
+    require(
+        "ShellAccountingManualEntryPersistenceResult" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 result DTO exists",
+    )
+    require(
+        "persistManualTransaction" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 transaction scaffold method exists",
+    )
+    require(
+        "persistManualCashMovement" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 cash scaffold method exists",
+    )
+    require(
+        "writeImplemented = false" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 result defaults writeImplemented=false",
+    )
+    require(
+        "databaseWritten = false" in shell_accounting_manual_entry_repository_scaffold_header,
+        "TASK-185 result defaults databaseWritten=false",
+    )
+    require(
+        "MANUAL_ENTRY_REPOSITORY_SCAFFOLD_WRITE_NOT_IMPLEMENTED"
+        in shell_accounting_manual_entry_repository_scaffold_source,
+        "TASK-185 source returns disabled issue",
+    )
+    for forbidden in [
+        "tradeLogId",
+        "cashFactId",
+        "auditLogId",
+        "ledgerId",
+        "persistentId",
+        "INSERT ",
+        "UPDATE ",
+        "DELETE ",
+        "executeSql",
+        "executeNonQuery",
+        "sqlite3_exec",
+        "trade_log",
+        "cash_fact",
+        "cash_ledger",
+        "audit_log",
+        "Broker",
+        "http://",
+        "https://",
+        "endpoint",
+        "credential",
+        "secret",
+        "password",
+        "brokerOrderId",
+        "placeOrder",
+        "automaticTrading",
+    ]:
+        require(
+            forbidden not in shell_accounting_manual_entry_repository_scaffold_source,
+            f"TASK-185 scaffold source excludes {forbidden}",
+        )
+    require("TASK-185" not in dataservice_actions_source, "DataServiceActions.cpp has no TASK-185 marker")
+    require("TASK-185" not in dataservice_actions_header, "DataServiceActions.h has no TASK-185 marker")
+    require("TASK-185" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-185 marker")
+    require(
+        "ShellAccountingManualEntryRepositoryScaffold" not in dataservice_actions_source,
+        "DataServiceActions.cpp does not call TASK-185 scaffold",
+    )
+    require(
+        "TASK-185" not in shell_accounting_manual_validation_header,
+        "TASK-178 validation header has no TASK-185 marker",
+    )
+    require(
+        "TASK-185" not in shell_accounting_manual_validation_source,
+        "TASK-178 validation source has no TASK-185 marker",
+    )
+
+    task185_ctests = [
+        "shell_accounting_manual_entry_repository_scaffold_docs",
+        "shell_accounting_manual_entry_repository_scaffold_docs_index_prompt",
+        "shell_accounting_manual_entry_repository_scaffold_header_exists",
+        "shell_accounting_manual_entry_repository_scaffold_source_exists",
+        "shell_accounting_manual_entry_repository_scaffold_cmake_registered",
+        "shell_accounting_manual_entry_repository_scaffold_transaction_command_dto",
+        "shell_accounting_manual_entry_repository_scaffold_cash_command_dto",
+        "shell_accounting_manual_entry_repository_scaffold_result_dto",
+        "shell_accounting_manual_entry_repository_scaffold_transaction_method",
+        "shell_accounting_manual_entry_repository_scaffold_cash_method",
+        "shell_accounting_manual_entry_repository_scaffold_transaction_disabled_result",
+        "shell_accounting_manual_entry_repository_scaffold_cash_disabled_result",
+        "shell_accounting_manual_entry_repository_scaffold_database_written_false",
+        "shell_accounting_manual_entry_repository_scaffold_trade_log_written_false",
+        "shell_accounting_manual_entry_repository_scaffold_cash_facts_written_false",
+        "shell_accounting_manual_entry_repository_scaffold_audit_written_false",
+        "shell_accounting_manual_entry_repository_scaffold_ledger_written_false",
+        "shell_accounting_manual_entry_repository_scaffold_no_persistent_ids",
+        "shell_accounting_manual_entry_repository_scaffold_no_sql",
+        "shell_accounting_manual_entry_repository_scaffold_no_insert_update_delete",
+        "shell_accounting_manual_entry_repository_scaffold_no_sqlite_mutation",
+        "shell_accounting_manual_entry_repository_scaffold_no_trade_log_write",
+        "shell_accounting_manual_entry_repository_scaffold_no_cash_fact_write",
+        "shell_accounting_manual_entry_repository_scaffold_no_audit_ledger_write",
+        "shell_accounting_manual_entry_repository_scaffold_dataserviceactions_cpp_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_dataserviceactions_h_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_registrar_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_validation_code_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_task182_write_not_implemented",
+        "shell_accounting_manual_entry_repository_scaffold_schema_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_no_new_migration",
+        "shell_accounting_manual_entry_repository_scaffold_production_qml_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_startup_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_presenter_controller_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_accountingengine_replay_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_strategy_market_unmodified",
+        "shell_accounting_manual_entry_repository_scaffold_no_tradedraft_suggestion",
+        "shell_accounting_manual_entry_repository_scaffold_no_broker_sdk",
+        "shell_accounting_manual_entry_repository_scaffold_no_network_endpoint",
+        "shell_accounting_manual_entry_repository_scaffold_no_credentials",
+        "shell_accounting_manual_entry_repository_scaffold_no_real_order_id",
+        "shell_accounting_manual_entry_repository_scaffold_no_real_order_placement",
+        "shell_accounting_manual_entry_repository_scaffold_no_automatic_trading",
+        "shell_accounting_manual_entry_repository_scaffold_task184_evolved",
+        "shell_accounting_manual_entry_repository_scaffold_task183_still_valid",
+        "shell_accounting_manual_entry_repository_scaffold_task182_still_valid",
+        "shell_accounting_manual_entry_repository_scaffold_task178_still_pure",
+        "shell_accounting_manual_entry_repository_scaffold_task177_still_valid",
+        "shell_accounting_manual_entry_repository_scaffold_broker_gates_retained",
+    ]
+    for ctest_name in task185_ctests:
+        require(
+            ctest_name in shell_accounting_manual_entry_repository_scaffold_cmake,
+            f"TASK-185 CTest exists: {ctest_name}",
         )
     return 0
 

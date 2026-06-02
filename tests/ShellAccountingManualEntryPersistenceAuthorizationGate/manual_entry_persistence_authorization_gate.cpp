@@ -362,8 +362,10 @@ void testNoManualPersistenceRepository(const Harness& h)
         "ManualEntryPersistenceRepository",
         "ManualTransactionWriteRepository",
         "ManualCashMovementWriteRepository",
-        "persistManualTransaction",
-        "persistManualCashMovement",
+        "insertManualTransaction",
+        "insertCashMovement",
+        "executeManualTransactionWrite",
+        "executeManualCashMovementWrite",
     }, "DataAccess manual persistence repository scan");
 }
 

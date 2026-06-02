@@ -3182,3 +3182,23 @@ no-automatic-trading gates remain retained and passing. See
 `docs/166_shell_accounting_manual_entry_repository_scaffold_authorization_gate.md`
 and
 `docs/167_shell_accounting_manual_entry_repository_scaffold_authorization_test_plan.md`.
+
+## TASK-185 Manual Entry Repository Scaffold
+
+TASK-185 adds the disabled DataAccess repository scaffold for future manual
+entry persistence. It introduces
+`ShellAccountingManualEntryRepositoryScaffold`,
+`ShellAccountingManualTransactionPersistenceCommand`,
+`ShellAccountingManualCashMovementPersistenceCommand`, and
+`ShellAccountingManualEntryPersistenceResult`.
+
+The scaffold is not a repository implementation and not a write
+implementation. Its methods return disabled / write-not-implemented results:
+`success=false`, `writeImplemented=false`, `databaseWritten=false`,
+`tradeLogWritten=false`, `cashFactsWritten=false`, `auditWritten=false`, and
+`ledgerWritten=false`, with no persistent ids. TASK-182 validation wiring still
+returns `writeImplemented=false`; DataServiceActions, QML, startup,
+AccountingEngine replay, schema, broker, network, credentials, endpoint, real
+order placement, and automatic trading remain unchanged. See
+`docs/168_shell_accounting_manual_entry_repository_scaffold.md` and
+`docs/169_shell_accounting_manual_entry_repository_scaffold_test_plan.md`.

@@ -3202,3 +3202,22 @@ AccountingEngine replay, schema, broker, network, credentials, endpoint, real
 order placement, and automatic trading remain unchanged. See
 `docs/168_shell_accounting_manual_entry_repository_scaffold.md` and
 `docs/169_shell_accounting_manual_entry_repository_scaffold_test_plan.md`.
+
+## TASK-186 Manual Entry Repository Implementation Authorization Gate
+
+TASK-186 adds the gate-only authorization boundary for a future manual entry
+DataAccess repository implementation. It does not implement repository writes,
+does not modify the TASK-185 scaffold production code, does not modify
+DataServiceActions, does not execute SQL, does not write SQLite, and does not
+modify schema, QML, startup, replay, broker, strategy, or automatic trading
+code.
+
+Future repository implementation must be separately authorized, must confirm
+schema adequacy first, must use a repository boundary instead of action-handler
+SQL, and must define transaction, rollback, idempotency, duplicate handling,
+audit, privacy, and failure atomicity policies. If schema is insufficient, a
+separate schema authorization TASK is required before any migration work.
+
+See `docs/170_shell_accounting_manual_entry_repository_implementation_authorization_gate.md`
+and
+`docs/171_shell_accounting_manual_entry_repository_implementation_authorization_test_plan.md`.

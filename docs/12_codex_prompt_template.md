@@ -1649,6 +1649,23 @@ return persistent ids. TASK-182 validation wiring must continue to return
 `writeImplemented=false` until a later DataService action write implementation
 task explicitly authorizes persistence.
 
+## TASK-186 Manual Entry Repository Implementation Authorization Gate Prompt Rule
+
+Future work after TASK-186 must reference docs/170 and docs/171. TASK-186 is a
+gate-only task for future manual entry DataAccess repository implementation. It
+does not authorize repository write implementation, SQL execution, SQLite
+writes, schema changes, DataServiceActions changes, QML/startup changes,
+AccountingEngine replay changes, broker SDK integration, network calls,
+credentials, endpoint configuration, real order placement, or automatic
+trading.
+
+Future repository implementation must be separately authorized, must confirm
+schema adequacy before writing, must use a repository boundary instead of
+scattered action-handler SQL, and must define transaction, rollback,
+idempotency, duplicate handling, audit, privacy, and failure atomicity policies.
+If schema is insufficient, open a separate schema authorization TASK before
+modifying migrations.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

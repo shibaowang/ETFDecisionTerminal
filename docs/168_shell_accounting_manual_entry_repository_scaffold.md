@@ -37,6 +37,11 @@ compile as part of the DataAccess library and be tested directly.
 
 TASK-182 validation wiring still returns validation accepted plus `writeImplemented=false`.
 
+TASK-186 adds a future repository implementation authorization gate. It does
+not change this scaffold, and the scaffold remains disabled /
+write-not-implemented until a separate repository implementation TASK is
+explicitly authorized.
+
 ## Command DTO Boundary
 
 `ShellAccountingManualTransactionPersistenceCommand` carries:

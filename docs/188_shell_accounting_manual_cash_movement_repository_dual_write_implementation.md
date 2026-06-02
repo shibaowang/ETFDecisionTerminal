@@ -109,3 +109,8 @@ Future DataService action write wiring must be separately authorized. Future
 replay, read-model, UI, audit write, ledger policy, broker, reconciliation,
 cancellation, correction, and automatic trading work must also remain separate
 TASKs.
+
+TASK-197 adds the DataService write wiring authorization gate after this
+DataAccess-only implementation. TASK-197 does not wire this repository into
+`DataServiceActions`, and the current manual cash movement DataService action
+remains validation-only with no runtime database write.

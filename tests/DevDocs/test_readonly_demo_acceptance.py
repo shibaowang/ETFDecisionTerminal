@@ -12678,6 +12678,83 @@ def main() -> int:
         "TASK-196 test directory registered",
     )
     require("ManualCashMovementRepository" not in production_qml, "production QML still has no direct manual cash movement repository")
+
+    task197_doc_path = root / "docs" / "190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md"
+    task197_plan_path = root / "docs" / "191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md"
+    task197_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(task197_doc_path.exists(), "docs/190 exists")
+    require(task197_plan_path.exists(), "docs/191 exists")
+    require(task197_cmake_path.exists(), "TASK-197 tests CMake exists")
+    task197_doc = task197_doc_path.read_text(encoding="utf-8")
+    task197_plan = task197_plan_path.read_text(encoding="utf-8")
+    task197_cmake = task197_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md" in readme,
+        "README links docs/190",
+    )
+    require(
+        "docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md" in readme,
+        "README links docs/191",
+    )
+    require(
+        "190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md" in docs_index,
+        "docs/README links docs/190",
+    )
+    require(
+        "191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/191",
+    )
+    require("TASK-197" in codex_prompt_template, "docs/12 registers TASK-197")
+    for token, message in [
+        ("TASK-197", "docs/190 mentions TASK-197"),
+        ("DataService write wiring authorization gate-only", "docs/190 states authorization-only"),
+        ("does not implement DataService runtime write wiring", "docs/190 blocks write wiring"),
+        ("does not modify `DataServiceActions.cpp`", "docs/190 protects DataServiceActions.cpp"),
+        ("does not modify `DataServiceActions.h`", "docs/190 protects DataServiceActions.h"),
+        ("does not modify `DataServiceActionRegistrar.cpp`", "docs/190 protects registrar"),
+        ("accounting.manual_transaction.create", "docs/190 records manual transaction action"),
+        ("accounting.manual_cash_movement.create", "docs/190 records manual cash movement action"),
+        ("ShellAccountingManualTransactionRepository", "docs/190 references TASK-192 repository"),
+        ("ShellAccountingManualCashMovementRepository", "docs/190 references TASK-196 repository"),
+        ("validation-first", "docs/190 requires validation-first"),
+        ("must not scatter SQL in DataService action handlers", "docs/190 blocks scattered SQL"),
+        ("sanitized local write result", "docs/190 requires sanitized response"),
+        ("Repository transaction boundaries remain authoritative", "docs/190 preserves repository transaction boundary"),
+        ("Duplicate idempotency", "docs/190 covers duplicate idempotency"),
+        ("Future audit write", "docs/190 separates audit write"),
+        ("Future replay", "docs/190 separates replay"),
+        ("Broker sandbox new capability development remains paused", "docs/190 keeps broker paused"),
+    ]:
+        require(token in task197_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/191 contains Test Matrix"),
+        ("Required Probes", "docs/191 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/191 contains Go / No-Go Checklist"),
+        ("DataServiceActions.cpp is not modified", "docs/191 protects DataServiceActions.cpp"),
+        ("TASK-182 validation wiring still returns `writeImplemented=false`", "docs/191 keeps validation-only"),
+        ("DataService action response still does not return persistent id", "docs/191 blocks persistent ids"),
+        ("No broker SDK", "docs/191 blocks broker SDK"),
+        ("No network or endpoint", "docs/191 blocks network"),
+        ("No credentials", "docs/191 blocks credentials"),
+        ("No real order placement", "docs/191 blocks order placement"),
+        ("No automatic trading", "docs/191 blocks automatic trading"),
+    ]:
+        require(token in task197_plan, message)
+    require(
+        "shell_accounting_manual_entry_dataservice_write_wiring_authorization" in task197_cmake,
+        "TASK-197 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate" in tests_cmake,
+        "TASK-197 test directory registered",
+    )
+    require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI after TASK-197")
+    require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-197")
     return 0
 
 

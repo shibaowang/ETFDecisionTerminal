@@ -1347,6 +1347,29 @@ Any future DataService write action, UI exposure, replay integration, audit
 policy, ledger policy, standalone cash_adjustment schema change, broker work,
 or automatic trading must be separately authorized.
 
+## TASK-197 Manual Entry DataService Write Wiring Authorization Gate Prompt Rule
+
+Future manual entry DataService write wiring work after TASK-197 must reference
+docs/190 and docs/191. TASK-197 is an authorization gate only. It does not
+authorize modifying `DataServiceActions.cpp`, `DataServiceActions.h`, or
+`DataServiceActionRegistrar.cpp`, wiring DataAccess repositories into runtime
+DataService actions, executing runtime SQL, writing SQLite rows, returning
+persistent ids from DataService actions, changing production QML/startup,
+Presenter, Controller, AccountingEngine replay, StrategyEngine, MarketEngine,
+TradeDraft or suggestion implementation, broker SDKs, network calls,
+credentials, endpoints, real order placement, or automatic trading.
+
+Future DataService write wiring must be a separate TASK, remain
+validation-first, call TASK-192 `ShellAccountingManualTransactionRepository` or
+TASK-196 `ShellAccountingManualCashMovementRepository` only through DataAccess
+repository boundaries, avoid scattered SQL in DataServiceActions, preserve
+repository idempotency / rollback semantics, and return sanitized local write
+results with safe error mapping. Future replay/read-model/UI, audit write,
+ledger policy, broker, reconciliation, cancellation, correction, and automatic
+trading work must remain separately authorized. Broker sandbox new capability
+development remains paused and existing broker / real broker / no-network /
+no-credentials / no-order-placement gates must remain present and passing.
+
 ## TASK-165 Broker Runtime Mode Source Authorization Gate Prompt Rule
 
 Future broker runtime mode source tasks must reference docs/128 and docs/129.

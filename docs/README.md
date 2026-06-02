@@ -719,9 +719,20 @@
   order, and automatic trading unchanged.
 - ShellAccounting manual cash movement repository write authorization test plan:
   [185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md](185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md)
-  defines TASK-194 static probes for cash_adjustment mapping, optional
-  trade_log cash fact mapping, movement type policy, transaction / rollback /
-  idempotency, privacy, no runtime write path, and retained broker gates.
+  defines TASK-194 static probes for cash_adjustment mapping, required
+  trade_log cash fact linkage under the current schema contract, movement type
+  policy, transaction / rollback / idempotency, privacy, no runtime write path,
+  and retained broker gates.
+- ShellAccounting manual cash movement schema contract alignment gate:
+  [186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md](186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md)
+  records TASK-195 gate-only alignment that current `cash_adjustment` schema
+  requires a valid `trade_log_id`, so cash_adjustment-only repository writes
+  are blocked unless a future schema migration separately authorizes them.
+- ShellAccounting manual cash movement schema contract alignment test plan:
+  [187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md](187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md)
+  defines TASK-195 static probes for the NOT NULL foreign-key contract,
+  required future dual-write policy, no schema drift, no repository
+  implementation, no runtime write path, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

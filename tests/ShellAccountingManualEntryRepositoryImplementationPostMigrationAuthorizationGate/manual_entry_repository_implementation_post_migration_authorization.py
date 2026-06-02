@@ -16,6 +16,8 @@ ALLOWED_DIFF_PREFIXES = {
     "docs/181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md",
     "docs/182_shell_accounting_manual_transaction_repository_write_implementation.md",
     "docs/183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md",
+    "docs/184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md",
+    "docs/185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md",
     "libs/DataAccess/CMakeLists.txt",
     "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
     "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",

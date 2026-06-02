@@ -1782,6 +1782,23 @@ repository boundary. Future DataService action write implementation must be a
 separate TASK. Replay, read model, UI, audit integration, and broker work must
 remain separately authorized.
 
+## TASK-195 Manual Cash Movement Schema Contract Alignment Prompt Rule
+
+Future manual cash movement repository work after TASK-195 must reference
+docs/186 and docs/187. TASK-195 is a schema-contract alignment gate only. It
+does not authorize repository implementation, migration changes,
+DataServiceActions changes, runtime SQL, SQLite writes, QML/startup changes,
+AccountingEngine replay changes, broker SDKs, network calls, credentials,
+endpoints, real order placement, or automatic trading.
+
+The current schema blocks cash_adjustment-only writes because
+`cash_adjustment.trade_log_id` is `NOT NULL` and references `trade_log(id)`.
+Future manual cash movement repository implementation must use an atomic
+`trade_log` + `cash_adjustment` dual-write under the current schema, or a
+future schema migration TASK must separately authorize standalone
+cash_adjustment. Future DataService action write wiring, replay/read model/UI,
+audit policy, and broker work must remain separately authorized.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

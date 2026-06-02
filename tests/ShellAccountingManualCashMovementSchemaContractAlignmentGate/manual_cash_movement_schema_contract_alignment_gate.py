@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+
+import argparse
+import re
+import subprocess
+from pathlib import Path
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def require_contains(text: str, token: str, context: str) -> None:
+    require(token in text, f"{context} missing `{token}`")
+
+
+def changed_paths(root: Path) -> set[str]:
+    completed = subprocess.run(
+        ["git", "diff", "--name-only", "main"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def diff_text(root: Path, *paths: str) -> str:
+    completed = subprocess.run(
+        ["git", "diff", "main", "--", *paths],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout
+
+
+def files_under(root: Path, suffixes: set[str] | None = None) -> list[Path]:
+    if not root.exists():
+        return []
+    files = [path for path in root.rglob("*") if path.is_file()]
+    if suffixes is not None:
+        files = [path for path in files if path.suffix in suffixes]
+    return files
+
+
+def joined(files: list[Path]) -> str:
+    return "\n".join(read(path) for path in files if path.exists())
+
+
+def assert_not_changed(changes: set[str], relative_path: str) -> None:
+    normalized = relative_path.replace("\\", "/")
+    require(normalized not in changes, f"{relative_path} must not be changed by TASK-195")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+
+    readme = read(root / "README.md")
+    docs_index = read(root / "docs" / "README.md")
+    prompt = read(root / "docs" / "12_codex_prompt_template.md")
+    doc184 = read(root / "docs" / "184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md")
+    doc185 = read(root / "docs" / "185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md")
+    doc186_path = root / "docs" / "186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md"
+    doc187_path = root / "docs" / "187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md"
+    doc186 = read(doc186_path)
+    doc187 = read(doc187_path)
+    migration001 = read(root / "migrations" / "001_initial_schema.sql")
+    migration002 = read(root / "migrations" / "002_shell_accounting_manual_entry_schema.sql")
+    tests_cmake = read(root / "tests" / "CMakeLists.txt")
+    dataaccess_cmake = read(root / "libs" / "DataAccess" / "CMakeLists.txt")
+
+    require(doc186_path.exists(), "docs/186 exists")
+    require(doc187_path.exists(), "docs/187 exists")
+    for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
+        require_contains(text, "TASK-195", context)
+    require_contains(readme, "docs/186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md", "README")
+    require_contains(readme, "docs/187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md", "README")
+    require_contains(docs_index, "186_shell_accounting_manual_cash_movement_schema_contract_alignment_gate.md", "docs/README")
+    require_contains(docs_index, "187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md", "docs/README")
+    require_contains(tests_cmake, "ShellAccountingManualCashMovementSchemaContractAlignmentGate", "tests/CMakeLists")
+
+    require_contains(migration001, "trade_log_id INTEGER NOT NULL", "migrations/001")
+    require_contains(migration001, "FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)", "migrations/001")
+    require_contains(migration002, "ALTER TABLE cash_adjustment ADD COLUMN trade_log_uid TEXT", "migrations/002")
+    require_contains(migration002, "ALTER TABLE trade_log ADD COLUMN cash_adjustment_uid TEXT", "migrations/002")
+
+    for token in [
+        "TASK-195",
+        "schema-contract alignment gate-only",
+        "cash_adjustment.trade_log_id INTEGER NOT NULL",
+        "FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)",
+        "current schema blocks cash_adjustment-only write",
+        "must not use a cash_adjustment-only design",
+        "write `trade_log` cash movement fact",
+        "write `cash_adjustment`",
+        "cash_adjustment.trade_log_id",
+        "trade_log.id",
+        "trade_log.cash_adjustment_uid",
+        "atomic transaction",
+        "rollback on any failure",
+        "no partial facts",
+        "Future DataService action write wiring must be a separate TASK",
+        "Future replay, read model, UI integration",
+        "does not authorize",
+        "repository implementation",
+        "runtime SQL / SQLite write",
+        "broker SDK, network, credentials, endpoint",
+        "automatic trading",
+        "Broker sandbox new capability development remains paused",
+    ]:
+        require_contains(doc186, token, "docs/186")
+
+    for token in [
+        "TASK-195",
+        "Test Matrix",
+        "Required Probes",
+        "Go / No-Go Checklist",
+        "cash_adjustment-only implementation",
+        "trade_log_id INTEGER NOT NULL",
+        "FOREIGN KEY (trade_log_id) REFERENCES trade_log(id)",
+        "current schema blocks cash_adjustment-only write",
+        "future implementation must dual-write",
+        "no partial facts",
+        "No manual cash movement repository implementation is added",
+        "Broker disabled / broker order / real broker gates pass",
+    ]:
+        require_contains(doc187, token, "docs/187")
+
+    for token in [
+        "current schema blocks cash_adjustment-only write",
+        "must atomically dual-write",
+        "cash_adjustment.trade_log_id",
+        "trade_log.id",
+        "trade_log.cash_adjustment_uid",
+    ]:
+        require_contains(doc184, token, "docs/184")
+    require(
+        "cash_adjustment-only implementation is viable" not in doc184,
+        "docs/184 must not claim cash_adjustment-only implementation is viable",
+    )
+    require_contains(doc185, "current schema blocks cash_adjustment-only write", "docs/185")
+    require_contains(doc185, "`cash_adjustment` + `trade_log` dual write", "docs/185")
+
+    changes = changed_paths(root)
+    for protected in [
+        "migrations/001_initial_schema.sql",
+        "migrations/002_shell_accounting_manual_entry_schema.sql",
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
+        "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+        "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+        "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
+        "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
+    ]:
+        assert_not_changed(changes, protected)
+    require(not any(path.startswith("migrations/") for path in changes), "TASK-195 must not modify migrations")
+    require(not any(path.endswith(".sql") for path in changes), "TASK-195 must not add schema or SQL files")
+    require(not any(path.startswith("libs/DataAccess/") for path in changes), "TASK-195 must not add DataAccess implementation")
+    require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "TASK-195 must not modify production QML")
+    require(not any(path.startswith("libs/AccountingEngine/") for path in changes), "TASK-195 must not modify AccountingEngine")
+
+    require("ShellAccountingManualCashMovementRepository.cpp" not in dataaccess_cmake, "DataAccess CMake must not add cash movement repository")
+    dataaccess_text = joined(
+        files_under(root / "libs" / "DataAccess" / "include", {".h", ".hpp"})
+        + files_under(root / "libs" / "DataAccess" / "src", {".cpp", ".cc", ".cxx"})
+    )
+    require("ShellAccountingManualCashMovementRepository" not in dataaccess_text, "manual cash movement repository implementation must not exist")
+    require("ManualCashMovementWriteRepository" not in dataaccess_text, "manual cash movement write repository implementation must not exist")
+
+    production_diff = diff_text(root, "libs", "apps")
+    dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")
+    require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", dataservice_shell_diff, re.IGNORECASE) is None,
+            "TASK-195 must not add DataService/Shell runtime DML")
+    added_production_lines = "\n".join(
+        line for line in production_diff.splitlines() if line.startswith("+") and not line.startswith("+++")
+    )
+    for token in [
+        "INSERT INTO cash_adjustment",
+        "INSERT INTO trade_log",
+        "INSERT INTO audit_log",
+        "ledgerWritten = true",
+        "brokerOrder",
+        "placeOrder",
+        "http://",
+        "https://",
+        "api_key",
+        "password=",
+        "secret=",
+        "endpoint=",
+        "automaticTrading",
+    ]:
+        require(token not in added_production_lines, f"TASK-195 must not add forbidden production token {token}")
+
+    for required_subdir in [
+        "ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate",
+        "ShellAccountingManualTransactionRepositoryWriteImplementation",
+        "ShellAccountingManualEntryDataServiceActionValidationWiring",
+        "ShellAccountingBrokerAdapterDisabledWiring",
+        "ShellAccountingBrokerOrderImplementation",
+        "ShellAccountingRealBrokerOrderAuthorizationGate",
+        "ShellAccountingRealBrokerOrderImplementationGate",
+    ]:
+        require_contains(tests_cmake, required_subdir, "tests/CMakeLists retained related gates")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

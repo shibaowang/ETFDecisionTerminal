@@ -33,9 +33,12 @@ TASK-192 DataAccess-only repository is allowed while DataServiceActions runtime
 write remains forbidden.
 
 Manual cash movement repository write is still not implemented. DataService
-runtime write wiring is still not implemented. `cash_adjustment`, audit, cash
-ledger, replay, read model, UI, broker, network, credentials, endpoint, real
-order placement, and automatic trading remain out of scope.
+runtime write wiring is still not implemented. The current
+`cash_adjustment.trade_log_id` column is `NOT NULL` and references
+`trade_log(id)`, so the current schema blocks cash_adjustment-only write.
+`cash_adjustment`, audit, cash ledger, replay, read model, UI, broker, network,
+credentials, endpoint, real order placement, and automatic trading remain out
+of scope.
 
 Broker sandbox new capability development remains paused. Existing broker,
 real broker, no-network, no-credentials, and no-order-placement gates must stay
@@ -45,8 +48,11 @@ retained and must not be weakened, skipped, or deleted.
 
 Future manual cash movement repository write implementation must be a separate
 TASK. Future implementation may only live inside the DataAccess repository boundary.
-It must not scatter SQL in DataService action handlers, and future
-DataService action write wiring must be a separate TASK.
+Under the current schema, future implementation must atomically dual-write
+`trade_log` and `cash_adjustment`; cash_adjustment-only implementation is
+blocked unless a future schema migration TASK separately authorizes standalone
+cash_adjustment. It must not scatter SQL in DataService action handlers, and
+future DataService action write wiring must be a separate TASK.
 
 Future implementation must stay split from AccountingEngine replay, read model,
 production QML, Presenter, Controller, and UI work. It must use the TASK-190 002 migration schema fields and must coordinate with TASK-192 manual
@@ -70,8 +76,9 @@ Future repository implementation must use or explicitly map:
 
 ## Trade Log Cash Fact Mapping Boundary
 
-Future repository implementation must explicitly decide whether it also writes
-`trade_log` cash facts. If it writes those facts, it must use or explicitly map:
+Future repository implementation must write `trade_log` cash facts under the
+current schema contract because `cash_adjustment.trade_log_id` requires a valid
+`trade_log.id`. It must use or explicitly map:
 
 - `trade_log.request_id`
 - `trade_log.idempotency_key`
@@ -84,8 +91,10 @@ Future repository implementation must explicitly decide whether it also writes
 - `trade_log.net_cash_impact_cents`
 - `trade_log.source_memo_sanitized`
 
-Any dual write between `cash_adjustment` and `trade_log` must be atomic and must
-not produce partial facts.
+The dual write between `cash_adjustment` and `trade_log` must be atomic and
+must not produce partial facts. `cash_adjustment.trade_log_id` must point to
+`trade_log.id`, and `trade_log.cash_adjustment_uid` must match the
+cash_adjustment uid / linkage policy or be explicitly mapped.
 
 ## Movement Type Policy
 
@@ -129,6 +138,9 @@ cancellation, correction, or automatic trading.
 ## Required Follow-Up
 
 Future manual cash movement repository implementation must be separately
-authorized. Future DataService action write implementation must be separately
-authorized. Future replay, read model, UI integration, audit integration, and
-broker work must remain separate authorization tasks.
+authorized and must follow the TASK-195 schema contract alignment: atomic
+`trade_log` + `cash_adjustment` dual-write, or a separate future schema
+migration authorization for standalone cash_adjustment. Future DataService
+action write implementation must be separately authorized. Future replay, read
+model, UI integration, audit integration, and broker work must remain separate
+authorization tasks.

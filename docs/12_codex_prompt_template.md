@@ -1718,6 +1718,21 @@ implementation must be a separately authorized TASK, must add an independent
 migration file, must declare migration id / rollback / compatibility policy,
 and must not directly edit `migrations/001_initial_schema.sql`.
 
+## TASK-190 Manual Entry Schema Migration Implementation Prompt Rule
+
+Future manual entry repository or DataService write work after TASK-190 must
+reference docs/178 and docs/179. TASK-190 only authorizes the independent
+DDL-only migration `migrations/002_shell_accounting_manual_entry_schema.sql`.
+It does not authorize modifying `migrations/001_initial_schema.sql`, adding
+runtime SQL execution, writing SQLite at runtime, implementing manual entry
+repositories, changing DataServiceActions, changing TASK-178 validation
+production code, changing TASK-185 repository scaffold code, changing
+QML/startup, changing AccountingEngine replay, adding TradeDraft or suggestion
+implementation, adding broker SDK, adding network calls, adding credentials or
+endpoints, placing real orders, or enabling automatic trading. Future
+repository implementation and DataService write implementation must remain
+separately authorized tasks.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -38,6 +38,12 @@ Future schema implementation must be a separately authorized TASK. The future
 schema task must use an independent migration file and must not directly edit
 `migrations/001_initial_schema.sql`.
 
+TASK-190 later satisfies this authorization by adding the independent DDL-only
+`migrations/002_shell_accounting_manual_entry_schema.sql` migration. TASK-190
+does not implement repository writes, DataService writes, runtime SQL execution,
+production QML, AccountingEngine replay changes, broker capability, or
+automatic trading.
+
 Future schema implementation must declare:
 
 - migration filename and migration id policy.

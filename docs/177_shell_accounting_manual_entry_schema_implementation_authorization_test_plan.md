@@ -8,6 +8,11 @@ migrations, schema files, repository writes, SQL execution, SQLite writes,
 broker integration, network calls, credentials, endpoints, real order
 placement, or automatic trading.
 
+TASK-190 later adds the independently authorized DDL-only
+`migrations/002_shell_accounting_manual_entry_schema.sql` migration. TASK-190
+does not implement repository writes, DataService writes, runtime SQL execution,
+broker capability, real orders, or automatic trading.
+
 ## Test Matrix
 
 A. Documentation and indexing

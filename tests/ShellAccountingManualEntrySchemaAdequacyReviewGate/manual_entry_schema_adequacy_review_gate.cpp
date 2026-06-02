@@ -413,6 +413,9 @@ void testSchemaUnmodified(const Harness& h)
 void testNoNewMigration(const Harness& h)
 {
     for (const auto& file : filesUnder(h.root / "migrations")) {
+        if (file.filename().string() == "002_shell_accounting_manual_entry_schema.sql") {
+            continue;
+        }
         requireNotContains(file.filename().string(), "187", "migration filename");
         requireNotContains(file.filename().string(), "manual_entry_schema", "migration filename");
     }

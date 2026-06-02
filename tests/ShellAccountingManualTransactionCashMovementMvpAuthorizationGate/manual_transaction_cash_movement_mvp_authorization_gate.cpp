@@ -233,7 +233,11 @@ void testMigrationNotModified(const Harness& harness)
 void testNoNewMigration(const Harness& harness)
 {
     for (const auto& file : filesUnder(harness.root / "migrations")) {
-        require(file.filename() == "001_initial_schema.sql", "TASK-177 must not add migration " + file.string());
+        const auto filename = file.filename().string();
+        require(
+            filename == "001_initial_schema.sql"
+                || filename == "002_shell_accounting_manual_entry_schema.sql",
+            "TASK-177 must not add unauthorized migration " + file.string());
     }
 }
 

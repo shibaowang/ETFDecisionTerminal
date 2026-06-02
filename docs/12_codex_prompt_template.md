@@ -1733,6 +1733,23 @@ endpoints, placing real orders, or enabling automatic trading. Future
 repository implementation and DataService write implementation must remain
 separately authorized tasks.
 
+## TASK-191 Manual Entry Repository Implementation Post-Migration Authorization Prompt Rule
+
+Future manual entry repository implementation work after TASK-191 must
+reference docs/180 and docs/181. TASK-191 is a post-migration authorization
+gate only. It does not authorize modifying `migrations/001_initial_schema.sql`
+or `migrations/002_shell_accounting_manual_entry_schema.sql`, adding a
+repository implementation, executing runtime SQL, writing SQLite at runtime,
+changing DataServiceActions, changing TASK-178 validation production code,
+changing TASK-185 repository scaffold code, changing QML/startup, changing
+AccountingEngine replay, adding TradeDraft or suggestion implementation,
+adding broker SDK, adding network calls, adding credentials or endpoints,
+placing real orders, or enabling automatic trading. Future repository
+implementation must be a separate TASK inside the DataAccess repository
+boundary, must use the TASK-190 schema fields, and must not scatter SQL in
+DataService action handlers. Future DataService action write implementation,
+replay, read model, and UI work must remain separately authorized.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

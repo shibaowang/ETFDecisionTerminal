@@ -689,6 +689,17 @@
   defines TASK-190 probes for DDL-only migration content, SQLite application,
   `PRAGMA table_info`, `sqlite_master` index checks, no runtime write path, and
   retained broker gates.
+- ShellAccounting manual entry repository implementation post-migration authorization gate:
+  [180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md](180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md)
+  records TASK-191 gate-only policy for future repository implementation after
+  the TASK-190 migration exists, while keeping migrations, repository scaffold,
+  DataServiceActions, runtime SQL/SQLite writes, QML, replay, and broker
+  capabilities unchanged.
+- ShellAccounting manual entry repository implementation post-migration authorization test plan:
+  [181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md](181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md)
+  defines TASK-191 static probes for repository mapping boundaries,
+  transaction / rollback / idempotency policy, no runtime write path, no
+  migration drift, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

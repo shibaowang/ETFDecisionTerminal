@@ -115,3 +115,13 @@ broker, or trading implementation.
   trading is added.
 - [ ] Full CTest passes.
 - [ ] transport local socket echo 50 repeat passes.
+
+## TASK-191 Follow-Up Gate
+
+TASK-191 adds the post-migration repository implementation authorization gate.
+The TASK-191 tests must keep the TASK-190 migration semantics intact, prove that
+`migrations/001_initial_schema.sql` and
+`migrations/002_shell_accounting_manual_entry_schema.sql` are not modified, and
+continue to block repository implementation, DataService write implementation,
+runtime SQL, SQLite writes, QML/startup changes, broker SDKs, network,
+credentials, real order placement, and automatic trading.

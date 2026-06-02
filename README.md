@@ -3317,3 +3317,24 @@ Broker sandbox new capability development remains paused, and existing broker
 safety gates remain retained. See
 `docs/178_shell_accounting_manual_entry_schema_migration_implementation.md` and
 `docs/179_shell_accounting_manual_entry_schema_migration_implementation_test_plan.md`.
+
+## TASK-191 Manual Entry Repository Implementation Post-Migration Authorization Gate
+
+TASK-191 adds the post-migration authorization gate for future manual entry
+repository implementation now that TASK-190 has landed
+`migrations/002_shell_accounting_manual_entry_schema.sql`.
+
+This is gate-only. It does not modify `migrations/001_initial_schema.sql` or
+`migrations/002_shell_accounting_manual_entry_schema.sql`, does not implement a
+repository, does not modify TASK-185 repository scaffold code, does not modify
+DataServiceActions, does not execute runtime SQL, does not write SQLite, and
+does not write runtime `trade_log`, `cash_adjustment`, or `audit_log` facts.
+
+Future repository implementation must be a separate TASK, must remain inside a
+DataAccess repository boundary, and must use the TASK-190 schema fields. Future
+DataService action write implementation, replay, read model, and UI work must
+also remain separately authorized. Broker sandbox new capability development
+remains paused, and existing broker safety gates remain retained. See
+`docs/180_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_gate.md`
+and
+`docs/181_shell_accounting_manual_entry_repository_implementation_post_migration_authorization_test_plan.md`.

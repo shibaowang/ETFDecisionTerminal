@@ -10,11 +10,7 @@ authorization boundary.
 TASK-189 does not modify schema. TASK-189 does not add a migration. TASK-189 does not add a schema file.
 TASK-189 does not implement repository implementation. TASK-189 does not write a database. TASK-189 does not execute SQL. TASK-189 does not modify DataServiceActions. TASK-189 does not modify the TASK-185 repository scaffold. TASK-189 does not modify TASK-178 validation production code. TASK-189 only defines future schema implementation authorization boundary.
 
-The source of truth remains `migrations/001_initial_schema.sql`. A future
-schema implementation must add an independent migration file and must not
-directly edit `migrations/001_initial_schema.sql`.
-
-Future schema implementation must not directly edit `migrations/001_initial_schema.sql`.
+The source of truth remains `migrations/001_initial_schema.sql`. A future schema implementation must add an independent migration file and must not directly edit `migrations/001_initial_schema.sql`.
 
 ## Current State
 
@@ -54,8 +50,7 @@ Future schema implementation must declare:
 - compatibility with broker disabled, fail-closed, no-real-order, no-network,
   no-credentials, and no-order-placement gates.
 - idempotency and duplicate handling policy.
-- the split from repository implementation and DataService write
-  implementation.
+- Future schema implementation must keep a split from repository implementation and DataService write implementation.
 
 The future schema task must not include repository implementation. The future
 schema task must not include DataService write implementation. The future
@@ -63,11 +58,7 @@ schema task must not include QML / UI work. The future schema task must not
 include broker, network, credentials, endpoint, real order, or automatic
 trading work.
 
-Future repository implementation may continue only after the schema gaps are
-resolved or after a separately authorized lossless mapping is approved.
-
-Future repository implementation may continue only after the schema gaps are resolved.
-Future schema implementation must keep a split from repository implementation and DataService write implementation.
+Future repository implementation may continue only after the schema gaps are resolved or after a separately authorized lossless mapping is approved.
 
 ## Future Migration Implementation Readiness Checklist
 
@@ -112,13 +103,9 @@ mapping for these candidate categories:
 
 ## Privacy And Payload Policy
 
-Future schema implementation must not store raw SQL, raw manual entry payload,
-raw trade payload, credentials, tokens, keys, passwords, endpoints, broker
-payloads, or internal exception stacks. Any memo, source memo, request trace,
+Future schema implementation must not store raw SQL, raw manual entry payload, raw trade payload, credentials, tokens, keys, passwords, endpoints, broker payloads, or internal exception stacks. Any memo, source memo, request trace,
 or audit-related schema design must include sanitized payload policy and
 redaction policy.
-
-Future schema implementation must not store broker payloads.
 
 ## Forbidden Current-Scope Changes
 

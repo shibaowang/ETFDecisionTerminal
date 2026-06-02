@@ -5,21 +5,16 @@
 TASK-194 is a manual cash movement repository write implementation
 authorization gate-only task. This task does not implement manual cash movement
 repository write, does not modify the TASK-192 manual transaction repository,
-does not modify DataAccess production implementation, does not modify
-DataServiceActions.cpp / DataServiceActions.h / DataServiceActionRegistrar.cpp,
+does not modify DataAccess production implementation, does not modify DataServiceActions.cpp / DataServiceActions.h / DataServiceActionRegistrar.cpp,
 does not modify TASK-178 validation production code, and does not modify
 `migrations/001_initial_schema.sql` or
 `migrations/002_shell_accounting_manual_entry_schema.sql`.
 
-This task does not write SQLite, does not execute runtime SQL, and does not
-write `cash_adjustment`, `trade_log`, `audit_log`, cash facts, cash ledger, or
+This task does not write SQLite, does not execute runtime SQL, and does not write `cash_adjustment`, `trade_log`, `audit_log`, cash facts, cash ledger, or
 ledger rows. It does not modify production QML, startup, Presenter, Controller,
 AccountingEngine replay, StrategyEngine, or MarketEngine. It does not add
 TradeDraft, trade suggestion, broker SDK, network, credentials, endpoint, real
 order placement, broker order id storage, or automatic trading.
-
-TASK-194 does not write `cash_adjustment`, `trade_log`, `audit_log`, cash
-facts, cash ledger, or ledger rows.
 
 Current task does not implement manual cash movement repository write. Current
 task does not modify TASK-192 manual transaction repository. Current task does
@@ -27,10 +22,6 @@ not modify DataServiceActions.cpp / DataServiceActions.h /
 DataServiceActionRegistrar.cpp. Current task does not modify TASK-178
 validation production code. Current task does not modify DataAccess production
 implementation.
-
-Current task does not modify DataServiceActions.cpp / DataServiceActions.h / DataServiceActionRegistrar.cpp.
-Current task does not modify TASK-178 validation production code.
-Current task does not modify DataAccess production implementation.
 
 ## Current State
 
@@ -53,24 +44,15 @@ retained and must not be weakened, skipped, or deleted.
 ## Future Implementation Boundary
 
 Future manual cash movement repository write implementation must be a separate
-TASK. Future implementation may only live inside the DataAccess repository
-boundary. It must not scatter SQL in DataService action handlers, and future
+TASK. Future implementation may only live inside the DataAccess repository boundary.
+It must not scatter SQL in DataService action handlers, and future
 DataService action write wiring must be a separate TASK.
 
-Future implementation must stay inside the DataAccess repository boundary.
-Future DataService action write wiring must be a separate TASK.
-
 Future implementation must stay split from AccountingEngine replay, read model,
-production QML, Presenter, Controller, and UI work. It must use the TASK-190
-002 migration schema fields and must coordinate with TASK-192 manual
+production QML, Presenter, Controller, and UI work. It must use the TASK-190 002 migration schema fields and must coordinate with TASK-192 manual
 transaction repository write without modifying TASK-192 repository behavior.
 
-Future implementation must use TASK-190 002 migration schema fields.
-
-Future implementation must preserve no broker, no network, no credentials, no
-endpoint, no real order placement, no broker order id, and no automatic trading.
-
-Future implementation must preserve no broker / no network / no credentials / no endpoint / no real order placement / no automatic trading.
+Future implementation must preserve no broker, no network, no credentials, no endpoint, no real order placement, no broker order id, and no automatic trading.
 
 ## Cash Adjustment Mapping Boundary
 
@@ -107,12 +89,9 @@ not produce partial facts.
 
 ## Movement Type Policy
 
-Future repository implementation must define Deposit mapping and Withdrawal
-mapping. Adjustment support must be explicit; if Adjustment is not authorized,
+Future repository implementation must define Deposit mapping and Withdrawal mapping.
+Adjustment support must be explicit; if Adjustment is not authorized,
 the implementation must fail closed.
-
-Future repository implementation must define Deposit mapping.
-Future repository implementation must define Withdrawal mapping.
 
 Future implementation must define amount sign policy, net cash impact policy,
 currency constraints, account constraints, portfolio constraints,

@@ -764,6 +764,15 @@
   defines TASK-198 runtime and static probes for repository writes,
   idempotency, safe errors, no migrations, no QML/replay, and retained broker
   gates.
+- ShellAccounting manual entry QML Presenter authorization gate:
+  [194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md](194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md)
+  records TASK-199 gate-only policy for future manual entry QML / Presenter
+  integration through DataService actions only.
+- ShellAccounting manual entry QML Presenter authorization test plan:
+  [195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md](195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md)
+  defines TASK-199 static probes for no production QML/startup/Presenter drift,
+  no direct SQLite/DataAccess access, no broker/network/credentials, and
+  retained TASK-198 / repository / broker regressions.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

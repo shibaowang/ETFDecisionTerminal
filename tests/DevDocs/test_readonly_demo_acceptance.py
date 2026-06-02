@@ -12823,6 +12823,87 @@ def main() -> int:
     require("INSERT INTO" not in dataservice_actions_source, "DataServiceActions still has no scattered INSERT after TASK-198")
     require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI after TASK-197")
     require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-197")
+
+    task199_doc_path = root / "docs" / "194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md"
+    task199_plan_path = root / "docs" / "195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md"
+    task199_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryQmlPresenterAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(task199_doc_path.exists(), "docs/194 exists")
+    require(task199_plan_path.exists(), "docs/195 exists")
+    require(task199_cmake_path.exists(), "TASK-199 tests CMake exists")
+    task199_doc = task199_doc_path.read_text(encoding="utf-8")
+    task199_plan = task199_plan_path.read_text(encoding="utf-8")
+    task199_cmake = task199_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md" in readme,
+        "README links docs/194",
+    )
+    require(
+        "docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md" in readme,
+        "README links docs/195",
+    )
+    require(
+        "194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md" in docs_index,
+        "docs/README links docs/194",
+    )
+    require(
+        "195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/195",
+    )
+    require("TASK-199" in codex_prompt_template, "docs/12 registers TASK-199")
+    for token, message in [
+        ("QML / Presenter authorization gate-only", "docs/194 states authorization-only"),
+        ("does not implement UI", "docs/194 blocks UI implementation"),
+        ("does not modify production QML", "docs/194 blocks production QML"),
+        ("does not modify startup", "docs/194 blocks startup"),
+        ("does not modify Presenter or Controller", "docs/194 blocks Presenter/Controller"),
+        ("does not modify DataServiceActions", "docs/194 blocks DataServiceActions"),
+        ("does not modify repositories", "docs/194 blocks repositories"),
+        ("does not write the database", "docs/194 blocks database writes"),
+        ("accounting.manual_transaction.create", "docs/194 references manual transaction action"),
+        ("accounting.manual_cash_movement.create", "docs/194 references manual cash movement action"),
+        ("Future Manual Transaction Form Boundary", "docs/194 covers transaction form boundary"),
+        ("Future Manual Cash Movement Form Boundary", "docs/194 covers cash movement form boundary"),
+        ("DataService-Only UI Policy", "docs/194 covers DataService-only UI policy"),
+        ("raw SQL", "docs/194 protects raw SQL"),
+        ("raw payloads", "docs/194 protects raw payloads"),
+        ("credentials", "docs/194 protects credentials"),
+        ("endpoints", "docs/194 protects endpoints"),
+        ("internal stack traces", "docs/194 protects stack traces"),
+        ("real order placement", "docs/194 blocks real order placement"),
+        ("automatic trading", "docs/194 blocks automatic trading"),
+    ]:
+        require(token in task199_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/195 contains Test Matrix"),
+        ("Required Probes", "docs/195 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/195 contains Go / No-Go Checklist"),
+        ("Authorization-Only Boundary", "docs/195 covers authorization boundary"),
+        ("Future Manual Entry UI Boundary", "docs/195 covers future UI boundary"),
+        ("Privacy And Response Boundary", "docs/195 covers privacy"),
+        ("No Production Drift", "docs/195 covers no production drift"),
+        ("Future UI must call DataService actions only", "docs/195 requires DataService-only UI"),
+        ("Future UI must not call DataAccess repositories directly", "docs/195 blocks direct DataAccess"),
+        ("Future UI must not write SQLite directly", "docs/195 blocks direct SQLite"),
+        ("TASK-198 DataService write wiring implementation tests pass", "docs/195 retains TASK-198"),
+    ]:
+        require(token in task199_plan, message)
+    require(
+        "shell_accounting_manual_entry_qml_presenter_authorization" in task199_cmake,
+        "TASK-199 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryQmlPresenterAuthorizationGate" in tests_cmake,
+        "TASK-199 test directory registered",
+    )
+    require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI after TASK-199")
+    require("manualCashMovement" not in production_qml, "production QML still has no manual cash movement UI after TASK-199")
+    require("accounting.manual_transaction.create" not in production_qml, "production QML still does not bind manual transaction action after TASK-199")
+    require("accounting.manual_cash_movement.create" not in production_qml, "production QML still does not bind manual cash movement action after TASK-199")
     return 0
 
 

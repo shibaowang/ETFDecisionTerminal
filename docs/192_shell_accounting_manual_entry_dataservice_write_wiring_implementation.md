@@ -112,6 +112,13 @@ not store real broker order ids, and does not add automatic trading.
 
 Broker sandbox new capability development remains paused.
 
+TASK-199 adds a UI / Presenter authorization gate after this implementation. It
+does not change TASK-198 DataService write wiring behavior, does not implement
+UI, and does not modify production QML, startup, Presenter, Controller,
+DataServiceActions, repositories, migrations, replay, audit, ledger, broker,
+network, credentials, endpoint, real order placement, or automatic trading
+scope.
+
 ## Future Work
 
 Future replay/read-model integration, UI exposure, audit write, ledger policy,

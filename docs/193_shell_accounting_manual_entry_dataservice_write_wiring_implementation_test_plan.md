@@ -19,6 +19,8 @@ no-runtime-SQL boundaries.
 - tests/CMake registers `ShellAccountingManualEntryDataServiceWriteWiringImplementation`.
 - TASK-197 docs record that the gate has evolved to allow TASK-198 write
   wiring.
+- TASK-199 QML / Presenter authorization gate is documented while TASK-198
+  DataService write wiring behavior remains unchanged.
 
 ### DataService Wiring
 
@@ -67,6 +69,9 @@ no-runtime-SQL boundaries.
   tokens, internal stack traces, broker order ids, or real order ids.
 - No AccountingEngine replay or read model integration is triggered.
 - No production QML, startup, Presenter, or Controller changes are introduced.
+- No Production Drift is allowed from TASK-199: production QML, startup,
+  Presenter, Controller, DataServiceActions, repositories, and migrations remain
+  unchanged.
 - No TradeDraft or suggestion implementation is introduced.
 - No broker SDK, network, credentials, endpoint, real order placement, or
   automatic trading is introduced.

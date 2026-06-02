@@ -3493,3 +3493,22 @@ capability, does not place real orders, and does not add automatic trading. See
 `docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md`
 and
 `docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md`.
+
+## TASK-199 Manual Entry QML Presenter Authorization Gate
+
+TASK-199 adds only the authorization gate for future ShellAccounting manual
+entry QML / Presenter integration. It documents how a later task may expose
+manual BUY / SELL and Deposit / Withdrawal forms while routing only through the
+DataService actions `accounting.manual_transaction.create` and
+`accounting.manual_cash_movement.create`.
+
+TASK-199 does not implement UI, does not modify production QML/startup,
+Presenter, Controller, DataServiceActions, repositories, or migrations, does
+not add direct SQLite writes, does not trigger AccountingEngine replay, does
+not write `audit_log` or ledger rows, does not add broker SDK, network,
+credentials, endpoint, real order placement, or automatic trading. Future UI,
+readback / refresh / replay integration, audit write, ledger policy, and broker
+work must remain separately authorized. See
+`docs/194_shell_accounting_manual_entry_qml_presenter_authorization_gate.md`
+and
+`docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md`.

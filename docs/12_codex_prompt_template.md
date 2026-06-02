@@ -1763,6 +1763,25 @@ credentials, endpoint values, real order placement, or automatic trading.
 Future manual cash movement repository write and future DataService write
 wiring must remain separate TASKs.
 
+## TASK-194 Manual Cash Movement Repository Write Authorization Gate Prompt Rule
+
+Future work after TASK-194 must reference docs/184 and docs/185. TASK-194 is a
+manual cash movement repository write implementation authorization gate only.
+It does not authorize implementing manual cash movement repository write,
+modifying TASK-192 manual transaction repository behavior, modifying
+DataAccess production implementation, modifying DataServiceActions,
+modifying TASK-178 validation production code, modifying migrations 001 or
+002, executing runtime SQL, writing SQLite, writing `cash_adjustment`,
+writing `trade_log` cash movement facts, writing `audit_log`, writing ledger,
+changing QML/startup/Presenter/Controller, changing AccountingEngine replay,
+adding TradeDraft or suggestion implementation, adding broker SDK, adding
+network calls, adding credentials or endpoints, placing real orders, storing
+broker order ids, or enabling automatic trading. Future manual cash movement
+repository implementation must be a separate TASK inside the DataAccess
+repository boundary. Future DataService action write implementation must be a
+separate TASK. Replay, read model, UI, audit integration, and broker work must
+remain separately authorized.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -3361,3 +3361,29 @@ separate authorization tasks. See
 `docs/182_shell_accounting_manual_transaction_repository_write_implementation.md`
 and
 `docs/183_shell_accounting_manual_transaction_repository_write_implementation_test_plan.md`.
+
+## TASK-194 Manual Cash Movement Repository Write Authorization Gate
+
+TASK-194 adds a gate-only authorization boundary for future ShellAccounting
+manual cash movement repository write implementation. It defines the future
+DataAccess repository boundary, cash_adjustment mapping, optional trade_log
+cash fact mapping, movement type policy, transaction / rollback / idempotency
+policy, and privacy / memo sanitization policy.
+
+TASK-194 does not implement manual cash movement repository write, does not
+modify TASK-192 manual transaction repository behavior, does not modify
+DataAccess production implementation, does not modify DataServiceActions,
+does not modify TASK-178 validation code, does not modify migrations 001 or
+002, does not execute runtime SQL, does not write SQLite, and does not write
+`cash_adjustment`, `trade_log`, `audit_log`, cash facts, cash ledger, or ledger
+rows.
+
+Future manual cash movement repository implementation must be a separate TASK,
+and future DataService action write implementation must be a separate TASK.
+Replay, read model, UI, audit integration, broker, network, credentials,
+endpoint, real order, and automatic trading work remain separately authorized.
+Broker sandbox new capability development remains paused, and existing broker
+gates remain retained. See
+`docs/184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md`
+and
+`docs/185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md`.

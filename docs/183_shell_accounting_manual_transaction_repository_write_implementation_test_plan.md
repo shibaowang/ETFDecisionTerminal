@@ -86,6 +86,8 @@ runtime, UI, broker, strategy, and automatic trading boundaries.
 ### Regression
 
 - TASK-191 post-migration repository authorization gate passes.
+- TASK-194 manual cash movement repository write authorization gate passes and
+  does not modify TASK-192 repository behavior.
 - TASK-190 migration implementation passes.
 - TASK-185 repository scaffold passes with cash movement disabled.
 - TASK-182 validation wiring passes and remains validation-only.
@@ -117,6 +119,7 @@ runtime, UI, broker, strategy, and automatic trading boundaries.
 - [ ] No new migration or schema file is added.
 - [ ] Manual BUY / SELL direct repository writes pass.
 - [ ] Manual cash movement write remains disabled.
+- [ ] TASK-194 cash movement repository authorization gate passes.
 - [ ] DataService action write wiring is not implemented.
 - [ ] No audit, broker, strategy, UI, network, credentials, real order, or
   automatic trading implementation is added.

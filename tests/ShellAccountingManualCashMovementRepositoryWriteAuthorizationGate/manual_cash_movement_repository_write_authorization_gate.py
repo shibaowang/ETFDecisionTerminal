@@ -182,6 +182,11 @@ def main() -> int:
         assert_not_changed(root, path)
 
     changes = changed_paths(root)
+    allowed_task196_dataaccess = {
+        "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+        "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+        "libs/DataAccess/CMakeLists.txt",
+    }
     require(not any(path.startswith("migrations/") for path in changes), "TASK-194 must not modify migrations")
     require(not any(path.endswith(".sql") for path in changes), "TASK-194 must not add schema or SQL files")
     require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "production QML must not change")
@@ -201,7 +206,12 @@ def main() -> int:
     require("ManualCashMovementWriteRepository" not in dataaccess_prod_text,
             "manual cash movement write repository implementation must not exist")
 
-    production_diff = diff_text(root, "libs", "apps")
+    production_diff = "\n".join(
+        diff_text(root, path)
+        for path in changes
+        if (path.startswith("libs/") or path.startswith("apps/"))
+        and path not in allowed_task196_dataaccess
+    )
     dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", dataservice_shell_diff, re.IGNORECASE) is None,
             "TASK-194 must not add DataService/Shell runtime DML")

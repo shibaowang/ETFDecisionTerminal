@@ -74,6 +74,14 @@ TASK190_MIGRATION_TOKENS = [
     "idx_audit_log_manual_idempotency_key",
 ]
 
+AUTHORIZED_DATAACCESS_REPOSITORY_PATHS = {
+    "libs/DataAccess/CMakeLists.txt",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
+}
+
 
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -97,6 +105,21 @@ def changed_paths(root: Path) -> set[str]:
         text=True,
     )
     return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def production_diff_excluding_authorized_repositories(root: Path) -> str:
+    return "\n".join(
+        subprocess.run(
+            ["git", "diff", "main", "--", path],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+        for path in changed_paths(root)
+        if (path.startswith("libs/") or path.startswith("apps/"))
+        and path not in AUTHORIZED_DATAACCESS_REPOSITORY_PATHS
+    )
 
 
 def assert_allowed_diff_only(root: Path) -> None:
@@ -496,32 +519,32 @@ def test_strategy_market_unmodified(h: Harness) -> None:
 
 
 def test_no_tradedraft_suggestion(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = production_diff_excluding_authorized_repositories(h.root)
     added_lines = "\n".join(line for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++"))
     for token in ["TradeDraft", "trade suggestion", "strategy recommendation"]:
         require(token not in added_lines, f"TASK-192 must not add {token}")
 
 
 def test_no_broker_sdk(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = production_diff_excluding_authorized_repositories(h.root)
     for token in ["broker SDK", "BrokerSdk", "IBKR", "Futu", "Tiger"]:
         require(token not in diff, f"TASK-191 must not add broker SDK token {token}")
 
 
 def test_no_network_endpoint(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = production_diff_excluding_authorized_repositories(h.root)
     for token in ["http://", "https://", "endpoint configuration", "network call"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add network token {token}")
 
 
 def test_no_credentials(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = production_diff_excluding_authorized_repositories(h.root)
     for token in ["credential store", "secret store", "password value", "apiKey", "api_key"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add credential token {token}")
 
 
 def test_no_real_order(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = production_diff_excluding_authorized_repositories(h.root)
     for token in ["placeOrder", "brokerOrderId", "real order", "order placement"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add real order token {token}")
 

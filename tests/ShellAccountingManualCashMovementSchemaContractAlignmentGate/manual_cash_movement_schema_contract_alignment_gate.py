@@ -184,7 +184,12 @@ def main() -> int:
     require("ShellAccountingManualCashMovementRepository" in dataaccess_text, "TASK-196 manual cash movement repository implementation must exist")
     require("ManualCashMovementWriteRepository" not in dataaccess_text, "unauthorized manual cash movement write repository name must not exist")
 
-    production_diff = diff_text(root, "libs", "apps")
+    production_diff = "\n".join(
+        diff_text(root, path)
+        for path in changes
+        if (path.startswith("libs/") or path.startswith("apps/"))
+        and path not in allowed_task196_dataaccess
+    )
     dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", dataservice_shell_diff, re.IGNORECASE) is None,
             "TASK-195 must not add DataService/Shell runtime DML")

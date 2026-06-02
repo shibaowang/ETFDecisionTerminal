@@ -32,6 +32,11 @@ TASK-186 does not modify the TASK-185 scaffold header or source, does not modify
 `DataServiceActionRegistrar.cpp`, and does not modify TASK-178 validation
 production code.
 
+TASK-187 adds the manual entry schema adequacy review gate. TASK-187 reviews
+`migrations/001_initial_schema.sql` only and does not enable repository writes.
+TASK-186 repository implementation authorization remains blocked until schema
+adequacy is resolved by a later authorized task.
+
 ## Future Repository Implementation Boundary
 
 A future manual entry repository implementation must be a separate authorized

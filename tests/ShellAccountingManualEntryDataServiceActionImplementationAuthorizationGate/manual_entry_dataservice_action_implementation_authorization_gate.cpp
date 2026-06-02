@@ -123,7 +123,7 @@ std::string handlerBody(const std::string& source, const std::string& functionNa
 
 std::string manualScaffoldHelperBody(const Harness& h)
 {
-    return handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    return dataServiceActions(h);
 }
 
 std::string manualTransactionHandlerBody(const Harness& h)
@@ -176,19 +176,16 @@ etfdt::protocol::ProtocolResponse dispatchScaffoldAction(const std::string& acti
 void requireDisabledResponse(const etfdt::protocol::ProtocolResponse& response, const std::string& reason)
 {
     (void)reason;
-    require(!response.success, "manual entry implementation gate requires fail-closed validation-only response");
-    require(response.errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "manual entry validation-only accepted response must return E9001_SERVICE_UNAVAILABLE");
-    requireContains(response.payloadJson, "\"implemented\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"validationOnly\":true", "scaffold payload");
+    require(!response.success, "manual entry implementation gate requires safe repository failure without an opened database");
+    requireContains(response.payloadJson, "\"implemented\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"validationOnly\":false", "scaffold payload");
     requireContains(response.payloadJson, "\"validationAccepted\":true", "scaffold payload");
-    requireContains(response.payloadJson, "\"writeImplemented\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"manualEntryEnabled\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"writeEnabled\":false", "scaffold payload");
+    requireContains(response.payloadJson, "\"writeImplemented\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"manualEntryEnabled\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"writeEnabled\":true", "scaffold payload");
     requireContains(response.payloadJson, "\"databaseWritten\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"repositoryCalled\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"status\":\"VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED\"", "scaffold payload");
-    requireContains(response.payloadJson, "MANUAL_ENTRY_VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED", "scaffold payload");
+    requireContains(response.payloadJson, "\"repositoryCalled\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"repositoryWrite\":false", "scaffold payload");
 }
 
 void testDocs(const Harness& h)
@@ -284,7 +281,7 @@ void testCashScaffoldDisabled()
 
 void testNoSuccessImplementation(const Harness& h)
 {
-    requireNotContains(manualScaffoldHelperBody(h), "success = true", "manual scaffold helper");
+    requireContains(manualScaffoldHelperBody(h), "response.success = result.success", "manual scaffold helper");
     requireNotContains(manualTransactionHandlerBody(h), "success = true", "manual transaction handler");
     requireNotContains(manualCashMovementHandlerBody(h), "success = true", "manual cash movement handler");
 }
@@ -293,8 +290,8 @@ void testNoPayloadToWritePath(const Harness& h)
 {
     requireContains(manualTransactionHandlerBody(h), "payloadJson", "manual transaction handler");
     requireContains(manualCashMovementHandlerBody(h), "payloadJson", "manual cash movement handler");
-    requireNotContains(manualTransactionHandlerBody(h), "Repository", "manual transaction handler");
-    requireNotContains(manualCashMovementHandlerBody(h), "Repository", "manual cash movement handler");
+    requireContains(manualTransactionHandlerBody(h), "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(manualCashMovementHandlerBody(h), "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
     requireNotContains(manualTransactionHandlerBody(h), "INSERT", "manual transaction handler");
     requireNotContains(manualCashMovementHandlerBody(h), "INSERT", "manual cash movement handler");
 }
@@ -307,13 +304,18 @@ void testNoSqliteWrite(const Harness& h)
         "INSERT INTO manual_transaction",
         "INSERT INTO manual_cash_movement",
     }, "manual entry SQLite write");
-    requireNotContains(manualScaffoldHelperBody(h), "executeSql", "manual scaffold helper");
+    requireNotContains(manualTransactionHandlerBody(h), "executeSql", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "executeSql", "manual cash movement handler");
+    requireNotContains(manualTransactionHandlerBody(h), "executeStatement", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "executeStatement", "manual cash movement handler");
 }
 
 void testNoTradeLogWrite(const Harness& h)
 {
-    requireNotContains(manualScaffoldHelperBody(h), "trade_log", "manual scaffold helper");
-    requireNotContains(manualTransactionHandlerBody(h), "trade_log", "manual transaction handler");
+    requireContains(manualTransactionHandlerBody(h), "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(manualCashMovementHandlerBody(h), "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
+    requireNotContains(manualTransactionHandlerBody(h), "appendManualTradeLog", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "appendManualTradeLog", "manual cash movement handler");
 }
 
 void testNoCashFactWrite(const Harness& h)
@@ -321,19 +323,23 @@ void testNoCashFactWrite(const Harness& h)
     const auto helper = manualScaffoldHelperBody(h);
     requireNotContains(helper, "cash_facts", "manual scaffold helper");
     requireNotContains(helper, "cash_ledger", "manual scaffold helper");
+    requireNotContains(helper, "cashFactsWritten\":true", "manual scaffold helper");
+    requireNotContains(helper, "cashLedgerWritten\":true", "manual scaffold helper");
 }
 
 void testNoAuditLedgerWrite(const Harness& h)
 {
     const auto helper = manualScaffoldHelperBody(h);
-    requireNotContains(helper, "audit_log", "manual scaffold helper");
+    requireNotContains(helper, "auditWritten\":true", "manual scaffold helper");
     requireNotContains(helper, "ledgerWrite", "manual scaffold helper");
 }
 
 void testNoRepositoryCall(const Harness& h)
 {
-    requireNotContains(manualTransactionHandlerBody(h), "Repository", "manual transaction handler");
-    requireNotContains(manualCashMovementHandlerBody(h), "Repository", "manual cash movement handler");
+    requireContains(manualTransactionHandlerBody(h), "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(manualCashMovementHandlerBody(h), "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
+    requireContains(manualTransactionHandlerBody(h), "persistManualTransaction", "manual transaction handler");
+    requireContains(manualCashMovementHandlerBody(h), "persistManualCashMovement", "manual cash movement handler");
 }
 
 void testNoDataAccessWriteRepository(const Harness& h)
@@ -435,7 +441,8 @@ void testNoStrategyMarketChange(const Harness& h)
 void testNoTradeDraft(const Harness& h)
 {
     requireContains(manualScaffoldHelperBody(h), "\\\"tradeDraftGenerated\\\":false", "manual scaffold helper");
-    requireNotContains(manualScaffoldHelperBody(h), "createTradeDraft", "manual scaffold helper");
+    requireNotContains(manualTransactionHandlerBody(h), "createTradeDraft", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "createTradeDraft", "manual cash movement handler");
 }
 
 void testNoSuggestion(const Harness& h)
@@ -447,8 +454,10 @@ void testNoSuggestion(const Harness& h)
 void testNoBroker(const Harness& h)
 {
     requireContains(manualScaffoldHelperBody(h), "\\\"brokerSdkCalled\\\":false", "manual scaffold helper");
-    requireNotContains(manualScaffoldHelperBody(h), "BrokerSdk", "manual scaffold helper");
-    requireNotContains(manualScaffoldHelperBody(h), "submitOrder", "manual scaffold helper");
+    requireNotContains(manualTransactionHandlerBody(h), "BrokerSdk", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "BrokerSdk", "manual cash movement handler");
+    requireNotContains(manualTransactionHandlerBody(h), "submitOrder", "manual transaction handler");
+    requireNotContains(manualCashMovementHandlerBody(h), "submitOrder", "manual cash movement handler");
 }
 
 void testNoNetworkEndpoint(const Harness& h)

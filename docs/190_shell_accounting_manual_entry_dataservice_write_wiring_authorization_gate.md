@@ -7,15 +7,15 @@ ShellAccounting manual entry actions. It defines the future boundary for
 connecting validated manual entry DataService actions to the already authorized
 DataAccess repositories.
 
-This task does not implement DataService runtime write wiring.
+This task did not implement DataService runtime write wiring.
 
-- It does not modify `DataServiceActions.cpp`.
-- It does not modify `DataServiceActions.h`.
+- It did not modify `DataServiceActions.cpp`.
+- It did not modify `DataServiceActions.h`.
 - It does not modify `DataServiceActionRegistrar.cpp`.
-- It does not wire repositories.
-- It does not write database rows.
-- It does not execute runtime SQL.
-- It does not return persistent id values from DataService action responses.
+- It did not wire repositories.
+- It did not write database rows.
+- It did not execute runtime SQL.
+- It did not return persistent id values from DataService action responses.
 
 ## Current State
 
@@ -24,8 +24,9 @@ TASK-182 completed validation-only wiring for:
 - `accounting.manual_transaction.create`
 - `accounting.manual_cash_movement.create`
 
-Valid payloads still return validation accepted with `writeImplemented=false`
-and `writeEnabled=false`.
+TASK-198 has now evolved the authorized path: valid payloads remain
+validation-first, then call the authorized DataAccess repository boundary and
+return sanitized local write results.
 
 TASK-192 implemented the DataAccess-only
 `ShellAccountingManualTransactionRepository` for manual BUY / SELL repository
@@ -33,19 +34,19 @@ writes. TASK-196 implemented the DataAccess-only
 `ShellAccountingManualCashMovementRepository` for Deposit / Withdrawal
 `trade_log + cash_adjustment` dual-write.
 
-The repositories are not wired into DataService runtime actions. QML, startup,
-Presenter, Controller, AccountingEngine replay, read model, UI, broker, network,
-credentials, endpoint, real order placement, and automatic trading remain out of
-scope.
+The repositories are wired into DataService runtime actions only by TASK-198.
+QML, startup, Presenter, Controller, AccountingEngine replay, read model, UI,
+broker, network, credentials, endpoint, real order placement, and automatic
+trading remain out of scope.
 
 ## Future DataService Write Wiring Boundary
 
-Future DataService write wiring must be separately authorized in a later TASK.
-That future task must preserve TASK-178 / TASK-182 validation-first behavior and
-may call only the authorized DataAccess repository boundary after validation
+TASK-198 separately authorized and implemented DataService write wiring. The
+implementation preserves TASK-178 / TASK-182 validation-first behavior and may
+call only the authorized DataAccess repository boundary after validation
 succeeds.
 
-Future DataService write wiring must not scatter SQL in DataService action handlers.
+DataService write wiring must not scatter SQL in DataService action handlers.
 SQL location remains DataAccess only. DataService responses must be
 explicit, sanitized local write results, and failure mapping must not leak raw
 SQL, raw payloads, credentials, endpoint values, authorization tokens, or
@@ -70,7 +71,7 @@ Future DataService write wiring remains no real order placement.
 - No broker semantics.
 - No replay trigger.
 
-Future manual transaction wiring must map a valid payload to a DataAccess
+TASK-198 manual transaction wiring maps a valid payload to a DataAccess
 repository command for manual BUY / SELL. Duplicate idempotency keys must map to
 a stable idempotent DataService response. Repository failure must map to a safe
 DataService error.
@@ -85,7 +86,7 @@ DataService error.
 - No broker semantics.
 - No replay trigger.
 
-Future manual cash movement wiring must map a valid payload to the DataAccess
+TASK-198 manual cash movement wiring maps a valid payload to the DataAccess
 repository command for Deposit / Withdrawal and must preserve the TASK-196
 `trade_log + cash_adjustment` dual-write boundary. Duplicate idempotency keys
 must map to a stable idempotent DataService response. Repository failure must
@@ -103,9 +104,9 @@ exception stacks, credentials, endpoint values, tokens, or broker payloads.
 
 ## Explicit Non-Goals
 
-TASK-197 does not modify migrations, does not add a migration or schema file,
-does not modify production QML or startup, does not modify Presenter or
-Controller behavior, does not modify DataServiceActions, does not modify
+TASK-197 did not modify migrations, did not add a migration or schema file,
+did not modify production QML or startup, did not modify Presenter or
+Controller behavior, did not modify DataServiceActions, did not modify
 DataServiceActionRegistrar, does not modify TASK-178 validation production code,
 does not modify TASK-192 or TASK-196 repositories, does not add DataService
 runtime write wiring, does not add runtime SQL / SQLite writes, does not write

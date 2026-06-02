@@ -59,6 +59,23 @@ def assert_not_changed(changes: set[str], relative_path: str) -> None:
     require(normalized not in changes, f"{relative_path} must not be changed by TASK-195")
 
 
+def function_body(source: str, function_name: str) -> str:
+    start = source.find(function_name + "(")
+    require(start >= 0, f"{function_name} must exist")
+    brace = source.find("{", start)
+    require(brace >= 0, f"{function_name} body must start")
+    depth = 0
+    for index in range(brace, len(source)):
+        char = source[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return source[brace : index + 1]
+    raise AssertionError(f"{function_name} body must end")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-root", required=True)
@@ -155,7 +172,6 @@ def main() -> int:
     for protected in [
         "migrations/001_initial_schema.sql",
         "migrations/002_shell_accounting_manual_entry_schema.sql",
-        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
         "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
@@ -175,6 +191,25 @@ def main() -> int:
     )
     require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "TASK-195 must not modify production QML")
     require(not any(path.startswith("libs/AccountingEngine/") for path in changes), "TASK-195 must not modify AccountingEngine")
+
+    dataservice_actions = read(root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp")
+    require_contains(
+        dataservice_actions,
+        "ShellAccountingManualTransactionRepository repository(connection)",
+        "TASK-198 DataServiceActions manual transaction wiring",
+    )
+    require_contains(
+        dataservice_actions,
+        "ShellAccountingManualCashMovementRepository repository(connection)",
+        "TASK-198 DataServiceActions manual cash movement wiring",
+    )
+    for handler in [
+        function_body(dataservice_actions, "handleAccountingManualEntryTransactionCreate"),
+        function_body(dataservice_actions, "handleAccountingManualEntryCashMovementCreate"),
+    ]:
+        require("executeStatement" not in handler, "TASK-198 DataServiceActions handler must not execute SQL directly")
+        require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", handler, re.IGNORECASE) is None,
+                "TASK-198 DataServiceActions handler must not contain direct DML")
 
     require("ShellAccountingManualCashMovementRepository.cpp" in dataaccess_cmake, "DataAccess CMake registers TASK-196 cash movement repository")
     dataaccess_text = joined(
@@ -204,7 +239,7 @@ def main() -> int:
         "password=",
         "secret=",
         "endpoint=",
-        "automaticTrading",
+        "automaticTrading\\\":true",
     ]:
         require(token not in added_production_lines, f"TASK-195 must not add forbidden production token {token}")
 

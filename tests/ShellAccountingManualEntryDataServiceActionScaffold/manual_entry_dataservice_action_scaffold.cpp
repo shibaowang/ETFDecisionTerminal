@@ -186,19 +186,16 @@ etfdt::protocol::ProtocolResponse dispatchScaffoldAction(const std::string& acti
 void requireDisabledResponse(const etfdt::protocol::ProtocolResponse& response, const std::string& reason)
 {
     (void)reason;
-    require(!response.success, "manual entry validation-only action must fail closed");
-    require(response.errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "manual entry validation-only accepted response must return E9001_SERVICE_UNAVAILABLE");
-    requireContains(response.payloadJson, "\"implemented\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"validationOnly\":true", "scaffold payload");
+    require(!response.success, "manual entry repository action must fail safely without an opened database");
+    requireContains(response.payloadJson, "\"implemented\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"validationOnly\":false", "scaffold payload");
     requireContains(response.payloadJson, "\"validationAccepted\":true", "scaffold payload");
-    requireContains(response.payloadJson, "\"writeImplemented\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"manualEntryEnabled\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"writeEnabled\":false", "scaffold payload");
+    requireContains(response.payloadJson, "\"writeImplemented\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"manualEntryEnabled\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"writeEnabled\":true", "scaffold payload");
     requireContains(response.payloadJson, "\"databaseWritten\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"repositoryCalled\":false", "scaffold payload");
-    requireContains(response.payloadJson, "\"status\":\"VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED\"", "scaffold payload");
-    requireContains(response.payloadJson, "MANUAL_ENTRY_VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED", "scaffold payload");
+    requireContains(response.payloadJson, "\"repositoryCalled\":true", "scaffold payload");
+    requireContains(response.payloadJson, "\"repositoryWrite\":false", "scaffold payload");
 }
 
 void testDocs(const Harness& h)
@@ -270,7 +267,7 @@ void requireDisabledHandlerBody(const std::string& body, const std::string& reas
 {
     (void)reason;
     requireAll(body, {
-        "manualEntryValidationOnlyResponse",
+        "manualEntryValidationRejectedResponse",
         "validateManual",
         "kActionAccountingManual",
     }, "manual handler body");
@@ -302,36 +299,43 @@ void testDispatcherReturnsUnavailable()
 
 void testNoSqliteWrite(const Harness& h)
 {
-    const auto scaffoldBody = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto transactionBody = handlerBody(dataServiceActions(h), "handleAccountingManualEntryTransactionCreate");
+    const auto cashBody = handlerBody(dataServiceActions(h), "handleAccountingManualEntryCashMovementCreate");
     requireNoTokens({h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp"}, {
         "insertManualTransaction",
         "insertCashMovement",
         "INSERT INTO manual_transaction",
         "INSERT INTO manual_cash_movement",
     }, "manual entry SQLite write");
-    requireNotContains(scaffoldBody, "executeSql", "manual scaffold helper");
-    requireNotContains(scaffoldBody, "executeStatement", "manual scaffold helper");
+    requireNotContains(transactionBody, "executeSql", "manual transaction handler");
+    requireNotContains(transactionBody, "executeStatement", "manual transaction handler");
+    requireNotContains(cashBody, "executeSql", "manual cash movement handler");
+    requireNotContains(cashBody, "executeStatement", "manual cash movement handler");
 }
 
 void testNoTradeLogWrite(const Harness& h)
 {
-    const auto scaffoldBody = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
-    requireNotContains(scaffoldBody, "trade_log", "manual scaffold helper");
-    requireNotContains(scaffoldBody, "appendManualTradeLog", "manual scaffold helper");
+    const auto transactionBody = handlerBody(dataServiceActions(h), "handleAccountingManualEntryTransactionCreate");
+    const auto cashBody = handlerBody(dataServiceActions(h), "handleAccountingManualEntryCashMovementCreate");
+    requireContains(transactionBody, "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(cashBody, "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
+    requireNotContains(transactionBody, "appendManualTradeLog", "manual transaction handler");
+    requireNotContains(cashBody, "appendManualTradeLog", "manual cash movement handler");
 }
 
 void testNoCashFactWrite(const Harness& h)
 {
-    const auto scaffoldBody = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto scaffoldBody = dataServiceActions(h);
     requireNotContains(scaffoldBody, "cash_facts", "manual scaffold helper");
     requireNotContains(scaffoldBody, "cash_ledger", "manual scaffold helper");
-    requireNotContains(scaffoldBody, "manualCashMovementWrite", "manual scaffold helper");
+    requireNotContains(scaffoldBody, "cashFactsWritten\":true", "manual scaffold helper");
+    requireNotContains(scaffoldBody, "cashLedgerWritten\":true", "manual scaffold helper");
 }
 
 void testNoAuditLedgerWrite(const Harness& h)
 {
-    const auto scaffoldBody = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
-    requireNotContains(scaffoldBody, "audit_log", "manual scaffold helper");
+    const auto scaffoldBody = dataServiceActions(h);
+    requireNotContains(scaffoldBody, "auditWritten\":true", "manual scaffold helper");
     requireNotContains(scaffoldBody, "ledgerWrite", "manual scaffold helper");
 }
 
@@ -340,8 +344,10 @@ void testNoRepositoryCall(const Harness& h)
     const auto source = dataServiceActions(h);
     const auto transactionBody = handlerBody(source, "handleAccountingManualEntryTransactionCreate");
     const auto cashBody = handlerBody(source, "handleAccountingManualEntryCashMovementCreate");
-    requireNotContains(transactionBody, "Repository", "manual transaction handler");
-    requireNotContains(cashBody, "Repository", "manual cash movement handler");
+    requireContains(transactionBody, "ShellAccountingManualTransactionRepository", "manual transaction handler");
+    requireContains(cashBody, "ShellAccountingManualCashMovementRepository", "manual cash movement handler");
+    requireContains(transactionBody, "persistManualTransaction", "manual transaction handler");
+    requireContains(cashBody, "persistManualCashMovement", "manual cash movement handler");
 }
 
 void testNoAccountingEngineReplay(const Harness& h)
@@ -354,29 +360,36 @@ void testNoAccountingEngineReplay(const Harness& h)
 
 void testNoTradeDraft(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
+    const auto transactionBody = handlerBody(source, "handleAccountingManualEntryTransactionCreate");
+    const auto cashBody = handlerBody(source, "handleAccountingManualEntryCashMovementCreate");
     requireContains(source, "\\\"tradeDraftGenerated\\\":false", "manual scaffold helper");
-    requireNotContains(source, "createTradeDraft", "manual scaffold helper");
+    requireNotContains(transactionBody, "createTradeDraft", "manual transaction handler");
+    requireNotContains(cashBody, "createTradeDraft", "manual cash movement handler");
 }
 
 void testNoSuggestion(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
     requireContains(source, "\\\"tradeSuggestionGenerated\\\":false", "manual scaffold helper");
     requireNotContains(source, "SuggestionEngine", "manual scaffold helper");
 }
 
 void testNoBroker(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
+    const auto transactionBody = handlerBody(source, "handleAccountingManualEntryTransactionCreate");
+    const auto cashBody = handlerBody(source, "handleAccountingManualEntryCashMovementCreate");
     requireContains(source, "\\\"brokerSdkCalled\\\":false", "manual scaffold helper");
-    requireNotContains(source, "BrokerSdk", "manual scaffold helper");
-    requireNotContains(source, "submitOrder", "manual scaffold helper");
+    requireNotContains(transactionBody, "BrokerSdk", "manual transaction handler");
+    requireNotContains(cashBody, "BrokerSdk", "manual cash movement handler");
+    requireNotContains(transactionBody, "submitOrder", "manual transaction handler");
+    requireNotContains(cashBody, "submitOrder", "manual cash movement handler");
 }
 
 void testNoNetworkEndpoint(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
     requireContains(source, "\\\"networkAccessed\\\":false", "manual scaffold helper");
     requireContains(source, "\\\"endpointAccessed\\\":false", "manual scaffold helper");
     requireNotContains(source, "QNetwork", "manual scaffold helper");
@@ -384,7 +397,7 @@ void testNoNetworkEndpoint(const Harness& h)
 
 void testNoCredentialsSecretValues(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
     requireContains(source, "\\\"credentialsAccessed\\\":false", "manual scaffold helper");
     requireNotContains(source, "getenv", "manual scaffold helper");
     requireNotContains(source, "secretKey", "manual scaffold helper");
@@ -392,14 +405,14 @@ void testNoCredentialsSecretValues(const Harness& h)
 
 void testNoRealOrderPlacement(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
     requireContains(source, "\\\"realOrderPlacement\\\":false", "manual scaffold helper");
     requireNotContains(source, "placeOrder", "manual scaffold helper");
 }
 
 void testNoAutomaticTrading(const Harness& h)
 {
-    const auto source = handlerBody(dataServiceActions(h), "manualEntryValidationOnlyResponse");
+    const auto source = dataServiceActions(h);
     requireContains(source, "\\\"automaticTrading\\\":false", "manual scaffold helper");
     requireNotContains(source, "executeStrategy", "manual scaffold helper");
 }

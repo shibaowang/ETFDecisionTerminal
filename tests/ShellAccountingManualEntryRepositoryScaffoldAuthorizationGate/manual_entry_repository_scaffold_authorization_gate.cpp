@@ -201,21 +201,18 @@ std::string validManualCashMovementPayload()
 
 void requireWriteNotImplementedResponse(const etfdt::protocol::ProtocolResponse& response)
 {
-    require(!response.success, "TASK-182 validation-only response must fail closed");
-    require(response.errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "valid payload must remain unavailable until write implementation is separately authorized");
+    require(!response.success, "TASK-198 repository write response must fail safely without an opened database");
     requireAll(response.payloadJson, {
-        "\"validationOnly\":true",
+        "\"validationOnly\":false",
         "\"validationAccepted\":true",
-        "\"writeImplemented\":false",
-        "\"writeEnabled\":false",
+        "\"writeImplemented\":true",
+        "\"writeEnabled\":true",
         "\"databaseWritten\":false",
-        "\"tradeLogWritten\":false",
-        "\"cashFactsWritten\":false",
+        "\"repositoryCalled\":true",
+        "\"repositoryWrite\":false",
         "\"auditWritten\":false",
         "\"ledgerWritten\":false",
-        "\"status\":\"VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED\"",
-    }, "TASK-182 validation-only response");
+    }, "TASK-198 DataService repository write response");
 }
 
 void requireNoPersistentIds(const std::string& payload)
@@ -306,14 +303,15 @@ void testDataServiceActionsCppUnmodified(const Harness& h)
     const auto source = dataServiceActions(h);
     requireNotContains(source, "TASK-184", "DataServiceActions.cpp");
     requireNotContains(source, "ManualEntryRepository", "DataServiceActions.cpp");
-    requireNotContains(source, "ManualTransactionRepository", "DataServiceActions.cpp");
-    requireNotContains(source, "ManualCashMovementRepository", "DataServiceActions.cpp");
     requireAll(source, {
         "validateManualTransactionEntry",
         "validateManualCashMovement",
-        "manualEntryValidationOnlyResponse",
-        "VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED",
-    }, "DataServiceActions.cpp TASK-182 validation-only wiring");
+        "manualEntryValidationRejectedResponse",
+        "ShellAccountingManualTransactionRepository repository(connection)",
+        "ShellAccountingManualCashMovementRepository repository(connection)",
+        "persistManualTransaction",
+        "persistManualCashMovement",
+    }, "DataServiceActions.cpp TASK-198 repository wiring");
 }
 
 void testDataServiceActionsHUnmodified(const Harness& h)

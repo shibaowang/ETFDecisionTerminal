@@ -1838,6 +1838,23 @@ future schema migration TASK must separately authorize standalone
 cash_adjustment. Future DataService action write wiring, replay/read model/UI,
 audit policy, and broker work must remain separately authorized.
 
+## TASK-198 Manual Entry DataService Write Wiring Implementation Prompt Rule
+
+Future manual entry DataService write work after TASK-198 must reference
+docs/192 and docs/193. TASK-198 authorizes only validation-first DataService
+action wiring into the existing DataAccess repositories:
+`ShellAccountingManualTransactionRepository` for manual BUY / SELL writes and
+`ShellAccountingManualCashMovementRepository` for Deposit / Withdrawal
+`trade_log + cash_adjustment` writes.
+
+Do not use TASK-198 as authorization to modify migrations, modify repository
+implementations, modify production QML/startup, modify Presenter or Controller
+behavior, trigger AccountingEngine replay, add read model integration, write
+`audit_log` or ledger rows, add TradeDraft or suggestion implementation, add
+broker SDKs, add network calls, add credentials or endpoints, place real
+orders, store broker order ids, or enable automatic trading. SQL must remain in
+DataAccess repositories; DataServiceActions must not scatter direct SQL.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

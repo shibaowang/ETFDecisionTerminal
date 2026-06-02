@@ -92,6 +92,8 @@ def main() -> int:
     doc189 = read(root / "docs" / "189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md")
     doc190_path = root / "docs" / "190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md"
     doc191_path = root / "docs" / "191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md"
+    doc192_path = root / "docs" / "192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md"
+    doc193_path = root / "docs" / "193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md"
     doc190 = read(doc190_path)
     doc191 = read(doc191_path)
     tests_cmake = read(root / "tests" / "CMakeLists.txt")
@@ -106,13 +108,21 @@ def main() -> int:
 
     require(doc190_path.exists(), "docs/190 exists")
     require(doc191_path.exists(), "docs/191 exists")
+    require(doc192_path.exists(), "docs/192 exists")
+    require(doc193_path.exists(), "docs/193 exists")
     for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
         require_contains(text, "TASK-197", context)
+        require_contains(text, "TASK-198", context)
     require_contains(readme, "docs/190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md", "README")
     require_contains(readme, "docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md", "README")
+    require_contains(readme, "docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md", "README")
+    require_contains(readme, "docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md", "README")
     require_contains(docs_index, "190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md", "docs/README")
     require_contains(docs_index, "191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md", "docs/README")
+    require_contains(docs_index, "192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md", "docs/README")
+    require_contains(docs_index, "193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md", "docs/README")
     require_contains(tests_cmake, "ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate", "tests/CMakeLists")
+    require_contains(tests_cmake, "ShellAccountingManualEntryDataServiceWriteWiringImplementation", "tests/CMakeLists")
     require_contains(tests_cmake, "ShellAccountingBrokerAdapterDisabledWiring", "tests/CMakeLists broker disabled retained")
     require_contains(tests_cmake, "ShellAccountingBrokerOrderImplementation", "tests/CMakeLists broker order retained")
     require_contains(tests_cmake, "ShellAccountingRealBrokerOrderAuthorizationGate", "tests/CMakeLists real broker authorization retained")
@@ -121,20 +131,20 @@ def main() -> int:
     doc190_tokens = [
         "TASK-197",
         "DataService write wiring authorization gate-only",
-        "does not implement DataService runtime write wiring",
-        "does not modify `DataServiceActions.cpp`",
-        "does not modify `DataServiceActions.h`",
+        "TASK-198 has now evolved the authorized path",
+        "did not modify `DataServiceActions.cpp`",
+        "did not modify `DataServiceActions.h`",
         "does not modify `DataServiceActionRegistrar.cpp`",
-        "does not wire repositories",
-        "does not write database rows",
-        "does not execute runtime SQL",
-        "does not return persistent id",
+        "did not wire repositories",
+        "did not write database rows",
+        "did not execute runtime SQL",
+        "did not return persistent id",
         "accounting.manual_transaction.create",
         "accounting.manual_cash_movement.create",
-        "writeImplemented=false",
+        "sanitized local write results",
         "ShellAccountingManualTransactionRepository",
         "ShellAccountingManualCashMovementRepository",
-        "Future DataService write wiring must be separately authorized",
+        "TASK-198 separately authorized and implemented DataService write wiring",
         "validation-first",
         "must not scatter SQL in DataService action handlers",
         "SQL location remains DataAccess only",
@@ -169,18 +179,18 @@ def main() -> int:
         "Go / No-Go Checklist",
         "docs/190 exists",
         "docs/191 exists",
-        "DataServiceActions.cpp is not modified",
+        "DataServiceActions.cpp is modified only for TASK-198 repository wiring",
         "DataServiceActions.h is not modified",
         "DataServiceActionRegistrar.cpp is not modified",
         "TASK-178 validation production code is not modified",
         "TASK-192 repository header/source are not modified",
         "TASK-196 repository header/source are not modified",
-        "TASK-182 validation wiring still returns `writeImplemented=false`",
-        "Valid manual transaction payload still does not write database",
-        "Valid manual cash movement payload still does not write database",
-        "DataService action response still does not return persistent id",
-        "DataServiceActions does not call `ShellAccountingManualTransactionRepository`",
-        "DataServiceActions does not call `ShellAccountingManualCashMovementRepository`",
+        "TASK-182 validation-first behavior is retained",
+        "Valid manual transaction payload writes through",
+        "Valid manual cash movement payload writes through",
+        "Invalid payloads still do not write database rows",
+        "DataServiceActions calls only `ShellAccountingManualTransactionRepository`",
+        "DataServiceActions calls only `ShellAccountingManualCashMovementRepository`",
         "DataServiceApi does not add runtime SQL",
         "No TradeDraft implementation",
         "No broker SDK",
@@ -191,7 +201,7 @@ def main() -> int:
         "No automatic trading",
         "TASK-196 dual-write repository tests pass",
         "TASK-192 manual transaction repository tests pass",
-        "TASK-182 validation-only wiring tests pass",
+        "TASK-182 validation-first wiring tests pass",
     ]
     for token in doc191_tokens:
         require_contains(doc191, token, "docs/191")
@@ -210,10 +220,32 @@ def main() -> int:
         "docs/189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md",
         "docs/190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md",
         "docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md",
+        "docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md",
+        "docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md",
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
+        "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate/manual_entry_dataservice_action_implementation_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionScaffold/manual_entry_dataservice_action_scaffold.cpp",
+        "tests/ShellAccountingManualEntryDataServiceActionValidationWiring/manual_entry_dataservice_action_validation_wiring.cpp",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPersistenceAuthorizationGate/manual_entry_persistence_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryRepositoryImplementationAuthorizationGate/manual_entry_repository_implementation_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualEntryRepositoryScaffold/manual_entry_repository_scaffold.cpp",
+        "tests/ShellAccountingManualEntryRepositoryScaffoldAuthorizationGate/manual_entry_repository_scaffold_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntrySchemaAdequacyReviewGate/manual_entry_schema_adequacy_review_gate.cpp",
+        "tests/ShellAccountingManualEntrySchemaGapAuthorizationGate/manual_entry_schema_gap_authorization_gate.cpp",
+        "tests/ShellAccountingManualEntrySchemaImplementationAuthorizationGate/manual_entry_schema_implementation_authorization_gate.cpp",
+        "tests/ShellAccountingManualTransactionCashMovementMvpAuthorizationGate/manual_transaction_cash_movement_mvp_authorization_gate.cpp",
+        "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
+        "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
+        "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
+        "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/manual_transaction_repository_write_implementation.cpp",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/manual_entry_dataservice_write_wiring_implementation.cpp",
     }
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     require(not unexpected, "TASK-197 changed unauthorized paths: " + ", ".join(unexpected))
@@ -221,7 +253,6 @@ def main() -> int:
     protected_paths = [
         "migrations/001_initial_schema.sql",
         "migrations/002_shell_accounting_manual_entry_schema.sql",
-        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
         "libs/DataServiceApi/include/DataServiceApi/ShellAccountingManualTransactionCashMovementValidation.h",
@@ -242,17 +273,23 @@ def main() -> int:
     require(not any(path.startswith("libs/MarketEngine/") for path in changes), "TASK-197 must not modify MarketEngine")
     require(not any("Presenter" in path or "Controller" in path for path in changes), "TASK-197 must not modify Presenter/Controller")
 
-    require_contains(data_service_actions, "manualEntryValidationOnlyResponse", "DataServiceActions")
     require_contains(data_service_actions, "validateManualTransactionEntry", "DataServiceActions")
     require_contains(data_service_actions, "validateManualCashMovement", "DataServiceActions")
-    require_contains(data_service_actions, '\\"writeImplemented\\":false', "DataServiceActions")
-    require_contains(data_service_actions, '\\"writeEnabled\\":false', "DataServiceActions")
+    require_contains(data_service_actions, "manualEntryValidationRejectedResponse", "DataServiceActions")
+    require_contains(data_service_actions, "manualTransactionWriteResponse", "DataServiceActions")
+    require_contains(data_service_actions, "manualCashMovementWriteResponse", "DataServiceActions")
+    require_contains(data_service_actions, "ShellAccountingManualTransactionRepository repository(connection)", "DataServiceActions")
+    require_contains(data_service_actions, "ShellAccountingManualCashMovementRepository repository(connection)", "DataServiceActions")
+    require_contains(data_service_actions, "persistManualTransaction", "DataServiceActions")
+    require_contains(data_service_actions, "persistManualCashMovement", "DataServiceActions")
+    require_contains(data_service_actions, '\\"writeImplemented\\":true', "DataServiceActions")
+    require_contains(data_service_actions, '\\"writeEnabled\\":true', "DataServiceActions")
     require_contains(data_service_actions, '\\"databaseWritten\\":false', "DataServiceActions")
     require_contains(data_service_actions, '\\"tradeLogWritten\\":false', "DataServiceActions")
+    require_contains(data_service_actions, '\\"cashAdjustmentWritten\\":false', "DataServiceActions")
     require_contains(data_service_actions, '\\"cashFactsWritten\\":false', "DataServiceActions")
     require_contains(data_service_actions, '\\"auditWritten\\":false', "DataServiceActions")
     require_contains(data_service_actions, '\\"ledgerWritten\\":false', "DataServiceActions")
-    require_contains(data_service_actions, "VALIDATION_ACCEPTED_WRITE_NOT_IMPLEMENTED", "DataServiceActions")
     require_contains(data_service_actions_h, "handleAccountingManualEntryTransactionCreate", "DataServiceActions.h")
     require_contains(data_service_actions_h, "handleAccountingManualEntryCashMovementCreate", "DataServiceActions.h")
     require_contains(registrar, "kActionAccountingManualTransactionCreate", "DataServiceActionRegistrar")
@@ -265,35 +302,26 @@ def main() -> int:
         (cash_body, "manual cash movement handler", "validateManualCashMovement"),
     ]:
         require_contains(body, validator, context)
-        require_contains(body, "manualEntryValidationOnlyResponse", context)
-        require("Repository" not in body, f"{context} must not call repository")
+        require_contains(body, "Repository repository(connection)", context)
         require("executeStatement" not in body, f"{context} must not execute SQL")
         require("INSERT" not in body and "UPDATE" not in body and "DELETE" not in body and "REPLACE" not in body,
                 f"{context} must not contain DML")
 
-    data_service_diff = diff_text(root, "libs/DataServiceApi")
-    require(data_service_diff == "", "TASK-197 must not change DataServiceApi files")
     runtime_diff = added_lines(diff_text(root, "libs", "apps"))
     for token in [
-        "ShellAccountingManualTransactionRepository(",
-        "ShellAccountingManualCashMovementRepository(",
         "INSERT INTO",
         "UPDATE ",
         "DELETE FROM",
         "REPLACE INTO",
-        "tradeLogWritten\":true",
         "cashFactsWritten\":true",
         "auditWritten\":true",
         "ledgerWritten\":true",
-        "persistentId",
-        "tradeLogId",
-        "cashAdjustmentId",
         "TradeDraft",
         "trade suggestion",
         "brokerOrder",
         "placeOrder",
         "real order",
-        "automaticTrading",
+        "automaticTrading\\\":true",
         "http://",
         "https://",
         "api_key",
@@ -306,9 +334,6 @@ def main() -> int:
 
     require_contains(validation_wiring_cmake, "manual_transaction_success", "TASK-182 CMake")
     require_contains(validation_wiring_cmake, "manual_cash_movement_success", "TASK-182 CMake")
-    require_contains(validation_wiring_cmake, "validation_accepted_write_not_implemented", "TASK-182 CMake")
-    require_contains(validation_wiring_cmake, "no_database_write", "TASK-182 CMake")
-    require_contains(validation_wiring_cmake, "no_persistent_ids", "TASK-182 CMake")
     require_contains(task192_cmake, "shell_accounting_manual_transaction_repository_write_implementation_manual_buy_success", "TASK-192 CMake")
     require_contains(task192_cmake, "shell_accounting_manual_transaction_repository_write_implementation_manual_sell_success", "TASK-192 CMake")
     require_contains(task192_cmake, "no_cash_adjustment_write", "TASK-192 CMake")

@@ -22,18 +22,27 @@ ALLOWED_DIFF_PREFIXES = {
     "docs/187_shell_accounting_manual_cash_movement_schema_contract_alignment_test_plan.md",
     "docs/188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md",
     "docs/189_shell_accounting_manual_cash_movement_repository_dual_write_implementation_test_plan.md",
+    "docs/190_shell_accounting_manual_entry_dataservice_write_wiring_authorization_gate.md",
+    "docs/191_shell_accounting_manual_entry_dataservice_write_wiring_authorization_test_plan.md",
+    "docs/192_shell_accounting_manual_entry_dataservice_write_wiring_implementation.md",
+    "docs/193_shell_accounting_manual_entry_dataservice_write_wiring_implementation_test_plan.md",
     "libs/DataAccess/CMakeLists.txt",
     "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
     "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
     "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
     "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
+    "libs/DataServiceApi/src/DataServiceActions.cpp",
     "tests/CMakeLists.txt",
     "tests/DevDocs/test_readonly_demo_acceptance.py",
     "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
     "tests/ShellAccountingManualEntryDataServiceActionImplementationAuthorizationGate/manual_entry_dataservice_action_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualEntryDataServiceActionScaffold/manual_entry_dataservice_action_scaffold.cpp",
     "tests/ShellAccountingManualEntryPersistenceAuthorizationGate/manual_entry_persistence_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntryRepositoryImplementationAuthorizationGate/manual_entry_repository_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualEntryRepositoryScaffoldAuthorizationGate/manual_entry_repository_scaffold_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntrySchemaAdequacyReviewGate/manual_entry_schema_adequacy_review_gate.cpp",
+    "tests/ShellAccountingManualEntrySchemaGapAuthorizationGate/manual_entry_schema_gap_authorization_gate.cpp",
+    "tests/ShellAccountingManualEntrySchemaImplementationAuthorizationGate/manual_entry_schema_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualTransactionCashMovementMvpAuthorizationGate/manual_transaction_cash_movement_mvp_authorization_gate.cpp",
     "tests/ShellAccountingManualTransactionCashMovementValidationScaffold/manual_transaction_cash_movement_validation_scaffold.cpp",
 }
@@ -44,6 +53,8 @@ ALLOWED_DIFF_DIRS = {
     "tests/ShellAccountingManualEntryRepositoryImplementationAuthorizationGate/",
     "tests/ShellAccountingManualEntryRepositoryScaffold/",
     "tests/ShellAccountingManualEntryDataServiceActionValidationWiring/",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/",
     "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/",
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/",
     "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/",
@@ -366,7 +377,20 @@ def test_task190_columns_indexes_retained(h: Harness) -> None:
 
 
 def test_dataserviceactions_cpp_unmodified(h: Harness) -> None:
-    assert_path_not_changed(h.root, "libs/DataServiceApi/src/DataServiceActions.cpp")
+    actions = read(h.data_service_actions_cpp)
+    for token in [
+        "ShellAccountingManualTransactionRepository repository(connection)",
+        "ShellAccountingManualCashMovementRepository repository(connection)",
+        "persistManualTransaction",
+        "persistManualCashMovement",
+        "manualEntryValidationRejectedResponse",
+    ]:
+        require_contains(actions, token, "TASK-198 DataServiceActions wiring")
+    require("executeStatement" not in actions, "TASK-198 must not scatter SQLite executeStatement in DataServiceActions")
+    require("INSERT INTO" not in actions, "TASK-198 must not add direct DataServiceActions INSERT")
+    require("UPDATE " not in actions, "TASK-198 must not add direct DataServiceActions UPDATE")
+    require("DELETE " not in actions, "TASK-198 must not add direct DataServiceActions DELETE")
+    require("REPLACE " not in actions, "TASK-198 must not add direct DataServiceActions REPLACE")
 
 
 def test_dataserviceactions_h_unmodified(h: Harness) -> None:
@@ -452,7 +476,10 @@ def test_no_sqlite_write(h: Harness) -> None:
 
 def test_no_trade_log_write(h: Harness) -> None:
     diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    require("trade_log" not in diff, "TASK-192 must not add DataService/Shell trade_log references")
+    require("INSERT INTO trade_log" not in diff, "TASK-198 must not add direct DataService/Shell trade_log DML")
+    require("executeStatement" not in diff, "TASK-198 must not add direct DataService/Shell SQLite write")
+    require("ShellAccountingManualTransactionRepository repository(connection)" in read(h.data_service_actions_cpp),
+            "TASK-198 trade_log write must stay behind DataAccess repository boundary")
 
 
 def test_no_cash_adjustment_write(h: Harness) -> None:
@@ -460,7 +487,10 @@ def test_no_cash_adjustment_write(h: Harness) -> None:
     repository_source = read(h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualCashMovementRepository.cpp")
     require("INSERT INTO cash_adjustment" in repository_source, "TASK-196 must add DataAccess-only cash_adjustment write")
     forbidden = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
-    require("cash_adjustment" not in forbidden, "TASK-192 must not add DataService/Shell cash_adjustment references")
+    require("INSERT INTO cash_adjustment" not in forbidden, "TASK-198 must not add direct DataService/Shell cash_adjustment DML")
+    require("executeStatement" not in forbidden, "TASK-198 must not add direct DataService/Shell SQLite write")
+    require("ShellAccountingManualCashMovementRepository repository(connection)" in read(h.data_service_actions_cpp),
+            "TASK-198 cash_adjustment write must stay behind DataAccess repository boundary")
 
 
 def test_no_audit_ledger_write(h: Harness) -> None:

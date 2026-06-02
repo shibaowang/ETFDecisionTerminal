@@ -255,19 +255,17 @@ void requireDisabledResult(const etfdt::data_access::ShellAccountingManualEntryP
 
 void requireTask182ResponseStillValidationOnly(const etfdt::protocol::ProtocolResponse& response)
 {
-    require(!response.success, "TASK-182 response must fail closed");
-    require(response.errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE,
-        "TASK-182 response remains unavailable");
+    require(!response.success, "TASK-198 response must fail safely without an opened database");
     requireAll(response.payloadJson, {
-        "\"validationOnly\":true",
+        "\"validationOnly\":false",
         "\"validationAccepted\":true",
-        "\"writeImplemented\":false",
+        "\"writeImplemented\":true",
         "\"databaseWritten\":false",
-        "\"tradeLogWritten\":false",
-        "\"cashFactsWritten\":false",
+        "\"repositoryCalled\":true",
+        "\"repositoryWrite\":false",
         "\"auditWritten\":false",
         "\"ledgerWritten\":false",
-    }, "TASK-182 validation response");
+    }, "TASK-198 DataService repository write response");
 }
 
 void testDocs(const Harness& h)

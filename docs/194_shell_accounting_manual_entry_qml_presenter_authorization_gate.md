@@ -7,22 +7,7 @@ ShellAccounting manual entry UI integration. It defines the boundary for a
 future task that may expose manual transaction and manual cash movement entry
 through production UI and ShellServices.
 
-TASK-199 does not implement UI, does not modify production QML, does not modify
-startup, does not modify Presenter or Controller code, does not modify
-DataServiceActions, does not modify repositories, does not write the database,
-does not trigger replay, does not write audit or ledger rows, and does not add
-broker, network, credentials, endpoint, real order placement, or automatic
-trading capability.
-
-The current task does not modify startup or production application bootstrap
-behavior.
-The current task does not modify DataServiceActions.
-The current task does not modify repositories.
-The current task does not write the database.
-The current task does not trigger replay.
-The current task does not write audit or ledger rows.
-The current task does not add broker, network, credentials, endpoint, real
-order placement, or automatic trading capability.
+TASK-199 does not implement UI, does not modify production QML, does not modify startup, does not modify Presenter or Controller code, does not modify DataServiceActions, does not modify repositories, does not write the database, does not trigger replay, does not write audit or ledger rows, and does not add broker, network, credentials, endpoint, real order placement, or automatic trading capability.
 
 ## Current State
 
@@ -77,16 +62,12 @@ must not access DataServiceClient directly, must not access SQLite or
 DataAccess directly, and must not introduce a generic write-enabled escape
 hatch.
 
-Future UI implementation must be separately authorized. Future readback,
-refresh, or AccountingEngine replay integration must be separately authorized.
-Future readback, refresh, or AccountingEngine replay integration must be separately authorized.
+Future UI implementation must be separately authorized. Future readback, refresh, or AccountingEngine replay integration must be separately authorized.
 Future audit write or ledger policy changes must be separately authorized.
 
 ## UI Response And Privacy Boundary
 
-Future UI may display write status, validation issues, sanitized repository
-issues, duplicate / idempotent result state, and safe DataService errors.
-Future UI may display sanitized repository issues.
+Future UI may display write status, validation issues, sanitized repository issues, duplicate / idempotent result state, and safe DataService errors.
 Future UI must not expose real order ids.
 
 Future UI must not expose raw SQL, raw payloads, credentials, endpoints, tokens,

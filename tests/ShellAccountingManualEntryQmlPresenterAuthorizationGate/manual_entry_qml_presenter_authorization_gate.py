@@ -211,7 +211,21 @@ def main() -> int:
         assert_not_changed(changes, path)
     require(not any(path.startswith("apps/ETFDecisionShell/qml/") for path in changes), "TASK-199 must not modify production QML")
     require(not any(path.startswith("libs/ShellServices/") for path in changes), "TASK-199 must not modify ShellServices Presenter/Controller")
-    require(not any("Presenter" in path or "Controller" in path for path in changes), "TASK-199 must not modify Presenter/Controller")
+    production_presenter_controller_changes = [
+        path
+        for path in changes
+        if (
+            path.startswith("apps/ETFDecisionShell/")
+            or path.startswith("libs/ShellServices/")
+            or path.startswith("libs/ShellCore/")
+        )
+        and ("presenter" in path.lower() or "controller" in path.lower())
+    ]
+    require(
+        not production_presenter_controller_changes,
+        "TASK-199 must not modify production Presenter/Controller: "
+        + ", ".join(production_presenter_controller_changes),
+    )
     require(not any(path.startswith("migrations/") for path in changes), "TASK-199 must not modify migrations")
     require(not any(path.endswith(".sql") for path in changes), "TASK-199 must not add schema or SQL files")
     require(not any(path.startswith("libs/AccountingEngine/") for path in changes), "TASK-199 must not modify AccountingEngine")

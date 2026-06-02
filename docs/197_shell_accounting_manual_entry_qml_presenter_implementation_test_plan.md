@@ -98,3 +98,15 @@ QML / Presenter implementation.
 - [ ] Full CTest passes.
 - [ ] git diff --check passes.
 - [ ] git status is clean.
+
+## TASK-201 Authorization Gate Update
+
+TASK-201 adds a gate-only post-write readback / refresh authorization test
+plan. TASK-200 production QML, Presenter, Controller, ShellServices adapter,
+DataServiceActions, DataAccess repositories, migrations, and replay behavior
+remain unchanged.
+
+Post-write readback, refresh, replay integration, read model refresh, snapshot
+refresh, UI auto-refresh, refresh buttons, audit writes, ledger writes,
+broker SDKs, network calls, credentials, endpoints, real order placement, and
+automatic trading remain outside TASK-200 and TASK-201 implementation scope.

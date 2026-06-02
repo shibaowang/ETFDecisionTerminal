@@ -12964,6 +12964,80 @@ def main() -> int:
     require("DataAccess" not in shell_accounting_readonly_page, "ShellAccounting QML does not access DataAccess after TASK-200")
     require("brokerOrder" not in shell_accounting_readonly_page, "ShellAccounting QML has no broker order after TASK-200")
     require("automaticTrading" not in shell_accounting_readonly_page, "ShellAccounting QML has no automatic trading after TASK-200")
+
+    task201_doc_path = root / "docs" / "198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md"
+    task201_plan_path = root / "docs" / "199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md"
+    task201_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(task201_doc_path.exists(), "docs/198 exists")
+    require(task201_plan_path.exists(), "docs/199 exists")
+    require(task201_cmake_path.exists(), "TASK-201 tests CMake exists")
+    task201_doc = task201_doc_path.read_text(encoding="utf-8")
+    task201_plan = task201_plan_path.read_text(encoding="utf-8")
+    task201_cmake = task201_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md" in readme,
+        "README links docs/198",
+    )
+    require(
+        "docs/199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md" in readme,
+        "README links docs/199",
+    )
+    require(
+        "198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md" in docs_index,
+        "docs/README links docs/198",
+    )
+    require(
+        "199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/199",
+    )
+    require("TASK-201" in codex_prompt_template, "docs/12 registers TASK-201")
+    for token, message in [
+        ("authorization-only", "docs/198 states authorization-only"),
+        ("does not implement readback", "docs/198 blocks readback implementation"),
+        ("does not modify production QML", "docs/198 blocks production QML"),
+        ("ShellServices adapter / port code", "docs/198 blocks ShellServices adapter/port drift"),
+        ("DataServiceActions", "docs/198 blocks DataServiceActions drift"),
+        ("DataAccess repositories", "docs/198 blocks repository drift"),
+        ("accounting.manual_transaction.create", "docs/198 references manual transaction action"),
+        ("accounting.manual_cash_movement.create", "docs/198 references manual cash action"),
+        ("DataService Read Boundary Policy", "docs/198 defines read boundary"),
+        ("No Direct UI Data Access Policy", "docs/198 blocks direct UI data access"),
+        ("QML must not calculate accounting facts", "docs/198 blocks QML accounting calculation"),
+        ("Future audit write or ledger policy changes", "docs/198 keeps audit/ledger separate"),
+        ("Broker sandbox new capability development remains paused", "docs/198 keeps broker paused"),
+        ("no real order placement", "docs/198 blocks real orders"),
+        ("automatic trading", "docs/198 blocks automatic trading"),
+    ]:
+        require(token in task201_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/199 contains Test Matrix"),
+        ("Required Probes", "docs/199 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/199 contains Go / No-Go Checklist"),
+        ("No Production Implementation Drift", "docs/199 covers no production drift"),
+        ("No direct SQLite read/write is introduced", "docs/199 blocks direct SQLite"),
+        ("No AccountingEngine replay integration is introduced", "docs/199 blocks replay"),
+        ("No read model refresh implementation is introduced", "docs/199 blocks read model"),
+        ("No UI auto-refresh is introduced", "docs/199 blocks UI auto-refresh"),
+        ("No audit_log or ledger write is introduced", "docs/199 blocks audit/ledger"),
+        ("TASK-200 QML Presenter implementation tests pass", "docs/199 retains TASK-200"),
+        ("TASK-198 DataService write wiring implementation tests pass", "docs/199 retains TASK-198"),
+    ]:
+        require(token in task201_plan, message)
+    require(
+        "shell_accounting_manual_entry_post_write_readback_refresh_authorization" in task201_cmake,
+        "TASK-201 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate" in tests_cmake,
+        "TASK-201 test directory registered",
+    )
+    require("TASK-201 Authorization Gate Update" in task200_doc, "docs/196 mentions TASK-201")
+    require("TASK-201 Authorization Gate Update" in task200_plan, "docs/197 mentions TASK-201")
     return 0
 
 

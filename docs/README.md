@@ -782,6 +782,15 @@
   defines TASK-200 static probes for QML bindings, Presenter invokables,
   Controller / adapter boundary, no DataServiceActions or repository drift, no
   direct DB access, and retained broker regressions.
+- ShellAccounting manual entry post-write readback refresh authorization gate:
+  [198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md](198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md)
+  records TASK-201 gate-only policy for future manual entry post-write readback,
+  refresh, replay, read model refresh, or UI auto-refresh integration.
+- ShellAccounting manual entry post-write readback refresh authorization test plan:
+  [199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md](199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md)
+  defines TASK-201 static probes for no production drift, no direct SQLite or
+  DataAccess readback, no replay/read model implementation, no audit/ledger
+  write, and retained broker regressions.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

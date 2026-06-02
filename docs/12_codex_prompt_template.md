@@ -1890,6 +1890,24 @@ ShellServices, add TradeDraft or suggestion expansion, add broker SDKs, add
 network calls, add credentials or endpoints, place real orders, store real
 broker order ids, or enable automatic trading.
 
+## TASK-201 Manual Entry Post-Write Readback Refresh Authorization Gate Prompt Rule
+
+Future manual entry post-write readback / refresh work after TASK-201 must
+reference docs/198 and docs/199. TASK-201 is an authorization gate only and
+does not implement readback, refresh, AccountingEngine replay integration,
+read model refresh, snapshot refresh, UI auto-refresh, refresh buttons, audit
+write, ledger write, broker access, network calls, credentials, endpoints,
+real order placement, or automatic trading.
+
+Do not use TASK-201 as authorization to modify production QML, startup,
+Presenter, Controller, ShellServices adapter / port code, DataServiceActions,
+DataServiceActionRegistrar, DataAccess repositories, validation production
+code, migrations, schema files, AccountingEngine replay, StrategyEngine,
+MarketEngine, or broker code. Future readback must use a DataService read
+boundary or separately authorized replay/read-model boundary, and QML /
+Presenter / Controller must not directly access SQLite, DataAccess, raw SQL,
+or calculate accounting facts.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

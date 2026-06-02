@@ -12418,6 +12418,90 @@ def main() -> int:
             ctest_name in shell_accounting_manual_transaction_repository_write_cmake,
             f"TASK-192 CTest exists: {ctest_name}",
         )
+    shell_accounting_manual_cash_movement_repository_gate_doc_path = (
+        root / "docs" / "184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md"
+    )
+    shell_accounting_manual_cash_movement_repository_gate_plan_path = (
+        root / "docs" / "185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md"
+    )
+    shell_accounting_manual_cash_movement_repository_gate_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(shell_accounting_manual_cash_movement_repository_gate_doc_path.exists(), "docs/184 exists")
+    require(shell_accounting_manual_cash_movement_repository_gate_plan_path.exists(), "docs/185 exists")
+    require(shell_accounting_manual_cash_movement_repository_gate_cmake_path.exists(), "TASK-194 tests CMake exists")
+    shell_accounting_manual_cash_movement_repository_gate_doc = (
+        shell_accounting_manual_cash_movement_repository_gate_doc_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_cash_movement_repository_gate_plan = (
+        shell_accounting_manual_cash_movement_repository_gate_plan_path.read_text(encoding="utf-8")
+    )
+    shell_accounting_manual_cash_movement_repository_gate_cmake = (
+        shell_accounting_manual_cash_movement_repository_gate_cmake_path.read_text(encoding="utf-8")
+    )
+    require(
+        "docs/184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md" in readme,
+        "README links docs/184",
+    )
+    require(
+        "docs/185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md" in readme,
+        "README links docs/185",
+    )
+    require(
+        "184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md" in docs_index,
+        "docs/README links docs/184",
+    )
+    require(
+        "185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/185",
+    )
+    require("TASK-194" in codex_prompt_template, "docs/12 registers TASK-194")
+    for token, message in [
+        ("TASK-194", "docs/184 mentions TASK-194"),
+        ("authorization gate-only", "docs/184 states gate-only"),
+        ("does not implement manual cash movement repository write", "docs/184 blocks implementation"),
+        ("does not modify the TASK-192 manual transaction repository", "docs/184 protects TASK-192 repository"),
+        ("does not modify DataServiceActions.cpp / DataServiceActions.h / DataServiceActionRegistrar.cpp", "docs/184 protects DataServiceActions"),
+        ("does not write `cash_adjustment`, `trade_log`, `audit_log`", "docs/184 blocks writes"),
+        ("Future manual cash movement repository write implementation must be a separate", "docs/184 requires future TASK"),
+        ("DataService action write wiring must be a separate TASK", "docs/184 separates DataService wiring"),
+        ("DataAccess repository boundary", "docs/184 states DataAccess boundary"),
+        ("cash_adjustment.request_id", "docs/184 maps cash_adjustment request_id"),
+        ("cash_adjustment.idempotency_key", "docs/184 maps cash_adjustment idempotency"),
+        ("cash_adjustment.occurred_at_utc", "docs/184 maps cash_adjustment occurred_at"),
+        ("cash_adjustment.source_memo_sanitized", "docs/184 maps cash_adjustment memo"),
+        ("cash_adjustment.trade_log_uid", "docs/184 maps cash_adjustment trade link"),
+        ("trade_log.cash_adjustment_uid", "docs/184 maps trade_log cash_adjustment_uid"),
+        ("Deposit mapping", "docs/184 covers deposit"),
+        ("Withdrawal mapping", "docs/184 covers withdrawal"),
+        ("amount sign policy", "docs/184 covers amount sign"),
+        ("net cash impact policy", "docs/184 covers net cash impact"),
+        ("sourceMemo sanitization", "docs/184 covers memo sanitization"),
+        ("Broker sandbox new capability development remains paused", "docs/184 keeps broker paused"),
+    ]:
+        require(token in shell_accounting_manual_cash_movement_repository_gate_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/185 contains Test Matrix"),
+        ("Required Probes", "docs/185 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/185 contains Go / No-Go Checklist"),
+        ("Cash adjustment mapping includes request_id", "docs/185 covers cash adjustment mapping"),
+        ("Trade log cash fact mapping includes request_id", "docs/185 covers trade log cash fact mapping"),
+        ("Runtime SQL INSERT / UPDATE / DELETE / REPLACE is not added", "docs/185 blocks runtime DML"),
+        ("Runtime cash_adjustment write is not added", "docs/185 blocks cash adjustment write"),
+        ("Broker disabled / broker order / real broker gates pass", "docs/185 keeps broker gates"),
+    ]:
+        require(token in shell_accounting_manual_cash_movement_repository_gate_plan, message)
+    require(
+        "shell_accounting_manual_cash_movement_repository_write_authorization_gate"
+        in shell_accounting_manual_cash_movement_repository_gate_cmake,
+        "TASK-194 CTest exists",
+    )
+    require("ManualCashMovementRepository" not in dataaccess_cmake, "DataAccess CMake still has no cash movement repository")
+    require("manualTransaction" not in production_qml, "production QML still has no manual transaction UI for TASK-194")
+    require("broker SDK" in shell_accounting_manual_mvp_test_plan, "historic broker gate text remains available")
     return 0
 
 

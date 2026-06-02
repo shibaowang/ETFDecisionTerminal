@@ -711,6 +711,17 @@
   defines TASK-192 direct SQLite repository write tests for BUY / SELL,
   TASK-190 field mapping, idempotency, rollback, sanitized memo, no audit /
   cash movement write, and retained broker gates.
+- ShellAccounting manual cash movement repository write authorization gate:
+  [184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md](184_shell_accounting_manual_cash_movement_repository_write_authorization_gate.md)
+  records TASK-194 gate-only policy for future DataAccess-only manual cash
+  movement repository write implementation while keeping DataServiceActions,
+  runtime SQL, migrations, QML, replay, broker, network, credentials, real
+  order, and automatic trading unchanged.
+- ShellAccounting manual cash movement repository write authorization test plan:
+  [185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md](185_shell_accounting_manual_cash_movement_repository_write_authorization_test_plan.md)
+  defines TASK-194 static probes for cash_adjustment mapping, optional
+  trade_log cash fact mapping, movement type policy, transaction / rollback /
+  idempotency, privacy, no runtime write path, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

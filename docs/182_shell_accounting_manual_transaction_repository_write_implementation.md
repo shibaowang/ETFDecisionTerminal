@@ -144,3 +144,9 @@ AccountingEngine replay / read model integration, production UI integration,
 audit write integration, broker integration, and automatic trading require
 separate future TASK authorization. Broker sandbox new capability development
 remains paused and existing broker gates remain retained.
+
+TASK-194 adds the manual cash movement repository write implementation
+authorization gate. It does not modify this TASK-192 manual transaction
+repository behavior. Future cash movement repository implementation must remain
+a separate TASK and must coordinate with this repository without changing its
+manual BUY / SELL semantics.

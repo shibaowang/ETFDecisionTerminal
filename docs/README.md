@@ -828,6 +828,14 @@
   defines TASK-205 static probes for the adequacy review documents, formal gap
   matrix, next task recommendation, no production drift, and retained broker
   gates.
+- ShellAccounting manual entry readback mapping authorization gate:
+  [208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md](208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md)
+  records TASK-206 authorization-only policy for future DataService readback
+  mapping into `position.list`, `cash.summary`, and `portfolio.pnl.summary`.
+- ShellAccounting manual entry readback mapping authorization test plan:
+  [209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md](209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md)
+  defines TASK-206 static probes for docs registration, readback mapping policy,
+  production drift, no replay, no broker, and retained regression gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

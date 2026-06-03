@@ -3627,3 +3627,25 @@ automatic trading. See
 `docs/206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md`
 and
 `docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md`.
+
+## TASK-206 Manual Entry Readback Mapping Authorization Gate
+
+TASK-206 adds a readback mapping authorization gate for future mapping of
+manual entry facts into existing DataService read actions: `position.list`,
+`cash.summary`, and `portfolio.pnl.summary`.
+
+TASK-206 does not implement readback mapping, does not modify production code,
+does not modify QML, startup, Presenter, Controller, ShellServices adapter /
+port code, DataServiceActions, repositories, or migrations, and does not add
+runtime SQL / SQLite read/write behavior. It also does not implement
+AccountingEngine replay, write audit / ledger rows, connect broker, network,
+credentials, or endpoints, place real orders, or enable automatic trading.
+
+Future TASK-207 may implement readback mapping only if separately authorized.
+Future replay, audit, ledger, backup/export, packaging, broker sandbox, real
+broker order, and automatic trading work remain separate TASKs. First phase
+remains no real broker, no automatic trading, no real order placement, and
+broker sandbox new capability remains paused. See
+`docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md`
+and
+`docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md`.

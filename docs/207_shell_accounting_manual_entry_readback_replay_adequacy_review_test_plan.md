@@ -69,3 +69,11 @@ Go only if:
 No-Go if any production implementation change, database write, replay change,
 broker capability, network call, credential handling, endpoint configuration,
 real order placement, automatic trading behavior, or schema drift appears.
+
+TASK-206 follow-up note: the readback mapping authorization gate is now tracked
+by
+`docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md`
+and
+`docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md`.
+TASK-206 remains gate-only and does not implement readback mapping, replay,
+audit / ledger, broker, real order placement, or automatic trading.

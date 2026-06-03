@@ -3690,3 +3690,22 @@ order placement, and broker sandbox new capability remains paused. See
 `docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md`
 and
 `docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md`.
+
+## TASK-209 Manual Entry Readback Daily-Use Runtime Acceptance
+
+TASK-209 adds runtime acceptance tests for the BUY + Deposit daily-use
+baseline authorized by TASK-208. The new CTest uses a temporary SQLite
+database, applies migrations 001 and 002, writes synthetic manual BUY and
+Deposit facts through the existing DataService actions, and verifies
+`position.list`, `cash.summary`, and safe partial `portfolio.pnl.summary`
+readback.
+
+TASK-209 is tests-and-docs only. It does not modify production code, QML,
+startup, Presenter, Controller, ShellServices, DataServiceActions,
+DataServiceActionRegistrar, DataAccess repositories, migrations,
+AccountingEngine replay, StrategyEngine, MarketEngine, broker SDKs, network,
+credentials, endpoints, real order placement, real broker order ids, or
+automatic trading. See
+`docs/214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md`
+and
+`docs/215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md`.

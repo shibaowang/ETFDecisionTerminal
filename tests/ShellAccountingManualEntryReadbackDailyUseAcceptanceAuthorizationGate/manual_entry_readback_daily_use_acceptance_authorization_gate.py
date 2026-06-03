@@ -42,12 +42,16 @@ def main() -> int:
 
     doc212_path = root / "docs" / "212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md"
     doc213_path = root / "docs" / "213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md"
+    doc214_path = root / "docs" / "214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md"
+    doc215_path = root / "docs" / "215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md"
     test_dir = root / "tests" / "ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate"
     test_cmake = test_dir / "CMakeLists.txt"
     test_py = test_dir / "manual_entry_readback_daily_use_acceptance_authorization_gate.py"
 
     gate.require(doc212_path.exists(), "docs/212 exists")
     gate.require(doc213_path.exists(), "docs/213 exists")
+    gate.require(doc214_path.exists(), "docs/214 exists")
+    gate.require(doc215_path.exists(), "docs/215 exists")
     gate.require(test_cmake.exists(), "TASK-208 test CMake exists")
     gate.require(test_py.exists(), "TASK-208 test script exists")
 
@@ -138,6 +142,7 @@ def main() -> int:
         "Position and cash readback can be accepted for the BUY + Deposit baseline",
         "SELL, Withdrawal, PnL, market price, and AccountingEngine replay remain separate future work",
         "recommended next task is TASK-209",
+        "TASK-209 has now added tests-and-docs-only runtime daily-use acceptance coverage",
         "broker SDK",
         "network",
         "real order placement",
@@ -174,6 +179,7 @@ def main() -> int:
         "No broker / network / credentials / endpoint scan",
         "No real order / automatic trading scan",
         "TASK-209 runtime daily-use acceptance implementation",
+        "TASK-209 runtime daily-use acceptance tests pass",
     ]:
         gate.require_contains(doc213, token, "docs/213")
 
@@ -189,10 +195,14 @@ def main() -> int:
         "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
         "docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md",
         "docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md",
+        "docs/214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md",
+        "docs/215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/manual_entry_readback_daily_use_runtime_acceptance.cpp",
         "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/CMakeLists.txt",
@@ -227,6 +237,7 @@ def main() -> int:
     gate.require(not any(path.endswith(".sql") for path in changes), "TASK-208 must not add migration or schema files")
 
     retained_tokens = [
+        "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance",
         "ShellAccountingManualEntryReadbackMappingImplementation",
         "ShellAccountingManualEntryReadbackMappingAuthorizationGate",
         "ShellAccountingManualEntryReadbackReplayAdequacyReviewGate",

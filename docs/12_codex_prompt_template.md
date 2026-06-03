@@ -2051,6 +2051,23 @@ execution, and automatic trading remain separate TASKs. First phase remains no
 real broker, no automatic trading, no real order placement, and broker sandbox
 new capability remains paused.
 
+## TASK-209 Manual Entry Readback Daily-Use Runtime Acceptance Prompt Rule
+
+TASK-209 adds tests-and-docs-only runtime acceptance coverage for the manual
+entry BUY + Deposit daily-use baseline. Future work after TASK-209 must
+reference
+`docs/214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md`
+and
+`docs/215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md`.
+
+Do not treat TASK-209 as authorization to modify production code, production
+QML, startup, Presenter, Controller, ShellServices adapter / port code,
+DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, AccountingEngine replay, runtime implementation, audit / ledger
+writes, broker SDKs, network, credentials, endpoints, real order placement,
+real broker order ids, or automatic trading. TASK-209 acceptance tests may use
+temporary SQLite fixtures and synthetic local facts only.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

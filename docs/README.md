@@ -855,6 +855,15 @@
   defines TASK-208 static probes for docs registration, MVP ready / not-ready
   conclusion, no production drift, no replay/audit/ledger/broker behavior, and
   retained regression gates.
+- ShellAccounting manual entry readback daily-use runtime acceptance:
+  [214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md](214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md)
+  records TASK-209 runtime acceptance coverage for the BUY + Deposit manual
+  entry daily-use baseline.
+- ShellAccounting manual entry readback daily-use runtime acceptance test plan:
+  [215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md](215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md)
+  defines TASK-209 runtime probes for `position.list`, `cash.summary`, safe
+  partial `portfolio.pnl.summary`, readback no-write behavior, privacy, and
+  broker / production boundary retention.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

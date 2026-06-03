@@ -163,3 +163,12 @@ broker-disabled gates remain unaffected.
 Future SELL / Withdrawal production UI changes, replay integration, market
 price valuation, realized PnL computation, broker order placement, strategy
 execution, or automatic trading must be separately authorized.
+
+TASK-212 has now added a replay / audit / ledger / backup-export adequacy
+review gate in
+`docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md`
+and
+`docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md`.
+TASK-212 is review-gate-only and does not implement replay, audit / ledger
+writes, backup/export/restore, broker, network, credentials, endpoints, real
+order placement, or automatic trading.

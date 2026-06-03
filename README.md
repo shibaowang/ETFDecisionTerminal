@@ -3751,3 +3751,25 @@ or automatic trading. See
 `docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md`
 and
 `docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md`.
+
+## TASK-212 Manual Entry Replay Audit Ledger Adequacy Review Gate
+
+TASK-212 adds a review-gate-only adequacy review for whether manual BUY, SELL,
+Deposit, and Withdrawal facts are ready to enter future replay, audit, ledger,
+and backup/export/restore production chains. It adds docs and static CTest
+coverage only. It does not implement replay, does not write audit / ledger
+rows, does not implement backup/export/restore, and does not modify production
+code, QML, startup, Presenter, Controller, ShellServices, DataServiceActions,
+DataServiceActionRegistrar, DataAccess repositories, migrations,
+AccountingEngine, StrategyEngine, MarketEngine, broker SDKs, network,
+credentials, endpoints, real order placement, real broker order ids, or
+automatic trading.
+
+TASK-212 concludes that manual entry daily-use local MVP is ready at readback
+acceptance level, while replay, audit / ledger, and backup/export/restore need
+separate policy authorization before implementation. The recommended next task
+is TASK-213 manual entry replay policy authorization gate unless the project
+owner explicitly chooses audit or backup first. See
+`docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md`
+and
+`docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md`.

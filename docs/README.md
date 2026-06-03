@@ -883,6 +883,15 @@
   defines TASK-211 runtime probes for temporary SQLite fixtures, DataService
   manual entry writes, readback no-write behavior, response privacy, production
   boundary retention, and broker / real order gate retention.
+- ShellAccounting manual entry replay audit ledger adequacy review gate:
+  [220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md](220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md)
+  records TASK-212 review-gate-only adequacy conclusions for future replay,
+  audit, ledger, and backup/export/restore productionization.
+- ShellAccounting manual entry replay audit ledger adequacy review test plan:
+  [221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md](221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md)
+  defines TASK-212 static probes for docs registration, replay/audit/ledger
+  adequacy coverage, backup/export/restore adequacy, gap matrix, formal
+  conclusion, no production drift, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

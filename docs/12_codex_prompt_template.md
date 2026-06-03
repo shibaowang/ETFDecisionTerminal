@@ -2110,6 +2110,34 @@ local manual entry facts only. Future replay, market price valuation, realized
 PnL computation, production UI changes, broker order placement, strategy
 execution, and automatic trading remain separate TASKs.
 
+## TASK-212 Manual Entry Replay Audit Ledger Adequacy Review Gate Prompt Rule
+
+Future manual entry replay, audit, ledger, backup/export, or restore work after
+TASK-212 must reference
+`docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md`
+and
+`docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md`.
+
+TASK-212 is review-gate-only. It establishes adequacy conclusions for manual
+entry facts entering future replay / audit / ledger / backup-export chains, but
+it does not implement replay, audit / ledger writes, backup/export/restore,
+runtime SQL / SQLite read/write, read model refresh, broker SDKs, network,
+credentials, endpoints, real order placement, real broker order ids, or
+automatic trading. Do not treat TASK-212 as authorization to modify production
+code, production QML, startup, Presenter, Controller, ShellServices adapter /
+port code, DataServiceActions, DataServiceActionRegistrar, DataAccess
+repositories, migrations, AccountingEngine, StrategyEngine, or MarketEngine.
+
+TASK-212 concludes that manual entry daily-use local MVP is ready at readback
+acceptance level. Replay is not ready for implementation until replay
+input/output policy is separately authorized. Audit / ledger are not ready for
+implementation until policy is separately authorized. Backup/export/restore
+requires separate acceptance. Recommended next task: TASK-213 manual entry
+replay policy authorization gate, unless the project owner chooses audit or
+backup first with explicit rationale. First phase remains no real broker, no
+automatic trading, and no real order placement. Broker sandbox new capability
+remains paused.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

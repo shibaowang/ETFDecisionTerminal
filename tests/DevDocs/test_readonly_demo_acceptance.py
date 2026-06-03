@@ -14032,6 +14032,182 @@ def main() -> int:
         "ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance" in tests_cmake,
         "tests/CMakeLists registers TASK-211",
     )
+
+    task212_doc_path = (
+        root
+        / "docs"
+        / "220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md"
+    )
+    task212_plan_path = (
+        root
+        / "docs"
+        / "221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md"
+    )
+    task212_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate"
+        / "CMakeLists.txt"
+    )
+    task212_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate"
+        / "manual_entry_replay_audit_ledger_adequacy_review_gate.py"
+    )
+    require(task212_doc_path.exists(), "docs/220 exists")
+    require(task212_plan_path.exists(), "docs/221 exists")
+    require(task212_cmake_path.exists(), "TASK-212 tests CMake exists")
+    require(task212_test_path.exists(), "TASK-212 gate test exists")
+    task212_doc = task212_doc_path.read_text(encoding="utf-8")
+    task212_plan = task212_plan_path.read_text(encoding="utf-8")
+    task212_cmake = task212_cmake_path.read_text(encoding="utf-8")
+    task212_test = task212_test_path.read_text(encoding="utf-8")
+    require(
+        "docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md" in readme,
+        "README links docs/220",
+    )
+    require(
+        "docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md" in readme,
+        "README links docs/221",
+    )
+    require(
+        "220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md" in docs_index,
+        "docs/README links docs/220",
+    )
+    require(
+        "221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md" in docs_index,
+        "docs/README links docs/221",
+    )
+    require("TASK-212" in codex_prompt_template, "docs/12 registers TASK-212")
+    require("TASK-212 has now added" in task211_doc, "docs/218 references TASK-212")
+    require("TASK-212 follow-up note" in task211_plan, "docs/219 references TASK-212")
+    for token, message in [
+        ("TASK-212 is a replay / audit / ledger / backup-export adequacy review gate", "docs/220 documents TASK-212"),
+        ("review-gate-only", "docs/220 documents review gate scope"),
+        ("does not implement new functionality", "docs/220 blocks functionality"),
+        ("does not modify production code", "docs/220 blocks production code"),
+        ("does not modify DataServiceActions", "docs/220 blocks DataServiceActions"),
+        ("does not modify DataServiceActionRegistrar", "docs/220 blocks registrar"),
+        ("repositories", "docs/220 blocks repository drift"),
+        ("migrations", "docs/220 blocks migrations"),
+        ("does not implement AccountingEngine replay", "docs/220 blocks replay"),
+        ("does not write audit / ledger rows", "docs/220 blocks audit ledger"),
+        ("does not implement backup/export/restore", "docs/220 blocks backup export"),
+        ("does not add runtime SQL / SQLite read/write", "docs/220 blocks runtime SQL"),
+        ("Broker sandbox new capability remains paused", "docs/220 blocks broker sandbox"),
+        ("TASK-192", "docs/220 records TASK-192"),
+        ("TASK-196", "docs/220 records TASK-196"),
+        ("TASK-198", "docs/220 records TASK-198"),
+        ("TASK-200", "docs/220 records TASK-200"),
+        ("TASK-202", "docs/220 records TASK-202"),
+        ("TASK-204", "docs/220 records TASK-204"),
+        ("TASK-207", "docs/220 records TASK-207"),
+        ("TASK-209", "docs/220 records TASK-209"),
+        ("TASK-211", "docs/220 records TASK-211"),
+        ("Replay Adequacy Review", "docs/220 covers replay adequacy"),
+        ("BUY / SELL", "docs/220 covers BUY SELL"),
+        ("Deposit / Withdrawal", "docs/220 covers Deposit Withdrawal"),
+        ("fee / tax", "docs/220 covers fee tax"),
+        ("realized PnL", "docs/220 covers realized PnL"),
+        ("unrealized PnL", "docs/220 covers unrealized PnL"),
+        ("market price dependency", "docs/220 covers market price dependency"),
+        ("cost basis", "docs/220 covers cost basis"),
+        ("sell exceeds position", "docs/220 covers sell exceeds position"),
+        ("negative cash / insufficient cash", "docs/220 covers negative cash"),
+        ("replay input DTO", "docs/220 covers replay input DTO"),
+        ("replay output mapping", "docs/220 covers replay output mapping"),
+        ("Audit Adequacy Review", "docs/220 covers audit adequacy"),
+        ("requestId", "docs/220 covers requestId"),
+        ("idempotencyKey", "docs/220 covers idempotencyKey"),
+        ("actor / user confirmation", "docs/220 covers actor user confirmation"),
+        ("sanitized memo", "docs/220 covers sanitized memo"),
+        ("validation issue", "docs/220 covers validation issue"),
+        ("repository result", "docs/220 covers repository result"),
+        ("readback status", "docs/220 covers readback status"),
+        ("audit failure behavior", "docs/220 covers audit failure behavior"),
+        ("audit storage boundary", "docs/220 covers audit storage boundary"),
+        ("Ledger Adequacy Review", "docs/220 covers ledger adequacy"),
+        ("manual transaction ledger facts", "docs/220 covers transaction ledger facts"),
+        ("cash movement ledger facts", "docs/220 covers cash movement ledger facts"),
+        ("trade_log source-of-truth relationship", "docs/220 covers trade_log source"),
+        ("cash_adjustment linkage", "docs/220 covers cash_adjustment linkage"),
+        ("double-entry policy", "docs/220 covers double-entry policy"),
+        ("immutability", "docs/220 covers immutability"),
+        ("correction / void", "docs/220 covers correction void"),
+        ("reconciliation", "docs/220 covers reconciliation"),
+        ("Backup Export Restore Adequacy Review", "docs/220 covers backup export restore"),
+        ("migration 001 / 002", "docs/220 covers migrations 001 002"),
+        ("trade_log / trade_execution_group / cash_adjustment", "docs/220 covers export tables"),
+        ("restore replay safety", "docs/220 covers restore replay safety"),
+        ("no credentials / endpoint / broker payload export", "docs/220 blocks export secrets"),
+        ("Gap Matrix", "docs/220 contains gap matrix"),
+        ("Formal Conclusion And Next Task", "docs/220 contains formal conclusion"),
+        ("Manual entry daily-use local MVP is ready at readback acceptance level", "docs/220 states ready level"),
+        ("Replay is not ready for implementation until replay input/output policy is separately authorized", "docs/220 blocks replay implementation"),
+        ("Audit / ledger are not ready for implementation until policy is separately authorized", "docs/220 blocks audit ledger implementation"),
+        ("Backup/export/restore requires separate acceptance", "docs/220 blocks backup export implementation"),
+        ("Recommended next task: TASK-213 manual entry replay policy authorization gate", "docs/220 recommends TASK-213"),
+    ]:
+        require(token in task212_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/221 contains Test Matrix"),
+        ("Required Probes", "docs/221 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/221 contains Go/No-Go"),
+        ("Replay adequacy", "docs/221 covers replay adequacy"),
+        ("Audit adequacy", "docs/221 covers audit adequacy"),
+        ("Ledger adequacy", "docs/221 covers ledger adequacy"),
+        ("Backup/export/restore adequacy", "docs/221 covers backup export restore"),
+        ("Production drift", "docs/221 covers production drift"),
+        ("TASK-211", "docs/221 covers TASK-211"),
+        ("TASK-209", "docs/221 covers TASK-209"),
+        ("TASK-207", "docs/221 covers TASK-207"),
+        ("TASK-204", "docs/221 covers TASK-204"),
+        ("TASK-202", "docs/221 covers TASK-202"),
+        ("TASK-200", "docs/221 covers TASK-200"),
+        ("TASK-198", "docs/221 covers TASK-198"),
+        ("TASK-196", "docs/221 covers TASK-196"),
+        ("TASK-192", "docs/221 covers TASK-192"),
+        ("No DataServiceActions drift scan", "docs/221 protects DataServiceActions"),
+        ("No DataAccess repository drift scan", "docs/221 protects repositories"),
+        ("No migrations drift scan", "docs/221 protects migrations"),
+        ("No runtime SQL / SQLite read/write scan", "docs/221 blocks runtime SQL"),
+        ("No replay implementation scan", "docs/221 blocks replay"),
+        ("No audit / ledger write scan", "docs/221 blocks audit ledger"),
+        ("No backup/export implementation scan", "docs/221 blocks backup export"),
+        ("No broker / network / credentials / endpoint scan", "docs/221 blocks broker network"),
+        ("No real order / automatic trading scan", "docs/221 blocks real order auto"),
+    ]:
+        require(token in task212_plan, message)
+    for token, message in [
+        ("shell_accounting_manual_entry_replay_audit_ledger_adequacy_review", "TASK-212 CTest exists"),
+        ("manual_entry_replay_audit_ledger_adequacy_review_gate.py", "TASK-212 gate script registered"),
+    ]:
+        require(token in task212_cmake, message)
+    for token, message in [
+        ("changed_paths", "TASK-212 gate checks changed paths"),
+        ("allowed_changes", "TASK-212 gate has allowlist"),
+        ("libs/DataServiceApi/", "TASK-212 gate blocks DataServiceApi"),
+        ("libs/DataAccess/", "TASK-212 gate blocks DataAccess"),
+        ("migrations/", "TASK-212 gate blocks migrations"),
+        ("No backup/export implementation scan", "TASK-212 gate checks backup export"),
+        ("ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance", "TASK-212 retains TASK-211"),
+        ("ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance", "TASK-212 retains TASK-209"),
+        ("ShellAccountingManualEntryReadbackMappingImplementation", "TASK-212 retains TASK-207"),
+        ("ShellAccountingManualEntryMvpRuntimeE2eAcceptance", "TASK-212 retains TASK-204"),
+        ("ShellAccountingManualEntryPostWriteReadbackRefreshImplementation", "TASK-212 retains TASK-202"),
+        ("ShellAccountingManualEntryQmlPresenterImplementation", "TASK-212 retains TASK-200"),
+        ("ShellAccountingManualEntryDataServiceWriteWiringImplementation", "TASK-212 retains TASK-198"),
+        ("ShellAccountingManualCashMovementRepositoryDualWriteImplementation", "TASK-212 retains TASK-196"),
+        ("ShellAccountingManualTransactionRepositoryWriteImplementation", "TASK-212 retains TASK-192"),
+        ("ShellAccountingBrokerOrderImplementation", "TASK-212 retains broker gate"),
+        ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-212 retains real broker gate"),
+    ]:
+        require(token in task212_test + tests_cmake, message)
+    require(
+        "ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate" in tests_cmake,
+        "tests/CMakeLists registers TASK-212",
+    )
     return 0
 
 

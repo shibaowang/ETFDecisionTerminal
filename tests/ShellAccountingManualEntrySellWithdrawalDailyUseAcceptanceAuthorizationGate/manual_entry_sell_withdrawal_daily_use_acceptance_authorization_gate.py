@@ -1,0 +1,243 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+from pathlib import Path
+
+
+class Gate:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+    def contains(self, text: str, token: str, context: str) -> None:
+        self.require(token in text, f"{context} missing `{token}`")
+
+    def not_contains(self, text: str, token: str, context: str) -> None:
+        self.require(token not in text, f"{context} must not contain `{token}`")
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def changed_paths(root: Path) -> set[str]:
+    completed = subprocess.run(
+        ["git", "diff", "--name-only", "main"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    gate = Gate()
+
+    doc216_path = root / "docs" / "216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md"
+    doc217_path = root / "docs" / "217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md"
+    test_dir = root / "tests" / "ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate"
+    test_cmake_path = test_dir / "CMakeLists.txt"
+    test_py_path = test_dir / "manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py"
+
+    gate.require(doc216_path.exists(), "docs/216 exists")
+    gate.require(doc217_path.exists(), "docs/217 exists")
+    gate.require(test_cmake_path.exists(), "TASK-210 CMake exists")
+    gate.require(test_py_path.exists(), "TASK-210 gate script exists")
+
+    doc216 = read(doc216_path)
+    doc217 = read(doc217_path)
+    readme = read(root / "README.md")
+    docs_index = read(root / "docs" / "README.md")
+    prompt = read(root / "docs" / "12_codex_prompt_template.md")
+    tests_cmake = read(root / "tests" / "CMakeLists.txt")
+    devdocs = read(root / "tests" / "DevDocs" / "test_readonly_demo_acceptance.py")
+
+    for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
+        gate.contains(text, "TASK-210", context)
+    gate.contains(readme, "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md", "README")
+    gate.contains(readme, "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md", "README")
+    gate.contains(docs_index, "216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md", "docs/README")
+    gate.contains(docs_index, "217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md", "docs/README")
+    gate.contains(tests_cmake, "ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate", "tests/CMakeLists")
+    gate.contains(read(test_cmake_path), "shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization", "TASK-210 CTest")
+
+    for token in [
+        "TASK-210 is SELL / Withdrawal daily-use acceptance authorization gate-only",
+        "does not implement runtime acceptance",
+        "does not modify production code",
+        "production QML",
+        "startup",
+        "Presenter",
+        "Controller",
+        "ShellServices adapter / port code",
+        "DataServiceActions",
+        "repositories",
+        "migrations",
+        "AccountingEngine replay",
+        "runtime SQL / SQLite read/write behavior",
+        "audit / ledger writes",
+        "broker SDKs",
+        "network calls",
+        "credentials",
+        "endpoints",
+        "real order placement",
+        "real broker order ids",
+        "automatic trading",
+        "TASK-209 proved the BUY + Deposit daily-use runtime acceptance baseline",
+        "SELL / Withdrawal remain separate acceptance expansion",
+        "BUY fixture before SELL",
+        "SELL quantity reduction",
+        "sell exceeds position",
+        "SELL cash inflow",
+        "Fee / tax treatment policy",
+        "No fabricated realized PnL",
+        "No fabricated unrealized PnL",
+        "No replay",
+        "No silent success",
+        "No QML calculation of SELL position or cash effects",
+        "Deposit fixture before Withdrawal",
+        "Withdrawal cash outflow",
+        "Insufficient cash / negative cash policy",
+        "Currency mapping",
+        "Principal flow safe status",
+        "No fabricated PnL",
+        "No QML calculation of Withdrawal cash effects",
+        "Future TASK-211 may implement SELL / Withdrawal runtime acceptance tests",
+        "Use temporary SQLite DB and synthetic fixtures",
+        "Do not modify QML / Presenter / Controller / ShellServices",
+        "Do not modify DataServiceActions unless a blocking bug is found and separately authorized",
+        "Do not modify repositories / migrations",
+        "Do not add replay / audit / ledger / broker / real order / automatic",
+        "Broker sandbox new capability development remains paused",
+    ]:
+        gate.contains(doc216, token, "docs/216")
+
+    for token in [
+        "Test Matrix",
+        "Required Probes",
+        "Go / No-Go Checklist",
+        "docs/216 exists",
+        "docs/217 exists",
+        "Authorization-only scope",
+        "BUY + Deposit baseline",
+        "SELL boundary",
+        "Withdrawal boundary",
+        "Future TASK-211",
+        "Production code unchanged",
+        "Existing gates retained",
+        "Forbidden drift",
+        "No production code scan",
+        "No QML / startup / Presenter / Controller scan",
+        "No ShellServices adapter / port scan",
+        "No DataServiceActions scan",
+        "No repository scan",
+        "No migration / schema file scan",
+        "No runtime SQL / SQLite read/write scan",
+        "No runtime acceptance implementation scan",
+        "No AccountingEngine replay scan",
+        "No audit / ledger write scan",
+        "No broker / network / credentials / endpoint scan",
+        "No real order / automatic trading scan",
+        "TASK-209",
+        "TASK-208",
+        "TASK-207",
+        "TASK-204",
+        "TASK-202",
+        "TASK-200",
+        "TASK-198",
+        "TASK-196",
+        "TASK-192",
+    ]:
+        gate.contains(doc217, token, "docs/217")
+
+    for token, context in [
+        ("docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md", "DevDocs"),
+        ("docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md", "DevDocs"),
+        ("shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization", "DevDocs"),
+    ]:
+        gate.contains(devdocs, token, context)
+
+    changes = changed_paths(root)
+    allowed_changes = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md",
+        "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md",
+        "tests/CMakeLists.txt",
+        "tests/DevDocs/test_readonly_demo_acceptance.py",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    }
+    unexpected = sorted(path for path in changes if path not in allowed_changes)
+    gate.require(not unexpected, "TASK-210 changed unauthorized paths: " + ", ".join(unexpected))
+
+    forbidden_prefixes = [
+        "apps/",
+        "libs/ShellServices/",
+        "libs/ShellCore/",
+        "libs/DataServiceApi/",
+        "libs/DataAccess/",
+        "libs/AccountingEngine/",
+        "libs/StrategyEngine/",
+        "libs/MarketEngine/",
+        "migrations/",
+    ]
+    for prefix in forbidden_prefixes:
+        gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-210 must not change {prefix}")
+    gate.require(not any(path.endswith(".sql") for path in changes), "TASK-210 must not add migration or schema files")
+    gate.require(not any("RuntimeAcceptance" in path and "SellWithdrawal" in path for path in changes),
+                 "TASK-210 must not add SELL / Withdrawal runtime acceptance implementation")
+
+    retained_tokens = [
+        "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance",
+        "ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate",
+        "ShellAccountingManualEntryReadbackMappingImplementation",
+        "ShellAccountingManualEntryReadbackMappingAuthorizationGate",
+        "ShellAccountingManualEntryMvpRuntimeE2eAcceptance",
+        "ShellAccountingManualEntryPostWriteReadbackRefreshImplementation",
+        "ShellAccountingManualEntryQmlPresenterImplementation",
+        "ShellAccountingManualEntryDataServiceWriteWiringImplementation",
+        "ShellAccountingManualCashMovementRepositoryDualWriteImplementation",
+        "ShellAccountingManualTransactionRepositoryWriteImplementation",
+        "ShellAccountingBrokerAdapterDisabledWiring",
+        "ShellAccountingBrokerOrderImplementation",
+        "ShellAccountingRealBrokerOrderAuthorizationGate",
+        "ShellAccountingRealBrokerOrderImplementationGate",
+    ]
+    for token in retained_tokens:
+        gate.contains(tests_cmake, token, "retained regression gate")
+
+    production_qml = "\n".join(
+        path.read_text(encoding="utf-8", errors="ignore")
+        for path in (root / "apps" / "ETFDecisionShell" / "qml").rglob("*.qml")
+    )
+    for token in ["sellWithdrawalDailyUseAcceptance", "TASK-210", "AccountingEngineReplay", "realOrderId"]:
+        gate.not_contains(production_qml, token, "production QML")
+
+    gate.require(gate.checks >= 38, "TASK-210 gate must execute at least 38 checks")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

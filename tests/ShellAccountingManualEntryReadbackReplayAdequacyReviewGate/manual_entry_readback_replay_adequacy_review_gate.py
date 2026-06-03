@@ -177,6 +177,8 @@ def main() -> int:
         "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
         "docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md",
         "docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md",
+        "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md",
+        "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md",
         "libs/DataServiceApi/src/DataServiceActions.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
@@ -194,6 +196,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)

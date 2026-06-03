@@ -3729,3 +3729,25 @@ separately authorized. See
 `docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md`
 and
 `docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md`.
+
+## TASK-211 Manual Entry SELL Withdrawal Daily-Use Runtime Acceptance
+
+TASK-211 adds tests-and-docs-only runtime acceptance coverage for manual entry
+SELL / Withdrawal daily-use scenarios authorized by TASK-210. The new CTest
+uses a temporary SQLite database, applies migrations 001 and 002, writes
+synthetic BUY, SELL, Deposit, and Withdrawal facts through existing DataService
+actions, and verifies `position.list`, `cash.summary`, and safe partial
+`portfolio.pnl.summary` readback.
+
+TASK-211 verifies SELL quantity reduction, SELL cash inflow,
+sell-exceeds-position safe behavior, Withdrawal cash outflow, insufficient-cash
+/ negative-cash safe behavior, no fabricated PnL, no replay, no readback
+writes, and no broker / real order / automatic trading behavior. It does not
+modify production code, QML, startup, Presenter, Controller, ShellServices,
+DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, AccountingEngine replay, StrategyEngine, MarketEngine, broker SDKs,
+network, credentials, endpoints, real order placement, real broker order ids,
+or automatic trading. See
+`docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md`
+and
+`docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md`.

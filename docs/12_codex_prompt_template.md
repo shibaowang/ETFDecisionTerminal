@@ -2090,6 +2090,26 @@ writes, broker SDKs, network, credentials, endpoints, real order placement,
 real broker order ids, or automatic trading. Future TASK-211 may implement
 SELL / Withdrawal runtime acceptance tests if separately authorized.
 
+## TASK-211 Manual Entry SELL Withdrawal Daily-Use Runtime Acceptance Prompt Rule
+
+TASK-211 adds tests-and-docs-only runtime acceptance coverage for the manual
+entry SELL / Withdrawal daily-use expansion. Future work after TASK-211 must
+reference
+`docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md`
+and
+`docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md`.
+
+Do not treat TASK-211 as authorization to modify production code, production
+QML, startup, Presenter, Controller, ShellServices adapter / port code,
+DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, AccountingEngine replay, production runtime implementation, audit /
+ledger writes, broker SDKs, network, credentials, endpoints, real order
+placement, real broker order ids, or automatic trading. TASK-211 acceptance
+tests may use temporary SQLite fixtures, migrations 001 / 002, and synthetic
+local manual entry facts only. Future replay, market price valuation, realized
+PnL computation, production UI changes, broker order placement, strategy
+execution, and automatic trading remain separate TASKs.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

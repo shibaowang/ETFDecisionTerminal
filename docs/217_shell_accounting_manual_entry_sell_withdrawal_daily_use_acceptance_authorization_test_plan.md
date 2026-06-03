@@ -3,9 +3,10 @@
 ## Document Purpose
 
 TASK-210 defines static documentation and boundary probes for future SELL /
-Withdrawal daily-use acceptance expansion. The tests do not implement runtime
-acceptance, write a database, trigger replay, call broker code, or depend on
-real data.
+Withdrawal daily-use acceptance expansion. TASK-211 has now added
+tests-and-docs-only runtime acceptance coverage for that expansion. The TASK-210
+gate still does not implement production runtime behavior, trigger replay, call
+broker code, or depend on real data.
 
 ## Test Matrix
 
@@ -18,9 +19,9 @@ real data.
 | BUY + Deposit baseline | Verify docs/216 records that TASK-209 proved the BUY + Deposit runtime acceptance baseline. |
 | SELL boundary | Verify docs/216 covers BUY fixture before SELL, SELL quantity reduction, sell exceeds position safe issue, SELL cash inflow, fee / tax treatment policy, no fabricated realized PnL, no fabricated unrealized PnL, no replay, no silent success, and no QML calculation. |
 | Withdrawal boundary | Verify docs/216 covers Deposit fixture before Withdrawal, Withdrawal cash outflow, insufficient cash / negative cash policy, currency mapping, principal flow safe status, no fabricated PnL, no replay, no silent success, and no QML calculation. |
-| Future TASK-211 | Verify docs/216 recommends TASK-211 runtime acceptance tests only and keeps production code, QML, DataServiceActions, repositories, migrations, replay, audit / ledger, broker, real order, and automatic trading out of scope. |
+| TASK-211 runtime acceptance | Verify docs/216 records that TASK-211 added runtime acceptance tests only and keeps production code, QML, DataServiceActions, repositories, migrations, replay, audit / ledger, broker, real order, and automatic trading out of scope. |
 | Production code unchanged | Verify TASK-210 changed paths exclude production code. |
-| Existing gates retained | Verify TASK-209, TASK-208, TASK-207, TASK-204, TASK-202, TASK-200, TASK-198, TASK-196, TASK-192, broker, and real broker gates remain registered. |
+| Existing gates retained | Verify TASK-211, TASK-209, TASK-208, TASK-207, TASK-204, TASK-202, TASK-200, TASK-198, TASK-196, TASK-192, broker, and real broker gates remain registered. |
 | Forbidden drift | Verify no runtime SQL / SQLite read/write, runtime acceptance implementation, read model refresh, replay, audit / ledger, broker, network, credentials, endpoint, real order, or automatic trading behavior is added. |
 
 ## Required Probes
@@ -35,7 +36,7 @@ real data.
 - No repository scan.
 - No migration / schema file scan.
 - No runtime SQL / SQLite read/write scan.
-- No runtime acceptance implementation scan.
+- No production runtime implementation scan.
 - No readback implementation scan.
 - No AccountingEngine replay scan.
 - No audit / ledger write scan.
@@ -52,16 +53,18 @@ Go only if:
 - docs/216 contains the TASK-209 BUY + Deposit baseline.
 - docs/216 contains SELL daily-use acceptance boundaries.
 - docs/216 contains Withdrawal daily-use acceptance boundaries.
-- docs/216 recommends TASK-211 runtime acceptance tests only.
+- docs/216 records TASK-211 runtime acceptance tests only.
 - production code, QML, startup, Presenter, Controller, ShellServices,
   DataServiceActions, repositories, and migrations are unchanged.
-- no SELL / Withdrawal runtime acceptance implementation, runtime SQL / SQLite
-  read/write, read model refresh, replay, audit / ledger, broker, network,
-  credentials, endpoint, real order, or automatic trading behavior is added.
-- existing TASK-209, TASK-208, TASK-207, TASK-204, TASK-202, TASK-200,
+- no SELL / Withdrawal production runtime implementation, production SQL /
+  SQLite read/write, read model refresh, replay, audit / ledger, broker,
+  network, credentials, endpoint, real order, or automatic trading behavior is
+  added.
+- existing TASK-211, TASK-209, TASK-208, TASK-207, TASK-204, TASK-202, TASK-200,
   TASK-198, TASK-196, TASK-192, broker, and real broker gates remain registered.
 
-No-Go if TASK-210 modifies production code, adds runtime implementation,
-writes a database, weakens broker / real broker gates, fabricates PnL, connects
+No-Go if TASK-210 modifies production code, adds production runtime
+implementation, writes a database outside the authorized TASK-211 synthetic
+test fixture, weakens broker / real broker gates, fabricates PnL, connects
 network or broker capability, places a real order, or enables automatic
 trading.

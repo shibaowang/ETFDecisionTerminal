@@ -132,7 +132,7 @@ def main() -> int:
         "BUY + Deposit baseline",
         "SELL boundary",
         "Withdrawal boundary",
-        "Future TASK-211",
+        "TASK-211 runtime acceptance",
         "Production code unchanged",
         "Existing gates retained",
         "Forbidden drift",
@@ -143,7 +143,7 @@ def main() -> int:
         "No repository scan",
         "No migration / schema file scan",
         "No runtime SQL / SQLite read/write scan",
-        "No runtime acceptance implementation scan",
+        "No production runtime implementation scan",
         "No AccountingEngine replay scan",
         "No audit / ledger write scan",
         "No broker / network / credentials / endpoint scan",
@@ -174,6 +174,8 @@ def main() -> int:
         "docs/12_codex_prompt_template.md",
         "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md",
         "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md",
+        "docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md",
+        "docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
@@ -188,6 +190,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/manual_entry_sell_withdrawal_daily_use_runtime_acceptance.cpp",
     }
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-210 changed unauthorized paths: " + ", ".join(unexpected))
@@ -206,11 +210,16 @@ def main() -> int:
     for prefix in forbidden_prefixes:
         gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-210 must not change {prefix}")
     gate.require(not any(path.endswith(".sql") for path in changes), "TASK-210 must not add migration or schema files")
-    gate.require(not any("RuntimeAcceptance" in path and "SellWithdrawal" in path for path in changes),
-                 "TASK-210 must not add SELL / Withdrawal runtime acceptance implementation")
+    for path in changes:
+        if "RuntimeAcceptance" in path and "SellWithdrawal" in path:
+            gate.require(
+                path.startswith("tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/"),
+                "TASK-210 only allows the TASK-211 SELL / Withdrawal runtime acceptance test path",
+            )
 
     retained_tokens = [
         "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance",
+        "ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance",
         "ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate",
         "ShellAccountingManualEntryReadbackMappingImplementation",
         "ShellAccountingManualEntryReadbackMappingAuthorizationGate",

@@ -334,13 +334,35 @@ def main() -> int:
     ]:
         gate.contains(doc225, token, "docs/225")
 
+    authorized_task217_fixture_scaffold_paths = {
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
+    }
+
+    def is_authorized_task217_fixture_scaffold_path(path: str) -> bool:
+        return path in authorized_task217_fixture_scaffold_paths
+
     allowed_changes = {
         "README.md",
         "docs/README.md",
         "docs/12_codex_prompt_template.md",
         "docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md",
         "docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md",
+        "docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md",
+        "docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md",
         "tests/CMakeLists.txt",
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
         "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
@@ -360,6 +382,9 @@ def main() -> int:
         "docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
@@ -383,8 +408,22 @@ def main() -> int:
     for prefix in forbidden_prefixes:
         gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-214 must not change {prefix}")
     gate.require(not any(path.endswith(".sql") for path in changes), "TASK-214 must not add migration or schema files")
-    gate.require(not any(path.endswith(".json") for path in changes), "TASK-214 must not add replay fixture JSON files")
-    gate.require(not any("fixture" in path.lower() and path.endswith((".json", ".db", ".sqlite")) for path in changes), "TASK-214 must not add fixture data files")
+    gate.require(
+        not any(
+            path.endswith(".json") and not is_authorized_task217_fixture_scaffold_path(path)
+            for path in changes
+        ),
+        "TASK-214 must not add replay fixture JSON files",
+    )
+    gate.require(
+        not any(
+            "fixture" in path.lower()
+            and path.endswith((".json", ".db", ".sqlite"))
+            and not is_authorized_task217_fixture_scaffold_path(path)
+            for path in changes
+        ),
+        "TASK-214 must not add fixture data files",
+    )
 
     production_diff = added_lines(diff_text(root, "apps", "libs", "migrations"))
     for token in [

@@ -2216,6 +2216,24 @@ changes, or migration changes.
 
 Recommended next task: TASK-217 manual entry replay fixture files scaffold.
 
+## TASK-217 Manual Entry Replay Fixture Files Scaffold Prompt Rule
+
+Future manual entry replay fixture validator or replay implementation work must
+reference
+`docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md` and
+`docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md`.
+
+TASK-217 creates test-only replay fixture scaffold files only. TASK-217 does
+not authorize replay implementation, parser / validator / loader / reader
+implementation, AccountingEngine replay calls, runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, backup/export/restore, broker /
+network / credentials / endpoint / real order / automatic trading, production
+code changes, production QML changes, DataServiceActions changes, repository
+changes, or migration changes.
+
+Recommended next task: TASK-218 manual entry replay fixture scaffold static
+validator authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

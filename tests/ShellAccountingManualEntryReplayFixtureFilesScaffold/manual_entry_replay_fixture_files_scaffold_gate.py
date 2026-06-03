@@ -1,0 +1,522 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import subprocess
+from pathlib import Path
+from typing import Any
+
+
+class Gate:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+    def contains(self, text: str, token: str, context: str) -> None:
+        normalized_text = " ".join(text.split())
+        normalized_token = " ".join(token.split())
+        self.require(
+            token in text or normalized_token in normalized_text,
+            f"{context} missing `{token}`",
+        )
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def load_json(path: Path) -> Any:
+    return json.loads(read(path))
+
+
+def git_lines(root: Path, *args: str) -> set[str]:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def git_text(root: Path, *args: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout
+
+
+def changed_paths(root: Path) -> set[str]:
+    changed = git_lines(root, "diff", "--name-only", "main")
+    staged = git_lines(root, "diff", "--cached", "--name-only")
+    untracked = git_lines(root, "ls-files", "--others", "--exclude-standard")
+    return changed | staged | untracked
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    gate = Gate()
+
+    doc230_path = root / "docs" / "230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md"
+    doc231_path = root / "docs" / "231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md"
+    fixture_dir = root / "tests" / "fixtures" / "manual_entry_replay"
+    index_path = fixture_dir / "fixtures_index.json"
+    test_dir = root / "tests" / "ShellAccountingManualEntryReplayFixtureFilesScaffold"
+    test_cmake_path = test_dir / "CMakeLists.txt"
+    test_py_path = test_dir / "manual_entry_replay_fixture_files_scaffold_gate.py"
+
+    expected_files = {
+        "MRF001": "MRF001_empty_manual_facts.json",
+        "MRF002": "MRF002_single_buy.json",
+        "MRF003": "MRF003_buy_deposit_baseline.json",
+        "MRF004": "MRF004_buy_sell_partial_reduction.json",
+        "MRF005": "MRF005_deposit_withdrawal_baseline.json",
+        "MRF006": "MRF006_daily_use_combined_baseline.json",
+    }
+
+    gate.require(doc230_path.exists(), "docs/230 exists")
+    gate.require(doc231_path.exists(), "docs/231 exists")
+    gate.require(fixture_dir.exists(), "fixture directory exists")
+    gate.require(index_path.exists(), "fixtures_index exists")
+    gate.require(test_cmake_path.exists(), "TASK-217 CMake exists")
+    gate.require(test_py_path.exists(), "TASK-217 gate script exists")
+
+    for file_name in expected_files.values():
+        gate.require((fixture_dir / file_name).exists(), f"fixture exists: {file_name}")
+
+    doc230 = read(doc230_path)
+    doc231 = read(doc231_path)
+    readme = read(root / "README.md")
+    docs_index = read(root / "docs" / "README.md")
+    prompt = read(root / "docs" / "12_codex_prompt_template.md")
+    tests_cmake = read(root / "tests" / "CMakeLists.txt")
+    test_cmake = read(test_cmake_path)
+
+    for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
+        gate.contains(text, "TASK-217", context)
+        gate.contains(text, "230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md", context)
+        gate.contains(text, "231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md", context)
+
+    gate.contains(tests_cmake, "ShellAccountingManualEntryReplayFixtureFilesScaffold", "tests/CMakeLists")
+    gate.contains(test_cmake, "shell_accounting_manual_entry_replay_fixture_files_scaffold", "TASK-217 CTest")
+
+    for token in [
+        "# ShellAccounting Manual Entry Replay Fixture Files Scaffold",
+        "TASK-217 creates test-only replay fixture scaffold files.",
+        "The files are only for future test design.",
+        "TASK-217 does not implement replay.",
+        "TASK-217 does not create parser / validator code.",
+        "TASK-217 does not call AccountingEngine replay.",
+        "TASK-217 does not modify production code.",
+        "TASK-217 does not modify DataServiceActions.",
+        "TASK-217 does not modify repositories.",
+        "TASK-217 does not modify migrations.",
+        "TASK-217 does not modify QML / startup / Presenter / Controller / ShellServices.",
+        "TASK-217 does not add runtime SQL / SQLite read/write.",
+        "TASK-217 does not write audit / ledger / snapshot rows.",
+        "TASK-217 does not connect broker / network / credentials / endpoint.",
+        "TASK-217 does not place real orders.",
+        "TASK-217 does not enable automatic trading.",
+        "Broker sandbox new capability remains paused.",
+        "## Scaffold Files Created",
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
+        "scaffold-only",
+        "runtimeUse=false",
+        "productionUse=false",
+        "replayExecuted=false",
+        "synthetic-only",
+        "## Scaffold Index Contract",
+        "manual-entry-replay-fixtures.scaffold.v1",
+        "manual_entry_replay_scaffold",
+        "generatedByTask = TASK-217",
+        "expectedStatus",
+        "SCAFFOLD_ONLY",
+        "privacyStatus",
+        "SYNTHETIC_ONLY",
+        "## Scaffold Fixture Contract",
+        "manual-entry-replay-fixture.scaffold.v1",
+        "sourceFacts",
+        "expectedOutputs",
+        "expectedIssues",
+        "privacyExpectations",
+        "metadata",
+        "## Fixture Case Summary",
+        "MRF001",
+        "MRF002",
+        "MRF003",
+        "MRF004",
+        "MRF005",
+        "MRF006",
+        "Empty manual facts",
+        "Single BUY",
+        "BUY + Deposit",
+        "BUY + SELL partial reduction",
+        "Deposit + Withdrawal",
+        "BUY + SELL + Deposit + Withdrawal",
+        "UNAVAILABLE_EXPECTED",
+        "TODO_PLACEHOLDER",
+        "## Privacy And Synthetic Data Guarantee",
+        "SYNTHETIC_*",
+        "SANITIZED_MEMO",
+        "raw SQL",
+        "raw UI payload",
+        "raw DataService payload",
+        "full trade_log payload",
+        "full cash_adjustment payload",
+        "broker payload",
+        "endpoint values",
+        "credentials",
+        "real broker order ids",
+        "real order ids",
+        "## Runtime Isolation",
+        "TASK-217 does not add parser, validator, loader, fixture reader, or replay runner code.",
+        "No production code reads the fixture directory.",
+        "## Test-Only Boundary",
+        "static CTest gate",
+        "does not run replay",
+        "read SQLite",
+        "write SQLite",
+        "write audit",
+        "write ledger",
+        "write snapshot",
+        "## Out-of-Scope Boundaries",
+        "replay implementation",
+        "parser / validator / loader / fixture reader implementation",
+        "AccountingEngine replay calls",
+        "runtime SQL / SQLite read/write",
+        "production code changes",
+        "DataServiceActions or DataServiceActionRegistrar changes",
+        "repository changes",
+        "migration changes",
+        "audit / ledger writes",
+        "snapshot writes",
+        "backup/export/restore implementation",
+        "real order placement",
+        "automatic trading",
+        "## Formal Conclusion And Next Task",
+        "TASK-217 creates test-only replay fixture scaffold files.",
+        "TASK-217 does not implement replay.",
+        "TASK-217 does not create parser or validator.",
+        "TASK-217 does not call AccountingEngine replay.",
+        "TASK-217 does not authorize runtime SQL / SQLite read/write.",
+        "TASK-217 does not modify production code.",
+        "TASK-217 does not authorize audit / ledger / snapshot writes.",
+        "TASK-217 does not authorize broker, network, credentials, endpoint, real order placement, or automatic trading.",
+        "Recommended next task: TASK-218 manual entry replay fixture scaffold static validator authorization gate.",
+    ]:
+        gate.contains(doc230, token, "docs/230")
+
+    for token in [
+        "# ShellAccounting Manual Entry Replay Fixture Files Scaffold Test Plan",
+        "## Document Purpose",
+        "## Test Matrix",
+        "docs/230 exists",
+        "docs/231 exists",
+        "Fixture directory exists",
+        "fixtures_index exists",
+        "MRF001-MRF006 exist",
+        "JSON parse checks",
+        "Fixture id uniqueness",
+        "Index references all fixture files",
+        "scaffoldOnly flags",
+        "runtimeUse false",
+        "productionUse false",
+        "replayExecuted false",
+        "synthetic-only privacy flags",
+        "Forbidden token scan",
+        "No seed DB / WAL / SHM",
+        "No parser / validator",
+        "No production drift",
+        "TASK-216 regression",
+        "TASK-215 regression",
+        "TASK-214 regression",
+        "TASK-213 regression",
+        "TASK-212 regression",
+        "Broker / real broker gates",
+        "transport_local_socket_echo 50-repeat regression",
+        "## Required Probes",
+        "Static source scan",
+        "Documentation token scan",
+        "Changed-path allowlist scan",
+        "Untracked-file detection scan",
+        "Fixture directory presence scan",
+        "Fixture index presence scan",
+        "MRF001-MRF006 presence scan",
+        "JSON parse scan",
+        "Fixture id uniqueness scan",
+        "Index-to-file reference scan",
+        "Scaffold-only flag scan",
+        "Runtime-use false scan",
+        "Production-use false scan",
+        "Replay-executed false scan",
+        "Synthetic-only privacy scan",
+        "Forbidden fixture token scan",
+        "No seed DB / SQLite / WAL / SHM scan",
+        "No parser / validator implementation scan",
+        "No loader / fixture reader / replay runner implementation scan",
+        "No production code changed scan",
+        "No DataServiceActions drift scan",
+        "No DataServiceActionRegistrar drift scan",
+        "No DataAccess repository drift scan",
+        "No migrations drift scan",
+        "No runtime SQL / SQLite read/write scan",
+        "No AccountingEngine replay implementation scan",
+        "No AccountingEngine replay call scan",
+        "No audit / ledger write scan",
+        "No snapshot write scan",
+        "No backup/export/restore implementation scan",
+        "No broker / network / credentials / endpoint scan",
+        "No real order / automatic trading scan",
+        "TASK-216 / TASK-215 / TASK-214 / TASK-213 / TASK-212 regression probes",
+        "Broker and real broker gate probes",
+        "transport_local_socket_echo 50-repeat regression probe",
+        "## Go / No-Go Checklist",
+        "TASK-217 CTest is registered",
+        "`tests/fixtures/manual_entry_replay/` exists",
+        "`fixtures_index.json` exists and parses as JSON",
+        "MRF001 through MRF006 exist and parse as JSON",
+        "Fixture ids are unique",
+        "The index references every fixture by exact file name",
+        "The index and every fixture are scaffold-only",
+        "runtimeUse=false",
+        "productionUse=false",
+        "replayExecuted=false",
+        "No DB, SQLite, WAL, SHM, seed data, or runtime fixture data files are added",
+        "No parser, validator, loader, fixture reader, or replay runner is added",
+        "TASK-216 / TASK-215 / TASK-214 / TASK-213 / TASK-212 gates remain present",
+        "Fixture JSON cannot be parsed",
+        "Fixture ids are duplicated",
+        "AccountingEngine replay call appears",
+        "Runtime SQL / SQLite read/write appears",
+        "DataServiceActions runtime behavior changes",
+        "Repository / migration changes appear",
+        "Audit / ledger write appears",
+        "Snapshot write appears",
+        "Backup/export/restore implementation appears",
+        "Real order placement or broker order id appears",
+        "Automatic trading appears",
+    ]:
+        gate.contains(doc231, token, "docs/231")
+
+    allowed_changes = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md",
+        "docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md",
+        "tests/CMakeLists.txt",
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    }
+    changes = changed_paths(root)
+    unexpected = sorted(path for path in changes if path not in allowed_changes)
+    gate.require(not unexpected, "TASK-217 changed unauthorized paths: " + ", ".join(unexpected))
+    gate.require(changes == allowed_changes, "TASK-217 changed paths must match the exact scaffold allowlist")
+
+    forbidden_prefixes = [
+        "apps/",
+        "libs/ShellServices/",
+        "libs/ShellCore/",
+        "libs/DataServiceApi/",
+        "libs/DataServiceClient/",
+        "libs/DataAccess/",
+        "libs/AccountingEngine/",
+        "libs/StrategyEngine/",
+        "libs/MarketEngine/",
+        "libs/Transport/",
+        "libs/ServiceRuntime/",
+        "libs/ServiceHost/",
+        "migrations/",
+    ]
+    for prefix in forbidden_prefixes:
+        gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-217 must not change {prefix}")
+
+    production_diff = git_text(root, "diff", "main", "--", "apps", "libs", "migrations")
+    gate.require(production_diff == "", "TASK-217 must not change production apps/libs/migrations")
+
+    tests_fixture_files = sorted(path.name for path in fixture_dir.glob("*"))
+    expected_dir_files = sorted(["fixtures_index.json", *expected_files.values()])
+    gate.require(tests_fixture_files == expected_dir_files, "fixture directory contains only the expected scaffold files")
+
+    index = load_json(index_path)
+    gate.require(index["schemaVersion"] == "manual-entry-replay-fixtures.scaffold.v1", "index schemaVersion")
+    gate.require(index["fixtureSet"] == "manual_entry_replay_scaffold", "index fixtureSet")
+    gate.require(index["generatedByTask"] == "TASK-217", "index generatedByTask")
+    gate.require(index["runtimeUse"] is False, "index runtimeUse false")
+    gate.require(index["productionUse"] is False, "index productionUse false")
+    gate.require(index["replayExecuted"] is False, "index replayExecuted false")
+    gate.require(index["containsSyntheticDataOnly"] is True, "index containsSyntheticDataOnly true")
+    gate.require(isinstance(index["fixtures"], list), "index fixtures list")
+    gate.require(len(index["fixtures"]) == 6, "index has six fixtures")
+
+    ids = [entry["fixtureId"] for entry in index["fixtures"]]
+    gate.require(len(set(ids)) == len(ids), "fixture ids are unique")
+    gate.require(set(ids) == set(expected_files), "fixture ids match expected MRF001-MRF006")
+
+    for entry in index["fixtures"]:
+        fixture_id = entry["fixtureId"]
+        gate.require(entry["file"] == expected_files[fixture_id], f"index file matches {fixture_id}")
+        gate.require(entry["expectedStatus"] == "SCAFFOLD_ONLY", f"index expectedStatus {fixture_id}")
+        gate.require(entry["blockingExpected"] is False, f"index blockingExpected {fixture_id}")
+        gate.require(entry["privacyStatus"] == "SYNTHETIC_ONLY", f"index privacyStatus {fixture_id}")
+        for field in ["title", "category"]:
+            gate.require(isinstance(entry[field], str) and entry[field], f"index {field} {fixture_id}")
+
+    required_fixture_fields = {
+        "schemaVersion",
+        "fixtureId",
+        "title",
+        "purpose",
+        "category",
+        "scaffoldOnly",
+        "runtimeUse",
+        "productionUse",
+        "replayExecuted",
+        "containsSyntheticDataOnly",
+        "sourceFacts",
+        "expectedOutputs",
+        "expectedIssues",
+        "blockingExpected",
+        "privacyExpectations",
+        "metadata",
+    }
+    forbidden_fixture_tokens = [
+        "raw sql",
+        "raw payload",
+        "credential",
+        "endpoint",
+        "broker payload",
+        "brokerpayload",
+        "real order",
+        "real broker",
+        "account number",
+        "secret",
+        "exception stack",
+        "stack trace",
+        "sqlite",
+        "insert ",
+        "update ",
+        "delete ",
+        "replace ",
+    ]
+
+    for fixture_id, file_name in expected_files.items():
+        path = fixture_dir / file_name
+        raw_text = read(path)
+        data = load_json(path)
+        gate.require(set(data) == required_fixture_fields, f"{fixture_id} top-level fields")
+        gate.require(data["schemaVersion"] == "manual-entry-replay-fixture.scaffold.v1", f"{fixture_id} schemaVersion")
+        gate.require(data["fixtureId"] == fixture_id, f"{fixture_id} fixtureId")
+        gate.require(isinstance(data["title"], str) and data["title"], f"{fixture_id} title")
+        gate.require(isinstance(data["purpose"], str) and data["purpose"], f"{fixture_id} purpose")
+        gate.require(isinstance(data["category"], str) and data["category"], f"{fixture_id} category")
+        gate.require(data["scaffoldOnly"] is True, f"{fixture_id} scaffoldOnly true")
+        gate.require(data["runtimeUse"] is False, f"{fixture_id} runtimeUse false")
+        gate.require(data["productionUse"] is False, f"{fixture_id} productionUse false")
+        gate.require(data["replayExecuted"] is False, f"{fixture_id} replayExecuted false")
+        gate.require(data["containsSyntheticDataOnly"] is True, f"{fixture_id} containsSyntheticDataOnly true")
+        gate.require(isinstance(data["sourceFacts"], dict), f"{fixture_id} sourceFacts dict")
+        gate.require(isinstance(data["expectedOutputs"], dict), f"{fixture_id} expectedOutputs dict")
+        gate.require(isinstance(data["expectedIssues"], list), f"{fixture_id} expectedIssues list")
+        gate.require(data["blockingExpected"] is False, f"{fixture_id} blockingExpected false")
+        gate.require("SYNTHETIC_ONLY" in data["privacyExpectations"], f"{fixture_id} synthetic privacy")
+        gate.require(data["metadata"]["generatedByTask"] == "TASK-217", f"{fixture_id} metadata generatedByTask")
+        gate.require("SYNTHETIC_" in raw_text, f"{fixture_id} includes synthetic placeholder")
+        gate.require("SANITIZED_MEMO" in raw_text, f"{fixture_id} includes sanitized memo marker")
+        gate.require("TODO_PLACEHOLDER" in raw_text or "UNAVAILABLE_EXPECTED" in raw_text, f"{fixture_id} includes placeholder expected marker")
+        lowered = raw_text.lower()
+        for token in forbidden_fixture_tokens:
+            gate.require(token not in lowered, f"{fixture_id} fixture must not contain `{token}`")
+
+    for pattern in ["*.db", "*.sqlite", "*.sqlite3", "*.wal", "*.shm", "*.sql"]:
+        gate.require(not list(fixture_dir.glob(pattern)), f"fixture dir has no {pattern} files")
+
+    for path in changes:
+        lowered = path.lower()
+        if path.startswith("docs/"):
+            continue
+        gate.require("parser" not in lowered, f"TASK-217 must not add parser path: {path}")
+        gate.require("validator" not in lowered, f"TASK-217 must not add validator path: {path}")
+        gate.require("loader" not in lowered, f"TASK-217 must not add loader path: {path}")
+        gate.require("reader" not in lowered, f"TASK-217 must not add reader path: {path}")
+
+    retained_paths = [
+        "docs/228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md",
+        "docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/CMakeLists.txt",
+        "docs/226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md",
+        "docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/CMakeLists.txt",
+        "docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md",
+        "docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/CMakeLists.txt",
+        "docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md",
+        "docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
+        "docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md",
+        "docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryMvpRuntimeE2eAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/CMakeLists.txt",
+        "tests/ShellAccountingBrokerAdapterDisabledWiring/CMakeLists.txt",
+        "tests/ShellAccountingBrokerOrderImplementation/CMakeLists.txt",
+        "tests/ShellAccountingRealBrokerOrderAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingRealBrokerOrderImplementationGate/CMakeLists.txt",
+        "tests/Transport/CMakeLists.txt",
+    ]
+    for path in retained_paths:
+        gate.require((root / path).exists(), f"retained path exists: {path}")
+    gate.contains(read(root / "tests" / "Transport" / "CMakeLists.txt"), "transport_local_socket_echo", "transport CTest")
+
+    gate.require(gate.checks >= 120, "TASK-217 gate must execute at least 120 checks")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

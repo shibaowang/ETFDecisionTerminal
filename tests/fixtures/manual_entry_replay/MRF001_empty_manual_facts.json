@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "manual-entry-replay-fixture.scaffold.v1",
+  "fixtureId": "MRF001",
+  "title": "Empty manual facts",
+  "purpose": "Scaffold an empty manual fact set for future safe empty output replay design.",
+  "category": "empty_manual_facts",
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "sourceFacts": {
+    "manualTransactions": [],
+    "manualCashMovements": []
+  },
+  "expectedOutputs": {
+    "positions": "UNAVAILABLE_EXPECTED",
+    "cashSummary": "UNAVAILABLE_EXPECTED",
+    "dailyUseReadback": "SCAFFOLD_ONLY"
+  },
+  "expectedIssues": [
+    "TODO_PLACEHOLDER"
+  ],
+  "blockingExpected": false,
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "SANITIZED_MEMO"
+  ],
+  "metadata": {
+    "generatedByTask": "TASK-217",
+    "accountId": "SYNTHETIC_ACCOUNT_EMPTY",
+    "portfolioId": "SYNTHETIC_PORTFOLIO_EMPTY",
+    "notes": "SCAFFOLD_ONLY"
+  }
+}

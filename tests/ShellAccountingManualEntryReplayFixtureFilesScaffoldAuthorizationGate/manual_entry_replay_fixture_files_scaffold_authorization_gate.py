@@ -371,19 +371,54 @@ def main() -> int:
     ]:
         gate.contains(doc229, token, "docs/229")
 
+    authorized_task217_fixture_scaffold_paths = {
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
+    }
+
+    def is_authorized_task217_fixture_scaffold_path(path: str) -> bool:
+        return path in authorized_task217_fixture_scaffold_paths
+
     allowed_changes = {
         "README.md",
         "docs/README.md",
         "docs/12_codex_prompt_template.md",
         "docs/228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md",
         "docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md",
+        "docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md",
+        "docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md",
         "tests/CMakeLists.txt",
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
         "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
@@ -406,7 +441,13 @@ def main() -> int:
         "tests/fixtures/manual_entry_replay/",
     ]
     for prefix in forbidden_prefixes:
-        gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-216 must not change {prefix}")
+        gate.require(
+            not any(
+                path.startswith(prefix) and not is_authorized_task217_fixture_scaffold_path(path)
+                for path in changes
+            ),
+            f"TASK-216 must not change {prefix}",
+        )
 
     forbidden_suffixes = [
         ".json",
@@ -419,7 +460,11 @@ def main() -> int:
     ]
     for path in changes:
         lowered = path.lower()
-        gate.require(not any(lowered.endswith(suffix) for suffix in forbidden_suffixes), f"TASK-216 must not add fixture/schema data file: {path}")
+        gate.require(
+            is_authorized_task217_fixture_scaffold_path(path)
+            or not any(lowered.endswith(suffix) for suffix in forbidden_suffixes),
+            f"TASK-216 must not add fixture/schema data file: {path}",
+        )
 
     for forbidden_name in [
         "fixtures_index.json",
@@ -430,7 +475,12 @@ def main() -> int:
         "MRF005_deposit_withdrawal_baseline.json",
         "MRF006_daily_use_combined_baseline.json",
     ]:
-        gate.require(not (root / "tests" / "fixtures" / "manual_entry_replay" / forbidden_name).exists(), f"TASK-216 must not create {forbidden_name}")
+        relative_path = f"tests/fixtures/manual_entry_replay/{forbidden_name}"
+        gate.require(
+            is_authorized_task217_fixture_scaffold_path(relative_path)
+            or not (root / relative_path).exists(),
+            f"TASK-216 must not create {forbidden_name}",
+        )
 
     production_diff = added_lines(diff_text(root, "apps", "libs", "migrations"))
     for token in [
@@ -464,7 +514,18 @@ def main() -> int:
         gate.require(token not in production_diff, f"production diff must not add `{token}`")
 
     forbidden_tree = root / "tests" / "fixtures" / "manual_entry_replay"
-    gate.require(not forbidden_tree.exists(), "TASK-216 must not create tests/fixtures/manual_entry_replay/")
+    if forbidden_tree.exists():
+        actual_fixture_paths = {
+            path.relative_to(root).as_posix()
+            for path in forbidden_tree.iterdir()
+            if path.is_file()
+        }
+        gate.require(
+            actual_fixture_paths <= authorized_task217_fixture_scaffold_paths,
+            "TASK-216 must not create unauthorized files under tests/fixtures/manual_entry_replay/",
+        )
+    else:
+        gate.require(True, "TASK-216 fixture directory absent or only authorized TASK-217 scaffold files")
 
     fixture_data_patterns = [
         "tests/fixtures/**/*.json",
@@ -475,8 +536,16 @@ def main() -> int:
         "tests/fixtures/**/*.shm",
     ]
     for pattern in fixture_data_patterns:
-        candidates = [p for p in root.glob(pattern) if "manual_entry_replay" in p.as_posix()]
-        gate.require(not candidates, f"TASK-216 must not create manual entry replay fixture data for pattern {pattern}")
+        candidates = {
+            p.relative_to(root).as_posix()
+            for p in root.glob(pattern)
+            if "manual_entry_replay" in p.as_posix()
+        }
+        unauthorized_candidates = candidates - authorized_task217_fixture_scaffold_paths
+        gate.require(
+            not unauthorized_candidates,
+            f"TASK-216 must not create manual entry replay fixture data for pattern {pattern}",
+        )
 
     retained_paths = [
         "docs/226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md",

@@ -3849,3 +3849,23 @@ orders or enable automatic trading. See
 and
 `docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md`.
 Recommended next task is TASK-217 manual entry replay fixture files scaffold.
+
+## TASK-217 Manual Entry Replay Fixture Files Scaffold
+
+TASK-217 creates test-only replay fixture scaffold files for future manual
+entry replay test design. It creates
+`tests/fixtures/manual_entry_replay/fixtures_index.json` and MRF001 through
+MRF006 scaffold JSON files under `tests/fixtures/manual_entry_replay/`.
+
+The scaffold files are static, synthetic-only, scaffold-only, runtimeUse=false,
+productionUse=false, and replayExecuted=false. TASK-217 does not implement
+replay, does not create parser / validator / loader / reader code, does not
+call AccountingEngine replay, does not modify production code, production QML,
+DataServiceActions, repositories, or migrations, does not write audit / ledger
+/ snapshot rows, does not implement backup/export/restore, does not connect
+broker, network, credentials, or endpoint, and does not place real orders or
+enable automatic trading. See
+`docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md` and
+`docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md`.
+Recommended next task is TASK-218 manual entry replay fixture scaffold static
+validator authorization gate.

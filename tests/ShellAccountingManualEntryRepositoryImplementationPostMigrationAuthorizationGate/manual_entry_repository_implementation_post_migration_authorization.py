@@ -118,6 +118,18 @@ ALLOWED_DIFF_PREFIXES = {
     "docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md",
     "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md",
+    "docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md",
+    "tests/fixtures/manual_entry_replay/fixtures_index.json",
+    "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+    "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+    "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+    "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+    "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+    "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
 }
 
 ALLOWED_DIFF_DIRS = {

@@ -932,6 +932,15 @@
   creation, no parser / validator / replay implementation, no production drift,
   retained replay and manual entry regressions, broker gates, and transport
   regression.
+- ShellAccounting manual entry replay fixture files scaffold:
+  [230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md](230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md)
+  records TASK-217 test-only replay fixture scaffold files for MRF001-MRF006
+  without replay implementation.
+- ShellAccounting manual entry replay fixture files scaffold test plan:
+  [231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md](231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md)
+  defines TASK-217 static probes for fixture index, JSON parse,
+  scaffold-only flags, synthetic-only privacy, no parser / validator, no
+  replay, and no-production-drift checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

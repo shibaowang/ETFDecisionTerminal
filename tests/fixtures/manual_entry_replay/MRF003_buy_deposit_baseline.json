@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "manual-entry-replay-fixture.scaffold.v1",
+  "fixtureId": "MRF003",
+  "title": "BUY and deposit baseline",
+  "purpose": "Scaffold a BUY with a deposit for future position and cash baseline replay design.",
+  "category": "buy_deposit_baseline",
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "sourceFacts": {
+    "manualTransactions": [
+      {
+        "transactionId": "SYNTHETIC_TXN_MRF003_BUY_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF003",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF003",
+        "instrumentCode": "SYNTHETIC_INSTRUMENT_MRF003",
+        "side": "BUY",
+        "quantity": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      }
+    ],
+    "manualCashMovements": [
+      {
+        "movementId": "SYNTHETIC_CASH_MRF003_DEPOSIT_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF003",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF003",
+        "currency": "SYNTHETIC_CURRENCY",
+        "movementType": "DEPOSIT",
+        "amount": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      }
+    ]
+  },
+  "expectedOutputs": {
+    "positionBaseline": "UNAVAILABLE_EXPECTED",
+    "cashBaseline": "UNAVAILABLE_EXPECTED",
+    "dailyUseReadback": "SCAFFOLD_ONLY"
+  },
+  "expectedIssues": [
+    "TODO_PLACEHOLDER"
+  ],
+  "blockingExpected": false,
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "SANITIZED_MEMO"
+  ],
+  "metadata": {
+    "generatedByTask": "TASK-217",
+    "scenario": "SCAFFOLD_ONLY",
+    "notes": "BUY and deposit baseline values remain placeholders."
+  }
+}

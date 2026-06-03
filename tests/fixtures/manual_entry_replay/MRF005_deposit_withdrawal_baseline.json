@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "manual-entry-replay-fixture.scaffold.v1",
+  "fixtureId": "MRF005",
+  "title": "Deposit and withdrawal baseline",
+  "purpose": "Scaffold deposit and withdrawal cash movements for future cash baseline replay design.",
+  "category": "deposit_withdrawal_baseline",
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "sourceFacts": {
+    "manualTransactions": [],
+    "manualCashMovements": [
+      {
+        "movementId": "SYNTHETIC_CASH_MRF005_DEPOSIT_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF005",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF005",
+        "currency": "SYNTHETIC_CURRENCY",
+        "movementType": "DEPOSIT",
+        "amount": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      },
+      {
+        "movementId": "SYNTHETIC_CASH_MRF005_WITHDRAWAL_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF005",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF005",
+        "currency": "SYNTHETIC_CURRENCY",
+        "movementType": "WITHDRAWAL",
+        "amount": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      }
+    ]
+  },
+  "expectedOutputs": {
+    "cashMovementBaseline": "UNAVAILABLE_EXPECTED",
+    "dailyUseReadback": "SCAFFOLD_ONLY"
+  },
+  "expectedIssues": [
+    "TODO_PLACEHOLDER"
+  ],
+  "blockingExpected": false,
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "SANITIZED_MEMO"
+  ],
+  "metadata": {
+    "generatedByTask": "TASK-217",
+    "scenario": "SCAFFOLD_ONLY",
+    "notes": "Deposit and withdrawal values remain placeholders."
+  }
+}

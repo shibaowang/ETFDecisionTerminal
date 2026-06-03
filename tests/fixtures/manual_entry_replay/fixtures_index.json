@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "manual-entry-replay-fixtures.scaffold.v1",
+  "fixtureSet": "manual_entry_replay_scaffold",
+  "generatedByTask": "TASK-217",
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "fixtures": [
+    {
+      "fixtureId": "MRF001",
+      "title": "Empty manual facts",
+      "category": "empty_manual_facts",
+      "file": "MRF001_empty_manual_facts.json",
+      "expectedStatus": "SCAFFOLD_ONLY",
+      "blockingExpected": false,
+      "privacyStatus": "SYNTHETIC_ONLY"
+    },
+    {
+      "fixtureId": "MRF002",
+      "title": "Single BUY",
+      "category": "single_buy",
+      "file": "MRF002_single_buy.json",
+      "expectedStatus": "SCAFFOLD_ONLY",
+      "blockingExpected": false,
+      "privacyStatus": "SYNTHETIC_ONLY"
+    },
+    {
+      "fixtureId": "MRF003",
+      "title": "BUY and deposit baseline",
+      "category": "buy_deposit_baseline",
+      "file": "MRF003_buy_deposit_baseline.json",
+      "expectedStatus": "SCAFFOLD_ONLY",
+      "blockingExpected": false,
+      "privacyStatus": "SYNTHETIC_ONLY"
+    },
+    {
+      "fixtureId": "MRF004",
+      "title": "BUY and SELL partial reduction",
+      "category": "buy_sell_partial_reduction",
+      "file": "MRF004_buy_sell_partial_reduction.json",
+      "expectedStatus": "SCAFFOLD_ONLY",
+      "blockingExpected": false,
+      "privacyStatus": "SYNTHETIC_ONLY"
+    },
+    {
+      "fixtureId": "MRF005",
+      "title": "Deposit and withdrawal baseline",
+      "category": "deposit_withdrawal_baseline",
+      "file": "MRF005_deposit_withdrawal_baseline.json",
+      "expectedStatus": "SCAFFOLD_ONLY",
+      "blockingExpected": false,
+      "privacyStatus": "SYNTHETIC_ONLY"
+    },
+    {
+      "fixtureId": "MRF006",
+      "title": "Combined daily-use baseline",
+      "category": "daily_use_combined_baseline",
+      "file": "MRF006_daily_use_combined_baseline.json",
+      "expectedStatus": "SCAFFOLD_ONLY",
+      "blockingExpected": false,
+      "privacyStatus": "SYNTHETIC_ONLY"
+    }
+  ]
+}

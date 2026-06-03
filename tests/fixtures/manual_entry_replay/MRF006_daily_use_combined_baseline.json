@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "manual-entry-replay-fixture.scaffold.v1",
+  "fixtureId": "MRF006",
+  "title": "Combined daily-use baseline",
+  "purpose": "Scaffold BUY, SELL, deposit, and withdrawal inputs for future daily-use replay design.",
+  "category": "daily_use_combined_baseline",
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "sourceFacts": {
+    "manualTransactions": [
+      {
+        "transactionId": "SYNTHETIC_TXN_MRF006_BUY_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF006",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF006",
+        "instrumentCode": "SYNTHETIC_INSTRUMENT_MRF006",
+        "side": "BUY",
+        "quantity": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      },
+      {
+        "transactionId": "SYNTHETIC_TXN_MRF006_SELL_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF006",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF006",
+        "instrumentCode": "SYNTHETIC_INSTRUMENT_MRF006",
+        "side": "SELL",
+        "quantity": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      }
+    ],
+    "manualCashMovements": [
+      {
+        "movementId": "SYNTHETIC_CASH_MRF006_DEPOSIT_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF006",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF006",
+        "currency": "SYNTHETIC_CURRENCY",
+        "movementType": "DEPOSIT",
+        "amount": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      },
+      {
+        "movementId": "SYNTHETIC_CASH_MRF006_WITHDRAWAL_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF006",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF006",
+        "currency": "SYNTHETIC_CURRENCY",
+        "movementType": "WITHDRAWAL",
+        "amount": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      }
+    ]
+  },
+  "expectedOutputs": {
+    "dailyUseCombinedBaseline": "UNAVAILABLE_EXPECTED",
+    "positionReadback": "UNAVAILABLE_EXPECTED",
+    "cashReadback": "UNAVAILABLE_EXPECTED"
+  },
+  "expectedIssues": [
+    "TODO_PLACEHOLDER"
+  ],
+  "blockingExpected": false,
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "SANITIZED_MEMO"
+  ],
+  "metadata": {
+    "generatedByTask": "TASK-217",
+    "scenario": "SCAFFOLD_ONLY",
+    "notes": "Combined daily-use values remain placeholders for future validator work."
+  }
+}

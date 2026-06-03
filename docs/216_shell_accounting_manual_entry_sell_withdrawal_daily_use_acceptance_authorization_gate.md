@@ -101,13 +101,10 @@ separately authorized. TASK-211 should implement runtime acceptance tests only:
   safe partial status without production drift.
 - Avoid production feature additions.
 - Do not modify QML / Presenter / Controller / ShellServices.
-- Do not modify DataServiceActions unless a blocking bug is found and
-  separately authorized.
+- Do not modify DataServiceActions unless a blocking bug is found and separately authorized.
 - Do not modify repositories / migrations.
 - Do not add replay / audit / ledger / broker / real order / automatic
   trading.
-
-Do not modify DataServiceActions unless a blocking bug is found and separately authorized.
 
 TASK-211 must keep the first phase local and synthetic: no broker SDK, no
 network, no credentials, no endpoint, no real broker order id, no real order

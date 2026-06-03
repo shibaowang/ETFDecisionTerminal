@@ -69,6 +69,9 @@ Go only if:
   network, credentials, endpoint, real order placement, or automatic trading
   behavior is added.
 
+TASK-208 has now added a daily-use acceptance authorization gate. Runtime
+daily-use acceptance implementation remains a separate future TASK.
+
 No-Go if any readback path writes the database, fabricates PnL, calls replay,
 changes UI or write repositories, changes migrations, exposes unsafe payload
 details, connects broker/network/credentials/endpoints, places real orders, or

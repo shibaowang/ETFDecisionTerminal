@@ -3671,3 +3671,22 @@ paused. See
 `docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md`
 and
 `docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md`.
+
+## TASK-208 Manual Entry Readback Daily-Use Acceptance Authorization Gate
+
+TASK-208 adds a gate-only daily-use acceptance authorization boundary for
+manual entry readback. It defines how `position.list`, `cash.summary`, and safe
+partial `portfolio.pnl.summary` must be evaluated for local MVP daily use after
+TASK-207 readback mapping.
+
+TASK-208 does not implement new functionality and does not modify production
+code, QML, startup, Presenter, Controller, ShellServices, DataServiceActions,
+repositories, migrations, AccountingEngine replay, runtime SQL / SQLite
+read/write behavior, audit / ledger writes, broker SDKs, network, credentials,
+endpoints, real order placement, real broker order ids, or automatic trading.
+Future TASK-209 may implement runtime daily-use acceptance tests if separately
+authorized. First phase remains no real broker, no automatic trading, no real
+order placement, and broker sandbox new capability remains paused. See
+`docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md`
+and
+`docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md`.

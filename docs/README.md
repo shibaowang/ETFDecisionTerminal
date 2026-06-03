@@ -846,6 +846,15 @@
   defines TASK-207 runtime and static probes for manual entry readback mapping,
   duplicate idempotency, safe PnL unavailability, response sanitization, and
   retained regression gates.
+- ShellAccounting manual entry readback daily-use acceptance authorization gate:
+  [212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md](212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md)
+  records TASK-208 gate-only daily-use acceptance policy for `position.list`,
+  `cash.summary`, and safe partial `portfolio.pnl.summary` after TASK-207.
+- ShellAccounting manual entry readback daily-use acceptance authorization test plan:
+  [213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md](213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md)
+  defines TASK-208 static probes for docs registration, MVP ready / not-ready
+  conclusion, no production drift, no replay/audit/ledger/broker behavior, and
+  retained regression gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -912,6 +912,15 @@
   defines TASK-214 static probes for fixture matrix coverage, no fixture-file
   creation, no replay implementation, no production drift, retained manual
   entry regressions, and broker / transport gates.
+- ShellAccounting manual entry replay fixture files authorization gate:
+  [226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md](226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md)
+  records TASK-215 gate-only replay fixture files contract authorization
+  without creating fixture files.
+- ShellAccounting manual entry replay fixture files authorization test plan:
+  [227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md](227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md)
+  defines TASK-215 static probes for future fixture directory, naming, index,
+  JSON schema, content, privacy, validation, runtime boundary, no fixture
+  creation, and no-production-drift checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

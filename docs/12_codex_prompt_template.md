@@ -2178,6 +2178,25 @@ order / automatic trading.
 Recommended next task: TASK-215 manual entry replay fixture files
 authorization gate.
 
+## TASK-215 Manual Entry Replay Fixture Files Authorization Gate Prompt Rule
+
+Future manual entry replay fixture file creation or replay implementation work
+must reference
+`docs/226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md`
+and
+`docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md`.
+
+TASK-215 authorizes replay fixture files contract only. TASK-215 does not
+authorize creation of replay fixture files. TASK-215 does not authorize replay
+implementation. TASK-215 does not authorize AccountingEngine replay calls.
+TASK-215 does not authorize runtime SQL / SQLite read/write. TASK-215 does not
+authorize audit / ledger / snapshot writes. TASK-215 does not authorize
+backup/export/restore. TASK-215 does not authorize broker / network /
+credentials / endpoint / real order / automatic trading.
+
+Recommended next task: TASK-216 manual entry replay fixture files scaffold
+authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

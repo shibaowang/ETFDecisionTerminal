@@ -921,6 +921,17 @@
   defines TASK-215 static probes for future fixture directory, naming, index,
   JSON schema, content, privacy, validation, runtime boundary, no fixture
   creation, and no-production-drift checks.
+- ShellAccounting manual entry replay fixture files scaffold authorization gate:
+  [228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md](228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md)
+  records TASK-216 gate-only scaffold policy for future replay fixture
+  directory, file set, fixture index, placeholders, JSON shape, static
+  validation, privacy, and runtime boundaries without creating fixture files.
+- ShellAccounting manual entry replay fixture files scaffold authorization test plan:
+  [229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md](229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md)
+  defines TASK-216 static probes for documentation registration, no fixture
+  creation, no parser / validator / replay implementation, no production drift,
+  retained replay and manual entry regressions, broker gates, and transport
+  regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -1,0 +1,516 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+from pathlib import Path
+
+
+class Gate:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+    def contains(self, text: str, token: str, context: str) -> None:
+        normalized_text = " ".join(text.split())
+        normalized_token = " ".join(token.split())
+        self.require(
+            token in text or normalized_token in normalized_text,
+            f"{context} missing `{token}`",
+        )
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def git_lines(root: Path, *args: str) -> set[str]:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def changed_paths(root: Path) -> set[str]:
+    changed = git_lines(root, "diff", "--name-only", "main")
+    staged = git_lines(root, "diff", "--cached", "--name-only")
+    untracked = git_lines(root, "ls-files", "--others", "--exclude-standard")
+    return changed | staged | untracked
+
+
+def diff_text(root: Path, *paths: str) -> str:
+    completed = subprocess.run(
+        ["git", "diff", "main", "--", *paths],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout
+
+
+def added_lines(diff: str) -> str:
+    return "\n".join(line[1:] for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++"))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    gate = Gate()
+
+    doc228_path = root / "docs" / "228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md"
+    doc229_path = root / "docs" / "229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md"
+    test_dir = root / "tests" / "ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate"
+    test_cmake_path = test_dir / "CMakeLists.txt"
+    test_py_path = test_dir / "manual_entry_replay_fixture_files_scaffold_authorization_gate.py"
+
+    gate.require(doc228_path.exists(), "docs/228 exists")
+    gate.require(doc229_path.exists(), "docs/229 exists")
+    gate.require(test_cmake_path.exists(), "TASK-216 CMake exists")
+    gate.require(test_py_path.exists(), "TASK-216 gate script exists")
+
+    doc228 = read(doc228_path)
+    doc229 = read(doc229_path)
+    readme = read(root / "README.md")
+    docs_index = read(root / "docs" / "README.md")
+    prompt = read(root / "docs" / "12_codex_prompt_template.md")
+    tests_cmake = read(root / "tests" / "CMakeLists.txt")
+    test_cmake = read(test_cmake_path)
+
+    for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
+        gate.contains(text, "TASK-216", context)
+        gate.contains(text, "228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md", context)
+        gate.contains(text, "229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md", context)
+
+    gate.contains(tests_cmake, "ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate", "tests/CMakeLists")
+    gate.contains(test_cmake, "shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization", "TASK-216 CTest")
+
+    for token in [
+        "# ShellAccounting Manual Entry Replay Fixture Files Scaffold Authorization Gate",
+        "TASK-216 is gate-only / scaffold-authorization-only.",
+        "TASK-216 only authorizes future fixture files scaffold scope.",
+        "TASK-216 does not create replay fixture files.",
+        "TASK-216 does not create replay fixture JSON.",
+        "TASK-216 does not create fixture index.",
+        "TASK-216 does not create seed DB.",
+        "TASK-216 does not create runtime fixture data.",
+        "TASK-216 does not create parser / validator.",
+        "TASK-216 does not implement replay.",
+        "TASK-216 does not call AccountingEngine replay.",
+        "TASK-216 does not modify production code.",
+        "TASK-216 does not modify DataServiceActions.",
+        "TASK-216 does not modify DataServiceActionRegistrar.",
+        "TASK-216 does not modify repositories.",
+        "TASK-216 does not modify migrations.",
+        "TASK-216 does not modify QML / startup / Presenter / Controller / ShellServices adapter / port.",
+        "TASK-216 does not add runtime SQL / SQLite read/write.",
+        "TASK-216 does not write audit / ledger.",
+        "TASK-216 does not write snapshot.",
+        "TASK-216 does not implement backup/export/restore.",
+        "TASK-216 does not connect broker / network / credentials / endpoint.",
+        "TASK-216 does not place real orders.",
+        "TASK-216 does not enable automatic trading.",
+        "Broker sandbox new capability remains paused.",
+        "## Scaffold Authorization Purpose",
+        "## Future Scaffold Directory Boundary",
+        "tests/fixtures/manual_entry_replay/",
+        "TASK-216 does not create this directory.",
+        "must not become a production data source",
+        "## Future Scaffold File Set Boundary",
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
+        "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",
+        "tests/fixtures/manual_entry_replay/MRF003_buy_deposit_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF004_buy_sell_partial_reduction.json",
+        "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
+        "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
+        "TASK-216 does not create any of these files.",
+        "Future scaffold file creation must be a separate TASK.",
+        "seed databases",
+        "SQLite files",
+        "WAL files",
+        "SHM files",
+        "runtime output",
+        "real account data",
+        "real broker data",
+        "credentials",
+        "endpoint values",
+        "real order ids",
+        "backup/export/restore payloads",
+        "## Future Fixture Index Scaffold Boundary",
+        "schemaVersion",
+        "fixtureSet",
+        "fixtures",
+        "fixtureId",
+        "title",
+        "category",
+        "file",
+        "expectedStatus",
+        "blockingExpected",
+        "privacyStatus",
+        "TASK-216 does not create `fixtures_index.json`.",
+        "must not run replay",
+        "read SQLite",
+        "write SQLite",
+        "call AccountingEngine replay",
+        "trigger DataServiceActions behavior",
+        "## Future Placeholder Content Boundary",
+        "TODO_PLACEHOLDER",
+        "SYNTHETIC_ACCOUNT",
+        "SYNTHETIC_PORTFOLIO",
+        "SYNTHETIC_INSTRUMENT",
+        "SYNTHETIC_CURRENCY",
+        "SANITIZED_MEMO",
+        "UNAVAILABLE_EXPECTED",
+        "real users",
+        "real accounts",
+        "real portfolios",
+        "real instruments",
+        "real orders",
+        "real broker order ids",
+        "raw QML payload",
+        "raw DataService payload",
+        "## Future Fixture JSON Schema Boundary",
+        "purpose",
+        "sourceFacts",
+        "expectedOutputs",
+        "expectedIssues",
+        "privacyExpectations",
+        "metadata",
+        "TASK-216 does not create replay fixture JSON.",
+        "does not create a JSON schema file",
+        "parser",
+        "validator",
+        "loader",
+        "fixture reader",
+        "replay runner",
+        "## Future Static Validation Boundary",
+        "file presence",
+        "field presence",
+        "stable fixture ids",
+        "placeholder-only content",
+        "privacy tokens",
+        "no seed DB files",
+        "no runtime output files",
+        "no production path dependencies",
+        "TASK-216 does not implement static validation.",
+        "Future parser or validator implementation must be a separate TASK",
+        "## Privacy And Synthetic Data Boundary",
+        "raw SQL",
+        "raw payload",
+        "full trade_log payload",
+        "full cash_adjustment payload",
+        "broker payload",
+        "secret store values",
+        "internal exception stacks",
+        "real user data",
+        "real account numbers",
+        "Privacy expectations must be explicit.",
+        "visibly synthetic",
+        "not fabricated PnL",
+        "fabricated market value",
+        "fake ledger output",
+        "## No-Runtime-Dependency Boundary",
+        "must not add runtime dependencies",
+        "DataServiceActions runtime behavior",
+        "DataServiceActionRegistrar registration",
+        "DataAccess repositories",
+        "migrations",
+        "AccountingEngine replay",
+        "production QML",
+        "startup",
+        "Presenter",
+        "Controller",
+        "ShellServices adapter / port",
+        "StrategyEngine",
+        "MarketEngine",
+        "broker adapter",
+        "network code",
+        "credentials handling",
+        "endpoint handling",
+        "runtime SQL / SQLite read/write",
+        "audit / ledger writes",
+        "snapshot writes",
+        "backup/export/restore",
+        "broker order placement",
+        "real order id generation",
+        "real broker order id generation",
+        "strategy execution",
+        "automatic trading",
+        "## Out-of-Scope Boundaries",
+        "creation of replay fixture files",
+        "creation of replay fixture JSON",
+        "creation of fixture index files",
+        "fixture parser implementation",
+        "fixture validator implementation",
+        "fixture reader implementation",
+        "replay implementation",
+        "AccountingEngine replay calls",
+        "runtime SQL / SQLite read/write",
+        "production code changes",
+        "DataServiceActions or DataServiceActionRegistrar changes",
+        "repository changes",
+        "migration changes",
+        "audit / ledger writes",
+        "snapshot writes",
+        "real order placement",
+        "automatic trading",
+        "## Formal Authorization Conclusion And Next Task",
+        "TASK-216 authorizes replay fixture files scaffold policy only.",
+        "TASK-216 does not authorize creation of replay fixture files.",
+        "TASK-216 does not authorize creation of replay fixture JSON.",
+        "TASK-216 does not authorize creation of fixture index files.",
+        "TASK-216 does not authorize parser or validator implementation.",
+        "TASK-216 does not authorize replay implementation.",
+        "TASK-216 does not authorize AccountingEngine replay calls.",
+        "TASK-216 does not authorize runtime SQL / SQLite read/write.",
+        "TASK-216 does not authorize audit / ledger writes.",
+        "TASK-216 does not authorize snapshot writes.",
+        "TASK-216 does not authorize backup/export/restore.",
+        "TASK-216 does not authorize broker, network, credentials, endpoint, real order placement, or automatic trading.",
+        "Recommended next task: TASK-217 manual entry replay fixture files scaffold.",
+    ]:
+        gate.contains(doc228, token, "docs/228")
+
+    for token in [
+        "# ShellAccounting Manual Entry Replay Fixture Files Scaffold Authorization Test Plan",
+        "## Document Purpose",
+        "## Test Matrix",
+        "## Required Probes",
+        "## Go / No-Go Checklist",
+        "docs/228 exists",
+        "docs/229 exists",
+        "Documentation registration",
+        "Gate-only scope",
+        "Scaffold authorization purpose",
+        "Future scaffold directory boundary",
+        "Future scaffold file set boundary",
+        "Future fixture index scaffold boundary",
+        "Future placeholder content boundary",
+        "Future fixture JSON schema boundary",
+        "Future static validation boundary",
+        "Privacy and synthetic data boundary",
+        "No-runtime-dependency boundary",
+        "Out-of-scope boundaries",
+        "Formal conclusion",
+        "No fixture file creation",
+        "No parser / validator creation",
+        "Production drift",
+        "TASK-215 regression",
+        "TASK-214 regression",
+        "TASK-213 regression",
+        "TASK-212 regression",
+        "TASK-211 regression",
+        "TASK-209 regression",
+        "TASK-207 regression",
+        "TASK-204 regression",
+        "TASK-198 regression",
+        "TASK-196 regression",
+        "TASK-192 regression",
+        "Broker / real broker gates",
+        "transport_local_socket_echo 50-repeat regression",
+        "Static source scan",
+        "Documentation token scan",
+        "Changed-path allowlist scan",
+        "Untracked-file detection scan",
+        "No fixture directory creation scan",
+        "No replay fixture JSON scan",
+        "No fixture index file scan",
+        "No seed DB or runtime fixture data scan",
+        "No parser / validator implementation scan",
+        "No loader / fixture reader / replay runner implementation scan",
+        "No production code changed scan",
+        "No production QML / startup / Presenter / Controller drift scan",
+        "No ShellServices adapter / port drift scan",
+        "No DataServiceActions drift scan",
+        "No DataServiceActionRegistrar drift scan",
+        "No DataAccess repository drift scan",
+        "No migrations drift scan",
+        "No new migration or schema file scan",
+        "No runtime SQL / SQLite read/write scan",
+        "No AccountingEngine replay implementation scan",
+        "No AccountingEngine replay call scan",
+        "No audit / ledger write scan",
+        "No snapshot write scan",
+        "No backup/export/restore implementation scan",
+        "No broker / network / credentials / endpoint scan",
+        "No real order / automatic trading scan",
+        "Retained TASK-215 / TASK-214 / TASK-213 / TASK-212",
+        "TASK-216 CTest is registered",
+        "TASK-216 authorizes replay fixture files scaffold policy only",
+        "No `tests/fixtures/manual_entry_replay/` directory is added",
+        "No replay fixture JSON files are added",
+        "No `fixtures_index.json` file is added",
+        "No seed DB or runtime fixture data is added",
+        "No parser, validator, loader, fixture reader, or replay runner is added",
+        "Replay fixture files appear",
+        "Replay fixture JSON appears",
+        "Fixture index files appear",
+        "Seed DB / runtime fixture data appears",
+        "Fixture parser / validator / loader / reader implementation appears",
+        "Replay implementation appears",
+        "AccountingEngine replay call appears",
+        "Runtime SQL / SQLite read/write appears",
+        "DataServiceActions runtime behavior changes",
+        "Repository / migration changes appear",
+        "Audit / ledger write appears",
+        "Snapshot write appears",
+        "Backup/export/restore implementation appears",
+        "Real order placement or broker order id appears",
+        "Automatic trading appears",
+        "Fabricated PnL or fabricated market value appears",
+    ]:
+        gate.contains(doc229, token, "docs/229")
+
+    allowed_changes = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md",
+        "docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md",
+        "tests/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    }
+    changes = changed_paths(root)
+    unexpected = sorted(path for path in changes if path not in allowed_changes)
+    gate.require(not unexpected, "TASK-216 changed unauthorized paths: " + ", ".join(unexpected))
+
+    forbidden_prefixes = [
+        "apps/",
+        "libs/ShellServices/",
+        "libs/ShellCore/",
+        "libs/DataServiceApi/",
+        "libs/DataServiceClient/",
+        "libs/DataAccess/",
+        "libs/AccountingEngine/",
+        "libs/StrategyEngine/",
+        "libs/MarketEngine/",
+        "libs/Transport/",
+        "libs/ServiceRuntime/",
+        "libs/ServiceHost/",
+        "migrations/",
+        "tests/fixtures/manual_entry_replay/",
+    ]
+    for prefix in forbidden_prefixes:
+        gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-216 must not change {prefix}")
+
+    forbidden_suffixes = [
+        ".json",
+        ".db",
+        ".sqlite",
+        ".sqlite3",
+        ".wal",
+        ".shm",
+        ".sql",
+    ]
+    for path in changes:
+        lowered = path.lower()
+        gate.require(not any(lowered.endswith(suffix) for suffix in forbidden_suffixes), f"TASK-216 must not add fixture/schema data file: {path}")
+
+    for forbidden_name in [
+        "fixtures_index.json",
+        "MRF001_empty_manual_facts.json",
+        "MRF002_single_buy.json",
+        "MRF003_buy_deposit_baseline.json",
+        "MRF004_buy_sell_partial_reduction.json",
+        "MRF005_deposit_withdrawal_baseline.json",
+        "MRF006_daily_use_combined_baseline.json",
+    ]:
+        gate.require(not (root / "tests" / "fixtures" / "manual_entry_replay" / forbidden_name).exists(), f"TASK-216 must not create {forbidden_name}")
+
+    production_diff = added_lines(diff_text(root, "apps", "libs", "migrations"))
+    for token in [
+        "INSERT ",
+        "UPDATE ",
+        "DELETE ",
+        "REPLACE ",
+        "audit_log",
+        "ledger",
+        "snapshot",
+        "backup",
+        "export",
+        "restore",
+        "AccountingReplay",
+        "runReplay",
+        "manual_entry_replay",
+        "FixtureReader",
+        "FixtureParser",
+        "FixtureValidator",
+        "validator",
+        "parser",
+        "Broker",
+        "broker",
+        "network",
+        "credentials",
+        "endpoint",
+        "realOrder",
+        "brokerOrderId",
+        "automaticTrading",
+    ]:
+        gate.require(token not in production_diff, f"production diff must not add `{token}`")
+
+    forbidden_tree = root / "tests" / "fixtures" / "manual_entry_replay"
+    gate.require(not forbidden_tree.exists(), "TASK-216 must not create tests/fixtures/manual_entry_replay/")
+
+    fixture_data_patterns = [
+        "tests/fixtures/**/*.json",
+        "tests/fixtures/**/*.db",
+        "tests/fixtures/**/*.sqlite",
+        "tests/fixtures/**/*.sqlite3",
+        "tests/fixtures/**/*.wal",
+        "tests/fixtures/**/*.shm",
+    ]
+    for pattern in fixture_data_patterns:
+        candidates = [p for p in root.glob(pattern) if "manual_entry_replay" in p.as_posix()]
+        gate.require(not candidates, f"TASK-216 must not create manual entry replay fixture data for pattern {pattern}")
+
+    retained_paths = [
+        "docs/226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md",
+        "docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/CMakeLists.txt",
+        "docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md",
+        "docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/CMakeLists.txt",
+        "docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md",
+        "docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
+        "docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md",
+        "docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryMvpRuntimeE2eAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/CMakeLists.txt",
+        "tests/ShellAccountingBrokerAdapterDisabledWiring/CMakeLists.txt",
+        "tests/ShellAccountingBrokerOrderImplementation/CMakeLists.txt",
+        "tests/ShellAccountingRealBrokerOrderAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingRealBrokerOrderImplementationGate/CMakeLists.txt",
+        "tests/Transport/CMakeLists.txt",
+    ]
+    for path in retained_paths:
+        gate.require((root / path).exists(), f"retained path exists: {path}")
+    gate.contains(read(root / "tests" / "Transport" / "CMakeLists.txt"), "transport_local_socket_echo", "transport CTest")
+
+    gate.require(gate.checks >= 110, "TASK-216 gate must execute at least 110 checks")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

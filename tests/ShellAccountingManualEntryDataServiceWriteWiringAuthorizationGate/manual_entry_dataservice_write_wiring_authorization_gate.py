@@ -238,6 +238,8 @@ def main() -> int:
         "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md",
         "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md",
         "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
+        "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md",
+        "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",

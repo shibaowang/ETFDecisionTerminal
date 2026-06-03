@@ -132,6 +132,10 @@ Future replay, audit, ledger, backup/export, packaging, broker sandbox, real
 broker order, strategy execution, and automatic trading work must remain
 separately authorized.
 
+TASK-208 has now added a daily-use acceptance authorization gate for this
+readback mapping. TASK-208 does not modify production code or add runtime
+daily-use acceptance implementation.
+
 ## Test Coverage
 
 TASK-207 adds runtime and static acceptance tests for:

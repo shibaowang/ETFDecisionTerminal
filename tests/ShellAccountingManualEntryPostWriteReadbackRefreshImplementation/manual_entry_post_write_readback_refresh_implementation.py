@@ -262,6 +262,8 @@ def main() -> int:
         "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
         "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md",
         "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
+        "docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md",
+        "docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md",
         "libs/DataServiceApi/src/DataServiceActions.cpp",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
@@ -287,6 +289,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-202 changed unauthorized paths: " + ", ".join(unexpected))

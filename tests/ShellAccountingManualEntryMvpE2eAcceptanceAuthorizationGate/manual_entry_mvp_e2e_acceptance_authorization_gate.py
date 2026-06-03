@@ -234,6 +234,10 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
+        "docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md",
+        "docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-203 changed unauthorized paths: " + ", ".join(unexpected))

@@ -2027,6 +2027,30 @@ must not be fabricated. Future replay, audit, ledger, backup/export, packaging,
 broker sandbox, real broker order, strategy execution, and automatic trading
 remain separate TASKs.
 
+## TASK-208 Manual Entry Readback Daily-Use Acceptance Authorization Gate Prompt Rule
+
+Future manual entry daily-use acceptance work after TASK-208 must reference
+`docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md`
+and
+`docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md`.
+TASK-208 is daily-use acceptance authorization gate-only. It defines acceptance
+standards for `position.list`, `cash.summary`, and safe partial
+`portfolio.pnl.summary` after TASK-207 readback mapping, but it does not
+implement runtime daily-use acceptance.
+
+Do not treat TASK-208 as authorization to modify production code, production
+QML, startup, Presenter, Controller, ShellServices adapter / port code,
+DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, AccountingEngine replay, runtime SQL / SQLite read/write behavior,
+snapshot rebuild, derived table refresh, audit / ledger writes, broker SDKs,
+network, credentials, endpoints, real order placement, real broker order ids,
+or automatic trading. Future TASK-209 may implement runtime daily-use
+acceptance tests if separately authorized. Future replay, audit, ledger,
+backup/export, packaging, broker sandbox, real broker order, strategy
+execution, and automatic trading remain separate TASKs. First phase remains no
+real broker, no automatic trading, no real order placement, and broker sandbox
+new capability remains paused.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

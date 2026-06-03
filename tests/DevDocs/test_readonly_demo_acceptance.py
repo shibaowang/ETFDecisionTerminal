@@ -13542,6 +13542,131 @@ def main() -> int:
         ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-207 retains real broker gate"),
     ]:
         require(token in task207_test + tests_cmake, message)
+    task208_doc_path = (
+        root
+        / "docs"
+        / "212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md"
+    )
+    task208_plan_path = (
+        root
+        / "docs"
+        / "213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md"
+    )
+    task208_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    task208_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate"
+        / "manual_entry_readback_daily_use_acceptance_authorization_gate.py"
+    )
+    require(task208_doc_path.exists(), "docs/212 exists")
+    require(task208_plan_path.exists(), "docs/213 exists")
+    require(task208_cmake_path.exists(), "TASK-208 tests CMake exists")
+    require(task208_test_path.exists(), "TASK-208 gate test exists")
+    task208_doc = task208_doc_path.read_text(encoding="utf-8")
+    task208_plan = task208_plan_path.read_text(encoding="utf-8")
+    task208_cmake = task208_cmake_path.read_text(encoding="utf-8")
+    task208_test = task208_test_path.read_text(encoding="utf-8")
+    require(
+        "docs/212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md" in readme,
+        "README links docs/212",
+    )
+    require(
+        "docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md" in readme,
+        "README links docs/213",
+    )
+    require(
+        "212_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_gate.md" in docs_index,
+        "docs/README links docs/212",
+    )
+    require(
+        "213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/213",
+    )
+    require("TASK-208" in codex_prompt_template, "docs/12 registers TASK-208")
+    require("TASK-208" in task207_doc, "docs/210 references TASK-208 follow-up")
+    require("TASK-208" in task207_plan, "docs/211 references TASK-208 follow-up")
+    for token, message in [
+        ("TASK-208 is daily-use acceptance authorization gate-only", "docs/212 documents gate scope"),
+        ("does not implement new functionality", "docs/212 blocks implementation"),
+        ("does not modify production code", "docs/212 blocks production code"),
+        ("runtime SQL / SQLite read/write behavior", "docs/212 blocks runtime SQL"),
+        ("TASK-207", "docs/212 references TASK-207"),
+        ("position.list", "docs/212 covers position.list"),
+        ("cash.summary", "docs/212 covers cash.summary"),
+        ("portfolio.pnl.summary", "docs/212 covers portfolio summary"),
+        ("BUY position visible", "docs/212 covers BUY position"),
+        ("SELL reduction visible", "docs/212 covers SELL reduction"),
+        ("Deposit cash inflow visible", "docs/212 covers Deposit inflow"),
+        ("Withdrawal cash outflow visible", "docs/212 covers Withdrawal outflow"),
+        ("BUY cash outflow visible", "docs/212 covers BUY cash outflow"),
+        ("SELL cash inflow visible", "docs/212 covers SELL cash inflow"),
+        ("Realized PnL not fabricated", "docs/212 blocks fabricated realized PnL"),
+        ("Unrealized PnL not fabricated", "docs/212 blocks fabricated unrealized PnL"),
+        ("Market value not fabricated", "docs/212 blocks fabricated market value"),
+        ("safe partial / unavailable issue", "docs/212 covers safe partial"),
+        ("No silent success", "docs/212 blocks silent success"),
+        ("No QML calculation", "docs/212 blocks QML calculation"),
+        ("raw SQL", "docs/212 blocks raw SQL exposure"),
+        ("raw payload", "docs/212 blocks raw payload exposure"),
+        ("credentials", "docs/212 blocks credentials exposure"),
+        ("endpoint", "docs/212 blocks endpoint exposure"),
+        ("stack trace", "docs/212 blocks stack trace exposure"),
+        ("Manual entry write + readback is partially daily-use ready", "docs/212 has ready conclusion"),
+        ("recommended next task is TASK-209", "docs/212 recommends TASK-209"),
+        ("broker SDK", "docs/212 blocks broker SDK"),
+        ("network", "docs/212 blocks network"),
+        ("real order placement", "docs/212 blocks real order"),
+        ("automatic trading", "docs/212 blocks automatic trading"),
+        ("Broker sandbox new capability development remains paused", "docs/212 keeps broker paused"),
+    ]:
+        require(token in task208_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/213 contains Test Matrix"),
+        ("Required Probes", "docs/213 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/213 contains Go/No-Go"),
+        ("position.list acceptance", "docs/213 covers position acceptance"),
+        ("cash.summary acceptance", "docs/213 covers cash acceptance"),
+        ("portfolio.pnl.summary acceptance", "docs/213 covers pnl acceptance"),
+        ("MVP conclusion", "docs/213 covers MVP conclusion"),
+        ("Production code unchanged", "docs/213 covers production code unchanged"),
+        ("Existing gates retained", "docs/213 covers retained gates"),
+        ("Forbidden drift", "docs/213 covers forbidden drift"),
+        ("No runtime SQL / SQLite read/write scan", "docs/213 blocks runtime SQL"),
+        ("No AccountingEngine replay scan", "docs/213 blocks replay"),
+        ("No audit / ledger write scan", "docs/213 blocks audit ledger"),
+        ("No broker / network / credentials / endpoint scan", "docs/213 blocks broker network"),
+        ("No real order / automatic trading scan", "docs/213 blocks real order auto"),
+        ("TASK-209 runtime daily-use acceptance implementation", "docs/213 recommends TASK-209"),
+    ]:
+        require(token in task208_plan, message)
+    for token, message in [
+        ("shell_accounting_manual_entry_readback_daily_use_acceptance_authorization", "TASK-208 CTest exists"),
+        ("manual_entry_readback_daily_use_acceptance_authorization_gate.py", "TASK-208 gate script registered"),
+    ]:
+        require(token in task208_cmake, message)
+    for token, message in [
+        ("changed_paths", "TASK-208 test checks changed paths"),
+        ("DataServiceActions", "TASK-208 test blocks DataServiceActions drift"),
+        ("migrations/", "TASK-208 test blocks migrations"),
+        ("ShellAccountingManualEntryReadbackMappingImplementation", "TASK-208 retains TASK-207"),
+        ("ShellAccountingManualEntryReadbackMappingAuthorizationGate", "TASK-208 retains TASK-206"),
+        ("ShellAccountingManualEntryReadbackReplayAdequacyReviewGate", "TASK-208 retains TASK-205"),
+        ("ShellAccountingManualEntryMvpRuntimeE2eAcceptance", "TASK-208 retains TASK-204"),
+        ("ShellAccountingManualEntryPostWriteReadbackRefreshImplementation", "TASK-208 retains TASK-202"),
+        ("ShellAccountingManualEntryQmlPresenterImplementation", "TASK-208 retains TASK-200"),
+        ("ShellAccountingManualEntryDataServiceWriteWiringImplementation", "TASK-208 retains TASK-198"),
+        ("ShellAccountingManualCashMovementRepositoryDualWriteImplementation", "TASK-208 retains TASK-196"),
+        ("ShellAccountingManualTransactionRepositoryWriteImplementation", "TASK-208 retains TASK-192"),
+        ("ShellAccountingBrokerOrderImplementation", "TASK-208 retains broker gate"),
+        ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-208 retains real broker gate"),
+    ]:
+        require(token in task208_test + tests_cmake, message)
     return 0
 
 

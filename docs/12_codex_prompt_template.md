@@ -2160,6 +2160,24 @@ automatic trading.
 Recommended next task: TASK-214 manual entry replay fixture matrix
 authorization gate.
 
+## TASK-214 Manual Entry Replay Fixture Matrix Authorization Gate Prompt Rule
+
+Future manual entry replay fixture or implementation work must reference
+`docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md`
+and
+`docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md`.
+
+TASK-214 authorizes replay fixture matrix design only. TASK-214 does not
+authorize replay implementation. TASK-214 does not authorize creation of replay
+fixture files. TASK-214 does not authorize AccountingEngine replay calls.
+TASK-214 does not authorize runtime SQL / SQLite read/write. TASK-214 does not
+authorize audit / ledger writes. TASK-214 does not authorize backup/export/restore.
+TASK-214 does not authorize broker / network / credentials / endpoint / real
+order / automatic trading.
+
+Recommended next task: TASK-215 manual entry replay fixture files
+authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

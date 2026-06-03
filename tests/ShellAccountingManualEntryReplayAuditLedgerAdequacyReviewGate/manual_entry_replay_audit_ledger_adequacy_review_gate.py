@@ -225,6 +225,8 @@ def main() -> int:
         "docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md",
         "docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md",
         "docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md",
+        "docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md",
+        "docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
@@ -240,6 +242,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
     }

@@ -3791,3 +3791,22 @@ entry replay fixture matrix authorization gate. See
 `docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md`
 and
 `docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md`.
+
+## TASK-214 Manual Entry Replay Fixture Matrix Authorization Gate
+
+TASK-214 adds a gate-only replay fixture matrix authorization. It defines
+fixture naming, source facts, baseline success, ordering, position, cash, PnL,
+multi-scope, failure, expected output, and privacy policy for future manual
+entry replay fixtures.
+
+TASK-214 does not implement replay, does not create replay fixture files, does
+not call AccountingEngine replay, does not modify production code, production
+QML, DataServiceActions, repositories, or migrations, does not write audit /
+ledger rows, does not implement backup/export/restore, does not connect broker,
+network, credentials, or endpoint, and does not place real orders or enable
+automatic trading. See
+`docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md`
+and
+`docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md`.
+Recommended next task is TASK-215 manual entry replay fixture files
+authorization gate.

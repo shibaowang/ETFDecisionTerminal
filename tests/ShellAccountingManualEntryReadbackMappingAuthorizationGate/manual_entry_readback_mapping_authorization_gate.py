@@ -216,6 +216,10 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+        "docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md",
+        "docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)

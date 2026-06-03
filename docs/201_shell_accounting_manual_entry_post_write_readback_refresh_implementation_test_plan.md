@@ -80,6 +80,8 @@ replay.
 - TASK-198 DataService write wiring implementation tests pass.
 - TASK-196 manual cash movement repository tests pass.
 - TASK-192 manual transaction repository tests pass.
+- TASK-203 manual entry MVP E2E acceptance authorization gate passes without
+  adding runtime implementation or production drift.
 - Broker disabled, broker order, real broker authorization, and real broker
   implementation gates pass.
 - transport local socket echo 50 repeat passes.

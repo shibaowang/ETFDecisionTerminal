@@ -3571,3 +3571,24 @@ See
 `docs/200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md`
 and
 `docs/201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md`.
+
+## TASK-203 Manual Entry MVP E2E Acceptance Authorization Gate
+
+TASK-203 adds a gate-only authorization boundary for ShellAccounting manual
+entry MVP end-to-end acceptance. It documents the current chain:
+QML -> Presenter -> Controller -> ShellServices adapter -> DataService action
+-> DataAccess repository, and requires future acceptance to prove no layer
+bypasses its boundary.
+
+The gate covers manual transaction BUY / SELL, manual cash movement Deposit /
+Withdrawal, invalid payload no-write, duplicate idempotency behavior, sensitive
+memo handling, visible status / issue / duplicate / refresh state, and
+DataService read-boundary refresh after successful writes. TASK-203 does not
+implement new functionality, does not modify production code, does not write a
+database, does not connect replay, does not write audit or ledger rows, does
+not connect broker / network / credentials / endpoint capability, does not
+place real orders, and does not enable automatic trading. Broker sandbox new
+capability development remains paused. See
+`docs/202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md`
+and
+`docs/203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md`.

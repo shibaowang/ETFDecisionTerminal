@@ -800,6 +800,15 @@
   defines TASK-202 static probes for Presenter/Controller read-boundary refresh,
   QML refresh status fields, no DataServiceActions or repository drift, no
   replay/snapshot/audit/ledger/broker behavior, and retained regressions.
+- ShellAccounting manual entry MVP E2E acceptance authorization gate:
+  [202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md](202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md)
+  records TASK-203 gate-only policy for manual entry MVP end-to-end acceptance
+  without adding runtime implementation, production drift, replay, audit,
+  ledger, broker, real order, or automatic trading behavior.
+- ShellAccounting manual entry MVP E2E acceptance authorization test plan:
+  [203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md](203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md)
+  defines TASK-203 documentation, changed-path, boundary, no-drift, and
+  retained regression probes for the manual entry MVP acceptance gate.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

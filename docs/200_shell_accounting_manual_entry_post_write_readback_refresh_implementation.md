@@ -138,6 +138,14 @@ TASK-202 is covered by:
   implementation gates.
 - full CTest and transport local socket echo 50 repeat.
 
+## TASK-203 Acceptance Gate Update
+
+TASK-203 adds a gate-only manual entry MVP E2E acceptance authorization layer
+on top of this implementation. It does not add new TASK-202 behavior and does
+not modify QML, Presenter, Controller, ShellServices, DataServiceActions,
+DataAccess repositories, migrations, replay, audit, ledger, broker, network,
+credentials, endpoints, real order placement, or automatic trading.
+
 Future AccountingEngine replay, read model refresh, snapshot refresh,
 snapshot rebuild, audit write, ledger policy, broker capability, real order
 placement, or automatic trading must be separately authorized.

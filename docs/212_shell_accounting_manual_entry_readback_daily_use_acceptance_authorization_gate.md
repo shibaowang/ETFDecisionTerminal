@@ -49,15 +49,11 @@ endpoint handling, real order placement, or automatic trading.
 Daily-use acceptance for `position.list` requires:
 
 - Manual BUY position visible after a successful manual transaction write.
-- Instrument code visible for the manual entry position.
-- instrument code visible.
+- Instrument code visible for the manual entry position (`instrument code visible`).
 - Account / portfolio mapping visible for the manual entry position.
-- account / portfolio mapping visible.
 - Manual SELL reduction visible after a successful manual SELL, or an explicit
   safe not-ready issue if a scenario is not yet supported.
-- market value unavailable if there are no prices.
 - Market value unavailable if there are no prices.
-- unrealized PnL unavailable if there are no prices.
 - Unrealized PnL unavailable if there are no prices.
 - No fabricated market value or unrealized PnL.
 - No silent success when data is partial or unavailable.
@@ -76,9 +72,7 @@ Daily-use acceptance for `cash.summary` requires:
 - SELL cash inflow visible after a successful manual transaction write, or an
   explicit safe not-ready issue if a scenario is not yet supported.
 - Currency visible.
-- currency visible.
 - Principal base policy visible or a safe not-ready issue when unsupported.
-- principal base policy visible or safe not-ready issue.
 - No fabricated principal or cash facts.
 - No silent success when data is partial or unavailable.
 - No QML calculation of cash.
@@ -119,9 +113,7 @@ or real broker order id.
 Manual entry write + readback is partially daily-use ready.
 
 Position and cash readback can be accepted for the BUY + Deposit baseline.
-SELL, Withdrawal, PnL, market price, and AccountingEngine replay remain
-separate future work unless already covered by explicit runtime tests.
-SELL, Withdrawal, PnL, market price, and AccountingEngine replay remain separate future work.
+SELL, Withdrawal, PnL, market price, and AccountingEngine replay remain separate future work unless already covered by explicit runtime tests.
 
 The recommended next task is TASK-209 runtime daily-use acceptance
 implementation. Future replay, audit, ledger, backup/export, packaging,

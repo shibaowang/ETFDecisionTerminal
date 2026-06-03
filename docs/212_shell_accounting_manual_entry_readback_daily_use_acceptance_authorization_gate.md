@@ -119,3 +119,9 @@ The recommended next task is TASK-209 runtime daily-use acceptance
 implementation. Future replay, audit, ledger, backup/export, packaging,
 broker sandbox, real broker order, strategy execution, and automatic trading
 must remain separate TASKs.
+
+TASK-209 has now added tests-and-docs-only runtime daily-use acceptance coverage
+for the BUY + Deposit baseline. The acceptance boundary remains no production
+code changes, no production QML calculation, no replay implementation, no audit
+/ ledger write expansion, no broker / network / credentials / endpoint, no real
+order placement, and no automatic trading.

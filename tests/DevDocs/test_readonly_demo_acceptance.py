@@ -13667,6 +13667,125 @@ def main() -> int:
         ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-208 retains real broker gate"),
     ]:
         require(token in task208_test + tests_cmake, message)
+
+    task209_doc_path = (
+        root
+        / "docs"
+        / "214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md"
+    )
+    task209_plan_path = (
+        root
+        / "docs"
+        / "215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md"
+    )
+    task209_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance"
+        / "CMakeLists.txt"
+    )
+    task209_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance"
+        / "manual_entry_readback_daily_use_runtime_acceptance.cpp"
+    )
+    require(task209_doc_path.exists(), "docs/214 exists")
+    require(task209_plan_path.exists(), "docs/215 exists")
+    require(task209_cmake_path.exists(), "TASK-209 tests CMake exists")
+    require(task209_test_path.exists(), "TASK-209 runtime test exists")
+    task209_doc = task209_doc_path.read_text(encoding="utf-8")
+    task209_plan = task209_plan_path.read_text(encoding="utf-8")
+    task209_cmake = task209_cmake_path.read_text(encoding="utf-8")
+    task209_test = task209_test_path.read_text(encoding="utf-8")
+    require(
+        "docs/214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md" in readme,
+        "README links docs/214",
+    )
+    require(
+        "docs/215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md" in readme,
+        "README links docs/215",
+    )
+    require(
+        "214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md" in docs_index,
+        "docs/README links docs/214",
+    )
+    require(
+        "215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md" in docs_index,
+        "docs/README links docs/215",
+    )
+    require("TASK-209" in codex_prompt_template, "docs/12 registers TASK-209")
+    require("TASK-209 has now added tests-and-docs-only runtime daily-use acceptance coverage" in task208_doc, "docs/212 references TASK-209")
+    require("TASK-209 runtime daily-use acceptance tests pass" in task208_plan, "docs/213 references TASK-209 tests")
+    for token, message in [
+        ("TASK-209 adds runtime acceptance coverage", "docs/214 documents runtime acceptance"),
+        ("tests-and-docs only", "docs/214 blocks production implementation"),
+        ("temporary SQLite database", "docs/214 uses temporary SQLite"),
+        ("accounting.manual_transaction.create", "docs/214 covers manual transaction setup"),
+        ("accounting.manual_cash_movement.create", "docs/214 covers cash movement setup"),
+        ("position.list", "docs/214 covers position.list"),
+        ("cash.summary", "docs/214 covers cash.summary"),
+        ("portfolio.pnl.summary", "docs/214 covers portfolio.pnl.summary"),
+        ("Manual BUY", "docs/214 covers manual BUY"),
+        ("Deposit", "docs/214 covers Deposit"),
+        ("UNAVAILABLE", "docs/214 covers safe unavailable fields"),
+        ("MANUAL_ENTRY_READBACK_MAPPING", "docs/214 covers readback issue"),
+        ("PNL_UNAVAILABLE_WITHOUT_REPLAY", "docs/214 covers PnL issue"),
+        ("Readback does not write additional database rows", "docs/214 covers no-write readback"),
+        ("Production QML does not calculate positions", "docs/214 blocks QML calculation"),
+        ("No replay, audit / ledger, broker, network, credentials, endpoint, real order", "docs/214 blocks forbidden capability"),
+    ]:
+        require(token in task209_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/215 contains Test Matrix"),
+        ("Required Probes", "docs/215 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/215 contains Go/No-Go"),
+        ("Temporary SQLite fixture", "docs/215 covers SQLite fixture"),
+        ("BUY write setup", "docs/215 covers BUY setup"),
+        ("Deposit write setup", "docs/215 covers Deposit setup"),
+        ("position.list acceptance", "docs/215 covers position acceptance"),
+        ("cash.summary acceptance", "docs/215 covers cash acceptance"),
+        ("portfolio.pnl.summary acceptance", "docs/215 covers portfolio acceptance"),
+        ("Readback no-write", "docs/215 covers no-write"),
+        ("Payload privacy", "docs/215 covers privacy"),
+        ("Static production boundary", "docs/215 covers static boundary"),
+        ("Broker boundary", "docs/215 covers broker boundary"),
+        ("No AccountingEngine replay integration probe", "docs/215 blocks replay"),
+        ("No audit / ledger write probe", "docs/215 blocks audit ledger"),
+        ("No broker / network / credentials / endpoint probe", "docs/215 blocks broker network"),
+        ("No real order / automatic trading probe", "docs/215 blocks real order auto"),
+    ]:
+        require(token in task209_plan, message)
+    for token, message in [
+        ("shell_accounting_manual_entry_readback_daily_use_runtime_acceptance", "TASK-209 CTest exists"),
+        ("SAManualEntryReadbackDailyUseRuntimeAcceptanceTests", "TASK-209 CTest executable exists"),
+    ]:
+        require(token in task209_cmake, message)
+    for token, message in [
+        ("applyMigrationFile(h.root / \"migrations\" / \"001_initial_schema.sql\")", "TASK-209 applies migration 001"),
+        ("002_shell_accounting_manual_entry_schema.sql", "TASK-209 applies migration 002"),
+        ("kActionAccountingManualTransactionCreate", "TASK-209 writes manual transaction through DataService"),
+        ("kActionAccountingManualCashMovementCreate", "TASK-209 writes manual cash movement through DataService"),
+        ("kActionPositionList", "TASK-209 calls position.list"),
+        ("kActionCashSummary", "TASK-209 calls cash.summary"),
+        ("kActionPortfolioPnlSummary", "TASK-209 calls portfolio.pnl.summary"),
+        ("requireSameCounts", "TASK-209 verifies readback no-write"),
+        ("\\\"quantityText\\\":\\\"1\\\"", "TASK-209 verifies BUY quantity"),
+        ("\\\"cashBalanceText\\\":\\\"297.80\\\"", "TASK-209 verifies cash balance"),
+        ("\\\"principalBaseText\\\":\\\"500.00\\\"", "TASK-209 verifies principal base"),
+        ("\\\"holdingCostText\\\":\\\"202.00\\\"", "TASK-209 verifies holding cost"),
+        ("\\\"totalPnlText\\\":\\\"UNAVAILABLE\\\"", "TASK-209 verifies unavailable total PnL"),
+        ("requireSafePayload", "TASK-209 checks response privacy"),
+        ("requireNotContains(qml, token", "TASK-209 checks QML boundary"),
+        ("BrokerOrderPort", "TASK-209 checks broker boundary"),
+        ("StrategyEngine", "TASK-209 checks strategy boundary"),
+        ("automaticTrading", "TASK-209 checks automatic trading boundary"),
+    ]:
+        require(token in task209_test, message)
+    require(
+        "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance" in tests_cmake,
+        "tests/CMakeLists registers TASK-209",
+    )
     return 0
 
 

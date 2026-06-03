@@ -54,6 +54,7 @@ Go only if:
 - docs/212 contains portfolio.pnl.summary safe partial acceptance.
 - docs/212 contains MVP ready / not-ready conclusion.
 - docs/212 recommends TASK-209 runtime daily-use acceptance implementation.
+- TASK-209 runtime daily-use acceptance tests pass when separately authorized.
 - production code, QML, startup, Presenter, Controller, ShellServices,
   DataServiceActions, repositories, and migrations are unchanged.
 - no daily-use acceptance implementation, runtime SQL / SQLite read/write,

@@ -144,3 +144,16 @@ acceptance implementation, audit write policy, ledger policy, real broker
 capability, strategy execution, or automatic trading must be separately
 authorized. Broker sandbox new capability development remains paused in this
 phase, and existing broker gates remain required.
+
+## TASK-204 Runtime E2E Acceptance Update
+
+TASK-204 adds the separately authorized runtime E2E acceptance implementation
+for the manual entry MVP chain. TASK-204 uses temporary SQLite databases,
+applies migrations 001 / 002, and verifies synthetic manual BUY and Deposit
+payloads through existing DataService action boundaries.
+
+TASK-204 does not modify production code, does not add product functionality,
+does not modify QML / Presenter / Controller / ShellServices, does not modify
+DataServiceActions, repositories, or migrations, does not connect replay, does
+not write audit or ledger rows, does not connect broker, network, credentials,
+or endpoints, does not place real orders, and does not enable automatic trading.

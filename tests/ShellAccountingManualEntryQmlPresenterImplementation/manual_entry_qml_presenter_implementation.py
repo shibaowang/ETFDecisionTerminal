@@ -158,6 +158,9 @@ def main() -> int:
         "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md",
         "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md",
         "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
+        "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md",
+        "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
@@ -203,6 +206,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-200 changed unauthorized paths: " + ", ".join(unexpected))
@@ -215,7 +220,6 @@ def main() -> int:
     ]:
         require(not any(path.startswith(forbidden) for path in changes), f"TASK-200 must not change {forbidden}")
     for forbidden in [
-        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
         "apps/ETFDecisionShell/src/main.cpp",

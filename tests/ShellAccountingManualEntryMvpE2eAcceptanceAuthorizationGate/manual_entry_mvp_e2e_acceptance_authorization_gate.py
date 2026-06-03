@@ -213,6 +213,9 @@ def main() -> int:
         "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md",
         "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md",
         "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
+        "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md",
+        "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
         "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
@@ -229,6 +232,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-203 changed unauthorized paths: " + ", ".join(unexpected))
@@ -236,7 +241,6 @@ def main() -> int:
     forbidden_prefixes = [
         "apps/",
         "libs/ShellServices/",
-        "libs/DataServiceApi/",
         "libs/DataAccess/",
         "libs/AccountingEngine/",
         "libs/StrategyEngine/",
@@ -245,6 +249,12 @@ def main() -> int:
     ]
     for prefix in forbidden_prefixes:
         require(not any(path.startswith(prefix) for path in changes), f"TASK-203 must not change {prefix}")
+    for path in changes:
+        if path.startswith("libs/DataServiceApi/"):
+            require(
+                path == "libs/DataServiceApi/src/DataServiceActions.cpp",
+                f"TASK-203/TASK-207 only permits DataServiceActions readback mapping, not {path}",
+            )
     require(not any(path.endswith(".sql") for path in changes), "TASK-203 must not add SQL or schema files")
 
     for token in [

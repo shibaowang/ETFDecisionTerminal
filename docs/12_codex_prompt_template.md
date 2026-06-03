@@ -2007,6 +2007,26 @@ order, and automatic trading work remain separate TASKs. First phase remains no
 real broker, no automatic trading, no real order placement, and broker sandbox
 new capability remains paused.
 
+## TASK-207 Manual Entry Readback Mapping Implementation Prompt Rule
+
+Future work after TASK-207 must reference
+`docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md`
+and
+`docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md`.
+TASK-207 implements DataService readback mapping only for `position.list`,
+`cash.summary`, and safe partial `portfolio.pnl.summary` using persisted manual
+entry facts.
+
+Do not treat TASK-207 as authorization to modify QML, startup, Presenter,
+Controller, ShellServices adapter / port code, DataServiceActionRegistrar,
+manual write repositories, migrations, AccountingEngine replay, snapshot
+rebuild, derived table refresh, audit / ledger writes, broker SDKs, network,
+credentials, endpoints, real order placement, real broker order ids, or
+automatic trading. Unsupported PnL must remain safe partial / unavailable and
+must not be fabricated. Future replay, audit, ledger, backup/export, packaging,
+broker sandbox, real broker order, strategy execution, and automatic trading
+remain separate TASKs.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -3649,3 +3649,25 @@ broker sandbox new capability remains paused. See
 `docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md`
 and
 `docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md`.
+
+## TASK-207 Manual Entry Readback Mapping Implementation
+
+TASK-207 implements the minimum DataService readback mapping for persisted
+manual entry facts. Existing read actions now consume authorized manual entry
+facts for `position.list`, `cash.summary`, and a safe partial
+`portfolio.pnl.summary` when snapshot read-only facts are absent and replay is
+not requested.
+
+The mapping reads manual BUY / SELL facts, Deposit / Withdrawal cash movement
+facts, duplicate-idempotent persisted rows, and safe response issues through
+the DataService boundary. It does not implement AccountingEngine replay,
+snapshot rebuild, derived table refresh, audit / ledger write, backup/export,
+broker SDK, network, credentials, endpoint, real order placement, real broker
+order ids, or automatic trading. It does not modify production QML, startup,
+Presenter, Controller, ShellServices, write repositories, migrations, or
+DataServiceActionRegistrar. First phase remains no real broker, no automatic
+trading, no real order placement, and broker sandbox new capability remains
+paused. See
+`docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md`
+and
+`docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md`.

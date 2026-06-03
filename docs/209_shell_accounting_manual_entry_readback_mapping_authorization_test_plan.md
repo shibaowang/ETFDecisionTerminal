@@ -21,8 +21,9 @@ user data.
 | cash.summary mapping policy | Verify docs/208 covers BUY cash outflow, SELL cash inflow, Deposit cash inflow, Withdrawal cash outflow, fee / tax cash treatment, `cash_adjustment.trade_log_id`, currency aggregation, principal base, and negative cash / insufficient cash policy. |
 | portfolio.pnl.summary mapping policy | Verify docs/208 covers realized PnL, unrealized PnL, fee / tax treatment, cash movement treatment, principal flow, market price dependency, stale price / missing price, and multi-instrument / multi-account handling. |
 | Formal authorization conclusion | Verify docs/208 states TASK-206 only authorizes future readback mapping implementation after a separate implementation TASK and recommends TASK-207. |
-| Production drift | Verify production code unchanged, QML / Presenter / Controller unchanged, ShellServices adapter / port unchanged, DataServiceActions unchanged, repositories unchanged, and migrations unchanged. |
-| Forbidden capability drift | Verify no runtime SQL / SQLite read/write, no replay implementation, no audit / ledger write, no broker / network / credentials / endpoint, no real order placement, and no automatic trading. |
+| TASK-207 implementation evolution | Verify the gate permits only the TASK-207 DataService readback mapping implementation in `DataServiceActions.cpp` plus TASK-207 docs and tests. |
+| Production drift | Verify QML / Presenter / Controller unchanged, ShellServices adapter / port unchanged, DataServiceActionRegistrar unchanged, repositories unchanged, and migrations unchanged. |
+| Forbidden capability drift | Verify no runtime SQLite write in readback, no replay implementation, no audit / ledger write, no broker / network / credentials / endpoint, no real order placement, and no automatic trading. |
 | Regression | Verify existing TASK-205 / TASK-204 / TASK-202 / TASK-200 / TASK-198 / TASK-196 / TASK-192 gates and broker / real broker gates remain retained. |
 
 ## Required Probes
@@ -30,15 +31,15 @@ user data.
 - Static source scan.
 - Documentation token scan.
 - Changed-path allowlist scan.
-- No production code changed scan.
+- TASK-207 DataService readback mapping implementation scan.
 - No QML / startup / Presenter / Controller drift scan.
 - No ShellServices adapter / port drift scan.
-- No DataServiceActions drift scan.
+- No DataServiceActionRegistrar drift scan.
 - No DataAccess repository drift scan.
 - No migrations drift scan.
 - No new migration / schema file scan.
-- No runtime SQL / SQLite read/write scan.
-- No readback implementation scan.
+- No runtime SQL / SQLite write outside readback scan.
+- Authorized readback implementation scan.
 - No AccountingEngine replay implementation scan.
 - No snapshot rebuild / derived table refresh scan.
 - No audit / ledger write scan.
@@ -65,10 +66,10 @@ Go only if:
 - TASK-198 DataService write wiring implementation remains passing.
 - TASK-196 / TASK-192 repository tests remain passing.
 - Broker and real broker gates remain passing.
-- No production code changed.
+- Only authorized TASK-207 DataService readback mapping production code changed.
 - No migrations changed.
-- No readback mapping implementation was added.
-- No runtime SQL / SQLite read/write was added.
+- No unauthorized production code changed.
+- No runtime SQL / SQLite write was added by readback.
 - No replay implementation was added.
 - No audit / ledger write was added.
 - No broker, network, credentials, endpoint, real order, or automatic trading

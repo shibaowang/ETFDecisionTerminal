@@ -211,6 +211,9 @@ def main() -> int:
         "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md",
         "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md",
         "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
+        "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md",
+        "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
         "libs/ShellServices/src/ShellAccountingPresenter.cpp",
@@ -234,13 +237,14 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-201 changed unauthorized paths: " + ", ".join(unexpected))
 
     forbidden_prefixes = [
         "libs/DataAccess/",
-        "libs/DataServiceApi/",
         "libs/AccountingEngine/",
         "libs/StrategyEngine/",
         "libs/MarketEngine/",
@@ -251,7 +255,6 @@ def main() -> int:
 
     forbidden_files = [
         "apps/ETFDecisionShell/src/main.cpp",
-        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
         "migrations/001_initial_schema.sql",
@@ -259,6 +262,12 @@ def main() -> int:
     ]
     for path in forbidden_files:
         require(path not in changes, f"TASK-201 must not change {path}")
+    for path in changes:
+        if path.startswith("libs/DataServiceApi/"):
+            require(
+                path == "libs/DataServiceApi/src/DataServiceActions.cpp",
+                f"TASK-201/TASK-207 only permits DataServiceActions readback mapping, not {path}",
+            )
 
     for token in [
         "DataServiceClient",

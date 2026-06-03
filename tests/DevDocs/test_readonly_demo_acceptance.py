@@ -13418,7 +13418,7 @@ def main() -> int:
         ("no direct UI DB access", "docs/208 blocks direct UI DB"),
         ("does not authorize replay", "docs/208 blocks replay"),
         ("does not authorize audit / ledger", "docs/208 blocks audit ledger"),
-        ("Recommended next task: TASK-207 manual entry readback mapping implementation", "docs/208 recommends TASK-207"),
+        ("TASK-207 has now implemented the authorized DataService readback mapping", "docs/208 records TASK-207"),
         ("Broker sandbox new capability development remains paused", "docs/208 keeps broker sandbox paused"),
         ("real order placement", "docs/208 blocks real order"),
         ("automatic trading", "docs/208 blocks automatic trading"),
@@ -13435,8 +13435,9 @@ def main() -> int:
         ("Formal authorization conclusion", "docs/209 covers conclusion"),
         ("Production drift", "docs/209 covers production drift"),
         ("Forbidden capability drift", "docs/209 covers forbidden drift"),
-        ("no runtime SQL / SQLite read/write", "docs/209 blocks runtime SQL"),
-        ("no readback implementation", "docs/209 blocks readback implementation"),
+        ("TASK-207 implementation evolution", "docs/209 covers TASK-207 implementation evolution"),
+        ("No runtime SQL / SQLite write outside readback scan", "docs/209 blocks readback write drift"),
+        ("Authorized readback implementation scan", "docs/209 covers authorized readback implementation"),
         ("no AccountingEngine replay implementation", "docs/209 blocks replay"),
         ("no audit / ledger write", "docs/209 blocks audit ledger"),
         ("no broker, network, credentials, endpoint, real order, or automatic trading", "docs/209 blocks broker/order/auto"),
@@ -13450,6 +13451,97 @@ def main() -> int:
         "ShellAccountingManualEntryReadbackMappingAuthorizationGate" in tests_cmake,
         "TASK-206 test directory registered",
     )
+    task207_doc_path = root / "docs" / "210_shell_accounting_manual_entry_readback_mapping_implementation.md"
+    task207_plan_path = root / "docs" / "211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md"
+    task207_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackMappingImplementation"
+        / "CMakeLists.txt"
+    )
+    task207_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackMappingImplementation"
+        / "manual_entry_readback_mapping_implementation.cpp"
+    )
+    require(task207_doc_path.exists(), "docs/210 exists")
+    require(task207_plan_path.exists(), "docs/211 exists")
+    require(task207_cmake_path.exists(), "TASK-207 tests CMake exists")
+    require(task207_test_path.exists(), "TASK-207 implementation test exists")
+    task207_doc = task207_doc_path.read_text(encoding="utf-8")
+    task207_plan = task207_plan_path.read_text(encoding="utf-8")
+    task207_cmake = task207_cmake_path.read_text(encoding="utf-8")
+    task207_test = task207_test_path.read_text(encoding="utf-8")
+    require(
+        "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md" in readme,
+        "README links docs/210",
+    )
+    require(
+        "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md" in readme,
+        "README links docs/211",
+    )
+    require(
+        "210_shell_accounting_manual_entry_readback_mapping_implementation.md" in docs_index,
+        "docs/README links docs/210",
+    )
+    require(
+        "211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/211",
+    )
+    require("TASK-207" in codex_prompt_template, "docs/12 registers TASK-207")
+    for token, message in [
+        ("TASK-207 implements the minimum DataService readback mapping", "docs/210 documents implementation"),
+        ("position.list", "docs/210 covers position.list"),
+        ("cash.summary", "docs/210 covers cash.summary"),
+        ("portfolio.pnl.summary", "docs/210 covers portfolio pnl"),
+        ("BUY increases quantity", "docs/210 covers BUY quantity"),
+        ("SELL decreases quantity", "docs/210 covers SELL reduction"),
+        ("Deposit and Withdrawal", "docs/210 covers cash movements"),
+        ("Realized and unrealized PnL flags remain false", "docs/210 covers PnL flags"),
+        ("must not fabricate", "docs/210 blocks fabricated values"),
+        ("does not implement AccountingEngine replay", "docs/210 blocks replay"),
+        ("does not write audit or ledger rows", "docs/210 blocks audit ledger"),
+        ("does not connect broker SDK", "docs/210 blocks broker SDK"),
+        ("place real orders", "docs/210 blocks real orders"),
+        ("automatic trading", "docs/210 blocks automatic trading"),
+        ("Broker sandbox new capability development remains paused", "docs/210 keeps broker sandbox paused"),
+    ]:
+        require(token in task207_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/211 contains Test Matrix"),
+        ("Required Probes", "docs/211 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/211 contains Go/No-Go"),
+        ("Manual BUY fixture", "docs/211 covers BUY fixture"),
+        ("Manual SELL fixture", "docs/211 covers SELL fixture"),
+        ("Manual Deposit fixture", "docs/211 covers Deposit fixture"),
+        ("Manual Withdrawal fixture", "docs/211 covers Withdrawal fixture"),
+        ("Duplicate idempotency", "docs/211 covers duplicate idempotency"),
+        ("position.list mapping", "docs/211 covers position mapping"),
+        ("cash.summary mapping", "docs/211 covers cash mapping"),
+        ("portfolio.pnl.summary mapping", "docs/211 covers pnl mapping"),
+        ("No readback write", "docs/211 covers no readback write"),
+        ("No AccountingEngine replay scan", "docs/211 blocks replay"),
+        ("No broker / network / credentials / endpoint scan", "docs/211 blocks broker/network"),
+        ("No real order / automatic trading scan", "docs/211 blocks real order auto trading"),
+    ]:
+        require(token in task207_plan, message)
+    for token, message in [
+        ("shell_accounting_manual_entry_readback_mapping_implementation", "TASK-207 CTest exists"),
+        ("SAManualEntryReadbackMappingImplementationTests", "TASK-207 test executable exists"),
+    ]:
+        require(token in task207_cmake, message)
+    for token, message in [
+        ("loadManualEntryReadbackPositions", "TASK-207 test checks position helper"),
+        ("loadManualEntryReadbackCashSummaries", "TASK-207 test checks cash helper"),
+        ("manualEntryPortfolioSummariesFromReadback", "TASK-207 test checks portfolio helper"),
+        ("MANUAL_ENTRY_READBACK_MAPPING", "TASK-207 test checks readback issue"),
+        ("PNL_UNAVAILABLE_WITHOUT_REPLAY", "TASK-207 test checks PnL issue"),
+        ("ShellAccountingManualEntryReadbackMappingImplementation", "TASK-207 tests are registered"),
+        ("ShellAccountingBrokerOrderImplementation", "TASK-207 retains broker gate"),
+        ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-207 retains real broker gate"),
+    ]:
+        require(token in task207_test + tests_cmake, message)
     return 0
 
 

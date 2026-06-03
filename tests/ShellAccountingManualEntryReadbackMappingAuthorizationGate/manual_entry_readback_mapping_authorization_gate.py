@@ -128,10 +128,10 @@ def main() -> int:
         "no replay unless separately authorized",
         "no broker",
         "Formal Authorization Conclusion",
-        "TASK-206 authorizes future readback mapping implementation only after a separate implementation TASK",
+        "TASK-207 has now implemented the authorized DataService readback mapping",
         "does not authorize replay",
         "does not authorize audit / ledger",
-        "Recommended next task: TASK-207 manual entry readback mapping implementation",
+        "TASK-207 has now implemented the authorized DataService readback mapping",
         "broker SDK",
         "network",
         "credentials",
@@ -156,8 +156,9 @@ def main() -> int:
         "Production drift",
         "Forbidden capability drift",
         "no production code changed",
-        "no runtime SQL / SQLite read/write",
-        "no readback implementation",
+        "TASK-207 implementation evolution",
+        "No runtime SQL / SQLite write outside readback scan",
+        "Authorized readback implementation scan",
         "no AccountingEngine replay implementation",
         "no audit / ledger write",
         "no broker, network, credentials, endpoint, real order, or automatic trading",
@@ -179,11 +180,16 @@ def main() -> int:
         "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md",
         "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md",
         "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
+        "docs/210_shell_accounting_manual_entry_readback_mapping_implementation.md",
+        "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
+        "libs/DataServiceApi/src/DataServiceActions.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/manual_entry_readback_mapping_implementation.cpp",
         "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
         "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
@@ -199,7 +205,6 @@ def main() -> int:
     forbidden_prefixes = [
         "apps/",
         "libs/ShellServices/",
-        "libs/DataServiceApi/",
         "libs/DataAccess/",
         "libs/AccountingEngine/",
         "libs/StrategyEngine/",
@@ -208,6 +213,12 @@ def main() -> int:
     ]
     for prefix in forbidden_prefixes:
         require(not any(path.startswith(prefix) for path in changes), f"TASK-206 must not change {prefix}")
+    for path in changes:
+        if path.startswith("libs/DataServiceApi/"):
+            require(
+                path == "libs/DataServiceApi/src/DataServiceActions.cpp",
+                f"TASK-206/TASK-207 only permits DataServiceActions readback mapping, not {path}",
+            )
 
     require(not any(path.endswith(".sql") for path in changes), "TASK-206 must not add migration or schema files")
 
@@ -217,19 +228,11 @@ def main() -> int:
         "UPDATE ",
         "DELETE ",
         "REPLACE ",
-        "SELECT ",
-        "SQLite",
-        "readback",
-        "AccountingEngine",
-        "Replay",
-        "snapshot",
         "audit_log",
         "ledger",
         "Broker",
         "broker",
         "network",
-        "credentials",
-        "endpoint",
         "realOrder",
         "brokerOrderId",
         "automatic trading",

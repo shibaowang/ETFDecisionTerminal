@@ -317,8 +317,12 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
         "docs/226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md",
         "docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md",
+        "docs/228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md",
+        "docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-202 changed unauthorized paths: " + ", ".join(unexpected))

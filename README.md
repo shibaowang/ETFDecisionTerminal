@@ -3829,3 +3829,23 @@ and
 `docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md`.
 Recommended next task is TASK-216 manual entry replay fixture files scaffold
 authorization gate.
+
+## TASK-216 Manual Entry Replay Fixture Files Scaffold Authorization Gate
+
+TASK-216 adds a gate-only replay fixture files scaffold authorization. It
+defines future scaffold directory, file set, fixture index, placeholder
+content, JSON schema, static validation, privacy, no-runtime-dependency, and
+out-of-scope boundaries for manual entry replay fixture file scaffolding.
+
+TASK-216 does not create replay fixture files, does not create replay fixture
+JSON, does not create fixture index files, does not create seed DB or runtime
+fixture data, does not implement parser / validator work, does not implement
+replay, does not call AccountingEngine replay, does not modify production code,
+production QML, DataServiceActions, repositories, or migrations, does not write
+audit / ledger / snapshot rows, does not implement backup/export/restore, does
+not connect broker, network, credentials, or endpoint, and does not place real
+orders or enable automatic trading. See
+`docs/228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md`
+and
+`docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md`.
+Recommended next task is TASK-217 manual entry replay fixture files scaffold.

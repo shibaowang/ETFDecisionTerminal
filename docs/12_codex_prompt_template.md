@@ -2197,6 +2197,25 @@ credentials / endpoint / real order / automatic trading.
 Recommended next task: TASK-216 manual entry replay fixture files scaffold
 authorization gate.
 
+## TASK-216 Manual Entry Replay Fixture Files Scaffold Authorization Gate Prompt Rule
+
+Future manual entry replay fixture scaffold, fixture file creation, fixture
+parser / validator, or replay implementation work must reference
+`docs/228_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_gate.md`
+and
+`docs/229_shell_accounting_manual_entry_replay_fixture_files_scaffold_authorization_test_plan.md`.
+
+TASK-216 authorizes replay fixture files scaffold policy only. TASK-216 does
+not authorize creation of replay fixture files, creation of replay fixture
+JSON, creation of fixture index files, parser or validator implementation,
+replay implementation, AccountingEngine replay calls, runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, backup/export/restore, broker /
+network / credentials / endpoint / real order / automatic trading, production
+code changes, production QML changes, DataServiceActions changes, repository
+changes, or migration changes.
+
+Recommended next task: TASK-217 manual entry replay fixture files scaffold.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

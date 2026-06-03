@@ -244,6 +244,8 @@ def main() -> int:
         "docs/213_shell_accounting_manual_entry_readback_daily_use_acceptance_authorization_test_plan.md",
         "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md",
         "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md",
+        "docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md",
+        "docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",

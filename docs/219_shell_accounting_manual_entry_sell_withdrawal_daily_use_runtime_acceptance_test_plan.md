@@ -83,3 +83,11 @@ No-Go if TASK-211 modifies production code, changes DataServiceActions,
 changes repositories, changes migrations, adds runtime replay, writes audit or
 ledger rows, fabricates PnL, calls broker/network code, places a real order, or
 enables automatic trading.
+
+TASK-212 follow-up note: replay / audit / ledger / backup-export adequacy is now
+tracked by
+`docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md`
+and
+`docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md`.
+TASK-212 remains review-gate-only and does not implement replay, audit / ledger,
+backup/export/restore, broker, real order placement, or automatic trading.

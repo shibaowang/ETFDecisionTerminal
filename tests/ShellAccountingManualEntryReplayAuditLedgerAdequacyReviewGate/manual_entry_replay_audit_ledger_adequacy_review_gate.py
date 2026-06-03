@@ -1,0 +1,305 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+from pathlib import Path
+
+
+class Gate:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+    def contains(self, text: str, token: str, context: str) -> None:
+        self.require(token in text, f"{context} missing `{token}`")
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def changed_paths(root: Path) -> set[str]:
+    completed = subprocess.run(
+        ["git", "diff", "--name-only", "main"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def diff_text(root: Path, *paths: str) -> str:
+    completed = subprocess.run(
+        ["git", "diff", "main", "--", *paths],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout
+
+
+def added_lines(diff: str) -> str:
+    return "\n".join(line[1:] for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++"))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    gate = Gate()
+
+    doc220_path = root / "docs" / "220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md"
+    doc221_path = root / "docs" / "221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md"
+    test_dir = root / "tests" / "ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate"
+    test_cmake_path = test_dir / "CMakeLists.txt"
+    test_py_path = test_dir / "manual_entry_replay_audit_ledger_adequacy_review_gate.py"
+
+    gate.require(doc220_path.exists(), "docs/220 exists")
+    gate.require(doc221_path.exists(), "docs/221 exists")
+    gate.require(test_cmake_path.exists(), "TASK-212 CMake exists")
+    gate.require(test_py_path.exists(), "TASK-212 gate script exists")
+
+    doc220 = read(doc220_path)
+    doc221 = read(doc221_path)
+    readme = read(root / "README.md")
+    docs_index = read(root / "docs" / "README.md")
+    prompt = read(root / "docs" / "12_codex_prompt_template.md")
+    tests_cmake = read(root / "tests" / "CMakeLists.txt")
+    devdocs = read(root / "tests" / "DevDocs" / "test_readonly_demo_acceptance.py")
+    doc218 = read(root / "docs" / "218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md")
+    doc219 = read(root / "docs" / "219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md")
+
+    for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
+        gate.contains(text, "TASK-212", context)
+        gate.contains(text, "220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md", context)
+        gate.contains(text, "221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md", context)
+
+    gate.contains(tests_cmake, "ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate", "tests/CMakeLists")
+    gate.contains(read(test_cmake_path), "shell_accounting_manual_entry_replay_audit_ledger_adequacy_review", "TASK-212 CTest")
+    gate.contains(devdocs, "docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md", "DevDocs")
+    gate.contains(devdocs, "docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md", "DevDocs")
+    gate.contains(devdocs, "shell_accounting_manual_entry_replay_audit_ledger_adequacy_review", "DevDocs")
+    gate.contains(doc218, "TASK-212", "docs/218")
+    gate.contains(doc219, "TASK-212", "docs/219")
+
+    for token in [
+        "TASK-212",
+        "review-gate-only",
+        "does not implement new functionality",
+        "does not modify production code",
+        "does not modify DataServiceActions",
+        "does not modify DataServiceActionRegistrar",
+        "repositories",
+        "migrations",
+        "does not implement AccountingEngine replay",
+        "does not write audit / ledger rows",
+        "does not implement backup/export/restore",
+        "does not add runtime SQL / SQLite read/write",
+        "no real broker",
+        "no automatic trading",
+        "no real order placement",
+        "Broker sandbox new capability remains paused",
+        "TASK-192",
+        "TASK-196",
+        "TASK-198",
+        "TASK-200",
+        "TASK-202",
+        "TASK-204",
+        "TASK-207",
+        "TASK-209",
+        "TASK-211",
+        "BUY / SELL",
+        "Deposit / Withdrawal",
+        "fee / tax",
+        "realized PnL",
+        "unrealized PnL",
+        "market price dependency",
+        "cost basis",
+        "sell exceeds position",
+        "negative cash / insufficient cash",
+        "multi-account / multi-portfolio / multi-instrument",
+        "idempotency and duplicate handling",
+        "replay input DTO",
+        "replay output mapping",
+        "no replay side effects",
+        "requestId",
+        "idempotencyKey",
+        "actor / user confirmation",
+        "sanitized memo",
+        "before / after facts",
+        "validation issue",
+        "repository result",
+        "readback status",
+        "sensitive data redaction",
+        "no raw SQL / raw payload exposure",
+        "audit failure behavior",
+        "audit storage boundary",
+        "manual transaction ledger facts",
+        "cash movement ledger facts",
+        "trade_log source-of-truth relationship",
+        "cash_adjustment linkage",
+        "position / cash / pnl derived facts",
+        "double-entry policy",
+        "rollback / idempotency semantics",
+        "ledger immutability policy",
+        "correction / void policy",
+        "reconciliation policy",
+        "migration 001 / 002",
+        "manual entries export scope",
+        "trade_log / trade_execution_group / cash_adjustment",
+        "request trace export scope",
+        "sanitized memo export policy",
+        "schema version metadata",
+        "restore replay safety",
+        "no credentials / endpoint / broker payload export",
+        "offline local-only packaging boundary",
+        "Gap Matrix",
+        "replay gap",
+        "audit gap",
+        "ledger gap",
+        "backup/export gap",
+        "restore gap",
+        "UI explainability gap",
+        "fixture/test gap",
+        "policy decision gap",
+        "Formal Conclusion And Next Task",
+        "Manual entry daily-use local MVP is ready at readback acceptance level",
+        "Replay is not ready for implementation until replay input/output policy is separately authorized",
+        "Audit / ledger are not ready for implementation until policy is separately authorized",
+        "Backup/export/restore requires separate acceptance",
+        "Recommended next task: TASK-213 manual entry replay policy authorization gate",
+    ]:
+        gate.contains(doc220, token, "docs/220")
+
+    for token in [
+        "Test Matrix",
+        "Required Probes",
+        "Go / No-Go Checklist",
+        "docs/220 exists",
+        "docs/221 exists",
+        "Review-gate-only scope",
+        "Current coverage",
+        "Replay adequacy",
+        "Audit adequacy",
+        "Ledger adequacy",
+        "Backup/export/restore adequacy",
+        "Gap matrix",
+        "Formal conclusion",
+        "Production drift",
+        "TASK-211",
+        "TASK-209",
+        "TASK-207",
+        "TASK-204",
+        "TASK-202",
+        "TASK-200",
+        "TASK-198",
+        "TASK-196",
+        "TASK-192",
+        "No production code changed scan",
+        "No DataServiceActions drift scan",
+        "No DataAccess repository drift scan",
+        "No migrations drift scan",
+        "No runtime SQL / SQLite read/write scan",
+        "No replay implementation scan",
+        "No audit / ledger write scan",
+        "No backup/export implementation scan",
+        "No broker / network / credentials / endpoint scan",
+        "No real order / automatic trading scan",
+    ]:
+        gate.contains(doc221, token, "docs/221")
+
+    allowed_changes = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md",
+        "docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md",
+        "docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md",
+        "docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md",
+        "tests/CMakeLists.txt",
+        "tests/DevDocs/test_readonly_demo_acceptance.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    }
+    changes = changed_paths(root)
+    unexpected = sorted(path for path in changes if path not in allowed_changes)
+    gate.require(not unexpected, "TASK-212 changed unauthorized paths: " + ", ".join(unexpected))
+
+    forbidden_prefixes = [
+        "apps/",
+        "libs/ShellServices/",
+        "libs/ShellCore/",
+        "libs/DataServiceApi/",
+        "libs/DataAccess/",
+        "libs/AccountingEngine/",
+        "libs/StrategyEngine/",
+        "libs/MarketEngine/",
+        "migrations/",
+    ]
+    for prefix in forbidden_prefixes:
+        gate.require(not any(path.startswith(prefix) for path in changes), f"TASK-212 must not change {prefix}")
+    gate.require(not any(path.endswith(".sql") for path in changes), "TASK-212 must not add migration or schema files")
+
+    production_diff = added_lines(diff_text(root, "apps", "libs", "migrations"))
+    for token in [
+        "INSERT ",
+        "UPDATE ",
+        "DELETE ",
+        "REPLACE ",
+        "audit_log",
+        "ledger",
+        "backup",
+        "export",
+        "restore",
+        "AccountingReplay",
+        "Broker",
+        "broker",
+        "network",
+        "credentials",
+        "endpoint",
+        "realOrder",
+        "brokerOrderId",
+        "automaticTrading",
+    ]:
+        gate.require(token not in production_diff, f"production diff must not add `{token}`")
+
+    retained_paths = [
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryMvpRuntimeE2eAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/CMakeLists.txt",
+        "tests/ShellAccountingBrokerAdapterDisabledWiring/CMakeLists.txt",
+        "tests/ShellAccountingBrokerOrderImplementation/CMakeLists.txt",
+        "tests/ShellAccountingRealBrokerOrderAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingRealBrokerOrderImplementationGate/CMakeLists.txt",
+    ]
+    for path in retained_paths:
+        gate.require((root / path).exists(), f"retained path exists: {path}")
+
+    gate.require(gate.checks >= 90, "TASK-212 gate must execute at least 90 checks")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

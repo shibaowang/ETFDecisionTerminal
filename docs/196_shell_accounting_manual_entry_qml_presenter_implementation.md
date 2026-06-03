@@ -119,3 +119,15 @@ TASK-200 is covered by:
 Future readback, refresh, replay integration, audit UI, ledger UI, broker
 capability, real order placement, or automatic trading must be separately
 authorized.
+
+## TASK-201 Authorization Gate Update
+
+TASK-201 adds the post-write readback / refresh authorization gate for the
+manual entry flow. TASK-200 manual entry QML / Presenter wiring remains
+unchanged.
+
+Post-write readback, refresh, AccountingEngine replay integration, read model
+refresh, snapshot refresh, UI auto-refresh, refresh buttons, audit writes,
+ledger writes, broker access, network calls, credentials, endpoints, real
+order placement, and automatic trading remain unimplemented unless separately
+authorized by a later TASK.

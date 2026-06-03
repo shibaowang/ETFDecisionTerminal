@@ -3533,3 +3533,21 @@ credentials, endpoints, real order placement, or automatic trading. QML,
 Presenter, and Controller do not directly access SQLite or DataAccess. See
 `docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md` and
 `docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md`.
+
+## TASK-201 Manual Entry Post-Write Readback Refresh Authorization Gate
+
+TASK-201 adds the ShellAccounting manual entry post-write readback / refresh
+authorization gate. It documents and tests the boundary for future readback or
+refresh after successful manual transaction and manual cash movement writes.
+
+TASK-201 does not implement readback, refresh, AccountingEngine replay
+integration, read model refresh, snapshot refresh, UI auto-refresh, or refresh
+buttons. It does not modify production QML, startup, Presenter, Controller,
+ShellServices adapter / port code, DataServiceActions, DataServiceActionRegistrar,
+DataAccess repositories, validation production code, migrations, or schema
+files. It does not write SQLite, `audit_log`, ledger rows, broker payloads, or
+real order ids, and it does not add broker SDKs, network calls, credentials,
+endpoints, real order placement, or automatic trading. See
+`docs/198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md`
+and
+`docs/199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md`.

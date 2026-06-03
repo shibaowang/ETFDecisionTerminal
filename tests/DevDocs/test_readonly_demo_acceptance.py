@@ -13265,6 +13265,89 @@ def main() -> int:
         "ShellAccountingManualEntryMvpRuntimeE2eAcceptance" in tests_cmake,
         "TASK-204 test directory registered",
     )
+    task205_doc_path = root / "docs" / "206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md"
+    task205_plan_path = root / "docs" / "207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md"
+    task205_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackReplayAdequacyReviewGate"
+        / "CMakeLists.txt"
+    )
+    require(task205_doc_path.exists(), "docs/206 exists")
+    require(task205_plan_path.exists(), "docs/207 exists")
+    require(task205_cmake_path.exists(), "TASK-205 tests CMake exists")
+    task205_doc = task205_doc_path.read_text(encoding="utf-8")
+    task205_plan = task205_plan_path.read_text(encoding="utf-8")
+    task205_cmake = task205_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md" in readme,
+        "README links docs/206",
+    )
+    require(
+        "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md" in readme,
+        "README links docs/207",
+    )
+    require(
+        "206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md" in docs_index,
+        "docs/README links docs/206",
+    )
+    require(
+        "207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md" in docs_index,
+        "docs/README links docs/207",
+    )
+    require("TASK-205" in codex_prompt_template, "docs/12 registers TASK-205")
+    for token, message in [
+        ("readback / replay adequacy review gate-only", "docs/206 documents review gate scope"),
+        ("does not implement readback / replay", "docs/206 blocks implementation"),
+        ("does not modify production code", "docs/206 blocks production code drift"),
+        ("manual transaction facts", "docs/206 covers manual transaction facts"),
+        ("manual cash movement facts", "docs/206 covers manual cash movement facts"),
+        ("trade_execution_group", "docs/206 covers execution group"),
+        ("trade_log", "docs/206 covers trade log"),
+        ("cash_adjustment", "docs/206 covers cash adjustment"),
+        ("cash_adjustment.trade_log_id", "docs/206 covers cash adjustment link"),
+        ("position.list", "docs/206 covers position.list"),
+        ("cash.summary", "docs/206 covers cash.summary"),
+        ("portfolio.pnl.summary", "docs/206 covers portfolio pnl"),
+        ("AccountingEngine replay", "docs/206 covers replay adequacy"),
+        ("schema gap", "docs/206 covers schema gap"),
+        ("repository mapping gap", "docs/206 covers repository mapping gap"),
+        ("DataService readback gap", "docs/206 covers DataService readback gap"),
+        ("replay gap", "docs/206 covers replay gap"),
+        ("UI refresh gap", "docs/206 covers UI refresh gap"),
+        ("fixture/test gap", "docs/206 covers fixture gap"),
+        ("audit/ledger gap", "docs/206 covers audit ledger gap"),
+        ("backup/export gap", "docs/206 covers backup export gap"),
+        ("Formal Review Conclusion", "docs/206 has formal conclusion"),
+        ("Next Task Recommendation", "docs/206 has next task recommendation"),
+        ("TASK-206", "docs/206 names exact next task"),
+        ("Broker sandbox new capability development remains paused", "docs/206 keeps broker sandbox paused"),
+        ("real order placement", "docs/206 blocks real order"),
+        ("automatic trading", "docs/206 blocks automatic trading"),
+    ]:
+        require(token in task205_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/207 contains Test Matrix"),
+        ("Required Probes", "docs/207 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/207 contains Go/No-Go"),
+        ("Review-gate-only scope", "docs/207 covers review scope"),
+        ("Manual transaction fact adequacy", "docs/207 covers manual transaction"),
+        ("Manual cash movement fact adequacy", "docs/207 covers manual cash"),
+        ("Readback / replay gap matrix", "docs/207 covers gap matrix"),
+        ("Formal conclusion", "docs/207 covers formal conclusion"),
+        ("Production drift", "docs/207 covers production drift"),
+        ("no runtime SQL / SQLite write", "docs/207 blocks runtime SQL"),
+        ("no broker, network, credentials, endpoint, real order, or automatic trading", "docs/207 blocks broker/order/auto"),
+    ]:
+        require(token in task205_plan, message)
+    require(
+        "shell_accounting_manual_entry_readback_replay_adequacy_review" in task205_cmake,
+        "TASK-205 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryReadbackReplayAdequacyReviewGate" in tests_cmake,
+        "TASK-205 test directory registered",
+    )
     return 0
 
 

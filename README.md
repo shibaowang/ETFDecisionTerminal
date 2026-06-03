@@ -3609,3 +3609,21 @@ actions, repositories, or migrations, does not connect replay, audit, ledger,
 broker, network, credentials, endpoints, real orders, or automatic trading. See
 `docs/204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md` and
 `docs/205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md`.
+
+## TASK-205 Manual Entry Readback Replay Adequacy Review Gate
+
+TASK-205 adds a review-gate-only adequacy review for whether ShellAccounting
+manual entry facts are ready to flow into readback, future AccountingEngine
+replay, and daily-use accounting pages. It reviews manual transaction facts,
+manual cash movement facts, existing DataService read actions, and a formal gap
+matrix without implementing readback / replay.
+
+TASK-205 does not modify production code, production QML, startup, Presenter,
+Controller, ShellServices adapter / port code, DataServiceActions,
+DataServiceActionRegistrar, DataAccess repositories, migrations, schema files,
+AccountingEngine replay, audit writes, ledger writes, broker SDKs, network,
+credentials, endpoints, real order placement, real broker order ids, or
+automatic trading. See
+`docs/206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md`
+and
+`docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md`.

@@ -1963,6 +1963,28 @@ real order placement, real broker order ids, or automatic trading. Broader SELL
 and automatic trading must remain separately authorized. Broker sandbox new
 capability development remains paused.
 
+## TASK-205 Manual Entry Readback Replay Adequacy Review Gate Prompt Rule
+
+Future manual entry readback / replay adequacy work after TASK-205 must
+reference
+`docs/206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md`
+and
+`docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md`.
+TASK-205 is review-gate-only: it documents a formal conclusion and gap matrix
+for manual transaction facts, manual cash movement facts, existing DataService
+read actions, future AccountingEngine replay, and daily-use accounting pages.
+
+Do not use TASK-205 as authorization to implement readback, implement replay,
+modify production QML, startup, Presenter, Controller, ShellServices adapter /
+port code, DataServiceActions, DataServiceActionRegistrar, DataAccess
+repositories, migrations, schema files, AccountingEngine production code,
+StrategyEngine, MarketEngine, broker SDKs, network calls, credentials,
+endpoints, real order placement, real broker order ids, or automatic trading.
+Future readback implementation, AccountingEngine replay implementation, audit
+write / ledger policy, backup / export / packaging acceptance, broker sandbox
+capability, and real broker order placement must remain separately authorized.
+Broker sandbox new capability development remains paused.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

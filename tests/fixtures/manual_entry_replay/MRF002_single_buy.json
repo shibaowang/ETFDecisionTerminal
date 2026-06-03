@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "manual-entry-replay-fixture.scaffold.v1",
+  "fixtureId": "MRF002",
+  "title": "Single BUY",
+  "purpose": "Scaffold a single manual BUY for future position increase and cash outflow replay design.",
+  "category": "single_buy",
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "sourceFacts": {
+    "manualTransactions": [
+      {
+        "transactionId": "SYNTHETIC_TXN_MRF002_BUY_001",
+        "accountId": "SYNTHETIC_ACCOUNT_MRF002",
+        "portfolioId": "SYNTHETIC_PORTFOLIO_MRF002",
+        "instrumentCode": "SYNTHETIC_INSTRUMENT_MRF002",
+        "side": "BUY",
+        "quantity": "TODO_PLACEHOLDER",
+        "cashEffect": "TODO_PLACEHOLDER",
+        "memo": "SANITIZED_MEMO"
+      }
+    ],
+    "manualCashMovements": []
+  },
+  "expectedOutputs": {
+    "positionQuantity": "UNAVAILABLE_EXPECTED",
+    "cashOutflow": "UNAVAILABLE_EXPECTED",
+    "dailyUseReadback": "SCAFFOLD_ONLY"
+  },
+  "expectedIssues": [
+    "TODO_PLACEHOLDER"
+  ],
+  "blockingExpected": false,
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "SANITIZED_MEMO"
+  ],
+  "metadata": {
+    "generatedByTask": "TASK-217",
+    "scenario": "SCAFFOLD_ONLY",
+    "notes": "Single BUY values stay placeholders until a later validator task."
+  }
+}

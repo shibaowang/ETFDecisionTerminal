@@ -864,6 +864,14 @@
   defines TASK-209 runtime probes for `position.list`, `cash.summary`, safe
   partial `portfolio.pnl.summary`, readback no-write behavior, privacy, and
   broker / production boundary retention.
+- ShellAccounting manual entry SELL / Withdrawal daily-use acceptance authorization gate:
+  [216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md](216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md)
+  records TASK-210 gate-only SELL / Withdrawal acceptance policy after the
+  TASK-209 BUY + Deposit baseline.
+- ShellAccounting manual entry SELL / Withdrawal daily-use acceptance authorization test plan:
+  [217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md](217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md)
+  defines TASK-210 static probes for SELL reduction, Withdrawal cash outflow,
+  no fabricated PnL, no replay, no production drift, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

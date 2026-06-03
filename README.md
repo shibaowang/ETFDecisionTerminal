@@ -3709,3 +3709,23 @@ automatic trading. See
 `docs/214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md`
 and
 `docs/215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md`.
+
+## TASK-210 Manual Entry SELL Withdrawal Daily-Use Acceptance Authorization Gate
+
+TASK-210 adds a gate-only authorization boundary for future SELL / Withdrawal
+daily-use acceptance expansion after the TASK-209 BUY + Deposit baseline. It
+defines the expected SELL quantity reduction, sell-exceeds-position safe issue,
+SELL cash inflow, Withdrawal cash outflow, insufficient-cash / negative-cash
+policy, currency mapping, principal flow safe status, and no fabricated PnL /
+no replay requirements.
+
+TASK-210 does not implement runtime acceptance and does not modify production
+code, QML, startup, Presenter, Controller, ShellServices, DataServiceActions,
+repositories, migrations, AccountingEngine replay, runtime SQL / SQLite
+read/write behavior, audit / ledger writes, broker SDKs, network, credentials,
+endpoints, real order placement, real broker order ids, or automatic trading.
+Future TASK-211 may implement SELL / Withdrawal runtime acceptance tests if
+separately authorized. See
+`docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md`
+and
+`docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md`.

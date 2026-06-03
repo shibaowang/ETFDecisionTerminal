@@ -13786,6 +13786,120 @@ def main() -> int:
         "ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance" in tests_cmake,
         "tests/CMakeLists registers TASK-209",
     )
+
+    task210_doc_path = (
+        root
+        / "docs"
+        / "216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md"
+    )
+    task210_plan_path = (
+        root
+        / "docs"
+        / "217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md"
+    )
+    task210_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    task210_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate"
+        / "manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py"
+    )
+    require(task210_doc_path.exists(), "docs/216 exists")
+    require(task210_plan_path.exists(), "docs/217 exists")
+    require(task210_cmake_path.exists(), "TASK-210 tests CMake exists")
+    require(task210_test_path.exists(), "TASK-210 gate test exists")
+    task210_doc = task210_doc_path.read_text(encoding="utf-8")
+    task210_plan = task210_plan_path.read_text(encoding="utf-8")
+    task210_cmake = task210_cmake_path.read_text(encoding="utf-8")
+    task210_test = task210_test_path.read_text(encoding="utf-8")
+    require(
+        "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md" in readme,
+        "README links docs/216",
+    )
+    require(
+        "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md" in readme,
+        "README links docs/217",
+    )
+    require(
+        "216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md" in docs_index,
+        "docs/README links docs/216",
+    )
+    require(
+        "217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/217",
+    )
+    require("TASK-210" in codex_prompt_template, "docs/12 registers TASK-210")
+    for token, message in [
+        ("TASK-210 is SELL / Withdrawal daily-use acceptance authorization gate-only", "docs/216 documents gate scope"),
+        ("does not implement runtime acceptance", "docs/216 blocks runtime acceptance implementation"),
+        ("does not modify production code", "docs/216 blocks production code"),
+        ("TASK-209 proved the BUY + Deposit daily-use runtime acceptance baseline", "docs/216 records TASK-209 baseline"),
+        ("SELL / Withdrawal remain separate acceptance expansion", "docs/216 keeps SELL Withdrawal separate"),
+        ("BUY fixture before SELL", "docs/216 covers BUY fixture before SELL"),
+        ("SELL quantity reduction", "docs/216 covers SELL quantity reduction"),
+        ("sell exceeds position", "docs/216 covers sell exceeds safe issue"),
+        ("SELL cash inflow", "docs/216 covers SELL cash inflow"),
+        ("Fee / tax treatment policy", "docs/216 covers fee tax policy"),
+        ("No fabricated realized PnL", "docs/216 blocks fabricated realized PnL"),
+        ("No fabricated unrealized PnL", "docs/216 blocks fabricated unrealized PnL"),
+        ("No replay", "docs/216 blocks replay"),
+        ("Deposit fixture before Withdrawal", "docs/216 covers Deposit fixture before Withdrawal"),
+        ("Withdrawal cash outflow", "docs/216 covers Withdrawal outflow"),
+        ("Insufficient cash / negative cash policy", "docs/216 covers insufficient cash policy"),
+        ("Currency mapping", "docs/216 covers currency mapping"),
+        ("Principal flow safe status", "docs/216 covers principal flow safe status"),
+        ("No fabricated PnL", "docs/216 blocks fabricated PnL"),
+        ("Future TASK-211 may implement SELL / Withdrawal runtime acceptance tests", "docs/216 recommends TASK-211"),
+        ("Do not modify DataServiceActions unless a blocking bug is found and separately authorized", "docs/216 protects DataServiceActions"),
+        ("Do not modify repositories / migrations", "docs/216 protects repos migrations"),
+        ("Do not add replay / audit / ledger / broker / real order / automatic", "docs/216 blocks forbidden capability"),
+    ]:
+        require(token in task210_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/217 contains Test Matrix"),
+        ("Required Probes", "docs/217 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/217 contains Go/No-Go"),
+        ("SELL boundary", "docs/217 covers SELL boundary"),
+        ("Withdrawal boundary", "docs/217 covers Withdrawal boundary"),
+        ("Future TASK-211", "docs/217 covers TASK-211"),
+        ("Production code unchanged", "docs/217 covers production unchanged"),
+        ("Existing gates retained", "docs/217 covers retained gates"),
+        ("Forbidden drift", "docs/217 covers forbidden drift"),
+        ("No runtime SQL / SQLite read/write scan", "docs/217 blocks runtime SQL"),
+        ("No runtime acceptance implementation scan", "docs/217 blocks runtime implementation"),
+        ("No AccountingEngine replay scan", "docs/217 blocks replay"),
+        ("No audit / ledger write scan", "docs/217 blocks audit ledger"),
+        ("No broker / network / credentials / endpoint scan", "docs/217 blocks broker network"),
+        ("No real order / automatic trading scan", "docs/217 blocks real order auto"),
+    ]:
+        require(token in task210_plan, message)
+    for token, message in [
+        ("shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization", "TASK-210 CTest exists"),
+        ("manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py", "TASK-210 gate script registered"),
+    ]:
+        require(token in task210_cmake, message)
+    for token, message in [
+        ("changed_paths", "TASK-210 test checks changed paths"),
+        ("DataServiceActions", "TASK-210 test blocks DataServiceActions drift"),
+        ("migrations/", "TASK-210 test blocks migrations"),
+        ("ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance", "TASK-210 retains TASK-209"),
+        ("ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate", "TASK-210 retains TASK-208"),
+        ("ShellAccountingManualEntryReadbackMappingImplementation", "TASK-210 retains TASK-207"),
+        ("ShellAccountingManualEntryMvpRuntimeE2eAcceptance", "TASK-210 retains TASK-204"),
+        ("ShellAccountingManualEntryPostWriteReadbackRefreshImplementation", "TASK-210 retains TASK-202"),
+        ("ShellAccountingManualEntryQmlPresenterImplementation", "TASK-210 retains TASK-200"),
+        ("ShellAccountingManualEntryDataServiceWriteWiringImplementation", "TASK-210 retains TASK-198"),
+        ("ShellAccountingManualCashMovementRepositoryDualWriteImplementation", "TASK-210 retains TASK-196"),
+        ("ShellAccountingManualTransactionRepositoryWriteImplementation", "TASK-210 retains TASK-192"),
+        ("ShellAccountingBrokerOrderImplementation", "TASK-210 retains broker gate"),
+        ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-210 retains real broker gate"),
+    ]:
+        require(token in task210_test + tests_cmake, message)
     return 0
 
 

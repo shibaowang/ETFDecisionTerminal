@@ -2068,6 +2068,28 @@ writes, broker SDKs, network, credentials, endpoints, real order placement,
 real broker order ids, or automatic trading. TASK-209 acceptance tests may use
 temporary SQLite fixtures and synthetic local facts only.
 
+## TASK-210 Manual Entry SELL Withdrawal Daily-Use Acceptance Authorization Gate Prompt Rule
+
+Future SELL / Withdrawal daily-use acceptance work after TASK-210 must
+reference
+`docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md`
+and
+`docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md`.
+TASK-210 is authorization gate-only. It defines acceptance boundaries for
+manual SELL quantity reduction, sell-exceeds-position safe issues, SELL cash
+inflow, Withdrawal cash outflow, insufficient cash / negative cash policy,
+currency mapping, principal flow safe status, no fabricated realized PnL, no
+fabricated unrealized PnL, no fabricated cash or PnL, and no replay.
+
+Do not treat TASK-210 as authorization to implement runtime acceptance, modify
+production code, production QML, startup, Presenter, Controller, ShellServices
+adapter / port code, DataServiceActions, DataServiceActionRegistrar, DataAccess
+repositories, migrations, AccountingEngine replay, runtime SQL / SQLite
+read/write behavior, snapshot rebuild, derived table refresh, audit / ledger
+writes, broker SDKs, network, credentials, endpoints, real order placement,
+real broker order ids, or automatic trading. Future TASK-211 may implement
+SELL / Withdrawal runtime acceptance tests if separately authorized.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -217,6 +217,8 @@ def main() -> int:
         "docs/211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md",
         "docs/214_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance.md",
         "docs/215_shell_accounting_manual_entry_readback_daily_use_runtime_acceptance_test_plan.md",
+        "docs/216_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.md",
+        "docs/217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md",
         "libs/DataServiceApi/src/DataServiceActions.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
@@ -242,6 +244,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance/manual_entry_readback_daily_use_runtime_acceptance.cpp",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-203 changed unauthorized paths: " + ", ".join(unexpected))

@@ -120,12 +120,16 @@ database access.
 ## Formal Authorization Conclusion
 
 TASK-206 authorizes future readback mapping implementation only after a separate implementation TASK.
+TASK-207 has now implemented the authorized DataService readback mapping for
+`position.list`, `cash.summary`, and safe partial `portfolio.pnl.summary`.
 TASK-206 does not authorize readback implementation in this task,
 does not authorize replay, does not authorize audit / ledger, does not
 authorize backup/export, and does not authorize broker or real order
 capability.
 
-Recommended next task: TASK-207 manual entry readback mapping implementation.
+TASK-207 does not implement AccountingEngine replay, audit / ledger,
+backup/export, packaging, broker sandbox, real broker order, strategy
+execution, or automatic trading.
 
 Future replay, audit, ledger, backup/export, packaging, broker sandbox, real
 broker order, strategy execution, and automatic trading work must remain

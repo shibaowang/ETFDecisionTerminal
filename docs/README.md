@@ -836,6 +836,16 @@
   [209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md](209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md)
   defines TASK-206 static probes for docs registration, readback mapping policy,
   production drift, no replay, no broker, and retained regression gates.
+- ShellAccounting manual entry readback mapping implementation:
+  [210_shell_accounting_manual_entry_readback_mapping_implementation.md](210_shell_accounting_manual_entry_readback_mapping_implementation.md)
+  records TASK-207 DataService readback mapping for manual entry facts into
+  `position.list`, `cash.summary`, and safe partial `portfolio.pnl.summary`
+  without replay, audit / ledger, broker, real order, or automatic trading.
+- ShellAccounting manual entry readback mapping implementation test plan:
+  [211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md](211_shell_accounting_manual_entry_readback_mapping_implementation_test_plan.md)
+  defines TASK-207 runtime and static probes for manual entry readback mapping,
+  duplicate idempotency, safe PnL unavailability, response sanitization, and
+  retained regression gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <cstdint>
+#include <iomanip>
 #include <optional>
 #include <regex>
 #include <sstream>
@@ -316,6 +318,45 @@ std::int64_t parseNumericTextScaled(
     catch (...) {
         return fallback;
     }
+}
+
+std::string formatCentsText(std::int64_t cents)
+{
+    const bool negative = cents < 0;
+    const auto absolute = negative ? -cents : cents;
+    std::ostringstream output;
+    if (negative) {
+        output << '-';
+    }
+    output << (absolute / 100) << '.' << std::setw(2) << std::setfill('0') << (absolute % 100);
+    return output.str();
+}
+
+std::string formatQuantity1e6Text(std::int64_t value)
+{
+    const bool negative = value < 0;
+    const auto absolute = negative ? -value : value;
+    const auto whole = absolute / 1000000;
+    auto fraction = absolute % 1000000;
+
+    std::ostringstream output;
+    if (negative) {
+        output << '-';
+    }
+    output << whole;
+    if (fraction == 0) {
+        return output.str();
+    }
+
+    output << '.' << std::setw(6) << std::setfill('0') << fraction;
+    auto text = output.str();
+    while (!text.empty() && text.back() == '0') {
+        text.pop_back();
+    }
+    if (!text.empty() && text.back() == '.') {
+        text.pop_back();
+    }
+    return text;
 }
 
 std::string snapshotUid(
@@ -1096,6 +1137,178 @@ void writePortfolioSummaryRow(
     appendJsonField(stream, "baseViolationCount", row.baseViolationCount, comma);
     appendJsonField(stream, "updatedAtUtc", row.updatedAtUtc, comma);
     stream << '}';
+}
+
+etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingPositionRow>>
+loadManualEntryReadbackPositions(
+    etfdt::data_access::SQLiteConnection& connection,
+    const etfdt::data_access::ShellAccountingFactsQueryRequest& request)
+{
+    const auto rows = connection.queryRows(
+        "SELECT "
+        "tl.account_id, tl.portfolio_id, COALESCE(tl.actual_code, ''), "
+        "SUM(CASE WHEN tl.action_type = 'BUY' THEN tl.quantity_1e6 "
+        "WHEN tl.action_type = 'SELL' THEN -tl.quantity_1e6 ELSE 0 END), "
+        "SUM(CASE WHEN tl.action_type = 'BUY' THEN tl.amount_cents + tl.fee_cents "
+        "WHEN tl.action_type = 'SELL' THEN -(tl.amount_cents + tl.fee_cents) ELSE 0 END), "
+        "MAX(COALESCE(tl.local_time, tl.created_at_utc)) "
+        "FROM trade_log tl "
+        "WHERE tl.manual_entry = 1 AND tl.trade_source = 'MANUAL' AND tl.voided = 0 "
+        "AND tl.action_type IN ('BUY', 'SELL') "
+        "AND (? = '' OR CAST(tl.account_id AS TEXT) = ?) "
+        "AND (? = '' OR CAST(tl.portfolio_id AS TEXT) = ?) "
+        "GROUP BY tl.account_id, tl.portfolio_id, COALESCE(tl.actual_code, '') "
+        "HAVING SUM(CASE WHEN tl.action_type = 'BUY' THEN tl.quantity_1e6 "
+        "WHEN tl.action_type = 'SELL' THEN -tl.quantity_1e6 ELSE 0 END) <> 0 "
+        "ORDER BY tl.account_id, tl.portfolio_id, COALESCE(tl.actual_code, '');",
+        {request.accountId, request.accountId, request.portfolioId, request.portfolioId});
+    if (!rows) {
+        return etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingPositionRow>>::
+            failure(rows.error().errorCode, rows.error().message);
+    }
+
+    std::vector<etfdt::data_access::ShellAccountingPositionRow> positions;
+    positions.reserve(rows.value().size());
+    for (const auto& row : rows.value()) {
+        if (row.size() != 6) {
+            return etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingPositionRow>>::
+                failure(
+                    etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+                    "manual entry position readback returned unexpected column count");
+        }
+        etfdt::data_access::ShellAccountingPositionRow position;
+        position.accountId = std::to_string(row[0].int64Value);
+        position.portfolioId = std::to_string(row[1].int64Value);
+        position.strategyCode = "";
+        position.instrumentCode = row[2].text;
+        position.tradeSource = "MANUAL_ENTRY_READBACK";
+        position.quantityText = formatQuantity1e6Text(row[3].int64Value);
+        position.costAmountText = formatCentsText(row[4].int64Value);
+        position.marketValueText = "UNAVAILABLE";
+        position.unrealizedPnlText = "UNAVAILABLE";
+        position.updatedAtUtc = row[5].text;
+        positions.push_back(std::move(position));
+    }
+
+    return etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingPositionRow>>::
+        success(std::move(positions));
+}
+
+etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingCashSummaryRow>>
+loadManualEntryReadbackCashSummaries(
+    etfdt::data_access::SQLiteConnection& connection,
+    const etfdt::data_access::ShellAccountingFactsQueryRequest& request)
+{
+    const auto rows = connection.queryRows(
+        "SELECT "
+        "tl.account_id, tl.portfolio_id, "
+        "SUM(tl.net_cash_impact_cents), "
+        "SUM(CASE WHEN tl.action_type IN ('CASH_IN', 'CASH_OUT') THEN tl.net_cash_impact_cents ELSE 0 END), "
+        "MAX(COALESCE(tl.local_time, tl.created_at_utc)) "
+        "FROM trade_log tl "
+        "WHERE tl.manual_entry = 1 AND tl.trade_source = 'MANUAL' AND tl.voided = 0 "
+        "AND (tl.action_type IN ('BUY', 'SELL') "
+        "OR EXISTS (SELECT 1 FROM cash_adjustment ca WHERE ca.trade_log_id = tl.id)) "
+        "AND (? = '' OR CAST(tl.account_id AS TEXT) = ?) "
+        "AND (? = '' OR CAST(tl.portfolio_id AS TEXT) = ?) "
+        "GROUP BY tl.account_id, tl.portfolio_id "
+        "ORDER BY tl.account_id, tl.portfolio_id;",
+        {request.accountId, request.accountId, request.portfolioId, request.portfolioId});
+    if (!rows) {
+        return etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingCashSummaryRow>>::
+            failure(rows.error().errorCode, rows.error().message);
+    }
+
+    std::vector<etfdt::data_access::ShellAccountingCashSummaryRow> summaries;
+    summaries.reserve(rows.value().size());
+    for (const auto& row : rows.value()) {
+        if (row.size() != 5) {
+            return etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingCashSummaryRow>>::
+                failure(
+                    etfdt::protocol::ErrorCode::E2000_DATABASE_ERROR,
+                    "manual entry cash readback returned unexpected column count");
+        }
+        etfdt::data_access::ShellAccountingCashSummaryRow summary;
+        summary.accountId = std::to_string(row[0].int64Value);
+        summary.portfolioId = std::to_string(row[1].int64Value);
+        summary.cashBalanceText = formatCentsText(row[2].int64Value);
+        summary.principalBaseText = formatCentsText(row[3].int64Value);
+        summary.updatedAtUtc = row[4].text;
+        summaries.push_back(std::move(summary));
+    }
+
+    return etfdt::data_access::RepositoryResult<std::vector<etfdt::data_access::ShellAccountingCashSummaryRow>>::
+        success(std::move(summaries));
+}
+
+std::vector<etfdt::data_access::ShellAccountingPortfolioSummaryRow> manualEntryPortfolioSummariesFromReadback(
+    const std::vector<etfdt::data_access::ShellAccountingPositionRow>& positions,
+    const std::vector<etfdt::data_access::ShellAccountingCashSummaryRow>& cashRows)
+{
+    std::vector<etfdt::data_access::ShellAccountingPortfolioSummaryRow> summaries;
+    for (const auto& cash : cashRows) {
+        std::int64_t holdingCostCents = 0;
+        std::string updatedAtUtc = cash.updatedAtUtc;
+        for (const auto& position : positions) {
+            if (position.accountId == cash.accountId && position.portfolioId == cash.portfolioId) {
+                holdingCostCents += parseNumericTextScaled(position.costAmountText, 100);
+                if (position.updatedAtUtc > updatedAtUtc) {
+                    updatedAtUtc = position.updatedAtUtc;
+                }
+            }
+        }
+
+        etfdt::data_access::ShellAccountingPortfolioSummaryRow summary;
+        summary.accountId = cash.accountId;
+        summary.portfolioId = cash.portfolioId;
+        summary.totalAssetsText = "UNAVAILABLE";
+        summary.totalMarketValueText = "UNAVAILABLE";
+        summary.cashBalanceText = cash.cashBalanceText;
+        summary.principalBaseText = cash.principalBaseText;
+        summary.holdingCostText = formatCentsText(holdingCostCents);
+        summary.totalPnlText = "UNAVAILABLE";
+        summary.totalReturnText = "UNAVAILABLE";
+        summary.baseCompletionRatioText = "UNAVAILABLE";
+        summary.sniperPoolText = "UNAVAILABLE";
+        summary.activeGridCycleCount = 0;
+        summary.activeDraftCount = 0;
+        summary.baseViolationCount = 0;
+        summary.updatedAtUtc = updatedAtUtc;
+        summaries.push_back(std::move(summary));
+    }
+    return summaries;
+}
+
+std::string manualEntryReadbackIssuesJson(const char* action)
+{
+    std::ostringstream stream;
+    stream << '[';
+    appendIssueObject(
+        stream,
+        "WARNING",
+        "MANUAL_ENTRY_READBACK_MAPPING",
+        "Manual entry persisted facts were mapped by DataService readback without AccountingEngine replay.",
+        false);
+    if (std::string(action) == "position.list") {
+        stream << ',';
+        appendIssueObject(
+            stream,
+            "WARNING",
+            "PNL_UNAVAILABLE_WITHOUT_REPLAY",
+            "Realized and unrealized PnL are unavailable without replay or market prices.",
+            false);
+    }
+    if (std::string(action) == "portfolio.pnl.summary") {
+        stream << ',';
+        appendIssueObject(
+            stream,
+            "WARNING",
+            "PNL_UNAVAILABLE_WITHOUT_REPLAY",
+            "Portfolio realized and unrealized PnL are not fabricated without replay and market prices.",
+            false);
+    }
+    stream << ']';
+    return stream.str();
 }
 
 void writeBasePositionSummaryRow(
@@ -2708,6 +2921,26 @@ etfdt::protocol::ProtocolResponse handlePositionList(
             shellAccountingQueryErrorPayload("position.list", "POSITION_LIST_QUERY_ERROR"));
     }
     if (positions.value().empty()) {
+        auto manualPositions =
+            loadManualEntryReadbackPositions(connection, shellAccountingQueryRequest(context.request.payloadJson));
+        if (!manualPositions) {
+            return successResponse(
+                context,
+                shellAccountingQueryErrorPayload("position.list", "POSITION_LIST_QUERY_ERROR"));
+        }
+        if (!manualPositions.value().empty()) {
+            std::ostringstream payload;
+            payload << shellAccountingPayloadPrefix("position.list", "PARTIAL", "PARTIAL", true)
+                    << "\"message\":\"position.list manual entry readback mapping completed without replay.\","
+                    << "\"issues\":" << manualEntryReadbackIssuesJson("position.list")
+                    << ",\"warnings\":[],\"errors\":[],"
+                    << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                    << "\"rawPayloadExposed\":false,\"credentialsExposed\":false,\"endpointExposed\":false},"
+                    << "\"manualEntryReadback\":true,"
+                    << "\"realizedPnlComputed\":false,\"unrealizedPnlComputed\":false,"
+                    << "\"positions\":" << jsonArray(manualPositions.value(), writePositionRow) << "}";
+            return successResponse(context, payload.str());
+        }
         return successResponse(
             context,
             shellAccountingEmptyPayload("position.list", "POSITION_LIST_EMPTY", "positions", "[]"));
@@ -2776,6 +3009,28 @@ etfdt::protocol::ProtocolResponse handleCashSummary(
             shellAccountingQueryErrorPayload("cash.summary", "CASH_SUMMARY_QUERY_ERROR"));
     }
     if (summaries.value().empty()) {
+        auto manualCash =
+            loadManualEntryReadbackCashSummaries(connection, shellAccountingQueryRequest(context.request.payloadJson));
+        if (!manualCash) {
+            return successResponse(
+                context,
+                shellAccountingQueryErrorPayload("cash.summary", "CASH_SUMMARY_QUERY_ERROR"));
+        }
+        if (!manualCash.value().empty()) {
+            std::ostringstream payload;
+            payload << shellAccountingPayloadPrefix("cash.summary", "OK", "OK", true)
+                    << "\"message\":\"cash.summary manual entry readback mapping completed without replay.\","
+                    << "\"issues\":" << manualEntryReadbackIssuesJson("cash.summary")
+                    << ",\"warnings\":[],\"errors\":[],"
+                    << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                    << "\"rawPayloadExposed\":false,\"credentialsExposed\":false,\"endpointExposed\":false},"
+                    << "\"manualEntryReadback\":true,"
+                    << "\"accountCashSummaries\":" << jsonArray(manualCash.value(), writeCashSummaryRow)
+                    << ",\"cashSummary\":";
+            writeCashSummaryRow(payload, manualCash.value().front());
+            payload << "}";
+            return successResponse(context, payload.str());
+        }
         return successResponse(
             context,
             shellAccountingEmptyPayload("cash.summary", "CASH_SUMMARY_EMPTY", "accountCashSummaries", "[]"));
@@ -2858,6 +3113,43 @@ etfdt::protocol::ProtocolResponse handlePortfolioPnlSummary(
                 "PORTFOLIO_PNL_SUMMARY_QUERY_ERROR"));
     }
     if (summaries.value().empty()) {
+        const auto request = shellAccountingQueryRequest(context.request.payloadJson);
+        auto manualCash = loadManualEntryReadbackCashSummaries(connection, request);
+        if (!manualCash) {
+            return successResponse(
+                context,
+                shellAccountingQueryErrorPayload(
+                    "portfolio.pnl.summary",
+                    "PORTFOLIO_PNL_SUMMARY_QUERY_ERROR"));
+        }
+        auto manualPositions = loadManualEntryReadbackPositions(connection, request);
+        if (!manualPositions) {
+            return successResponse(
+                context,
+                shellAccountingQueryErrorPayload(
+                    "portfolio.pnl.summary",
+                    "PORTFOLIO_PNL_SUMMARY_QUERY_ERROR"));
+        }
+        auto manualSummaries = manualEntryPortfolioSummariesFromReadback(
+            manualPositions.value(),
+            manualCash.value());
+        if (!manualSummaries.empty()) {
+            std::ostringstream payload;
+            payload << shellAccountingPayloadPrefix("portfolio.pnl.summary", "PARTIAL", "PARTIAL", true)
+                    << "\"message\":\"portfolio.pnl.summary manual entry readback returned safe partial data without "
+                       "fabricating PnL.\","
+                    << "\"issues\":" << manualEntryReadbackIssuesJson("portfolio.pnl.summary")
+                    << ",\"warnings\":[],\"errors\":[],"
+                    << "\"privacy\":{\"rawSqlExposed\":false,\"rawTradeLogPayloadExposed\":false,"
+                    << "\"rawPayloadExposed\":false,\"credentialsExposed\":false,\"endpointExposed\":false},"
+                    << "\"manualEntryReadback\":true,"
+                    << "\"realizedPnlComputed\":false,\"unrealizedPnlComputed\":false,"
+                    << "\"portfolioPnlSummaries\":" << jsonArray(manualSummaries, writePortfolioSummaryRow)
+                    << ",\"portfolioPnl\":";
+            writePortfolioSummaryRow(payload, manualSummaries.front());
+            payload << "}";
+            return successResponse(context, payload.str());
+        }
         return successResponse(
             context,
             shellAccountingEmptyPayload(

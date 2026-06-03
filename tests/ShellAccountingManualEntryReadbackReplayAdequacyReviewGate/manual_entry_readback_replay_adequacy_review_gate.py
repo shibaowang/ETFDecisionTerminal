@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import argparse
 import subprocess
@@ -200,6 +200,11 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+        "docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md",
+        "docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)

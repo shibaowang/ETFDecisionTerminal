@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import argparse
 import subprocess
@@ -192,6 +192,11 @@ def main() -> int:
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/CMakeLists.txt",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance/manual_entry_sell_withdrawal_daily_use_runtime_acceptance.cpp",
+        "docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md",
+        "docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-210 changed unauthorized paths: " + ", ".join(unexpected))

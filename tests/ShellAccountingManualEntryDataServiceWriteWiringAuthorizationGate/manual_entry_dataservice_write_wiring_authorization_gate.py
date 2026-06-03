@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import argparse
 import re
@@ -309,6 +309,11 @@ def main() -> int:
         "tests/ShellAccountingManualTransactionRepositoryWriteImplementation/manual_transaction_repository_write_implementation.cpp",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/CMakeLists.txt",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringImplementation/manual_entry_dataservice_write_wiring_implementation.cpp",
+        "docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md",
+        "docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     require(not unexpected, "TASK-197 changed unauthorized paths: " + ", ".join(unexpected))

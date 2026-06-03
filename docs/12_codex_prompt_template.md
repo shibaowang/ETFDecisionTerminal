@@ -2138,6 +2138,28 @@ backup first with explicit rationale. First phase remains no real broker, no
 automatic trading, and no real order placement. Broker sandbox new capability
 remains paused.
 
+## TASK-213 Manual Entry Replay Policy Authorization Gate Prompt Rule
+
+Future manual entry replay fixture matrix, AccountingEngine replay
+implementation, replay output mapping, or replay integration work after
+TASK-213 must reference
+`docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md`
+and
+`docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md`.
+
+TASK-213 authorizes replay policy only. It defines replay input, ordering,
+position, cash, PnL, output, unsupported state, privacy, sanitization, and
+integration boundaries for future work. Do not treat TASK-213 as authorization
+to implement replay, call AccountingEngine replay, modify production code,
+production QML, startup, Presenter, Controller, ShellServices adapter / port
+code, DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, audit / ledger writes, backup/export/restore, broker SDKs, network,
+credentials, endpoints, real order placement, real broker order ids, or
+automatic trading.
+
+Recommended next task: TASK-214 manual entry replay fixture matrix
+authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

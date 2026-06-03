@@ -892,6 +892,16 @@
   defines TASK-212 static probes for docs registration, replay/audit/ledger
   adequacy coverage, backup/export/restore adequacy, gap matrix, formal
   conclusion, no production drift, and retained broker gates.
+- ShellAccounting manual entry replay policy authorization gate:
+  [222_shell_accounting_manual_entry_replay_policy_authorization_gate.md](222_shell_accounting_manual_entry_replay_policy_authorization_gate.md)
+  records TASK-213 policy-only boundaries for future manual entry replay input,
+  ordering, position, cash, PnL, output, unsupported states, privacy, and
+  integration.
+- ShellAccounting manual entry replay policy authorization test plan:
+  [223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md](223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md)
+  defines TASK-213 static probes for docs registration, gate-only scope, replay
+  policy coverage, no production drift, retained manual entry regressions, and
+  broker / transport gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -3773,3 +3773,21 @@ owner explicitly chooses audit or backup first. See
 `docs/220_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_gate.md`
 and
 `docs/221_shell_accounting_manual_entry_replay_audit_ledger_adequacy_review_test_plan.md`.
+
+## TASK-213 Manual Entry Replay Policy Authorization Gate
+
+TASK-213 adds a policy-authorization-only gate for future manual entry replay.
+It defines replay input, ordering, position, cash, PnL, output, unsupported
+state, privacy, sanitization, and integration boundaries before any replay
+fixture or AccountingEngine replay implementation may be authorized.
+
+TASK-213 authorizes replay policy only. It does not authorize replay
+implementation, audit / ledger writes, backup/export/restore, production code
+changes, QML changes, startup changes, Presenter / Controller / ShellServices
+changes, DataServiceActions changes, DataAccess repository changes, migrations,
+broker SDKs, network, credentials, endpoints, real order placement, real broker
+order ids, or automatic trading. The recommended next task is TASK-214 manual
+entry replay fixture matrix authorization gate. See
+`docs/222_shell_accounting_manual_entry_replay_policy_authorization_gate.md`
+and
+`docs/223_shell_accounting_manual_entry_replay_policy_authorization_test_plan.md`.

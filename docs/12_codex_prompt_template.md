@@ -1908,6 +1908,25 @@ boundary or separately authorized replay/read-model boundary, and QML /
 Presenter / Controller must not directly access SQLite, DataAccess, raw SQL,
 or calculate accounting facts.
 
+## TASK-202 Manual Entry Post-Write Readback Refresh Implementation Prompt Rule
+
+Future manual entry refresh work after TASK-202 must reference docs/200 and
+docs/201. TASK-202 authorizes only minimal post-write readback refresh through
+existing DataService read actions after successful manual transaction or manual
+cash movement writes.
+
+Manual transaction success may refresh only `position.list`, `cash.summary`,
+and `portfolio.pnl.summary` through Presenter / Controller / DataService read
+boundaries. Manual cash movement success may refresh only `cash.summary` and
+`portfolio.pnl.summary` through the same boundary. Do not use TASK-202 as
+authorization to modify DataServiceActions, DataServiceActionRegistrar,
+DataAccess repositories, migrations, validation production code, AccountingEngine
+replay, snapshot rebuild, derived table refresh, audit writes, ledger writes,
+TradeDraft or suggestion behavior, broker SDKs, network calls, credentials,
+endpoints, real order placement, real broker order ids, or automatic trading.
+QML / Presenter / Controller must not directly access SQLite or DataAccess and
+QML must not calculate position, cash, or PnL facts.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

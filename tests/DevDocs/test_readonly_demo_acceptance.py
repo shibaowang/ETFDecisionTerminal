@@ -13038,6 +13038,81 @@ def main() -> int:
     )
     require("TASK-201 Authorization Gate Update" in task200_doc, "docs/196 mentions TASK-201")
     require("TASK-201 Authorization Gate Update" in task200_plan, "docs/197 mentions TASK-201")
+
+    task202_doc_path = root / "docs" / "200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md"
+    task202_plan_path = root / "docs" / "201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md"
+    task202_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryPostWriteReadbackRefreshImplementation"
+        / "CMakeLists.txt"
+    )
+    require(task202_doc_path.exists(), "docs/200 exists")
+    require(task202_plan_path.exists(), "docs/201 exists")
+    require(task202_cmake_path.exists(), "TASK-202 tests CMake exists")
+    task202_doc = task202_doc_path.read_text(encoding="utf-8")
+    task202_plan = task202_plan_path.read_text(encoding="utf-8")
+    task202_cmake = task202_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md" in readme,
+        "README links docs/200",
+    )
+    require(
+        "docs/201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md" in readme,
+        "README links docs/201",
+    )
+    require(
+        "200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md" in docs_index,
+        "docs/README links docs/200",
+    )
+    require(
+        "201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md" in docs_index,
+        "docs/README links docs/201",
+    )
+    require("TASK-202" in codex_prompt_template, "docs/12 registers TASK-202")
+    for token, message in [
+        ("postWriteRefreshEnabled", "docs/200 documents post-write refresh enabled state"),
+        ("lastPostWriteRefreshStatus", "docs/200 documents post-write refresh status"),
+        ("shellAccountingPostWriteRefreshStatus", "docs/200 documents QML status object"),
+        ("accounting.manual_transaction.create", "docs/200 references manual transaction action"),
+        ("accounting.manual_cash_movement.create", "docs/200 references manual cash action"),
+        ("position.list", "docs/200 references position read action"),
+        ("cash.summary", "docs/200 references cash read action"),
+        ("portfolio.pnl.summary", "docs/200 references pnl read action"),
+        ("does not modify DataServiceActions", "docs/200 blocks DataServiceActions drift"),
+        ("does not trigger AccountingEngine replay", "docs/200 blocks replay"),
+        ("snapshot rebuild after write", "docs/200 blocks snapshot rebuild"),
+        ("write `audit_log` or ledger rows", "docs/200 blocks audit/ledger"),
+        ("real order placement", "docs/200 blocks real order placement"),
+        ("automatic trading", "docs/200 blocks automatic trading"),
+    ]:
+        require(token in task202_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/201 contains Test Matrix"),
+        ("Required Probes", "docs/201 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/201 contains Go / No-Go Checklist"),
+        ("QML Status Boundary", "docs/201 covers QML status boundary"),
+        ("Presenter And Controller Boundary", "docs/201 covers Presenter/Controller"),
+        ("Successful manual transaction writes trigger post-write refresh", "docs/201 covers transaction refresh"),
+        ("Successful manual cash movement writes trigger post-write refresh", "docs/201 covers cash refresh"),
+        ("Validation failures do not trigger refresh", "docs/201 blocks validation refresh"),
+        ("Write failures do not trigger refresh", "docs/201 blocks write failure refresh"),
+        ("DataServiceActions.cpp is not modified by TASK-202", "docs/201 blocks DataServiceActions"),
+        ("No audit_log or ledger write is introduced", "docs/201 blocks audit/ledger"),
+        ("No real order placement is introduced", "docs/201 blocks real orders"),
+        ("No automatic trading is introduced", "docs/201 blocks automatic trading"),
+    ]:
+        require(token in task202_plan, message)
+    require(
+        "shell_accounting_manual_entry_post_write_readback_refresh_implementation" in task202_cmake,
+        "TASK-202 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryPostWriteReadbackRefreshImplementation" in tests_cmake,
+        "TASK-202 test directory registered",
+    )
+    require("TASK-202 Implementation Update" in task201_doc, "docs/198 mentions TASK-202")
+    require("TASK-202 Implementation Update" in task201_plan, "docs/199 mentions TASK-202")
     return 0
 
 

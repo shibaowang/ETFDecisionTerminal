@@ -110,6 +110,10 @@ ALLOWED_DIFF_PREFIXES = {
     "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
     "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
     "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "docs/224_shell_accounting_manual_entry_replay_fixture_matrix_authorization_gate.md",
+    "docs/225_shell_accounting_manual_entry_replay_fixture_matrix_authorization_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
 }
 
 ALLOWED_DIFF_DIRS = {

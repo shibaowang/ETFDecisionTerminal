@@ -13866,12 +13866,12 @@ def main() -> int:
         ("Go / No-Go Checklist", "docs/217 contains Go/No-Go"),
         ("SELL boundary", "docs/217 covers SELL boundary"),
         ("Withdrawal boundary", "docs/217 covers Withdrawal boundary"),
-        ("Future TASK-211", "docs/217 covers TASK-211"),
+        ("TASK-211 runtime acceptance", "docs/217 covers TASK-211"),
         ("Production code unchanged", "docs/217 covers production unchanged"),
         ("Existing gates retained", "docs/217 covers retained gates"),
         ("Forbidden drift", "docs/217 covers forbidden drift"),
         ("No runtime SQL / SQLite read/write scan", "docs/217 blocks runtime SQL"),
-        ("No runtime acceptance implementation scan", "docs/217 blocks runtime implementation"),
+        ("No production runtime implementation scan", "docs/217 blocks production runtime implementation"),
         ("No AccountingEngine replay scan", "docs/217 blocks replay"),
         ("No audit / ledger write scan", "docs/217 blocks audit ledger"),
         ("No broker / network / credentials / endpoint scan", "docs/217 blocks broker network"),
@@ -13887,6 +13887,7 @@ def main() -> int:
         ("changed_paths", "TASK-210 test checks changed paths"),
         ("DataServiceActions", "TASK-210 test blocks DataServiceActions drift"),
         ("migrations/", "TASK-210 test blocks migrations"),
+        ("ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance", "TASK-210 retains TASK-211"),
         ("ShellAccountingManualEntryReadbackDailyUseRuntimeAcceptance", "TASK-210 retains TASK-209"),
         ("ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate", "TASK-210 retains TASK-208"),
         ("ShellAccountingManualEntryReadbackMappingImplementation", "TASK-210 retains TASK-207"),
@@ -13900,6 +13901,137 @@ def main() -> int:
         ("ShellAccountingRealBrokerOrderImplementationGate", "TASK-210 retains real broker gate"),
     ]:
         require(token in task210_test + tests_cmake, message)
+
+    task211_doc_path = (
+        root
+        / "docs"
+        / "218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md"
+    )
+    task211_plan_path = (
+        root
+        / "docs"
+        / "219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md"
+    )
+    task211_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance"
+        / "CMakeLists.txt"
+    )
+    task211_test_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance"
+        / "manual_entry_sell_withdrawal_daily_use_runtime_acceptance.cpp"
+    )
+    require(task211_doc_path.exists(), "docs/218 exists")
+    require(task211_plan_path.exists(), "docs/219 exists")
+    require(task211_cmake_path.exists(), "TASK-211 tests CMake exists")
+    require(task211_test_path.exists(), "TASK-211 runtime test exists")
+    task211_doc = task211_doc_path.read_text(encoding="utf-8")
+    task211_plan = task211_plan_path.read_text(encoding="utf-8")
+    task211_cmake = task211_cmake_path.read_text(encoding="utf-8")
+    task211_test = task211_test_path.read_text(encoding="utf-8")
+    require(
+        "docs/218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md" in readme,
+        "README links docs/218",
+    )
+    require(
+        "docs/219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md" in readme,
+        "README links docs/219",
+    )
+    require(
+        "218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md" in docs_index,
+        "docs/README links docs/218",
+    )
+    require(
+        "219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md" in docs_index,
+        "docs/README links docs/219",
+    )
+    require("TASK-211" in codex_prompt_template, "docs/12 registers TASK-211")
+    require("TASK-211 has now added" in task210_doc, "docs/216 references TASK-211")
+    require("tests-and-docs-only SELL / Withdrawal daily-use runtime acceptance coverage" in task210_doc, "docs/216 references TASK-211 scope")
+    require("TASK-211 has now added" in task210_plan, "docs/217 references TASK-211")
+    require("tests-and-docs-only runtime acceptance coverage" in task210_plan, "docs/217 references TASK-211 scope")
+    for token, message in [
+        ("TASK-211 adds tests-and-docs-only runtime acceptance coverage", "docs/218 documents runtime acceptance"),
+        ("temporary SQLite database", "docs/218 uses temporary SQLite"),
+        ("migrations/001_initial_schema.sql", "docs/218 applies migration 001"),
+        ("migrations/002_shell_accounting_manual_entry_schema.sql", "docs/218 applies migration 002"),
+        ("accounting.manual_transaction.create", "docs/218 covers manual transaction write"),
+        ("accounting.manual_cash_movement.create", "docs/218 covers cash movement write"),
+        ("position.list", "docs/218 covers position.list"),
+        ("cash.summary", "docs/218 covers cash.summary"),
+        ("portfolio.pnl.summary", "docs/218 covers portfolio.pnl.summary"),
+        ("SELL quantity reduction", "docs/218 covers SELL reduction"),
+        ("SELL cash inflow", "docs/218 covers SELL cash inflow"),
+        ("sell-exceeds-position", "docs/218 covers oversell"),
+        ("Withdrawal cash outflow", "docs/218 covers Withdrawal outflow"),
+        ("insufficient-cash / negative-cash", "docs/218 covers negative cash"),
+        ("No fabricated realized PnL", "docs/218 blocks fabricated realized PnL"),
+        ("No fabricated unrealized PnL", "docs/218 blocks fabricated unrealized PnL"),
+        ("Readback responses must keep the established safe flags", "docs/218 covers readback flags"),
+        ("No AccountingEngine replay", "docs/218 blocks replay"),
+        ("No QML calculation", "docs/218 blocks QML calculation"),
+        ("no broker SDK", "docs/218 blocks broker SDK"),
+        ("no real order", "docs/218 blocks real order"),
+        ("no automatic trading", "docs/218 blocks automatic trading"),
+    ]:
+        require(token in task211_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/219 contains Test Matrix"),
+        ("Required Probes", "docs/219 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/219 contains Go/No-Go"),
+        ("Temporary SQLite fixture", "docs/219 covers SQLite fixture"),
+        ("SELL setup", "docs/219 covers SELL setup"),
+        ("SELL reduction", "docs/219 covers SELL reduction"),
+        ("SELL cash inflow", "docs/219 covers SELL cash inflow"),
+        ("Sell exceeds position", "docs/219 covers sell exceeds position"),
+        ("Withdrawal cash outflow", "docs/219 covers Withdrawal cash"),
+        ("Insufficient cash / negative cash", "docs/219 covers negative cash"),
+        ("Portfolio partial PnL", "docs/219 covers portfolio partial PnL"),
+        ("Readback no-write", "docs/219 covers no-write readback"),
+        ("Payload privacy", "docs/219 covers payload privacy"),
+        ("Static production boundary", "docs/219 covers production boundary"),
+        ("Broker boundary", "docs/219 covers broker boundary"),
+        ("No broker / network / credentials / endpoint scan", "docs/219 blocks broker network"),
+        ("No real order / automatic trading scan", "docs/219 blocks real order auto"),
+    ]:
+        require(token in task211_plan, message)
+    for token, message in [
+        ("shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance", "TASK-211 CTest exists"),
+        ("SAManualEntrySellWithdrawalDailyUseRuntimeAcceptanceTests", "TASK-211 CTest executable exists"),
+    ]:
+        require(token in task211_cmake, message)
+    for token, message in [
+        ("applyMigrationFile(h.root / \"migrations\" / \"001_initial_schema.sql\")", "TASK-211 applies migration 001"),
+        ("002_shell_accounting_manual_entry_schema.sql", "TASK-211 applies migration 002"),
+        ("kActionAccountingManualTransactionCreate", "TASK-211 writes manual transaction through DataService"),
+        ("kActionAccountingManualCashMovementCreate", "TASK-211 writes manual cash movement through DataService"),
+        ("kActionPositionList", "TASK-211 calls position.list"),
+        ("kActionCashSummary", "TASK-211 calls cash.summary"),
+        ("kActionPortfolioPnlSummary", "TASK-211 calls portfolio.pnl.summary"),
+        ("testSellReductionDailyUseAcceptance", "TASK-211 tests SELL reduction"),
+        ("testSellExceedsPositionSafeBehavior", "TASK-211 tests oversell"),
+        ("testWithdrawalDailyUseAcceptance", "TASK-211 tests Withdrawal"),
+        ("testInsufficientWithdrawalSafeBehavior", "TASK-211 tests negative cash"),
+        ("requireSameCounts", "TASK-211 verifies readback no-write"),
+        ("\\\"quantityText\\\":\\\"0.75\\\"", "TASK-211 verifies SELL reduced quantity"),
+        ("\\\"cashBalanceText\\\":\\\"-152.55\\\"", "TASK-211 verifies SELL cash effect"),
+        ("\\\"cashBalanceText\\\":\\\"375.00\\\"", "TASK-211 verifies Withdrawal cash effect"),
+        ("\\\"cashBalanceText\\\":\\\"-250.00\\\"", "TASK-211 verifies negative cash visibility"),
+        ("\\\"totalPnlText\\\":\\\"UNAVAILABLE\\\"", "TASK-211 verifies unavailable PnL"),
+        ("requireSafeReadbackPayload", "TASK-211 checks readback privacy"),
+        ("requireNotContains(qml, token", "TASK-211 checks QML boundary"),
+        ("BrokerOrderPort", "TASK-211 checks broker boundary"),
+        ("StrategyEngine", "TASK-211 checks strategy boundary"),
+        ("automaticTrading", "TASK-211 checks automatic trading boundary"),
+    ]:
+        require(token in task211_test, message)
+    require(
+        "ShellAccountingManualEntrySellWithdrawalDailyUseRuntimeAcceptance" in tests_cmake,
+        "tests/CMakeLists registers TASK-211",
+    )
     return 0
 
 

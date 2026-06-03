@@ -872,6 +872,17 @@
   [217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md](217_shell_accounting_manual_entry_sell_withdrawal_daily_use_acceptance_authorization_test_plan.md)
   defines TASK-210 static probes for SELL reduction, Withdrawal cash outflow,
   no fabricated PnL, no replay, no production drift, and retained broker gates.
+- ShellAccounting manual entry SELL / Withdrawal daily-use runtime acceptance:
+  [218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md](218_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance.md)
+  records TASK-211 runtime acceptance coverage for manual SELL reduction,
+  sell-exceeds-position safety, Withdrawal cash outflow, insufficient-cash /
+  negative-cash safety, no fabricated PnL, and retained no-replay / no-broker
+  boundaries.
+- ShellAccounting manual entry SELL / Withdrawal daily-use runtime acceptance test plan:
+  [219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md](219_shell_accounting_manual_entry_sell_withdrawal_daily_use_runtime_acceptance_test_plan.md)
+  defines TASK-211 runtime probes for temporary SQLite fixtures, DataService
+  manual entry writes, readback no-write behavior, response privacy, production
+  boundary retention, and broker / real order gate retention.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

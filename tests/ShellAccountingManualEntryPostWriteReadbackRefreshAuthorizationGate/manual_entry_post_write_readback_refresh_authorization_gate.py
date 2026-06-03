@@ -201,19 +201,30 @@ def main() -> int:
         "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
         "docs/198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md",
         "docs/199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md",
+        "docs/200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md",
+        "docs/201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md",
+        "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+        "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+        "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+        "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+        "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
+        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-201 changed unauthorized paths: " + ", ".join(unexpected))
 
     forbidden_prefixes = [
-        "apps/",
         "libs/DataAccess/",
         "libs/DataServiceApi/",
-        "libs/ShellServices/",
         "libs/AccountingEngine/",
         "libs/StrategyEngine/",
         "libs/MarketEngine/",

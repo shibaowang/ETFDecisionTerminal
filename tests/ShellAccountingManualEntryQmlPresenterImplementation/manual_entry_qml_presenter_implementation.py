@@ -146,6 +146,10 @@ def main() -> int:
         "docs/195_shell_accounting_manual_entry_qml_presenter_authorization_test_plan.md",
         "docs/196_shell_accounting_manual_entry_qml_presenter_implementation.md",
         "docs/197_shell_accounting_manual_entry_qml_presenter_implementation_test_plan.md",
+        "docs/198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md",
+        "docs/199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md",
+        "docs/200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md",
+        "docs/201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
@@ -181,6 +185,9 @@ def main() -> int:
         "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
         "tests/ShellAccountingManualEntryQmlPresenterImplementation/CMakeLists.txt",
         "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-200 changed unauthorized paths: " + ", ".join(unexpected))

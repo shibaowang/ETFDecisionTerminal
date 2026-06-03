@@ -150,3 +150,17 @@ Any future implementation PR for post-write readback / refresh must:
 - prove broker, network, credentials, endpoints, real order placement, and
   automatic trading remain absent.
 - pass full CTest and the TASK-201 gate tests.
+
+## TASK-202 Implementation Update
+
+TASK-202 implements the minimal post-write readback refresh path authorized by
+this gate. Manual transaction success refreshes `position.list`,
+`cash.summary`, and `portfolio.pnl.summary` through Presenter / Controller /
+DataService read boundaries. Manual cash movement success refreshes
+`cash.summary` and `portfolio.pnl.summary` through the same boundary.
+
+TASK-202 does not authorize AccountingEngine replay integration, read model
+refresh, snapshot refresh, snapshot rebuild after write, derived table refresh
+after write, audit writes, ledger writes, DataServiceActions changes,
+repository changes, migration changes, broker SDKs, network calls, credentials,
+endpoints, real order placement, or automatic trading.

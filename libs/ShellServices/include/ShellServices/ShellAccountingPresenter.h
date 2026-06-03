@@ -26,6 +26,11 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString lastManualEntryStatus READ lastManualEntryStatus NOTIFY manualEntryStateChanged)
     Q_PROPERTY(QString lastManualEntryIssue READ lastManualEntryIssue NOTIFY manualEntryStateChanged)
     Q_PROPERTY(QString lastManualEntryResult READ lastManualEntryResult NOTIFY manualEntryStateChanged)
+    Q_PROPERTY(bool postWriteRefreshEnabled READ postWriteRefreshEnabled NOTIFY postWriteRefreshStateChanged)
+    Q_PROPERTY(bool postWriteRefreshBusy READ postWriteRefreshBusy NOTIFY postWriteRefreshStateChanged)
+    Q_PROPERTY(QString lastPostWriteRefreshStatus READ lastPostWriteRefreshStatus NOTIFY postWriteRefreshStateChanged)
+    Q_PROPERTY(QString lastPostWriteRefreshIssue READ lastPostWriteRefreshIssue NOTIFY postWriteRefreshStateChanged)
+    Q_PROPERTY(QString lastPostWriteRefreshSummary READ lastPostWriteRefreshSummary NOTIFY postWriteRefreshStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -46,6 +51,11 @@ public:
     [[nodiscard]] QString lastManualEntryStatus() const;
     [[nodiscard]] QString lastManualEntryIssue() const;
     [[nodiscard]] QString lastManualEntryResult() const;
+    [[nodiscard]] bool postWriteRefreshEnabled() const noexcept;
+    [[nodiscard]] bool postWriteRefreshBusy() const noexcept;
+    [[nodiscard]] QString lastPostWriteRefreshStatus() const;
+    [[nodiscard]] QString lastPostWriteRefreshIssue() const;
+    [[nodiscard]] QString lastPostWriteRefreshSummary() const;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -105,11 +115,14 @@ public:
         const QString& requestId,
         const QString& idempotencyKey);
     Q_INVOKABLE void resetManualEntryUi();
+    Q_INVOKABLE void resetPostWriteRefreshState();
+    Q_INVOKABLE bool refreshManualEntryReadback();
     void reset();
 
 signals:
     void tradingUiStateChanged();
     void manualEntryStateChanged();
+    void postWriteRefreshStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -123,6 +136,7 @@ private:
         std::vector<ShellAccountingIssue> issues);
     void applyTradingResult(const ShellAccountingServiceResult& result, bool confirming);
     void applyManualEntryResult(const ShellAccountingServiceResult& result, const QString& fallback);
+    void refreshAfterManualEntryWrite(bool includePositionList, const char* reason);
     void markManualEntryInputError(const QString& message);
     [[nodiscard]] ShellAccountingServiceRequest makeDraftCreateRequest(
         const QString& accountId,
@@ -177,6 +191,11 @@ private:
     QString lastManualEntryStatus_ = QStringLiteral("READY");
     QString lastManualEntryIssue_;
     QString lastManualEntryResult_;
+    bool postWriteRefreshEnabled_ = true;
+    bool postWriteRefreshBusy_ = false;
+    QString lastPostWriteRefreshStatus_ = QStringLiteral("READY");
+    QString lastPostWriteRefreshIssue_;
+    QString lastPostWriteRefreshSummary_;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

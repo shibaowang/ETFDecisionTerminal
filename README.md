@@ -3551,3 +3551,23 @@ endpoints, real order placement, or automatic trading. See
 `docs/198_shell_accounting_manual_entry_post_write_readback_refresh_authorization_gate.md`
 and
 `docs/199_shell_accounting_manual_entry_post_write_readback_refresh_authorization_test_plan.md`.
+
+## TASK-202 Manual Entry Post-Write Readback Refresh Implementation
+
+TASK-202 implements the minimal ShellAccounting post-write readback refresh
+after successful manual entry writes. Manual transaction success now triggers
+DataService read-boundary refresh for `position.list`, `cash.summary`, and
+`portfolio.pnl.summary`. Manual cash movement success now triggers DataService
+read-boundary refresh for `cash.summary` and `portfolio.pnl.summary`.
+
+The UI exposes separate post-write refresh status, issue, and summary fields
+without changing the write result into silent failure. TASK-202 does not modify
+DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, validation production code, AccountingEngine replay, StrategyEngine,
+MarketEngine, broker code, network, credentials, endpoints, real order
+placement, or automatic trading. QML, Presenter, and Controller do not directly
+access SQLite or DataAccess and do not calculate positions, cash, or PnL in QML.
+See
+`docs/200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md`
+and
+`docs/201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md`.

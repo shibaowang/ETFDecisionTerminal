@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QStringList>
 
 #include <cmath>
 #include <string>
@@ -147,6 +148,14 @@ QString issueTextFromResult(const ShellAccountingServiceResult& result)
     return {};
 }
 
+QString issueTextFromIssues(const std::vector<ShellAccountingIssue>& issues)
+{
+    if (issues.empty()) {
+        return {};
+    }
+    return QString::fromStdString(issues.front().message);
+}
+
 QJsonObject payloadObject(const ShellAccountingServiceResult& result)
 {
     const auto document =
@@ -276,6 +285,31 @@ QString ShellAccountingPresenter::lastManualEntryIssue() const
 QString ShellAccountingPresenter::lastManualEntryResult() const
 {
     return lastManualEntryResult_;
+}
+
+bool ShellAccountingPresenter::postWriteRefreshEnabled() const noexcept
+{
+    return postWriteRefreshEnabled_;
+}
+
+bool ShellAccountingPresenter::postWriteRefreshBusy() const noexcept
+{
+    return postWriteRefreshBusy_;
+}
+
+QString ShellAccountingPresenter::lastPostWriteRefreshStatus() const
+{
+    return lastPostWriteRefreshStatus_;
+}
+
+QString ShellAccountingPresenter::lastPostWriteRefreshIssue() const
+{
+    return lastPostWriteRefreshIssue_;
+}
+
+QString ShellAccountingPresenter::lastPostWriteRefreshSummary() const
+{
+    return lastPostWriteRefreshSummary_;
 }
 
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
@@ -549,9 +583,13 @@ bool ShellAccountingPresenter::submitManualTransaction(
     const auto result = controller_->submitManualTransaction(request);
     manualEntryBusy_ = false;
     applyManualEntryResult(result, QStringLiteral("Manual transaction write failed."));
-    syncFromController();
-    return lastManualEntryStatus_ == QStringLiteral("OK")
+    const bool writeSucceeded = lastManualEntryStatus_ == QStringLiteral("OK")
         || lastManualEntryStatus_ == QStringLiteral("DUPLICATE");
+    if (writeSucceeded) {
+        refreshAfterManualEntryWrite(true, "manual_transaction");
+    }
+    syncFromController();
+    return writeSucceeded;
 }
 
 bool ShellAccountingPresenter::submitManualCashMovement(
@@ -596,9 +634,13 @@ bool ShellAccountingPresenter::submitManualCashMovement(
     const auto result = controller_->submitManualCashMovement(request);
     manualEntryBusy_ = false;
     applyManualEntryResult(result, QStringLiteral("Manual cash movement write failed."));
-    syncFromController();
-    return lastManualEntryStatus_ == QStringLiteral("OK")
+    const bool writeSucceeded = lastManualEntryStatus_ == QStringLiteral("OK")
         || lastManualEntryStatus_ == QStringLiteral("DUPLICATE");
+    if (writeSucceeded) {
+        refreshAfterManualEntryWrite(false, "manual_cash_movement");
+    }
+    syncFromController();
+    return writeSucceeded;
 }
 
 void ShellAccountingPresenter::resetManualEntryUi()
@@ -608,6 +650,33 @@ void ShellAccountingPresenter::resetManualEntryUi()
     lastManualEntryIssue_.clear();
     lastManualEntryResult_.clear();
     emit manualEntryStateChanged();
+}
+
+void ShellAccountingPresenter::resetPostWriteRefreshState()
+{
+    postWriteRefreshBusy_ = false;
+    lastPostWriteRefreshStatus_ = QStringLiteral("READY");
+    lastPostWriteRefreshIssue_.clear();
+    lastPostWriteRefreshSummary_.clear();
+    emit postWriteRefreshStateChanged();
+}
+
+bool ShellAccountingPresenter::refreshManualEntryReadback()
+{
+    if (!controller_) {
+        postWriteRefreshBusy_ = false;
+        lastPostWriteRefreshStatus_ = QStringLiteral("UNAVAILABLE");
+        lastPostWriteRefreshIssue_ = QStringLiteral("Shell accounting controller is not configured.");
+        lastPostWriteRefreshSummary_.clear();
+        emit postWriteRefreshStateChanged();
+        markControllerNotConfigured("accounting.manual_entry.post_write_readback_refresh");
+        return false;
+    }
+
+    refreshAfterManualEntryWrite(true, "manual_entry_user_refresh");
+    return lastPostWriteRefreshStatus_ == QStringLiteral("OK")
+        || lastPostWriteRefreshStatus_ == QStringLiteral("WARNING")
+        || lastPostWriteRefreshStatus_ == QStringLiteral("EMPTY");
 }
 
 void ShellAccountingPresenter::reset()
@@ -620,6 +689,7 @@ void ShellAccountingPresenter::reset()
     positions_.setPrivacyMode(false);
     resetTradingUi();
     resetManualEntryUi();
+    resetPostWriteRefreshState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -727,6 +797,112 @@ void ShellAccountingPresenter::applyManualEntryResult(
         .arg(boolField(payload, "cashAdjustmentWritten") ? QStringLiteral("true") : QStringLiteral("false"))
         .arg(idempotent ? QStringLiteral("true") : QStringLiteral("false"));
     emit manualEntryStateChanged();
+}
+
+void ShellAccountingPresenter::refreshAfterManualEntryWrite(
+    bool includePositionList,
+    const char* reason)
+{
+    if (!postWriteRefreshEnabled_) {
+        postWriteRefreshBusy_ = false;
+        lastPostWriteRefreshStatus_ = QStringLiteral("DISABLED");
+        lastPostWriteRefreshIssue_ = QStringLiteral("Post-write readback refresh is disabled.");
+        lastPostWriteRefreshSummary_ = QStringLiteral("reason=%1 actions=none")
+            .arg(QString::fromUtf8(reason));
+        emit postWriteRefreshStateChanged();
+        return;
+    }
+    if (!controller_) {
+        postWriteRefreshBusy_ = false;
+        lastPostWriteRefreshStatus_ = QStringLiteral("UNAVAILABLE");
+        lastPostWriteRefreshIssue_ = QStringLiteral("Shell accounting controller is not configured.");
+        lastPostWriteRefreshSummary_.clear();
+        emit postWriteRefreshStateChanged();
+        return;
+    }
+
+    struct RefreshStep final {
+        const char* actionName;
+        void (ShellAccountingReadOnlyController::*refresh)(
+            const ShellAccountingServiceRequest&);
+    };
+
+    const RefreshStep transactionSteps[] = {
+        {"position.list", &ShellAccountingReadOnlyController::refreshPositionList},
+        {"cash.summary", &ShellAccountingReadOnlyController::refreshCashSummary},
+        {"portfolio.pnl.summary", &ShellAccountingReadOnlyController::refreshPortfolioPnlSummary},
+    };
+    const RefreshStep cashMovementSteps[] = {
+        {"cash.summary", &ShellAccountingReadOnlyController::refreshCashSummary},
+        {"portfolio.pnl.summary", &ShellAccountingReadOnlyController::refreshPortfolioPnlSummary},
+    };
+
+    postWriteRefreshBusy_ = true;
+    lastPostWriteRefreshStatus_ = QStringLiteral("REFRESHING");
+    lastPostWriteRefreshIssue_.clear();
+    lastPostWriteRefreshSummary_ = QStringLiteral("reason=%1 actions=pending")
+        .arg(QString::fromUtf8(reason));
+    emit postWriteRefreshStateChanged();
+
+    ShellAccountingViewState aggregateState = ShellAccountingViewState::Idle;
+    std::vector<ShellAccountingIssue> aggregateIssues;
+    QStringList actionNames;
+
+    const auto runStep = [&](const RefreshStep& step) {
+        auto request = makePresenterRefreshRequest(step.actionName);
+        (controller_.get()->*step.refresh)(request);
+        aggregateState = moreSevereRefreshState(aggregateState, controller_->currentState());
+        appendIssues(aggregateIssues, controller_->issues());
+        actionNames.append(QString::fromUtf8(step.actionName));
+    };
+
+    if (includePositionList) {
+        for (const auto& step : transactionSteps) {
+            runStep(step);
+        }
+    } else {
+        for (const auto& step : cashMovementSteps) {
+            runStep(step);
+        }
+    }
+
+    postWriteRefreshBusy_ = false;
+    lastPostWriteRefreshIssue_ = issueTextFromIssues(aggregateIssues);
+    switch (aggregateState) {
+    case ShellAccountingViewState::Error:
+    case ShellAccountingViewState::Unavailable:
+        lastPostWriteRefreshStatus_ = QStringLiteral("ERROR");
+        if (lastPostWriteRefreshIssue_.isEmpty()) {
+            lastPostWriteRefreshIssue_ = QStringLiteral("Post-write readback refresh failed.");
+        }
+        break;
+    case ShellAccountingViewState::Stale:
+        lastPostWriteRefreshStatus_ = QStringLiteral("STALE");
+        if (lastPostWriteRefreshIssue_.isEmpty()) {
+            lastPostWriteRefreshIssue_ = QStringLiteral("Post-write readback refresh returned stale data.");
+        }
+        break;
+    case ShellAccountingViewState::Warning:
+        lastPostWriteRefreshStatus_ = QStringLiteral("WARNING");
+        break;
+    case ShellAccountingViewState::Empty:
+        lastPostWriteRefreshStatus_ = QStringLiteral("EMPTY");
+        break;
+    case ShellAccountingViewState::Loaded:
+    case ShellAccountingViewState::Idle:
+    case ShellAccountingViewState::Loading:
+        lastPostWriteRefreshStatus_ = QStringLiteral("OK");
+        break;
+    }
+    lastPostWriteRefreshSummary_ = QStringLiteral("reason=%1 actions=%2 issueCount=%3")
+        .arg(QString::fromUtf8(reason), actionNames.join(QStringLiteral(",")))
+        .arg(static_cast<int>(aggregateIssues.size()));
+    emit postWriteRefreshStateChanged();
+
+    applyControllerState(
+        "accounting.manual_entry.post_write_readback_refresh",
+        aggregateState,
+        std::move(aggregateIssues));
 }
 
 void ShellAccountingPresenter::markManualEntryInputError(const QString& message)

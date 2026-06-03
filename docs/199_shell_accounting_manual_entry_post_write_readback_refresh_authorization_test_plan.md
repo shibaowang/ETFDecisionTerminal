@@ -132,3 +132,14 @@ broker code, run replay, or depend on real data.
   or automatic trading was added.
 - No-go if any production implementation file changes outside the explicit
   TASK-201 authorization scope.
+
+## TASK-202 Implementation Update
+
+TASK-202 evolves this authorization gate to allow only the authorized minimal
+post-write readback refresh implementation. The allowed production changes are
+limited to ShellAccounting QML and ShellServices Presenter / Controller refresh
+wiring. The gate must continue to block DataServiceActions changes,
+DataServiceActionRegistrar changes, DataAccess repository changes, migration
+changes, AccountingEngine replay, snapshot rebuild after write, derived table
+refresh after write, audit or ledger writes, broker SDKs, network, credentials,
+endpoints, real order placement, and automatic trading.

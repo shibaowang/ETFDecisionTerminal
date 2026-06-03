@@ -791,6 +791,15 @@
   defines TASK-201 static probes for no production drift, no direct SQLite or
   DataAccess readback, no replay/read model implementation, no audit/ledger
   write, and retained broker regressions.
+- ShellAccounting manual entry post-write readback refresh implementation:
+  [200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md](200_shell_accounting_manual_entry_post_write_readback_refresh_implementation.md)
+  records TASK-202 minimal post-write readback refresh through existing
+  DataService read actions after successful manual entry writes.
+- ShellAccounting manual entry post-write readback refresh implementation test plan:
+  [201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md](201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md)
+  defines TASK-202 static probes for Presenter/Controller read-boundary refresh,
+  QML refresh status fields, no DataServiceActions or repository drift, no
+  replay/snapshot/audit/ledger/broker behavior, and retained regressions.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -292,7 +292,7 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingManualEntrySection"
                 width: parent.width
-                height: 530
+                height: 650
                 radius: 8
                 color: "#ffffff"
                 border.color: "#cfd8e6"
@@ -589,7 +589,7 @@ Rectangle {
                     Rectangle {
                         objectName: "shellAccountingManualEntryStatusPanel"
                         width: parent.width
-                        height: 92
+                        height: 178
                         radius: 8
                         color: "#f8fbff"
                         border.color: "#d9e3f2"
@@ -624,6 +624,37 @@ Rectangle {
                                 objectName: "shellAccountingManualEntryIssueText"
                                 width: parent.width
                                 text: root.presenterAvailable ? accountingPresenter.lastManualEntryIssue : ""
+                                color: "#9a3412"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                visible: text.length > 0
+                            }
+
+                            Text {
+                                objectName: "shellAccountingPostWriteRefreshStatus"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Post-write refresh status: " + accountingPresenter.lastPostWriteRefreshStatus
+                                    : "Post-write refresh status: unavailable"
+                                color: "#18202f"
+                                font.pixelSize: 13
+                                font.bold: true
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingPostWriteRefreshSummary"
+                                width: parent.width
+                                text: root.presenterAvailable ? accountingPresenter.lastPostWriteRefreshSummary : ""
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingPostWriteRefreshIssue"
+                                width: parent.width
+                                text: root.presenterAvailable ? accountingPresenter.lastPostWriteRefreshIssue : ""
                                 color: "#9a3412"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap

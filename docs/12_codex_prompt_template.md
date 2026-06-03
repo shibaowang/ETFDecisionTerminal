@@ -1927,6 +1927,23 @@ endpoints, real order placement, real broker order ids, or automatic trading.
 QML / Presenter / Controller must not directly access SQLite or DataAccess and
 QML must not calculate position, cash, or PnL facts.
 
+## TASK-203 Manual Entry MVP E2E Acceptance Authorization Gate Prompt Rule
+
+Future manual entry MVP E2E acceptance work after TASK-203 must reference
+docs/202 and docs/203. TASK-203 is a gate-only authorization task. It documents
+the current QML -> Presenter -> Controller -> ShellServices adapter ->
+DataService action -> DataAccess repository chain and requires acceptance to
+prove no layer bypasses its boundary.
+
+Do not use TASK-203 as authorization to implement new runtime E2E behavior,
+modify production QML, startup, Presenter, Controller, ShellServices adapter /
+port code, DataServiceActions, DataServiceActionRegistrar, DataAccess
+repositories, validation production code, migrations, schema files,
+AccountingEngine replay, audit or ledger writes, broker SDKs, network calls,
+credentials, endpoints, real order placement, or automatic trading. Runtime E2E
+fixture tests, acceptance implementation, audit policy, ledger policy, broker
+capability, and automatic trading must remain separately authorized.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

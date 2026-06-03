@@ -13113,6 +13113,81 @@ def main() -> int:
     )
     require("TASK-202 Implementation Update" in task201_doc, "docs/198 mentions TASK-202")
     require("TASK-202 Implementation Update" in task201_plan, "docs/199 mentions TASK-202")
+    task203_doc_path = root / "docs" / "202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md"
+    task203_plan_path = root / "docs" / "203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md"
+    task203_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(task203_doc_path.exists(), "docs/202 exists")
+    require(task203_plan_path.exists(), "docs/203 exists")
+    require(task203_cmake_path.exists(), "TASK-203 tests CMake exists")
+    task203_doc = task203_doc_path.read_text(encoding="utf-8")
+    task203_plan = task203_plan_path.read_text(encoding="utf-8")
+    task203_cmake = task203_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md" in readme,
+        "README links docs/202",
+    )
+    require(
+        "docs/203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md" in readme,
+        "README links docs/203",
+    )
+    require(
+        "202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md" in docs_index,
+        "docs/README links docs/202",
+    )
+    require(
+        "203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/203",
+    )
+    require("TASK-203" in codex_prompt_template, "docs/12 registers TASK-203")
+    for token, message in [
+        ("manual entry MVP E2E acceptance", "docs/202 documents MVP E2E acceptance"),
+        ("gate-only", "docs/202 documents gate-only scope"),
+        ("does not implement new functionality", "docs/202 blocks new functionality"),
+        ("QML -> Presenter -> Controller -> ShellServices adapter -> DataService action -> DataAccess repository", "docs/202 documents chain"),
+        ("Acceptance must prove no layer bypasses its boundary", "docs/202 documents no bypass"),
+        ("BUY / SELL", "docs/202 documents manual transaction sides"),
+        ("Deposit / Withdrawal", "docs/202 documents cash movement types"),
+        ("Invalid payload does not write database rows", "docs/202 documents invalid no-write"),
+        ("Duplicate idempotencyKey does not duplicate writes", "docs/202 documents idempotency"),
+        ("Sensitive memo handling is safe and sanitized", "docs/202 documents sensitive memo handling"),
+        ("Post-write readback refresh state is visible", "docs/202 documents refresh visibility"),
+        ("No silent success is allowed", "docs/202 blocks silent success"),
+        ("Raw SQL, raw payload, credentials, endpoint values, and internal stack trace", "docs/202 blocks raw exposure"),
+        ("broker SDK, network, credentials, or endpoint integration", "docs/202 blocks broker/network"),
+        ("real order placement", "docs/202 blocks real orders"),
+        ("automatic trading", "docs/202 blocks automatic trading"),
+    ]:
+        require(token in task203_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/203 contains Test Matrix"),
+        ("Manual Transaction E2E Acceptance", "docs/203 covers manual transaction"),
+        ("Manual Cash Movement E2E Acceptance", "docs/203 covers manual cash movement"),
+        ("Daily-Use MVP Acceptance", "docs/203 covers daily-use MVP"),
+        ("No Production Drift", "docs/203 covers no production drift"),
+        ("production QML is not modified by TASK-203", "docs/203 blocks QML drift"),
+        ("Presenter / Controller are not modified by TASK-203", "docs/203 blocks Presenter/Controller drift"),
+        ("DataServiceActions and DataServiceActionRegistrar are not modified by", "docs/203 blocks DataServiceActions drift"),
+        ("DataAccess repositories are not modified by TASK-203", "docs/203 blocks repositories"),
+        ("migrations are not modified by TASK-203", "docs/203 blocks migrations"),
+        ("no new runtime SQL / SQLite write path is added", "docs/203 blocks runtime SQL"),
+        ("no new AccountingEngine replay integration is added", "docs/203 blocks replay"),
+        ("no new audit or ledger write is added", "docs/203 blocks audit/ledger"),
+        ("no new broker SDK, network, credentials, endpoint, real order, or automatic", "docs/203 blocks broker/order/auto"),
+    ]:
+        require(token in task203_plan, message)
+    require(
+        "shell_accounting_manual_entry_mvp_e2e_acceptance_authorization" in task203_cmake,
+        "TASK-203 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate" in tests_cmake,
+        "TASK-203 test directory registered",
+    )
     return 0
 
 

@@ -1985,6 +1985,28 @@ write / ledger policy, backup / export / packaging acceptance, broker sandbox
 capability, and real broker order placement must remain separately authorized.
 Broker sandbox new capability development remains paused.
 
+## TASK-206 Manual Entry Readback Mapping Authorization Gate Prompt Rule
+
+Future manual entry readback mapping work after TASK-206 must reference
+`docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md`
+and
+`docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md`.
+TASK-206 is readback mapping authorization gate-only: it documents mapping
+policy for `position.list`, `cash.summary`, and `portfolio.pnl.summary`, but it
+does not implement readback mapping.
+
+Do not use TASK-206 as authorization to modify production code, production QML,
+startup, Presenter, Controller, ShellServices adapter / port code,
+DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+migrations, AccountingEngine, StrategyEngine, MarketEngine, broker code,
+network, credentials, endpoints, real order placement, or automatic trading.
+
+Future TASK-207 may implement readback mapping if separately authorized. Future
+replay, audit, ledger, backup/export, packaging, broker sandbox, real broker
+order, and automatic trading work remain separate TASKs. First phase remains no
+real broker, no automatic trading, no real order placement, and broker sandbox
+new capability remains paused.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -50,142 +50,151 @@ def main() -> int:
     args = parser.parse_args()
     root = Path(args.source_root)
 
-    doc206_path = root / "docs" / "206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md"
-    doc207_path = root / "docs" / "207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md"
-    require(doc206_path.exists(), "docs/206 exists")
-    require(doc207_path.exists(), "docs/207 exists")
+    doc208_path = root / "docs" / "208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md"
+    doc209_path = root / "docs" / "209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md"
+    require(doc208_path.exists(), "docs/208 exists")
+    require(doc209_path.exists(), "docs/209 exists")
 
-    doc206 = read(doc206_path)
-    doc207 = read(doc207_path)
+    doc208 = read(doc208_path)
+    doc209 = read(doc209_path)
     readme = read(root / "README.md")
     docs_index = read(root / "docs" / "README.md")
     prompt = read(root / "docs" / "12_codex_prompt_template.md")
     tests_cmake = read(root / "tests" / "CMakeLists.txt")
-    task204_doc = read(root / "docs" / "204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md")
-    task204_plan = read(root / "docs" / "205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md")
+    doc206 = read(root / "docs" / "206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md")
+    doc207 = read(root / "docs" / "207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md")
 
     for text, context in [(readme, "README"), (docs_index, "docs/README"), (prompt, "docs/12")]:
-        require_contains(text, "TASK-205", context)
-        require_contains(text, "206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md", context)
-        require_contains(text, "207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md", context)
+        require_contains(text, "TASK-206", context)
+        require_contains(text, "208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md", context)
+        require_contains(text, "209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md", context)
 
-    require_contains(tests_cmake, "ShellAccountingManualEntryReadbackReplayAdequacyReviewGate", "tests/CMakeLists")
-    require_contains(task204_doc, "TASK-205", "docs/204")
-    require_contains(task204_plan, "TASK-205", "docs/205")
+    require_contains(tests_cmake, "ShellAccountingManualEntryReadbackMappingAuthorizationGate", "tests/CMakeLists")
+    require_contains(doc206, "TASK-206", "docs/206")
+    require_contains(doc207, "TASK-206", "docs/207")
 
     for token in [
-        "TASK-205",
-        "readback / replay adequacy review gate-only",
-        "does not implement readback / replay",
+        "TASK-206",
+        "readback mapping authorization gate-only",
+        "does not implement readback mapping",
         "does not modify production code",
-        "does not write any database table",
-        "review conclusion and gap matrix",
-        "manual entry facts",
-        "daily-use accounting pages",
+        "does not modify DataServiceActions",
+        "does not modify repositories",
+        "does not modify migrations",
+        "does not add runtime SQL / SQLite read/write behavior",
         "TASK-192",
         "TASK-196",
         "TASK-198",
         "TASK-200",
         "TASK-202",
         "TASK-204",
-        "manual transaction facts",
-        "manual cash movement facts",
-        "trade_execution_group",
-        "trade_log",
-        "cash_adjustment",
-        "cash_adjustment.trade_log_id",
-        "BUY",
-        "SELL",
-        "quantity",
-        "price",
-        "fee",
-        "tax",
-        "cash impact",
-        "instrument mapping",
-        "account / portfolio mapping",
-        "idempotency / request trace",
-        "deposit",
-        "withdrawal",
-        "amount sign",
-        "currency",
-        "principal base / cash balance",
+        "TASK-205",
         "position.list",
         "cash.summary",
         "portfolio.pnl.summary",
-        "base_position.summary",
-        "sniper_pool.summary",
-        "AccountingEngine replay",
-        "gap matrix",
-        "schema gap",
-        "repository mapping gap",
-        "DataService readback gap",
-        "replay gap",
-        "UI refresh gap",
-        "fixture/test gap",
-        "audit/ledger gap",
-        "backup/export gap",
-        "Formal Review Conclusion",
-        "partially ready",
-        "not ready",
-        "Next Task Recommendation",
-        "TASK-206",
+        "BUY aggregation",
+        "SELL reduction",
+        "instrument mapping",
+        "account / portfolio mapping",
+        "cost basis",
+        "fee / tax",
+        "partial sell",
+        "sell exceeds position",
+        "stale / invalid facts",
+        "no QML calculation",
+        "BUY cash outflow",
+        "SELL cash inflow",
+        "Deposit cash inflow",
+        "Withdrawal cash outflow",
+        "fee / tax cash treatment",
+        "cash_adjustment.trade_log_id",
+        "currency aggregation",
+        "principal base",
+        "negative cash / insufficient cash",
+        "realized PnL",
+        "unrealized PnL",
+        "cash movement treatment",
+        "principal flow",
+        "market price dependency",
+        "stale price / missing price",
+        "multi-instrument / multi-account",
+        "temporary SQLite fixtures",
+        "BUY / SELL fixtures",
+        "Deposit / Withdrawal fixtures",
+        "duplicate idempotency",
+        "invalid no-write",
+        "response sanitization",
+        "no direct UI DB access",
+        "no replay unless separately authorized",
+        "no broker",
+        "Formal Authorization Conclusion",
+        "TASK-206 authorizes future readback mapping implementation only after a separate implementation TASK",
+        "does not authorize replay",
+        "does not authorize audit / ledger",
+        "Recommended next task: TASK-207 manual entry readback mapping implementation",
         "broker SDK",
         "network",
         "credentials",
-        "endpoints",
+        "endpoint",
         "real order placement",
         "automatic trading",
         "Broker sandbox new capability development remains paused",
     ]:
-        require_contains(doc206, token, "docs/206")
+        require_contains(doc208, token, "docs/208")
 
     for token in [
         "Test Matrix",
         "Required Probes",
         "Go / No-Go Checklist",
-        "docs/206 exists",
-        "docs/207 exists",
-        "Review-gate-only scope",
-        "Manual transaction fact adequacy",
-        "Manual cash movement fact adequacy",
-        "Readback / replay gap matrix",
-        "Formal conclusion",
+        "docs/208 exists",
+        "docs/209 exists",
+        "Authorization-only scope",
+        "position.list mapping policy",
+        "cash.summary mapping policy",
+        "portfolio.pnl.summary mapping policy",
+        "Formal authorization conclusion",
         "Production drift",
+        "Forbidden capability drift",
+        "no production code changed",
+        "no runtime SQL / SQLite read/write",
+        "no readback implementation",
+        "no AccountingEngine replay implementation",
+        "no audit / ledger write",
+        "no broker, network, credentials, endpoint, real order, or automatic trading",
+        "TASK-205",
         "TASK-204",
         "TASK-202",
         "TASK-200",
         "TASK-198",
         "TASK-196",
         "TASK-192",
-        "no production code changed",
-        "no runtime SQL / SQLite write",
-        "no broker, network, credentials, endpoint, real order, or automatic trading",
     ]:
-        require_contains(doc207, token, "docs/207")
+        require_contains(doc209, token, "docs/209")
 
     allowed_changes = {
         "README.md",
         "docs/README.md",
         "docs/12_codex_prompt_template.md",
-        "docs/204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md",
-        "docs/205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md",
         "docs/206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md",
         "docs/207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md",
+        "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md",
+        "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md",
         "tests/CMakeLists.txt",
         "tests/DevDocs/test_readonly_demo_acceptance.py",
-        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
         "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
         "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
         "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
         "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
-        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
         "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
-    require(not unexpected, "TASK-205 changed unauthorized paths: " + ", ".join(unexpected))
+    require(not unexpected, "TASK-206 changed unauthorized paths: " + ", ".join(unexpected))
 
     forbidden_prefixes = [
         "apps/",
@@ -198,9 +207,9 @@ def main() -> int:
         "migrations/",
     ]
     for prefix in forbidden_prefixes:
-        require(not any(path.startswith(prefix) for path in changes), f"TASK-205 must not change {prefix}")
+        require(not any(path.startswith(prefix) for path in changes), f"TASK-206 must not change {prefix}")
 
-    require(not any(path.endswith(".sql") for path in changes), "TASK-205 must not add migration or schema files")
+    require(not any(path.endswith(".sql") for path in changes), "TASK-206 must not add migration or schema files")
 
     production_diff = added_lines(diff_text(root, "apps", "libs", "migrations"))
     for token in [
@@ -208,9 +217,12 @@ def main() -> int:
         "UPDATE ",
         "DELETE ",
         "REPLACE ",
+        "SELECT ",
         "SQLite",
+        "readback",
         "AccountingEngine",
         "Replay",
+        "snapshot",
         "audit_log",
         "ledger",
         "Broker",
@@ -225,6 +237,7 @@ def main() -> int:
         require(token not in production_diff, f"production diff must not add `{token}`")
 
     retained_paths = [
+        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryMvpRuntimeE2eAcceptance/CMakeLists.txt",
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/CMakeLists.txt",
         "tests/ShellAccountingManualEntryQmlPresenterImplementation/CMakeLists.txt",

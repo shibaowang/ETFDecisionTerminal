@@ -13348,6 +13348,108 @@ def main() -> int:
         "ShellAccountingManualEntryReadbackReplayAdequacyReviewGate" in tests_cmake,
         "TASK-205 test directory registered",
     )
+    task206_doc_path = root / "docs" / "208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md"
+    task206_plan_path = root / "docs" / "209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md"
+    task206_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReadbackMappingAuthorizationGate"
+        / "CMakeLists.txt"
+    )
+    require(task206_doc_path.exists(), "docs/208 exists")
+    require(task206_plan_path.exists(), "docs/209 exists")
+    require(task206_cmake_path.exists(), "TASK-206 tests CMake exists")
+    task206_doc = task206_doc_path.read_text(encoding="utf-8")
+    task206_plan = task206_plan_path.read_text(encoding="utf-8")
+    task206_cmake = task206_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md" in readme,
+        "README links docs/208",
+    )
+    require(
+        "docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md" in readme,
+        "README links docs/209",
+    )
+    require(
+        "208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md" in docs_index,
+        "docs/README links docs/208",
+    )
+    require(
+        "209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md" in docs_index,
+        "docs/README links docs/209",
+    )
+    require("TASK-206" in codex_prompt_template, "docs/12 registers TASK-206")
+    require("TASK-206" in task205_doc, "docs/206 references TASK-206 follow-up")
+    require("TASK-206" in task205_plan, "docs/207 references TASK-206 follow-up")
+    for token, message in [
+        ("readback mapping authorization gate-only", "docs/208 documents authorization gate scope"),
+        ("does not implement readback mapping", "docs/208 blocks readback implementation"),
+        ("does not modify production code", "docs/208 blocks production code drift"),
+        ("does not modify DataServiceActions", "docs/208 blocks DataServiceActions drift"),
+        ("does not modify repositories", "docs/208 blocks repository drift"),
+        ("does not modify migrations", "docs/208 blocks migration drift"),
+        ("does not add runtime SQL / SQLite read/write behavior", "docs/208 blocks runtime SQL"),
+        ("position.list", "docs/208 covers position.list"),
+        ("cash.summary", "docs/208 covers cash.summary"),
+        ("portfolio.pnl.summary", "docs/208 covers portfolio pnl"),
+        ("BUY aggregation", "docs/208 covers BUY aggregation"),
+        ("SELL reduction", "docs/208 covers SELL reduction"),
+        ("instrument mapping", "docs/208 covers instrument mapping"),
+        ("account / portfolio mapping", "docs/208 covers account portfolio mapping"),
+        ("cost basis", "docs/208 covers cost basis"),
+        ("fee / tax", "docs/208 covers fee tax"),
+        ("partial sell", "docs/208 covers partial sell"),
+        ("sell exceeds position", "docs/208 covers sell exceeds"),
+        ("Deposit cash inflow", "docs/208 covers deposit"),
+        ("Withdrawal cash outflow", "docs/208 covers withdrawal"),
+        ("cash_adjustment.trade_log_id", "docs/208 covers cash adjustment link"),
+        ("currency aggregation", "docs/208 covers currency aggregation"),
+        ("principal base", "docs/208 covers principal base"),
+        ("negative cash / insufficient cash", "docs/208 covers negative cash"),
+        ("realized PnL", "docs/208 covers realized PnL"),
+        ("unrealized PnL", "docs/208 covers unrealized PnL"),
+        ("market price dependency", "docs/208 covers market price"),
+        ("stale price / missing price", "docs/208 covers stale price"),
+        ("no QML calculation", "docs/208 blocks QML calculation"),
+        ("temporary SQLite fixtures", "docs/208 requires fixtures"),
+        ("duplicate idempotency", "docs/208 covers idempotency"),
+        ("invalid no-write", "docs/208 covers invalid no-write"),
+        ("response sanitization", "docs/208 covers sanitization"),
+        ("no direct UI DB access", "docs/208 blocks direct UI DB"),
+        ("does not authorize replay", "docs/208 blocks replay"),
+        ("does not authorize audit / ledger", "docs/208 blocks audit ledger"),
+        ("Recommended next task: TASK-207 manual entry readback mapping implementation", "docs/208 recommends TASK-207"),
+        ("Broker sandbox new capability development remains paused", "docs/208 keeps broker sandbox paused"),
+        ("real order placement", "docs/208 blocks real order"),
+        ("automatic trading", "docs/208 blocks automatic trading"),
+    ]:
+        require(token in task206_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/209 contains Test Matrix"),
+        ("Required Probes", "docs/209 contains Required Probes"),
+        ("Go / No-Go Checklist", "docs/209 contains Go/No-Go"),
+        ("Authorization-only scope", "docs/209 covers authorization scope"),
+        ("position.list mapping policy", "docs/209 covers position mapping"),
+        ("cash.summary mapping policy", "docs/209 covers cash mapping"),
+        ("portfolio.pnl.summary mapping policy", "docs/209 covers pnl mapping"),
+        ("Formal authorization conclusion", "docs/209 covers conclusion"),
+        ("Production drift", "docs/209 covers production drift"),
+        ("Forbidden capability drift", "docs/209 covers forbidden drift"),
+        ("no runtime SQL / SQLite read/write", "docs/209 blocks runtime SQL"),
+        ("no readback implementation", "docs/209 blocks readback implementation"),
+        ("no AccountingEngine replay implementation", "docs/209 blocks replay"),
+        ("no audit / ledger write", "docs/209 blocks audit ledger"),
+        ("no broker, network, credentials, endpoint, real order, or automatic trading", "docs/209 blocks broker/order/auto"),
+    ]:
+        require(token in task206_plan, message)
+    require(
+        "shell_accounting_manual_entry_readback_mapping_authorization" in task206_cmake,
+        "TASK-206 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryReadbackMappingAuthorizationGate" in tests_cmake,
+        "TASK-206 test directory registered",
+    )
     return 0
 
 

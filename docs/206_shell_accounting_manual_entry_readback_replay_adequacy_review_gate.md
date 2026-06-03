@@ -175,6 +175,13 @@ readback mapping authorization gate. It should authorize only the design and
 tests required to prove how manual transaction and manual cash movement facts
 flow into `position.list`, `cash.summary`, and `portfolio.pnl.summary`.
 
+TASK-206 has now added that readback mapping authorization gate in
+`docs/208_shell_accounting_manual_entry_readback_mapping_authorization_gate.md`
+and
+`docs/209_shell_accounting_manual_entry_readback_mapping_authorization_test_plan.md`.
+TASK-206 still does not implement readback mapping, AccountingEngine replay,
+audit / ledger, broker, real order placement, or automatic trading.
+
 TASK-206 should not implement AccountingEngine replay until a later dedicated
 replay implementation task confirms fixtures, realized / unrealized PnL
 semantics, fee / tax treatment, and principal flow policy.

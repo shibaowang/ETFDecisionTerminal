@@ -8,6 +8,10 @@ not add production functionality, does not modify production code, and does not
 connect replay, audit, ledger, broker, network, credentials, endpoint, real
 order placement, or automatic trading behavior.
 
+TASK-205 adds a follow-up readback / replay adequacy review gate. TASK-205 does
+not change TASK-204 runtime E2E behavior and does not implement readback,
+replay, audit, ledger, broker, real order, or automatic trading behavior.
+
 ## Test Matrix
 
 ### Documentation And Registration

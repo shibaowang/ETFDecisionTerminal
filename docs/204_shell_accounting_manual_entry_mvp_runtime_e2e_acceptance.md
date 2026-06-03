@@ -19,6 +19,11 @@ validation production code, migrations, schema files, AccountingEngine replay,
 StrategyEngine, MarketEngine, broker code, network, credentials, endpoints, real
 order placement, or automatic trading.
 
+TASK-205 adds a later readback / replay adequacy review gate for these manual
+entry facts. TASK-205 remains review-only and does not implement readback,
+replay, daily-use page mapping, audit, ledger, broker, or automatic trading
+behavior.
+
 ## Runtime E2E Fixture Boundary
 
 The TASK-204 runtime tests use test-only temporary SQLite databases. Each test

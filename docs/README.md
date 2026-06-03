@@ -818,6 +818,16 @@
   defines TASK-204 runtime probes for valid writes, duplicate idempotency,
   invalid no-write behavior, sanitized responses, post-write readback boundary,
   no direct UI DB access, and retained broker gates.
+- ShellAccounting manual entry readback replay adequacy review gate:
+  [206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md](206_shell_accounting_manual_entry_readback_replay_adequacy_review_gate.md)
+  records TASK-205 review-gate-only adequacy findings for manual entry facts
+  entering readback, future AccountingEngine replay, and daily-use accounting
+  pages without production implementation.
+- ShellAccounting manual entry readback replay adequacy review test plan:
+  [207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md](207_shell_accounting_manual_entry_readback_replay_adequacy_review_test_plan.md)
+  defines TASK-205 static probes for the adequacy review documents, formal gap
+  matrix, next task recommendation, no production drift, and retained broker
+  gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

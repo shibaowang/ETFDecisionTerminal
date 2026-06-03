@@ -254,6 +254,8 @@ def main() -> int:
         "docs/201_shell_accounting_manual_entry_post_write_readback_refresh_implementation_test_plan.md",
         "docs/202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md",
         "docs/203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md",
+        "docs/204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md",
+        "docs/205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md",
         "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
         "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
         "libs/ShellServices/src/ShellAccountingPresenter.cpp",
@@ -270,6 +272,8 @@ def main() -> int:
         "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
         "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+        "tests/ShellAccountingManualEntryMvpRuntimeE2eAcceptance/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryMvpRuntimeE2eAcceptance/manual_entry_mvp_runtime_e2e_acceptance.cpp",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-202 changed unauthorized paths: " + ", ".join(unexpected))

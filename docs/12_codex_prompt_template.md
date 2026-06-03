@@ -1944,6 +1944,25 @@ credentials, endpoints, real order placement, or automatic trading. Runtime E2E
 fixture tests, acceptance implementation, audit policy, ledger policy, broker
 capability, and automatic trading must remain separately authorized.
 
+## TASK-204 Manual Entry MVP Runtime E2E Acceptance Prompt Rule
+
+Future manual entry MVP runtime E2E work after TASK-204 must reference docs/204
+and docs/205. TASK-204 authorizes tests and documentation only: temporary SQLite
+DB fixtures, migrations 001 / 002 application, synthetic manual transaction BUY
+and manual cash movement Deposit payloads through existing DataService action
+boundaries, duplicate idempotency checks, invalid payload no-write checks,
+sanitized response checks, and TASK-202 post-write readback boundary checks.
+
+Do not use TASK-204 as authorization to add production functionality, modify
+production QML, startup, Presenter, Controller, ShellServices adapter / port
+code, DataServiceActions, DataServiceActionRegistrar, DataAccess repositories,
+validation production code, migrations, schema files, AccountingEngine replay,
+audit writes, ledger writes, broker SDKs, network calls, credentials, endpoints,
+real order placement, real broker order ids, or automatic trading. Broader SELL
+/ Withdrawal fixture expansion, audit policy, ledger policy, broker capability,
+and automatic trading must remain separately authorized. Broker sandbox new
+capability development remains paused.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

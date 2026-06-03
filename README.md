@@ -3592,3 +3592,20 @@ capability development remains paused. See
 `docs/202_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_gate.md`
 and
 `docs/203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md`.
+
+## TASK-204 Manual Entry MVP Runtime E2E Acceptance
+
+TASK-204 adds runtime E2E acceptance tests for the ShellAccounting manual entry
+MVP chain. The tests use temporary SQLite databases, apply migrations 001 + 002,
+and submit synthetic manual transaction BUY and manual cash movement Deposit
+payloads through existing DataService action boundaries.
+
+The runtime acceptance verifies expected `trade_execution_group`, `trade_log`,
+and `cash_adjustment` rows, duplicate idempotency behavior, invalid payload
+no-write behavior, sanitized responses, and the existing TASK-202 post-write
+readback refresh boundary. TASK-204 does not add production functionality, does
+not modify production QML, Presenter, Controller, ShellServices, DataService
+actions, repositories, or migrations, does not connect replay, audit, ledger,
+broker, network, credentials, endpoints, real orders, or automatic trading. See
+`docs/204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md` and
+`docs/205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md`.

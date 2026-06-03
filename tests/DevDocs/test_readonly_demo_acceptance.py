@@ -13188,6 +13188,83 @@ def main() -> int:
         "ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate" in tests_cmake,
         "TASK-203 test directory registered",
     )
+    task204_doc_path = root / "docs" / "204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md"
+    task204_plan_path = root / "docs" / "205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md"
+    task204_cmake_path = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryMvpRuntimeE2eAcceptance"
+        / "CMakeLists.txt"
+    )
+    require(task204_doc_path.exists(), "docs/204 exists")
+    require(task204_plan_path.exists(), "docs/205 exists")
+    require(task204_cmake_path.exists(), "TASK-204 tests CMake exists")
+    task204_doc = task204_doc_path.read_text(encoding="utf-8")
+    task204_plan = task204_plan_path.read_text(encoding="utf-8")
+    task204_cmake = task204_cmake_path.read_text(encoding="utf-8")
+    require(
+        "docs/204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md" in readme,
+        "README links docs/204",
+    )
+    require(
+        "docs/205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md" in readme,
+        "README links docs/205",
+    )
+    require(
+        "204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md" in docs_index,
+        "docs/README links docs/204",
+    )
+    require(
+        "205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md" in docs_index,
+        "docs/README links docs/205",
+    )
+    require("TASK-204" in codex_prompt_template, "docs/12 registers TASK-204")
+    for token, message in [
+        ("runtime E2E acceptance", "docs/204 documents runtime E2E acceptance"),
+        ("tests and documentation only", "docs/204 limits scope to tests/docs"),
+        ("temporary SQLite", "docs/204 documents temporary SQLite"),
+        ("migrations/001_initial_schema.sql", "docs/204 documents migration 001"),
+        ("migrations/002_shell_accounting_manual_entry_schema.sql", "docs/204 documents migration 002"),
+        ("manual BUY", "docs/204 documents BUY acceptance"),
+        ("Deposit", "docs/204 documents Deposit acceptance"),
+        ("Duplicate `idempotencyKey`", "docs/204 documents idempotency"),
+        ("Invalid payloads must be rejected", "docs/204 documents invalid no-write"),
+        ("responses do not expose raw SQL", "docs/204 documents raw SQL privacy"),
+        ("responses do not expose raw payload", "docs/204 documents raw payload privacy"),
+        ("post-write readback refresh boundary", "docs/204 documents refresh boundary"),
+        ("QML does not access SQLite", "docs/204 blocks direct UI DB access"),
+        ("does not modify production code", "docs/204 blocks production code drift"),
+        ("broker SDK integration", "docs/204 blocks broker SDK"),
+        ("network calls", "docs/204 blocks network"),
+        ("credentials or endpoint access", "docs/204 blocks credentials/endpoints"),
+        ("real order placement", "docs/204 blocks real orders"),
+        ("automatic trading", "docs/204 blocks automatic trading"),
+    ]:
+        require(token in task204_doc, message)
+    for token, message in [
+        ("Test Matrix", "docs/205 contains Test Matrix"),
+        ("Runtime E2E Temporary DB", "docs/205 covers temporary DB"),
+        ("Manual Transaction E2E", "docs/205 covers manual transaction"),
+        ("Manual Cash Movement E2E", "docs/205 covers manual cash movement"),
+        ("Sanitized Response", "docs/205 covers sanitized response"),
+        ("Post-Write Readback Boundary", "docs/205 covers refresh boundary"),
+        ("No Production Drift", "docs/205 covers no production drift"),
+        ("Required Probes", "docs/205 contains Required Probes"),
+        ("runtime E2E acceptance tests pass", "docs/205 covers TASK-204 tests"),
+        ("no new production runtime SQL / SQLite write path is added", "docs/205 blocks runtime SQL"),
+        ("no new AccountingEngine replay integration is added", "docs/205 blocks replay"),
+        ("no new audit or ledger write is added", "docs/205 blocks audit/ledger"),
+        ("no new broker SDK, network, credentials, endpoint, real order, or automatic", "docs/205 blocks broker/order/auto"),
+    ]:
+        require(token in task204_plan, message)
+    require(
+        "shell_accounting_manual_entry_mvp_runtime_e2e_acceptance" in task204_cmake,
+        "TASK-204 CTest exists",
+    )
+    require(
+        "ShellAccountingManualEntryMvpRuntimeE2eAcceptance" in tests_cmake,
+        "TASK-204 test directory registered",
+    )
     return 0
 
 

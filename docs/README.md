@@ -809,6 +809,15 @@
   [203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md](203_shell_accounting_manual_entry_mvp_e2e_acceptance_authorization_test_plan.md)
   defines TASK-203 documentation, changed-path, boundary, no-drift, and
   retained regression probes for the manual entry MVP acceptance gate.
+- ShellAccounting manual entry MVP runtime E2E acceptance:
+  [204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md](204_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance.md)
+  records TASK-204 runtime E2E acceptance tests over temporary SQLite databases
+  and existing DataService action boundaries without production behavior drift.
+- ShellAccounting manual entry MVP runtime E2E acceptance test plan:
+  [205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md](205_shell_accounting_manual_entry_mvp_runtime_e2e_acceptance_test_plan.md)
+  defines TASK-204 runtime probes for valid writes, duplicate idempotency,
+  invalid no-write behavior, sanitized responses, post-write readback boundary,
+  no direct UI DB access, and retained broker gates.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

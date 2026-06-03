@@ -84,6 +84,7 @@ placement, or automatic trading.
 
 ### Regression
 
+- TASK-204 runtime E2E acceptance tests pass after implementation.
 - TASK-202 post-write refresh implementation tests pass.
 - TASK-200 QML Presenter implementation tests pass.
 - TASK-198 DataService write wiring implementation tests pass.

@@ -3929,3 +3929,27 @@ and
 `docs/237_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_test_plan.md`.
 Recommended next task is TASK-221 manual entry replay fixture negative fixtures
 scaffold authorization gate.
+
+## TASK-221 Manual Entry Replay Negative Fixtures Scaffold Authorization Gate
+
+TASK-221 adds a gate-only authorization boundary for future manual entry replay
+negative fixtures scaffold work. It documents the future
+`tests/fixtures/manual_entry_replay_negative/` directory candidate, future
+`negative_fixtures_index.json` contract, NEG_MRF001 through NEG_MRF010
+candidate file names, metadata fields, mutation categories, sanitized issue
+codes, privacy requirements, and no-replay / no-runtime-dependency boundaries.
+
+TASK-221 does not create negative fixture files, does not create the negative
+fixture directory, does not create `NEG_MRF*.json`, does not modify existing
+fixture JSON, does not modify the TASK-219 static validator, does not
+implement a negative validator, parser, loader, reader, or replay, does not
+call AccountingEngine replay, does not add runtime SQL / SQLite read/write,
+does not write audit / ledger / snapshot rows, does not modify production code,
+DataServiceActions, repositories, QML, or migrations, does not connect broker,
+network, credentials, or endpoint, and does not place real orders or enable
+automatic trading. See
+`docs/238_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_gate.md`
+and
+`docs/239_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_test_plan.md`.
+Recommended next task is TASK-222 manual entry replay negative fixture scaffold
+files gate.

@@ -135,6 +135,7 @@ ALLOWED_DIFF_PREFIXES = {
     "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/manual_entry_replay_fixture_static_validator.py",
     "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
 }
 
 ALLOWED_DIFF_DIRS = {

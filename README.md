@@ -4200,3 +4200,28 @@ and
 `docs/261_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_test_plan.md`.
 Recommended next task is TASK-233 manual entry replay implementation
 authorization gate.
+
+## TASK-233 Manual Entry Replay Implementation Authorization Gate
+
+TASK-233 adds a static authorization gate for a future manual entry replay
+implementation. The gate fixes the future test-only implementation directory,
+candidate CTest name, input and output boundaries, AccountingEngine boundary,
+no-write boundary, runtime SQL / ledger boundary, production integration
+boundary, and broker / network boundary.
+
+TASK-233 does not implement replay, does not call AccountingEngine replay,
+does not register the future implementation CTest, does not modify fixture
+JSON, and does not change TASK-231 harness business semantics or TASK-224
+validator validation behavior except exact-path changed-set self-consistency.
+It also does not write runtime SQL / SQLite, audit, ledger, snapshot, cash
+facts, or trade facts; does not compute real position / cash / PnL; does not
+modify production code, QML, DataServiceActions, repositories, or migrations;
+and does not connect broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+See
+`docs/262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md`
+and
+`docs/263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md`.
+Recommended next task is TASK-234 manual entry replay test-only implementation
+gate.

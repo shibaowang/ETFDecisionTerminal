@@ -2526,6 +2526,25 @@ automatic trading. Future replay implementation must be separately authorized.
 Recommended next task: TASK-233 manual entry replay implementation
 authorization gate.
 
+## TASK-233 Manual Entry Replay Implementation Authorization Gate Prompt Rule
+
+Future manual entry replay test-only implementation work must reference
+`docs/262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md`
+and
+`docs/263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md`.
+
+TASK-233 authorizes future manual entry replay implementation boundaries only.
+TASK-233 does not implement replay, call AccountingEngine replay, register the
+future implementation CTest, modify fixture JSON, change TASK-231 harness
+business semantics, or change TASK-224 validator validation behavior except
+exact-path changed-set self-consistency. TASK-233 does not authorize runtime
+SQL / SQLite read/write, audit / ledger / snapshot writes, production
+integration, QML, DataServiceActions, repositories, migrations, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+Recommended next task: TASK-234 manual entry replay test-only implementation
+gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

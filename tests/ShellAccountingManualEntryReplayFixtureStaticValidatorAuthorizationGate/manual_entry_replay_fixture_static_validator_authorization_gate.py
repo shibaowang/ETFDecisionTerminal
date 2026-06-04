@@ -440,12 +440,19 @@ def main() -> int:
         "tests/fixtures/manual_entry_replay_negative/NEG_MRF009_broker_payload_token.json",
         "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
     }
+    task223_allowed_changes = {
+        "docs/242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md",
+        "docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    }
     allowed_changes = (
         task218_allowed_changes
         | task219_allowed_changes
         | task220_allowed_changes
         | task221_allowed_changes
         | task222_allowed_changes
+        | task223_allowed_changes
     )
 
     changes = changed_paths(root)

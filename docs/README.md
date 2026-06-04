@@ -1007,6 +1007,16 @@
   defines TASK-224 probes for docs/244, docs/245, CTest registration, exact
   negative fixture file-set checks, positive fixture source mapping,
   sanitized summary output, unchanged fixtures, and full regression.
+- ShellAccounting manual entry replay negative fixture static validator regression matrix gate:
+  [246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md](246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md)
+  records TASK-225 test-only regression matrix policy for the TASK-224
+  validator summary output, ten NEG_MRF mappings, no replay, and no production
+  runtime boundary.
+- ShellAccounting manual entry replay negative fixture static validator regression matrix test plan:
+  [247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md](247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md)
+  defines TASK-225 probes for docs/246, docs/247, summary JSON schema,
+  issue-count and issue-code mapping, sanitized output, unchanged fixtures,
+  no production drift, and full regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -2376,6 +2376,26 @@ automatic trading.
 Recommended next task: TASK-225 manual entry replay negative fixture static
 validator regression matrix gate.
 
+## TASK-225 Manual Entry Replay Negative Fixture Static Validator Regression Matrix Gate Prompt Rule
+
+Future manual entry replay negative fixture static validator failure-mode
+hardening work must reference
+`docs/246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md`
+and
+`docs/247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md`.
+
+TASK-225 authorizes a test-only regression matrix gate for the TASK-224
+validator only. TASK-225 may add stable sanitized `--summary-json` output mode
+to the TASK-224 test-only validator, without changing default validation
+semantics. TASK-225 does not authorize fixture JSON changes, production
+validator, parser, loader, reader, replay implementation, AccountingEngine
+replay calls, runtime SQL / SQLite read/write, audit / ledger / snapshot
+writes, broker, network, credentials, endpoint, real order placement, or
+automatic trading.
+
+Recommended next task: TASK-226 manual entry replay negative fixture static
+validator failure-mode hardening gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

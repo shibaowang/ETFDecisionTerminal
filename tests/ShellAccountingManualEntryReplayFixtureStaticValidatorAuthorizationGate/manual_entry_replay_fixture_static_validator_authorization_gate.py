@@ -452,6 +452,12 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
     }
+    task225_allowed_changes = {
+        "docs/246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md",
+        "docs/247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    }
     allowed_changes = (
         task218_allowed_changes
         | task219_allowed_changes
@@ -460,6 +466,7 @@ def main() -> int:
         | task222_allowed_changes
         | task223_allowed_changes
         | task224_allowed_changes
+        | task225_allowed_changes
     )
 
     changes = changed_paths(root)

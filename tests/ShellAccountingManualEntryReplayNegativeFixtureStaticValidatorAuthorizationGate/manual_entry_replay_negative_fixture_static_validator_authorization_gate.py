@@ -1,0 +1,289 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+from pathlib import Path
+
+
+NEGATIVE_FILES = {
+    "negative_fixtures_index.json",
+    "NEG_MRF001_missing_required_field.json",
+    "NEG_MRF002_wrong_schema_version.json",
+    "NEG_MRF003_runtime_use_true.json",
+    "NEG_MRF004_production_use_true.json",
+    "NEG_MRF005_replay_executed_true.json",
+    "NEG_MRF006_non_synthetic_privacy.json",
+    "NEG_MRF007_extra_json_file.json",
+    "NEG_MRF008_forbidden_token.sql.json",
+    "NEG_MRF009_broker_payload_token.json",
+    "NEG_MRF010_real_order_id_token.json",
+}
+
+ISSUE_CODES = {
+    "NEG_FIXTURE_MISSING_REQUIRED_FIELD",
+    "NEG_FIXTURE_SCHEMA_VERSION_INVALID",
+    "NEG_FIXTURE_ID_MISMATCH",
+    "NEG_FIXTURE_DUPLICATE_ID",
+    "NEG_FIXTURE_UNAUTHORIZED_FILE",
+    "NEG_FIXTURE_UNAUTHORIZED_PATH",
+    "NEG_FIXTURE_RUNTIME_USE_TRUE",
+    "NEG_FIXTURE_PRODUCTION_USE_TRUE",
+    "NEG_FIXTURE_REPLAY_EXECUTED_TRUE",
+    "NEG_FIXTURE_SYNTHETIC_FLAG_FALSE",
+    "NEG_FIXTURE_FORBIDDEN_TOKEN",
+    "NEG_FIXTURE_RAW_SQL_TOKEN",
+    "NEG_FIXTURE_CREDENTIAL_TOKEN",
+    "NEG_FIXTURE_ENDPOINT_TOKEN",
+    "NEG_FIXTURE_BROKER_PAYLOAD_TOKEN",
+    "NEG_FIXTURE_REAL_ORDER_TOKEN",
+    "NEG_FIXTURE_DB_ARTIFACT_PRESENT",
+    "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
+}
+
+ALLOWED_CHANGED_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md",
+    "docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+}
+
+FORBIDDEN_CHANGED_PREFIXES = (
+    "apps/",
+    "libs/",
+    "migrations/",
+    "tests/fixtures/manual_entry_replay/",
+    "tests/fixtures/manual_entry_replay_negative/",
+)
+
+class Gate:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+    def contains(self, text: str, token: str, context: str) -> None:
+        normalized_text = " ".join(text.split())
+        normalized_token = " ".join(token.split())
+        self.require(
+            token in text or normalized_token in normalized_text,
+            f"{context} missing `{token}`",
+        )
+
+    def not_contains(self, text: str, token: str, context: str) -> None:
+        self.require(token not in text, f"{context} must not contain `{token}`")
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def git_lines(root: Path, *args: str) -> set[str]:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def changed_paths(root: Path) -> set[str]:
+    changed = git_lines(root, "diff", "--name-only", "main")
+    staged = git_lines(root, "diff", "--cached", "--name-only")
+    untracked = git_lines(root, "ls-files", "--others", "--exclude-standard")
+    return changed | staged | untracked
+
+
+def assert_indexed(gate: Gate, root: Path, doc_name: str, task: str) -> None:
+    for relative in ["README.md", "docs/README.md", "docs/12_codex_prompt_template.md"]:
+        text = read(root / relative)
+        gate.contains(text, task, relative)
+        gate.contains(text, doc_name, relative)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    gate = Gate()
+
+    doc242_path = root / "docs" / "242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md"
+    doc243_path = root / "docs" / "243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md"
+    tests_cmake_path = root / "tests" / "CMakeLists.txt"
+    test_dir = root / "tests" / "ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate"
+    test_cmake_path = test_dir / "CMakeLists.txt"
+    test_py_path = test_dir / "manual_entry_replay_negative_fixture_static_validator_authorization_gate.py"
+    negative_dir = root / "tests" / "fixtures" / "manual_entry_replay_negative"
+    positive_dir = root / "tests" / "fixtures" / "manual_entry_replay"
+    task219_validator = (
+        root
+        / "tests"
+        / "ShellAccountingManualEntryReplayFixtureStaticValidator"
+        / "manual_entry_replay_fixture_static_validator.py"
+    )
+    future_validator_dir = root / "tests" / "ShellAccountingManualEntryReplayNegativeFixtureStaticValidator"
+    future_validator_py = future_validator_dir / "manual_entry_replay_negative_fixture_static_validator.py"
+
+    for path in [
+        doc242_path,
+        doc243_path,
+        tests_cmake_path,
+        test_cmake_path,
+        test_py_path,
+        negative_dir,
+        positive_dir,
+        task219_validator,
+        root / "docs" / "238_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_gate.md",
+        root / "docs" / "239_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_test_plan.md",
+        root / "docs" / "240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md",
+        root / "docs" / "241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md",
+    ]:
+        gate.require(path.exists(), f"required path exists: {path.relative_to(root).as_posix()}")
+
+    assert_indexed(gate, root, "242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md", "TASK-223")
+    assert_indexed(gate, root, "243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md", "TASK-223")
+
+    tests_cmake = read(tests_cmake_path)
+    test_cmake = read(test_cmake_path)
+    test_py = read(test_py_path)
+    doc242 = read(doc242_path)
+    doc243 = read(doc243_path)
+
+    gate.contains(tests_cmake, "ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate", "tests/CMakeLists")
+    gate.contains(test_cmake, "shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization", "TASK-223 CTest")
+    gate.contains(test_py, 'git_lines(root, "ls-files", "--others", "--exclude-standard")', "untracked detection")
+
+    for section in [
+        "# ShellAccounting Manual Entry Replay Negative Fixture Static Validator Authorization Gate",
+        "## Purpose",
+        "## Relationship To TASK-220 Through TASK-222",
+        "## Future Static Validator Scope",
+        "## Future Input Boundary",
+        "## Future Output Contract",
+        "## Future Expected Issue Code Mapping",
+        "## Future Failure Semantics",
+        "## Privacy And Sanitization Boundary",
+        "## No-Replay Boundary",
+        "## No-Runtime-Dependency Boundary",
+        "## Out-of-Scope Boundaries",
+        "## Formal Conclusion And Next Task",
+    ]:
+        gate.contains(doc242, section, "docs/242")
+
+    for token in [
+        "TASK-223 authorizes future negative fixture static validator policy only.",
+        "TASK-223 does not implement negative validator.",
+        "TASK-223 does not implement parser, loader, reader.",
+        "TASK-223 does not implement replay.",
+        "TASK-223 does not call AccountingEngine replay.",
+        "TASK-223 does not modify negative fixture JSON.",
+        "TASK-223 does not modify positive fixture JSON.",
+        "TASK-223 does not modify TASK-219 static validator.",
+        "TASK-223 does not modify production code.",
+        "TASK-223 does not modify QML / DataServiceActions / repositories / migrations.",
+        "TASK-223 does not write runtime SQL / SQLite / audit / ledger / snapshot.",
+        "TASK-223 does not connect broker / network / credentials / endpoint.",
+        "TASK-223 does not place real orders or enable automatic trading.",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/",
+        "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF*.json",
+        "negativeFixtureId",
+        "issueCode",
+        "severity",
+        "blocking",
+        "message",
+        "The validator must not echo raw fixture payload.",
+        "Unknown issue code must fail.",
+        "Duplicate fixture id must fail.",
+        "Unauthorized JSON must fail.",
+        "Unsafe scaffold flag must fail.",
+        "Recommended next task: TASK-224 manual entry replay negative fixture static validator implementation gate.",
+    ]:
+        gate.contains(doc242, token, "docs/242")
+
+    for issue_code in sorted(ISSUE_CODES):
+        gate.contains(doc242, issue_code, "docs/242 issue code mapping")
+
+    for section in ["## Document Purpose", "## Test Matrix", "## Required Probes", "## Go / No-Go Checklist"]:
+        gate.contains(doc243, section, "docs/243")
+
+    for token in [
+        "docs/242 exists",
+        "docs/243 exists",
+        "TASK-223 CTest is registered",
+        "future validator scope",
+        "future input boundary",
+        "future output contract",
+        "future issue code mapping",
+        "future failure semantics",
+        "privacy and sanitization",
+        "no replay",
+        "no runtime dependency",
+        "TASK-222 negative fixture scaffold files remain unchanged",
+        "Negative fixture JSON is not modified",
+        "Positive fixture JSON is not modified",
+        "TASK-219 static validator is not modified",
+        "No negative validator / parser / loader / reader / replay implementation",
+        "No AccountingEngine replay call",
+        "No production code / QML / DataServiceActions / repositories / migrations / broker",
+    ]:
+        gate.contains(doc243, token, "docs/243")
+
+    actual_negative_files = {path.name for path in negative_dir.iterdir() if path.is_file()}
+    gate.require(actual_negative_files == NEGATIVE_FILES, f"TASK-222 negative fixture exact file set changed: {actual_negative_files}")
+    for filename in NEGATIVE_FILES:
+        gate.require((negative_dir / filename).exists(), f"negative fixture file exists: {filename}")
+        gate.require((negative_dir / filename).suffix.lower() == ".json", f"negative fixture is JSON: {filename}")
+
+    gate.require((positive_dir / "fixtures_index.json").exists(), "positive fixture index exists")
+    gate.require(not future_validator_dir.exists(), "future negative validator directory must not be created by TASK-223")
+    gate.require(not future_validator_py.exists(), "future negative validator implementation must not be created by TASK-223")
+
+    changed = changed_paths(root)
+    unexpected = sorted(changed - ALLOWED_CHANGED_PATHS)
+    gate.require(not unexpected, "TASK-223 changed unauthorized paths: " + ", ".join(unexpected))
+
+    task219_relative = task219_validator.relative_to(root).as_posix()
+    for path in changed:
+        gate.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed path: {path}")
+        gate.require(path != task219_relative, "TASK-219 static validator must not change")
+        gate.require(not path.endswith(".json"), f"TASK-223 must not modify JSON fixtures: {path}")
+        gate.require(not path.endswith(".sql"), f"TASK-223 must not add SQL files: {path}")
+
+    for forbidden_path in [
+        "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF001_missing_required_field.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
+        "tests/fixtures/manual_entry_replay/fixtures_index.json",
+        task219_relative,
+    ]:
+        gate.require(forbidden_path not in changed, f"forbidden path changed: {forbidden_path}")
+
+    for token in ["broker", "endpoint", "credential", "real order", "automatic trading"]:
+        gate.contains(doc242, token, "docs/242 forbidden boundary")
+
+    gate.require(gate.checks >= 150, f"expected at least 150 gate checks, got {gate.checks}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

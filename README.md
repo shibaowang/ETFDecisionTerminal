@@ -3976,3 +3976,24 @@ and
 `docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md`.
 Recommended next task is TASK-223 manual entry replay negative fixture static
 validator authorization gate.
+
+## TASK-223 Manual Entry Replay Negative Fixture Static Validator Authorization Gate
+
+TASK-223 adds a gate-only authorization boundary for future manual entry replay
+negative fixture static validator work. It documents future validator scope,
+allowed test-only inputs, sanitized output issue objects, issue-code mapping,
+failure semantics, privacy, no-replay, and no-runtime-dependency boundaries.
+
+TASK-223 does not modify negative fixture JSON, does not modify positive
+fixture JSON, does not modify the TASK-219 static validator, does not implement
+a negative validator, parser, loader, reader, or replay, does not call
+AccountingEngine replay, does not add runtime SQL / SQLite read/write, does
+not write audit / ledger / snapshot rows, does not modify production code,
+DataServiceActions, repositories, QML, or migrations, does not connect broker,
+network, credentials, or endpoint, and does not place real orders or enable
+automatic trading. See
+`docs/242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md`
+and
+`docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md`.
+Recommended next task is TASK-224 manual entry replay negative fixture static
+validator implementation gate.

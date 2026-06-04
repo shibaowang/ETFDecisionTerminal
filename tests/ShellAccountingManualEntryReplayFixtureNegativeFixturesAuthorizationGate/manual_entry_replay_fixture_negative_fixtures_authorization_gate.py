@@ -480,7 +480,13 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
     } | task222_negative_fixture_paths
-    allowed_changes = allowed_changes | task221_allowed_changes | task222_allowed_changes
+    task223_allowed_changes = {
+        "docs/242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md",
+        "docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    }
+    allowed_changes = allowed_changes | task221_allowed_changes | task222_allowed_changes | task223_allowed_changes
     gate.require(all(not path.endswith("/") for path in allowed_changes), "TASK-220 allowlist must be exact file paths")
     gate.require(all("*" not in path for path in allowed_changes), "TASK-220 allowlist must not use wildcards")
     changes = changed_paths(root)

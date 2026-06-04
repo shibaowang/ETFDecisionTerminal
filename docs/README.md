@@ -987,6 +987,16 @@
   defines TASK-222 static probes for exact file set, JSON contracts, safe
   scaffold flags, issue-code mapping, positive fixture references, no replay,
   and no production-runtime boundaries.
+- ShellAccounting manual entry replay negative fixture static validator authorization gate:
+  [242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md](242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md)
+  records TASK-223 gate-only policy for future negative fixture static
+  validator scope, test-only inputs, sanitized output contract, issue-code
+  mapping, failure semantics, privacy, no replay, and no runtime dependency.
+- ShellAccounting manual entry replay negative fixture static validator authorization test plan:
+  [243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md](243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md)
+  defines TASK-223 static probes for docs/242, docs/243, changed-path
+  allowlist, unchanged fixture JSON, no TASK-219 validator drift, no future
+  validator implementation, and no production-runtime boundaries.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -2488,6 +2488,26 @@ network, credentials, endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-231 manual entry replay test-only dry-run harness
 implementation gate.
 
+## TASK-231 Manual Entry Replay Test-Only Dry-Run Harness Implementation Gate Prompt Rule
+
+Future manual entry replay dry-run harness regression matrix work must
+reference
+`docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md`
+and
+`docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md`.
+
+TASK-231 implements a test-only dry-run harness that reads only authorized
+manual entry replay fixture metadata and fixture JSON, emits a sanitized
+dry-run summary, and preserves fixture immutability. TASK-231 does not
+authorize production parser / loader / reader behavior, replay implementation,
+AccountingEngine replay calls, runtime SQL / SQLite read/write, audit / ledger
+/ snapshot writes, production integration, QML, DataServiceActions,
+repositories, migrations, broker, network, credentials, endpoint, real order
+placement, automatic trading, or real position / cash / PnL calculation.
+
+Recommended next task: TASK-232 manual entry replay test-only dry-run harness
+regression matrix gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

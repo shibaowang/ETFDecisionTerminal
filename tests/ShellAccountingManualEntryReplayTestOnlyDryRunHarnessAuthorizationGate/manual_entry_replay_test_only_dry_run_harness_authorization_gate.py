@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -17,9 +17,17 @@ TASK_230_PLAN = Path(
 TASK_230_GATE_DIR = Path("tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate")
 TASK_230_GATE = TASK_230_GATE_DIR / "manual_entry_replay_test_only_dry_run_harness_authorization_gate.py"
 TASK_230_CMAKE = TASK_230_GATE_DIR / "CMakeLists.txt"
+TASK_231_DOC = Path(
+    "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md"
+)
+TASK_231_PLAN = Path(
+    "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md"
+)
 
-FUTURE_HARNESS_DIR = Path("tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness")
-FUTURE_HARNESS_CTEST = "shell_accounting_manual_entry_replay_test_only_dry_run_harness"
+TASK_231_HARNESS_DIR = Path("tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness")
+TASK_231_HARNESS = TASK_231_HARNESS_DIR / "manual_entry_replay_test_only_dry_run_harness.py"
+TASK_231_CMAKE = TASK_231_HARNESS_DIR / "CMakeLists.txt"
+TASK_231_HARNESS_CTEST = "shell_accounting_manual_entry_replay_test_only_dry_run_harness"
 AUTHORIZATION_CTEST = "shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization"
 
 NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
@@ -39,6 +47,7 @@ TASK_DOCS = {
         Path("docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md"),
     ],
     "TASK-230": [TASK_230_DOC, TASK_230_PLAN],
+    "TASK-231": [TASK_231_DOC, TASK_231_PLAN],
 }
 
 CRITICAL_CTEST_NAMES = [
@@ -74,6 +83,12 @@ ALLOWED_CHANGED_PATHS = {
     TASK_230_DOC.as_posix(),
     TASK_230_PLAN.as_posix(),
     "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    TASK_231_DOC.as_posix(),
+    TASK_231_PLAN.as_posix(),
+    TASK_231_CMAKE.as_posix(),
+    TASK_231_HARNESS.as_posix(),
     TASK_224_VALIDATOR.as_posix(),
     "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
@@ -248,8 +263,8 @@ def validate_docs(gate: Gate, root: Path) -> None:
         gate.contains(doc256, section, "docs/256")
 
     for token in [
-        FUTURE_HARNESS_DIR.as_posix() + "/",
-        FUTURE_HARNESS_CTEST,
+        TASK_231_HARNESS_DIR.as_posix() + "/",
+        TASK_231_HARNESS_CTEST,
         "tests/fixtures/manual_entry_replay/fixtures_index.json",
         "tests/fixtures/manual_entry_replay/*.json",
         "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
@@ -292,11 +307,59 @@ def validate_docs(gate: Gate, root: Path) -> None:
     ]:
         gate.contains(doc257, token, "docs/257")
 
+    doc258 = read(root / TASK_231_DOC)
+    doc259 = read(root / TASK_231_PLAN)
+    for section in [
+        "## Purpose",
+        "## Relationship To TASK-230",
+        "## Test-Only Harness Scope",
+        "## Input Boundary",
+        "## Output Contract",
+        "## No-Write Boundary",
+        "## No-Replay Boundary",
+        "## AccountingEngine Boundary",
+        "## Runtime SQL And Ledger Boundary",
+        "## Broker And Network Boundary",
+        "## Fixture Immutability Boundary",
+        "## Formal Conclusion And Next Task",
+    ]:
+        gate.contains(doc258, section, "docs/258")
+    for token in [
+        "TASK-231 implements the manual entry replay test-only dry-run harness",
+        TASK_231_HARNESS_CTEST,
+        "TASK-231 does not implement production parser / loader / reader behavior.",
+        "TASK-231 does not implement replay",
+        "TASK-231 does not call AccountingEngine replay",
+        "TASK-231 does not modify fixture JSON",
+        "TASK-231 does not write runtime SQL",
+        "TASK-231 does not compute real position",
+        "Recommended next task: TASK-232",
+    ]:
+        gate.contains(doc258, token, "docs/258")
+    for section in [
+        "## Document Purpose",
+        "## Test Matrix",
+        "## Required Probes",
+        "## Go / No-Go Checklist",
+    ]:
+        gate.contains(doc259, section, "docs/259")
+    for token in [
+        "TASK-231 dry-run harness CTest passes",
+        "TASK-230 authorization gate passes",
+        "Fixture JSON unchanged",
+        "Validator validation behavior unchanged",
+        "Production code unchanged",
+    ]:
+        gate.contains(doc259, token, "docs/259")
+
     for index_path in [Path("README.md"), Path("docs/README.md"), Path("docs/12_codex_prompt_template.md")]:
         text = read(root / index_path)
         gate.contains(text, "TASK-230", index_path.as_posix())
         gate.contains(text, TASK_230_DOC.name, index_path.as_posix())
         gate.contains(text, TASK_230_PLAN.name, index_path.as_posix())
+        gate.contains(text, "TASK-231", index_path.as_posix())
+        gate.contains(text, TASK_231_DOC.name, index_path.as_posix())
+        gate.contains(text, TASK_231_PLAN.name, index_path.as_posix())
 
 
 def validate_registration(gate: Gate, root: Path) -> None:
@@ -315,13 +378,22 @@ def validate_registration(gate: Gate, root: Path) -> None:
     names = ctest_names(root, gate)
     for name in CRITICAL_CTEST_NAMES:
         gate.require(name in names, f"CTest registered: {name}")
-    gate.require(FUTURE_HARNESS_CTEST not in names, "future harness implementation CTest is not registered")
+    gate.require(TASK_231_HARNESS_CTEST in names, "TASK-231 harness implementation CTest is registered")
 
 
 def validate_assets(gate: Gate, root: Path) -> None:
-    gate.require(not (root / FUTURE_HARNESS_DIR).exists(), "future harness directory is absent")
-    gate.require(not (root / FUTURE_HARNESS_DIR / "manual_entry_replay_test_only_dry_run_harness.py").exists(),
-                 "future harness implementation script is absent")
+    gate.require((root / TASK_231_HARNESS_DIR).exists(), "TASK-231 harness directory exists")
+    gate.require((root / TASK_231_CMAKE).exists(), "TASK-231 harness CMakeLists exists")
+    gate.require((root / TASK_231_HARNESS).exists(), "TASK-231 harness script exists")
+    harness_files = {
+        path.relative_to(root).as_posix()
+        for path in (root / TASK_231_HARNESS_DIR).iterdir()
+        if path.is_file()
+    }
+    gate.require(
+        harness_files == {TASK_231_CMAKE.as_posix(), TASK_231_HARNESS.as_posix()},
+        "TASK-231 harness directory contains only authorized test-only files",
+    )
 
     index_path = root / NEGATIVE_DIR / "negative_fixtures_index.json"
     gate.require(index_path.exists(), "negative fixture index exists")
@@ -387,7 +459,10 @@ def validate_no_runtime_boundary(gate: Gate, root: Path, changes: set[str]) -> N
     scanned_paths = [
         TASK_230_DOC,
         TASK_230_PLAN,
+        TASK_231_DOC,
+        TASK_231_PLAN,
         TASK_230_GATE,
+        TASK_231_HARNESS,
     ]
     for path in scanned_paths:
         text = read(root / path)

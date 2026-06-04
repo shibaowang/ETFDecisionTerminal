@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+
+import argparse
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+from typing import Any
+
+
+SUMMARY_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
+POSITIVE_INDEX = Path("tests/fixtures/manual_entry_replay/fixtures_index.json")
+NEGATIVE_INDEX = Path("tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json")
+POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
+NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
+TASK_219_VALIDATOR = (
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/"
+    "manual_entry_replay_fixture_static_validator.py"
+)
+TASK_224_VALIDATOR = (
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/"
+    "manual_entry_replay_negative_fixture_static_validator.py"
+)
+
+ALLOWED_CHANGED_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md",
+    "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
+}
+
+FORBIDDEN_CHANGED_PREFIXES = (
+    "apps/",
+    "libs/",
+    "migrations/",
+    "tests/fixtures/manual_entry_replay/",
+    "tests/fixtures/manual_entry_replay_negative/",
+)
+
+FORBIDDEN_OUTPUT_TOKENS = (
+    "raw fixture payload",
+    "raw payload",
+    "select *",
+    "insert into",
+    "update ",
+    "delete from",
+    "drop table",
+    "credential=",
+    "endpoint=",
+    "access token",
+    "secret key",
+    "private key",
+    "password",
+    "broker payload:",
+    "real order id:",
+    "traceback",
+    "stack trace",
+)
+
+
+class Harness:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+
+def read_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def git_lines(root: Path, *args: str) -> set[str]:
+    completed = subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def changed_paths(root: Path) -> set[str]:
+    return (
+        git_lines(root, "diff", "--name-only", "main")
+        | git_lines(root, "diff", "--cached", "--name-only")
+        | git_lines(root, "ls-files", "--others", "--exclude-standard")
+    )
+
+
+def validate_changed_paths(harness: Harness, root: Path) -> None:
+    changes = changed_paths(root)
+    unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
+    harness.require(not unexpected, "changed paths are exact allowlisted")
+    for path in sorted(changes):
+        harness.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
+        harness.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed fixture/production path: {path}")
+    harness.require(TASK_219_VALIDATOR not in changes, "TASK-219 positive validator unchanged")
+    harness.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
+    harness.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") == set(), "libs diff empty")
+    harness.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
+    harness.require(
+        git_lines(root, "diff", "--name-only", "main", "--", "tests/fixtures/manual_entry_replay") == set(),
+        "positive fixture diff empty",
+    )
+    harness.require(
+        git_lines(root, "diff", "--name-only", "main", "--", "tests/fixtures/manual_entry_replay_negative") == set(),
+        "negative fixture diff empty",
+    )
+
+
+def fixture_hashes(root: Path) -> dict[str, str]:
+    paths = sorted((root / POSITIVE_DIR).glob("*.json")) + sorted((root / NEGATIVE_DIR).glob("*.json"))
+    return {path.relative_to(root).as_posix(): sha256(path) for path in paths}
+
+
+def sanitized_positive_entry(harness: Harness, root: Path, row: dict[str, Any]) -> dict[str, Any]:
+    fixture_id = row.get("fixtureId")
+    file_name = row.get("file")
+    harness.require(isinstance(fixture_id, str) and fixture_id.startswith("MRF"), "positive fixture id is sanitized")
+    harness.require(isinstance(file_name, str) and file_name.endswith(".json"), "positive fixture file name exists")
+    fixture_path = root / POSITIVE_DIR / file_name
+    harness.require(fixture_path.exists(), f"positive fixture exists: {file_name}")
+    fixture = read_json(fixture_path)
+    harness.require(isinstance(fixture, dict), f"positive fixture JSON object: {file_name}")
+    harness.require(fixture.get("fixtureId") == fixture_id, f"positive fixture id matches: {fixture_id}")
+    return {
+        "fixtureId": fixture_id,
+        "source": "positive_fixture",
+        "dryRunStatus": "metadata_checked",
+        "plannedStepCount": 0,
+        "replayExecuted": False,
+        "accountingEngineCalled": False,
+        "runtimeWrites": False,
+    }
+
+
+def sanitized_negative_entry(harness: Harness, root: Path, row: dict[str, Any]) -> dict[str, Any]:
+    fixture_id = row.get("negativeFixtureId")
+    file_name = row.get("file")
+    harness.require(isinstance(fixture_id, str) and fixture_id.startswith("NEG_MRF"), "negative fixture id is sanitized")
+    harness.require(isinstance(file_name, str) and file_name.endswith(".json"), "negative fixture file name exists")
+    fixture_path = root / NEGATIVE_DIR / file_name
+    harness.require(fixture_path.exists(), f"negative fixture exists: {file_name}")
+    fixture = read_json(fixture_path)
+    harness.require(isinstance(fixture, dict), f"negative fixture JSON object: {file_name}")
+    harness.require(fixture.get("negativeFixtureId") == fixture_id, f"negative fixture id matches: {fixture_id}")
+    return {
+        "fixtureId": fixture_id,
+        "source": "negative_scaffold",
+        "dryRunStatus": "metadata_checked",
+        "plannedStepCount": 0,
+        "replayExecuted": False,
+        "accountingEngineCalled": False,
+        "runtimeWrites": False,
+    }
+
+
+def build_summary(harness: Harness, root: Path) -> dict[str, Any]:
+    positive_index_path = root / POSITIVE_INDEX
+    negative_index_path = root / NEGATIVE_INDEX
+    harness.require(positive_index_path.exists(), "positive fixture index exists")
+    harness.require(negative_index_path.exists(), "negative fixture index exists")
+
+    positive_index = read_json(positive_index_path)
+    negative_index = read_json(negative_index_path)
+    harness.require(positive_index.get("runtimeUse") is False, "positive index runtimeUse false")
+    harness.require(positive_index.get("productionUse") is False, "positive index productionUse false")
+    harness.require(positive_index.get("replayExecuted") is False, "positive index replayExecuted false")
+    harness.require(negative_index.get("runtimeUse") is False, "negative index runtimeUse false")
+    harness.require(negative_index.get("productionUse") is False, "negative index productionUse false")
+    harness.require(negative_index.get("replayExecuted") is False, "negative index replayExecuted false")
+
+    positive_rows = positive_index.get("fixtures")
+    negative_rows = negative_index.get("fixtures")
+    harness.require(isinstance(positive_rows, list), "positive fixtures list")
+    harness.require(isinstance(negative_rows, list), "negative fixtures list")
+    harness.require(len(negative_rows) == 10, "negative fixture count remains ten")
+
+    entries = [sanitized_positive_entry(harness, root, row) for row in positive_rows]
+    entries.extend(sanitized_negative_entry(harness, root, row) for row in negative_rows)
+
+    summary = {
+        "schemaVersion": SUMMARY_SCHEMA,
+        "dryRunStatus": "ok",
+        "positiveFixtureCount": len(positive_rows),
+        "negativeFixtureCount": len(negative_rows),
+        "entries": entries,
+    }
+    encoded = json.dumps(summary, sort_keys=True)
+    lowered = encoded.lower()
+    for token in FORBIDDEN_OUTPUT_TOKENS:
+        harness.require(token not in lowered, f"summary excludes forbidden token: {token}")
+    for entry in entries:
+        harness.require(set(entry) == {
+            "fixtureId",
+            "source",
+            "dryRunStatus",
+            "plannedStepCount",
+            "replayExecuted",
+            "accountingEngineCalled",
+            "runtimeWrites",
+        }, "summary entry uses sanitized key set")
+        harness.require(entry["plannedStepCount"] == 0, "planned step count zero")
+        harness.require(entry["replayExecuted"] is False, "replay not executed")
+        harness.require(entry["accountingEngineCalled"] is False, "AccountingEngine not called")
+        harness.require(entry["runtimeWrites"] is False, "runtime writes false")
+    return summary
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    parser.add_argument("--summary-json", action="store_true")
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    harness = Harness()
+
+    validate_changed_paths(harness, root)
+    before = fixture_hashes(root)
+    summary = build_summary(harness, root)
+    after = fixture_hashes(root)
+    harness.require(before == after, "fixture JSON hashes unchanged")
+    harness.require((root / TASK_219_VALIDATOR).exists(), "TASK-219 positive validator exists")
+    harness.require((root / TASK_224_VALIDATOR).exists(), "TASK-224 negative validator exists")
+    harness.require(harness.checks >= 90, f"expected at least 90 harness checks, got {harness.checks}")
+
+    if args.summary_json:
+        print(json.dumps(summary, sort_keys=True))
+    else:
+        print(json.dumps({"status": "passed", "checks": harness.checks}, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

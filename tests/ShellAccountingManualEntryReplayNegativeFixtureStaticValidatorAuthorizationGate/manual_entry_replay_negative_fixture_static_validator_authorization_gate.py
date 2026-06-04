@@ -59,6 +59,17 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
 }
 
 FORBIDDEN_CHANGED_PREFIXES = (
@@ -142,6 +153,61 @@ def main() -> int:
     )
     future_validator_dir = root / "tests" / "ShellAccountingManualEntryReplayNegativeFixtureStaticValidator"
     future_validator_py = future_validator_dir / "manual_entry_replay_negative_fixture_static_validator.py"
+
+    gate.require(
+        test_dir.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate",
+        "TASK-223 authorization gate directory stays exact",
+    )
+    gate.require(
+        test_cmake_path.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
+        "TASK-223 authorization gate CMakeLists path stays exact",
+    )
+    gate.require(
+        test_py_path.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+        "TASK-223 authorization gate script path stays exact",
+    )
+    gate.require(
+        future_validator_dir.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator",
+        "future negative validator implementation directory is explicitly separate",
+    )
+    gate.require(
+        future_validator_py.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+        "future negative validator implementation script path is explicit",
+    )
+    gate.require(
+        all(not path.endswith("/") for path in ALLOWED_CHANGED_PATHS),
+        "TASK-223 changed-path allowlist uses exact files only",
+    )
+    gate.require(
+        all("*" not in path for path in ALLOWED_CHANGED_PATHS),
+        "TASK-223 changed-path allowlist uses no wildcards",
+    )
+    gate.require(
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py"
+        in ALLOWED_CHANGED_PATHS,
+        "TASK-223 allowlist includes its own authorization gate script",
+    )
+    gate.require(
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py"
+        not in ALLOWED_CHANGED_PATHS,
+        "TASK-223 allowlist does not permit future validator implementation script",
+    )
+    gate.require(
+        set(FORBIDDEN_CHANGED_PREFIXES)
+        == {
+            "apps/",
+            "libs/",
+            "migrations/",
+            "tests/fixtures/manual_entry_replay/",
+            "tests/fixtures/manual_entry_replay_negative/",
+        },
+        "TASK-223 forbidden changed prefixes remain complete",
+    )
 
     for path in [
         doc242_path,
@@ -250,6 +316,15 @@ def main() -> int:
 
     actual_negative_files = {path.name for path in negative_dir.iterdir() if path.is_file()}
     gate.require(actual_negative_files == NEGATIVE_FILES, f"TASK-222 negative fixture exact file set changed: {actual_negative_files}")
+    gate.require(len(actual_negative_files) == 11, "TASK-222 negative fixture scaffold keeps 11 JSON files")
+    gate.require(
+        len([name for name in actual_negative_files if name.startswith("NEG_MRF")]) == 10,
+        "TASK-222 negative fixture scaffold keeps 10 NEG_MRF files",
+    )
+    gate.require(
+        "negative_fixtures_index.json" in actual_negative_files,
+        "TASK-222 negative fixture scaffold keeps index file",
+    )
     for filename in NEGATIVE_FILES:
         gate.require((negative_dir / filename).exists(), f"negative fixture file exists: {filename}")
         gate.require((negative_dir / filename).suffix.lower() == ".json", f"negative fixture is JSON: {filename}")
@@ -261,6 +336,17 @@ def main() -> int:
     changed = changed_paths(root)
     unexpected = sorted(changed - ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected, "TASK-223 changed unauthorized paths: " + ", ".join(unexpected))
+    gate.require(
+        not any(path.startswith("tests/fixtures/manual_entry_replay_negative/") and path.endswith(".json") for path in changed),
+        "TASK-223 changed set does not include negative fixture JSON",
+    )
+    gate.require(
+        not any(path.startswith("tests/fixtures/manual_entry_replay/") and path.endswith(".json") for path in changed),
+        "TASK-223 changed set does not include positive fixture JSON",
+    )
+    gate.require(not any(path.startswith("apps/") for path in changed), "TASK-223 changed set does not include apps")
+    gate.require(not any(path.startswith("libs/") for path in changed), "TASK-223 changed set does not include libs")
+    gate.require(not any(path.startswith("migrations/") for path in changed), "TASK-223 changed set does not include migrations")
 
     task219_relative = task219_validator.relative_to(root).as_posix()
     for path in changed:

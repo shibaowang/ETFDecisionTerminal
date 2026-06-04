@@ -2435,6 +2435,24 @@ credentials, endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-228 manual entry replay negative fixture validator
 phase closeout and handoff gate.
 
+## TASK-228 Manual Entry Replay Negative Fixture Validator Phase Closeout And Handoff Gate Prompt Rule
+
+Future manual entry replay next-phase planning must reference
+`docs/252_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_gate.md`
+and
+`docs/253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md`.
+
+TASK-228 authorizes a static phase closeout and handoff gate for TASK-220
+through TASK-227 only. TASK-228 does not authorize validator behavior changes,
+fixture JSON changes, production parser, loader, reader, replay implementation,
+AccountingEngine replay calls, runtime SQL / SQLite read/write, audit /
+ledger / snapshot writes, production code, QML, DataServiceActions,
+repositories, migrations, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+Recommended next task: TASK-229 manual entry replay next-phase authorization
+planning gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

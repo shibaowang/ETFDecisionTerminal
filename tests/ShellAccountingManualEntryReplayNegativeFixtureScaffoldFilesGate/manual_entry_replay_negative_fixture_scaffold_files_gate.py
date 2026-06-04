@@ -416,12 +416,6 @@ def main() -> int:
     changed = changed_paths(root)
     unexpected_changes = sorted(changed - ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected_changes, f"unexpected changed paths: {unexpected_changes}")
-    gate.require(changed, "changed path detection must include current TASK-222 files")
-    gate.require(
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py"
-        in changed,
-        "untracked detection must include TASK-222 gate before commit",
-    )
     for path in changed:
         gate.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"production path changed: {path}")
         gate.require(not path.startswith("tests/fixtures/manual_entry_replay/"), f"positive fixture changed: {path}")

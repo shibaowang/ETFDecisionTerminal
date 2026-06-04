@@ -356,6 +356,7 @@ def main() -> int:
         "docs/230_shell_accounting_manual_entry_replay_fixture_files_scaffold.md",
         "docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md",
         "tests/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
         "tests/fixtures/manual_entry_replay/fixtures_index.json",
         "tests/fixtures/manual_entry_replay/MRF001_empty_manual_facts.json",
         "tests/fixtures/manual_entry_replay/MRF002_single_buy.json",

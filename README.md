@@ -4021,3 +4021,27 @@ and
 `docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md`.
 Recommended next task is TASK-225 manual entry replay negative fixture static
 validator regression matrix gate.
+
+## TASK-225 Manual Entry Replay Negative Fixture Static Validator Regression Matrix Gate
+
+TASK-225 adds a test-only regression matrix gate for the TASK-224 negative
+fixture static validator. The gate runs the validator with `--summary-json`,
+parses the sanitized summary, and verifies all ten `NEG_MRF` scaffold cases,
+exact expected issue-code mapping, `severity="error"`, `blocking=true`, file
+alignment, duplicate-id rejection policy, unknown issue-code rejection policy,
+and no raw payload / no stack trace / no production drift boundaries.
+
+TASK-225 may add stable sanitized summary output mode to the TASK-224
+test-only validator. TASK-225 does not modify negative fixture JSON, does not
+modify positive fixture JSON, does not modify the TASK-219 positive fixture
+static validator, does not implement production validator, parser, loader,
+reader, or replay, does not call AccountingEngine replay, does not add runtime
+SQL / SQLite read/write, does not write audit / ledger / snapshot rows, does
+not modify production code, DataServiceActions, repositories, QML, or
+migrations, does not connect broker, network, credentials, or endpoint, and
+does not place real orders or enable automatic trading. See
+`docs/246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md`
+and
+`docs/247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md`.
+Recommended next task is TASK-226 manual entry replay negative fixture static
+validator failure-mode hardening gate.

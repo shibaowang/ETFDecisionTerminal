@@ -222,6 +222,7 @@ def main() -> int:
         "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
         "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
       "tests/CMakeLists.txt",
+      "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
       "tests/DevDocs/test_readonly_demo_acceptance.py",
       "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/CMakeLists.txt",
       "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",

@@ -445,14 +445,29 @@ def validate_real_fixtures_unchanged(gate: Gate, before: dict[str, str], after: 
                      f"fixture hash key in fixture dirs: {relative}")
 
 
+def validate_validator_cli_contract(gate: Gate, root: Path) -> None:
+    completed = subprocess.run(
+        [sys.executable, str(root / VALIDATOR), "--help"],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    help_output = f"{completed.stdout}\n{completed.stderr}"
+    gate.require(completed.returncode == 0, "validator --help exits zero")
+    gate.contains(help_output, "--negative-fixtures-dir", "validator --help")
+    gate.contains(help_output, "--positive-fixtures-index", "validator --help")
+    gate.contains(help_output, "--summary-json", "validator --help")
+
+
 def validate_static_boundaries(gate: Gate, root: Path) -> None:
     changes = changed_paths(root)
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") == set(), "libs diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
-    gate.require(VALIDATOR.as_posix() in changes, "TASK-224 validator test-only parameter extension changed")
     gate.require(not any(path.endswith(".json") for path in changes), "no JSON changed paths")
     gate.require(not any(path.startswith(("apps/", "libs/", "migrations/")) for path in changes), "no production changed paths")
+    validate_validator_cli_contract(gate, root)
     validator_text = read(root / VALIDATOR)
     gate.contains(validator_text, "--negative-fixtures-dir", "validator")
     gate.contains(validator_text, "--positive-fixtures-index", "validator")

@@ -4066,3 +4066,26 @@ does not place real orders or enable automatic trading. See
 and
 `docs/249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md`.
 Recommended next task is TASK-227 CI closeout gate.
+
+## TASK-227 Manual Entry Replay Negative Fixture Validator CI Closeout Gate
+
+TASK-227 adds a static CI closeout gate for the TASK-220 through TASK-226
+negative fixture validator chain. The gate verifies docs, CTest registration,
+critical gate existence, clean-main-safe changed-path checks, no recursive full
+CTest inside the gate, unchanged fixture JSON, unchanged validator validation
+behavior, exact-path TASK-224 validator changed-set self-consistency, no
+production drift, and no replay / AccountingEngine / broker boundary drift.
+
+TASK-227 does not modify validator validation behavior and only allows
+exact-path changed-set self-consistency updates to the TASK-224 test-only
+validator. TASK-227 does not modify fixture JSON, does not implement parser,
+loader, reader, or replay, does not call AccountingEngine replay, does not add
+runtime SQL / SQLite read/write, does not write audit / ledger / snapshot rows,
+does not modify production code, DataServiceActions, repositories, QML, or
+migrations, does not connect broker, network, credentials, or endpoint, and
+does not place real orders or enable automatic trading. See
+`docs/250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md`
+and
+`docs/251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md`.
+Recommended next task is TASK-228 manual entry replay negative fixture
+validator phase closeout and handoff gate.

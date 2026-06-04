@@ -2415,6 +2415,26 @@ endpoint, real order placement, or automatic trading.
 
 Recommended next task: TASK-227 CI closeout gate.
 
+## TASK-227 Manual Entry Replay Negative Fixture Validator CI Closeout Gate Prompt Rule
+
+Future manual entry replay negative fixture validator phase closeout and
+handoff work must reference
+`docs/250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md`
+and
+`docs/251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md`.
+
+TASK-227 authorizes a static CI closeout gate for TASK-220 through TASK-226
+only. TASK-227 does not authorize validator validation behavior changes and
+only allows exact-path changed-set self-consistency updates to the TASK-224
+test-only validator. TASK-227 does not authorize fixture JSON changes, parser,
+loader, reader, replay implementation, AccountingEngine replay calls, runtime
+SQL / SQLite read/write, audit / ledger / snapshot writes, production code,
+QML, DataServiceActions, repositories, migrations, broker, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+Recommended next task: TASK-228 manual entry replay negative fixture validator
+phase closeout and handoff gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

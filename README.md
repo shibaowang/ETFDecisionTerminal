@@ -4110,3 +4110,23 @@ and
 `docs/253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md`.
 Recommended next task is TASK-229 manual entry replay next-phase authorization
 planning gate.
+
+## TASK-229 Manual Entry Replay Next-Phase Authorization Planning Gate
+
+TASK-229 adds a static next-phase authorization planning gate after the
+TASK-220 through TASK-228 negative fixture validator phase. The gate records
+future candidate work tracks, required preconditions, risk register,
+explicit non-authorization boundaries, and Go / No-Go handoff rules for manual
+entry replay planning.
+
+TASK-229 authorizes planning only. TASK-229 does not authorize replay
+implementation, AccountingEngine replay calls, parser, loader, reader,
+runtime SQL / SQLite read/write, audit / ledger / snapshot writes, production
+integration, QML, DataServiceActions, repositories, migrations, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+See
+`docs/254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md`
+and
+`docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md`.
+Recommended next task is TASK-230 manual entry replay test-only dry-run
+harness authorization gate.

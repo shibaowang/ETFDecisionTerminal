@@ -2453,6 +2453,23 @@ placement, or automatic trading.
 Recommended next task: TASK-229 manual entry replay next-phase authorization
 planning gate.
 
+## TASK-229 Manual Entry Replay Next-Phase Authorization Planning Gate Prompt Rule
+
+Future manual entry replay dry-run harness authorization work must reference
+`docs/254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md`
+and
+`docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md`.
+
+TASK-229 authorizes next-phase planning only. TASK-229 does not authorize
+replay implementation, AccountingEngine replay calls, parser, loader, reader,
+runtime SQL / SQLite read/write, audit / ledger / snapshot writes, production
+integration, QML, DataServiceActions, repositories, migrations, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+Future implementation must be separately authorized.
+
+Recommended next task: TASK-230 manual entry replay test-only dry-run harness
+authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

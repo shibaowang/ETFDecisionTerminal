@@ -52,9 +52,19 @@ TASK_DOCS = {
         Path("docs/250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md"),
         Path("docs/251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md"),
     ],
+    "TASK-228": [
+        Path("docs/252_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_gate.md"),
+        Path("docs/253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md"),
+    ],
+    "TASK-229": [
+        Path("docs/254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md"),
+        Path("docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md"),
+    ],
 }
 
 CRITICAL_CTEST_NAMES = [
+    "shell_accounting_manual_entry_replay_next_phase_authorization_planning",
+    "shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout",
     "shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout",
     "shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening",
     "shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix",
@@ -76,6 +86,8 @@ CRITICAL_GATE_PATHS = [
     Path("tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py"),
     Path("tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py"),
     Path("tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py"),
+    Path("tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py"),
+    Path("tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py"),
 ]
 
 EXPECTED_NEGATIVE_FILES = {
@@ -104,44 +116,27 @@ ALLOWED_CHANGED_PATHS = {
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
-    "docs/250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md",
-    "docs/251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md",
-    "docs/252_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_gate.md",
-    "docs/253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md",
     "docs/254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md",
     "docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md",
     "tests/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/CMakeLists.txt",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/CMakeLists.txt",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
     "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
-    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
-    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
     "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
     "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
-    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
-    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
-    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
-    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
-    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
-    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
 }
 
 FORBIDDEN_CHANGED_PREFIXES = (
@@ -243,8 +238,8 @@ def ctest_names(root: Path, gate: Gate) -> set[str]:
 
 
 def validate_docs(gate: Gate, root: Path) -> None:
-    doc250 = read(root / TASK_DOCS["TASK-227"][0])
-    doc251 = read(root / TASK_DOCS["TASK-227"][1])
+    doc254 = read(root / TASK_DOCS["TASK-229"][0])
+    doc255 = read(root / TASK_DOCS["TASK-229"][1])
     for task, docs in TASK_DOCS.items():
         for doc in docs:
             gate.require((root / doc).exists(), f"{doc.as_posix()} exists")
@@ -252,33 +247,39 @@ def validate_docs(gate: Gate, root: Path) -> None:
 
     for section in [
         "## Purpose",
-        "## Scope",
-        "## Required CTest Set",
-        "## Clean-Main Invariants",
-        "## No Recursive Full CTest Boundary",
-        "## CI Closeout Commands",
-        "## No-Production-Drift Boundary",
-        "## Fixture Immutability Boundary",
+        "## Background From TASK-220 Through TASK-228",
+        "## Next-Phase Scope",
+        "## Future Work Tracks",
+        "## Required Preconditions",
+        "## Risk Register",
+        "## Explicit Non-Authorization List",
         "## Replay And AccountingEngine Boundary",
+        "## Runtime SQL And Ledger Boundary",
         "## Broker And Network Boundary",
+        "## Fixture And Validator Boundary",
+        "## Go / No-Go Handoff Rules",
         "## Formal Conclusion And Next Task",
     ]:
-        gate.contains(doc250, section, "docs/250")
+        gate.contains(doc254, section, "docs/254")
 
     for token in [
-        "TASK-227 is a CI closeout gate for TASK-220 through TASK-226.",
-        "TASK-227 does not modify validator validation behavior.",
-        "TASK-227 only allows exact-path changed-set self-consistency updates to the TASK-224 test-only validator.",
-        "TASK-227 does not modify fixture JSON.",
-        "TASK-227 does not implement parser / loader / reader / replay.",
-        "TASK-227 does not call AccountingEngine replay.",
-        "TASK-227 does not modify production code / QML / DataServiceActions / repositories / migrations.",
-        "TASK-227 does not write runtime SQL / SQLite / audit / ledger / snapshot.",
-        "TASK-227 does not connect broker / network / credentials / endpoint.",
-        "TASK-227 does not place real orders or enable automatic trading.",
-        "Recommended next task: TASK-228 manual entry replay negative fixture validator phase closeout and handoff gate.",
+        "manual entry replay input contract authorization",
+        "test-only replay dry-run harness authorization",
+        "AccountingEngine replay adequacy review",
+        "read model replay reconciliation authorization",
+        "runtime integration authorization",
+        "TASK-229 does not authorize replay implementation.",
+        "TASK-229 does not authorize AccountingEngine replay calls.",
+        "TASK-229 does not authorize parser / loader / reader implementation.",
+        "TASK-229 does not authorize runtime SQL / SQLite read/write.",
+        "TASK-229 does not authorize audit / ledger / snapshot writes.",
+        "TASK-229 does not authorize production integration.",
+        "TASK-229 does not authorize QML / DataServiceActions / repositories changes.",
+        "TASK-229 does not authorize broker / network / credentials / endpoint.",
+        "TASK-229 does not authorize real order placement or automatic trading.",
+        "Recommended next task: TASK-230 manual entry replay test-only dry-run harness authorization gate.",
     ]:
-        gate.contains(doc250, token, "docs/250")
+        gate.contains(doc254, token, "docs/254")
 
     for section in [
         "## Document Purpose",
@@ -286,46 +287,43 @@ def validate_docs(gate: Gate, root: Path) -> None:
         "## Required Probes",
         "## Go / No-Go Checklist",
     ]:
-        gate.contains(doc251, section, "docs/251")
+        gate.contains(doc255, section, "docs/255")
 
     for token in [
-        "CI closeout gate passes",
-        "TASK-220 through TASK-226 critical gates are registered",
-        "Clean-main unsafe assertions are absent",
-        "No recursive full CTest runs inside the gate",
-        "Fixture JSON is unchanged",
-        "Validator validation behavior is unchanged",
-        "TASK-224 validator changed-set self-consistency is exact-path only",
-        "Production code is unchanged",
+        "TASK-229 planning gate passes",
+        "TASK-228 phase closeout still passes",
+        "Fixture JSON unchanged",
+        "Validator validation behavior unchanged",
+        "Production code unchanged",
         "Full CTest is run externally and passes",
     ]:
-        gate.contains(doc251, token, "docs/251")
+        gate.contains(doc255, token, "docs/255")
 
     for index_path in [Path("README.md"), Path("docs/README.md"), Path("docs/12_codex_prompt_template.md")]:
         text = read(root / index_path)
-        gate.contains(text, "TASK-227", index_path.as_posix())
-        gate.contains(text, TASK_DOCS["TASK-227"][0].name, index_path.as_posix())
-        gate.contains(text, TASK_DOCS["TASK-227"][1].name, index_path.as_posix())
+        gate.contains(text, "TASK-229", index_path.as_posix())
+        gate.contains(text, TASK_DOCS["TASK-229"][0].name, index_path.as_posix())
+        gate.contains(text, TASK_DOCS["TASK-229"][1].name, index_path.as_posix())
 
 
 def validate_registration(gate: Gate, root: Path) -> None:
     tests_cmake = read(root / "tests/CMakeLists.txt")
     gate.contains(
         tests_cmake,
-        "add_subdirectory(ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate)",
+        "add_subdirectory(ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate)",
         "tests/CMakeLists",
     )
     gate.require(
-        (root / "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/CMakeLists.txt").exists(),
-        "TASK-227 CMakeLists exists",
+        (root / "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/CMakeLists.txt").exists(),
+        "TASK-229 CMakeLists exists",
     )
     gate.require(
-        (root / "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py").exists(),
-        "TASK-227 gate script exists",
+        (root / "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py").exists(),
+        "TASK-229 gate script exists",
     )
-    cmake = read(root / "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/CMakeLists.txt")
-    gate.contains(cmake, "shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout", "TASK-227 CMakeLists")
-    gate.contains(cmake, "manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py", "TASK-227 CMakeLists")
+    cmake = read(root / "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/CMakeLists.txt")
+    gate.contains(cmake, "shell_accounting_manual_entry_replay_next_phase_authorization_planning", "TASK-229 CMakeLists")
+    gate.contains(cmake, "manual_entry_replay_next_phase_authorization_planning_gate.py", "TASK-229 CMakeLists")
 
     names = ctest_names(root, gate)
     for name in CRITICAL_CTEST_NAMES:
@@ -368,6 +366,8 @@ def validate_negative_fixture_assets(gate: Gate, root: Path) -> None:
     gate.require(TASK_224_VALIDATOR.exists(), "TASK-224 negative validator exists")
     gate.require((root / CRITICAL_GATE_PATHS[4]).exists(), "TASK-225 regression matrix gate exists")
     gate.require((root / CRITICAL_GATE_PATHS[5]).exists(), "TASK-226 failure-mode hardening gate exists")
+    gate.require((root / CRITICAL_GATE_PATHS[6]).exists(), "TASK-227 CI closeout gate exists")
+    gate.require((root / CRITICAL_GATE_PATHS[7]).exists(), "TASK-228 phase closeout gate exists")
 
 
 def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
@@ -407,15 +407,15 @@ def validate_gate_safety(gate: Gate, root: Path) -> None:
         gate.require(ACCOUNTING_ENGINE_REPLAY_CALL not in text, f"{path.as_posix()} does not call AccountingEngine replay")
         gate.require("subprocess.run([\"ctest\", \"--test-dir\", \"build\"]" not in text, f"{path.as_posix()} no recursive ctest subprocess")
 
-    closeout_text = read(root / CRITICAL_GATE_PATHS[-1])
-    gate.contains(closeout_text, "ctest\", \"--test-dir\", str(build), \"-N", "TASK-227 gate")
-    gate.require("ctest\", \"--test-dir\", str(build), \"--output-on-failure" not in closeout_text, "TASK-227 gate does not run full CTest")
+    planning_text = read(root / CRITICAL_GATE_PATHS[-1])
+    gate.contains(planning_text, "ctest\", \"--test-dir\", str(build), \"-N", "TASK-229 gate")
+    gate.require("ctest\", \"--test-dir\", str(build), \"--output-on-failure" not in planning_text, "TASK-229 gate does not run full CTest")
 
 
 def validate_no_runtime_boundary(gate: Gate, root: Path, changes: set[str]) -> None:
     gate.require(not any(path.startswith(("apps/", "libs/", "migrations/")) for path in changes), "no production changed paths")
     gate.require(not any(path.endswith(".json") for path in changes), "no fixture JSON changed paths")
-    for path in [TASK_DOCS["TASK-227"][0], TASK_DOCS["TASK-227"][1], CRITICAL_GATE_PATHS[-1]]:
+    for path in [TASK_DOCS["TASK-229"][0], TASK_DOCS["TASK-229"][1], CRITICAL_GATE_PATHS[-1]]:
         text = read(root / path)
         lowered = text.lower()
         for token, message in FORBIDDEN_RUNTIME_TEXT_TOKENS:

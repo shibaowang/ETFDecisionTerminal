@@ -1017,6 +1017,15 @@
   defines TASK-225 probes for docs/246, docs/247, summary JSON schema,
   issue-count and issue-code mapping, sanitized output, unchanged fixtures,
   no production drift, and full regression.
+- ShellAccounting manual entry replay negative fixture static validator failure-mode hardening gate:
+  [248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md](248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md)
+  records TASK-226 test-only failure-mode hardening policy for temporary
+  mutated negative fixture copies, sanitized failures, no replay, and no
+  production runtime boundary.
+- ShellAccounting manual entry replay negative fixture static validator failure-mode hardening test plan:
+  [249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md](249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md)
+  defines TASK-226 probes for bad input non-zero exits, sanitized failure JSON,
+  unchanged fixtures, no production drift, and full regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

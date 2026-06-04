@@ -1047,6 +1047,16 @@
   defines TASK-228 probes for docs/252, docs/253, CTest registration,
   artifact inventory, fixture immutability, validator behavior boundaries,
   production no-drift, and external full CTest regression.
+- ShellAccounting manual entry replay next-phase authorization planning gate:
+  [254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md](254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md)
+  records TASK-229 next-phase planning boundaries, future candidate tracks,
+  required preconditions, risk register, explicit non-authorization list, and
+  Go / No-Go handoff rules after TASK-220 through TASK-228.
+- ShellAccounting manual entry replay next-phase authorization planning test plan:
+  [255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md](255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md)
+  defines TASK-229 probes for docs/254, docs/255, CTest registration,
+  TASK-228 phase closeout retention, fixture immutability, validator behavior
+  immutability, production no-drift, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

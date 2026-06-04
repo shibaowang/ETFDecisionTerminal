@@ -2234,6 +2234,26 @@ changes, or migration changes.
 Recommended next task: TASK-218 manual entry replay fixture scaffold static
 validator authorization gate.
 
+## TASK-218 Manual Entry Replay Fixture Scaffold Static Validator Authorization Gate Prompt Rule
+
+Future manual entry replay fixture validator or replay implementation work must
+reference
+`docs/232_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_gate.md`
+and
+`docs/233_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_test_plan.md`.
+
+TASK-218 authorizes replay fixture scaffold static validator policy only.
+TASK-218 does not authorize parser / validator / loader / reader
+implementation. TASK-218 does not authorize replay implementation. TASK-218
+does not authorize AccountingEngine replay calls. TASK-218 does not authorize
+runtime SQL / SQLite read/write. TASK-218 does not authorize audit / ledger /
+snapshot writes. TASK-218 does not authorize backup/export/restore. TASK-218
+does not authorize broker / network / credentials / endpoint / real order /
+automatic trading.
+
+Recommended next task: TASK-219 manual entry replay fixture scaffold static
+validator.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

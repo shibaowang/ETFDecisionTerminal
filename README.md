@@ -3869,3 +3869,22 @@ enable automatic trading. See
 `docs/231_shell_accounting_manual_entry_replay_fixture_files_scaffold_test_plan.md`.
 Recommended next task is TASK-218 manual entry replay fixture scaffold static
 validator authorization gate.
+
+## TASK-218 Manual Entry Replay Fixture Scaffold Static Validator Authorization Gate
+
+TASK-218 adds a gate-only replay fixture scaffold static validator
+authorization. It defines future validator input boundary, output boundary,
+check matrix, fixture index rules, fixture JSON rules, privacy rules,
+no-replay boundary, and no-runtime-dependency boundary.
+
+TASK-218 does not implement parser / validator / loader / reader, does not run
+replay, does not call AccountingEngine replay, does not modify fixture JSON
+files, does not modify production code, production QML, DataServiceActions,
+repositories, or migrations, does not write audit / ledger / snapshot rows,
+does not connect broker, network, credentials, or endpoint, and does not place
+real orders or enable automatic trading. See
+`docs/232_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_gate.md`
+and
+`docs/233_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_test_plan.md`.
+Recommended next task is TASK-219 manual entry replay fixture scaffold static
+validator.

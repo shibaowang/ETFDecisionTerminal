@@ -941,6 +941,15 @@
   defines TASK-217 static probes for fixture index, JSON parse,
   scaffold-only flags, synthetic-only privacy, no parser / validator, no
   replay, and no-production-drift checks.
+- ShellAccounting manual entry replay fixture scaffold static validator authorization gate:
+  [232_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_gate.md](232_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_gate.md)
+  records TASK-218 gate-only authorization for a future test-only static
+  validator over the TASK-217 scaffold files.
+- ShellAccounting manual entry replay fixture scaffold static validator authorization test plan:
+  [233_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_test_plan.md](233_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_test_plan.md)
+  defines TASK-218 static probes for future validator input, output, check
+  matrix, fixture index rules, fixture JSON rules, privacy, no-replay,
+  no-runtime-dependency, and no-production-drift boundaries.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

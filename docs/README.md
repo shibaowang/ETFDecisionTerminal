@@ -1057,6 +1057,16 @@
   defines TASK-229 probes for docs/254, docs/255, CTest registration,
   TASK-228 phase closeout retention, fixture immutability, validator behavior
   immutability, production no-drift, and external full CTest regression.
+- ShellAccounting manual entry replay test-only dry-run harness authorization gate:
+  [256_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_gate.md](256_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_gate.md)
+  records TASK-230 future harness directory, CTest name, input and output
+  boundary, no-write, no-replay, no-AccountingEngine, no-runtime SQL, and
+  no-production authorization constraints.
+- ShellAccounting manual entry replay test-only dry-run harness authorization test plan:
+  [257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md](257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md)
+  defines TASK-230 probes for docs/256, docs/257, CTest registration, absent
+  harness implementation, fixture immutability, validator behavior immutability,
+  production no-drift, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

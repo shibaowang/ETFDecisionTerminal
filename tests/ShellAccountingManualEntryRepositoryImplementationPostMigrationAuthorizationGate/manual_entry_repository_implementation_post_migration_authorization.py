@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import argparse
 import re
@@ -164,6 +164,11 @@ ALLOWED_DIFF_DIRS = {
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/",
     "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/",
     "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/",
+    "docs/256_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_gate.md",
+    "docs/257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
 }
 
 TASK190_MIGRATION_TOKENS = [

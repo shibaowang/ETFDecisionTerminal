@@ -4130,3 +4130,26 @@ and
 `docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md`.
 Recommended next task is TASK-230 manual entry replay test-only dry-run
 harness authorization gate.
+
+## TASK-230 Manual Entry Replay Test-Only Dry-Run Harness Authorization Gate
+
+TASK-230 adds a static authorization gate for a future manual entry replay
+test-only dry-run harness. The gate fixes the future harness directory,
+candidate CTest name, allowed fixture input boundary, sanitized output
+contract, no-write boundary, no-replay boundary, no-AccountingEngine boundary,
+and no-production boundary before any harness implementation may be created.
+
+TASK-230 authorizes the future boundary only. It does not implement the dry-run
+harness, does not implement replay, does not call AccountingEngine replay,
+does not modify fixture JSON, does not modify validator validation behavior,
+and does not modify production code, QML, DataServiceActions, repositories, or
+migrations. It also does not authorize runtime SQL / SQLite, audit, ledger,
+snapshot, broker, network, credentials, endpoint, real order placement, or
+automatic trading.
+
+See
+`docs/256_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_gate.md`
+and
+`docs/257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md`.
+Recommended next task is TASK-231 manual entry replay test-only dry-run harness
+implementation gate.

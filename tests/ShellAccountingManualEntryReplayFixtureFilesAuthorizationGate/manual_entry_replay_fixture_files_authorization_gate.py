@@ -382,6 +382,19 @@ def main() -> int:
         "tests/fixtures/manual_entry_replay/MRF005_deposit_withdrawal_baseline.json",
         "tests/fixtures/manual_entry_replay/MRF006_daily_use_combined_baseline.json",
     }
+    authorized_task222_negative_fixture_scaffold_paths = {
+        "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF001_missing_required_field.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF002_wrong_schema_version.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF003_runtime_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF004_production_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF005_replay_executed_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF006_non_synthetic_privacy.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF007_extra_json_file.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF008_forbidden_token.sql.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF009_broker_payload_token.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
+    }
 
     def is_authorized_task217_fixture_scaffold_path(path: str) -> bool:
         return path in authorized_task217_fixture_scaffold_paths
@@ -440,7 +453,12 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+        "docs/240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md",
+        "docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
     }
+    allowed_changes = allowed_changes | authorized_task222_negative_fixture_scaffold_paths
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-215 changed unauthorized paths: " + ", ".join(unexpected))
@@ -483,6 +501,7 @@ def main() -> int:
         lowered = path.lower()
         gate.require(
             is_authorized_task217_fixture_scaffold_path(path)
+            or path in authorized_task222_negative_fixture_scaffold_paths
             or not any(lowered.endswith(suffix) for suffix in forbidden_suffixes),
             f"TASK-215 must not add fixture/schema data file: {path}",
         )
@@ -543,7 +562,7 @@ def main() -> int:
             for p in root.glob(pattern)
             if "manual_entry_replay" in p.as_posix()
         }
-        unauthorized_candidates = candidates - authorized_task217_fixture_scaffold_paths
+        unauthorized_candidates = candidates - authorized_task217_fixture_scaffold_paths - authorized_task222_negative_fixture_scaffold_paths
         gate.require(
             not unauthorized_candidates,
             f"TASK-215 must not create manual entry replay fixture data for pattern {pattern}",

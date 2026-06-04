@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF009",
+  "title": "Broker Marker Placeholder",
+  "purpose": "Describe a future sanitized broker marker rejection without an external-order payload.",
+  "sourcePositiveFixtureId": "MRF004",
+  "mutationCategory": "sanitized_broker_marker_candidate",
+  "targetValidatorRule": "broker_marker_rejected",
+  "expectedIssueCode": "NEG_FIXTURE_BROKER_PAYLOAD_TOKEN",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture includes SANITIZED_BROKER_PAYLOAD_PLACEHOLDER.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_BROKER_PAYLOAD_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

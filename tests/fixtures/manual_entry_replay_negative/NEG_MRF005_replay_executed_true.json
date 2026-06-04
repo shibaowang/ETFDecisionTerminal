@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF005",
+  "title": "Replay Executed True",
+  "purpose": "Describe a future replay-executed flag rejection while this scaffold remains replay disabled.",
+  "sourcePositiveFixtureId": "MRF004",
+  "mutationCategory": "replay_executed_true_candidate",
+  "targetValidatorRule": "replay_executed_must_be_false",
+  "expectedIssueCode": "NEG_FIXTURE_REPLAY_EXECUTED_TRUE",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture attempts to mark replay as executed.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_FORBIDDEN_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

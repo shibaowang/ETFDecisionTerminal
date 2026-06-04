@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF010",
+  "title": "Real Order Marker Placeholder",
+  "purpose": "Describe a future sanitized order marker rejection without an actual order identifier.",
+  "sourcePositiveFixtureId": "MRF004",
+  "mutationCategory": "sanitized_order_marker_candidate",
+  "targetValidatorRule": "real_order_marker_rejected",
+  "expectedIssueCode": "NEG_FIXTURE_REAL_ORDER_TOKEN",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture includes SANITIZED_REAL_ORDER_ID_PLACEHOLDER.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_REAL_ORDER_ID_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

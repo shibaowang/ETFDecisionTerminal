@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF001",
+  "title": "Missing Required Field",
+  "purpose": "Describe a future required-field rejection without deleting fields from this scaffold.",
+  "sourcePositiveFixtureId": "MRF002",
+  "mutationCategory": "missing_required_field",
+  "targetValidatorRule": "required_field_presence",
+  "expectedIssueCode": "NEG_FIXTURE_MISSING_REQUIRED_FIELD",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a required field is absent from a candidate negative fixture.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_FORBIDDEN_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

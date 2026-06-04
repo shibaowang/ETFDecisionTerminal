@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF008",
+  "title": "Forbidden Token Placeholder",
+  "purpose": "Describe a future sanitized SQL marker rejection without executable statements.",
+  "sourcePositiveFixtureId": "MRF002",
+  "mutationCategory": "sanitized_sql_marker_candidate",
+  "targetValidatorRule": "forbidden_sql_marker_rejected",
+  "expectedIssueCode": "NEG_FIXTURE_RAW_SQL_TOKEN",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture includes SANITIZED_RAW_SQL_TOKEN_PLACEHOLDER.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_RAW_SQL_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

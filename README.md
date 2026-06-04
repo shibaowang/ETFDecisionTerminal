@@ -3953,3 +3953,26 @@ and
 `docs/239_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_test_plan.md`.
 Recommended next task is TASK-222 manual entry replay negative fixture scaffold
 files gate.
+
+## TASK-222 Manual Entry Replay Negative Fixture Scaffold Files Gate
+
+TASK-222 creates test-only negative fixture scaffold JSON files for manual
+entry replay fixture static validation. It adds
+`tests/fixtures/manual_entry_replay_negative/`, a
+`negative_fixtures_index.json`, and ten controlled `NEG_MRF001` through
+`NEG_MRF010` scaffold JSON files. The files are synthetic metadata only and
+are not replay input, runtime data, production seed data, database input, or
+broker/order input.
+
+TASK-222 does not modify existing positive fixture JSON, does not modify the
+TASK-219 static validator, does not implement a negative validator, parser,
+loader, reader, or replay, does not call AccountingEngine replay, does not add
+runtime SQL / SQLite read/write, does not write audit / ledger / snapshot rows,
+does not modify production code, DataServiceActions, repositories, QML, or
+migrations, does not connect broker, network, credentials, or endpoint, and
+does not place real orders or enable automatic trading. See
+`docs/240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md`
+and
+`docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md`.
+Recommended next task is TASK-223 manual entry replay negative fixture static
+validator authorization gate.

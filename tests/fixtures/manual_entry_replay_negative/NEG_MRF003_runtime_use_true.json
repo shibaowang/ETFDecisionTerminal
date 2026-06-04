@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF003",
+  "title": "Runtime Use True",
+  "purpose": "Describe a future runtime-use flag rejection while this scaffold remains runtime disabled.",
+  "sourcePositiveFixtureId": "MRF003",
+  "mutationCategory": "runtime_use_true_candidate",
+  "targetValidatorRule": "runtime_use_must_be_false",
+  "expectedIssueCode": "NEG_FIXTURE_RUNTIME_USE_TRUE",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture attempts to mark runtime use as enabled.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_FORBIDDEN_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF002",
+  "title": "Wrong Schema Version",
+  "purpose": "Describe a future schema-version rejection while this scaffold keeps the authorized schema.",
+  "sourcePositiveFixtureId": "MRF001",
+  "mutationCategory": "wrong_schema_version",
+  "targetValidatorRule": "schema_version_allowlist",
+  "expectedIssueCode": "NEG_FIXTURE_SCHEMA_VERSION_INVALID",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture declares an unsupported schema version.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_FORBIDDEN_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

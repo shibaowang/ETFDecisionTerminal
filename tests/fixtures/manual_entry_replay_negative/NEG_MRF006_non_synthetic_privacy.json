@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF006",
+  "title": "Non Synthetic Privacy",
+  "purpose": "Describe a future synthetic-flag rejection while this scaffold remains synthetic-only.",
+  "sourcePositiveFixtureId": "MRF005",
+  "mutationCategory": "non_synthetic_privacy_candidate",
+  "targetValidatorRule": "synthetic_data_flag_must_be_true",
+  "expectedIssueCode": "NEG_FIXTURE_SYNTHETIC_FLAG_FALSE",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture attempts to mark synthetic-only privacy as disabled.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_FORBIDDEN_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

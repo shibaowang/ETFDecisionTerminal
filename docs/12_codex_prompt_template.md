@@ -2315,6 +2315,26 @@ credentials, endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-222 manual entry replay negative fixture scaffold
 files gate.
 
+## TASK-222 Manual Entry Replay Negative Fixture Scaffold Files Gate Prompt Rule
+
+Future manual entry replay negative fixture static validator work must
+reference
+`docs/240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md`
+and
+`docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md`.
+
+TASK-222 authorizes creation of test-only negative fixture scaffold JSON files
+only. TASK-222 does not authorize negative validator implementation. TASK-222
+does not authorize parser, loader, or reader implementation. TASK-222 does not
+authorize replay implementation. TASK-222 does not authorize AccountingEngine
+replay calls. TASK-222 does not authorize runtime SQL / SQLite read/write.
+TASK-222 does not authorize audit / ledger / snapshot writes. TASK-222 does
+not authorize broker, network, credentials, endpoint, real order placement, or
+automatic trading.
+
+Recommended next task: TASK-223 manual entry replay negative fixture static
+validator authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

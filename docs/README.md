@@ -959,6 +959,15 @@
   defines TASK-219 probes for exact fixture file set, index validation,
   fixture JSON validation, forbidden token validation, no-replay, and
   no-production-runtime boundaries.
+- ShellAccounting manual entry replay fixture static validator negative fixtures authorization gate:
+  [236_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_gate.md](236_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_gate.md)
+  records TASK-220 gate-only policy for future negative fixture coverage
+  without creating negative fixture files.
+- ShellAccounting manual entry replay fixture static validator negative fixtures authorization test plan:
+  [237_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_test_plan.md](237_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_test_plan.md)
+  defines TASK-220 static probes for negative fixture naming, schema, issue
+  codes, changed-path allowlist, no negative fixture files, no replay, and no
+  production-runtime boundaries.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

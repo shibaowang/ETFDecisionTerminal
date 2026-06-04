@@ -3906,3 +3906,26 @@ and
 `docs/235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md`.
 Recommended next task is TASK-220 manual entry replay fixture static validator
 negative fixtures authorization gate.
+
+## TASK-220 Manual Entry Replay Fixture Static Validator Negative Fixtures Authorization Gate
+
+TASK-220 adds a gate-only authorization boundary for future negative fixture
+coverage for the manual entry replay fixture static validator. It documents the
+future negative fixture directory, candidate NEG_MRF001 through NEG_MRF010
+names, negative fixture schema fields, expected sanitized issue codes, and
+static no-replay / no-runtime boundaries.
+
+TASK-220 does not create negative fixture files, does not create
+`tests/fixtures/manual_entry_replay_negative/`, does not modify existing
+fixture JSON, does not implement a negative validator, parser, loader, or
+reader, does not run replay or call AccountingEngine replay, does not add
+runtime SQL / SQLite read/write, does not write audit / ledger / snapshot rows,
+does not implement backup/export/restore, does not modify production code,
+DataServiceActions, repositories, QML, or migrations, does not connect broker,
+network, credentials, or endpoint, and does not place real orders or enable
+automatic trading. See
+`docs/236_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_gate.md`
+and
+`docs/237_shell_accounting_manual_entry_replay_fixture_static_validator_negative_fixtures_authorization_test_plan.md`.
+Recommended next task is TASK-221 manual entry replay fixture negative fixtures
+scaffold authorization gate.

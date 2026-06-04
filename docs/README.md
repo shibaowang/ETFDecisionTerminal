@@ -1026,6 +1026,17 @@
   [249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md](249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md)
   defines TASK-226 probes for bad input non-zero exits, sanitized failure JSON,
   unchanged fixtures, no production drift, and full regression.
+- ShellAccounting manual entry replay negative fixture validator CI closeout gate:
+  [250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md](250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md)
+  records TASK-227 static CI closeout policy for TASK-220 through TASK-226,
+  clean-main invariants, no recursive full CTest inside the gate, unchanged
+  fixtures, unchanged validator validation behavior, exact-path TASK-224
+  validator changed-set self-consistency, and no production drift.
+- ShellAccounting manual entry replay negative fixture validator CI closeout test plan:
+  [251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md](251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md)
+  defines TASK-227 probes for docs/250, docs/251, CTest registration,
+  critical gate registration, changed-path fail-closed behavior, fixture
+  immutability, validator immutability, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

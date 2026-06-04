@@ -1087,6 +1087,18 @@
   defines TASK-232 probes for docs/260, docs/261, CTest registration, harness
   invocation, sanitized summary JSON, fixture coverage, no writes, no replay,
   no AccountingEngine, and external full CTest regression.
+- ShellAccounting manual entry replay implementation authorization gate:
+  [262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md](262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md)
+  records TASK-233 future replay implementation directory, CTest name, input
+  and output boundary, AccountingEngine boundary, no-write boundary, runtime
+  SQL / ledger boundary, production integration boundary, and broker/network
+  non-authorization constraints.
+- ShellAccounting manual entry replay implementation authorization test plan:
+  [263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md](263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md)
+  defines TASK-233 probes for docs/262, docs/263, CTest registration, absent
+  replay implementation, fixture immutability, harness behavior immutability,
+  validator behavior immutability, production no-drift, and external full
+  CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

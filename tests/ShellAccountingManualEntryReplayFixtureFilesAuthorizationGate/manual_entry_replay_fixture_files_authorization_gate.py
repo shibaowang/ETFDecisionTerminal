@@ -400,6 +400,10 @@ def main() -> int:
         return path in authorized_task217_fixture_scaffold_paths
 
     allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md",
         "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md",
         "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",

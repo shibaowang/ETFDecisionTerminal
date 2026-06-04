@@ -4225,3 +4225,28 @@ and
 `docs/263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md`.
 Recommended next task is TASK-234 manual entry replay test-only implementation
 gate.
+
+## TASK-234 Manual Entry Replay Test-Only Implementation Gate
+
+TASK-234 implements the authorized test-only manual entry replay implementation
+shell under `tests/ShellAccountingManualEntryReplayImplementation`. The CTest
+`shell_accounting_manual_entry_replay_implementation` reads the TASK-231
+dry-run harness sanitized summary and fixture metadata, then emits an in-memory
+sanitized replay implementation report.
+
+TASK-234 does not implement production replay, does not call AccountingEngine
+replay, does not modify fixture JSON, and does not modify dry-run harness
+business semantics or validator validation behavior except exact-path
+changed-set self-consistency. It also does not write runtime SQL / SQLite,
+audit, ledger, snapshot, cash facts, or trade facts; does not refresh read
+models; does not compute real position / cash / PnL; does not modify
+production code, QML, DataServiceActions, repositories, or migrations; and does
+not connect broker, network, credentials, endpoint, real order placement, or
+automatic trading.
+
+See
+`docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md`
+and
+`docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md`.
+Recommended next task is TASK-235 manual entry replay test-only implementation
+regression matrix gate.

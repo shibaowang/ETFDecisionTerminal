@@ -36,6 +36,9 @@ TASK_224_VALIDATOR = Path(
 )
 TASK_233_DOC = Path("docs/262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md")
 TASK_233_PLAN = Path("docs/263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md")
+TASK_234_DOC = Path("docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md")
+TASK_234_PLAN = Path("docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md")
+TASK_234_CMAKE = FUTURE_REPLAY_DIR / "CMakeLists.txt"
 POSITIVE_INDEX = Path("tests/fixtures/manual_entry_replay/fixtures_index.json")
 NEGATIVE_INDEX = Path("tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json")
 POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
@@ -45,14 +48,29 @@ SUMMARY_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
 VALIDATOR_SUMMARY_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-summary/v1"
 
 ALLOWED_CHANGED_PATHS = {
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
     TASK_233_DOC.as_posix(),
     TASK_233_PLAN.as_posix(),
+    TASK_234_DOC.as_posix(),
+    TASK_234_PLAN.as_posix(),
     "tests/CMakeLists.txt",
     AUTH_CMAKE.as_posix(),
     AUTH_GATE.as_posix(),
+    TASK_234_CMAKE.as_posix(),
+    FUTURE_REPLAY_SCRIPT.as_posix(),
     TASK_231_HARNESS.as_posix(),
     TASK_224_VALIDATOR.as_posix(),
     "docs/262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md",
@@ -333,8 +351,11 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
         gate.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed fixture/production path: {path}")
         gate.require(not path.endswith(".json"), f"fixture JSON must not be a changed path: {path}")
         gate.require(not path.endswith(".sql"), f"SQL file must not be a changed path: {path}")
-        gate.require(path != FUTURE_REPLAY_SCRIPT.as_posix(), "future replay script is not changed")
-        gate.require(not path.startswith(FUTURE_REPLAY_DIR.as_posix() + "/"), f"future replay implementation path absent from changes: {path}")
+        if path.startswith(FUTURE_REPLAY_DIR.as_posix() + "/"):
+            gate.require(
+                path in {TASK_234_CMAKE.as_posix(), FUTURE_REPLAY_SCRIPT.as_posix()},
+                f"TASK-234 allows only exact test-only implementation path: {path}",
+            )
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") == set(), "libs diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
@@ -411,19 +432,24 @@ def validate_registration(gate: Gate, root: Path) -> None:
         "shell_diagnostics_facade",
     ]:
         gate.require(name in names, f"CTest registered: {name}")
-    gate.require(FUTURE_REPLAY_CTEST not in names, f"future implementation CTest not registered: {FUTURE_REPLAY_CTEST}")
+    gate.require(FUTURE_REPLAY_CTEST in names, f"TASK-234 implementation CTest registered: {FUTURE_REPLAY_CTEST}")
 
 
-def validate_future_absent(gate: Gate, root: Path) -> None:
-    gate.require(not (root / FUTURE_REPLAY_DIR).exists(), "future replay implementation directory remains absent")
-    gate.require(not (root / FUTURE_REPLAY_SCRIPT).exists(), "future replay implementation script remains absent")
-    gate.require(not any((root / "tests").glob("**/manual_entry_replay_implementation.py")), "no replay implementation script exists under tests")
+def validate_test_only_implementation_present(gate: Gate, root: Path) -> None:
+    gate.require((root / FUTURE_REPLAY_DIR).exists(), "TASK-234 test-only replay implementation directory exists")
+    gate.require((root / TASK_234_CMAKE).exists(), "TASK-234 test-only replay implementation CMakeLists exists")
+    gate.require((root / FUTURE_REPLAY_SCRIPT).exists(), "TASK-234 test-only replay implementation script exists")
+    implementation_scripts = {
+        path.relative_to(root).as_posix()
+        for path in (root / "tests").glob("**/manual_entry_replay_implementation.py")
+    }
+    gate.require(implementation_scripts == {FUTURE_REPLAY_SCRIPT.as_posix()}, "only exact TASK-234 replay implementation script exists under tests")
     gate.require(not any((root / "tests").glob("**/manual_entry_replay_implementation.cpp")), "no replay implementation C++ exists under tests")
     gate.require(not any((root / "tests").glob("**/manual_entry_replay_implementation_test.py")), "no replay implementation test script exists")
     gate.require(not any((root / "tests").glob("**/manual_entry_replay_implementation_test.cpp")), "no replay implementation test C++ exists")
     gate.require(
-        "add_subdirectory(ShellAccountingManualEntryReplayImplementation)" not in read(root / "tests/CMakeLists.txt"),
-        "future replay implementation directory not registered",
+        "add_subdirectory(ShellAccountingManualEntryReplayImplementation)" in read(root / "tests/CMakeLists.txt"),
+        "TASK-234 test-only replay implementation directory registered",
     )
 
 
@@ -499,7 +525,7 @@ def validate_validator_summary(gate: Gate, summary: dict[str, Any]) -> None:
 
 
 def validate_no_runtime_text(gate: Gate, root: Path) -> None:
-    text_paths = [AUTH_GATE, TASK_231_HARNESS, TASK_224_VALIDATOR]
+    text_paths = [AUTH_GATE, TASK_231_HARNESS, TASK_224_VALIDATOR, FUTURE_REPLAY_SCRIPT]
     for relative in text_paths:
         text = read(root / relative)
         lowered = text.lower()
@@ -526,7 +552,7 @@ def main() -> int:
     changes_before = validate_changed_paths(gate, root)
     validate_docs(gate, root)
     validate_registration(gate, root)
-    validate_future_absent(gate, root)
+    validate_test_only_implementation_present(gate, root)
     validate_no_runtime_text(gate, root)
 
     positive_index = read_json(root / POSITIVE_INDEX)

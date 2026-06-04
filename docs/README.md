@@ -1099,6 +1099,16 @@
   replay implementation, fixture immutability, harness behavior immutability,
   validator behavior immutability, production no-drift, and external full
   CTest regression.
+- ShellAccounting manual entry replay test-only implementation gate:
+  [264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md](264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md)
+  records TASK-234 test-only replay implementation shell scope, dry-run harness
+  summary input, sanitized report output, no AccountingEngine replay,
+  no-runtime-write, no-production, and no-broker constraints.
+- ShellAccounting manual entry replay test-only implementation test plan:
+  [265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md](265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md)
+  defines TASK-234 probes for the implementation CTest, TASK-233 authorization
+  gate, TASK-231/TASK-232 dry-run harness gates, fixture immutability, sanitized
+  output, production no-drift, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

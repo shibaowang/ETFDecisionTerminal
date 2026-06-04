@@ -4177,3 +4177,26 @@ and
 `docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md`.
 Recommended next task is TASK-232 manual entry replay test-only dry-run harness
 regression matrix gate.
+
+## TASK-232 Manual Entry Replay Test-Only Dry-Run Harness Regression Matrix Gate
+
+TASK-232 adds a regression matrix gate for the TASK-231 test-only dry-run
+harness. The gate invokes the harness with `--source-root` and
+`--summary-json`, validates the sanitized summary JSON, verifies positive and
+negative fixture coverage, and keeps fixture immutability, no-replay,
+no-AccountingEngine, no-write, no-production, and no-broker boundaries fixed.
+
+TASK-232 does not change dry-run harness business semantics, does not modify
+fixture JSON, does not implement replay, does not call AccountingEngine replay,
+does not compute real position / cash / PnL, and does not modify production
+code, QML, DataServiceActions, repositories, or migrations. It also does not
+write runtime SQL / SQLite, audit, ledger, snapshot, cash facts, or trade facts;
+does not connect broker, network, credentials, or endpoint; and does not place
+real orders or enable automatic trading.
+
+See
+`docs/260_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.md`
+and
+`docs/261_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_test_plan.md`.
+Recommended next task is TASK-233 manual entry replay implementation
+authorization gate.

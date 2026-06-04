@@ -950,6 +950,15 @@
   defines TASK-218 static probes for future validator input, output, check
   matrix, fixture index rules, fixture JSON rules, privacy, no-replay,
   no-runtime-dependency, and no-production-drift boundaries.
+- ShellAccounting manual entry replay fixture scaffold static validator:
+  [234_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator.md](234_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator.md)
+  records TASK-219 test-only static validator behavior for the TASK-217
+  manual entry replay fixture scaffold files.
+- ShellAccounting manual entry replay fixture scaffold static validator test plan:
+  [235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md](235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md)
+  defines TASK-219 probes for exact fixture file set, index validation,
+  fixture JSON validation, forbidden token validation, no-replay, and
+  no-production-runtime boundaries.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

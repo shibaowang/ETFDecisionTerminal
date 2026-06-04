@@ -2254,6 +2254,26 @@ automatic trading.
 Recommended next task: TASK-219 manual entry replay fixture scaffold static
 validator.
 
+## TASK-219 Manual Entry Replay Fixture Scaffold Static Validator Prompt Rule
+
+Future manual entry replay fixture validator negative-fixture work or replay
+implementation work must reference
+`docs/234_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator.md`
+and
+`docs/235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md`.
+
+TASK-219 implements a test-only static validator for replay fixture scaffold
+files. TASK-219 does not authorize replay implementation. TASK-219 does not
+authorize AccountingEngine replay calls. TASK-219 does not authorize fixture
+JSON modification. TASK-219 does not authorize production module imports.
+TASK-219 does not authorize runtime SQL / SQLite read/write. TASK-219 does not
+authorize audit / ledger / snapshot writes. TASK-219 does not authorize
+backup/export/restore. TASK-219 does not authorize broker / network /
+credentials / endpoint / real order / automatic trading.
+
+Recommended next task: TASK-220 manual entry replay fixture static validator
+negative fixtures authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

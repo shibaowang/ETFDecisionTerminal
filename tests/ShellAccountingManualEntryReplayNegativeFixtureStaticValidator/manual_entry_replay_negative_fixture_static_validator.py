@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 
+FAILURE_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-failure/v1"
 EXPECTED_NEGATIVE_FILES = {
     "negative_fixtures_index.json",
     "NEG_MRF001_missing_required_field.json",
@@ -42,7 +43,11 @@ ALLOWED_CHANGED_PATHS = {
     "docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md",
     "docs/246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md",
     "docs/247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md",
+    "docs/248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md",
+    "docs/249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md",
     "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
     "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
@@ -317,15 +322,48 @@ def summary_payload(validator: Validator) -> dict[str, Any]:
     }
 
 
+def safe_failure_file(message: str) -> str:
+    candidate = Path(str(message).replace("\\", "/")).name
+    if candidate.endswith(".json"):
+        return candidate
+    return "validator-input"
+
+
+def failure_payload(issue_code: str, message: str) -> dict[str, Any]:
+    return {
+        "schemaVersion": FAILURE_SCHEMA,
+        "ok": False,
+        "failureCount": 1,
+        "failures": [
+            {
+                "issueCode": issue_code,
+                "rule": "validator-fail-closed",
+                "file": safe_failure_file(message),
+                "message": "sanitized failure",
+            }
+        ],
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-root", required=True)
+    parser.add_argument("--negative-fixtures-dir")
+    parser.add_argument("--positive-fixtures-index")
     parser.add_argument("--summary-json", action="store_true")
     args = parser.parse_args()
     root = Path(args.source_root)
     validator = Validator()
-    negative_dir = root / "tests" / "fixtures" / "manual_entry_replay_negative"
-    positive_index = root / "tests" / "fixtures" / "manual_entry_replay" / "fixtures_index.json"
+    negative_dir = (
+        Path(args.negative_fixtures_dir)
+        if args.negative_fixtures_dir
+        else root / "tests" / "fixtures" / "manual_entry_replay_negative"
+    )
+    positive_index = (
+        Path(args.positive_fixtures_index)
+        if args.positive_fixtures_index
+        else root / "tests" / "fixtures" / "manual_entry_replay" / "fixtures_index.json"
+    )
 
     validate_changed_paths(validator, root)
     validate_negative_directory(validator, negative_dir)
@@ -347,5 +385,8 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except ValidationError as exc:
-        print(json.dumps({"status": "failed", "issueCode": exc.issue_code, "message": exc.message}, sort_keys=True))
+        print(json.dumps(failure_payload(exc.issue_code, exc.message), sort_keys=True))
+        raise SystemExit(1)
+    except Exception:
+        print(json.dumps(failure_payload("VALIDATOR_CONTRACT_VIOLATION", "validator-input"), sort_keys=True))
         raise SystemExit(1)

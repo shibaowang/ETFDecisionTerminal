@@ -1,0 +1,488 @@
+#!/usr/bin/env python3
+
+import argparse
+import copy
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from typing import Any, Callable
+
+
+FAILURE_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-failure/v1"
+NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
+POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
+VALIDATOR = Path(
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/"
+    "manual_entry_replay_negative_fixture_static_validator.py"
+)
+
+ALLOWED_CHANGED_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md",
+    "docs/249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+}
+
+FORBIDDEN_CHANGED_PREFIXES = (
+    "apps/",
+    "libs/",
+    "migrations/",
+    "tests/fixtures/manual_entry_replay/",
+    "tests/fixtures/manual_entry_replay_negative/",
+)
+
+FORBIDDEN_OUTPUT_TOKENS = (
+    "traceback",
+    "select",
+    "insert",
+    "update",
+    "delete",
+    "password",
+    "credential",
+    "api_key",
+    "endpoint",
+    "broker payload",
+    "real order",
+    "apps/",
+    "libs/",
+    "migrations/",
+)
+
+RAW_JSON_TOKENS = (
+    '"mutationDescription"',
+    '"privacyExpectations"',
+    '"sanitizationExpectations"',
+    '"metadata"',
+    '"sourcePositiveFixtureId"',
+)
+
+EXPECTED_NEGATIVE_FILES = {
+    "negative_fixtures_index.json",
+    "NEG_MRF001_missing_required_field.json",
+    "NEG_MRF002_wrong_schema_version.json",
+    "NEG_MRF003_runtime_use_true.json",
+    "NEG_MRF004_production_use_true.json",
+    "NEG_MRF005_replay_executed_true.json",
+    "NEG_MRF006_non_synthetic_privacy.json",
+    "NEG_MRF007_extra_json_file.json",
+    "NEG_MRF008_forbidden_token.sql.json",
+    "NEG_MRF009_broker_payload_token.json",
+    "NEG_MRF010_real_order_id_token.json",
+}
+
+
+class Gate:
+    def __init__(self) -> None:
+        self.checks = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise AssertionError(message)
+
+    def contains(self, text: str, token: str, context: str) -> None:
+        normalized_text = " ".join(text.split())
+        normalized_token = " ".join(token.split())
+        self.require(token in text or normalized_token in normalized_text, f"{context} missing `{token}`")
+
+
+def read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def read_json(path: Path) -> Any:
+    return json.loads(read(path))
+
+
+def write_json(path: Path, payload: Any) -> None:
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def git_lines(root: Path, *args: str) -> set[str]:
+    completed = subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def changed_paths(root: Path) -> set[str]:
+    return (
+        git_lines(root, "diff", "--name-only", "main")
+        | git_lines(root, "diff", "--cached", "--name-only")
+        | git_lines(root, "ls-files", "--others", "--exclude-standard")
+    )
+
+
+def fixture_paths(root: Path) -> list[Path]:
+    return sorted((root / NEGATIVE_DIR).glob("*.json")) + sorted((root / POSITIVE_DIR).glob("*.json"))
+
+
+def load_negative_fixture(case_dir: Path, name: str = "NEG_MRF001_missing_required_field.json") -> dict[str, Any]:
+    payload = read_json(case_dir / name)
+    if not isinstance(payload, dict):
+        raise AssertionError(f"fixture is not an object: {name}")
+    return payload
+
+
+def save_negative_fixture(case_dir: Path, payload: dict[str, Any], name: str = "NEG_MRF001_missing_required_field.json") -> None:
+    write_json(case_dir / name, payload)
+
+
+def load_negative_index(case_dir: Path) -> dict[str, Any]:
+    payload = read_json(case_dir / "negative_fixtures_index.json")
+    if not isinstance(payload, dict):
+        raise AssertionError("negative index is not an object")
+    return payload
+
+
+def save_negative_index(case_dir: Path, payload: dict[str, Any]) -> None:
+    write_json(case_dir / "negative_fixtures_index.json", payload)
+
+
+def load_positive_index(path: Path) -> dict[str, Any]:
+    payload = read_json(path)
+    if not isinstance(payload, dict):
+        raise AssertionError("positive index is not an object")
+    return payload
+
+
+def save_positive_index(path: Path, payload: dict[str, Any]) -> None:
+    write_json(path, payload)
+
+
+def mutate_missing_required_field(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture.pop("title", None)
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_wrong_schema_version(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["schemaVersion"] = "wrong-schema/v1"
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_duplicate_negative_fixture_id(case_dir: Path, positive_index: Path) -> None:
+    index = load_negative_index(case_dir)
+    rows = index["fixtures"]
+    rows[1]["negativeFixtureId"] = rows[0]["negativeFixtureId"]
+    save_negative_index(case_dir, index)
+
+
+def mutate_file_name_id_mismatch(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["negativeFixtureId"] = "NEG_MRF999"
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_index_missing_reference(case_dir: Path, positive_index: Path) -> None:
+    index = load_negative_index(case_dir)
+    index["fixtures"] = index["fixtures"][1:]
+    save_negative_index(case_dir, index)
+
+
+def mutate_index_references_unauthorized_json(case_dir: Path, positive_index: Path) -> None:
+    index = load_negative_index(case_dir)
+    index["fixtures"][0]["file"] = "NEG_MRF999_unauthorized.json"
+    save_negative_index(case_dir, index)
+
+
+def mutate_extra_unauthorized_json(case_dir: Path, positive_index: Path) -> None:
+    shutil.copy2(
+        case_dir / "NEG_MRF001_missing_required_field.json",
+        case_dir / "NEG_MRF999_unauthorized_extra.json",
+    )
+
+
+def mutate_runtime_use_true(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["runtimeUse"] = True
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_production_use_true(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["productionUse"] = True
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_replay_executed_true(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["replayExecuted"] = True
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_non_synthetic(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["containsSyntheticDataOnly"] = False
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_unknown_expected_issue_code(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["expectedIssueCode"] = "NEG_FIXTURE_UNKNOWN_CODE"
+    save_negative_fixture(case_dir, fixture)
+    index = load_negative_index(case_dir)
+    index["fixtures"][0]["expectedIssueCode"] = "NEG_FIXTURE_UNKNOWN_CODE"
+    save_negative_index(case_dir, index)
+
+
+def mutate_unknown_source_positive_fixture(case_dir: Path, positive_index: Path) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["sourcePositiveFixtureId"] = "MRF999"
+    save_negative_fixture(case_dir, fixture)
+    index = load_negative_index(case_dir)
+    index["fixtures"][0]["sourcePositiveFixtureId"] = "MRF999"
+    save_negative_index(case_dir, index)
+
+
+def inject_text(case_dir: Path, text: str) -> None:
+    fixture = load_negative_fixture(case_dir)
+    fixture["mutationDescription"] = text
+    save_negative_fixture(case_dir, fixture)
+
+
+def mutate_raw_sql_token(case_dir: Path, positive_index: Path) -> None:
+    inject_text(case_dir, "SELECT * FROM manual_entry")
+
+
+def mutate_credential_token(case_dir: Path, positive_index: Path) -> None:
+    inject_text(case_dir, "password=secret")
+
+
+def mutate_endpoint_token(case_dir: Path, positive_index: Path) -> None:
+    inject_text(case_dir, "endpoint=https://broker.example.invalid")
+
+
+def mutate_broker_payload_token(case_dir: Path, positive_index: Path) -> None:
+    inject_text(case_dir, "broker payload: raw")
+
+
+def mutate_real_order_token(case_dir: Path, positive_index: Path) -> None:
+    inject_text(case_dir, "real order id: ORD-123")
+
+
+def mutate_db_artifact(case_dir: Path, positive_index: Path) -> None:
+    (case_dir / "leak.sqlite").write_text("not a fixture", encoding="utf-8")
+
+
+def mutate_production_path_reference(case_dir: Path, positive_index: Path) -> None:
+    inject_text(case_dir, "apps/ETFDecisionShell/qml/pages/Order.qml")
+
+
+FAILURE_CASES: tuple[tuple[str, Callable[[Path, Path], None]], ...] = (
+    ("missing_required_field", mutate_missing_required_field),
+    ("wrong_schema_version", mutate_wrong_schema_version),
+    ("duplicate_negative_fixture_id", mutate_duplicate_negative_fixture_id),
+    ("file_name_id_mismatch", mutate_file_name_id_mismatch),
+    ("index_missing_neg_mrf_reference", mutate_index_missing_reference),
+    ("index_references_unauthorized_json", mutate_index_references_unauthorized_json),
+    ("extra_unauthorized_json_file", mutate_extra_unauthorized_json),
+    ("runtime_use_true", mutate_runtime_use_true),
+    ("production_use_true", mutate_production_use_true),
+    ("replay_executed_true", mutate_replay_executed_true),
+    ("contains_synthetic_data_only_false", mutate_non_synthetic),
+    ("unknown_expected_issue_code", mutate_unknown_expected_issue_code),
+    ("unknown_source_positive_fixture", mutate_unknown_source_positive_fixture),
+    ("raw_sql_token", mutate_raw_sql_token),
+    ("credential_token", mutate_credential_token),
+    ("endpoint_token", mutate_endpoint_token),
+    ("broker_payload_token", mutate_broker_payload_token),
+    ("real_order_id_token", mutate_real_order_token),
+    ("db_artifact_present", mutate_db_artifact),
+    ("production_path_reference", mutate_production_path_reference),
+)
+
+
+def validate_changed_paths(gate: Gate, root: Path) -> None:
+    changes = changed_paths(root)
+    gate.require(all("*" not in path for path in ALLOWED_CHANGED_PATHS), "allowlist uses no wildcards")
+    gate.require(all(not path.endswith("/") for path in ALLOWED_CHANGED_PATHS), "allowlist uses exact files")
+    unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
+    gate.require(not unexpected, "TASK-226 changed unauthorized paths: " + ", ".join(unexpected))
+    for path in changes:
+        gate.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
+        gate.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed path: {path}")
+        gate.require(not path.endswith(".json"), f"fixture JSON must not be changed: {path}")
+        gate.require(not path.endswith((".db", ".sqlite", ".wal", ".shm", ".sql")), f"runtime artifact changed: {path}")
+
+
+def validate_docs(gate: Gate, root: Path) -> None:
+    doc248 = root / "docs" / "248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md"
+    doc249 = root / "docs" / "249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md"
+    for path in [doc248, doc249, root / "README.md", root / "docs" / "README.md", root / "docs" / "12_codex_prompt_template.md"]:
+        gate.require(path.exists(), f"required doc/index exists: {path.relative_to(root).as_posix()}")
+    gate.contains(read(doc248), "# ShellAccounting Manual Entry Replay Negative Fixture Static Validator Failure-Mode Hardening Gate", "docs/248")
+    gate.contains(read(doc248), "TASK-226 hardens TASK-224", "docs/248")
+    gate.contains(read(doc248), "temporary mutated copies only", "docs/248")
+    gate.contains(read(doc248), "does not modify fixture JSON", "docs/248")
+    gate.contains(read(doc248), "does not implement production validator", "docs/248")
+    gate.contains(read(doc248), "does not implement replay", "docs/248")
+    gate.contains(read(doc248), "does not call AccountingEngine replay", "docs/248")
+    gate.contains(read(doc248), "does not modify production code", "docs/248")
+    gate.contains(read(doc248), "does not write runtime SQL / SQLite / audit / ledger / snapshot", "docs/248")
+    gate.contains(read(doc248), "does not connect broker / network / credentials / endpoint", "docs/248")
+    gate.contains(read(doc248), "does not place real orders or enable automatic trading", "docs/248")
+    gate.contains(read(doc248), "Recommended next task: TASK-227", "docs/248")
+    for heading in ["## Document Purpose", "## Test Matrix", "## Required Probes", "## Go / No-Go Checklist"]:
+        gate.contains(read(doc249), heading, "docs/249")
+    for relative in ["README.md", "docs/README.md", "docs/12_codex_prompt_template.md"]:
+        text = read(root / relative)
+        gate.contains(text, "TASK-226", relative)
+        gate.contains(text, doc248.name, relative)
+        gate.contains(text, doc249.name, relative)
+
+
+def copy_case_inputs(root: Path, temp_root: Path, case_name: str) -> tuple[Path, Path]:
+    case_root = temp_root / case_name
+    case_negative_dir = case_root / "manual_entry_replay_negative"
+    case_positive_index = case_root / "fixtures_index.json"
+    shutil.copytree(root / NEGATIVE_DIR, case_negative_dir)
+    shutil.copy2(root / POSITIVE_DIR / "fixtures_index.json", case_positive_index)
+    return case_negative_dir, case_positive_index
+
+
+def invoke_validator(root: Path, negative_dir: Path, positive_index: Path) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [
+            sys.executable,
+            str(root / VALIDATOR),
+            "--source-root",
+            str(root),
+            "--negative-fixtures-dir",
+            str(negative_dir),
+            "--positive-fixtures-index",
+            str(positive_index),
+            "--summary-json",
+        ],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+
+def validate_failure_output(gate: Gate, case_name: str, completed: subprocess.CompletedProcess[str]) -> None:
+    output = (completed.stdout + completed.stderr).strip()
+    gate.require(completed.returncode != 0, f"{case_name} exits non-zero")
+    gate.require(completed.stderr.strip() == "", f"{case_name} emits no stderr traceback")
+    gate.require(output.startswith("{") and output.endswith("}"), f"{case_name} emits JSON object")
+    payload = json.loads(completed.stdout)
+    gate.require(payload.get("schemaVersion") == FAILURE_SCHEMA, f"{case_name} failure schema")
+    gate.require(payload.get("ok") is False, f"{case_name} ok false")
+    gate.require(payload.get("failureCount") == 1, f"{case_name} one failure")
+    failures = payload.get("failures")
+    gate.require(isinstance(failures, list) and len(failures) == 1, f"{case_name} failure list")
+    failure = failures[0]
+    gate.require(isinstance(failure, dict), f"{case_name} failure object")
+    gate.require(set(failure) == {"issueCode", "rule", "file", "message"}, f"{case_name} sanitized keys only")
+    gate.require(isinstance(failure.get("issueCode"), str) and failure["issueCode"].strip(), f"{case_name} issue code")
+    gate.require(failure.get("rule") == "validator-fail-closed", f"{case_name} fail closed rule")
+    gate.require(isinstance(failure.get("file"), str) and failure["file"], f"{case_name} file populated")
+    gate.require("/" not in failure["file"] and "\\" not in failure["file"], f"{case_name} file basename only")
+    gate.require(failure.get("message") == "sanitized failure", f"{case_name} sanitized message")
+    lowered = output.lower()
+    for token in FORBIDDEN_OUTPUT_TOKENS:
+        gate.require(token not in lowered, f"{case_name} output excludes `{token}`")
+    for token in RAW_JSON_TOKENS:
+        gate.require(token not in output, f"{case_name} output excludes raw JSON token {token}")
+
+
+def validate_failure_cases(gate: Gate, root: Path) -> None:
+    with tempfile.TemporaryDirectory(prefix="task226_negative_validator_") as tmp:
+        temp_root = Path(tmp)
+        observed: set[str] = set()
+        for case_name, mutate in FAILURE_CASES:
+            case_negative_dir, case_positive_index = copy_case_inputs(root, temp_root, case_name)
+            mutate(case_negative_dir, case_positive_index)
+            completed = invoke_validator(root, case_negative_dir, case_positive_index)
+            validate_failure_output(gate, case_name, completed)
+            observed.add(case_name)
+        gate.require(observed == {case_name for case_name, _ in FAILURE_CASES}, "all failure cases exercised")
+        gate.require(len(observed) >= 20, "at least twenty failure cases exercised")
+
+
+def validate_real_fixtures_unchanged(gate: Gate, before: dict[str, str], after: dict[str, str]) -> None:
+    gate.require(before == after, "real fixture JSON hashes unchanged")
+    gate.require(all("\\" not in relative for relative in before), "fixture hash keys use forward slashes")
+    for relative in before:
+        gate.require(relative.endswith(".json"), f"fixture hash key is JSON: {relative}")
+        gate.require(relative.startswith(("tests/fixtures/manual_entry_replay/", "tests/fixtures/manual_entry_replay_negative/")),
+                     f"fixture hash key in fixture dirs: {relative}")
+
+
+def validate_static_boundaries(gate: Gate, root: Path) -> None:
+    changes = changed_paths(root)
+    gate.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
+    gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") == set(), "libs diff empty")
+    gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
+    gate.require(VALIDATOR.as_posix() in changes, "TASK-224 validator test-only parameter extension changed")
+    gate.require(not any(path.endswith(".json") for path in changes), "no JSON changed paths")
+    gate.require(not any(path.startswith(("apps/", "libs/", "migrations/")) for path in changes), "no production changed paths")
+    validator_text = read(root / VALIDATOR)
+    gate.contains(validator_text, "--negative-fixtures-dir", "validator")
+    gate.contains(validator_text, "--positive-fixtures-index", "validator")
+    gate.contains(validator_text, FAILURE_SCHEMA, "validator")
+    gate.contains(validator_text, "sanitized failure", "validator")
+    gate.require("AccountingEngine" not in validator_text, "validator does not call AccountingEngine")
+    gate.require("import sqlite3" not in validator_text.lower(), "validator does not import sqlite")
+    gate.require("requests" not in validator_text.lower(), "validator does not import network client")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    gate = Gate()
+
+    validate_changed_paths(gate, root)
+    validate_docs(gate, root)
+    before = {path.relative_to(root).as_posix(): sha256(path) for path in fixture_paths(root)}
+    before_snapshot = copy.deepcopy(before)
+    validate_failure_cases(gate, root)
+    after = {path.relative_to(root).as_posix(): sha256(path) for path in fixture_paths(root)}
+    gate.require(before == before_snapshot, "pre-run fixture hash snapshot stable")
+    validate_real_fixtures_unchanged(gate, before, after)
+    validate_static_boundaries(gate, root)
+    gate.require(gate.checks >= 180, f"expected at least 180 gate checks, got {gate.checks}")
+    print(json.dumps({"status": "passed", "checks": gate.checks, "failureCases": len(FAILURE_CASES)}, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

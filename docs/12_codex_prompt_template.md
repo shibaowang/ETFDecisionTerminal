@@ -2396,6 +2396,25 @@ automatic trading.
 Recommended next task: TASK-226 manual entry replay negative fixture static
 validator failure-mode hardening gate.
 
+## TASK-226 Manual Entry Replay Negative Fixture Static Validator Failure-Mode Hardening Gate Prompt Rule
+
+Future manual entry replay negative fixture validator CI closeout work must
+reference
+`docs/248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md`
+and
+`docs/249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md`.
+
+TASK-226 authorizes a test-only failure-mode hardening gate for the TASK-224
+validator only. TASK-226 may use temporary mutated copies and may add test-only
+input path arguments plus sanitized failure output to the TASK-224 validator,
+without changing default successful validation semantics. TASK-226 does not
+authorize fixture JSON changes, production validator, parser, loader, reader,
+replay implementation, AccountingEngine replay calls, runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, broker, network, credentials,
+endpoint, real order placement, or automatic trading.
+
+Recommended next task: TASK-227 CI closeout gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

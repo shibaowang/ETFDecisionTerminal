@@ -4045,3 +4045,24 @@ and
 `docs/247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md`.
 Recommended next task is TASK-226 manual entry replay negative fixture static
 validator failure-mode hardening gate.
+
+## TASK-226 Manual Entry Replay Negative Fixture Static Validator Failure-Mode Hardening Gate
+
+TASK-226 adds a test-only failure-mode hardening gate for the TASK-224 negative
+fixture static validator. The gate mutates temporary copies of the negative
+fixture scaffold and positive fixture index, verifies bad inputs exit non-zero,
+and confirms sanitized failure JSON without touching real fixture JSON.
+
+TASK-226 may add test-only input path arguments and sanitized failure output to
+the TASK-224 validator. TASK-226 does not modify negative fixture JSON, does
+not modify positive fixture JSON, does not modify the TASK-219 positive fixture
+static validator, does not implement production validator, parser, loader,
+reader, or replay, does not call AccountingEngine replay, does not add runtime
+SQL / SQLite read/write, does not write audit / ledger / snapshot rows, does
+not modify production code, DataServiceActions, repositories, QML, or
+migrations, does not connect broker, network, credentials, or endpoint, and
+does not place real orders or enable automatic trading. See
+`docs/248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md`
+and
+`docs/249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md`.
+Recommended next task is TASK-227 CI closeout gate.

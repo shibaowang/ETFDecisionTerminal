@@ -3997,3 +3997,27 @@ and
 `docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md`.
 Recommended next task is TASK-224 manual entry replay negative fixture static
 validator implementation gate.
+
+## TASK-224 Manual Entry Replay Negative Fixture Static Validator Implementation Gate
+
+TASK-224 adds a test-only CTest static validator for the manual entry replay
+negative fixture scaffold. The validator reads only
+`tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json`, the
+ten `NEG_MRF*.json` scaffold files, and
+`tests/fixtures/manual_entry_replay/fixtures_index.json` to verify schema,
+flags, source positive fixture mapping, expected issue-code mapping, sanitized
+privacy markers, no-replay boundaries, and no-production boundaries.
+
+TASK-224 does not modify negative fixture JSON, does not modify positive
+fixture JSON, does not modify the TASK-219 positive fixture static validator,
+does not implement production validator, parser, loader, reader, or replay,
+does not call AccountingEngine replay, does not add runtime SQL / SQLite
+read/write, does not write audit / ledger / snapshot rows, does not modify
+production code, DataServiceActions, repositories, QML, or migrations, does
+not connect broker, network, credentials, or endpoint, and does not place real
+orders or enable automatic trading. See
+`docs/244_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_gate.md`
+and
+`docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md`.
+Recommended next task is TASK-225 manual entry replay negative fixture static
+validator regression matrix gate.

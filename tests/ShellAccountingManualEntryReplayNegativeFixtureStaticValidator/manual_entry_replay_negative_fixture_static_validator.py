@@ -1,0 +1,324 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import subprocess
+from pathlib import Path
+from typing import Any
+
+
+EXPECTED_NEGATIVE_FILES = {
+    "negative_fixtures_index.json",
+    "NEG_MRF001_missing_required_field.json",
+    "NEG_MRF002_wrong_schema_version.json",
+    "NEG_MRF003_runtime_use_true.json",
+    "NEG_MRF004_production_use_true.json",
+    "NEG_MRF005_replay_executed_true.json",
+    "NEG_MRF006_non_synthetic_privacy.json",
+    "NEG_MRF007_extra_json_file.json",
+    "NEG_MRF008_forbidden_token.sql.json",
+    "NEG_MRF009_broker_payload_token.json",
+    "NEG_MRF010_real_order_id_token.json",
+}
+
+EXPECTED_ISSUE_CODES = {
+    "NEG_MRF001": "NEG_FIXTURE_MISSING_REQUIRED_FIELD",
+    "NEG_MRF002": "NEG_FIXTURE_SCHEMA_VERSION_INVALID",
+    "NEG_MRF003": "NEG_FIXTURE_RUNTIME_USE_TRUE",
+    "NEG_MRF004": "NEG_FIXTURE_PRODUCTION_USE_TRUE",
+    "NEG_MRF005": "NEG_FIXTURE_REPLAY_EXECUTED_TRUE",
+    "NEG_MRF006": "NEG_FIXTURE_SYNTHETIC_FLAG_FALSE",
+    "NEG_MRF007": "NEG_FIXTURE_UNAUTHORIZED_FILE",
+    "NEG_MRF008": "NEG_FIXTURE_RAW_SQL_TOKEN",
+    "NEG_MRF009": "NEG_FIXTURE_BROKER_PAYLOAD_TOKEN",
+    "NEG_MRF010": "NEG_FIXTURE_REAL_ORDER_TOKEN",
+}
+
+ALLOWED_CHANGED_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/244_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_gate.md",
+    "docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+}
+
+FORBIDDEN_STORAGE_SUFFIXES = {".db", ".sqlite", ".sqlite3", ".wal", ".shm", ".sql"}
+FORBIDDEN_PATH_TOKENS = {"apps/", "libs/", "migrations/", "DataServiceActions", "ETFDecisionShell"}
+FORBIDDEN_UNSANITIZED_TOKENS = {
+    "select *",
+    "insert into",
+    "update ",
+    "delete from",
+    "drop table",
+    "access token",
+    "secret key",
+    "private key",
+    "password",
+    "credential=",
+    "endpoint=",
+    "broker payload:",
+    "real order id:",
+}
+ALLOWED_PRIVACY = {"SYNTHETIC_ONLY", "NO_RAW_PAYLOAD"}
+
+
+class ValidationError(Exception):
+    def __init__(self, issue_code: str, message: str) -> None:
+        super().__init__(message)
+        self.issue_code = issue_code
+        self.message = message
+
+
+class Validator:
+    def __init__(self) -> None:
+        self.checks = 0
+        self.summaries: list[dict[str, Any]] = []
+
+    def require(self, condition: bool, issue_code: str, message: str) -> None:
+        self.checks += 1
+        if not condition:
+            raise ValidationError(issue_code, message)
+
+    def add_summary(self, fixture: dict[str, Any]) -> None:
+        fixture_id = fixture["negativeFixtureId"]
+        self.summaries.append(
+            {
+                "negativeFixtureId": fixture_id,
+                "file": expected_file_for(fixture_id),
+                "issueCode": fixture["expectedIssueCode"],
+                "severity": fixture["expectedSeverity"],
+                "blocking": fixture["expectedBlocking"],
+                "rule": fixture["targetValidatorRule"],
+                "message": f"sanitized expected issue for {fixture_id}",
+            }
+        )
+
+
+def expected_file_for(fixture_id: str) -> str:
+    for name in EXPECTED_NEGATIVE_FILES:
+        if name.startswith(fixture_id):
+            return name
+    raise ValidationError("NEG_FIXTURE_ID_MISMATCH", f"unknown fixture id {fixture_id}")
+
+
+def read_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValidationError("NEG_FIXTURE_JSON_INVALID", path.name) from exc
+
+
+def git_lines(root: Path, *args: str) -> set[str]:
+    completed = subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)
+    return {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+
+
+def changed_paths(root: Path) -> set[str]:
+    return (
+        git_lines(root, "diff", "--name-only", "main")
+        | git_lines(root, "diff", "--cached", "--name-only")
+        | git_lines(root, "ls-files", "--others", "--exclude-standard")
+    )
+
+
+def validate_changed_paths(validator: Validator, root: Path) -> None:
+    changes = changed_paths(root)
+    unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
+    validator.require(not unexpected, "NEG_FIXTURE_UNAUTHORIZED_PATH", "unauthorized changed path")
+    validator.require(
+        not any(path.startswith("tests/fixtures/manual_entry_replay_negative/") for path in changes),
+        "NEG_FIXTURE_UNAUTHORIZED_FILE",
+        "negative fixture JSON changed",
+    )
+    validator.require(
+        not any(path.startswith("tests/fixtures/manual_entry_replay/") for path in changes),
+        "NEG_FIXTURE_UNAUTHORIZED_FILE",
+        "positive fixture JSON changed",
+    )
+    validator.require(not any(path.startswith(("apps/", "libs/", "migrations/")) for path in changes),
+                      "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
+                      "production path changed")
+
+
+def validate_no_forbidden_text(validator: Validator, text: str, context: str) -> None:
+    lowered = text.lower()
+    for token in FORBIDDEN_UNSANITIZED_TOKENS:
+        validator.require(token not in lowered, "NEG_FIXTURE_FORBIDDEN_TOKEN", f"{context} forbidden token")
+    for token in FORBIDDEN_PATH_TOKENS:
+        validator.require(token.lower() not in lowered, "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE", context)
+
+
+def validate_negative_directory(validator: Validator, negative_dir: Path) -> None:
+    validator.require(negative_dir.exists(), "NEG_FIXTURE_DIR_MISSING", "negative fixture directory exists")
+    validator.require(negative_dir.is_dir(), "NEG_FIXTURE_DIR_INVALID", "negative fixture directory is dir")
+    actual_files = {child.name for child in negative_dir.iterdir() if child.is_file()}
+    validator.require(actual_files == EXPECTED_NEGATIVE_FILES, "NEG_FIXTURE_UNAUTHORIZED_FILE", "exact file set")
+    validator.require(len([name for name in actual_files if name.startswith("NEG_MRF")]) == 10,
+                      "NEG_FIXTURE_UNAUTHORIZED_FILE",
+                      "ten NEG_MRF files")
+    for child in negative_dir.iterdir():
+        validator.require(child.suffix.lower() not in FORBIDDEN_STORAGE_SUFFIXES,
+                          "NEG_FIXTURE_DB_ARTIFACT_PRESENT",
+                          child.name)
+
+
+def positive_fixture_ids(validator: Validator, positive_index_path: Path) -> set[str]:
+    index = read_json(positive_index_path)
+    validator.require(isinstance(index, dict), "NEG_FIXTURE_SOURCE_INDEX_INVALID", "positive index object")
+    rows = index.get("fixtures")
+    validator.require(isinstance(rows, list), "NEG_FIXTURE_SOURCE_INDEX_INVALID", "positive index fixtures")
+    ids = {row.get("fixtureId") for row in rows if isinstance(row, dict)}
+    validator.require(ids >= {"MRF001", "MRF002", "MRF003", "MRF004", "MRF005", "MRF006"},
+                      "NEG_FIXTURE_SOURCE_INDEX_INVALID",
+                      "positive fixture ids")
+    return {fixture_id for fixture_id in ids if isinstance(fixture_id, str)}
+
+
+def validate_index(validator: Validator, negative_dir: Path, positive_ids: set[str]) -> dict[str, dict[str, Any]]:
+    index_path = negative_dir / "negative_fixtures_index.json"
+    index_text = index_path.read_text(encoding="utf-8")
+    validate_no_forbidden_text(validator, index_text, index_path.name)
+    index = read_json(index_path)
+    validator.require(isinstance(index, dict), "NEG_FIXTURE_INDEX_INVALID", "negative index object")
+    validator.require(index.get("schemaVersion") == "manual-entry-replay-negative-fixtures-index/v1",
+                      "NEG_FIXTURE_SCHEMA_VERSION_INVALID",
+                      "index schema")
+    for field, expected in [
+        ("scaffoldOnly", True),
+        ("runtimeUse", False),
+        ("productionUse", False),
+        ("replayExecuted", False),
+        ("containsSyntheticDataOnly", True),
+    ]:
+        validator.require(index.get(field) is expected, "NEG_FIXTURE_FLAG_INVALID", f"index {field}")
+    rows = index.get("fixtures")
+    validator.require(isinstance(rows, list), "NEG_FIXTURE_INDEX_INVALID", "index fixtures")
+    validator.require(len(rows) == 10, "NEG_FIXTURE_INDEX_INVALID", "index fixture count")
+    seen: set[str] = set()
+    by_id: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        validator.require(isinstance(row, dict), "NEG_FIXTURE_INDEX_INVALID", "index row")
+        fixture_id = row.get("negativeFixtureId")
+        validator.require(isinstance(fixture_id, str), "NEG_FIXTURE_ID_MISMATCH", "index fixture id")
+        validator.require(fixture_id not in seen, "NEG_FIXTURE_DUPLICATE_ID", fixture_id)
+        seen.add(fixture_id)
+        validator.require(fixture_id in EXPECTED_ISSUE_CODES, "NEG_FIXTURE_ID_MISMATCH", fixture_id)
+        validator.require(row.get("file") == expected_file_for(fixture_id), "NEG_FIXTURE_ID_MISMATCH", fixture_id)
+        validator.require(row.get("expectedIssueCode") == EXPECTED_ISSUE_CODES[fixture_id],
+                          "NEG_FIXTURE_EXPECTED_ISSUE_MISMATCH",
+                          fixture_id)
+        validator.require(row.get("sourcePositiveFixtureId") in positive_ids,
+                          "NEG_FIXTURE_SOURCE_POSITIVE_MISSING",
+                          fixture_id)
+        for field, expected in [
+            ("scaffoldOnly", True),
+            ("runtimeUse", False),
+            ("productionUse", False),
+            ("replayExecuted", False),
+            ("containsSyntheticDataOnly", True),
+        ]:
+            validator.require(row.get(field) is expected, "NEG_FIXTURE_FLAG_INVALID", f"{fixture_id}.{field}")
+        by_id[fixture_id] = row
+    validator.require(seen == set(EXPECTED_ISSUE_CODES), "NEG_FIXTURE_INDEX_INVALID", "all expected ids")
+    return by_id
+
+
+def validate_fixture(validator: Validator, path: Path, index_row: dict[str, Any], positive_ids: set[str]) -> None:
+    text = path.read_text(encoding="utf-8")
+    validate_no_forbidden_text(validator, text, path.name)
+    fixture = read_json(path)
+    validator.require(isinstance(fixture, dict), "NEG_FIXTURE_INVALID", path.name)
+    fixture_id = fixture.get("negativeFixtureId")
+    validator.require(fixture_id == index_row["negativeFixtureId"], "NEG_FIXTURE_ID_MISMATCH", path.name)
+    validator.require(path.name == index_row["file"], "NEG_FIXTURE_ID_MISMATCH", path.name)
+    validator.require(path.name.startswith(fixture_id), "NEG_FIXTURE_ID_MISMATCH", path.name)
+    validator.require(fixture.get("schemaVersion") == "manual-entry-replay-negative-fixture-scaffold/v1",
+                      "NEG_FIXTURE_SCHEMA_VERSION_INVALID",
+                      fixture_id)
+    for field in ["title", "purpose", "mutationCategory", "targetValidatorRule", "mutationDescription"]:
+        validator.require(isinstance(fixture.get(field), str) and fixture[field].strip(),
+                          "NEG_FIXTURE_MISSING_REQUIRED_FIELD",
+                          f"{fixture_id}.{field}")
+    validator.require(fixture.get("sourcePositiveFixtureId") in positive_ids,
+                      "NEG_FIXTURE_SOURCE_POSITIVE_MISSING",
+                      fixture_id)
+    validator.require(fixture.get("sourcePositiveFixtureId") == index_row["sourcePositiveFixtureId"],
+                      "NEG_FIXTURE_SOURCE_POSITIVE_MISMATCH",
+                      fixture_id)
+    validator.require(fixture.get("expectedIssueCode") == EXPECTED_ISSUE_CODES[fixture_id],
+                      "NEG_FIXTURE_EXPECTED_ISSUE_MISMATCH",
+                      fixture_id)
+    validator.require(fixture.get("expectedIssueCode") == index_row["expectedIssueCode"],
+                      "NEG_FIXTURE_EXPECTED_ISSUE_MISMATCH",
+                      fixture_id)
+    validator.require(fixture.get("expectedSeverity") == "error", "NEG_FIXTURE_SEVERITY_INVALID", fixture_id)
+    validator.require(fixture.get("expectedBlocking") is True, "NEG_FIXTURE_BLOCKING_INVALID", fixture_id)
+    for field, expected in [
+        ("scaffoldOnly", True),
+        ("runtimeUse", False),
+        ("productionUse", False),
+        ("replayExecuted", False),
+        ("containsSyntheticDataOnly", True),
+    ]:
+        validator.require(fixture.get(field) is expected, "NEG_FIXTURE_FLAG_INVALID", f"{fixture_id}.{field}")
+    privacy = fixture.get("privacyExpectations")
+    validator.require(isinstance(privacy, list), "NEG_FIXTURE_PRIVACY_INVALID", fixture_id)
+    validator.require(set(privacy) == ALLOWED_PRIVACY, "NEG_FIXTURE_PRIVACY_INVALID", fixture_id)
+    sanitized = fixture.get("sanitizationExpectations")
+    validator.require(isinstance(sanitized, list) and sanitized, "NEG_FIXTURE_SANITIZATION_INVALID", fixture_id)
+    for marker in sanitized:
+        validator.require(isinstance(marker, str), "NEG_FIXTURE_SANITIZATION_INVALID", fixture_id)
+        validator.require(marker.startswith("SANITIZED_") and marker.endswith("_PLACEHOLDER"),
+                          "NEG_FIXTURE_FORBIDDEN_TOKEN",
+                          fixture_id)
+    metadata = fixture.get("metadata")
+    validator.require(isinstance(metadata, dict), "NEG_FIXTURE_METADATA_INVALID", fixture_id)
+    validator.require(metadata.get("task") == "TASK-222", "NEG_FIXTURE_METADATA_INVALID", fixture_id)
+    validator.require(metadata.get("notReplayInput") is True, "NEG_FIXTURE_REPLAY_EXECUTED_TRUE", fixture_id)
+    validator.require(metadata.get("notProductionInput") is True, "NEG_FIXTURE_PRODUCTION_USE_TRUE", fixture_id)
+    validator.require(metadata.get("notRuntimeDataSource") is True, "NEG_FIXTURE_RUNTIME_USE_TRUE", fixture_id)
+    validator.add_summary(fixture)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", required=True)
+    args = parser.parse_args()
+    root = Path(args.source_root)
+    validator = Validator()
+    negative_dir = root / "tests" / "fixtures" / "manual_entry_replay_negative"
+    positive_index = root / "tests" / "fixtures" / "manual_entry_replay" / "fixtures_index.json"
+
+    validate_changed_paths(validator, root)
+    validate_negative_directory(validator, negative_dir)
+    positive_ids = positive_fixture_ids(validator, positive_index)
+    index_rows = validate_index(validator, negative_dir, positive_ids)
+    for fixture_id in sorted(EXPECTED_ISSUE_CODES):
+        validate_fixture(validator, negative_dir / expected_file_for(fixture_id), index_rows[fixture_id], positive_ids)
+
+    validator.require(len(validator.summaries) == 10, "NEG_FIXTURE_SUMMARY_INVALID", "summary count")
+    validator.require(validator.checks >= 260, "NEG_FIXTURE_CHECK_COUNT_LOW", str(validator.checks))
+    print(json.dumps({"status": "passed", "checks": validator.checks, "issues": validator.summaries}, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except ValidationError as exc:
+        print(json.dumps({"status": "failed", "issueCode": exc.issue_code, "message": exc.message}, sort_keys=True))
+        raise SystemExit(1)

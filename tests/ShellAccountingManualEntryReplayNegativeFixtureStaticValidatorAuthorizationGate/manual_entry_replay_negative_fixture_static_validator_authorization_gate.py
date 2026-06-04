@@ -46,9 +46,13 @@ ALLOWED_CHANGED_PATHS = {
     "docs/12_codex_prompt_template.md",
     "docs/242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md",
     "docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md",
+    "docs/244_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_gate.md",
+    "docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md",
     "tests/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
@@ -194,8 +198,8 @@ def main() -> int:
     )
     gate.require(
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py"
-        not in ALLOWED_CHANGED_PATHS,
-        "TASK-223 allowlist does not permit future validator implementation script",
+        in ALLOWED_CHANGED_PATHS,
+        "TASK-223 allowlist permits only the TASK-224 test-only validator implementation script",
     )
     gate.require(
         set(FORBIDDEN_CHANGED_PREFIXES)
@@ -330,8 +334,18 @@ def main() -> int:
         gate.require((negative_dir / filename).suffix.lower() == ".json", f"negative fixture is JSON: {filename}")
 
     gate.require((positive_dir / "fixtures_index.json").exists(), "positive fixture index exists")
-    gate.require(not future_validator_dir.exists(), "future negative validator directory must not be created by TASK-223")
-    gate.require(not future_validator_py.exists(), "future negative validator implementation must not be created by TASK-223")
+    gate.require(future_validator_dir.exists(), "TASK-224 test-only negative validator directory exists")
+    gate.require(future_validator_py.exists(), "TASK-224 test-only negative validator implementation exists")
+    gate.require(
+        future_validator_dir.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator",
+        "TASK-224 test-only negative validator directory stays exact",
+    )
+    gate.require(
+        future_validator_py.relative_to(root).as_posix()
+        == "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+        "TASK-224 test-only negative validator implementation path stays exact",
+    )
 
     changed = changed_paths(root)
     unexpected = sorted(changed - ALLOWED_CHANGED_PATHS)

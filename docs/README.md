@@ -1077,6 +1077,16 @@
   defines TASK-231 probes for the test-only harness CTest, fixture
   immutability, sanitized output, validator behavior immutability, production
   no-drift, and external full CTest regression.
+- ShellAccounting manual entry replay test-only dry-run harness regression matrix gate:
+  [260_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.md](260_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.md)
+  records TASK-232 regression matrix policy for the TASK-231 dry-run harness
+  summary JSON, positive and negative fixture coverage, fixture immutability,
+  no replay, no AccountingEngine, no runtime writes, and no production drift.
+- ShellAccounting manual entry replay test-only dry-run harness regression matrix test plan:
+  [261_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_test_plan.md](261_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_test_plan.md)
+  defines TASK-232 probes for docs/260, docs/261, CTest registration, harness
+  invocation, sanitized summary JSON, fixture coverage, no writes, no replay,
+  no AccountingEngine, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

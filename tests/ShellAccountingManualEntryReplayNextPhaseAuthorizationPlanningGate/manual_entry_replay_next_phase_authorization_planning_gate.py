@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -121,6 +121,10 @@ ALLOWED_CHANGED_PATHS = {
     "docs/256_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_gate.md",
     "docs/257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md",
     "tests/CMakeLists.txt",
+    "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md",
+    "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
     "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",

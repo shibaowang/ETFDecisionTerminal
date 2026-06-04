@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import subprocess
@@ -59,6 +59,10 @@ ALLOWED_CHANGED_PATHS = {
     "docs/254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md",
     "docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md",
     "tests/CMakeLists.txt",
+    "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md",
+    "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",

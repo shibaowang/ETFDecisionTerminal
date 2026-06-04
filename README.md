@@ -4153,3 +4153,27 @@ and
 `docs/257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md`.
 Recommended next task is TASK-231 manual entry replay test-only dry-run harness
 implementation gate.
+
+## TASK-231 Manual Entry Replay Test-Only Dry-Run Harness Implementation Gate
+
+TASK-231 implements the authorized test-only manual entry replay dry-run
+harness under `tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness`.
+The harness reads only manual entry replay fixture metadata and fixture JSON,
+checks fixture availability and immutability, and emits a sanitized dry-run
+summary through the CTest
+`shell_accounting_manual_entry_replay_test_only_dry_run_harness`.
+
+TASK-231 does not implement production parser / loader / reader behavior, does
+not implement replay, does not call AccountingEngine replay, does not modify
+fixture JSON, and does not modify production code, QML, DataServiceActions,
+repositories, or migrations. It also does not write runtime SQL / SQLite,
+audit, ledger, snapshot, cash facts, or trade facts; does not compute real
+position / cash / PnL; and does not connect broker, network, credentials,
+endpoint, real order placement, or automatic trading.
+
+See
+`docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md`
+and
+`docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md`.
+Recommended next task is TASK-232 manual entry replay test-only dry-run harness
+regression matrix gate.

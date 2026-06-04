@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import subprocess
@@ -398,6 +398,10 @@ def main() -> int:
         return path in authorized_task217_fixture_scaffold_paths
 
     allowed_changes = {
+        "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md",
+        "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
         "README.md",
         "docs/README.md",
         "docs/12_codex_prompt_template.md",

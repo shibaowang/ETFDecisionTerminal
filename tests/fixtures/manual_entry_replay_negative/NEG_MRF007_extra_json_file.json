@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixture-scaffold/v1",
+  "negativeFixtureId": "NEG_MRF007",
+  "title": "Extra JSON File",
+  "purpose": "Describe a future unauthorized-extra-file rejection while this scaffold file is authorized.",
+  "sourcePositiveFixtureId": "MRF006",
+  "mutationCategory": "unauthorized_extra_json_candidate",
+  "targetValidatorRule": "negative_fixture_file_set_exact",
+  "expectedIssueCode": "NEG_FIXTURE_UNAUTHORIZED_FILE",
+  "expectedSeverity": "error",
+  "expectedBlocking": true,
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "mutationDescription": "Future validator case: a candidate negative fixture directory contains an unauthorized JSON file.",
+  "privacyExpectations": [
+    "SYNTHETIC_ONLY",
+    "NO_RAW_PAYLOAD"
+  ],
+  "sanitizationExpectations": [
+    "SANITIZED_FORBIDDEN_TOKEN_PLACEHOLDER"
+  ],
+  "metadata": {
+    "task": "TASK-222",
+    "notReplayInput": true,
+    "notProductionInput": true,
+    "notRuntimeDataSource": true
+  }
+}

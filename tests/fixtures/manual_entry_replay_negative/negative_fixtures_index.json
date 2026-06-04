@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "manual-entry-replay-negative-fixtures-index/v1",
+  "fixtureSet": "manual_entry_replay_negative_scaffold",
+  "generatedByTask": "TASK-222",
+  "scaffoldOnly": true,
+  "runtimeUse": false,
+  "productionUse": false,
+  "replayExecuted": false,
+  "containsSyntheticDataOnly": true,
+  "fixtures": [
+    {
+      "negativeFixtureId": "NEG_MRF001",
+      "file": "NEG_MRF001_missing_required_field.json",
+      "sourcePositiveFixtureId": "MRF002",
+      "expectedIssueCode": "NEG_FIXTURE_MISSING_REQUIRED_FIELD",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF002",
+      "file": "NEG_MRF002_wrong_schema_version.json",
+      "sourcePositiveFixtureId": "MRF001",
+      "expectedIssueCode": "NEG_FIXTURE_SCHEMA_VERSION_INVALID",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF003",
+      "file": "NEG_MRF003_runtime_use_true.json",
+      "sourcePositiveFixtureId": "MRF003",
+      "expectedIssueCode": "NEG_FIXTURE_RUNTIME_USE_TRUE",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF004",
+      "file": "NEG_MRF004_production_use_true.json",
+      "sourcePositiveFixtureId": "MRF003",
+      "expectedIssueCode": "NEG_FIXTURE_PRODUCTION_USE_TRUE",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF005",
+      "file": "NEG_MRF005_replay_executed_true.json",
+      "sourcePositiveFixtureId": "MRF004",
+      "expectedIssueCode": "NEG_FIXTURE_REPLAY_EXECUTED_TRUE",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF006",
+      "file": "NEG_MRF006_non_synthetic_privacy.json",
+      "sourcePositiveFixtureId": "MRF005",
+      "expectedIssueCode": "NEG_FIXTURE_SYNTHETIC_FLAG_FALSE",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF007",
+      "file": "NEG_MRF007_extra_json_file.json",
+      "sourcePositiveFixtureId": "MRF006",
+      "expectedIssueCode": "NEG_FIXTURE_UNAUTHORIZED_FILE",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF008",
+      "file": "NEG_MRF008_forbidden_token.sql.json",
+      "sourcePositiveFixtureId": "MRF002",
+      "expectedIssueCode": "NEG_FIXTURE_RAW_SQL_TOKEN",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF009",
+      "file": "NEG_MRF009_broker_payload_token.json",
+      "sourcePositiveFixtureId": "MRF004",
+      "expectedIssueCode": "NEG_FIXTURE_BROKER_PAYLOAD_TOKEN",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    },
+    {
+      "negativeFixtureId": "NEG_MRF010",
+      "file": "NEG_MRF010_real_order_id_token.json",
+      "sourcePositiveFixtureId": "MRF004",
+      "expectedIssueCode": "NEG_FIXTURE_REAL_ORDER_TOKEN",
+      "scaffoldOnly": true,
+      "runtimeUse": false,
+      "productionUse": false,
+      "replayExecuted": false,
+      "containsSyntheticDataOnly": true
+    }
+  ]
+}

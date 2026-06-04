@@ -416,15 +416,45 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     }
-    allowed_changes = task218_allowed_changes | task219_allowed_changes | task220_allowed_changes | task221_allowed_changes
+    task222_allowed_changes = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md",
+        "docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md",
+        "tests/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+        "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF001_missing_required_field.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF002_wrong_schema_version.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF003_runtime_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF004_production_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF005_replay_executed_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF006_non_synthetic_privacy.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF007_extra_json_file.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF008_forbidden_token.sql.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF009_broker_payload_token.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
+    }
+    allowed_changes = (
+        task218_allowed_changes
+        | task219_allowed_changes
+        | task220_allowed_changes
+        | task221_allowed_changes
+        | task222_allowed_changes
+    )
 
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-218 changed unauthorized paths: " + ", ".join(unexpected))
     if changes:
         gate.require(
-            changes in [task218_allowed_changes, task219_allowed_changes, task220_allowed_changes, task221_allowed_changes],
-            "TASK-218 changed paths must match an exact static validator authorization allowlist",
+            changes.issubset(allowed_changes),
+            "TASK-218 changed paths must stay within an exact static validator authorization allowlist",
         )
 
     fixture_json_changes = sorted(

@@ -302,6 +302,21 @@ def main() -> int:
         "docs/235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md",
         "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/manual_entry_replay_fixture_static_validator.py",
+        "docs/240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md",
+        "docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+        "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF001_missing_required_field.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF002_wrong_schema_version.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF003_runtime_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF004_production_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF005_replay_executed_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF006_non_synthetic_privacy.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF007_extra_json_file.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF008_forbidden_token.sql.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF009_broker_payload_token.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-201 changed unauthorized paths: " + ", ".join(unexpected))

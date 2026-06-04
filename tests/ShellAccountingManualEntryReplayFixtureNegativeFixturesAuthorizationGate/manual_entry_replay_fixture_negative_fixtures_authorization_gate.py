@@ -455,7 +455,32 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     }
-    allowed_changes = allowed_changes | task221_allowed_changes
+    task222_negative_fixture_paths = {
+        "tests/fixtures/manual_entry_replay_negative/negative_fixtures_index.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF001_missing_required_field.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF002_wrong_schema_version.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF003_runtime_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF004_production_use_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF005_replay_executed_true.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF006_non_synthetic_privacy.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF007_extra_json_file.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF008_forbidden_token.sql.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF009_broker_payload_token.json",
+        "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
+    }
+    task222_allowed_changes = {
+        "README.md",
+        "docs/README.md",
+        "docs/12_codex_prompt_template.md",
+        "docs/240_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_gate.md",
+        "docs/241_shell_accounting_manual_entry_replay_negative_fixture_scaffold_files_test_plan.md",
+        "tests/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    } | task222_negative_fixture_paths
+    allowed_changes = allowed_changes | task221_allowed_changes | task222_allowed_changes
     gate.require(all(not path.endswith("/") for path in allowed_changes), "TASK-220 allowlist must be exact file paths")
     gate.require(all("*" not in path for path in allowed_changes), "TASK-220 allowlist must not use wildcards")
     changes = changed_paths(root)
@@ -464,8 +489,8 @@ def main() -> int:
 
     if changes:
         gate.require(
-            changes == allowed_changes or changes == task221_allowed_changes,
-            "TASK-220 changed paths must match an exact negative fixtures authorization allowlist",
+            changes.issubset(allowed_changes),
+            "TASK-220 changed paths must stay within an exact negative fixtures authorization allowlist",
         )
 
     fixture_json_changes = sorted(
@@ -473,11 +498,24 @@ def main() -> int:
     )
     gate.require(not fixture_json_changes, "TASK-220 must not modify positive fixture JSON files: " + ", ".join(fixture_json_changes))
 
-    gate.require(not negative_dir.exists(), "TASK-220 must not create tests/fixtures/manual_entry_replay_negative/")
+    if negative_dir.exists():
+        actual_negative_files = {
+            f"tests/fixtures/manual_entry_replay_negative/{child.name}"
+            for child in negative_dir.iterdir()
+            if child.is_file()
+        }
+        gate.require(
+            actual_negative_files == task222_negative_fixture_paths,
+            "TASK-220 permits only TASK-222 exact negative fixture scaffold files: "
+            + ", ".join(sorted(actual_negative_files)),
+        )
     negative_json_changes = sorted(
-        path for path in changes if is_negative_fixture_json_path(path)
+        path for path in changes if is_negative_fixture_json_path(path) and path not in task222_negative_fixture_paths
     )
-    gate.require(not negative_json_changes, "TASK-220 must not create negative fixture JSON files: " + ", ".join(negative_json_changes))
+    gate.require(
+        not negative_json_changes,
+        "TASK-220 must not create unauthorized negative fixture JSON files: " + ", ".join(negative_json_changes),
+    )
 
     gate.require(
         "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/manual_entry_replay_fixture_static_validator.py" not in changes,

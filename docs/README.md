@@ -1037,6 +1037,16 @@
   defines TASK-227 probes for docs/250, docs/251, CTest registration,
   critical gate registration, changed-path fail-closed behavior, fixture
   immutability, validator immutability, and external full CTest regression.
+- ShellAccounting manual entry replay negative fixture validator phase closeout and handoff gate:
+  [252_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_gate.md](252_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_gate.md)
+  records TASK-228 phase closeout and handoff policy for TASK-220 through
+  TASK-227 artifact inventory, validation inventory, CTest inventory,
+  boundary inventory, clean-main invariants, and next-phase entry conditions.
+- ShellAccounting manual entry replay negative fixture validator phase closeout and handoff test plan:
+  [253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md](253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md)
+  defines TASK-228 probes for docs/252, docs/253, CTest registration,
+  artifact inventory, fixture immutability, validator behavior boundaries,
+  production no-drift, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

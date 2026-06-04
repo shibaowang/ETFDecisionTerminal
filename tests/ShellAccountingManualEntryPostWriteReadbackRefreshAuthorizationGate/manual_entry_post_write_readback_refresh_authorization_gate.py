@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import argparse
 import subprocess
@@ -345,6 +345,10 @@ def main() -> int:
         "tests/fixtures/manual_entry_replay_negative/NEG_MRF008_forbidden_token.sql.json",
         "tests/fixtures/manual_entry_replay_negative/NEG_MRF009_broker_payload_token.json",
         "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
+        "docs/256_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_gate.md",
+        "docs/257_shell_accounting_manual_entry_replay_test_only_dry_run_harness_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
     }
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-201 changed unauthorized paths: " + ", ".join(unexpected))

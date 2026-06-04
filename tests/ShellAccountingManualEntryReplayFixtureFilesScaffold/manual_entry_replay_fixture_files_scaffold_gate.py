@@ -490,7 +490,13 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
     }
-    allowed_changes = allowed_changes | task222_supplemental_changes | task223_supplemental_changes
+    task224_supplemental_changes = {
+        "docs/244_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_gate.md",
+        "docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    }
+    allowed_changes = allowed_changes | task222_supplemental_changes | task223_supplemental_changes | task224_supplemental_changes
 
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-217 changed unauthorized paths: " + ", ".join(unexpected))
@@ -502,6 +508,7 @@ def main() -> int:
         task221_supplemental_changes,
         task222_supplemental_changes,
         task223_supplemental_changes,
+        task224_supplemental_changes,
     ]:
         gate.require(changes.issubset(allowed_changes), "TASK-217 changed paths must stay within the exact scaffold allowlist")
 
@@ -634,6 +641,8 @@ def main() -> int:
             "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/manual_entry_replay_fixture_static_validator.py",
             "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
             "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+            "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",
+            "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
         }:
             continue
         gate.require("parser" not in lowered, f"TASK-217 must not add parser path: {path}")

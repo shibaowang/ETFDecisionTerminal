@@ -2355,6 +2355,27 @@ automatic trading.
 Recommended next task: TASK-224 manual entry replay negative fixture static
 validator implementation gate.
 
+## TASK-224 Manual Entry Replay Negative Fixture Static Validator Implementation Gate Prompt Rule
+
+Future manual entry replay negative fixture static validator regression matrix
+work must reference
+`docs/244_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_gate.md`
+and
+`docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md`.
+
+TASK-224 authorizes a test-only negative fixture static validator only. The
+validator may read the TASK-222 negative fixture index, ten `NEG_MRF*.json`
+scaffold files, and the TASK-217 positive fixture index for source mapping.
+TASK-224 does not authorize production validator, parser, loader, reader, or
+replay implementation. TASK-224 does not authorize AccountingEngine replay
+calls. TASK-224 does not authorize runtime SQL / SQLite read/write. TASK-224
+does not authorize audit / ledger / snapshot writes. TASK-224 does not
+authorize broker, network, credentials, endpoint, real order placement, or
+automatic trading.
+
+Recommended next task: TASK-225 manual entry replay negative fixture static
+validator regression matrix gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

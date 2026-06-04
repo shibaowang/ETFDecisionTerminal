@@ -968,6 +968,16 @@
   defines TASK-220 static probes for negative fixture naming, schema, issue
   codes, changed-path allowlist, no negative fixture files, no replay, and no
   production-runtime boundaries.
+- ShellAccounting manual entry replay negative fixtures scaffold authorization gate:
+  [238_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_gate.md](238_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_gate.md)
+  records TASK-221 gate-only policy for future negative fixture scaffold
+  directory, index, file set, metadata, mutation categories, issue codes, and
+  no-runtime boundaries without creating negative fixture files.
+- ShellAccounting manual entry replay negative fixtures scaffold authorization test plan:
+  [239_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_test_plan.md](239_shell_accounting_manual_entry_replay_negative_fixtures_scaffold_authorization_test_plan.md)
+  defines TASK-221 static probes for docs/238, docs/239, changed-path
+  allowlist, no negative fixture directory, no NEG_MRF JSON, no replay, and no
+  production-runtime boundaries.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

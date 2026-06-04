@@ -3888,3 +3888,21 @@ and
 `docs/233_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_authorization_test_plan.md`.
 Recommended next task is TASK-219 manual entry replay fixture scaffold static
 validator.
+
+## TASK-219 Manual Entry Replay Fixture Scaffold Static Validator
+
+TASK-219 adds a test-only static validator for the TASK-217 manual entry replay
+fixture scaffold files. The validator checks the exact fixture file set,
+fixture index metadata, fixture JSON scaffold flags, placeholder expected
+outputs, synthetic-only privacy markers, and forbidden-token boundaries.
+
+TASK-219 does not implement replay, does not call AccountingEngine replay, does
+not import production modules, does not modify fixture JSON files, does not add
+runtime SQL / SQLite read/write, does not write audit / ledger / snapshot rows,
+does not connect broker, network, credentials, or endpoint, and does not place
+real orders or enable automatic trading. See
+`docs/234_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator.md`
+and
+`docs/235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md`.
+Recommended next task is TASK-220 manual entry replay fixture static validator
+negative fixtures authorization gate.

@@ -380,11 +380,16 @@ def main() -> int:
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
         "docs/226_shell_accounting_manual_entry_replay_fixture_files_authorization_gate.md",
         "docs/227_shell_accounting_manual_entry_replay_fixture_files_authorization_test_plan.md",
+        "docs/234_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator.md",
+        "docs/235_shell_accounting_manual_entry_replay_fixture_scaffold_static_validator_test_plan.md",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
         "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+        "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayFixtureStaticValidator/manual_entry_replay_fixture_static_validator.py",
+        "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
     }
     changes = changed_paths(root)
     unexpected = sorted(path for path in changes if path not in allowed_changes)

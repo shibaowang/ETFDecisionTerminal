@@ -21,6 +21,10 @@ VALIDATOR = Path(
 )
 
 ALLOWED_CHANGED_PATHS = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",

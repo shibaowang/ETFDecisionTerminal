@@ -88,9 +88,13 @@ ALLOWED_CHANGED_PATHS = {
     TASK_231_PLAN.as_posix(),
     "docs/260_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.md",
     "docs/261_shell_accounting_manual_entry_replay_test_only_dry_run_harness_regression_matrix_test_plan.md",
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
     TASK_231_CMAKE.as_posix(),
     TASK_231_HARNESS.as_posix(),
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
     TASK_224_VALIDATOR.as_posix(),
     TASK_230_CMAKE.as_posix(),
     TASK_230_GATE.as_posix(),
@@ -150,6 +154,8 @@ FORBIDDEN_IMPLEMENTATION_PATH_PARTS = (
 ALLOWED_IMPLEMENTATION_AUTHORIZATION_PATHS = {
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
 }
 
 FORBIDDEN_RUNTIME_TEXT_TOKENS = (

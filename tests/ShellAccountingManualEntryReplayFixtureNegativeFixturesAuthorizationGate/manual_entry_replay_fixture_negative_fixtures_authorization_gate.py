@@ -410,6 +410,10 @@ def main() -> int:
         gate.contains(doc237, token, "docs/237")
 
     allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/258_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_gate.md",
         "docs/259_shell_accounting_manual_entry_replay_test_only_dry_run_harness_implementation_test_plan.md",
         "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/CMakeLists.txt",
@@ -449,6 +453,10 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
     }
     task221_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "README.md",
         "docs/README.md",
         "docs/12_codex_prompt_template.md",
@@ -482,6 +490,10 @@ def main() -> int:
         "tests/fixtures/manual_entry_replay_negative/NEG_MRF010_real_order_id_token.json",
     }
     task222_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "README.md",
         "docs/README.md",
         "docs/12_codex_prompt_template.md",
@@ -491,36 +503,64 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/CMakeLists.txt",
     } | task222_negative_fixture_paths
     task223_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/242_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_gate.md",
         "docs/243_shell_accounting_manual_entry_replay_negative_fixture_static_validator_authorization_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/CMakeLists.txt",
     }
     task224_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/244_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_gate.md",
         "docs/245_shell_accounting_manual_entry_replay_negative_fixture_static_validator_implementation_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/CMakeLists.txt",
     }
     task225_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/246_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.md",
         "docs/247_shell_accounting_manual_entry_replay_negative_fixture_static_validator_regression_matrix_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/CMakeLists.txt",
     }
     task226_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/248_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.md",
         "docs/249_shell_accounting_manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/CMakeLists.txt",
     }
     task227_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/250_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_gate.md",
         "docs/251_shell_accounting_manual_entry_replay_negative_fixture_validator_ci_closeout_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/CMakeLists.txt",
     }
     task228_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/252_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_gate.md",
         "docs/253_shell_accounting_manual_entry_replay_negative_fixture_validator_phase_closeout_handoff_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/CMakeLists.txt",
     }
     task229_allowed_changes = {
+    "docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md",
+    "docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
         "docs/254_shell_accounting_manual_entry_replay_next_phase_authorization_planning_gate.md",
         "docs/255_shell_accounting_manual_entry_replay_next_phase_authorization_planning_test_plan.md",
         "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/CMakeLists.txt",

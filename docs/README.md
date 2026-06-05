@@ -1182,6 +1182,16 @@
   defines TASK-241 matrix checks, exact changed-path allowlist, regression
   probes, failure modes, acceptance criteria, and formal conclusion without
   authorizing AccountingEngine replay or bridge implementation.
+- ShellAccounting manual entry replay AccountingEngine adequacy review failure-mode hardening gate:
+  [280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md](280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md)
+  records TASK-242 failure-mode hardening for review-only AccountingEngine
+  adequacy gates, temporary bad input probes, sanitized output, no-bridge,
+  no-replay, no-write, and no production integration boundaries.
+- ShellAccounting manual entry replay AccountingEngine adequacy review failure-mode hardening test plan:
+  [281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md](281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md)
+  defines TASK-242 temporary input probes, failure matrix, changed-path
+  allowlist, regression gates, acceptance criteria, and formal conclusion
+  without authorizing AccountingEngine replay or bridge implementation.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

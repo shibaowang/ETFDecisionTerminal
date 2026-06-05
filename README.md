@@ -4440,3 +4440,26 @@ and
 `docs/279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md`.
 Recommended next task is TASK-242 manual entry replay AccountingEngine
 adequacy review failure-mode hardening gate.
+
+## TASK-242 Manual Entry Replay AccountingEngine Adequacy Review Failure-Mode Hardening Gate
+
+TASK-242 adds failure-mode hardening for the review-only manual entry replay
+AccountingEngine adequacy gates. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening`
+uses temporary bad docs, missing matrix sections, unauthorized changed paths,
+and forbidden-token probes to verify TASK-240 and TASK-241 fail closed with
+sanitized output.
+
+TASK-242 is review-only and test-only. TASK-242 does not call AccountingEngine
+replay, does not implement an AccountingEngine bridge, does not implement
+replay, does not modify AccountingEngine code, does not authorize runtime SQL /
+SQLite read/write, audit / ledger / snapshot writes, read model refresh,
+broker, network, credentials, endpoint, real order placement, or automatic
+trading.
+
+See
+`docs/280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md`
+and
+`docs/281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md`.
+Recommended next task is TASK-243 manual entry replay AccountingEngine
+adequacy review CI closeout gate.

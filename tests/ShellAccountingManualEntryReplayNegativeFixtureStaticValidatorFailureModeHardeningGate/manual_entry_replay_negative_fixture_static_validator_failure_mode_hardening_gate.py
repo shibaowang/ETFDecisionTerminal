@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import copy
@@ -119,6 +119,14 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
+
+    "docs/280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md",
+
+    "docs/281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md",
+
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/CMakeLists.txt",
+
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
 }
 
 FORBIDDEN_CHANGED_PREFIXES = (
@@ -556,6 +564,12 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
             "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/"
             "manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py"
         ),
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/CMakeLists.txt",
+        (
+            "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/"
+            "manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py"
+        ),
+        "ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate",
     ]:
         validator_call_scan_text = validator_call_scan_text.replace(allowed_path_token, "")
     gate.require("AccountingEngine" not in validator_call_scan_text, "validator does not call AccountingEngine")

@@ -23,6 +23,10 @@ VALIDATOR = Path(
 ALLOWED_CHANGED_PATHS = {
     "docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md",
     "docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md",
+    "docs/274_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_gate.md",
+    "docs/275_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
     "docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md",
@@ -521,7 +525,16 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
     gate.contains(validator_text, "--positive-fixtures-index", "validator")
     gate.contains(validator_text, FAILURE_SCHEMA, "validator")
     gate.contains(validator_text, "sanitized failure", "validator")
-    gate.require("AccountingEngine" not in validator_text, "validator does not call AccountingEngine")
+    validator_call_scan_text = validator_text
+    for allowed_path_token in [
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/CMakeLists.txt",
+        (
+            "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/"
+            "manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py"
+        ),
+    ]:
+        validator_call_scan_text = validator_call_scan_text.replace(allowed_path_token, "")
+    gate.require("AccountingEngine" not in validator_call_scan_text, "validator does not call AccountingEngine")
     gate.require("import sqlite3" not in validator_text.lower(), "validator does not import sqlite")
     gate.require("requests" not in validator_text.lower(), "validator does not import network client")
 

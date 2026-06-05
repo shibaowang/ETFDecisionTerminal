@@ -4360,3 +4360,28 @@ and
 `docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md`.
 Recommended next task is TASK-239 manual entry replay AccountingEngine adequacy
 review authorization gate.
+
+## TASK-239 Manual Entry Replay AccountingEngine Adequacy Review Authorization Gate
+
+TASK-239 adds a static authorization gate for planning a future manual entry
+replay AccountingEngine adequacy review. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization`
+verifies docs, index registration, clean-main changed-path behavior, absence of
+the future review directory and future review CTest, fixture immutability, no
+AccountingEngine replay calls, no AccountingEngine code drift, and no
+production / broker / runtime-write drift.
+
+TASK-239 authorizes AccountingEngine adequacy review planning only. It does
+not call AccountingEngine replay, does not authorize AccountingEngine bridge
+implementation, does not implement replay, does not authorize runtime SQL /
+SQLite read/write, audit / ledger / snapshot writes, read model refresh,
+production position / cash / PnL calculation, production integration, QML,
+DataServiceActions, repositories, migrations, broker, network, credentials,
+endpoint, real order placement, or automatic trading.
+
+See
+`docs/274_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_gate.md`
+and
+`docs/275_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_test_plan.md`.
+Recommended next task is TASK-240 manual entry replay AccountingEngine
+adequacy review implementation gate.

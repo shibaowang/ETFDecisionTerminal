@@ -1150,6 +1150,17 @@
   defines TASK-238 probes for required artifacts, critical CTest registration,
   changed-path exact allowlists, fixture immutability, implementation behavior,
   harness behavior, validator behavior, and production no-drift boundaries.
+- ShellAccounting manual entry replay AccountingEngine adequacy review authorization gate:
+  [274_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_gate.md](274_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_gate.md)
+  records TASK-239 planning-only authorization for a future test-only
+  AccountingEngine adequacy review without creating the future review directory,
+  registering the future review CTest, calling AccountingEngine replay, or
+  modifying production code.
+- ShellAccounting manual entry replay AccountingEngine adequacy review authorization test plan:
+  [275_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_test_plan.md](275_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_test_plan.md)
+  defines TASK-239 probes for docs, indexes, CTest registration, clean-main
+  changed-path behavior, fixture immutability, AccountingEngine no-call
+  boundaries, no runtime writes, no read model refresh, and no broker drift.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -11,6 +11,7 @@ from typing import Any
 
 SUMMARY_SCHEMA = "manual-entry-replay-test-only-implementation-summary/v1"
 DRY_RUN_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
+FAILURE_SCHEMA = "manual-entry-replay-test-only-implementation-failure/v1"
 TASK_231_HARNESS = Path(
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/"
     "manual_entry_replay_test_only_dry_run_harness.py"
@@ -19,6 +20,10 @@ POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
 NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
 
 ALLOWED_CHANGED_PATHS = {
+    "docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md",
+    "docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
     "docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md",
     "docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md",
     "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/CMakeLists.txt",
@@ -93,6 +98,24 @@ FORBIDDEN_SUMMARY_TOKENS = (
     "stack " + "trace",
 )
 
+FORBIDDEN_DRY_RUN_INPUT_TOKENS = FORBIDDEN_SUMMARY_TOKENS + (
+    "api_key",
+    "credential",
+    "endpoint",
+    "broker payload",
+    "real order",
+    "apps/",
+    "libs/",
+    "migrations/",
+    ".db",
+    ".sqlite",
+    ".sqlite3",
+    ".db-wal",
+    ".db-shm",
+    ".sqlite-wal",
+    ".sqlite-shm",
+)
+
 DB_SUFFIXES = (".db", ".sqlite", ".sqlite3", ".db-wal", ".db-shm", ".sqlite-wal", ".sqlite-shm")
 
 
@@ -104,6 +127,22 @@ class Check:
         self.count += 1
         if not condition:
             raise AssertionError(message)
+
+
+def sanitized_failure(message: str = "dry-run summary contract failed") -> dict[str, Any]:
+    return {
+        "schemaVersion": FAILURE_SCHEMA,
+        "ok": False,
+        "failureCount": 1,
+        "failures": [
+            {
+                "issueCode": "REPLAY_IMPLEMENTATION_CONTRACT_VIOLATION",
+                "rule": "dry-run-summary-contract",
+                "file": "dry-run-summary",
+                "message": "sanitized failure: " + message,
+            }
+        ],
+    }
 
 
 def git_lines(root: Path, *args: str) -> set[str]:
@@ -172,12 +211,47 @@ def run_dry_run_summary(check: Check, root: Path) -> dict[str, Any]:
     )
     summary = json.loads(completed.stdout)
     check.require(isinstance(summary, dict), "dry-run summary object")
+    validate_dry_run_summary(check, summary)
+    return summary
+
+
+def read_dry_run_summary_override(check: Check, path: Path) -> dict[str, Any]:
+    check.require(path.exists(), "dry-run summary override exists")
+    check.require(path.is_file(), "dry-run summary override is file")
+    try:
+        summary = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise AssertionError("dry-run summary JSON is invalid") from exc
+    check.require(isinstance(summary, dict), "dry-run summary object")
+    validate_dry_run_summary(check, summary)
+    return summary
+
+
+def validate_dry_run_summary(check: Check, summary: dict[str, Any]) -> None:
+    encoded = json.dumps(summary, sort_keys=True).lower()
+    for token in FORBIDDEN_DRY_RUN_INPUT_TOKENS:
+        check.require(token not in encoded, "dry-run summary input excludes forbidden token")
     check.require(summary.get("schemaVersion") == DRY_RUN_SCHEMA, "dry-run summary schema correct")
     check.require(summary.get("dryRunStatus") == "ok", "dry-run summary status ok")
     entries = summary.get("entries")
     check.require(isinstance(entries, list), "dry-run entries list")
     check.require(bool(entries), "dry-run entries present")
-    return summary
+    seen: set[str] = set()
+    for entry in entries:
+        check.require(isinstance(entry, dict), "dry-run entry object")
+        fixture_id = entry.get("fixtureId")
+        check.require(isinstance(fixture_id, str) and fixture_id, "dry-run fixture id is present")
+        check.require(fixture_id not in seen, "dry-run fixture id is unique")
+        seen.add(fixture_id)
+        source = entry.get("source")
+        check.require(isinstance(source, str) and source, "dry-run entry source is present")
+        check.require(entry.get("dryRunStatus") == "metadata_checked", "dry-run entry status is metadata checked")
+        planned_count = entry.get("plannedStepCount")
+        check.require(isinstance(planned_count, int), "planned step count is integer")
+        check.require(planned_count >= 0, "planned step count is non-negative")
+        check.require(entry.get("replayExecuted") is False, "dry-run replay executed flag false")
+        check.require(entry.get("accountingEngineCalled") is False, "dry-run engine flag false")
+        check.require(entry.get("runtimeWrites") is False, "dry-run runtime write flag false")
 
 
 def sanitize_entry(check: Check, entry: dict[str, Any]) -> dict[str, Any]:
@@ -236,26 +310,37 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-root", required=True)
     parser.add_argument("--summary-json", action="store_true")
+    parser.add_argument("--dry-run-summary-json-file")
     args = parser.parse_args()
 
     root = Path(args.source_root)
     check = Check()
-    validate_changed_paths(check, root)
-    before_hashes = fixture_hashes(root)
-    before_db_like = db_like_untracked_paths(root)
-    dry_run_summary = run_dry_run_summary(check, root)
-    summary = build_summary(check, dry_run_summary)
-    after_hashes = fixture_hashes(root)
-    after_db_like = db_like_untracked_paths(root)
-    check.require(before_hashes == after_hashes, "fixture JSON hashes unchanged")
-    check.require(before_db_like == after_db_like, "no DB/WAL/SHM/SQLite files created")
-    check.require(check.count >= 80, f"expected at least 80 implementation checks, got {check.count}")
+    try:
+        validate_changed_paths(check, root)
+        before_hashes = fixture_hashes(root)
+        before_db_like = db_like_untracked_paths(root)
+        if args.dry_run_summary_json_file:
+            dry_run_summary = read_dry_run_summary_override(check, Path(args.dry_run_summary_json_file))
+        else:
+            dry_run_summary = run_dry_run_summary(check, root)
+        summary = build_summary(check, dry_run_summary)
+        after_hashes = fixture_hashes(root)
+        after_db_like = db_like_untracked_paths(root)
+        check.require(before_hashes == after_hashes, "fixture JSON hashes unchanged")
+        check.require(before_db_like == after_db_like, "no DB/WAL/SHM/SQLite files created")
+        check.require(check.count >= 80, f"expected at least 80 implementation checks, got {check.count}")
 
-    if args.summary_json:
-        print(json.dumps(summary, sort_keys=True))
-    else:
-        print(json.dumps({"status": "passed", "checks": check.count}, sort_keys=True))
-    return 0
+        if args.summary_json:
+            print(json.dumps(summary, sort_keys=True))
+        else:
+            print(json.dumps({"status": "passed", "checks": check.count}, sort_keys=True))
+        return 0
+    except Exception:
+        if args.summary_json:
+            print(json.dumps(sanitized_failure(), sort_keys=True))
+        else:
+            print("sanitized failure: dry-run summary contract failed", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

@@ -1131,6 +1131,16 @@
   defines TASK-236 probes for malformed dry-run summaries, sanitized failure
   output, TASK-235 regression matrix, TASK-234 implementation, fixture
   immutability, production no-drift, and external full CTest regression.
+- ShellAccounting manual entry replay test-only implementation CI closeout gate:
+  [270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md](270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md)
+  records TASK-237 CI closeout policy for the TASK-233 through TASK-236
+  test-only implementation chain, clean-main safety, CTest registration,
+  fixture immutability, no recursive full CTest, and no production drift.
+- ShellAccounting manual entry replay test-only implementation CI closeout test plan:
+  [271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md](271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md)
+  defines TASK-237 probes for required artifacts, critical CTest registration,
+  clean-main invariants, no AccountingEngine replay, no runtime writes, broker
+  boundaries, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

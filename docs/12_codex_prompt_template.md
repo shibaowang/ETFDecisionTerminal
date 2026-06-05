@@ -2763,6 +2763,28 @@ AccountingEngine replay calls must be separately authorized.
 Recommended next task: TASK-244 ShellAccounting manual entry replay
 AccountingEngine adequacy review phase closeout and handoff gate.
 
+## TASK-244 Manual Entry Replay AccountingEngine Adequacy Review Phase Closeout Handoff Prompt Rule
+
+Future manual entry replay AccountingEngine bridge authorization, bridge
+implementation, replay implementation, runtime integration, read model refresh,
+production parser / loader / reader work, or AccountingEngine replay calls must
+reference
+`docs/284_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_gate.md`
+and
+`docs/285_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_test_plan.md`.
+
+TASK-244 closes out the AccountingEngine adequacy review phase only. TASK-244
+does not call AccountingEngine replay, does not implement AccountingEngine
+bridge, does not implement replay, does not modify AccountingEngine code, does
+not authorize runtime SQL / SQLite read/write, audit / ledger / snapshot
+writes, read model refresh, production integration, broker, network,
+credentials, endpoint, real order placement, or automatic trading. Future
+bridge, replay, read model refresh, production integration, and AccountingEngine
+replay calls must be separately authorized.
+
+Recommended next task: TASK-245 ShellAccounting manual entry replay
+AccountingEngine bridge authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

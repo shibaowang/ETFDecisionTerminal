@@ -4488,3 +4488,30 @@ and
 `docs/283_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_test_plan.md`.
 Recommended next task is TASK-244 manual entry replay AccountingEngine
 adequacy review phase closeout and handoff gate.
+
+## TASK-244 Manual Entry Replay AccountingEngine Adequacy Review Phase Closeout Handoff Gate
+
+TASK-244 closes out the TASK-239 through TASK-243 manual entry replay
+AccountingEngine adequacy review phase and records the next-task handoff. The
+CTest
+`shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout`
+verifies docs, indexes, CTest registration, prior adequacy review gates,
+clean-main changed-path behavior, exact changed-path allowlists, no recursive
+full CTest inside the gate, fixture immutability, no AccountingEngine code
+drift, no AccountingEngine replay calls, no AccountingEngine bridge
+implementation, no runtime writes, no read model refresh, and no broker /
+network / credential / endpoint drift.
+
+TASK-244 is review-only and test-only. TASK-244 does not call AccountingEngine
+replay, does not implement AccountingEngine bridge, does not implement replay,
+does not modify AccountingEngine code, does not authorize runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, read model refresh, production
+integration, broker, network, credentials, endpoint, real order placement, or
+automatic trading.
+
+See
+`docs/284_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_gate.md`
+and
+`docs/285_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_test_plan.md`.
+Recommended next task is TASK-245 ShellAccounting manual entry replay
+AccountingEngine bridge authorization gate.

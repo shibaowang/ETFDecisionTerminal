@@ -2592,6 +2592,30 @@ placement, or automatic trading.
 Recommended next task: TASK-236 manual entry replay test-only implementation
 failure-mode hardening gate.
 
+## TASK-236 Manual Entry Replay Test-Only Implementation Failure-Mode Hardening Prompt Rule
+
+Future manual entry replay test-only implementation CI closeout work must
+reference
+`docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md`
+and
+`docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md`.
+
+TASK-236 hardens failure-mode behavior for the TASK-234 test-only manual entry
+replay implementation. TASK-236 uses temporary bad dry-run summaries only.
+TASK-236 does not modify fixture JSON, does not modify implementation success
+semantics, does not modify dry-run harness business semantics, and does not
+modify validator validation behavior except exact-path changed-set
+self-consistency. TASK-236 does not implement production parser / loader /
+reader behavior, does not implement production replay, does not call
+AccountingEngine replay, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, real position / cash /
+PnL calculation, production integration, QML, DataServiceActions,
+repositories, migrations, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+Recommended next task: TASK-237 manual entry replay test-only implementation CI
+closeout gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

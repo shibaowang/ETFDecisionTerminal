@@ -1121,6 +1121,16 @@
   implementation, TASK-233 authorization gate, TASK-231/TASK-232 harness
   regression, sanitized output, fixture immutability, production no-drift, and
   external full CTest regression.
+- ShellAccounting manual entry replay test-only implementation failure-mode hardening gate:
+  [268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md](268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md)
+  records TASK-236 failure-mode policy for temporary bad dry-run summary inputs,
+  sanitized failure JSON, fixture immutability, no AccountingEngine replay, no
+  runtime writes, no production drift, and no broker/network behavior.
+- ShellAccounting manual entry replay test-only implementation failure-mode hardening test plan:
+  [269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md](269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md)
+  defines TASK-236 probes for malformed dry-run summaries, sanitized failure
+  output, TASK-235 regression matrix, TASK-234 implementation, fixture
+  immutability, production no-drift, and external full CTest regression.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

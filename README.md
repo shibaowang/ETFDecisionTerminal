@@ -4278,3 +4278,31 @@ and
 `docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md`.
 Recommended next task is TASK-236 manual entry replay test-only implementation
 failure-mode hardening gate.
+
+## TASK-236 Manual Entry Replay Test-Only Implementation Failure-Mode Hardening Gate
+
+TASK-236 adds a failure-mode hardening gate for the TASK-234 test-only manual
+entry replay implementation. The CTest
+`shell_accounting_manual_entry_replay_implementation_failure_mode_hardening`
+creates temporary bad dry-run summary inputs, verifies non-zero failure behavior,
+and requires sanitized failure JSON with no raw payloads, credentials,
+endpoints, broker payloads, real order ids, raw SQL, stack traces, or production
+path disclosure.
+
+TASK-236 does not modify fixture JSON, does not change implementation success
+semantics, does not change dry-run harness business semantics, and does not
+change validator validation behavior except exact-path changed-set
+self-consistency. It also does not implement production parser / loader /
+reader behavior, does not implement production replay, does not call
+AccountingEngine replay, does not write runtime SQL / SQLite, audit, ledger,
+snapshot, cash facts, or trade facts; does not refresh read models; does not
+compute real position / cash / PnL; does not modify production code, QML,
+DataServiceActions, repositories, or migrations; and does not connect broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md`
+and
+`docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md`.
+Recommended next task is TASK-237 manual entry replay test-only implementation
+CI closeout gate.

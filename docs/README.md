@@ -1172,6 +1172,16 @@
   changed-path behavior, exact allowlists, fixture immutability, no
   AccountingEngine code drift, no runtime writes, no read model refresh, and
   no broker drift.
+- ShellAccounting manual entry replay AccountingEngine adequacy review regression matrix gate:
+  [278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md](278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md)
+  records TASK-241 review-only regression matrix scope, review input matrix,
+  no-bridge, no-replay, no-write, AccountingEngine code, production integration,
+  Go / No-Go, and next-phase handoff boundaries.
+- ShellAccounting manual entry replay AccountingEngine adequacy review regression matrix test plan:
+  [279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md](279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md)
+  defines TASK-241 matrix checks, exact changed-path allowlist, regression
+  probes, failure modes, acceptance criteria, and formal conclusion without
+  authorizing AccountingEngine replay or bridge implementation.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

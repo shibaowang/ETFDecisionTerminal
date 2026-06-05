@@ -2702,6 +2702,26 @@ endpoint, real order placement, or automatic trading.
 Future expansion beyond review gate implementation requires a separately
 authorized TASK.
 
+## TASK-241 Manual Entry Replay AccountingEngine Adequacy Review Regression Matrix Prompt Rule
+
+Future manual entry replay AccountingEngine adequacy review failure-mode
+hardening work must reference
+`docs/278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md`
+and
+`docs/279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md`.
+
+TASK-241 adds a review-only, test-only, deterministic, no-write regression
+matrix for the AccountingEngine adequacy review boundary. TASK-241 does not
+call AccountingEngine replay, does not implement an AccountingEngine bridge,
+does not implement replay, does not modify AccountingEngine code, does not
+authorize runtime SQL / SQLite read/write, audit / ledger / snapshot writes,
+read model refresh, real position / cash / PnL calculation, production
+integration, QML, DataServiceActions, repositories, migrations, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+Recommended next task: TASK-242 manual entry replay AccountingEngine adequacy
+review failure-mode hardening gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

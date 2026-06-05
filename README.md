@@ -4413,3 +4413,30 @@ and
 Future AccountingEngine bridge, runtime integration, replay implementation,
 read model refresh, production parser / loader / reader work, or
 AccountingEngine replay calls must be separately authorized.
+
+## TASK-241 Manual Entry Replay AccountingEngine Adequacy Review Regression Matrix Gate
+
+TASK-241 adds the review-only regression matrix gate for the manual entry replay
+AccountingEngine adequacy review boundary. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix`
+verifies docs, index registration, CTest registration, TASK-239 and TASK-240
+artifact retention, review input matrix coverage, static adequacy matrix rows,
+clean-main changed-path behavior, exact changed-path allowlists, fixture
+immutability, no AccountingEngine code drift, no AccountingEngine replay calls,
+no AccountingEngine bridge, no runtime SQL / SQLite writes, no audit / ledger /
+snapshot writes, no read model refresh, and no broker / network / credential /
+endpoint drift.
+
+TASK-241 is review-only and test-only. TASK-241 does not call AccountingEngine
+replay, does not implement an AccountingEngine bridge, does not implement
+replay, does not modify AccountingEngine code, does not modify fixture JSON,
+does not modify production code, QML, DataServiceActions, repositories, or
+migrations, and does not connect broker, network, credentials, endpoint, real
+order placement, or automatic trading.
+
+See
+`docs/278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md`
+and
+`docs/279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md`.
+Recommended next task is TASK-242 manual entry replay AccountingEngine
+adequacy review failure-mode hardening gate.

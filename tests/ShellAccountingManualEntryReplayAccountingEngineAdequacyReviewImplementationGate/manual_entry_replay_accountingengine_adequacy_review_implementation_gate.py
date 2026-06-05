@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -163,6 +164,17 @@ ALLOWED_CHANGED_PATHS = {
 
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",}
 
+ALLOWED_CHANGED_PATHS.update(
+    {
+        "docs/280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md",
+        "docs/281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
+    }
+)
+
+SANITIZED_FAILURE_ENV = "ETFDT_SANITIZED_FAILURE_OUTPUT"
+
 FORBIDDEN_CHANGED_PREFIXES = (
     "apps/",
     "libs/",
@@ -213,12 +225,16 @@ class Gate:
     def __init__(self) -> None:
         self.checks = 0
         self.results: list[dict[str, object]] = []
+        self.sanitized_output = os.environ.get(SANITIZED_FAILURE_ENV) == "1"
 
     def require(self, condition: bool, message: str) -> None:
         self.checks += 1
         passed = bool(condition)
         self.results.append({"check": self.checks, "passed": passed, "message": message})
-        print(f"CHECK {self.checks:03d} {'PASS' if passed else 'FAIL'} {message}")
+        visible_message = "check passed" if self.sanitized_output and passed else message
+        if self.sanitized_output and not passed:
+            visible_message = "sanitized failure"
+        print(f"CHECK {self.checks:03d} {'PASS' if passed else 'FAIL'} {visible_message}")
         if not passed:
             raise AssertionError(message)
 
@@ -536,5 +552,24 @@ def main() -> int:
     return 0
 
 
+def run_entrypoint() -> int:
+    try:
+        return main()
+    except Exception as exc:
+        if os.environ.get(SANITIZED_FAILURE_ENV) != "1":
+            raise
+        print(
+            json.dumps(
+                {
+                    "status": "failed",
+                    "error": "sanitized failure",
+                    "reason": type(exc).__name__,
+                },
+                sort_keys=True,
+            )
+        )
+        return 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_entrypoint())

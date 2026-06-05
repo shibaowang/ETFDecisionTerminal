@@ -1,8 +1,9 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -141,7 +142,29 @@ ALLOWED_CHANGED_PATHS = {
 
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
 
-    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",}
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+}
+
+ALLOWED_CHANGED_PATHS.update(
+    {
+        "docs/280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md",
+        "docs/281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
+    }
+)
+
+SANITIZED_FAILURE_ENV = "ETFDT_SANITIZED_FAILURE_OUTPUT"
 
 FORBIDDEN_CHANGED_PREFIXES = (
     "apps/",
@@ -203,12 +226,16 @@ class Gate:
     def __init__(self) -> None:
         self.checks = 0
         self.results: list[dict[str, object]] = []
+        self.sanitized_output = os.environ.get(SANITIZED_FAILURE_ENV) == "1"
 
     def require(self, condition: bool, message: str) -> None:
         self.checks += 1
         passed = bool(condition)
         self.results.append({"check": self.checks, "passed": passed, "message": message})
-        print(f"CHECK {self.checks:03d} {'PASS' if passed else 'FAIL'} {message}")
+        visible_message = "check passed" if self.sanitized_output and passed else message
+        if self.sanitized_output and not passed:
+            visible_message = "sanitized failure"
+        print(f"CHECK {self.checks:03d} {'PASS' if passed else 'FAIL'} {visible_message}")
         if not passed:
             raise AssertionError(message)
 
@@ -476,5 +503,24 @@ def main() -> int:
     return 0
 
 
+def run_entrypoint() -> int:
+    try:
+        return main()
+    except Exception as exc:
+        if os.environ.get(SANITIZED_FAILURE_ENV) != "1":
+            raise
+        print(
+            json.dumps(
+                {
+                    "status": "failed",
+                    "error": "sanitized failure",
+                    "reason": type(exc).__name__,
+                },
+                sort_keys=True,
+            )
+        )
+        return 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(run_entrypoint())

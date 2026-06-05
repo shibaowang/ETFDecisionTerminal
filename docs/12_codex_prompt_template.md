@@ -2722,6 +2722,25 @@ network, credentials, endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-242 manual entry replay AccountingEngine adequacy
 review failure-mode hardening gate.
 
+## TASK-242 Manual Entry Replay AccountingEngine Adequacy Review Failure-Mode Hardening Prompt Rule
+
+Future manual entry replay AccountingEngine adequacy review CI closeout work
+must reference
+`docs/280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md`
+and
+`docs/281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md`.
+
+TASK-242 hardens failure-mode behavior for review-only AccountingEngine
+adequacy gates. TASK-242 does not call AccountingEngine replay, does not
+implement AccountingEngine bridge, does not implement replay, does not modify
+AccountingEngine code, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, production integration,
+QML, DataServiceActions, repositories, migrations, broker, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+Recommended next task: TASK-243 ShellAccounting manual entry replay
+AccountingEngine adequacy review CI closeout gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

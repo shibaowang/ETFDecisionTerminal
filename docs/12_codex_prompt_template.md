@@ -2638,6 +2638,29 @@ network, credentials, endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-238 manual entry replay test-only implementation
 phase closeout and handoff gate.
 
+## TASK-238 Manual Entry Replay Test-Only Implementation Phase Closeout Prompt Rule
+
+Future manual entry replay AccountingEngine adequacy review work must reference
+`docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md`
+and
+`docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md`.
+
+TASK-238 is a phase closeout and handoff gate for the TASK-233 through TASK-237
+test-only implementation chain. TASK-238 checks artifact inventory, validation
+inventory, CTest registration, clean-main invariants, no recursive full CTest
+inside gates, fixture immutability, implementation success semantics, dry-run
+harness business semantics, validator validation behavior, boundary inventory,
+and next-phase entry conditions. TASK-238 does not implement production parser
+/ loader / reader behavior, does not implement production replay, does not call
+AccountingEngine replay, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, real position / cash /
+PnL calculation, production integration, QML, DataServiceActions,
+repositories, migrations, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+Recommended next task: TASK-239 manual entry replay AccountingEngine adequacy
+review authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

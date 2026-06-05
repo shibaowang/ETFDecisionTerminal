@@ -4333,3 +4333,30 @@ and
 `docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md`.
 Recommended next task is TASK-238 manual entry replay test-only implementation
 phase closeout and handoff gate.
+
+## TASK-238 Manual Entry Replay Test-Only Implementation Phase Closeout And Handoff Gate
+
+TASK-238 adds a phase closeout and handoff gate for the TASK-233 through
+TASK-237 manual entry replay test-only implementation chain. The CTest
+`shell_accounting_manual_entry_replay_implementation_phase_closeout` verifies
+artifact inventory, validation inventory, critical CTest registration,
+clean-main invariants, no recursive full CTest inside gates, fixture
+immutability, and handoff readiness for the next authorization review.
+
+TASK-238 does not modify fixture JSON, does not change implementation success
+semantics, does not change dry-run harness business semantics, and does not
+change validator validation behavior except exact-path changed-set
+self-consistency. It also does not implement production parser / loader /
+reader behavior, does not implement production replay, does not call
+AccountingEngine replay, does not write runtime SQL / SQLite, audit, ledger,
+snapshot, cash facts, or trade facts; does not refresh read models; does not
+compute real position / cash / PnL; does not modify production code, QML,
+DataServiceActions, repositories, or migrations; and does not connect broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md`
+and
+`docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md`.
+Recommended next task is TASK-239 manual entry replay AccountingEngine adequacy
+review authorization gate.

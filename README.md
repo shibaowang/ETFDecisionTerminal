@@ -4250,3 +4250,31 @@ and
 `docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md`.
 Recommended next task is TASK-235 manual entry replay test-only implementation
 regression matrix gate.
+
+## TASK-235 Manual Entry Replay Test-Only Implementation Regression Matrix Gate
+
+TASK-235 adds a regression matrix gate for the TASK-234 test-only manual entry
+replay implementation. The CTest
+`shell_accounting_manual_entry_replay_implementation_regression_matrix`
+invokes the TASK-234 implementation with `--summary-json`, validates its
+sanitized implementation summary, compares fixture coverage against the
+TASK-231 dry-run harness summary, and preserves no-replay, no-AccountingEngine,
+no-write, no-production, and fixture immutability boundaries.
+
+TASK-235 does not modify fixture JSON, does not change implementation business
+semantics, does not change dry-run harness business semantics, and does not
+change validator validation behavior except exact-path changed-set
+self-consistency. It also does not implement production parser / loader /
+reader behavior, does not implement production replay, does not call
+AccountingEngine replay, does not write runtime SQL / SQLite, audit, ledger,
+snapshot, cash facts, or trade facts; does not refresh read models; does not
+compute real position / cash / PnL; does not modify production code, QML,
+DataServiceActions, repositories, or migrations; and does not connect broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md`
+and
+`docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md`.
+Recommended next task is TASK-236 manual entry replay test-only implementation
+failure-mode hardening gate.

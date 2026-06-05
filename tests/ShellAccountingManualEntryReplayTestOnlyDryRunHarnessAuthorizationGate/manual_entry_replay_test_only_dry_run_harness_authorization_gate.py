@@ -77,6 +77,10 @@ EXPECTED_NEGATIVE_FILES = {
 }
 
 ALLOWED_CHANGED_PATHS = {
+    "docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md",
+    "docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
@@ -156,6 +160,8 @@ ALLOWED_IMPLEMENTATION_AUTHORIZATION_PATHS = {
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayImplementation/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
 }
 
 FORBIDDEN_RUNTIME_TEXT_TOKENS = (

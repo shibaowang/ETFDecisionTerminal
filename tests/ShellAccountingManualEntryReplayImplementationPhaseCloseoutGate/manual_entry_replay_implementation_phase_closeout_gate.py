@@ -163,7 +163,15 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
 
 
-    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",}
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+
+    "docs/278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md",
+
+    "docs/279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md",
+
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/CMakeLists.txt",
+
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",}
 
 FORBIDDEN_CHANGED_PREFIXES = (
     "apps/",

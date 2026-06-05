@@ -48,6 +48,10 @@ SUMMARY_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
 VALIDATOR_SUMMARY_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-summary/v1"
 
 ALLOWED_CHANGED_PATHS = {
+    "docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md",
+    "docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
     "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
     "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
     "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",

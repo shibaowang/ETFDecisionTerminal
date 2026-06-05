@@ -2569,6 +2569,29 @@ placement, or automatic trading.
 Recommended next task: TASK-235 manual entry replay test-only implementation
 regression matrix gate.
 
+## TASK-235 Manual Entry Replay Test-Only Implementation Regression Matrix Prompt Rule
+
+Future manual entry replay test-only implementation failure-mode work must
+reference
+`docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md`
+and
+`docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md`.
+
+TASK-235 adds a regression matrix gate around the TASK-234 test-only manual
+entry replay implementation. TASK-235 does not modify fixture JSON, does not
+modify implementation business semantics, does not modify dry-run harness
+business semantics, and does not modify validator validation behavior except
+exact-path changed-set self-consistency. TASK-235 does not implement production
+parser / loader / reader behavior, does not implement production replay, does
+not call AccountingEngine replay, does not authorize runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, read model refresh, real position
+/ cash / PnL calculation, production integration, QML, DataServiceActions,
+repositories, migrations, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+Recommended next task: TASK-236 manual entry replay test-only implementation
+failure-mode hardening gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

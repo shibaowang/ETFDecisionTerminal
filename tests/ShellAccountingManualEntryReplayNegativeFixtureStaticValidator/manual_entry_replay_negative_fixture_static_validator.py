@@ -36,6 +36,10 @@ EXPECTED_ISSUE_CODES = {
 }
 
 ALLOWED_CHANGED_PATHS = {
+    "docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md",
+    "docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",

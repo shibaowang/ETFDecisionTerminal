@@ -1161,6 +1161,17 @@
   defines TASK-239 probes for docs, indexes, CTest registration, clean-main
   changed-path behavior, fixture immutability, AccountingEngine no-call
   boundaries, no runtime writes, no read model refresh, and no broker drift.
+- ShellAccounting manual entry replay AccountingEngine adequacy review implementation gate:
+  [276_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_gate.md](276_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_gate.md)
+  records TASK-240 review gate implementation scope, static adequacy matrix,
+  forbidden side effects, formal conclusion, and next-phase handoff without
+  creating an AccountingEngine bridge or calling AccountingEngine replay.
+- ShellAccounting manual entry replay AccountingEngine adequacy review implementation test plan:
+  [277_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_test_plan.md](277_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_test_plan.md)
+  defines TASK-240 probes for docs, indexes, CTest registration, clean-main
+  changed-path behavior, exact allowlists, fixture immutability, no
+  AccountingEngine code drift, no runtime writes, no read model refresh, and
+  no broker drift.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

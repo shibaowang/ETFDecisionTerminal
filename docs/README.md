@@ -1201,6 +1201,16 @@
   defines TASK-243 CI checks, clean-main checks, exact changed-path allowlist,
   regression gates, failure modes, acceptance criteria, and formal conclusion.
   without authorizing AccountingEngine replay or bridge implementation.
+- ShellAccounting manual entry replay AccountingEngine adequacy review phase closeout handoff gate:
+  [284_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_gate.md](284_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_gate.md)
+  records TASK-244 review-only phase closeout and handoff boundaries for
+  TASK-239 through TASK-243, no bridge, no replay, no write, no read model
+  refresh, no production integration, and no broker/network drift.
+- ShellAccounting manual entry replay AccountingEngine adequacy review phase closeout handoff test plan:
+  [285_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_test_plan.md](285_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_test_plan.md)
+  defines TASK-244 static checks, regression gates, exact changed-path
+  allowlist, phase closeout evidence, handoff checks, failure modes,
+  acceptance criteria, and formal conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

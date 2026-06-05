@@ -131,6 +131,10 @@ ALLOWED_CHANGED_PATHS = {
     "docs/283_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_test_plan.md",
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
+    "docs/284_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_gate.md",
+    "docs/285_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
 }
 
 FORBIDDEN_CHANGED_PREFIXES = (
@@ -580,6 +584,12 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
             "manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py"
         ),
         "ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/CMakeLists.txt",
+        (
+            "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/"
+            "manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py"
+        ),
+        "ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate",
     ]:
         validator_call_scan_text = validator_call_scan_text.replace(allowed_path_token, "")
     gate.require("AccountingEngine" not in validator_call_scan_text, "validator does not call AccountingEngine")

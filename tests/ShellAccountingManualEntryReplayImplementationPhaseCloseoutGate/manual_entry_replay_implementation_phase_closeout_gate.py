@@ -104,6 +104,9 @@ CRITICAL_CTEST_NAMES = [
 ]
 
 ALLOWED_CHANGED_PATHS = {
+
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
+
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
@@ -111,11 +114,15 @@ ALLOWED_CHANGED_PATHS = {
     TASK_238_PLAN.as_posix(),
     "docs/274_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_gate.md",
     "docs/275_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_test_plan.md",
+    "docs/276_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_gate.md",
+    "docs/277_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_test_plan.md",
     "tests/CMakeLists.txt",
     TASK_238_CMAKE.as_posix(),
     TASK_238_GATE.as_posix(),
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
     TASK_234_IMPLEMENTATION.as_posix(),
     TASK_231_HARNESS.as_posix(),
     TASK_224_VALIDATOR.as_posix(),
@@ -154,7 +161,9 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
     "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
     "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
-}
+
+
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",}
 
 FORBIDDEN_CHANGED_PREFIXES = (
     "apps/",

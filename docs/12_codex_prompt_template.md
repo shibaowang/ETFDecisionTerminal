@@ -2681,6 +2681,27 @@ endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-240 manual entry replay AccountingEngine adequacy
 review implementation gate.
 
+## TASK-240 Manual Entry Replay AccountingEngine Adequacy Review Implementation Prompt Rule
+
+Future manual entry replay AccountingEngine bridge, runtime integration, replay
+implementation, read model refresh, production parser / loader / reader work,
+or AccountingEngine replay calls must reference
+`docs/276_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_gate.md`
+and
+`docs/277_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_test_plan.md`.
+
+TASK-240 implements the AccountingEngine adequacy review gate only. It is a
+test-only, deterministic, no-write static gate. TASK-240 does not implement an
+AccountingEngine bridge, does not call AccountingEngine replay, does not modify
+AccountingEngine code, does not implement production replay, does not authorize
+runtime SQL / SQLite read/write, audit / ledger / snapshot writes, read model
+refresh, real position / cash / PnL calculation, production integration, QML,
+DataServiceActions, repositories, migrations, broker, network, credentials,
+endpoint, real order placement, or automatic trading.
+
+Future expansion beyond review gate implementation requires a separately
+authorized TASK.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

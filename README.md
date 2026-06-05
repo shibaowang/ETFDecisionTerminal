@@ -4385,3 +4385,31 @@ and
 `docs/275_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_authorization_test_plan.md`.
 Recommended next task is TASK-240 manual entry replay AccountingEngine
 adequacy review implementation gate.
+
+## TASK-240 Manual Entry Replay AccountingEngine Adequacy Review Implementation Gate
+
+TASK-240 adds the static implementation gate for the manual entry replay
+AccountingEngine adequacy review boundary. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation`
+verifies docs, index registration, CTest registration, clean-main
+changed-path behavior, exact changed-path allowlists, TASK-233 through
+TASK-239 artifact inventory, fixture immutability, no AccountingEngine code
+drift, no AccountingEngine replay calls, no runtime SQL / SQLite writes, no
+audit / ledger / snapshot writes, no read model refresh, and no broker /
+network / credential / endpoint drift.
+
+Implementation in TASK-240 means review gate implementation only. TASK-240
+does not implement an AccountingEngine bridge, does not call AccountingEngine
+replay, does not modify AccountingEngine code, does not implement production
+replay, does not calculate real position / cash / PnL, does not refresh read
+models, does not modify production code, QML, DataServiceActions,
+repositories, or migrations, and does not connect broker, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/276_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_gate.md`
+and
+`docs/277_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_implementation_test_plan.md`.
+Future AccountingEngine bridge, runtime integration, replay implementation,
+read model refresh, production parser / loader / reader work, or
+AccountingEngine replay calls must be separately authorized.

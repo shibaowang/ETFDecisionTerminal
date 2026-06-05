@@ -1191,6 +1191,15 @@
   [281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md](281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md)
   defines TASK-242 temporary input probes, failure matrix, changed-path
   allowlist, regression gates, acceptance criteria, and formal conclusion
+- ShellAccounting manual entry replay AccountingEngine adequacy review CI closeout gate:
+  [282_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.md](282_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.md)
+  records TASK-243 review-only CI closeout boundaries for TASK-239 through
+  TASK-242, clean-main invariants, no recursive full CTest, no bridge,
+  no replay, no write, and no production integration.
+- ShellAccounting manual entry replay AccountingEngine adequacy review CI closeout test plan:
+  [283_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_test_plan.md](283_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_test_plan.md)
+  defines TASK-243 CI checks, clean-main checks, exact changed-path allowlist,
+  regression gates, failure modes, acceptance criteria, and formal conclusion.
   without authorizing AccountingEngine replay or bridge implementation.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)

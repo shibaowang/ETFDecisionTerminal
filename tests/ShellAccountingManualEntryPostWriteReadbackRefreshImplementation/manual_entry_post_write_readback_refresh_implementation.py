@@ -456,6 +456,13 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
 }
+    task245_allowed_paths = {
+        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    }
+    allowed.update(task245_allowed_paths)
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-202 changed unauthorized paths: " + ", ".join(unexpected))
     for forbidden in [

@@ -2785,6 +2785,27 @@ replay calls must be separately authorized.
 Recommended next task: TASK-245 ShellAccounting manual entry replay
 AccountingEngine bridge authorization gate.
 
+## TASK-245 Manual Entry Replay AccountingEngine Bridge Authorization Prompt Rule
+
+Future manual entry replay AccountingEngine bridge implementation, replay
+implementation, runtime integration, read model refresh, production parser /
+loader / reader work, or AccountingEngine replay calls must reference
+`docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md`
+and
+`docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md`.
+
+TASK-245 authorizes AccountingEngine bridge policy only. TASK-245 does not
+implement AccountingEngine bridge, does not call AccountingEngine replay, does
+not implement replay, does not modify AccountingEngine code, does not modify
+fixture JSON, does not authorize production integration, does not authorize
+runtime SQL / SQLite read/write, audit / ledger / snapshot writes, read model
+refresh, broker, network, credentials, endpoint, real order placement, or
+automatic trading. Future bridge implementation and AccountingEngine replay
+calls must be separately authorized.
+
+Recommended next task: TASK-246 ShellAccounting manual entry replay
+AccountingEngine bridge test-only implementation gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

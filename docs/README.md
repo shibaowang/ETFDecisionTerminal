@@ -1141,6 +1141,15 @@
   defines TASK-237 probes for required artifacts, critical CTest registration,
   clean-main invariants, no AccountingEngine replay, no runtime writes, broker
   boundaries, and external full CTest regression.
+- ShellAccounting manual entry replay test-only implementation phase closeout and handoff gate:
+  [272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md](272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md)
+  records TASK-238 phase artifact inventory, validation inventory, boundary
+  inventory, clean-main invariants, and next-phase handoff conditions.
+- ShellAccounting manual entry replay test-only implementation phase closeout and handoff test plan:
+  [273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md](273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md)
+  defines TASK-238 probes for required artifacts, critical CTest registration,
+  changed-path exact allowlists, fixture immutability, implementation behavior,
+  harness behavior, validator behavior, and production no-drift boundaries.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

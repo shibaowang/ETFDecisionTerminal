@@ -40,6 +40,9 @@ POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
 NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
 
 ALLOWED_CHANGED_PATHS = {
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
@@ -47,11 +50,15 @@ ALLOWED_CHANGED_PATHS = {
     TASK_236_PLAN.as_posix(),
     "docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md",
     "docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md",
+    "docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md",
+    "docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md",
     "tests/CMakeLists.txt",
     TASK_236_CMAKE.as_posix(),
     TASK_236_GATE.as_posix(),
     "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
     TASK_234_IMPLEMENTATION.as_posix(),
     TASK_231_HARNESS.as_posix(),
     TASK_224_VALIDATOR.as_posix(),

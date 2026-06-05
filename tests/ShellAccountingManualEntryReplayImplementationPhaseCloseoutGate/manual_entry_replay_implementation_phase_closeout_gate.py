@@ -8,25 +8,12 @@ import subprocess
 from pathlib import Path
 
 
-TASK_237_DOC = Path("docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md")
-TASK_237_PLAN = Path("docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md")
-TASK_237_DIR = Path("tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate")
-TASK_237_CMAKE = TASK_237_DIR / "CMakeLists.txt"
-TASK_237_GATE = TASK_237_DIR / "manual_entry_replay_implementation_ci_closeout_gate.py"
-TASK_237_CTEST = "shell_accounting_manual_entry_replay_implementation_ci_closeout"
-
-TASK_DOCS = [
-    Path("docs/262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md"),
-    Path("docs/263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md"),
-    Path("docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md"),
-    Path("docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md"),
-    Path("docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md"),
-    Path("docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md"),
-    Path("docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md"),
-    Path("docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md"),
-    TASK_237_DOC,
-    TASK_237_PLAN,
-]
+TASK_238_DOC = Path("docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md")
+TASK_238_PLAN = Path("docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md")
+TASK_238_DIR = Path("tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate")
+TASK_238_CMAKE = TASK_238_DIR / "CMakeLists.txt"
+TASK_238_GATE = TASK_238_DIR / "manual_entry_replay_implementation_phase_closeout_gate.py"
+TASK_238_CTEST = "shell_accounting_manual_entry_replay_implementation_phase_closeout"
 
 TASK_231_HARNESS = Path(
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/"
@@ -55,6 +42,25 @@ TASK_236_HARDENING = Path(
     "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/"
     "manual_entry_replay_implementation_failure_mode_hardening_gate.py"
 )
+TASK_237_CLOSEOUT = Path(
+    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/"
+    "manual_entry_replay_implementation_ci_closeout_gate.py"
+)
+
+TASK_DOCS = [
+    Path("docs/262_shell_accounting_manual_entry_replay_implementation_authorization_gate.md"),
+    Path("docs/263_shell_accounting_manual_entry_replay_implementation_authorization_test_plan.md"),
+    Path("docs/264_shell_accounting_manual_entry_replay_test_only_implementation_gate.md"),
+    Path("docs/265_shell_accounting_manual_entry_replay_test_only_implementation_test_plan.md"),
+    Path("docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md"),
+    Path("docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md"),
+    Path("docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md"),
+    Path("docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md"),
+    Path("docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md"),
+    Path("docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md"),
+    TASK_238_DOC,
+    TASK_238_PLAN,
+]
 
 CRITICAL_SCRIPTS = [
     TASK_231_HARNESS,
@@ -76,11 +82,13 @@ CRITICAL_SCRIPTS = [
     TASK_234_IMPLEMENTATION,
     TASK_235_REGRESSION,
     TASK_236_HARDENING,
-    TASK_237_GATE,
+    TASK_237_CLOSEOUT,
+    TASK_238_GATE,
 ]
 
 CRITICAL_CTEST_NAMES = [
-    TASK_237_CTEST,
+    TASK_238_CTEST,
+    "shell_accounting_manual_entry_replay_implementation_ci_closeout",
     "shell_accounting_manual_entry_replay_implementation_failure_mode_hardening",
     "shell_accounting_manual_entry_replay_implementation_regression_matrix",
     "shell_accounting_manual_entry_replay_implementation",
@@ -96,60 +104,52 @@ CRITICAL_CTEST_NAMES = [
 ]
 
 ALLOWED_CHANGED_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    TASK_238_DOC.as_posix(),
+    TASK_238_PLAN.as_posix(),
+    "tests/CMakeLists.txt",
+    TASK_238_CMAKE.as_posix(),
+    TASK_238_GATE.as_posix(),
+    TASK_234_IMPLEMENTATION.as_posix(),
+    TASK_231_HARNESS.as_posix(),
+    TASK_224_VALIDATOR.as_posix(),
+    "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
     "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
     "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
     "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
     "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
     "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
     "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
     "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
-    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
-    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
-    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
-    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
-    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
-    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
-    "README.md",
-    "docs/README.md",
-    "docs/12_codex_prompt_template.md",
-    TASK_237_DOC.as_posix(),
-    TASK_237_PLAN.as_posix(),
-    "docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md",
-    "docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md",
-    "tests/CMakeLists.txt",
-    TASK_237_CMAKE.as_posix(),
-    TASK_237_GATE.as_posix(),
-    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/CMakeLists.txt",
-    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
-    TASK_234_IMPLEMENTATION.as_posix(),
-    TASK_231_HARNESS.as_posix(),
-    TASK_232_MATRIX.as_posix(),
-    TASK_224_VALIDATOR.as_posix(),
-    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
-    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
-    TASK_233_AUTHORIZATION.as_posix(),
-    TASK_235_REGRESSION.as_posix(),
-    TASK_236_HARDENING.as_posix(),
-    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
-    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
-    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
     "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
 }
 
 FORBIDDEN_CHANGED_PREFIXES = (
@@ -318,7 +318,7 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
     gate.require("docs/" not in ALLOWED_CHANGED_PATHS, "allowlist does not include docs directory")
     gate.require("tests/" not in ALLOWED_CHANGED_PATHS, "allowlist does not include tests directory")
     unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
-    gate.require(not unexpected, "TASK-237 changed unauthorized paths: " + ", ".join(unexpected))
+    gate.require(not unexpected, "TASK-238 changed unauthorized paths: " + ", ".join(unexpected))
     for path in sorted(changes):
         gate.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
         gate.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed fixture/production path: {path}")
@@ -327,14 +327,8 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") == set(), "libs diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
-    gate.require(
-        git_lines(root, "diff", "--name-only", "main", "--", POSITIVE_DIR.as_posix()) == set(),
-        "positive fixture JSON diff empty",
-    )
-    gate.require(
-        git_lines(root, "diff", "--name-only", "main", "--", NEGATIVE_DIR.as_posix()) == set(),
-        "negative fixture JSON diff empty",
-    )
+    gate.require(git_lines(root, "diff", "--name-only", "main", "--", POSITIVE_DIR.as_posix()) == set(), "positive fixture JSON diff empty")
+    gate.require(git_lines(root, "diff", "--name-only", "main", "--", NEGATIVE_DIR.as_posix()) == set(), "negative fixture JSON diff empty")
     return changes
 
 
@@ -360,15 +354,16 @@ def validate_docs(gate: Gate, root: Path) -> None:
     for path in TASK_DOCS:
         gate.require((root / path).exists(), f"{path.as_posix()} exists")
 
-    doc270 = read(root / TASK_237_DOC)
-    doc271 = read(root / TASK_237_PLAN)
+    doc272 = read(root / TASK_238_DOC)
+    doc273 = read(root / TASK_238_PLAN)
     for section in [
         "## Purpose",
-        "## Scope",
-        "## Required CTest Set",
+        "## Phase Scope",
+        "## Artifact Inventory",
+        "## Validation Inventory",
+        "## CTest Inventory",
         "## Clean-Main Invariants",
-        "## No Recursive Full CTest Boundary",
-        "## CI Closeout Commands",
+        "## Boundary Inventory",
         "## Implementation Behavior Boundary",
         "## Dry-Run Harness Boundary",
         "## Validator Boundary",
@@ -377,34 +372,42 @@ def validate_docs(gate: Gate, root: Path) -> None:
         "## Runtime SQL And Ledger Boundary",
         "## Production Integration Boundary",
         "## Broker And Network Boundary",
+        "## Handoff Checklist",
+        "## Next-Phase Entry Conditions",
         "## Formal Conclusion And Next Task",
     ]:
-        gate.contains(doc270, section, "docs/270")
+        gate.contains(doc272, section, "docs/272")
     for token in [
-        "TASK-237 is a CI closeout gate for the TASK-233 through TASK-236 test-only implementation chain.",
-        "TASK-237 does not modify implementation success semantics.",
-        "TASK-237 does not modify dry-run harness business semantics.",
-        "TASK-237 does not modify validator validation behavior.",
-        "TASK-237 does not modify fixture JSON.",
-        "TASK-237 does not implement production parser / loader / reader.",
-        "TASK-237 does not implement production replay.",
-        "TASK-237 does not call AccountingEngine replay.",
-        "TASK-237 does not modify production code / QML / DataServiceActions / repositories / migrations.",
-        "TASK-237 does not write runtime SQL / SQLite / audit / ledger / snapshot.",
-        "TASK-237 does not refresh read models.",
-        "TASK-237 does not calculate real position / cash / PnL.",
-        "TASK-237 does not connect broker / network / credentials / endpoint.",
-        "TASK-237 does not place real orders or enable automatic trading.",
-        "Recommended next task: TASK-238 manual entry replay test-only implementation phase closeout and handoff gate.",
+        "TASK-238 closes out the test-only implementation phase from TASK-233 through TASK-237.",
+        "TASK-238 does not modify implementation success semantics.",
+        "TASK-238 does not modify dry-run harness business semantics.",
+        "TASK-238 does not modify validator validation behavior.",
+        "TASK-238 does not modify fixture JSON.",
+        "TASK-238 does not implement production parser / loader / reader.",
+        "TASK-238 does not implement production replay.",
+        "TASK-238 does not call AccountingEngine replay.",
+        "TASK-238 does not modify production code / QML / DataServiceActions / repositories / migrations.",
+        "TASK-238 does not write runtime SQL / SQLite / audit / ledger / snapshot.",
+        "TASK-238 does not refresh read models.",
+        "TASK-238 does not calculate real position / cash / PnL.",
+        "TASK-238 does not connect broker / network / credentials / endpoint.",
+        "TASK-238 does not place real orders or enable automatic trading.",
+        "Recommended next task: TASK-239 manual entry replay AccountingEngine adequacy review authorization gate.",
     ]:
-        gate.contains(doc270, token, "docs/270")
+        gate.contains(doc272, token, "docs/272")
     for section in ["## Document Purpose", "## Test Matrix", "## Required Probes", "## Go / No-Go Checklist"]:
-        gate.contains(doc271, section, "docs/271")
+        gate.contains(doc273, section, "docs/273")
     for token in [
+        "TASK-238 phase closeout gate passes.",
         "TASK-237 CI closeout gate passes.",
         "TASK-236 failure-mode hardening CTest passes.",
         "TASK-235 regression matrix CTest passes.",
         "TASK-234 implementation CTest passes.",
+        "TASK-233 authorization gate passes.",
+        "TASK-232 dry-run regression matrix CTest passes.",
+        "TASK-231 dry-run harness CTest passes.",
+        "TASK-230 dry-run harness authorization CTest passes.",
+        "TASK-224 negative fixture static validator CTest passes.",
         "Fixture JSON is unchanged.",
         "Implementation success semantics are unchanged.",
         "Dry-run harness business semantics are unchanged.",
@@ -413,22 +416,24 @@ def validate_docs(gate: Gate, root: Path) -> None:
         "No AccountingEngine / no runtime writes / no real position cash PnL is observed.",
         "External full CTest passes.",
     ]:
-        gate.contains(doc271, token, "docs/271")
+        gate.contains(doc273, token, "docs/273")
+    for artifact in [path.as_posix() for path in TASK_DOCS]:
+        gate.contains(doc272, artifact, "docs/272 artifact inventory")
 
     for index_path in [Path("README.md"), Path("docs/README.md"), Path("docs/12_codex_prompt_template.md")]:
         text = read(root / index_path)
-        gate.contains(text, "TASK-237", index_path.as_posix())
-        gate.contains(text, TASK_237_DOC.name, index_path.as_posix())
-        gate.contains(text, TASK_237_PLAN.name, index_path.as_posix())
+        gate.contains(text, "TASK-238", index_path.as_posix())
+        gate.contains(text, TASK_238_DOC.name, index_path.as_posix())
+        gate.contains(text, TASK_238_PLAN.name, index_path.as_posix())
 
 
 def validate_registration(gate: Gate, root: Path) -> None:
     tests_cmake = read(root / "tests/CMakeLists.txt")
-    gate.contains(tests_cmake, "add_subdirectory(ShellAccountingManualEntryReplayImplementationCiCloseoutGate)", "tests/CMakeLists")
-    gate.require((root / TASK_237_CMAKE).exists(), "TASK-237 CMakeLists exists")
-    gate.require((root / TASK_237_GATE).exists(), "TASK-237 gate script exists")
-    cmake_text = read(root / TASK_237_CMAKE)
-    gate.contains(cmake_text, TASK_237_CTEST, "TASK-237 CMakeLists")
+    gate.contains(tests_cmake, "add_subdirectory(ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate)", "tests/CMakeLists")
+    gate.require((root / TASK_238_CMAKE).exists(), "TASK-238 CMakeLists exists")
+    gate.require((root / TASK_238_GATE).exists(), "TASK-238 gate script exists")
+    cmake_text = read(root / TASK_238_CMAKE)
+    gate.contains(cmake_text, TASK_238_CTEST, "TASK-238 CMakeLists")
     names = ctest_names(root, gate)
     for name in CRITICAL_CTEST_NAMES:
         gate.require(name in names, f"CTest registered: {name}")
@@ -443,10 +448,10 @@ def validate_artifacts(gate: Gate, root: Path) -> None:
         TASK_234_IMPLEMENTATION,
         TASK_235_REGRESSION,
         TASK_236_HARDENING,
-        TASK_237_GATE,
+        TASK_237_CLOSEOUT,
+        TASK_238_GATE,
     ]:
         gate.require((root / path).exists(), f"{path.as_posix()} exists")
-    for path in [TASK_234_IMPLEMENTATION, TASK_231_HARNESS, TASK_224_VALIDATOR]:
         gate.require((root / path).is_file(), f"{path.as_posix()} is file")
 
 
@@ -471,10 +476,7 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
         for token, message in FORBIDDEN_RUNTIME_TEXT_TOKENS:
             haystack = lowered if token.islower() else text
             gate.require(token not in haystack, f"{path.as_posix()} {message}")
-        gate.require(
-            not has_recursive_full_ctest_invocation(text),
-            f"{path.as_posix()} does not run full CTest",
-        )
+        gate.require(not has_recursive_full_ctest_invocation(text), f"{path.as_posix()} does not run full CTest")
         gate.require("AccountingEngine().replay" not in text, f"{path.as_posix()} no AccountingEngine replay")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "apps", "libs", "migrations") == set(), "apps/libs/migrations diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", POSITIVE_DIR.as_posix()) == set(), "positive fixture diff empty")
@@ -509,8 +511,8 @@ def main() -> int:
 
     validate_fixture_immutability(gate, before_hashes, after_hashes)
     gate.require(before_db_like == after_db_like, "no DB/WAL/SHM/SQLite files created")
-    gate.require(changes_before == changes_after, "CI closeout gate does not mutate changed-path set")
-    gate.require(gate.checks >= 190, f"expected at least 190 gate checks, got {gate.checks}")
+    gate.require(changes_before == changes_after, "phase closeout gate does not mutate changed-path set")
+    gate.require(gate.checks >= 200, f"expected at least 200 gate checks, got {gate.checks}")
     print(json.dumps({"status": "passed", "checks": gate.checks}, sort_keys=True))
     return 0
 

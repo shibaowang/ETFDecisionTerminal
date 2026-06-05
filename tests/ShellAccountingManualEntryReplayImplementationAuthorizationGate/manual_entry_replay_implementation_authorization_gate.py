@@ -48,14 +48,19 @@ SUMMARY_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
 VALIDATOR_SUMMARY_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-summary/v1"
 
 ALLOWED_CHANGED_PATHS = {
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
     "docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md",
     "docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md",
     "docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md",
     "docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md",
+    "docs/272_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_gate.md",
+    "docs/273_shell_accounting_manual_entry_replay_test_only_implementation_phase_closeout_handoff_test_plan.md",
     "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
     "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
     "docs/266_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_gate.md",
     "docs/267_shell_accounting_manual_entry_replay_test_only_implementation_regression_matrix_test_plan.md",
     "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/CMakeLists.txt",

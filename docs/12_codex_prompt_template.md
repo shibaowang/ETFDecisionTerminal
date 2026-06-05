@@ -2616,6 +2616,28 @@ placement, or automatic trading.
 Recommended next task: TASK-237 manual entry replay test-only implementation CI
 closeout gate.
 
+## TASK-237 Manual Entry Replay Test-Only Implementation CI Closeout Prompt Rule
+
+Future manual entry replay phase closeout and handoff work must reference
+`docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md`
+and
+`docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md`.
+
+TASK-237 is a CI closeout gate for the TASK-233 through TASK-236 test-only
+implementation chain. TASK-237 checks CTest registration, required artifacts,
+clean-main invariants, no recursive full CTest inside gates, fixture
+immutability, implementation success semantics, dry-run harness business
+semantics, validator validation behavior, and production no-drift boundaries.
+TASK-237 does not implement production parser / loader / reader behavior, does
+not implement production replay, does not call AccountingEngine replay, does
+not authorize runtime SQL / SQLite read/write, audit / ledger / snapshot
+writes, read model refresh, real position / cash / PnL calculation, production
+integration, QML, DataServiceActions, repositories, migrations, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+Recommended next task: TASK-238 manual entry replay test-only implementation
+phase closeout and handoff gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

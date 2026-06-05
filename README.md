@@ -4306,3 +4306,30 @@ and
 `docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md`.
 Recommended next task is TASK-237 manual entry replay test-only implementation
 CI closeout gate.
+
+## TASK-237 Manual Entry Replay Test-Only Implementation CI Closeout Gate
+
+TASK-237 adds a CI closeout gate for the TASK-233 through TASK-236 test-only
+manual entry replay implementation chain. The CTest
+`shell_accounting_manual_entry_replay_implementation_ci_closeout` verifies
+critical CTest registration, required artifact presence, clean-main
+changed-path safety, no recursive full CTest inside gates, fixture immutability,
+and no production drift.
+
+TASK-237 does not modify fixture JSON, does not change implementation success
+semantics, does not change dry-run harness business semantics, and does not
+change validator validation behavior except exact-path changed-set
+self-consistency. It also does not implement production parser / loader /
+reader behavior, does not implement production replay, does not call
+AccountingEngine replay, does not write runtime SQL / SQLite, audit, ledger,
+snapshot, cash facts, or trade facts; does not refresh read models; does not
+compute real position / cash / PnL; does not modify production code, QML,
+DataServiceActions, repositories, or migrations; and does not connect broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md`
+and
+`docs/271_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_test_plan.md`.
+Recommended next task is TASK-238 manual entry replay test-only implementation
+phase closeout and handoff gate.

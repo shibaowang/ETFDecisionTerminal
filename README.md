@@ -4463,3 +4463,28 @@ and
 `docs/281_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_test_plan.md`.
 Recommended next task is TASK-243 manual entry replay AccountingEngine
 adequacy review CI closeout gate.
+
+## TASK-243 Manual Entry Replay AccountingEngine Adequacy Review CI Closeout Gate
+
+TASK-243 adds a review-only CI closeout gate for the TASK-239 through TASK-242
+manual entry replay AccountingEngine adequacy review chain. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout`
+verifies docs, indexes, CTest registration, clean-main changed-path behavior,
+critical gate retention, no recursive full CTest inside gates, fixture
+immutability, no AccountingEngine code drift, no AccountingEngine replay calls,
+no AccountingEngine bridge implementation, no runtime writes, no read model
+refresh, and no broker / network / credential / endpoint drift.
+
+TASK-243 is review-only and test-only. TASK-243 does not call AccountingEngine
+replay, does not implement an AccountingEngine bridge, does not implement
+replay, does not modify AccountingEngine code, does not authorize runtime SQL /
+SQLite read/write, audit / ledger / snapshot writes, read model refresh,
+production integration, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+See
+`docs/282_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.md`
+and
+`docs/283_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_test_plan.md`.
+Recommended next task is TASK-244 manual entry replay AccountingEngine
+adequacy review phase closeout and handoff gate.

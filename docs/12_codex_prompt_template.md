@@ -2741,6 +2741,28 @@ credentials, endpoint, real order placement, or automatic trading.
 Recommended next task: TASK-243 ShellAccounting manual entry replay
 AccountingEngine adequacy review CI closeout gate.
 
+## TASK-243 Manual Entry Replay AccountingEngine Adequacy Review CI Closeout Prompt Rule
+
+Future manual entry replay AccountingEngine adequacy review phase closeout,
+handoff, bridge authorization, replay implementation, runtime integration, read
+model refresh, production parser / loader / reader work, or AccountingEngine
+replay calls must reference
+`docs/282_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.md`
+and
+`docs/283_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_ci_closeout_test_plan.md`.
+
+TASK-243 adds a review-only CI closeout gate for AccountingEngine adequacy
+review. TASK-243 does not call AccountingEngine replay, does not implement
+AccountingEngine bridge, does not implement replay, does not modify
+AccountingEngine code, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, production integration,
+broker, network, credentials, endpoint, real order placement, or automatic
+trading. Future bridge, replay, read model refresh, production integration, and
+AccountingEngine replay calls must be separately authorized.
+
+Recommended next task: TASK-244 ShellAccounting manual entry replay
+AccountingEngine adequacy review phase closeout and handoff gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

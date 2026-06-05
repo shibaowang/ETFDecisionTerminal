@@ -4542,3 +4542,29 @@ and
 `docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md`.
 Recommended next task is TASK-246 ShellAccounting manual entry replay
 AccountingEngine bridge test-only implementation gate.
+
+## TASK-246 Manual Entry Replay AccountingEngine Bridge Test-only Implementation Gate
+
+TASK-246 adds a test-only AccountingEngine bridge contract shell under
+`tests/ShellAccountingManualEntryReplayAccountingEngineBridge`. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_bridge_implementation`
+verifies docs, indexes, CTest registration, bridge CLI support, sanitized
+request / response contract output, sanitized failure output, prior TASK-239
+through TASK-245 gates, changed-path exact allowlists, fixture immutability, no
+AccountingEngine code drift, no AccountingEngine replay calls, no production
+bridge, no runtime writes, no read model refresh, and no broker / network /
+credential / endpoint drift.
+
+TASK-246 is test-only. TASK-246 implements a bridge contract shell but does not
+call AccountingEngine replay, does not modify AccountingEngine code, does not
+implement production bridge, does not modify fixture JSON, does not authorize
+production integration, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, broker, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/288_shell_accounting_manual_entry_replay_accountingengine_bridge_test_only_implementation_gate.md`
+and
+`docs/289_shell_accounting_manual_entry_replay_accountingengine_bridge_test_only_implementation_test_plan.md`.
+Recommended next task is TASK-247 ShellAccounting manual entry replay
+AccountingEngine bridge regression matrix gate.

@@ -393,6 +393,12 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
     gate.require("tests/" not in ALLOWED_CHANGED_PATHS, "allowlist does not include tests directory")
     gate.require("apps/" not in ALLOWED_CHANGED_PATHS, "allowlist does not include apps directory")
     gate.require("libs/" not in ALLOWED_CHANGED_PATHS, "allowlist does not include libs directory")
+    ALLOWED_CHANGED_PATHS.update({
+        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    })
     unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected, "TASK-233 changed unauthorized paths: " + ", ".join(unexpected))
     for path in sorted(changes):

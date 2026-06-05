@@ -240,6 +240,13 @@ def changed_paths(root: Path) -> set[str]:
 
 def validate_changed_paths(validator: Validator, root: Path) -> None:
     changes = changed_paths(root)
+    task245_allowed_paths = {
+        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    }
+    ALLOWED_CHANGED_PATHS.update(task245_allowed_paths)
     unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
     validator.require(not unexpected, "NEG_FIXTURE_UNAUTHORIZED_PATH", "unauthorized changed path")
     validator.require(

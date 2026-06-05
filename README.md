@@ -4515,3 +4515,30 @@ and
 `docs/285_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_phase_closeout_handoff_test_plan.md`.
 Recommended next task is TASK-245 ShellAccounting manual entry replay
 AccountingEngine bridge authorization gate.
+
+## TASK-245 Manual Entry Replay AccountingEngine Bridge Authorization Gate
+
+TASK-245 adds an authorization-only gate for a future test-only manual entry
+replay AccountingEngine bridge. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_bridge_authorization`
+verifies docs, indexes, CTest registration, prior TASK-239 through TASK-244
+review gates, clean-main changed-path behavior, exact changed-path allowlists,
+the future bridge directory candidate, absence of the future bridge directory,
+fixture immutability, no AccountingEngine code drift, no AccountingEngine
+replay calls, no bridge implementation, no runtime writes, no read model
+refresh, and no broker / network / credential / endpoint drift.
+
+TASK-245 is authorization-only and test-only. TASK-245 authorizes
+AccountingEngine bridge policy only. It does not implement AccountingEngine
+bridge, does not call AccountingEngine replay, does not implement replay, does
+not modify AccountingEngine code, does not modify fixture JSON, does not
+authorize production integration, does not authorize runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, read model refresh, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md`
+and
+`docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md`.
+Recommended next task is TASK-246 ShellAccounting manual entry replay
+AccountingEngine bridge test-only implementation gate.

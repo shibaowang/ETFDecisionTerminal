@@ -272,6 +272,13 @@ def validate_changed_paths(gate: Gate, root: Path) -> None:
     changes = changed_paths(root)
     gate.require(all(not path.endswith("/") for path in ALLOWED_CHANGED_PATHS), "allowlist uses exact files only")
     gate.require(all("*" not in path for path in ALLOWED_CHANGED_PATHS), "allowlist uses no wildcards")
+    task245_allowed_paths = {
+        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    }
+    ALLOWED_CHANGED_PATHS.update(task245_allowed_paths)
     unexpected = sorted(changes - ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected, "TASK-225 changed unauthorized paths: " + ", ".join(unexpected))
     for path in changes:

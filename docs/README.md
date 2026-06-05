@@ -1211,6 +1211,16 @@
   defines TASK-244 static checks, regression gates, exact changed-path
   allowlist, phase closeout evidence, handoff checks, failure modes,
   acceptance criteria, and formal conclusion.
+- ShellAccounting manual entry replay AccountingEngine bridge authorization gate:
+  [286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md](286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md)
+  records TASK-245 authorization-only bridge policy, future bridge directory
+  candidate, input/output contract boundaries, no replay, no write, no
+  production integration, and no broker/network constraints.
+- ShellAccounting manual entry replay AccountingEngine bridge authorization test plan:
+  [287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md](287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md)
+  defines TASK-245 static checks, regression gates, exact changed-path
+  allowlist, authorization checks, future bridge contract checks, failure
+  modes, acceptance criteria, and formal conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

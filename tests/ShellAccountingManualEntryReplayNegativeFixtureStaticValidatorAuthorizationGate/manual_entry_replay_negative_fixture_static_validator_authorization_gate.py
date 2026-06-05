@@ -438,6 +438,13 @@ def main() -> int:
     )
 
     changed = changed_paths(root)
+    task245_allowed_paths = {
+        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    }
+    ALLOWED_CHANGED_PATHS.update(task245_allowed_paths)
     unexpected = sorted(changed - ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected, "TASK-223 changed unauthorized paths: " + ", ".join(unexpected))
     gate.require(

@@ -453,6 +453,12 @@ def validate_negative_fixture_assets(gate: Gate, root: Path) -> None:
 
 def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
     changes = changed_paths(root)
+    ALLOWED_CHANGED_PATHS.update({
+        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    })
     for path in sorted(changes):
         gate.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
     for prefix in FORBIDDEN_CHANGED_PREFIXES:

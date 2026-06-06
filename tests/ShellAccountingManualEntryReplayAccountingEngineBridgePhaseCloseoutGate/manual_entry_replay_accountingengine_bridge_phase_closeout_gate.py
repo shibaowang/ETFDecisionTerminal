@@ -10,39 +10,23 @@ from pathlib import Path
 from typing import Any
 
 
-TASK_249_DOC = Path("docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md")
-TASK_249_PLAN = Path("docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md")
-TASK_249_DIR = Path("tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate")
-TASK_249_CMAKE = TASK_249_DIR / "CMakeLists.txt"
-TASK_249_GATE = TASK_249_DIR / "manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py"
-TASK_249_CTEST = "shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout"
+TASK_250_DOC = Path("docs/296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md")
+TASK_250_PLAN = Path("docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md")
+TASK_250_DIR = Path("tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate")
+TASK_250_CMAKE = TASK_250_DIR / "CMakeLists.txt"
+TASK_250_GATE = TASK_250_DIR / "manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py"
+TASK_250_CTEST = "shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout"
 
 BRIDGE_SCRIPT = Path(
     "tests/ShellAccountingManualEntryReplayAccountingEngineBridge/"
     "manual_entry_replay_accountingengine_bridge.py"
-)
-TASK_245_GATE = Path(
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/"
-    "manual_entry_replay_accountingengine_bridge_authorization_gate.py"
-)
-TASK_246_GATE = Path(
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/"
-    "manual_entry_replay_accountingengine_bridge_implementation_gate.py"
-)
-TASK_247_GATE = Path(
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/"
-    "manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py"
-)
-TASK_248_GATE = Path(
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/"
-    "manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py"
 )
 
 POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
 NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
 DB_SUFFIXES = (".db", ".sqlite", ".sqlite3", ".db-wal", ".db-shm", ".sqlite-wal", ".sqlite-shm")
 
-TASK_245_TO_249_DOCS = [
+TASK_245_TO_250_DOCS = [
     Path("docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md"),
     Path("docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md"),
     Path("docs/288_shell_accounting_manual_entry_replay_accountingengine_bridge_test_only_implementation_gate.md"),
@@ -51,8 +35,10 @@ TASK_245_TO_249_DOCS = [
     Path("docs/291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md"),
     Path("docs/292_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.md"),
     Path("docs/293_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_test_plan.md"),
-    TASK_249_DOC,
-    TASK_249_PLAN,
+    Path("docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md"),
+    Path("docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md"),
+    TASK_250_DOC,
+    TASK_250_PLAN,
 ]
 
 ACCOUNTINGENGINE_ADEQUACY_DOCS = [
@@ -71,10 +57,27 @@ ACCOUNTINGENGINE_ADEQUACY_DOCS = [
 ]
 
 CRITICAL_GATE_SCRIPTS = [
-    TASK_245_GATE,
-    TASK_246_GATE,
-    TASK_247_GATE,
-    TASK_248_GATE,
+    Path(
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/"
+        "manual_entry_replay_accountingengine_bridge_authorization_gate.py"
+    ),
+    Path(
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/"
+        "manual_entry_replay_accountingengine_bridge_implementation_gate.py"
+    ),
+    Path(
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/"
+        "manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py"
+    ),
+    Path(
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/"
+        "manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py"
+    ),
+    Path(
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/"
+        "manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py"
+    ),
+    TASK_250_GATE,
     Path(
         "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/"
         "manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py"
@@ -124,7 +127,8 @@ CRITICAL_GATE_SCRIPTS = [
 ]
 
 CRITICAL_CTEST_NAMES = [
-    TASK_249_CTEST,
+    TASK_250_CTEST,
+    "shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout",
     "shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening",
     "shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix",
     "shell_accounting_manual_entry_replay_accountingengine_bridge_implementation",
@@ -150,38 +154,24 @@ ALLOWED_CHANGED_PATHS = {
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
-    TASK_249_DOC.as_posix(),
-    TASK_249_PLAN.as_posix(),
+    TASK_250_DOC.as_posix(),
+    TASK_250_PLAN.as_posix(),
     "tests/CMakeLists.txt",
-    TASK_249_CMAKE.as_posix(),
-    TASK_249_GATE.as_posix(),
-    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/manual_entry_replay_accountingengine_bridge_implementation_gate.py",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
-    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
-    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
-    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
-    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
+    TASK_250_CMAKE.as_posix(),
+    TASK_250_GATE.as_posix(),
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
 }
 
-REQUIRED_DOC_294_SECTIONS = [
+REQUIRED_DOC_296_SECTIONS = [
     "## Purpose",
-    "## Relationship To TASK-245 Through TASK-248",
-    "## CI Closeout Scope",
-    "## Required Bridge Gate Set",
-    "## Required Regression Evidence",
-    "## Changed-Path Allowlist",
-    "## Clean-Main Invariants",
+    "## Relationship To TASK-245 Through TASK-249",
+    "## Phase Closeout Scope",
+    "## Completed Bridge Gates",
+    "## CI Evidence",
+    "## Bridge Contract Evidence",
+    "## Failure-Mode Evidence",
+    "## Handoff Preconditions",
+    "## Handoff Non-Goals",
     "## No-AccountingEngine-Call Boundary",
     "## No-Replay Boundary",
     "## No-Write Boundary",
@@ -194,30 +184,31 @@ REQUIRED_DOC_294_SECTIONS = [
     "## Recommended Next Task",
 ]
 
-REQUIRED_DOC_295_SECTIONS = [
+REQUIRED_DOC_297_SECTIONS = [
     "## Test Objective",
     "## Required Static Checks",
     "## Required Regression Gates",
     "## Changed-Path Allowlist",
-    "## Clean-Main Checks",
+    "## Phase Closeout Evidence",
+    "## Handoff Checks",
     "## Failure Modes",
     "## Acceptance Criteria",
     "## Formal Conclusion",
 ]
 
 FORMAL_CONCLUSION_LINES = [
-    "TASK-249 adds a CI closeout gate for the test-only AccountingEngine bridge phase.",
-    "TASK-249 does not call AccountingEngine replay.",
-    "TASK-249 does not modify AccountingEngine code.",
-    "TASK-249 does not implement production bridge.",
-    "TASK-249 does not implement runtime integration.",
-    "TASK-249 does not modify fixture JSON.",
-    "TASK-249 does not authorize production integration.",
-    "TASK-249 does not authorize runtime SQL / SQLite read/write.",
-    "TASK-249 does not authorize audit / ledger / snapshot writes.",
-    "TASK-249 does not authorize read model refresh.",
-    "TASK-249 does not authorize broker, network, credentials, endpoint, real order placement, or automatic trading.",
-    "Recommended next task: TASK-250 ShellAccounting manual entry replay AccountingEngine bridge phase closeout and handoff gate.",
+    "TASK-250 closes out the test-only AccountingEngine bridge phase.",
+    "TASK-250 does not call AccountingEngine replay.",
+    "TASK-250 does not modify AccountingEngine code.",
+    "TASK-250 does not implement production bridge.",
+    "TASK-250 does not implement runtime integration.",
+    "TASK-250 does not modify fixture JSON.",
+    "TASK-250 does not authorize production integration.",
+    "TASK-250 does not authorize runtime SQL / SQLite read/write.",
+    "TASK-250 does not authorize audit / ledger / snapshot writes.",
+    "TASK-250 does not authorize read model refresh.",
+    "TASK-250 does not authorize broker, network, credentials, endpoint, real order placement, or automatic trading.",
+    "Recommended next task: TASK-251 ShellAccounting manual entry replay AccountingEngine runtime integration authorization gate.",
 ]
 
 EXPECTED_ISSUE_CODES = [
@@ -294,10 +285,38 @@ class Gate:
         self.require(token in text or normalized_token in normalized_text, f"{context} contains `{token}`")
 
 
-FULL_CTEST_OLD_GATE_SELF_CONSISTENCY_PATHS = {
+TARGETED_OLD_GATE_SELF_CONSISTENCY_PATHS = {
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/manual_entry_replay_accountingengine_bridge_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
     "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
     "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
     "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
@@ -316,17 +335,7 @@ FULL_CTEST_OLD_GATE_SELF_CONSISTENCY_PATHS = {
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
 }
 
-ALLOWED_CHANGED_PATHS.update(FULL_CTEST_OLD_GATE_SELF_CONSISTENCY_PATHS)
-
-
-TASK_250_PHASE_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
-    "docs/296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md",
-    "docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
-    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
-}
-
-ALLOWED_CHANGED_PATHS.update(TASK_250_PHASE_CLOSEOUT_SELF_CONSISTENCY_PATHS)
+ALLOWED_CHANGED_PATHS.update(TARGETED_OLD_GATE_SELF_CONSISTENCY_PATHS)
 
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -424,36 +433,38 @@ def executable_scan_text(text: str) -> str:
 
 
 def validate_docs(gate: Gate, root: Path) -> None:
-    doc_294 = read(root / TASK_249_DOC)
-    doc_295 = read(root / TASK_249_PLAN)
-    gate.require((root / TASK_249_DOC).exists(), "docs/294 exists")
-    gate.require((root / TASK_249_PLAN).exists(), "docs/295 exists")
-    gate.contains(doc_294, "# TASK-249 ShellAccounting manual entry replay AccountingEngine bridge CI closeout gate", "docs/294 title")
-    gate.contains(doc_295, "# TASK-249 AccountingEngine bridge CI closeout test plan", "docs/295 title")
-    for section in REQUIRED_DOC_294_SECTIONS:
-        gate.contains(doc_294, section, "docs/294")
-    for section in REQUIRED_DOC_295_SECTIONS:
-        gate.contains(doc_295, section, "docs/295")
+    gate.require((root / TASK_250_DOC).exists(), "docs/296 exists")
+    gate.require((root / TASK_250_PLAN).exists(), "docs/297 exists")
+    doc_296 = read(root / TASK_250_DOC)
+    doc_297 = read(root / TASK_250_PLAN)
+    gate.contains(doc_296, "# TASK-250 ShellAccounting manual entry replay AccountingEngine bridge phase closeout and handoff gate", "docs/296 title")
+    gate.contains(doc_297, "# TASK-250 AccountingEngine bridge phase closeout and handoff test plan", "docs/297 title")
+    for section in REQUIRED_DOC_296_SECTIONS:
+        gate.contains(doc_296, section, "docs/296")
+    for section in REQUIRED_DOC_297_SECTIONS:
+        gate.contains(doc_297, section, "docs/297")
     for line in FORMAL_CONCLUSION_LINES:
-        gate.contains(doc_294, line, "docs/294 Formal Conclusion")
-        gate.contains(doc_295, line, "docs/295 Formal Conclusion")
-    for path in TASK_245_TO_249_DOCS + ACCOUNTINGENGINE_ADEQUACY_DOCS:
+        gate.contains(doc_296, line, "docs/296 Formal Conclusion")
+        gate.contains(doc_297, line, "docs/297 Formal Conclusion")
+    for path in TASK_245_TO_250_DOCS + ACCOUNTINGENGINE_ADEQUACY_DOCS:
         gate.require((root / path).exists(), f"{path.as_posix()} exists")
     for index_path in [Path("README.md"), Path("docs/README.md"), Path("docs/12_codex_prompt_template.md")]:
         text = read(root / index_path)
-        gate.contains(text, "TASK-249", index_path.as_posix())
-        gate.contains(text, TASK_249_DOC.name, index_path.as_posix())
-        gate.contains(text, TASK_249_PLAN.name, index_path.as_posix())
+        gate.contains(text, "TASK-250", index_path.as_posix())
+        gate.contains(text, TASK_250_DOC.name, index_path.as_posix())
+        gate.contains(text, TASK_250_PLAN.name, index_path.as_posix())
+    gate.contains(doc_296, "TASK-251 ShellAccounting manual entry replay AccountingEngine runtime integration authorization gate", "docs/296 handoff")
+    gate.contains(doc_297, "TASK-251 ShellAccounting manual entry replay AccountingEngine runtime integration authorization gate", "docs/297 handoff")
 
 
 def validate_registration(gate: Gate, root: Path) -> None:
     tests_cmake = read(root / "tests/CMakeLists.txt")
-    task_cmake = read(root / TASK_249_CMAKE)
-    gate.contains(tests_cmake, "add_subdirectory(ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate)", "tests/CMakeLists")
-    gate.contains(task_cmake, TASK_249_CTEST, "TASK-249 CMakeLists")
-    gate.contains(task_cmake, TASK_249_GATE.name, "TASK-249 CMakeLists")
-    gate.require((root / TASK_249_CMAKE).exists(), "TASK-249 CMakeLists exists")
-    gate.require((root / TASK_249_GATE).exists(), "TASK-249 gate exists")
+    task_cmake = read(root / TASK_250_CMAKE)
+    gate.require((root / TASK_250_CMAKE).exists(), "TASK-250 CMakeLists exists")
+    gate.require((root / TASK_250_GATE).exists(), "TASK-250 gate exists")
+    gate.contains(tests_cmake, "add_subdirectory(ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate)", "tests/CMakeLists")
+    gate.contains(task_cmake, TASK_250_CTEST, "TASK-250 CMakeLists")
+    gate.contains(task_cmake, TASK_250_GATE.name, "TASK-250 CMakeLists")
     gate.require((root / BRIDGE_SCRIPT).exists(), "TASK-246 bridge script exists")
     for path in CRITICAL_GATE_SCRIPTS:
         gate.require((root / path).exists(), f"{path.as_posix()} exists")
@@ -465,56 +476,6 @@ def validate_registration(gate: Gate, root: Path) -> None:
 
 def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
     changes = changed_paths(root)
-    ALLOWED_CHANGED_PATHS.update({
-        "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
-        "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
-        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
-        "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
-        "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
-        "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
-        "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/manual_entry_replay_accountingengine_bridge_implementation_gate.py",
-        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
-        "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
-        "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
-        "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
-        "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
-        "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
-        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
-        "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
-        "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
-        "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
-    })
     unexpected = sorted(path for path in changes if path not in ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected, f"changed paths are exact allowlisted: {unexpected}")
     for path in sorted(changes):
@@ -532,8 +493,8 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
 
 
 def validate_static_boundaries(gate: Gate, root: Path) -> None:
-    scan_paths = [BRIDGE_SCRIPT, TASK_245_GATE, TASK_246_GATE, TASK_247_GATE, TASK_248_GATE, TASK_249_GATE]
-    for path in scan_paths + CRITICAL_GATE_SCRIPTS:
+    scan_paths = [BRIDGE_SCRIPT, *CRITICAL_GATE_SCRIPTS]
+    for path in scan_paths:
         text = read(root / path)
         scan = executable_scan_text(text)
         for token in FORBIDDEN_EXECUTABLE_TOKENS:
@@ -562,7 +523,7 @@ def validate_bridge_stdout_contract(gate: Gate, root: Path) -> None:
                     "dryRunStatus": "ok",
                     "entries": [
                         {
-                            "fixtureId": "MRF-CI-CLOSEOUT-001",
+                            "fixtureId": "MRF-PHASE-CLOSEOUT-001",
                             "accountingEngineCalled": False,
                             "replayExecuted": False,
                             "runtimeWrites": False,
@@ -582,7 +543,7 @@ def validate_bridge_stdout_contract(gate: Gate, root: Path) -> None:
                     "implementationStatus": "ok",
                     "entries": [
                         {
-                            "fixtureId": "MRF-CI-CLOSEOUT-001",
+                            "fixtureId": "MRF-PHASE-CLOSEOUT-001",
                             "accountingEngineCalled": False,
                             "runtimeWrites": False,
                             "positionCashPnlCalculated": False,
@@ -619,7 +580,10 @@ def validate_bridge_stdout_contract(gate: Gate, root: Path) -> None:
     gate.require(summary.get("runtimeWrite") is False, "bridge summary runtimeWrite=false")
     gate.require(summary.get("bridgeRequest", {}).get("syntheticDataOnly") is True, "bridge request remains synthetic")
     gate.require(summary.get("bridgeResponse", {}).get("status") == "not_executed", "bridge response status not_executed")
-    gate.require(summary.get("bridgeResponse", {}).get("reason") == "AccountingEngine replay is not authorized in TASK-246", "bridge response reason remains unauthorized replay")
+    gate.require(
+        summary.get("bridgeResponse", {}).get("reason") == "AccountingEngine replay is not authorized in TASK-246",
+        "bridge response reason remains unauthorized replay",
+    )
     encoded = json.dumps(summary, sort_keys=True).lower()
     for token in FORBIDDEN_OUTPUT_TOKENS:
         gate.require(token not in encoded, f"bridge stdout omits forbidden output token `{token}`")
@@ -638,7 +602,7 @@ def main() -> int:
     validate_static_boundaries(gate, root)
     validate_bridge_stdout_contract(gate, root)
     gate.require(gate.checks >= 180, f"expected at least 180 checks, got {gate.checks}")
-    print(f"TASK_249_CHECKS={gate.checks}")
+    print(f"TASK_250_CHECKS={gate.checks}")
     return 0
 
 

@@ -651,6 +651,12 @@ def main() -> int:
     allowed_changes.update(TASK_247_SELF_CONSISTENCY_PATHS)
     allowed_changes.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
     allowed_changes.update(TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS)
+    allowed_changes.update({
+        "docs/296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md",
+        "docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
+    })
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-217 changed unauthorized paths: " + ", ".join(unexpected))
     if changes and changes not in [

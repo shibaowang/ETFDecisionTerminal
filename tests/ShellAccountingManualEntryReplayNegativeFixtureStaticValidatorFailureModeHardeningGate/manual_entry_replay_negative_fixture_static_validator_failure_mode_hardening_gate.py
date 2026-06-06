@@ -698,6 +698,12 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
             "manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py"
         ),
         "ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
+        (
+            "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/"
+            "manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py"
+        ),
+        "ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate",
     ]:
         validator_call_scan_text = validator_call_scan_text.replace(allowed_path_token, "")
     gate.require("AccountingEngine" not in validator_call_scan_text, "validator does not call AccountingEngine")
@@ -797,5 +803,17 @@ TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS = {
 ALLOWED_CHANGED_PATHS.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
 
 ALLOWED_CHANGED_PATHS.update(TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS)
+
+ALLOWED_CHANGED_PATHS.update({
+
+    "docs/296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md",
+
+    "docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md",
+
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
+
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
+
+})
 if __name__ == "__main__":
     raise SystemExit(main())

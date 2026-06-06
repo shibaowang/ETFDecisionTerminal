@@ -292,6 +292,30 @@ ShellAccountingServiceResult ShellAccountingReadOnlyController::submitManualCash
     return result;
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::previewExcelVbaImportReadOnly(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.excel_vba_import.readonly_preview");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.excel_vba_import.readonly_preview");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.excel_vba_import.readonly_preview";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.importPreviewRejected = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->previewExcelVbaImportReadOnly(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

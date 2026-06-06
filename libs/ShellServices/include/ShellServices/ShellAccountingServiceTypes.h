@@ -50,6 +50,22 @@ struct ShellAccountingServiceRequest final {
     std::string amountMinor;
     std::string currency;
     std::string sourceReference;
+    std::string importPayloadJson;
+};
+
+struct ShellAccountingImportPreviewDiagnostic final {
+    std::string level;
+    std::string code;
+    std::string field;
+    std::string sheetName;
+    std::string rowId;
+};
+
+struct ShellAccountingImportPreviewFactSummary final {
+    int tradeFactCount = 0;
+    int cashFactCount = 0;
+    int marketPriceFactCount = 0;
+    int fxRateFactCount = 0;
 };
 
 struct ShellAccountingServiceResult final {
@@ -73,6 +89,25 @@ struct ShellAccountingServiceResult final {
     bool generatedTradeSuggestion = false;
     bool strategyExecuted = false;
     bool brokerOrderSubmitted = false;
+    bool importPreviewAccepted = false;
+    bool importPreviewRejected = false;
+    std::vector<ShellAccountingImportPreviewDiagnostic> importPreviewDiagnostics;
+    std::vector<std::string> importPreviewDiagnosticCodes;
+    ShellAccountingImportPreviewFactSummary importPreviewFactSummary;
+    bool accountingEngineCalled = false;
+    bool productionFileLoading = false;
+    bool productionWrite = false;
+    bool sqliteProductionWrite = false;
+    bool auditWritten = false;
+    bool ledgerWritten = false;
+    bool snapshotWritten = false;
+    bool tradeLogWritten = false;
+    bool readModelPersistentWrite = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool automaticTrading = false;
+    bool rawUserDataExposed = false;
 };
 
 [[nodiscard]] bool isShellAccountingServiceResultReadOnly(

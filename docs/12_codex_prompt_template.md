@@ -3083,7 +3083,7 @@ migrations, modify AccountingEngine production code, or authorize broker,
 network, credentials, endpoints, real order placement, strategy execution, or
 automatic trading.
 
-Recommended next task: TASK-259 ShellAccounting Excel/VBA import read-only preview client adapter vertical slice.
+Recommended next task: TASK-260 ShellAccounting Excel/VBA import read-only preview ShellServices presenter contract vertical slice.
 
 ## TASK-259 ShellAccounting Excel/VBA Import Read-Only Preview Client Adapter Prompt Rule
 
@@ -3106,6 +3106,32 @@ must not call AccountingEngine, write SQLite, write audit / ledger / snapshot /
 trade_log / read models, generate TradeDrafts, execute strategies, submit
 broker orders, access networks, read credentials, read endpoints, place real
 orders, or enable automatic trading.
+
+Recommended next task: TASK-260 ShellAccounting Excel/VBA import read-only preview ShellServices presenter contract vertical slice.
+
+## TASK-260 ShellAccounting Excel/VBA Import Read-Only Preview ShellServices Presenter Contract Prompt Rule
+
+Future QML preview wiring, startup wiring, production file loading,
+AccountingEngine runtime integration, read model refresh, import persistence,
+TradeDraft generation, or broker/trading capability must be separately
+authorized after
+`docs/316_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract.md`
+and
+`docs/317_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract_test_plan.md`.
+
+TASK-260 may add a ShellServices / Controller / Presenter contract for the
+read-only DataService action `accounting.excel_vba_import.readonly_preview`.
+The Presenter may accept only in-memory sanitized JSON object strings and must
+fail closed for malformed or file-path style inputs. Presenter and Controller
+must not include or directly call DataServiceClient. Only
+`ShellAccountingDataServiceClientPortAdapter` may call the typed client preview
+adapter. TASK-260 must not modify apps, production QML, startup, production
+file loading, AccountingEngine production code, DataServiceApi action
+implementation, DataAccess repositories, migrations, or historical fixture
+JSON. TASK-260 must not call AccountingEngine, write SQLite, write audit /
+ledger / snapshot / trade_log / read models, generate TradeDrafts, execute
+strategies, submit broker orders, access networks, read credentials, read
+endpoints, place real orders, or enable automatic trading.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

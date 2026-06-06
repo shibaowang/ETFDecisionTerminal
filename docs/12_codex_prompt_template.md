@@ -3061,6 +3061,28 @@ local sanitized fixtures, and must emit only in-memory summary / sanitized
 stdout JSON evidence. TASK-257 does not authorize broker, network, credentials,
 endpoints, real order placement, strategy execution, or automatic trading.
 
+Recommended next task: TASK-258 ShellAccounting Excel/VBA import read-only DataService preview action vertical slice.
+
+## TASK-258 ShellAccounting Excel/VBA Import Read-Only DataService Preview Action Prompt Rule
+
+Future production file loading, UI exposure, AccountingEngine runtime
+integration, read model refresh, import persistence, TradeDraft generation, or
+broker/trading capability must be separately authorized after
+`docs/312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md`
+and
+`docs/313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md`.
+
+TASK-258 may register a read-only DataService action named
+`accounting.excel_vba_import.readonly_preview`. The action may accept only
+in-memory sanitized import payload objects, may call the TASK-257 parser
+boundary, and may return only normalized diagnostics plus replay fact summary
+counts. TASK-258 must not load production files, call AccountingEngine, write
+SQLite, write audit / ledger / snapshot / trade_log / read models, generate
+TradeDrafts, modify production QML/startup/Presenter/Controller wiring, modify
+migrations, modify AccountingEngine production code, or authorize broker,
+network, credentials, endpoints, real order placement, strategy execution, or
+automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

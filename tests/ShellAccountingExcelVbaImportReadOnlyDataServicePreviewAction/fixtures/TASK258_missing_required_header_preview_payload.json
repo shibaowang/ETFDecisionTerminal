@@ -1,0 +1,39 @@
+{
+  "task": "TASK-258",
+  "sampleId": "TASK258_MISSING_REQUIRED_HEADER_PREVIEW_PAYLOAD",
+  "schemaVersion": "task-258-excel-vba-import-readonly-dataservice-preview-action/v1",
+  "sourceFormat": "sanitized-excel-vba-style-import-payload",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "requestPayload": {
+    "rawUserDataExposed": false,
+    "importPayload": {
+      "sheets": [
+        {
+          "sheetName": "InitialCash",
+          "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+          "rows": [
+            ["TASK258_INVALID_CASH_001", "2026-01-01T00:00:00Z", "TASK258_ACCOUNT", "TASK258_PORTFOLIO", "INITIAL_CASH", "50000.00", "CNY", "SANITIZED_TASK258_INVALID_INITIAL_CASH"]
+          ]
+        },
+        {
+          "sheetName": "TradeLog",
+          "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+          "rows": [
+            ["TASK258_INVALID_TRADE_001", "2026-01-02T09:30:00Z", "TASK258_ACCOUNT", "TASK258_PORTFOLIO", "TASK258_INSTRUMENT", "BUY", "100", "200.00", "1.00", "-201.00", "CNY", "TASK258_SANITIZED_IMPORT", "SANITIZED_TASK258_INVALID_BUY"]
+          ]
+        }
+      ]
+    }
+  },
+  "expectedPreview": {
+    "accepted": false,
+    "diagnosticCount": 1,
+    "replayFactSummary": {
+      "tradeFactCount": 0,
+      "cashFactCount": 0,
+      "marketPriceFactCount": 0,
+      "fxRateFactCount": 0
+    }
+  }
+}

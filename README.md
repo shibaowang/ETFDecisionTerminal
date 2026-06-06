@@ -4836,3 +4836,23 @@ TASK-257 documentation is in
 `docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md`
 and
 `docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md`.
+
+## TASK-258 ShellAccounting Excel/VBA Import Read-Only DataService Preview Action
+
+TASK-258 adds a production read-only DataService preview action for sanitized
+Excel/VBA-style manual entry import payloads. The action
+`accounting.excel_vba_import.readonly_preview` is registered through
+DataService read-only action registration, accepts only in-memory import
+payload objects, calls the TASK-257 parser boundary, returns normalized
+diagnostics and replay fact counts, and emits sanitized response evidence.
+
+TASK-258 does not call AccountingEngine, does not implement production runtime
+integration, does not load production files, does not refresh read models, does
+not write SQLite, audit, ledger, snapshot, trade_log, or TradeDraft data, and
+does not authorize strategy execution, broker integration, network access,
+credentials, endpoints, real order placement, or automatic trading.
+
+TASK-258 documentation is in
+`docs/312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md`
+and
+`docs/313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md`.

@@ -304,6 +304,25 @@ std::string gitDiff(const Harness& h, const std::vector<std::string>& paths)
     return output;
 }
 
+std::string gitDiffPatch(const Harness& h, const std::vector<std::string>& paths)
+{
+    std::ostringstream command;
+    command << "git -C \"" << h.root.string() << "\" diff main";
+    for (const auto& path : paths) {
+        command << " -- \"" << path << "\"";
+    }
+    FILE* pipe = _popen(command.str().c_str(), "r");
+    require(pipe != nullptr, "open git diff patch pipe");
+    char buffer[512];
+    std::string output;
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        output += buffer;
+    }
+    const int rc = _pclose(pipe);
+    require(rc == 0, "git diff patch command failed");
+    return output;
+}
+
 void testDocs(const Harness& h)
 {
     const auto doc188 = readFile(h.root / "docs" / "188_shell_accounting_manual_cash_movement_repository_dual_write_implementation.md");
@@ -372,10 +391,23 @@ void testNoSchemaFile(const Harness& h)
 
 void testDataServiceActionsUnmodified(const Harness& h)
 {
-    require(gitDiff(h, {
+    const auto diff = gitDiff(h, {
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
-    }).empty(), "DataServiceActions header and registrar must not change");
+    });
+    const auto patch = gitDiffPatch(h, {
+        "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+        "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+    });
+    require(
+        diff.empty()
+            || (diff == "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h\n"
+                        "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp\n"
+                && patch.find("kActionAccountingExcelVbaImportReadOnlyPreview") != std::string::npos
+                && patch.find("handleAccountingExcelVbaImportReadOnlyPreview") != std::string::npos
+                && patch.find("accounting.excel_vba_import.readonly_preview") != std::string::npos
+                && patch.find("manual_cash_movement.create") == std::string::npos),
+        "DataServiceActions header and registrar must not change except TASK-258 read-only preview action");
     const auto actions = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     requireContains(actions, "ShellAccountingManualCashMovementRepository repository(connection)",
         "TASK-198 DataServiceActions wiring");

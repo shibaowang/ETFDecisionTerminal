@@ -4697,3 +4697,26 @@ and
 `docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md`.
 Recommended next task is TASK-252 ShellAccounting manual entry replay
 AccountingEngine runtime integration implementation authorization gate.
+
+## TASK-252 Manual Entry Replay Read-Only Runtime Integration Vertical Slice Gate
+
+TASK-252 adds a test-only read-only runtime integration vertical slice for
+manual entry replay. The CTest
+`shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice`
+uses synthetic inline facts, a test-only adapter, and AccountingEngine public
+read-only replay to produce an in-memory ShellAccounting projection summary and
+stdout JSON evidence.
+
+TASK-252 is a test-only read-only runtime integration vertical slice. TASK-252
+does not implement production runtime integration, does not authorize
+production write, does not modify production code, does not modify
+AccountingEngine code, does not modify fixture JSON, does not persist read
+models, and does not authorize broker, network, credentials, endpoint, real
+order placement, or automatic trading.
+
+See
+`docs/300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md`
+and
+`docs/301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md`.
+Recommended next task is TASK-253 ShellAccounting manual entry replay
+production runtime integration authorization gate.

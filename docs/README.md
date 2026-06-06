@@ -1286,6 +1286,16 @@
   defines TASK-251 static checks, required regression gates, changed-path
   allowlist, authorization checks, runtime integration boundary checks, failure
   modes, acceptance criteria, and formal conclusion.
+- ShellAccounting manual entry replay read-only runtime integration vertical slice gate:
+  [300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md](300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md)
+  records TASK-252 test-only read-only vertical slice scope, AccountingEngine
+  read-only replay evidence, in-memory projection summary, no-write boundary,
+  and no broker/network constraints.
+- ShellAccounting manual entry replay read-only runtime integration vertical slice test plan:
+  [301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md](301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md)
+  defines TASK-252 runtime evidence checks, no-write checks, no-trading checks,
+  production boundary checks, failure modes, changed-path allowlist, and
+  regression requirements.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

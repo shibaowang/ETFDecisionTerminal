@@ -4788,3 +4788,27 @@ TASK-255 documentation is in
 `docs/306_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_readonly_vertical_slice.md`
 and
 `docs/307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md`.
+Recommended next task is TASK-256 ShellAccounting manual entry replay Excel/VBA export sample import matrix diagnostics read-only vertical slice.
+
+## TASK-256 Manual Entry Replay Excel/VBA Export Sample Import Matrix Diagnostics Read-Only Vertical Slice
+
+TASK-256 adds a test-only Excel/VBA export sample import matrix diagnostics
+read-only vertical slice for manual entry replay. The CTest
+`shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_readonly_vertical_slice`
+loads TASK-256-only sanitized samples, parses Excel/VBA-style sheet headers and
+rows through a test-only importer, builds normalized import diagnostics, builds
+replay fact DTOs for accepted samples, calls AccountingEngine public read-only
+replay, compares in-memory projection or sanitized issue output to expectations,
+and emits sanitized stdout JSON evidence.
+
+TASK-256 is test-only and read-only. TASK-256 does not use real user accounts,
+real trade history, real broker data, credentials, endpoints, production
+runtime integration, SQLite writes, audit / ledger / snapshot / trade_log /
+read model writes, production code, AccountingEngine code changes, historical
+fixture edits, broker integration, network access, real order placement, or
+automatic trading.
+
+TASK-256 documentation is in
+`docs/308_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_readonly_vertical_slice.md`
+and
+`docs/309_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_test_plan.md`.

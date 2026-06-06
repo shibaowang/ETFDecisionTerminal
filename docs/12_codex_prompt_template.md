@@ -3017,6 +3017,28 @@ AccountingEngine code, does not modify historical fixture JSON, does not persist
 read models, and does not authorize broker, network, credentials, endpoints,
 real order placement, or automatic trading.
 
+Recommended next task: TASK-256 ShellAccounting manual entry replay Excel/VBA export sample import matrix diagnostics read-only vertical slice.
+
+## TASK-256 Manual Entry Replay Excel/VBA Export Sample Import Matrix Diagnostics Read-Only Vertical Slice Prompt Rule
+
+Future production Excel import, production runtime integration, read model
+refresh, production parser / loader / reader work, larger sample suites, or
+broker/trading capability must be separately authorized after
+`docs/308_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_readonly_vertical_slice.md`
+and
+`docs/309_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_test_plan.md`.
+
+TASK-256 is a test-only Excel/VBA export sample import matrix diagnostics
+read-only vertical slice. TASK-256 may call AccountingEngine read-only replay
+only from the TASK-256 test helper, may load only TASK-256-local sanitized
+export sample fixtures, may build only normalized test-only diagnostics, and
+may emit only in-memory projection summary / sanitized stdout JSON evidence.
+TASK-256 does not implement production runtime integration, does not authorize
+production write, does not modify production code, does not modify
+AccountingEngine code, does not modify historical fixture JSON, does not persist
+read models, and does not authorize broker, network, credentials, endpoints,
+real order placement, or automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -371,6 +371,43 @@ ShellAccountingManualTransactionWriteResult
 ShellAccountingManualTransactionRepository::persistManualTransaction(
     const ShellAccountingManualTransactionWriteCommand& command)
 {
+    ShellAccountingManualTransactionWriteResult result;
+    TransactionRunner runner(connection_);
+    auto transactionResult = runner.runInTransaction([&]() {
+        result = persistManualTransactionInActiveTransaction(command);
+        if (!result.success) {
+            return DatabaseResult<bool>::failure(result.errorCode, result.status);
+        }
+        return DatabaseResult<bool>::success(true);
+    });
+
+    if (!transactionResult) {
+        if (!result.status.empty() && result.status != "MANUAL_TRANSACTION_REPOSITORY_NOT_RUN") {
+            return result;
+        }
+        return failure(
+            transactionResult.error().errorCode,
+            "TRANSACTION_ROLLED_BACK",
+            "SAFE_SQLITE_ERROR");
+    }
+
+    if (!result.duplicate) {
+        result.transactionCommitted = true;
+    }
+    return result;
+}
+
+ShellAccountingManualTransactionWriteResult
+ShellAccountingManualTransactionRepository::persistManualTransactionInActiveTransaction(
+    const ShellAccountingManualTransactionWriteCommand& command)
+{
+    if (!connection_.isInTransaction()) {
+        return failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            "ACTIVE_TRANSACTION_REQUIRED",
+            "ACTIVE_TRANSACTION_REQUIRED");
+    }
+
     auto validation = validate(command);
     if (!validation.success && validation.status == "VALIDATION_REJECTED") {
         return validation;
@@ -399,34 +436,28 @@ ShellAccountingManualTransactionRepository::persistManualTransaction(
     result.tradeExecutionGroupUid = executionGroupUid(command);
     result.tradeLogUid = tradeLogUid(command);
 
-    TransactionRunner runner(connection_);
-    auto transactionResult = runner.runInTransaction([&]() {
-        auto group = insertExecutionGroup(command, result.tradeExecutionGroupUid);
-        if (!group) {
-            return DatabaseResult<bool>::failure(group.error().errorCode, group.error().message);
-        }
-        result.tradeExecutionGroupId = group.value();
-        result.tradeExecutionGroupWritten = true;
-
-        auto log = insertTradeLog(command, result.tradeLogUid, result.tradeExecutionGroupId);
-        if (!log) {
-            return DatabaseResult<bool>::failure(log.error().errorCode, log.error().message);
-        }
-        result.tradeLogId = log.value();
-        result.tradeLogWritten = true;
-        return DatabaseResult<bool>::success(true);
-    });
-
-    if (!transactionResult) {
+    auto group = insertExecutionGroup(command, result.tradeExecutionGroupUid);
+    if (!group) {
         return failure(
-            transactionResult.error().errorCode,
+            group.error().errorCode,
             "TRANSACTION_ROLLED_BACK",
             "SAFE_SQLITE_ERROR");
     }
+    result.tradeExecutionGroupId = group.value();
+    result.tradeExecutionGroupWritten = true;
+
+    auto log = insertTradeLog(command, result.tradeLogUid, result.tradeExecutionGroupId);
+    if (!log) {
+        return failure(
+            log.error().errorCode,
+            "TRANSACTION_ROLLED_BACK",
+            "SAFE_SQLITE_ERROR");
+    }
+    result.tradeLogId = log.value();
+    result.tradeLogWritten = true;
 
     result.success = true;
     result.databaseWritten = true;
-    result.transactionCommitted = true;
     result.status = "OK";
     return result;
 }

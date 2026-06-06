@@ -5005,3 +5005,33 @@ TASK-264 documentation is in
 `docs/324_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.md`
 and
 `docs/325_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_test_plan.md`.
+
+## TASK-265 ShellAccounting Excel/VBA Import Accepted Preview Manual Entry Persistence Slice
+
+TASK-265 implements the dedicated DataService write action
+`accounting.excel_vba_import.persist_manual_entry` for accepted Excel/VBA import
+previews. The action accepts only `ACCEPTED` preview requests with a
+`previewDigest`, `idempotencyKey`, schema/source markers, fact summary, and
+sanitized in-memory import payload. It reuses the read-only Excel/VBA import
+parser boundary, verifies the digest and fact summary, and rejects non-accepted
+or mismatched previews before any write.
+
+TASK-265 adds the minimum DataAccess transaction composition needed to write
+manual transaction facts and a sanitized import audit event in one outer
+`TransactionRunner`. The existing manual transaction repository API remains a
+standalone transaction-owning wrapper, and the new active-transaction method is
+used only by the import composition repository. The DataService action does not
+handwrite `INSERT INTO trade_log`.
+
+TASK-265 covers idempotent duplicate handling, sanitized idempotency conflict,
+audit-failure rollback, trade-failure rollback, and non-accepted preview
+rejection in temporary test SQLite databases only. It does not add QML,
+startup, Presenter, Controller, ShellServices UI wiring, DataServiceClient
+changes, migrations, AccountingEngine production code, historical fixtures,
+TradeDraft generation, strategy execution, broker integration, network access,
+credentials, endpoints, real order placement, or automatic trading.
+
+TASK-265 documentation is in
+`docs/326_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_implementation.md`
+and
+`docs/327_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_test_plan.md`.

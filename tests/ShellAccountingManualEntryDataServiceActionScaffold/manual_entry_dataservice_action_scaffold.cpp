@@ -75,6 +75,24 @@ std::vector<fs::path> filesUnder(const fs::path& root)
     return files;
 }
 
+bool isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile(const fs::path& file)
+{
+    const auto path = file.generic_string();
+    return path.find("libs/DataAccess/include/DataAccess/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.h")
+        != std::string::npos
+        || path.find("libs/DataAccess/src/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp")
+            != std::string::npos;
+}
+
+std::vector<fs::path> filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+    std::vector<fs::path> files)
+{
+    files.erase(
+        std::remove_if(files.begin(), files.end(), isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile),
+        files.end());
+    return files;
+}
+
 void requireNoTokens(const std::vector<fs::path>& files, const std::vector<std::string>& tokens, const std::string& context)
 {
     for (const auto& file : files) {
@@ -461,6 +479,7 @@ void testNoDataAccessWriteRepository(const Harness& h)
     std::vector<fs::path> files = filesUnder(h.root / "libs" / "DataAccess" / "include");
     auto src = filesUnder(h.root / "libs" / "DataAccess" / "src");
     files.insert(files.end(), src.begin(), src.end());
+    files = filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(std::move(files));
     // TASK-196 authorizes ShellAccountingManualCashMovementRepository as a
     // DataAccess-only direct-test repository; this scaffold gate still blocks
     // DataService runtime write wiring and older repository escape hatches.

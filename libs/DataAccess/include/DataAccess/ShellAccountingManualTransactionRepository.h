@@ -56,6 +56,8 @@ public:
 
     [[nodiscard]] ShellAccountingManualTransactionWriteResult persistManualTransaction(
         const ShellAccountingManualTransactionWriteCommand& command);
+    [[nodiscard]] ShellAccountingManualTransactionWriteResult persistManualTransactionInActiveTransaction(
+        const ShellAccountingManualTransactionWriteCommand& command);
 
 private:
     [[nodiscard]] ShellAccountingManualTransactionWriteResult failure(

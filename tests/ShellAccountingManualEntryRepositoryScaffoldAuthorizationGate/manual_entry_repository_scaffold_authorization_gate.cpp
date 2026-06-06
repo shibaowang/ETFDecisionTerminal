@@ -74,6 +74,35 @@ std::vector<fs::path> filesUnder(const fs::path& root)
     return files;
 }
 
+bool isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile(const fs::path& file)
+{
+    const auto path = file.generic_string();
+    return path.find("libs/DataAccess/include/DataAccess/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.h")
+        != std::string::npos
+        || path.find("libs/DataAccess/src/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp")
+            != std::string::npos;
+}
+
+std::vector<fs::path> filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+    std::vector<fs::path> files)
+{
+    files.erase(
+        std::remove_if(files.begin(), files.end(), isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile),
+        files.end());
+    return files;
+}
+
+std::string textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(std::string text)
+{
+    const std::string task265Source =
+        "ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp";
+    std::size_t position = std::string::npos;
+    while ((position = text.find(task265Source)) != std::string::npos) {
+        text.erase(position, task265Source.size());
+    }
+    return text;
+}
+
 void requireNoTokens(
     const std::vector<fs::path>& files,
     const std::vector<std::string>& tokens,
@@ -379,7 +408,8 @@ void testNoPersistentIds(const Harness&)
 
 void testNoDataAccessWriteRepository(const Harness& h)
 {
-    const auto dataAccessCMake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
+    const auto dataAccessCMake = textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt"));
     requireNotContains(dataAccessCMake, "ManualTransactionWriteRepository", "DataAccess CMake");
     requireNotContains(dataAccessCMake, "ManualCashMovementWriteRepository", "DataAccess CMake");
     requireNotContains(dataAccessCMake, "ManualEntryPersistenceRepository", "DataAccess CMake");
@@ -394,7 +424,8 @@ void testNoManualRepositoryScaffold(const Harness& h)
     require(fs::exists(
                 h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualEntryRepositoryScaffold.cpp"),
         "TASK-185 scaffold source must exist");
-    requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
+    requireNoTokens(filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        filesUnder(h.root / "libs" / "DataAccess")), {
         "ManualEntryWriteRepository",
         "ManualTransactionWriteRepository",
         "ManualCashMovementWriteRepository",
@@ -405,7 +436,8 @@ void testNoManualRepositoryScaffold(const Harness& h)
 
 void testNoRepositoryHeadersSources(const Harness& h)
 {
-    for (const auto& file : filesUnder(h.root / "libs" / "DataAccess")) {
+    for (const auto& file : filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+             filesUnder(h.root / "libs" / "DataAccess"))) {
         const auto filename = file.filename().string();
         for (const auto& token : {
                  "ManualEntryPersistence",
@@ -419,7 +451,8 @@ void testNoRepositoryHeadersSources(const Harness& h)
 
 void testNoDataAccessCMakeRegistration(const Harness& h)
 {
-    const auto cmake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
+    const auto cmake = textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt"));
     requireContains(cmake, "ShellAccountingManualEntryRepositoryScaffold.cpp", "DataAccess CMake TASK-185 scaffold");
     requireNotContains(cmake, "ManualTransactionWriteRepository", "DataAccess CMake");
     requireNotContains(cmake, "ManualCashMovementWriteRepository", "DataAccess CMake");
@@ -428,7 +461,8 @@ void testNoDataAccessCMakeRegistration(const Harness& h)
 
 void testNoRepositoryWriteImplementationTokens(const Harness& h)
 {
-    requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
+    requireNoTokens(filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        filesUnder(h.root / "libs" / "DataAccess")), {
         "ManualEntryPersistenceRepository",
         "ManualTransactionCommand",
         "ManualCashMovementCommand",

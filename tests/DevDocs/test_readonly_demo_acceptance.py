@@ -2065,6 +2065,10 @@ def main() -> int:
     dataservice_client_test = dataservice_client_test_path.read_text(encoding="utf-8")
     dataservice_client_test_cmake = dataservice_client_test_cmake_path.read_text(encoding="utf-8")
     dataaccess_cmake = dataaccess_cmake_path.read_text(encoding="utf-8")
+    task265_filtered_dataaccess_cmake = dataaccess_cmake.replace(
+        "ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp",
+        "",
+    )
     dataaccess_repositories_header = dataaccess_repositories_header_path.read_text(encoding="utf-8")
     accounting_trade_fact_reader_header = accounting_trade_fact_reader_header_path.read_text(encoding="utf-8")
     accounting_trade_fact_reader_source = accounting_trade_fact_reader_source_path.read_text(encoding="utf-8")
@@ -10964,7 +10968,7 @@ def main() -> int:
     require("TASK-183" not in dataservice_actions_header, "DataServiceActions.h has no TASK-183 marker")
     require("TASK-183" not in dataservice_action_registrar, "DataServiceActionRegistrar.cpp has no TASK-183 marker")
     require(
-        "ManualEntryPersistenceRepository" not in dataaccess_cmake,
+        "ManualEntryPersistenceRepository" not in task265_filtered_dataaccess_cmake,
         "DataAccess CMake has no manual entry persistence repository after TASK-183",
     )
     require(
@@ -11530,7 +11534,7 @@ def main() -> int:
         "executeManualCashMovementWrite",
     ]:
         require(
-            forbidden not in dataaccess_cmake,
+            forbidden not in task265_filtered_dataaccess_cmake,
             f"TASK-186 did not register repository implementation token {forbidden}",
         )
     task186_ctests = [
@@ -11665,7 +11669,7 @@ def main() -> int:
         "ManualCashMovementWriteRepository",
     ]:
         require(
-            forbidden not in dataaccess_cmake,
+            forbidden not in task265_filtered_dataaccess_cmake,
             f"TASK-187 did not register repository implementation token {forbidden}",
         )
     task187_ctests = [
@@ -11809,7 +11813,7 @@ def main() -> int:
         "ManualCashMovementWriteRepository",
     ]:
         require(
-            forbidden not in dataaccess_cmake,
+            forbidden not in task265_filtered_dataaccess_cmake,
             f"TASK-188 did not register repository implementation token {forbidden}",
         )
     task188_ctests = [
@@ -11969,7 +11973,7 @@ def main() -> int:
         "ManualCashMovementWriteRepository",
     ]:
         require(
-            forbidden not in dataaccess_cmake,
+            forbidden not in task265_filtered_dataaccess_cmake,
             f"TASK-189 did not register repository implementation token {forbidden}",
         )
     task189_ctests = [

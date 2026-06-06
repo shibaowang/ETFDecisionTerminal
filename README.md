@@ -4812,3 +4812,27 @@ TASK-256 documentation is in
 `docs/308_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_readonly_vertical_slice.md`
 and
 `docs/309_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_test_plan.md`.
+Recommended next task is TASK-257 ShellAccounting manual entry replay Excel/VBA import read-only production parser boundary vertical slice.
+
+## TASK-257 Manual Entry Replay Excel/VBA Import Read-Only Production Parser Boundary Slice
+
+TASK-257 adds a minimal production read-only parser boundary for sanitized
+Excel/VBA-style manual entry replay import payloads. The CTest
+`shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary`
+loads TASK-257-only sanitized import samples, calls the production parser
+boundary to detect sheets, map stable and Chinese headers, build normalized
+diagnostics or replay fact DTOs, calls AccountingEngine read-only replay only
+from the TASK-257 test helper, compares in-memory projection or sanitized issue
+output to expectations, and emits sanitized stdout JSON evidence.
+
+TASK-257 is read-only and does not implement production runtime integration.
+TASK-257 does not use real user accounts, real trade history, real broker data,
+credentials, endpoints, SQLite writes, audit / ledger / snapshot / trade_log /
+read model writes, DataService action registration, AccountingEngine production
+code changes, historical fixture edits, broker integration, network access,
+real order placement, or automatic trading.
+
+TASK-257 documentation is in
+`docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md`
+and
+`docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md`.

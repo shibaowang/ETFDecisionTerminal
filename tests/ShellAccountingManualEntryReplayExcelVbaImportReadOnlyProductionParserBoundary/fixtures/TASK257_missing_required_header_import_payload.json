@@ -1,0 +1,29 @@
+{
+  "task": "TASK-257",
+  "sampleId": "TASK257_MISSING_REQUIRED_HEADER_IMPORT_PAYLOAD",
+  "sampleKind": "missing_required_header_import_payload",
+  "schemaVersion": "task-257-excel-vba-import-readonly-parser-boundary/v1",
+  "sourceFormat": "sanitized-excel-vba-style-import-payload",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {"accountId": "TASK257_HEADER_ACCOUNT", "portfolioId": "TASK257_PORTFOLIO"},
+  "importPayload": {
+    "sheets": [
+      {
+        "sheetName": "InitialCash",
+        "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+        "rows": [["TASK257_HEADER_CASH_001", "2026-01-01T00:00:00Z", "TASK257_HEADER_ACCOUNT", "TASK257_PORTFOLIO", "INITIAL_CASH", "100000.00", "CNY", "SANITIZED_TASK257_HEADER_INITIAL_CASH"]]
+      },
+      {
+        "sheetName": "TradeLog",
+        "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+        "rows": [["TASK257_HEADER_TRADE_001", "2026-01-02T09:30:00Z", "TASK257_HEADER_ACCOUNT", "TASK257_PORTFOLIO", "TASK257_HEADER_INSTRUMENT", "BUY", "100", "200.00", "1.00", "-201.00", "CNY", "TASK257_SANITIZED_IMPORT", "SANITIZED_TASK257_HEADER_BUY"]]
+      }
+    ]
+  },
+  "expectedParser": {
+    "accepted": false,
+    "diagnostics": [{"level": "ERROR", "code": "MISSING_REQUIRED_HEADER", "field": "PRICE", "sheetName": "TradeLog", "rowId": ""}]
+  },
+  "expectedProjection": null
+}

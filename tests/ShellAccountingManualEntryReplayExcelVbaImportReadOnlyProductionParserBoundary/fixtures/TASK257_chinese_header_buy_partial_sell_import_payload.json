@@ -1,0 +1,35 @@
+{
+  "task": "TASK-257",
+  "sampleId": "TASK257_CHINESE_HEADER_BUY_PARTIAL_SELL_IMPORT_PAYLOAD",
+  "sampleKind": "chinese_header_buy_partial_sell_import_payload",
+  "schemaVersion": "task-257-excel-vba-import-readonly-parser-boundary/v1",
+  "sourceFormat": "sanitized-excel-vba-style-import-payload",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {"accountId": "TASK257_CHINESE_ACCOUNT", "portfolioId": "TASK257_PORTFOLIO"},
+  "importPayload": {
+    "sheets": [
+      {
+        "sheetName": "初始现金",
+        "headers": ["流水号", "时间UTC", "账户代码", "组合代码", "动作", "金额", "币种", "备注"],
+        "rows": [["TASK257_CHINESE_CASH_001", "2026-01-01T00:00:00Z", "TASK257_CHINESE_ACCOUNT", "TASK257_PORTFOLIO", "初始现金", "100000.00", "CNY", "SANITIZED_TASK257_CHINESE_INITIAL_CASH"]]
+      },
+      {
+        "sheetName": "交易流水",
+        "headers": ["流水号", "成交时间UTC", "账户代码", "组合代码", "证券代码", "方向", "数量", "价格", "金额", "手续费", "现金流", "币种", "来源", "备注"],
+        "rows": [
+          ["TASK257_CHINESE_TRADE_001", "2026-01-02T09:30:00Z", "TASK257_CHINESE_ACCOUNT", "TASK257_PORTFOLIO", "TASK257_CHINESE_INSTRUMENT", "买入", "100", "2.0000", "200.00", "1.00", "-201.00", "CNY", "TASK257_SANITIZED_IMPORT", "SANITIZED_TASK257_CHINESE_BUY"],
+          ["TASK257_CHINESE_TRADE_002", "2026-01-03T09:30:00Z", "TASK257_CHINESE_ACCOUNT", "TASK257_PORTFOLIO", "TASK257_CHINESE_INSTRUMENT", "卖出", "40", "3.0000", "120.00", "1.00", "119.00", "CNY", "TASK257_SANITIZED_IMPORT", "SANITIZED_TASK257_CHINESE_SELL"]
+        ]
+      }
+    ]
+  },
+  "expectedParser": {"accepted": true, "diagnostics": []},
+  "expectedProjection": {
+    "replayStatus": "OK",
+    "cashSummary": {"accountId": "TASK257_CHINESE_ACCOUNT", "portfolioId": "TASK257_PORTFOLIO", "currency": "CNY", "cashBalanceText": "99918.00 CNY", "dataQualityStatus": "OK"},
+    "positionSummaries": [{"accountId": "TASK257_CHINESE_ACCOUNT", "portfolioId": "TASK257_PORTFOLIO", "instrumentCode": "TASK257_CHINESE_INSTRUMENT", "quantityText": "60", "costAmountText": "120.60 CNY", "costPriceText": "2.010 CNY", "marketValueText": "UNAVAILABLE", "unrealizedPnlText": "UNAVAILABLE", "currency": "CNY", "dataQualityStatus": "OK"}],
+    "pnlSummary": {"portfolioId": "TASK257_PORTFOLIO", "currency": "CNY", "realizedPnlText": "38.60 CNY", "unrealizedPnlText": "UNAVAILABLE", "totalAssetsText": "UNAVAILABLE", "totalPnlText": "UNAVAILABLE", "dataQualityStatus": "UNAVAILABLE"},
+    "issues": []
+  }
+}

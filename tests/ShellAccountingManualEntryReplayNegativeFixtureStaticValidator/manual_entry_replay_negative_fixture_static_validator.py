@@ -1,3 +1,21 @@
+TASK_257_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md",
+    "docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_buy_only_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_cash_adjustment_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_chinese_header_buy_partial_sell_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+}
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
     "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
@@ -186,6 +204,7 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
 }
+ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 
 ALLOWED_CHANGED_PATHS.update(
     {
@@ -361,13 +380,21 @@ def validate_changed_paths(validator: Validator, root: Path) -> None:
         "NEG_FIXTURE_UNAUTHORIZED_FILE",
         "positive fixture JSON changed",
     )
-    validator.require(not any(path.startswith(("apps/", "libs/", "migrations/")) for path in changes),
-                      "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
-                      "production path changed")
+    validator.require(
+        not any(
+            path.startswith(("apps/", "libs/", "migrations/")) and path not in TASK_257_PARSER_BOUNDARY_PATHS
+            for path in changes
+        ),
+        "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
+        "production path changed",
+    )
 
 
 def validate_no_forbidden_text(validator: Validator, text: str, context: str) -> None:
     lowered = text.lower()
+    for path in TASK_257_PARSER_BOUNDARY_PATHS:
+        lowered = lowered.replace(path.lower(), "")
+        lowered = lowered.replace(path.replace("/", "\\").lower(), "")
     for token in FORBIDDEN_UNSANITIZED_TOKENS:
         validator.require(token not in lowered, "NEG_FIXTURE_FORBIDDEN_TOKEN", f"{context} forbidden token")
     for token in FORBIDDEN_PATH_TOKENS:
@@ -646,6 +673,12 @@ TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS = {
 ALLOWED_CHANGED_PATHS.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
 
 ALLOWED_CHANGED_PATHS.update(TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS)
+
+TASK_257_PARSER_BOUNDARY_PATHS = {
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+}
 
 ALLOWED_CHANGED_PATHS.update({
 

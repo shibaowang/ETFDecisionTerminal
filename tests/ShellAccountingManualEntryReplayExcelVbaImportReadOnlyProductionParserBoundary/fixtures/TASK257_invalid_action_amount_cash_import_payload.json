@@ -1,0 +1,33 @@
+{
+  "task": "TASK-257",
+  "sampleId": "TASK257_INVALID_ACTION_AMOUNT_CASH_IMPORT_PAYLOAD",
+  "sampleKind": "invalid_action_amount_cash_import_payload",
+  "schemaVersion": "task-257-excel-vba-import-readonly-parser-boundary/v1",
+  "sourceFormat": "sanitized-excel-vba-style-import-payload",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {"accountId": "TASK257_INVALID_ACCOUNT", "portfolioId": "TASK257_PORTFOLIO"},
+  "importPayload": {
+    "sheets": [
+      {
+        "sheetName": "InitialCash",
+        "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+        "rows": [["TASK257_INVALID_CASH_001", "2026-01-01T00:00:00Z", "TASK257_INVALID_ACCOUNT", "TASK257_PORTFOLIO", "INITIAL_CASH", "", "CNY", "SANITIZED_TASK257_INVALID_CASH"]]
+      },
+      {
+        "sheetName": "TradeLog",
+        "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+        "rows": [["TASK257_INVALID_TRADE_001", "2026-01-02T09:30:00Z", "TASK257_INVALID_ACCOUNT", "TASK257_PORTFOLIO", "TASK257_INVALID_INSTRUMENT", "HOLD", "100", "2.0000", "NOT_NUMERIC", "1.00", "-201.00", "CNY", "TASK257_SANITIZED_IMPORT", "SANITIZED_TASK257_INVALID_TRADE"]]
+      }
+    ]
+  },
+  "expectedParser": {
+    "accepted": false,
+    "diagnostics": [
+      {"level": "ERROR", "code": "MISSING_CASH_FIELD", "field": "AMOUNT", "sheetName": "InitialCash", "rowId": "TASK257_INVALID_CASH_001"},
+      {"level": "ERROR", "code": "INVALID_ACTION", "field": "SIDE", "sheetName": "TradeLog", "rowId": "TASK257_INVALID_TRADE_001"},
+      {"level": "ERROR", "code": "NON_NUMERIC_AMOUNT", "field": "AMOUNT", "sheetName": "TradeLog", "rowId": "TASK257_INVALID_TRADE_001"}
+    ]
+  },
+  "expectedProjection": null
+}

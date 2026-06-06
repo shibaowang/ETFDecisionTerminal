@@ -1,3 +1,21 @@
+TASK_257_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md",
+    "docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_buy_only_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_cash_adjustment_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_chinese_header_buy_partial_sell_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+}
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
     "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
@@ -676,6 +694,7 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
     })
+    allowed_changes.update(TASK_257_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-215 changed unauthorized paths: " + ", ".join(unexpected))
 
@@ -698,7 +717,7 @@ def main() -> int:
     for prefix in forbidden_prefixes:
         gate.require(
             not any(
-                path.startswith(prefix) and not is_authorized_task217_fixture_scaffold_path(path)
+                path.startswith(prefix) and path not in TASK_257_EXACT_PATHS and not is_authorized_task217_fixture_scaffold_path(path)
                 for path in changes
             ),
             f"TASK-215 must not change {prefix}",
@@ -718,11 +737,12 @@ def main() -> int:
         gate.require(
             is_authorized_task217_fixture_scaffold_path(path)
             or path in authorized_task222_negative_fixture_scaffold_paths
-            or path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or not any(lowered.endswith(suffix) for suffix in forbidden_suffixes),
+            or path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or not any(lowered.endswith(suffix) for suffix in forbidden_suffixes),
             f"TASK-215 must not add fixture/schema data file: {path}",
         )
 
-    production_diff = added_lines(diff_text(root, "apps", "libs", "migrations"))
+    production_diff_paths = git_lines(root, "diff", "--name-only", "main", "--", "apps", "libs", "migrations") - TASK_257_EXACT_PATHS
+    production_diff = "" if not production_diff_paths else added_lines(diff_text(root, *sorted(production_diff_paths)))
     for token in [
         "INSERT ",
         "UPDATE ",

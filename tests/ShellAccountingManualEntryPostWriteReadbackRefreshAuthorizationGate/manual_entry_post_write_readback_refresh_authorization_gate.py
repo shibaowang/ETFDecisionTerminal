@@ -1,3 +1,21 @@
+TASK_257_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md",
+    "docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_buy_only_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_cash_adjustment_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_chinese_header_buy_partial_sell_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+}
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
     "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
@@ -525,6 +543,7 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
     })
+    allowed.update(TASK_257_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-201 changed unauthorized paths: " + ", ".join(unexpected))
 
@@ -536,7 +555,7 @@ def main() -> int:
         "migrations/",
     ]
     for prefix in forbidden_prefixes:
-        require(not any(path.startswith(prefix) for path in changes), f"TASK-201 must not change {prefix}")
+        require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS for path in changes), f"TASK-201 must not change {prefix}")
 
     forbidden_files = [
         "apps/ETFDecisionShell/src/main.cpp",
@@ -548,6 +567,8 @@ def main() -> int:
     for path in forbidden_files:
         require(path not in changes, f"TASK-201 must not change {path}")
     for path in changes:
+        if path in TASK_257_EXACT_PATHS:
+            continue
         if path.startswith("libs/DataServiceApi/"):
             require(
                 path == "libs/DataServiceApi/src/DataServiceActions.cpp",

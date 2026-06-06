@@ -1,4 +1,12 @@
 TASK_257_EXACT_PATHS = {
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
+    "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
+    "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
+    "libs/ShellServices/CMakeLists.txt",
+    "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
+    "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/excel_vba_import_readonly_local_export_json_file_loader_preview.cpp",
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
     "README.md",
     "docs/README.md",
@@ -579,6 +587,8 @@ def main() -> int:
         + ", ".join(unexpected_qml_changes),
     )
     allowed_task200_shellservices = {
+        "libs/ShellServices/CMakeLists.txt",
+        "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
         "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
@@ -589,6 +599,7 @@ def main() -> int:
         "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
         "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
         "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+        "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
         "libs/ShellServices/src/ShellAccountingPresenter.cpp",
         "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
         "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",

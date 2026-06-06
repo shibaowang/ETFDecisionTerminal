@@ -137,6 +137,7 @@ public:
     Q_INVOKABLE bool refreshManualEntryReadback();
     Q_INVOKABLE void resetExcelVbaImportPreviewState();
     Q_INVOKABLE bool previewExcelVbaImportReadOnly(const QString& importPayloadJson);
+    Q_INVOKABLE bool previewExcelVbaImportReadOnlyFromLocalFile(const QString& fileUrlOrPath);
     void reset();
 
 signals:

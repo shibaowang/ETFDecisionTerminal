@@ -3144,6 +3144,8 @@ broker/trading capability must be separately authorized after
 and
 `docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md`.
 
+Recommended next task: TASK-262 ShellAccounting Excel/VBA import read-only local export JSON file loader preview vertical slice.
+
 TASK-261 may wire the TASK-260 Presenter preview contract into
 `ShellAccountingReadOnlyPage.qml`. The QML panel may accept only pasted
 sanitized in-memory JSON payload text, may call
@@ -3158,6 +3160,28 @@ DataAccess / AccountingEngine access from QML, SQLite writes, audit / ledger /
 snapshot / trade_log / read model writes, TradeDraft generation, strategy
 execution, broker access, network access, credentials, endpoints, real order
 placement, or automatic trading.
+
+## TASK-262 ShellAccounting Excel/VBA Import Read-Only Local Export JSON File Loader Preview Prompt Rule
+
+Future work must reference
+`docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md`
+and
+`docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md`.
+
+TASK-262 may add a ShellServices-owned read-only local `.json` / `.txt` export
+file loader, may expose
+`ShellAccountingPresenter.previewExcelVbaImportReadOnlyFromLocalFile(fileUrlOrPath)`,
+and may wire `ShellAccountingReadOnlyPage.qml` with FileDialog select, preview,
+clear, and sanitized basename display. QML must not read file contents directly.
+The loader must reject non-local URLs, unsupported extensions, files larger than
+1 MB, non-object JSON, raw SQL, path / filename metadata, credentials, and
+endpoints with sanitized errors. TASK-262 must reuse the existing
+`previewExcelVbaImportReadOnly(payloadJson)` path and must not modify startup,
+DataServiceApi action implementation, DataServiceClient, DataAccess,
+migrations, AccountingEngine production code, or historical fixture JSON.
+TASK-262 must not write SQLite, audit, ledger, snapshot, trade_log, persistent
+read model data, generate TradeDrafts, execute strategies, access broker,
+network, credentials, endpoints, place real orders, or enable automatic trading.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

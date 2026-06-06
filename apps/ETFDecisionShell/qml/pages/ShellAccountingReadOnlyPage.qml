@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import ETFDecisionTerminal.ShellAccounting 1.0
 import "../components/readonly"
 
@@ -10,6 +11,28 @@ Rectangle {
     property ShellAccountingPresenter accountingPresenter: null
     readonly property bool presenterAvailable: accountingPresenter !== null
     readonly property string shellState: "UNAVAILABLE"
+    property url excelVbaImportPreviewSelectedFileUrl: ""
+    property string excelVbaImportPreviewSelectedFileName: ""
+
+    function sanitizedExcelVbaImportPreviewFileName(fileUrl) {
+        var value = String(fileUrl)
+        var queryIndex = value.indexOf("?")
+        if (queryIndex >= 0) {
+            value = value.substring(0, queryIndex)
+        }
+        var hashIndex = value.indexOf("#")
+        if (hashIndex >= 0) {
+            value = value.substring(0, hashIndex)
+        }
+        var slashIndex = Math.max(value.lastIndexOf("/"), value.lastIndexOf("\\"))
+        var name = slashIndex >= 0 ? value.substring(slashIndex + 1) : value
+        try {
+            name = decodeURIComponent(name)
+        } catch (error) {
+            name = "selected local file"
+        }
+        return name.length > 0 ? name : "selected local file"
+    }
 
     radius: 8
     color: "#ffffff"
@@ -110,10 +133,26 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingExcelVbaImportPreviewPanel"
                 width: parent.width
-                height: 390
+                height: 500
                 radius: 8
                 color: "#ffffff"
                 border.color: "#cfd8e6"
+
+                FileDialog {
+                    id: excelVbaImportPreviewFileDialog
+                    objectName: "shellAccountingExcelVbaImportPreviewFileDialog"
+                    title: "Select sanitized JSON export"
+                    fileMode: FileDialog.OpenFile
+                    nameFilters: [
+                        "JSON files (*.json)",
+                        "Text files (*.txt)"
+                    ]
+                    onAccepted: {
+                        root.excelVbaImportPreviewSelectedFileUrl = selectedFile
+                        root.excelVbaImportPreviewSelectedFileName =
+                            root.sanitizedExcelVbaImportPreviewFileName(selectedFile)
+                    }
+                }
 
                 Column {
                     anchors.fill: parent
@@ -162,6 +201,49 @@ Rectangle {
                                 accountingPresenter.resetExcelVbaImportPreviewState()
                             }
                         }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Button {
+                            objectName: "shellAccountingExcelVbaImportPreviewSelectFileButton"
+                            text: "Select File"
+                            enabled: root.presenterAvailable
+                            onClicked: excelVbaImportPreviewFileDialog.open()
+                        }
+
+                        Button {
+                            objectName: "shellAccountingExcelVbaImportPreviewFileButton"
+                            text: "Preview File"
+                            enabled: root.presenterAvailable
+                                && !accountingPresenter.excelVbaImportPreviewBusy
+                                && String(root.excelVbaImportPreviewSelectedFileUrl).length > 0
+                            onClicked: accountingPresenter.previewExcelVbaImportReadOnlyFromLocalFile(
+                                String(root.excelVbaImportPreviewSelectedFileUrl))
+                        }
+
+                        Button {
+                            objectName: "shellAccountingExcelVbaImportPreviewClearFileButton"
+                            text: "Clear File"
+                            enabled: root.excelVbaImportPreviewSelectedFileName.length > 0
+                            onClicked: {
+                                root.excelVbaImportPreviewSelectedFileUrl = ""
+                                root.excelVbaImportPreviewSelectedFileName = ""
+                            }
+                        }
+                    }
+
+                    Text {
+                        objectName: "shellAccountingExcelVbaImportPreviewSelectedFileText"
+                        width: parent.width
+                        text: root.excelVbaImportPreviewSelectedFileName.length > 0
+                            ? "Selected file: " + root.excelVbaImportPreviewSelectedFileName
+                            : "Selected file: none"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        elide: Text.ElideRight
                     }
 
                     Rectangle {

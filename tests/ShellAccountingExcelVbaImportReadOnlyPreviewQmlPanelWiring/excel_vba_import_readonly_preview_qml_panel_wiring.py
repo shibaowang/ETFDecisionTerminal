@@ -6,6 +6,19 @@ import subprocess
 from pathlib import Path
 
 
+TASK_262_EXACT_PATHS = {
+    "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
+    "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
+    "libs/ShellServices/CMakeLists.txt",
+    "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/excel_vba_import_readonly_local_export_json_file_loader_preview.cpp",
+}
+
+
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
@@ -109,13 +122,30 @@ def main() -> int:
         "SQLite",
         "DataAccess",
         "AccountingEngine",
-        "FileDialog",
         "XMLHttpRequest",
         "fetch(",
         "credential",
         "endpoint",
     ]:
         require_not_contains(qml, token, "ShellAccountingReadOnlyPage.qml")
+
+    if "FileDialog" in qml:
+        require_contains(qml, "shellAccountingExcelVbaImportPreviewFileDialog", "TASK-262 local file picker")
+        require_contains(qml, "previewExcelVbaImportReadOnlyFromLocalFile(", "TASK-262 local file preview")
+        require_contains(qml, "excelVbaImportPreviewSelectedFileName", "TASK-262 sanitized file display")
+        require_contains(qml, "Selected file:", "TASK-262 sanitized file display")
+        for token in [
+            ".read(",
+            "readText",
+            "readAll",
+            "XMLHttpRequest",
+            "fetch(",
+            "http://",
+            "https://",
+            "credential",
+            "endpoint",
+        ]:
+            require_not_contains(panel, token, "TASK-262 local file picker")
 
     for token in [
         "broker",
@@ -141,6 +171,8 @@ def main() -> int:
         require(path not in changes, f"forbidden changed path: {path}")
 
     for path in changes:
+        if path in TASK_262_EXACT_PATHS:
+            continue
         require(not path.startswith("libs/"), f"production libs path changed: {path}")
         require(not path.startswith("migrations/"), f"migration path changed: {path}")
         require(
@@ -164,7 +196,7 @@ def main() -> int:
         "qmlDirectDataServiceApi": False,
         "qmlDirectAccountingEngine": False,
         "productionFileLoading": False,
-        "fileDialogUsed": False,
+        "fileDialogUsed": "TASK-262-local-file-picker-only" if "FileDialog" in qml else False,
         "startupWiringChanged": False,
         "accountingEngineCalled": False,
         "productionWrite": False,

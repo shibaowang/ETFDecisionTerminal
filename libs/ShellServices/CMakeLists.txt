@@ -5,6 +5,7 @@ add_library(ETFShellServices STATIC
     include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h
     include/ShellServices/ShellAccountingDataServiceAdapter.h
     include/ShellServices/ShellAccountingDisplayText.h
+    include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h
     include/ShellServices/ShellAccountingIssue.h
     include/ShellServices/ShellAccountingIssueListModel.h
     include/ShellServices/ShellAccountingPresenter.h
@@ -28,6 +29,7 @@ add_library(ETFShellServices STATIC
     src/ShellAccountingDataServiceClientPort.cpp
     src/ShellAccountingDataServiceClientPortAdapter.cpp
     src/ShellAccountingDisplayText.cpp
+    src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp
     src/ShellAccountingIssue.cpp
     src/ShellAccountingIssueListModel.cpp
     src/ShellAccountingPresenter.cpp

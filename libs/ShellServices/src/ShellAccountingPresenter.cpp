@@ -1,5 +1,7 @@
 #include "ShellServices/ShellAccountingPresenter.h"
 
+#include "ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h"
+
 #include <QByteArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -767,6 +769,19 @@ bool ShellAccountingPresenter::previewExcelVbaImportReadOnly(
     applyExcelVbaImportPreviewResult(result);
     syncFromController();
     return lastExcelVbaImportPreviewStatus_ == QStringLiteral("ACCEPTED");
+}
+
+bool ShellAccountingPresenter::previewExcelVbaImportReadOnlyFromLocalFile(
+    const QString& fileUrlOrPath)
+{
+    const auto loaded =
+        ShellAccountingExcelVbaImportReadOnlyFileLoader::loadLocalExportJsonPayload(fileUrlOrPath);
+    if (!loaded.success) {
+        markExcelVbaImportPreviewInputError(loaded.issue);
+        return false;
+    }
+
+    return previewExcelVbaImportReadOnly(loaded.payloadJson);
 }
 
 void ShellAccountingPresenter::reset()

@@ -81,6 +81,13 @@ void registerDataServiceWriteActions(
             return handleAccountingAuditWrite(context, connection);
         });
     }
+    if (isWriteActionAllowed(kActionAccountingExcelVbaImportPersistManualEntry)) {
+        (void)dispatcher.registerAction(
+            kActionAccountingExcelVbaImportPersistManualEntry,
+            [&connection](const auto& context) {
+                return handleAccountingExcelVbaImportPersistManualEntry(context, connection);
+            });
+    }
     if (isWriteActionAllowed(kActionAccountingTradeDraftCreate)) {
         (void)dispatcher.registerAction(kActionAccountingTradeDraftCreate, [&connection](const auto& context) {
             return handleAccountingTradeDraftCreate(context, connection);

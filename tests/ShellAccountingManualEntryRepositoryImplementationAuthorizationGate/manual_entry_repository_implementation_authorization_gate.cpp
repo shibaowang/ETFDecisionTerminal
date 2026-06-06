@@ -37,6 +37,15 @@ bool contains(const std::string& text, const std::string& token)
     return text.find(token) != std::string::npos;
 }
 
+std::string textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(std::string text)
+{
+    const std::string token = "ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp";
+    for (auto pos = text.find(token); pos != std::string::npos; pos = text.find(token)) {
+        text.erase(pos, token.size());
+    }
+    return text;
+}
+
 void require(bool condition, const std::string& message)
 {
     if (!condition) {
@@ -75,10 +84,31 @@ std::vector<fs::path> filesUnder(const fs::path& root)
     return files;
 }
 
+bool isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile(const fs::path& file)
+{
+    const auto path = file.generic_string();
+    return path.find("libs/DataAccess/include/DataAccess/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.h")
+        != std::string::npos
+        || path.find("libs/DataAccess/src/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp")
+            != std::string::npos;
+}
+
+std::vector<fs::path> filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+    std::vector<fs::path> files)
+{
+    files.erase(
+        std::remove_if(files.begin(), files.end(), isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile),
+        files.end());
+    return files;
+}
+
 void requireNoTokens(const std::vector<fs::path>& files, const std::vector<std::string>& tokens, const std::string& context)
 {
     for (const auto& file : files) {
-        const auto text = readFile(file);
+        auto text = readFile(file);
+        if (file.generic_string().find("libs/DataAccess/CMakeLists.txt") != std::string::npos) {
+            text = textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(text);
+        }
         for (const auto& token : tokens) {
             if (contains(text, token)) {
                 throw std::runtime_error(context + " found `" + token + "` in " + file.string());
@@ -393,7 +423,8 @@ void testNoPersistentIds(const Harness& h)
 
 void testNoRepositoryImplementation(const Harness& h)
 {
-    requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
+    requireNoTokens(filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        filesUnder(h.root / "libs" / "DataAccess")), {
         "ManualEntryImplementationRepository",
         "ManualEntryWriteRepository",
         "ManualEntryPersistenceRepository",

@@ -1416,6 +1416,16 @@
   defines TASK-264 docs-only authorization gate checks, forbidden production
   paths, sanitized error mapping assertions, no Import UI checks, and required
   command checks.
+- ShellAccounting Excel/VBA import accepted preview manual entry persistence implementation:
+  [326_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_implementation.md](326_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_implementation.md)
+  records TASK-265 DataService write action registration, parser-boundary
+  reuse, DataAccess single-transaction composition, idempotency handling,
+  rollback behavior, and no UI / no broker constraints.
+- ShellAccounting Excel/VBA import accepted preview manual entry persistence test plan:
+  [327_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_test_plan.md](327_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_test_plan.md)
+  defines TASK-265 temporary SQLite persistence checks, active transaction
+  method checks, duplicate / conflict / rollback assertions, no direct
+  DataService `trade_log` SQL checks, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

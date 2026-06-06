@@ -74,13 +74,45 @@ std::vector<fs::path> filesUnder(const fs::path& root)
     return files;
 }
 
+bool isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile(const fs::path& file)
+{
+    const auto path = file.generic_string();
+    return path.find("libs/DataAccess/include/DataAccess/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.h")
+        != std::string::npos
+        || path.find("libs/DataAccess/src/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp")
+            != std::string::npos;
+}
+
+std::vector<fs::path> filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+    std::vector<fs::path> files)
+{
+    files.erase(
+        std::remove_if(files.begin(), files.end(), isTask265ExcelVbaImportManualEntryPersistenceRepositoryFile),
+        files.end());
+    return files;
+}
+
+std::string textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(std::string text)
+{
+    const std::string task265Source =
+        "ShellAccountingExcelVbaImportManualEntryPersistenceRepository.cpp";
+    std::size_t position = std::string::npos;
+    while ((position = text.find(task265Source)) != std::string::npos) {
+        text.erase(position, task265Source.size());
+    }
+    return text;
+}
+
 void requireNoTokens(
     const std::vector<fs::path>& files,
     const std::vector<std::string>& tokens,
     const std::string& context)
 {
     for (const auto& file : files) {
-        const auto text = readFile(file);
+        auto text = readFile(file);
+        if (file.generic_string().find("libs/DataAccess/CMakeLists.txt") != std::string::npos) {
+            text = textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(text);
+        }
         for (const auto& token : tokens) {
             if (contains(text, token)) {
                 throw std::runtime_error(context + " found `" + token + "` in " + file.string());
@@ -350,7 +382,8 @@ void testNoPersistentIds(const Harness&)
 
 void testNoDataAccessWriteRepository(const Harness& h)
 {
-    const auto dataAccessCMake = readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt");
+    const auto dataAccessCMake = textWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        readFile(h.root / "libs" / "DataAccess" / "CMakeLists.txt"));
     requireContains(dataAccessCMake, "ShellAccountingManualTransactionRepository.cpp", "DataAccess CMake TASK-192 repository");
     requireContains(dataAccessCMake, "ShellAccountingManualCashMovementRepository.cpp", "DataAccess CMake TASK-196 repository");
     requireNotContains(dataAccessCMake, "ManualEntryPersistence", "DataAccess CMake");
@@ -358,7 +391,8 @@ void testNoDataAccessWriteRepository(const Harness& h)
 
 void testNoManualPersistenceRepository(const Harness& h)
 {
-    requireNoTokens(filesUnder(h.root / "libs" / "DataAccess"), {
+    requireNoTokens(filesWithoutTask265ExcelVbaImportManualEntryPersistenceRepository(
+        filesUnder(h.root / "libs" / "DataAccess")), {
         "ManualEntryPersistenceRepository",
         "ManualTransactionWriteRepository",
         "ManualCashMovementWriteRepository",

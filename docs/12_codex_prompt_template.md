@@ -3233,6 +3233,28 @@ trade_log, persistent read model data, generate TradeDrafts, execute strategy,
 access broker, network, credentials, endpoints, place real orders, or enable
 automatic trading.
 
+## TASK-265 ShellAccounting Excel/VBA Import Accepted Preview Manual Entry Persistence Prompt Rule
+
+Future Excel/VBA import manual entry persistence work must reference
+`docs/326_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_implementation.md`
+and
+`docs/327_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_test_plan.md`.
+
+TASK-265 registers `accounting.excel_vba_import.persist_manual_entry` and may
+reuse `ShellAccountingExcelVbaImportReadOnlyParser`, existing manual transaction
+validation, and DataAccess repositories to persist accepted preview trade facts
+in temporary tests. It may add the minimal DataAccess active-transaction method
+and composition repository needed to commit manual facts plus sanitized audit
+marker in one `TransactionRunner`. The existing public manual transaction
+repository API must remain behaviorally preserved. The DataService action must
+not handwrite `INSERT INTO trade_log`, and it must reject non-`ACCEPTED`
+previews, digest mismatches, missing idempotency keys, duplicate conflicts, and
+partial failure with sanitized issue codes. TASK-265 must not add QML,
+startup, Presenter, Controller, ShellServices UI wiring, DataServiceClient
+changes, migrations, AccountingEngine production code, historical fixtures,
+TradeDraft generation, strategy execution, broker, network, credentials,
+endpoints, real order placement, or automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

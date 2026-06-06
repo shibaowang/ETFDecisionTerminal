@@ -399,15 +399,23 @@ void testDataServiceActionsUnmodified(const Harness& h)
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
         "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
     });
+    const bool task258ReadOnlyPreviewAction =
+        diff == "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h\n"
+                "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp\n"
+        && patch.find("kActionAccountingExcelVbaImportReadOnlyPreview") != std::string::npos
+        && patch.find("handleAccountingExcelVbaImportReadOnlyPreview") != std::string::npos
+        && patch.find("accounting.excel_vba_import.readonly_preview") != std::string::npos
+        && patch.find("manual_cash_movement.create") == std::string::npos;
+    const bool task265PersistManualEntryAction =
+        diff == "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h\n"
+                "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp\n"
+        && patch.find("kActionAccountingExcelVbaImportPersistManualEntry") != std::string::npos
+        && patch.find("handleAccountingExcelVbaImportPersistManualEntry") != std::string::npos
+        && patch.find("accounting.excel_vba_import.persist_manual_entry") != std::string::npos
+        && patch.find("manual_cash_movement.create") == std::string::npos;
     require(
-        diff.empty()
-            || (diff == "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h\n"
-                        "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp\n"
-                && patch.find("kActionAccountingExcelVbaImportReadOnlyPreview") != std::string::npos
-                && patch.find("handleAccountingExcelVbaImportReadOnlyPreview") != std::string::npos
-                && patch.find("accounting.excel_vba_import.readonly_preview") != std::string::npos
-                && patch.find("manual_cash_movement.create") == std::string::npos),
-        "DataServiceActions header and registrar must not change except TASK-258 read-only preview action");
+        diff.empty() || task258ReadOnlyPreviewAction || task265PersistManualEntryAction,
+        "DataServiceActions header and registrar must not change except authorized Excel/VBA import actions");
     const auto actions = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     requireContains(actions, "ShellAccountingManualCashMovementRepository repository(connection)",
         "TASK-198 DataServiceActions wiring");
@@ -426,10 +434,21 @@ void testValidationCodeUnmodified(const Harness& h)
 
 void testTask192RepositoryUnmodified(const Harness& h)
 {
-    require(gitDiff(h, {
+    const auto diff = gitDiff(h, {
         "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
         "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
-    }).empty(), "TASK-192 manual transaction repository must not change");
+    });
+    const auto patch = gitDiffPatch(h, {
+        "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h",
+        "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp",
+    });
+    require(
+        diff.empty()
+            || (diff == "libs/DataAccess/include/DataAccess/ShellAccountingManualTransactionRepository.h\n"
+                        "libs/DataAccess/src/ShellAccountingManualTransactionRepository.cpp\n"
+                && patch.find("persistManualTransactionInActiveTransaction") != std::string::npos
+                && patch.find("ACTIVE_TRANSACTION_REQUIRED") != std::string::npos),
+        "TASK-192 manual transaction repository must not change except TASK-265 active transaction method");
 }
 
 void testRepositoryExists(const Harness& h)

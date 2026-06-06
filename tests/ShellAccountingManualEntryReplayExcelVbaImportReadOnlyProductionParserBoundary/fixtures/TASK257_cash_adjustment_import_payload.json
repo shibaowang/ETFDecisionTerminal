@@ -1,0 +1,31 @@
+{
+  "task": "TASK-257",
+  "sampleId": "TASK257_CASH_ADJUSTMENT_IMPORT_PAYLOAD",
+  "sampleKind": "cash_adjustment_import_payload",
+  "schemaVersion": "task-257-excel-vba-import-readonly-parser-boundary/v1",
+  "sourceFormat": "sanitized-excel-vba-style-import-payload",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {"accountId": "TASK257_CASH_ACCOUNT", "portfolioId": "TASK257_PORTFOLIO"},
+  "importPayload": {
+    "sheets": [
+      {
+        "sheetName": "InitialCash",
+        "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+        "rows": [
+          ["TASK257_CASH_INITIAL_001", "2026-01-01T00:00:00Z", "TASK257_CASH_ACCOUNT", "TASK257_PORTFOLIO", "INITIAL_CASH", "100000.00", "CNY", "SANITIZED_TASK257_CASH_INITIAL"],
+          ["TASK257_CASH_DEPOSIT_001", "2026-01-02T00:00:00Z", "TASK257_CASH_ACCOUNT", "TASK257_PORTFOLIO", "DEPOSIT", "500.00", "CNY", "SANITIZED_TASK257_CASH_DEPOSIT"]
+        ]
+      },
+      {"sheetName": "Trades", "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"], "rows": []}
+    ]
+  },
+  "expectedParser": {"accepted": true, "diagnostics": []},
+  "expectedProjection": {
+    "replayStatus": "UNSUPPORTED_SCENARIO",
+    "cashSummary": null,
+    "positionSummaries": [],
+    "pnlSummary": null,
+    "issues": [{"level": "WARNING", "code": "REPLAY_NOT_IMPLEMENTED", "blocking": false, "field": "facts", "sourceId": ""}]
+  }
+}

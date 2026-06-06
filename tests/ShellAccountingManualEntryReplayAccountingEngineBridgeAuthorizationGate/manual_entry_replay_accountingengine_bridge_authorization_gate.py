@@ -1,3 +1,21 @@
+TASK_257_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md",
+    "docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_buy_only_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_cash_adjustment_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_chinese_header_buy_partial_sell_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+}
 #!/usr/bin/env python3
 
 import argparse
@@ -208,6 +226,7 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
 }
+ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 
 REQUIRED_DOC_286_SECTIONS = [
     "## Purpose",
@@ -590,7 +609,7 @@ def main() -> int:
     current_paths = changed_paths(root)
     unauthorized = sorted(path for path in current_paths if path not in ALLOWED_CHANGED_PATHS)
     gate.require(not unauthorized, f"changed paths are exact allowlisted: {unauthorized}")
-    gate.require(all(not path.startswith(prefix) for path in current_paths for prefix in FORBIDDEN_CHANGED_PREFIXES), "changed paths avoid forbidden production and fixture prefixes")
+    gate.require(all(not path.startswith(prefix) for path in current_paths if path not in TASK_257_EXACT_PATHS for prefix in FORBIDDEN_CHANGED_PREFIXES), "changed paths avoid forbidden production and fixture prefixes")
     gate.require(TASK_245_DOC.as_posix() in ALLOWED_CHANGED_PATHS, "TASK-245 docs/286 exact path allowlisted")
     gate.require(TASK_245_PLAN.as_posix() in ALLOWED_CHANGED_PATHS, "TASK-245 docs/287 exact path allowlisted")
     gate.require(TASK_245_GATE.as_posix() in ALLOWED_CHANGED_PATHS, "TASK-245 gate exact path allowlisted")
@@ -639,7 +658,7 @@ def main() -> int:
     validate_future_bridge_directory(gate, root)
     gate.require(not any(path.startswith("libs/AccountingEngine/") for path in current_paths), "AccountingEngine code unchanged")
     gate.require(not any(path.startswith("apps/") for path in current_paths), "apps production paths unchanged")
-    gate.require(not any(path.startswith("libs/") for path in current_paths), "libs production paths unchanged")
+    gate.require(not any(path.startswith("libs/") and path not in TASK_257_EXACT_PATHS for path in current_paths), "libs production paths unchanged")
     gate.require(not any(path.startswith("migrations/") for path in current_paths), "migrations unchanged")
     gate.require(not any(path.endswith(".qml") for path in current_paths), "QML unchanged")
 

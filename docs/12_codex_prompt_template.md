@@ -3039,6 +3039,28 @@ AccountingEngine code, does not modify historical fixture JSON, does not persist
 read models, and does not authorize broker, network, credentials, endpoints,
 real order placement, or automatic trading.
 
+Recommended next task: TASK-257 ShellAccounting manual entry replay Excel/VBA import read-only production parser boundary vertical slice.
+
+## TASK-257 Manual Entry Replay Excel/VBA Import Read-Only Production Parser Boundary Prompt Rule
+
+Future production Excel import runtime integration, file loading, UI exposure,
+read model refresh, larger sample suites, or broker/trading capability must be
+separately authorized after
+`docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md`
+and
+`docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md`.
+
+TASK-257 may add a minimal production read-only parser boundary for sanitized
+Excel/VBA-style import payloads. TASK-257 parser code may build normalized
+diagnostics and replay fact DTOs, but must not register DataService runtime
+actions, load files in production, call AccountingEngine, write SQLite, write
+audit / ledger / snapshot / trade_log / read models, generate TradeDrafts, or
+authorize production runtime integration. TASK-257 may call AccountingEngine
+read-only replay only from the TASK-257 test helper, may load only TASK-257
+local sanitized fixtures, and must emit only in-memory summary / sanitized
+stdout JSON evidence. TASK-257 does not authorize broker, network, credentials,
+endpoints, real order placement, strategy execution, or automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

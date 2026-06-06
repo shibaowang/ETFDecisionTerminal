@@ -1,3 +1,21 @@
+TASK_257_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md",
+    "docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_buy_only_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_cash_adjustment_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_chinese_header_buy_partial_sell_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+}
 TASK_246_SELF_CONSISTENCY_PATHS = {
     "README.md",
     "docs/12_codex_prompt_template.md",
@@ -424,6 +442,7 @@ def main() -> int:
         "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
         "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
     })
+    allowed_changes.update(TASK_257_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     require(not unexpected, "TASK-206 changed unauthorized paths: " + ", ".join(unexpected))
 
@@ -437,8 +456,10 @@ def main() -> int:
         "migrations/",
     ]
     for prefix in forbidden_prefixes:
-        require(not any(path.startswith(prefix) for path in changes), f"TASK-206 must not change {prefix}")
+        require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS for path in changes), f"TASK-206 must not change {prefix}")
     for path in changes:
+        if path in TASK_257_EXACT_PATHS:
+            continue
         if path.startswith("libs/DataServiceApi/"):
             require(
                 path == "libs/DataServiceApi/src/DataServiceActions.cpp",

@@ -1,3 +1,21 @@
+TASK_257_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/310_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary.md",
+    "docs/311_shell_accounting_manual_entry_replay_excel_vba_import_readonly_production_parser_boundary_test_plan.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_buy_only_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_cash_adjustment_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_chinese_header_buy_partial_sell_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
+    "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+}
 #!/usr/bin/env python3
 
 import argparse
@@ -106,6 +124,7 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
     "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
 }
+ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 
 FORBIDDEN_CHANGED_PREFIXES = (
     "apps/",
@@ -211,6 +230,8 @@ def validate_changed_paths(gate: Gate, root: Path) -> None:
     unexpected = sorted(path for path in changes if path not in ALLOWED_CHANGED_PATHS)
     gate.require(not unexpected, f"unexpected changed paths: {unexpected}")
     for path in changes:
+        if path in TASK_257_EXACT_PATHS:
+            continue
         gate.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed path: {path}")
     for required in (TASK_DOC, TASK_PLAN, TASK_CMAKE, TASK_GATE, TASK_RUNTIME):
         gate.require(required.as_posix() in ALLOWED_CHANGED_PATHS, f"required path allowlisted: {required}")
@@ -295,7 +316,7 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
         Path("libs/DataAccess"),
         Path("migrations"),
     ):
-        gate.require(not any(changed.startswith(path.as_posix() + "/") for changed in changed_paths(root)),
+        gate.require(not any(changed.startswith(path.as_posix() + "/") and changed not in TASK_257_EXACT_PATHS for changed in changed_paths(root)),
                      f"{path} unchanged")
 
     for production_path in (

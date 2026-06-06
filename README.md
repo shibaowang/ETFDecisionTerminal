@@ -4923,3 +4923,27 @@ TASK-261 documentation is in
 `docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md`
 and
 `docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md`.
+
+## TASK-262 ShellAccounting Excel/VBA Import Read-Only Local Export JSON File Loader Preview
+
+TASK-262 adds a ShellServices-owned read-only local export JSON/TXT file loader
+and wires `ShellAccountingReadOnlyPage.qml` to select a local sanitized export
+file, display only its basename, and call
+`ShellAccountingPresenter.previewExcelVbaImportReadOnlyFromLocalFile(fileUrl)`.
+The Presenter loads the local file as an in-memory JSON payload and reuses the
+existing `previewExcelVbaImportReadOnly(payloadJson)` path.
+
+TASK-262 enforces local-file-only input, `.json` / `.txt` extension allowlisting,
+a 1 MB file size limit, JSON object input, and sanitized rejection for path,
+filename, raw SQL, credential, and endpoint payload fields. TASK-262 does not
+modify startup wiring, DataServiceApi action implementation, DataServiceClient,
+DataAccess repositories, migrations, AccountingEngine production code, or
+historical fixtures. TASK-262 does not write SQLite, audit, ledger, snapshot,
+trade_log, or persistent read model data; does not generate TradeDrafts,
+execute strategies, submit broker orders, access networks, read credentials,
+read endpoints, place real orders, or enable automatic trading.
+
+TASK-262 documentation is in
+`docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md`
+and
+`docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md`.

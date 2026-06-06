@@ -1,4 +1,11 @@
 TASK_257_EXACT_PATHS = {
+    "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
+    "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
+    "libs/ShellServices/CMakeLists.txt",
+    "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
+    "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/excel_vba_import_readonly_local_export_json_file_loader_preview.cpp",
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
     "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
     "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
@@ -86,6 +93,15 @@ TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS = {
     "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
     "libs/ShellServices/src/ShellAccountingServiceTypes.cpp",
 }
+TASK_262_READONLY_LOCAL_FILE_LOADER_PRODUCTION_PATHS = {
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "libs/ShellServices/CMakeLists.txt",
+    "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+}
+
 TASK_246_SELF_CONSISTENCY_PATHS = {
     "README.md",
     "docs/12_codex_prompt_template.md",
@@ -596,7 +612,7 @@ def main() -> int:
         gate.require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS for path in changes), f"TASK-213 must not change {prefix}")
     gate.require(not any(path.endswith(".sql") for path in changes), "TASK-213 must not add migration or schema files")
 
-    production_diff = added_lines(diff_text(root, "apps", "libs", "migrations", *[f":(exclude){path}" for path in TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS]))
+    production_diff = added_lines(diff_text(root, "apps", "libs", "migrations", *[f":(exclude){path}" for path in (TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS | TASK_262_READONLY_LOCAL_FILE_LOADER_PRODUCTION_PATHS)]))
     for token in [
         "INSERT ",
         "UPDATE ",

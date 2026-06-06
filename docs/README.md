@@ -1385,6 +1385,16 @@
   defines TASK-261 QML object contract, Presenter invocation, property binding,
   reset wiring, FileDialog and direct dependency bans, production boundary, and
   required command checks.
+- ShellAccounting Excel/VBA import read-only local export JSON file loader preview:
+  [320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md](320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md)
+  records TASK-262 local-file-only loader scope, QML FileDialog handoff,
+  ShellServices file reading boundary, sanitized basename display, existing
+  Presenter preview path reuse, and no-write / no-broker constraints.
+- ShellAccounting Excel/VBA import read-only local export JSON file loader preview test plan:
+  [321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md](321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md)
+  defines TASK-262 loader validation, Presenter file preview invocation, QML
+  file-control wiring, sanitized error handling, no direct QML file read, and
+  required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

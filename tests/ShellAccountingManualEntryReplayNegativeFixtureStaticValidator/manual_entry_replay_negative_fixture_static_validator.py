@@ -1,4 +1,11 @@
 TASK_257_EXACT_PATHS = {
+    "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
+    "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
+    "libs/ShellServices/CMakeLists.txt",
+    "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
+    "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyLocalExportJsonFileLoaderPreview/excel_vba_import_readonly_local_export_json_file_loader_preview.cpp",
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
     "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
     "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
@@ -439,6 +446,7 @@ def validate_changed_paths(validator: Validator, root: Path) -> None:
             and path not in TASK_257_PARSER_BOUNDARY_PATHS
             and path not in TASK_258_READONLY_PREVIEW_ACTION_PATHS
             and path not in TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS
+            and path not in TASK_262_READONLY_LOCAL_FILE_LOADER_PREVIEW_PATHS
             for path in changes
         ),
         "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
@@ -452,6 +460,7 @@ def validate_no_forbidden_text(validator: Validator, text: str, context: str) ->
         TASK_257_PARSER_BOUNDARY_PATHS,
         TASK_258_READONLY_PREVIEW_ACTION_PATHS,
         TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS,
+        TASK_262_READONLY_LOCAL_FILE_LOADER_PREVIEW_PATHS,
         TASK_261_QML_PANEL_PATHS,
     ):
         for path in exact_paths:
@@ -770,6 +779,17 @@ TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS = {
     "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
     "libs/ShellServices/src/ShellAccountingServiceTypes.cpp",
 }
+
+TASK_262_READONLY_LOCAL_FILE_LOADER_PREVIEW_PATHS = {
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "libs/ShellServices/CMakeLists.txt",
+    "libs/ShellServices/include/ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/src/ShellAccountingExcelVbaImportReadOnlyFileLoader.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+}
+
+ALLOWED_CHANGED_PATHS.update(TASK_262_READONLY_LOCAL_FILE_LOADER_PREVIEW_PATHS)
 
 ALLOWED_CHANGED_PATHS.update({
 

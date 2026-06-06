@@ -1264,6 +1264,17 @@
   defines TASK-249 static checks, required regression gates, changed-path
   allowlist, clean-main checks, failure modes, acceptance criteria, and formal
   conclusion.
+- ShellAccounting manual entry replay AccountingEngine bridge phase closeout and handoff gate:
+  [296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md](296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md)
+  records TASK-250 phase closeout scope for the test-only bridge phase, CI
+  evidence, bridge contract evidence, failure-mode evidence, handoff
+  preconditions, no AccountingEngine call, no replay, no write, no production
+  integration, and no broker/network constraints.
+- ShellAccounting manual entry replay AccountingEngine bridge phase closeout and handoff test plan:
+  [297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md](297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md)
+  defines TASK-250 static checks, required regression gates, changed-path
+  allowlist, phase closeout evidence, handoff checks, failure modes, acceptance
+  criteria, and formal conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

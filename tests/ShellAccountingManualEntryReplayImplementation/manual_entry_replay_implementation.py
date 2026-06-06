@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import hashlib
@@ -8,6 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+
+TASK_250_PHASE_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
+    "docs/296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md",
+    "docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
+}
 
 SUMMARY_SCHEMA = "manual-entry-replay-test-only-implementation-summary/v1"
 DRY_RUN_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
@@ -554,5 +561,7 @@ TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS = {
 }
 
 ALLOWED_CHANGED_PATHS.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
+
+ALLOWED_CHANGED_PATHS.update(TASK_250_PHASE_CLOSEOUT_SELF_CONSISTENCY_PATHS)
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -4644,3 +4644,30 @@ and
 `docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md`.
 Recommended next task is TASK-250 ShellAccounting manual entry replay
 AccountingEngine bridge phase closeout and handoff gate.
+
+## TASK-250 Manual Entry Replay AccountingEngine Bridge Phase Closeout And Handoff Gate
+
+TASK-250 closes out the TASK-245 through TASK-249 test-only AccountingEngine
+bridge phase and records the handoff boundary for the next separately
+authorized runtime integration step. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout`
+verifies bridge phase docs, CTest registration, changed-path exact allowlists,
+bridge stdout contract evidence, failure-mode evidence, handoff prerequisites,
+no AccountingEngine code drift, no AccountingEngine replay calls, no production
+bridge, no runtime writes, no read model refresh, and no broker / network /
+credential / endpoint drift.
+
+TASK-250 is test-only and phase-closeout-only. TASK-250 does not call
+AccountingEngine replay, does not modify AccountingEngine code, does not
+implement production bridge, does not implement runtime integration, does not
+modify fixture JSON, does not authorize production integration, does not
+authorize runtime SQL / SQLite read/write, audit / ledger / snapshot writes,
+read model refresh, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+See
+`docs/296_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_gate.md`
+and
+`docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md`.
+Recommended next task is TASK-251 ShellAccounting manual entry replay
+AccountingEngine runtime integration authorization gate.

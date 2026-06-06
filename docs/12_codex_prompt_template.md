@@ -2933,7 +2933,27 @@ placement, or automatic trading. Future runtime integration implementation
 must be separately authorized.
 
 Recommended next task: TASK-252 ShellAccounting manual entry replay
-AccountingEngine runtime integration implementation authorization gate.
+read-only runtime integration vertical slice gate.
+
+## TASK-252 Manual Entry Replay Read-Only Runtime Integration Vertical Slice Prompt Rule
+
+Future manual entry replay production runtime integration, read model refresh,
+production parser / loader / reader work, persistent projection writes, or
+production AccountingEngine replay wiring must reference
+`docs/300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md`
+and
+`docs/301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md`.
+
+TASK-252 is a test-only read-only runtime integration vertical slice. TASK-252
+may call AccountingEngine read-only replay only through a test-only adapter and
+may emit only in-memory summary / stdout JSON evidence. TASK-252 does not
+implement production runtime integration, does not authorize production write,
+does not modify production code, does not modify AccountingEngine code, does
+not modify fixture JSON, does not persist read models, and does not authorize
+broker, network, credentials, endpoint, real order placement, or automatic
+trading. Future production runtime integration must be separately authorized.
+
+Recommended next task: TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

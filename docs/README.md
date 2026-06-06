@@ -1232,6 +1232,16 @@
   defines TASK-246 static checks, bridge CLI probes, sanitized output checks,
   exact changed-path allowlist, regression gates, failure modes, acceptance
   criteria, and formal conclusion.
+- ShellAccounting manual entry replay AccountingEngine bridge regression matrix gate:
+  [290_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_gate.md](290_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_gate.md)
+  records TASK-247 test-only bridge regression matrix scope, positive matrix,
+  failure matrix, sanitized output matrix, no AccountingEngine call, no replay,
+  no write, no production integration, and no broker/network constraints.
+- ShellAccounting manual entry replay AccountingEngine bridge regression matrix test plan:
+  [291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md](291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md)
+  defines TASK-247 static checks, bridge matrix cases, failure modes, exact
+  changed-path allowlist, regression gates, acceptance criteria, and formal
+  conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

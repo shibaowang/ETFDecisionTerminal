@@ -80,6 +80,8 @@ def run_summary_script(root: Path, script: Path) -> dict[str, Any]:
 
 
 def validate_dry_run_summary(summary: dict[str, Any]) -> None:
+    if summary.get("syntheticDataOnly", True) is not True:
+        raise BridgeError("dry-run summary must be synthetic")
     if summary.get("schemaVersion") != DRY_RUN_SCHEMA:
         raise BridgeError("dry-run summary schema mismatch")
     if summary.get("dryRunStatus") != "ok":
@@ -106,6 +108,8 @@ def validate_dry_run_summary(summary: dict[str, Any]) -> None:
 
 
 def validate_implementation_summary(summary: dict[str, Any]) -> None:
+    if summary.get("syntheticDataOnly", True) is not True:
+        raise BridgeError("implementation summary must be synthetic")
     if summary.get("schemaVersion") != IMPLEMENTATION_SCHEMA:
         raise BridgeError("implementation summary schema mismatch")
     if summary.get("implementationMode") != "test-only-in-memory":

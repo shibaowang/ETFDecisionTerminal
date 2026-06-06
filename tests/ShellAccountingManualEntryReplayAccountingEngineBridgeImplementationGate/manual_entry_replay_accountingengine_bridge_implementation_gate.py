@@ -84,6 +84,10 @@ ALLOWED_CHANGED_PATHS = {
     BRIDGE_SCRIPT.as_posix(),
     GATE_CMAKE.as_posix(),
     GATE_SCRIPT.as_posix(),
+    "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
+    "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
     (
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/"
         "manual_entry_replay_accountingengine_bridge_authorization_gate.py"

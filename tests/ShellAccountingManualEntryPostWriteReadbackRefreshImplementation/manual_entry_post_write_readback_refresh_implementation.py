@@ -1,4 +1,11 @@
-﻿TASK_246_SELF_CONSISTENCY_PATHS = {
+TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
+    "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
+    "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
+}
+
+TASK_246_SELF_CONSISTENCY_PATHS = {
     "README.md",
     "docs/12_codex_prompt_template.md",
     "docs/288_shell_accounting_manual_entry_replay_accountingengine_bridge_test_only_implementation_gate.md",
@@ -523,6 +530,7 @@ def main() -> int:
     allowed.update(TASK_246_SELF_CONSISTENCY_PATHS)
     allowed.update(TASK_247_SELF_CONSISTENCY_PATHS)
     allowed.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
+    allowed.update(TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-202 changed unauthorized paths: " + ", ".join(unexpected))
     for forbidden in [

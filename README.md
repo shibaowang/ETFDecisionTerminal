@@ -4617,3 +4617,30 @@ and
 `docs/293_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_test_plan.md`.
 Recommended next task is TASK-249 ShellAccounting manual entry replay
 AccountingEngine bridge CI closeout gate.
+
+## TASK-249 Manual Entry Replay AccountingEngine Bridge CI Closeout Gate
+
+TASK-249 adds a CI closeout gate for the TASK-245 through TASK-248 test-only
+AccountingEngine bridge phase. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout`
+verifies bridge authorization, implementation, regression matrix, and
+failure-mode hardening docs, CTest registration, changed-path exact allowlists,
+clean-main invariants, bridge stdout contract, stable failure issue codes, no
+AccountingEngine code drift, no AccountingEngine replay calls, no production
+bridge, no runtime writes, no read model refresh, and no broker / network /
+credential / endpoint drift.
+
+TASK-249 is test-only and CI-closeout-only. TASK-249 does not call
+AccountingEngine replay, does not modify AccountingEngine code, does not
+implement production bridge, does not implement runtime integration, does not
+modify fixture JSON, does not authorize production integration, does not
+authorize runtime SQL / SQLite read/write, audit / ledger / snapshot writes,
+read model refresh, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+See
+`docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md`
+and
+`docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md`.
+Recommended next task is TASK-250 ShellAccounting manual entry replay
+AccountingEngine bridge phase closeout and handoff gate.

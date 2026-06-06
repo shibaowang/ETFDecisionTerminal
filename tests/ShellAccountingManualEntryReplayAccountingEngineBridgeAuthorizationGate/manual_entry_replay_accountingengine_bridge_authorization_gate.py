@@ -116,9 +116,13 @@ ALLOWED_CHANGED_PATHS = {
     "docs/289_shell_accounting_manual_entry_replay_accountingengine_bridge_test_only_implementation_test_plan.md",
     "docs/290_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_gate.md",
     "docs/291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md",
+    "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
+    "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
     "tests/CMakeLists.txt",
     TASK_245_CMAKE.as_posix(),
     TASK_245_GATE.as_posix(),
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
     "tests/ShellAccountingManualEntryReplayAccountingEngine"
     "Bridge/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayAccountingEngine"

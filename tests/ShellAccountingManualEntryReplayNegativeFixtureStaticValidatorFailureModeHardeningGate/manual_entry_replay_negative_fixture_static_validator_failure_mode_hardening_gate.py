@@ -12,6 +12,13 @@ from pathlib import Path
 from typing import Any, Callable
 
 
+TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
+    "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
+    "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
+}
+
 FAILURE_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-failure/v1"
 NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
 POSITIVE_DIR = Path("tests/fixtures/manual_entry_replay")
@@ -685,6 +692,12 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
             "manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py"
         ),
         "ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
+        (
+            "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/"
+            "manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py"
+        ),
+        "ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate",
     ]:
         validator_call_scan_text = validator_call_scan_text.replace(allowed_path_token, "")
     gate.require("AccountingEngine" not in validator_call_scan_text, "validator does not call AccountingEngine")
@@ -782,5 +795,7 @@ TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS = {
 }
 
 ALLOWED_CHANGED_PATHS.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
+
+ALLOWED_CHANGED_PATHS.update(TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS)
 if __name__ == "__main__":
     raise SystemExit(main())

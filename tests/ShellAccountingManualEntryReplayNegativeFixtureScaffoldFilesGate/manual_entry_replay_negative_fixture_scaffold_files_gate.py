@@ -1,4 +1,11 @@
-﻿#!/usr/bin/env python3
+TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
+    "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
+    "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
+}
+
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -690,5 +697,7 @@ TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS = {
 }
 
 ALLOWED_CHANGED_PATHS.update(TASK_248_FULL_CTEST_SELF_CONSISTENCY_PATHS)
+
+ALLOWED_CHANGED_PATHS.update(TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS)
 if __name__ == "__main__":
     raise SystemExit(main())

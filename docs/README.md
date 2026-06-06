@@ -1253,6 +1253,17 @@
   defines TASK-248 static checks, regression gates, changed-path allowlist,
   failure-mode cases, sanitization checks, acceptance criteria, and formal
   conclusion.
+- ShellAccounting manual entry replay AccountingEngine bridge CI closeout gate:
+  [294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md](294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md)
+  records TASK-249 CI closeout scope for the test-only bridge phase, required
+  bridge gate set, regression evidence, clean-main invariants, no AccountingEngine
+  call, no replay, no write, no production integration, and no broker/network
+  constraints.
+- ShellAccounting manual entry replay AccountingEngine bridge CI closeout test plan:
+  [295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md](295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md)
+  defines TASK-249 static checks, required regression gates, changed-path
+  allowlist, clean-main checks, failure modes, acceptance criteria, and formal
+  conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

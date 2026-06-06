@@ -4593,3 +4593,27 @@ and
 `docs/291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md`.
 Recommended next task is TASK-248 ShellAccounting manual entry replay
 AccountingEngine bridge failure-mode hardening gate.
+
+## TASK-248 Manual Entry Replay AccountingEngine Bridge Failure-Mode Hardening Gate
+
+TASK-248 hardens the TASK-246 test-only AccountingEngine bridge contract shell
+with failure-mode probes for missing inputs, malformed JSON, missing required
+fields, unsafe flags, invalid output paths, forbidden tokens, sanitized failure
+output, stable issue codes, exact changed-path allowlists, fixture immutability,
+no AccountingEngine code drift, no AccountingEngine replay calls, no production
+bridge, no runtime writes, no read model refresh, and no broker / network /
+credential / endpoint drift.
+
+TASK-248 is test-only and failure-mode-hardening-only. TASK-248 does not call
+AccountingEngine replay, does not modify AccountingEngine code, does not
+implement production bridge, does not modify fixture JSON, does not authorize
+production integration, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, broker, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/292_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.md`
+and
+`docs/293_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_test_plan.md`.
+Recommended next task is TASK-249 ShellAccounting manual entry replay
+AccountingEngine bridge CI closeout gate.

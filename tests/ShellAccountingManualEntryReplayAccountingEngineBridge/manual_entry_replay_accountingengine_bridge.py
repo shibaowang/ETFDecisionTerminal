@@ -47,16 +47,22 @@ FORBIDDEN_OUTPUT_TOKENS = (
 
 
 class BridgeError(Exception):
-    pass
+    def __init__(self, issue_code: str, message: str = "bridge contract failed") -> None:
+        super().__init__(message)
+        self.issue_code = issue_code
+        self.message = message
 
 
 def read_json_file(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        raise BridgeError("BRIDGE_INPUT_MISSING", "input summary missing")
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
-        raise BridgeError("summary JSON is invalid") from exc
+        raise BridgeError("BRIDGE_INPUT_MALFORMED_JSON", "input summary malformed") from exc
     if not isinstance(value, dict):
-        raise BridgeError("summary JSON must be an object")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "input summary must be object")
+    ensure_input_sanitized(value)
     return value
 
 
@@ -69,65 +75,66 @@ def run_summary_script(root: Path, script: Path) -> dict[str, Any]:
         text=True,
     )
     if completed.returncode != 0:
-        raise BridgeError("test-only summary source failed")
+        raise BridgeError("BRIDGE_INPUT_MISSING", "test-only summary source failed")
     try:
         value = json.loads(completed.stdout)
     except Exception as exc:
-        raise BridgeError("test-only summary source returned invalid JSON") from exc
+        raise BridgeError("BRIDGE_INPUT_MALFORMED_JSON", "test-only summary source returned invalid JSON") from exc
     if not isinstance(value, dict):
-        raise BridgeError("test-only summary source returned non-object JSON")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "test-only summary source returned non-object JSON")
+    ensure_input_sanitized(value)
     return value
 
 
 def validate_dry_run_summary(summary: dict[str, Any]) -> None:
     if summary.get("syntheticDataOnly", True) is not True:
-        raise BridgeError("dry-run summary must be synthetic")
+        raise BridgeError("BRIDGE_INPUT_NON_SYNTHETIC", "dry-run summary must be synthetic")
     if summary.get("schemaVersion") != DRY_RUN_SCHEMA:
-        raise BridgeError("dry-run summary schema mismatch")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "dry-run summary schema mismatch")
     if summary.get("dryRunStatus") != "ok":
-        raise BridgeError("dry-run summary status mismatch")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "dry-run summary status mismatch")
     entries = summary.get("entries")
     if not isinstance(entries, list) or not entries:
-        raise BridgeError("dry-run summary entries missing")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "dry-run summary entries missing")
     seen: set[str] = set()
     for entry in entries:
         if not isinstance(entry, dict):
-            raise BridgeError("dry-run summary entry must be object")
+            raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "dry-run summary entry must be object")
         fixture_id = entry.get("fixtureId")
         if not isinstance(fixture_id, str) or not fixture_id:
-            raise BridgeError("dry-run summary fixture id missing")
+            raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "dry-run summary fixture id missing")
         if fixture_id in seen:
-            raise BridgeError("dry-run summary fixture id duplicate")
+            raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "dry-run summary fixture id duplicate")
         seen.add(fixture_id)
         if entry.get("accountingEngineCalled") is not False:
-            raise BridgeError("dry-run summary AccountingEngine flag must be false")
+            raise BridgeError("BRIDGE_INPUT_ACCOUNTINGENGINE_CALLED_TRUE", "dry-run summary engine flag rejected")
         if entry.get("replayExecuted") is not False:
-            raise BridgeError("dry-run summary replay flag must be false")
+            raise BridgeError("BRIDGE_INPUT_REPLAY_EXECUTED_TRUE", "dry-run summary replay flag rejected")
         if entry.get("runtimeWrites") is not False:
-            raise BridgeError("dry-run summary runtime write flag must be false")
+            raise BridgeError("BRIDGE_INPUT_RUNTIME_WRITE_TRUE", "dry-run summary runtime write flag rejected")
 
 
 def validate_implementation_summary(summary: dict[str, Any]) -> None:
     if summary.get("syntheticDataOnly", True) is not True:
-        raise BridgeError("implementation summary must be synthetic")
+        raise BridgeError("BRIDGE_INPUT_NON_SYNTHETIC", "implementation summary must be synthetic")
     if summary.get("schemaVersion") != IMPLEMENTATION_SCHEMA:
-        raise BridgeError("implementation summary schema mismatch")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "implementation summary schema mismatch")
     if summary.get("implementationMode") != "test-only-in-memory":
-        raise BridgeError("implementation summary mode mismatch")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "implementation summary mode mismatch")
     if summary.get("implementationStatus") != "ok":
-        raise BridgeError("implementation summary status mismatch")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "implementation summary status mismatch")
     entries = summary.get("entries")
     if not isinstance(entries, list) or not entries:
-        raise BridgeError("implementation summary entries missing")
+        raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "implementation summary entries missing")
     for entry in entries:
         if not isinstance(entry, dict):
-            raise BridgeError("implementation summary entry must be object")
+            raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "implementation summary entry must be object")
         if entry.get("accountingEngineCalled") is not False:
-            raise BridgeError("implementation summary AccountingEngine flag must be false")
+            raise BridgeError("BRIDGE_INPUT_ACCOUNTINGENGINE_CALLED_TRUE", "implementation summary engine flag rejected")
         if entry.get("runtimeWrites") is not False:
-            raise BridgeError("implementation summary runtime write flag must be false")
+            raise BridgeError("BRIDGE_INPUT_RUNTIME_WRITE_TRUE", "implementation summary runtime write flag rejected")
         if entry.get("positionCashPnlCalculated") is not False:
-            raise BridgeError("implementation summary calculation flag must be false")
+            raise BridgeError("BRIDGE_INPUT_MISSING_REQUIRED_FIELD", "implementation summary calculation flag rejected")
 
 
 def sanitized_fixture_ids(summary: dict[str, Any]) -> list[str]:
@@ -175,7 +182,7 @@ def build_bridge_summary(dry_run_summary: dict[str, Any], implementation_summary
     return summary
 
 
-def sanitized_failure(message: str = "bridge contract failed") -> dict[str, Any]:
+def sanitized_failure(issue_code: str = "BRIDGE_CONTRACT_INPUT_INVALID", message: str = "bridge contract failed") -> dict[str, Any]:
     return {
         "schemaVersion": 1,
         "task": "TASK-246",
@@ -195,18 +202,25 @@ def sanitized_failure(message: str = "bridge contract failed") -> dict[str, Any]
         },
         "issues": [
             {
-                "issueCode": "BRIDGE_CONTRACT_INPUT_INVALID",
+                "issueCode": issue_code,
                 "message": "sanitized bridge failure",
             }
         ],
     }
 
 
+def ensure_input_sanitized(summary: dict[str, Any]) -> None:
+    lowered = json.dumps(summary, sort_keys=True).lower()
+    for token in FORBIDDEN_OUTPUT_TOKENS:
+        if token in lowered:
+            raise BridgeError("BRIDGE_FORBIDDEN_TOKEN", "bridge input contains forbidden token")
+
+
 def ensure_sanitized(summary: dict[str, Any]) -> None:
     lowered = json.dumps(summary, sort_keys=True).lower()
     for token in FORBIDDEN_OUTPUT_TOKENS:
         if token in lowered:
-            raise BridgeError("bridge output contains forbidden token")
+            raise BridgeError("BRIDGE_FORBIDDEN_TOKEN", "bridge output contains forbidden token")
 
 
 def emit_json(summary: dict[str, Any], destination: str | None) -> None:
@@ -215,7 +229,18 @@ def emit_json(summary: dict[str, Any], destination: str | None) -> None:
         print(encoded)
         return
     path = Path(destination)
-    path.write_text(encoded + "\n", encoding="utf-8")
+    try:
+        path.write_text(encoded + "\n", encoding="utf-8")
+    except Exception as exc:
+        raise BridgeError("BRIDGE_OUTPUT_PATH_INVALID", "bridge output path invalid") from exc
+
+
+def emit_failure(summary: dict[str, Any], failure_destination: str | None, summary_destination: str | None) -> None:
+    destination = failure_destination if failure_destination is not None else summary_destination
+    try:
+        emit_json(summary, destination)
+    except Exception:
+        print(json.dumps(summary, sort_keys=True))
 
 
 def main() -> int:
@@ -224,6 +249,7 @@ def main() -> int:
     parser.add_argument("--dry-run-summary-json")
     parser.add_argument("--implementation-summary-json")
     parser.add_argument("--summary-json")
+    parser.add_argument("--failure-json")
     parser.add_argument("--expect-no-accountingengine-call", action="store_true")
     args = parser.parse_args()
 
@@ -243,15 +269,16 @@ def main() -> int:
         validate_implementation_summary(implementation_summary)
         summary = build_bridge_summary(dry_run_summary, implementation_summary)
         if args.expect_no_accountingengine_call and summary["accountingEngineCalled"] is not False:
-            raise BridgeError("AccountingEngine call expectation failed")
+            raise BridgeError("BRIDGE_INPUT_ACCOUNTINGENGINE_CALLED_TRUE", "AccountingEngine call expectation failed")
         emit_json(summary, args.summary_json)
         return 0
+    except BridgeError as exc:
+        failure = sanitized_failure(exc.issue_code, exc.message)
+        emit_failure(failure, args.failure_json, args.summary_json)
+        return 2
     except Exception:
-        failure = sanitized_failure()
-        try:
-            emit_json(failure, args.summary_json)
-        except Exception:
-            print(json.dumps(failure, sort_keys=True), file=sys.stderr)
+        failure = sanitized_failure("BRIDGE_CONTRACT_INPUT_INVALID")
+        emit_failure(failure, args.failure_json, args.summary_json)
         return 2
 
 

@@ -3208,6 +3208,31 @@ snapshot, trade_log, persistent read model data, generate TradeDrafts, execute
 strategies, access broker, network, credentials, endpoints, place real orders,
 or enable automatic trading.
 
+Recommended next task: TASK-264 ShellAccounting Excel/VBA import preview-to-manual-entry persistence authorization gate.
+
+## TASK-264 ShellAccounting Excel/VBA Import Preview To Manual Entry Persistence Authorization Gate Prompt Rule
+
+Future Excel/VBA import persistence work must reference
+`docs/324_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.md`
+and
+`docs/325_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_test_plan.md`.
+
+TASK-264 is authorization-only. It may define that only an `ACCEPTED` preview can
+enter future persistence, that future writes must enter through a dedicated
+DataService action, and that QML / Presenter / Controller / ShellServices must
+not directly write SQLite, `trade_log`, manual transaction facts, `audit_log`,
+idempotency records, import batch markers, read models, or ledger rows. TASK-264
+may define a minimal accepted-preview-to-persistence DTO, transaction boundary,
+rollback strategy, idempotency key strategy, duplicate import policy, and
+sanitized error mapping. TASK-264 must not implement persistence, register a
+write action, add Import / Confirm / Persist UI controls, modify apps,
+DataServiceApi production implementation, DataServiceClient, ShellServices
+production C++, DataAccess, migrations, AccountingEngine production code, or
+historical fixtures. TASK-264 must not write SQLite, audit, ledger, snapshot,
+trade_log, persistent read model data, generate TradeDrafts, execute strategy,
+access broker, network, credentials, endpoints, place real orders, or enable
+automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

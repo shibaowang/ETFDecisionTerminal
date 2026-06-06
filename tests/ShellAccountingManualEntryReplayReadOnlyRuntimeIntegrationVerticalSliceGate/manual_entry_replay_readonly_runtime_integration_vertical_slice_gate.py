@@ -73,6 +73,10 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewAcceptanceUxExportFormatContract/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewAcceptanceUxExportFormatContract/excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.py",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewAcceptanceUxExportFormatContract/fixtures/TASK263_sanitized_sample_export.json",
+    "docs/324_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.md",
+    "docs/325_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_test_plan.md",
+    "tests/ShellAccountingExcelVbaImportPreviewToManualEntryPersistenceAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPreviewToManualEntryPersistenceAuthorizationGate/excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.py",
 }
 #!/usr/bin/env python3
 

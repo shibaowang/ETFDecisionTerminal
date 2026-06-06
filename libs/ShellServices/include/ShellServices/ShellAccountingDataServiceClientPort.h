@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShellServices/ShellAccountingIssue.h"
+#include "ShellServices/ShellAccountingServiceTypes.h"
 
 #include <string>
 #include <vector>
@@ -31,6 +31,25 @@ struct ShellAccountingDataServiceClientResponse final {
     bool protocolError = false;
     bool domainError = false;
     std::string errorMessage;
+    bool importPreviewAccepted = false;
+    bool importPreviewRejected = false;
+    std::vector<ShellAccountingImportPreviewDiagnostic> importPreviewDiagnostics;
+    std::vector<std::string> importPreviewDiagnosticCodes;
+    ShellAccountingImportPreviewFactSummary importPreviewFactSummary;
+    bool accountingEngineCalled = false;
+    bool productionFileLoading = false;
+    bool productionWrite = false;
+    bool sqliteProductionWrite = false;
+    bool auditWritten = false;
+    bool ledgerWritten = false;
+    bool snapshotWritten = false;
+    bool tradeLogWritten = false;
+    bool readModelPersistentWrite = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool automaticTrading = false;
+    bool rawUserDataExposed = false;
 };
 
 class ShellAccountingDataServiceClientPort {
@@ -54,6 +73,8 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callManualTransactionCreate(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callManualCashMovementCreate(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callExcelVbaImportReadOnlyPreview(
         const ShellAccountingDataServiceClientRequest& request);
 };
 

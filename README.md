@@ -4877,3 +4877,26 @@ TASK-259 documentation is in
 `docs/314_shell_accounting_excel_vba_import_readonly_preview_client_adapter.md`
 and
 `docs/315_shell_accounting_excel_vba_import_readonly_preview_client_adapter_test_plan.md`.
+
+## TASK-260 ShellAccounting Excel/VBA Import Read-Only Preview ShellServices Presenter Contract
+
+TASK-260 maps the TASK-259 typed read-only preview client adapter through
+ShellServices and Presenter state. The vertical slice accepts sanitized
+in-memory import payload JSON, calls
+`accounting.excel_vba_import.readonly_preview` through
+`ShellAccountingDataServiceClientPortAdapter`, and exposes UI-ready preview
+status, sanitized diagnostics, diagnostic codes, and replay fact summary counts
+on `ShellAccountingPresenter`.
+
+TASK-260 does not modify apps, production QML, startup, production file
+loading, AccountingEngine production code, DataServiceApi action
+implementation, DataAccess repositories, migrations, or historical fixtures.
+TASK-260 does not call AccountingEngine, write SQLite, write audit / ledger /
+snapshot / trade_log / read model data, generate TradeDrafts, execute
+strategies, submit broker orders, access networks, read credentials, read
+endpoints, place real orders, or enable automatic trading.
+
+TASK-260 documentation is in
+`docs/316_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract.md`
+and
+`docs/317_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract_test_plan.md`.

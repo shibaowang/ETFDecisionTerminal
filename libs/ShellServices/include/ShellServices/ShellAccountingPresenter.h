@@ -31,6 +31,15 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString lastPostWriteRefreshStatus READ lastPostWriteRefreshStatus NOTIFY postWriteRefreshStateChanged)
     Q_PROPERTY(QString lastPostWriteRefreshIssue READ lastPostWriteRefreshIssue NOTIFY postWriteRefreshStateChanged)
     Q_PROPERTY(QString lastPostWriteRefreshSummary READ lastPostWriteRefreshSummary NOTIFY postWriteRefreshStateChanged)
+    Q_PROPERTY(bool excelVbaImportPreviewBusy READ excelVbaImportPreviewBusy NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPreviewStatus READ lastExcelVbaImportPreviewStatus NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPreviewIssue READ lastExcelVbaImportPreviewIssue NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPreviewSummary READ lastExcelVbaImportPreviewSummary NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPreviewDiagnosticCodes READ lastExcelVbaImportPreviewDiagnosticCodes NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(int excelVbaImportPreviewTradeFactCount READ excelVbaImportPreviewTradeFactCount NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(int excelVbaImportPreviewCashFactCount READ excelVbaImportPreviewCashFactCount NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(int excelVbaImportPreviewMarketPriceFactCount READ excelVbaImportPreviewMarketPriceFactCount NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(int excelVbaImportPreviewFxRateFactCount READ excelVbaImportPreviewFxRateFactCount NOTIFY excelVbaImportPreviewStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -56,6 +65,15 @@ public:
     [[nodiscard]] QString lastPostWriteRefreshStatus() const;
     [[nodiscard]] QString lastPostWriteRefreshIssue() const;
     [[nodiscard]] QString lastPostWriteRefreshSummary() const;
+    [[nodiscard]] bool excelVbaImportPreviewBusy() const noexcept;
+    [[nodiscard]] QString lastExcelVbaImportPreviewStatus() const;
+    [[nodiscard]] QString lastExcelVbaImportPreviewIssue() const;
+    [[nodiscard]] QString lastExcelVbaImportPreviewSummary() const;
+    [[nodiscard]] QString lastExcelVbaImportPreviewDiagnosticCodes() const;
+    [[nodiscard]] int excelVbaImportPreviewTradeFactCount() const noexcept;
+    [[nodiscard]] int excelVbaImportPreviewCashFactCount() const noexcept;
+    [[nodiscard]] int excelVbaImportPreviewMarketPriceFactCount() const noexcept;
+    [[nodiscard]] int excelVbaImportPreviewFxRateFactCount() const noexcept;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -117,12 +135,15 @@ public:
     Q_INVOKABLE void resetManualEntryUi();
     Q_INVOKABLE void resetPostWriteRefreshState();
     Q_INVOKABLE bool refreshManualEntryReadback();
+    Q_INVOKABLE void resetExcelVbaImportPreviewState();
+    Q_INVOKABLE bool previewExcelVbaImportReadOnly(const QString& importPayloadJson);
     void reset();
 
 signals:
     void tradingUiStateChanged();
     void manualEntryStateChanged();
     void postWriteRefreshStateChanged();
+    void excelVbaImportPreviewStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -136,8 +157,13 @@ private:
         std::vector<ShellAccountingIssue> issues);
     void applyTradingResult(const ShellAccountingServiceResult& result, bool confirming);
     void applyManualEntryResult(const ShellAccountingServiceResult& result, const QString& fallback);
+    void applyExcelVbaImportPreviewResult(const ShellAccountingServiceResult& result);
     void refreshAfterManualEntryWrite(bool includePositionList, const char* reason);
     void markManualEntryInputError(const QString& message);
+    void markExcelVbaImportPreviewInputError(const QString& message);
+    [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPreviewRequest(
+        const QString& importPayloadJson,
+        bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeDraftCreateRequest(
         const QString& accountId,
         const QString& portfolioId,
@@ -196,6 +222,15 @@ private:
     QString lastPostWriteRefreshStatus_ = QStringLiteral("READY");
     QString lastPostWriteRefreshIssue_;
     QString lastPostWriteRefreshSummary_;
+    bool excelVbaImportPreviewBusy_ = false;
+    QString lastExcelVbaImportPreviewStatus_ = QStringLiteral("READY");
+    QString lastExcelVbaImportPreviewIssue_;
+    QString lastExcelVbaImportPreviewSummary_;
+    QString lastExcelVbaImportPreviewDiagnosticCodes_;
+    int excelVbaImportPreviewTradeFactCount_ = 0;
+    int excelVbaImportPreviewCashFactCount_ = 0;
+    int excelVbaImportPreviewMarketPriceFactCount_ = 0;
+    int excelVbaImportPreviewFxRateFactCount_ = 0;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

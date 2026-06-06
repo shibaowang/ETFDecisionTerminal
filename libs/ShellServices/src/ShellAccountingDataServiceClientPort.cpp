@@ -61,4 +61,27 @@ ShellAccountingDataServiceClientPort::callManualCashMovementCreate(
         "SHELL_ACCOUNTING_MANUAL_CASH_MOVEMENT_PORT_NOT_CONFIGURED");
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callExcelVbaImportReadOnlyPreview(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = request.actionName;
+    response.protocolSuccess = false;
+    response.implemented = false;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus =
+        "SHELL_ACCOUNTING_EXCEL_VBA_IMPORT_READONLY_PREVIEW_PORT_NOT_CONFIGURED";
+    response.dataQualityStatus = "UNAVAILABLE";
+    response.protocolError = true;
+    response.errorMessage =
+        "ShellAccounting Excel/VBA import preview DataService port is not configured.";
+    response.importPreviewRejected = true;
+    response.issues.push_back(
+        {response.payloadStatus, "ERROR", response.errorMessage, true,
+         "ShellAccountingDataServiceClientPort"});
+    return response;
+}
+
 }  // namespace etfdt::shell_services

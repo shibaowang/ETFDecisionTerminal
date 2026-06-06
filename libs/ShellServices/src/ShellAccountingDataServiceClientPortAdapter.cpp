@@ -189,6 +189,101 @@ ShellAccountingDataServiceClientResponse mapClientResult(
     return makeUnavailableResponse(request, kClientCallFailedStatus, message, transport, timeout);
 }
 
+ShellAccountingImportPreviewDiagnostic mapPreviewDiagnostic(
+    const etfdt::data_service_client::ExcelVbaImportReadOnlyPreviewDiagnostic& diagnostic)
+{
+    return {
+        diagnostic.level,
+        diagnostic.code,
+        diagnostic.field,
+        diagnostic.sheetName,
+        diagnostic.rowId,
+    };
+}
+
+ShellAccountingDataServiceClientResponse mapPreviewClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::ExcelVbaImportReadOnlyPreviewResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient Excel/VBA import preview call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        auto response = makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+        response.importPreviewRejected = true;
+        return response;
+    }
+
+    const auto& preview = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = preview.action.empty() ? request.actionName : preview.action;
+    response.protocolSuccess = true;
+    response.implemented = true;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = preview.accepted ? "ACCEPTED" : "REJECTED";
+    response.dataQualityStatus = preview.accepted ? "OK" : kErrorQuality;
+    response.hasRows =
+        preview.replayFactSummary.tradeFactCount > 0 ||
+        preview.replayFactSummary.cashFactCount > 0 ||
+        preview.replayFactSummary.marketPriceFactCount > 0 ||
+        preview.replayFactSummary.fxRateFactCount > 0;
+    response.domainError = !preview.accepted;
+    response.importPreviewAccepted = preview.accepted;
+    response.importPreviewRejected = !preview.accepted;
+    response.importPreviewDiagnosticCodes = preview.diagnosticCodes;
+    response.importPreviewFactSummary = {
+        preview.replayFactSummary.tradeFactCount,
+        preview.replayFactSummary.cashFactCount,
+        preview.replayFactSummary.marketPriceFactCount,
+        preview.replayFactSummary.fxRateFactCount,
+    };
+    response.accountingEngineCalled = preview.accountingEngineCalled;
+    response.productionWrite = preview.productionWrite;
+    response.sqliteProductionWrite = preview.sqliteProductionWrite;
+    response.auditWritten = preview.auditWritten;
+    response.ledgerWritten = preview.ledgerWritten;
+    response.snapshotWritten = preview.snapshotWritten;
+    response.tradeLogWritten = preview.tradeLogWritten;
+    response.readModelPersistentWrite = preview.readModelPersistentWrite;
+    response.networkAccess = preview.networkAccess;
+    response.credentialAccess = preview.credentialAccess;
+    response.endpointAccess = preview.endpointAccess;
+    response.automaticTrading = preview.automaticTrading;
+    response.rawUserDataExposed = preview.rawUserDataExposed;
+
+    for (const auto& diagnostic : preview.diagnostics) {
+        const auto mapped = mapPreviewDiagnostic(diagnostic);
+        response.importPreviewDiagnostics.push_back(mapped);
+        const auto code = mapped.code.empty() ? "IMPORT_PREVIEW_DIAGNOSTIC" : mapped.code;
+        const auto level = mapped.level.empty() ? "ERROR" : mapped.level;
+        const bool blocking = level == "ERROR";
+        response.issues.push_back(makeIssue(
+            code,
+            level,
+            code,
+            blocking));
+    }
+    if (!preview.accepted && response.issues.empty()) {
+        response.issues.push_back(makeIssue(
+            "IMPORT_PREVIEW_REJECTED",
+            "ERROR",
+            "Excel/VBA import preview was rejected.",
+            true));
+    }
+    return response;
+}
+
 }  // namespace
 
 ShellAccountingDataServiceClientPortAdapter::ShellAccountingDataServiceClientPortAdapter(
@@ -356,6 +451,25 @@ ShellAccountingDataServiceClientPortAdapter::callManualCashMovementCreate(
     return mapClientResult(
         request,
         client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callExcelVbaImportReadOnlyPreview(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        auto response = makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting preview port.",
+            true,
+            false);
+        response.importPreviewRejected = true;
+        return response;
+    }
+    return mapPreviewClientResult(
+        request,
+        client_->accountingExcelVbaImportReadOnlyPreview(request.payloadJson, request.timeoutMs));
 }
 
 }  // namespace etfdt::shell_services

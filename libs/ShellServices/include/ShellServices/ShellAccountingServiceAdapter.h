@@ -26,6 +26,8 @@ public:
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult submitManualCashMovement(
         const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult previewExcelVbaImportReadOnly(
+        const ShellAccountingServiceRequest& request);
 };
 
 }  // namespace etfdt::shell_services

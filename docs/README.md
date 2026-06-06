@@ -1365,6 +1365,16 @@
   defines TASK-259 client adapter mapping, DataService action call, sanitized
   diagnostics, fact summary, no-write, no-trading, production boundary, and
   required command checks.
+- ShellAccounting Excel/VBA import read-only preview ShellServices Presenter contract:
+  [316_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract.md](316_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract.md)
+  records TASK-260 ShellServices / Controller / Presenter preview contract,
+  typed client boundary usage, diagnostics and fact summary mapping, no-write
+  boundary, and no broker/network constraints.
+- ShellAccounting Excel/VBA import read-only preview ShellServices Presenter contract test plan:
+  [317_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract_test_plan.md](317_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract_test_plan.md)
+  defines TASK-260 Presenter state, Controller delegation, ShellServices
+  mapping, typed client call boundary, local fail-closed input checks, no-write,
+  no-trading, production boundary, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

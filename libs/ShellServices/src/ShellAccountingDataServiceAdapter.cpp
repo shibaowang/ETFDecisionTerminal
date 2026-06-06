@@ -308,6 +308,16 @@ ShellAccountingDataServiceClientRequest makeManualCashMovementClientRequest(
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makeExcelVbaImportPreviewClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.excel_vba_import.readonly_preview";
+    clientRequest.payloadJson = request.importPayloadJson.empty() ? "{}" : request.importPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingServiceResult mapClientResponse(
     ShellAccountingDataServiceClientResponse response,
     const ShellAccountingServiceRequest& request,
@@ -338,6 +348,25 @@ ShellAccountingServiceResult mapClientResponse(
     result.generatedTradeSuggestion = false;
     result.strategyExecuted = false;
     result.brokerOrderSubmitted = false;
+    result.importPreviewAccepted = response.importPreviewAccepted;
+    result.importPreviewRejected = response.importPreviewRejected;
+    result.importPreviewDiagnostics = std::move(response.importPreviewDiagnostics);
+    result.importPreviewDiagnosticCodes = std::move(response.importPreviewDiagnosticCodes);
+    result.importPreviewFactSummary = response.importPreviewFactSummary;
+    result.accountingEngineCalled = response.accountingEngineCalled;
+    result.productionFileLoading = response.productionFileLoading;
+    result.productionWrite = response.productionWrite;
+    result.sqliteProductionWrite = response.sqliteProductionWrite;
+    result.auditWritten = response.auditWritten;
+    result.ledgerWritten = response.ledgerWritten;
+    result.snapshotWritten = response.snapshotWritten;
+    result.tradeLogWritten = response.tradeLogWritten;
+    result.readModelPersistentWrite = response.readModelPersistentWrite;
+    result.networkAccess = response.networkAccess;
+    result.credentialAccess = response.credentialAccess;
+    result.endpointAccess = response.endpointAccess;
+    result.automaticTrading = response.automaticTrading;
+    result.rawUserDataExposed = response.rawUserDataExposed;
     return result;
 }
 
@@ -457,6 +486,21 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::submitManualCash
             "accounting.manual_cash_movement.create");
     }
     return makeNotConnectedResult(request, "accounting.manual_cash_movement.create");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::previewExcelVbaImportReadOnly(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callExcelVbaImportReadOnlyPreview(
+                makeExcelVbaImportPreviewClientRequest(request)),
+            request,
+            "accounting.excel_vba_import.readonly_preview");
+    }
+    auto result = makeNotConnectedResult(request, "accounting.excel_vba_import.readonly_preview");
+    result.importPreviewRejected = true;
+    return result;
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

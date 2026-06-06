@@ -61,6 +61,8 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult submitManualCashMovement(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult previewExcelVbaImportReadOnly(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

@@ -9,7 +9,20 @@ bool isShellAccountingServiceResultReadOnly(
            !result.generatedTradeDraft &&
            !result.generatedTradeSuggestion &&
            !result.strategyExecuted &&
-           !result.brokerOrderSubmitted;
+           !result.brokerOrderSubmitted &&
+           !result.accountingEngineCalled &&
+           !result.productionFileLoading &&
+           !result.productionWrite &&
+           !result.sqliteProductionWrite &&
+           !result.auditWritten &&
+           !result.ledgerWritten &&
+           !result.snapshotWritten &&
+           !result.tradeLogWritten &&
+           !result.readModelPersistentWrite &&
+           !result.networkAccess &&
+           !result.credentialAccess &&
+           !result.endpointAccess &&
+           !result.automaticTrading;
 }
 
 }  // namespace etfdt::shell_services

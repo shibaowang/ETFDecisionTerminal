@@ -312,6 +312,51 @@ QString ShellAccountingPresenter::lastPostWriteRefreshSummary() const
     return lastPostWriteRefreshSummary_;
 }
 
+bool ShellAccountingPresenter::excelVbaImportPreviewBusy() const noexcept
+{
+    return excelVbaImportPreviewBusy_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPreviewStatus() const
+{
+    return lastExcelVbaImportPreviewStatus_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPreviewIssue() const
+{
+    return lastExcelVbaImportPreviewIssue_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPreviewSummary() const
+{
+    return lastExcelVbaImportPreviewSummary_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPreviewDiagnosticCodes() const
+{
+    return lastExcelVbaImportPreviewDiagnosticCodes_;
+}
+
+int ShellAccountingPresenter::excelVbaImportPreviewTradeFactCount() const noexcept
+{
+    return excelVbaImportPreviewTradeFactCount_;
+}
+
+int ShellAccountingPresenter::excelVbaImportPreviewCashFactCount() const noexcept
+{
+    return excelVbaImportPreviewCashFactCount_;
+}
+
+int ShellAccountingPresenter::excelVbaImportPreviewMarketPriceFactCount() const noexcept
+{
+    return excelVbaImportPreviewMarketPriceFactCount_;
+}
+
+int ShellAccountingPresenter::excelVbaImportPreviewFxRateFactCount() const noexcept
+{
+    return excelVbaImportPreviewFxRateFactCount_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -679,6 +724,51 @@ bool ShellAccountingPresenter::refreshManualEntryReadback()
         || lastPostWriteRefreshStatus_ == QStringLiteral("EMPTY");
 }
 
+void ShellAccountingPresenter::resetExcelVbaImportPreviewState()
+{
+    excelVbaImportPreviewBusy_ = false;
+    lastExcelVbaImportPreviewStatus_ = QStringLiteral("READY");
+    lastExcelVbaImportPreviewIssue_.clear();
+    lastExcelVbaImportPreviewSummary_.clear();
+    lastExcelVbaImportPreviewDiagnosticCodes_.clear();
+    excelVbaImportPreviewTradeFactCount_ = 0;
+    excelVbaImportPreviewCashFactCount_ = 0;
+    excelVbaImportPreviewMarketPriceFactCount_ = 0;
+    excelVbaImportPreviewFxRateFactCount_ = 0;
+    emit excelVbaImportPreviewStateChanged();
+}
+
+bool ShellAccountingPresenter::previewExcelVbaImportReadOnly(
+    const QString& importPayloadJson)
+{
+    if (!controller_) {
+        excelVbaImportPreviewBusy_ = false;
+        lastExcelVbaImportPreviewStatus_ = QStringLiteral("ERROR");
+        lastExcelVbaImportPreviewIssue_ =
+            QStringLiteral("Shell accounting controller is not configured.");
+        lastExcelVbaImportPreviewSummary_.clear();
+        emit excelVbaImportPreviewStateChanged();
+        markControllerNotConfigured("accounting.excel_vba_import.readonly_preview");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeExcelVbaImportPreviewRequest(importPayloadJson, valid);
+    if (!valid) {
+        return false;
+    }
+
+    excelVbaImportPreviewBusy_ = true;
+    lastExcelVbaImportPreviewStatus_ = QStringLiteral("PREVIEWING");
+    lastExcelVbaImportPreviewIssue_.clear();
+    emit excelVbaImportPreviewStateChanged();
+    const auto result = controller_->previewExcelVbaImportReadOnly(request);
+    excelVbaImportPreviewBusy_ = false;
+    applyExcelVbaImportPreviewResult(result);
+    syncFromController();
+    return lastExcelVbaImportPreviewStatus_ == QStringLiteral("ACCEPTED");
+}
+
 void ShellAccountingPresenter::reset()
 {
     controller_.reset();
@@ -690,6 +780,7 @@ void ShellAccountingPresenter::reset()
     resetTradingUi();
     resetManualEntryUi();
     resetPostWriteRefreshState();
+    resetExcelVbaImportPreviewState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -797,6 +888,57 @@ void ShellAccountingPresenter::applyManualEntryResult(
         .arg(boolField(payload, "cashAdjustmentWritten") ? QStringLiteral("true") : QStringLiteral("false"))
         .arg(idempotent ? QStringLiteral("true") : QStringLiteral("false"));
     emit manualEntryStateChanged();
+}
+
+void ShellAccountingPresenter::applyExcelVbaImportPreviewResult(
+    const ShellAccountingServiceResult& result)
+{
+    excelVbaImportPreviewTradeFactCount_ = result.importPreviewFactSummary.tradeFactCount;
+    excelVbaImportPreviewCashFactCount_ = result.importPreviewFactSummary.cashFactCount;
+    excelVbaImportPreviewMarketPriceFactCount_ =
+        result.importPreviewFactSummary.marketPriceFactCount;
+    excelVbaImportPreviewFxRateFactCount_ = result.importPreviewFactSummary.fxRateFactCount;
+
+    QStringList codes;
+    for (const auto& code : result.importPreviewDiagnosticCodes) {
+        codes.append(QString::fromStdString(code));
+    }
+    lastExcelVbaImportPreviewDiagnosticCodes_ = codes.join(QStringLiteral(","));
+    lastExcelVbaImportPreviewSummary_ = QStringLiteral(
+        "tradeFacts=%1 cashFacts=%2 marketPriceFacts=%3 fxRateFacts=%4 diagnostics=%5")
+        .arg(excelVbaImportPreviewTradeFactCount_)
+        .arg(excelVbaImportPreviewCashFactCount_)
+        .arg(excelVbaImportPreviewMarketPriceFactCount_)
+        .arg(excelVbaImportPreviewFxRateFactCount_)
+        .arg(codes.size());
+
+    const bool ok = result.protocolSuccess && result.implemented
+        && result.readOnly && !result.writeEnabled
+        && result.importPreviewAccepted && !result.importPreviewRejected
+        && !result.accountingEngineCalled && !result.productionFileLoading
+        && !result.productionWrite && !result.sqliteProductionWrite
+        && !result.auditWritten && !result.ledgerWritten && !result.snapshotWritten
+        && !result.tradeLogWritten && !result.readModelPersistentWrite
+        && isShellAccountingServiceResultReadOnly(result)
+        && !result.networkAccess && !result.credentialAccess
+        && !result.endpointAccess && !result.automaticTrading
+        && !result.rawUserDataExposed;
+
+    if (ok) {
+        lastExcelVbaImportPreviewStatus_ = QStringLiteral("ACCEPTED");
+        lastExcelVbaImportPreviewIssue_.clear();
+        emit excelVbaImportPreviewStateChanged();
+        return;
+    }
+
+    lastExcelVbaImportPreviewStatus_ =
+        result.importPreviewRejected ? QStringLiteral("REJECTED") : QStringLiteral("ERROR");
+    lastExcelVbaImportPreviewIssue_ = issueTextFromResult(result);
+    if (lastExcelVbaImportPreviewIssue_.isEmpty()) {
+        lastExcelVbaImportPreviewIssue_ =
+            QStringLiteral("Excel/VBA import preview failed closed.");
+    }
+    emit excelVbaImportPreviewStateChanged();
 }
 
 void ShellAccountingPresenter::refreshAfterManualEntryWrite(
@@ -912,6 +1054,52 @@ void ShellAccountingPresenter::markManualEntryInputError(const QString& message)
     lastManualEntryIssue_ = message;
     lastManualEntryResult_.clear();
     emit manualEntryStateChanged();
+}
+
+void ShellAccountingPresenter::markExcelVbaImportPreviewInputError(const QString& message)
+{
+    excelVbaImportPreviewBusy_ = false;
+    lastExcelVbaImportPreviewStatus_ = QStringLiteral("INPUT_ERROR");
+    lastExcelVbaImportPreviewIssue_ = message;
+    lastExcelVbaImportPreviewSummary_.clear();
+    lastExcelVbaImportPreviewDiagnosticCodes_.clear();
+    excelVbaImportPreviewTradeFactCount_ = 0;
+    excelVbaImportPreviewCashFactCount_ = 0;
+    excelVbaImportPreviewMarketPriceFactCount_ = 0;
+    excelVbaImportPreviewFxRateFactCount_ = 0;
+    emit excelVbaImportPreviewStateChanged();
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPreviewRequest(
+    const QString& importPayloadJson,
+    bool& valid)
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        importPayloadJson.trimmed().toUtf8(),
+        &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markExcelVbaImportPreviewInputError(
+            QStringLiteral("Excel/VBA import preview payload must be a JSON object."));
+        return {};
+    }
+
+    const auto object = document.object();
+    if (object.contains(QStringLiteral("filePath"))
+        || object.contains(QStringLiteral("path"))
+        || object.contains(QStringLiteral("filename"))) {
+        markExcelVbaImportPreviewInputError(
+            QStringLiteral("Excel/VBA import preview accepts in-memory payload JSON only."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.excel_vba_import.readonly_preview";
+    request.importPayloadJson = QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
 }
 
 ShellAccountingServiceRequest ShellAccountingPresenter::makeDraftCreateRequest(

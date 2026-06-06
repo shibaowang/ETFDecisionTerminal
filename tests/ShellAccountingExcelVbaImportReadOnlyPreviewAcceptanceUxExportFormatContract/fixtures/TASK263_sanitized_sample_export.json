@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "sheets": [
+    {
+      "name": "TradeLog",
+      "headers": [
+        "date",
+        "account",
+        "portfolio",
+        "instrument",
+        "side",
+        "quantity",
+        "price",
+        "currency"
+      ],
+      "rows": [
+        [
+          "2026-01-05",
+          "DEMO_ACCOUNT",
+          "DEMO_PORTFOLIO",
+          "DEMO_ETF",
+          "BUY",
+          10,
+          25.5,
+          "USD"
+        ]
+      ]
+    }
+  ]
+}

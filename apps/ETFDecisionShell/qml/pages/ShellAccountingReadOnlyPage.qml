@@ -14,6 +14,48 @@ Rectangle {
     property url excelVbaImportPreviewSelectedFileUrl: ""
     property string excelVbaImportPreviewSelectedFileName: ""
 
+    function excelVbaImportPreviewSamplePayload() {
+        return JSON.stringify({
+            "schemaVersion": "excel-vba-export/v1",
+            "source": "sanitized-excel-vba-export",
+            "sheets": [
+                {
+                    "name": "TradeLog",
+                    "headers": ["date", "account", "portfolio", "instrument", "side", "quantity", "price", "currency"],
+                    "rows": [
+                        ["2026-01-05", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "DEMO_ETF", "BUY", 10, 25.5, "USD"]
+                    ]
+                }
+            ]
+        })
+    }
+
+    function excelVbaImportPreviewAcceptanceState() {
+        if (!root.presenterAvailable) {
+            return "READY"
+        }
+        var status = accountingPresenter.lastExcelVbaImportPreviewStatus
+        if (status === "READY"
+                && root.excelVbaImportPreviewSelectedFileName.length > 0) {
+            return "FILE_SELECTED"
+        }
+        return status.length > 0 ? status : "READY"
+    }
+
+    function excelVbaImportPreviewAcceptanceSummary() {
+        var state = root.excelVbaImportPreviewAcceptanceState()
+        if (state === "ACCEPTED") {
+            return "Preview accepted: yes"
+        }
+        if (state === "REJECTED" || state === "INPUT_ERROR") {
+            return "Preview accepted: no"
+        }
+        if (state === "PREVIEWING") {
+            return "Preview accepted: pending"
+        }
+        return "Preview accepted: not evaluated"
+    }
+
     function sanitizedExcelVbaImportPreviewFileName(fileUrl) {
         var value = String(fileUrl)
         var queryIndex = value.indexOf("?")
@@ -133,7 +175,7 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingExcelVbaImportPreviewPanel"
                 width: parent.width
-                height: 500
+                height: 650
                 radius: 8
                 color: "#ffffff"
                 border.color: "#cfd8e6"
@@ -201,6 +243,19 @@ Rectangle {
                                 accountingPresenter.resetExcelVbaImportPreviewState()
                             }
                         }
+
+                        Button {
+                            objectName: "shellAccountingExcelVbaImportPreviewLoadSampleButton"
+                            text: "Load Sample Preview"
+                            enabled: root.presenterAvailable
+                                && !accountingPresenter.excelVbaImportPreviewBusy
+                            onClicked: {
+                                excelVbaImportPreviewPayloadInput.text =
+                                    root.excelVbaImportPreviewSamplePayload()
+                                accountingPresenter.previewExcelVbaImportReadOnly(
+                                    excelVbaImportPreviewPayloadInput.text)
+                            }
+                        }
                     }
 
                     Row {
@@ -247,9 +302,29 @@ Rectangle {
                     }
 
                     Rectangle {
+                        objectName: "shellAccountingExcelVbaImportPreviewFormatContractPanel"
+                        width: parent.width
+                        height: 58
+                        radius: 8
+                        color: "#fffaf0"
+                        border.color: "#ead6a5"
+
+                        Text {
+                            objectName: "shellAccountingExcelVbaImportPreviewFormatContractText"
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            text: "Format: schemaVersion=excel-vba-export/v1; source=sanitized-excel-vba-export; sheets[{name,headers,rows}]"
+                            color: "#5f4b1f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Rectangle {
                         objectName: "shellAccountingExcelVbaImportPreviewStatusPanel"
                         width: parent.width
-                        height: 220
+                        height: 280
                         radius: 8
                         color: "#f8fbff"
                         border.color: "#d9e3f2"
@@ -268,6 +343,25 @@ Rectangle {
                                 color: "#18202f"
                                 font.pixelSize: 13
                                 font.bold: true
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPreviewAcceptanceStateText"
+                                width: parent.width
+                                text: "Acceptance state: " + root.excelVbaImportPreviewAcceptanceState()
+                                    + " (READY / FILE_SELECTED / PREVIEWING / ACCEPTED / REJECTED / INPUT_ERROR)"
+                                color: "#18202f"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPreviewAcceptanceSummaryText"
+                                width: parent.width
+                                text: root.excelVbaImportPreviewAcceptanceSummary()
+                                color: "#465066"
+                                font.pixelSize: 13
                                 wrapMode: Text.WordWrap
                             }
 

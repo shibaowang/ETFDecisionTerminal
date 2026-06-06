@@ -1325,6 +1325,16 @@
   [307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md](307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md)
   defines TASK-255 sample loading, importer, replay evidence, parity,
   no-write, no-trading, production boundary, and required command checks.
+- ShellAccounting manual entry replay Excel/VBA export sample import matrix diagnostics read-only vertical slice:
+  [308_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_readonly_vertical_slice.md](308_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_readonly_vertical_slice.md)
+  records TASK-256 sanitized sample matrix scope, normalized diagnostics,
+  test-only importer boundary, AccountingEngine read-only replay evidence,
+  parity checks, no-write boundary, and no broker/network constraints.
+- ShellAccounting manual entry replay Excel/VBA export sample import matrix diagnostics test plan:
+  [309_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_test_plan.md](309_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_matrix_diagnostics_test_plan.md)
+  defines TASK-256 matrix loading, importer diagnostics, replay evidence,
+  parity / diagnostic checks, no-write, no-trading, production boundary, and
+  required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

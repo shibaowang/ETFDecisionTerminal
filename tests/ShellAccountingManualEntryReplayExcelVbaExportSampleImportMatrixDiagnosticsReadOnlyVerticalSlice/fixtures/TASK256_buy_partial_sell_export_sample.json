@@ -1,0 +1,41 @@
+{
+  "task": "TASK-256",
+  "sampleId": "TASK256_BUY_PARTIAL_SELL_EXPORT_SAMPLE",
+  "sampleKind": "buy_partial_sell_export_sample",
+  "schemaVersion": "task-256-excel-vba-export-sample-matrix/v1",
+  "sourceFormat": "sanitized-excel-vba-style-json-export",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK256_PARTIAL_ACCOUNT",
+    "portfolioId": "TASK256_PORTFOLIO"
+  },
+  "exportSample": {
+    "workbookName": "SANITIZED_TASK256_BUY_PARTIAL_SELL_EXPORT",
+    "sheets": [
+      {
+        "sheetName": "InitialCash",
+        "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+        "rows": [["TASK256_PARTIAL_CASH_001", "2026-01-01T00:00:00Z", "TASK256_PARTIAL_ACCOUNT", "TASK256_PORTFOLIO", "INITIAL_CASH", "100000.00", "CNY", "SANITIZED_TASK256_PARTIAL_INITIAL_CASH"]]
+      },
+      {
+        "sheetName": "Trades",
+        "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+        "rows": [
+          ["TASK256_PARTIAL_TRADE_BUY_001", "2026-01-02T09:30:00Z", "TASK256_PARTIAL_ACCOUNT", "TASK256_PORTFOLIO", "TASK256_PARTIAL_INSTRUMENT", "BUY", "100", "2.0000", "200.00", "1.00", "-201.00", "CNY", "TASK256_SANITIZED_EXPORT", "SANITIZED_TASK256_PARTIAL_BUY"],
+          ["TASK256_PARTIAL_TRADE_SELL_001", "2026-01-03T09:30:00Z", "TASK256_PARTIAL_ACCOUNT", "TASK256_PORTFOLIO", "TASK256_PARTIAL_INSTRUMENT", "SELL", "40", "3.0000", "120.00", "1.00", "119.00", "CNY", "TASK256_SANITIZED_EXPORT", "SANITIZED_TASK256_PARTIAL_SELL"]
+        ]
+      },
+      {"sheetName": "MarketPrices", "headers": ["INSTRUMENT_CODE", "PRICE_TIME_UTC", "PRICE", "CURRENCY", "SOURCE"], "rows": []},
+      {"sheetName": "FxRates", "headers": ["BASE_CURRENCY", "QUOTE_CURRENCY", "RATE_TIME_UTC", "RATE", "SOURCE"], "rows": []}
+    ]
+  },
+  "expectedImport": {"accepted": true, "diagnostics": []},
+  "expectedProjection": {
+    "replayStatus": "OK",
+    "cashSummary": {"accountId": "TASK256_PARTIAL_ACCOUNT", "portfolioId": "TASK256_PORTFOLIO", "currency": "CNY", "cashBalanceText": "99918.00 CNY", "dataQualityStatus": "OK"},
+    "positionSummaries": [{"accountId": "TASK256_PARTIAL_ACCOUNT", "portfolioId": "TASK256_PORTFOLIO", "instrumentCode": "TASK256_PARTIAL_INSTRUMENT", "quantityText": "60", "costAmountText": "120.60 CNY", "costPriceText": "2.010 CNY", "marketValueText": "UNAVAILABLE", "unrealizedPnlText": "UNAVAILABLE", "currency": "CNY", "dataQualityStatus": "OK"}],
+    "pnlSummary": {"portfolioId": "TASK256_PORTFOLIO", "currency": "CNY", "realizedPnlText": "38.60 CNY", "unrealizedPnlText": "UNAVAILABLE", "totalAssetsText": "UNAVAILABLE", "totalPnlText": "UNAVAILABLE", "dataQualityStatus": "UNAVAILABLE"},
+    "issues": []
+  }
+}

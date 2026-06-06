@@ -1,0 +1,41 @@
+{
+  "task": "TASK-256",
+  "sampleId": "TASK256_UNSUPPORTED_OR_ISSUE_SAMPLE",
+  "sampleKind": "unsupported_or_issue_sample",
+  "schemaVersion": "task-256-excel-vba-export-sample-matrix/v1",
+  "sourceFormat": "sanitized-excel-vba-style-json-export",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK256_ISSUE_ACCOUNT",
+    "portfolioId": "TASK256_PORTFOLIO"
+  },
+  "exportSample": {
+    "workbookName": "SANITIZED_TASK256_ISSUE_EXPORT",
+    "sheets": [
+      {
+        "sheetName": "InitialCash",
+        "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+        "rows": [["TASK256_ISSUE_CASH_001", "2026-01-01T00:00:00Z", "TASK256_ISSUE_ACCOUNT", "TASK256_PORTFOLIO", "INITIAL_CASH", "100000.00", "CNY", "SANITIZED_TASK256_ISSUE_INITIAL_CASH"]]
+      },
+      {
+        "sheetName": "Trades",
+        "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+        "rows": [
+          ["TASK256_ISSUE_TRADE_BUY_001", "2026-01-02T09:30:00Z", "TASK256_ISSUE_ACCOUNT", "TASK256_PORTFOLIO", "TASK256_ISSUE_INSTRUMENT", "BUY", "10", "2.0000", "20.00", "1.00", "-21.00", "CNY", "TASK256_SANITIZED_EXPORT", "SANITIZED_TASK256_ISSUE_BUY"],
+          ["TASK256_ISSUE_TRADE_SELL_001", "2026-01-03T09:30:00Z", "TASK256_ISSUE_ACCOUNT", "TASK256_PORTFOLIO", "TASK256_ISSUE_INSTRUMENT", "SELL", "15", "3.0000", "45.00", "1.00", "44.00", "CNY", "TASK256_SANITIZED_EXPORT", "SANITIZED_TASK256_ISSUE_SELL"]
+        ]
+      },
+      {"sheetName": "MarketPrices", "headers": ["INSTRUMENT_CODE", "PRICE_TIME_UTC", "PRICE", "CURRENCY", "SOURCE"], "rows": []},
+      {"sheetName": "FxRates", "headers": ["BASE_CURRENCY", "QUOTE_CURRENCY", "RATE_TIME_UTC", "RATE", "SOURCE"], "rows": []}
+    ]
+  },
+  "expectedImport": {"accepted": true, "diagnostics": []},
+  "expectedProjection": {
+    "replayStatus": "ERROR",
+    "cashSummary": null,
+    "positionSummaries": [],
+    "pnlSummary": null,
+    "issues": [{"level": "ERROR", "code": "SELL_EXCEEDS_POSITION", "blocking": true, "field": "tradeFacts", "sourceId": ""}]
+  }
+}

@@ -4976,3 +4976,32 @@ TASK-263 documentation is in
 `docs/322_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.md`
 and
 `docs/323_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract_test_plan.md`.
+
+## TASK-264 ShellAccounting Excel/VBA Import Preview To Manual Entry Persistence Authorization Gate
+
+TASK-264 defines the authorization-only boundary for future Excel/VBA import
+preview persistence. Only an `ACCEPTED` preview may enter a future production
+persistence path, and that path must be a dedicated DataService action. QML,
+Presenter, Controller, and ShellServices code must not directly write SQLite,
+`trade_log`, manual transaction facts, `audit_log`, idempotency records, import
+batch markers, read models, or ledger rows.
+
+Future persistence must transact the manual transaction facts or `trade_log`
+rows, sanitized `audit_log` event, and idempotency record / import batch marker
+together. TASK-264 defines rollback, idempotency key, duplicate import, and
+sanitized error mapping policy, plus the minimal accepted-preview-to-persistence
+request DTO. TASK-264 does not implement import persistence and does not add an
+Import, Confirm, or Persist UI control.
+
+TASK-264 does not modify apps, startup wiring, DataServiceApi production action
+implementation, DataServiceClient, ShellServices production C++, DataAccess,
+migrations, AccountingEngine production code, or historical fixtures. TASK-264
+does not write SQLite, audit, ledger, snapshot, trade_log, or persistent read
+models, generate TradeDrafts, execute strategies, submit broker orders, access
+networks, read credentials, read endpoints, place real orders, or enable
+automatic trading.
+
+TASK-264 documentation is in
+`docs/324_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.md`
+and
+`docs/325_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_test_plan.md`.

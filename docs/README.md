@@ -1406,6 +1406,16 @@
   defines TASK-263 QML object contract, acceptance summary checks, sample
   payload preview path reuse, sanitized issue checks, no import/persist
   controls, and required command checks.
+- ShellAccounting Excel/VBA import preview to manual entry persistence authorization gate:
+  [324_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.md](324_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.md)
+  records TASK-264 `ACCEPTED` preview requirement, DataService-only future
+  write boundary, transaction / rollback / idempotency / duplicate import
+  policy, minimal persistence request DTO, and no-write / no-broker constraints.
+- ShellAccounting Excel/VBA import preview to manual entry persistence authorization test plan:
+  [325_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_test_plan.md](325_shell_accounting_excel_vba_import_preview_to_manual_entry_persistence_authorization_test_plan.md)
+  defines TASK-264 docs-only authorization gate checks, forbidden production
+  paths, sanitized error mapping assertions, no Import UI checks, and required
+  command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

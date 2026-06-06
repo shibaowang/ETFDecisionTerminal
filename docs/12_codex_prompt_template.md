@@ -2849,6 +2849,27 @@ separately authorized.
 Recommended next task: TASK-248 ShellAccounting manual entry replay
 AccountingEngine bridge failure-mode hardening gate.
 
+## TASK-248 Manual Entry Replay AccountingEngine Bridge Failure-Mode Hardening Prompt Rule
+
+Future manual entry replay AccountingEngine bridge CI closeout, replay
+execution, runtime integration, read model refresh, production parser / loader /
+reader work, or AccountingEngine replay calls must reference
+`docs/292_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.md`
+and
+`docs/293_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_test_plan.md`.
+
+TASK-248 hardens test-only AccountingEngine bridge failure modes. TASK-248 does
+not call AccountingEngine replay, does not modify AccountingEngine code, does
+not implement production bridge, does not modify fixture JSON, does not
+authorize production integration, does not authorize runtime SQL / SQLite
+read/write, audit / ledger / snapshot writes, read model refresh, broker,
+network, credentials, endpoint, real order placement, or automatic trading.
+Future CI closeout, replay execution, read model refresh, production
+integration, and AccountingEngine replay calls must be separately authorized.
+
+Recommended next task: TASK-249 ShellAccounting manual entry replay
+AccountingEngine bridge CI closeout gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

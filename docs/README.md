@@ -1242,6 +1242,17 @@
   defines TASK-247 static checks, bridge matrix cases, failure modes, exact
   changed-path allowlist, regression gates, acceptance criteria, and formal
   conclusion.
+- ShellAccounting manual entry replay AccountingEngine bridge failure-mode hardening gate:
+  [292_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.md](292_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.md)
+  records TASK-248 test-only bridge failure-mode hardening scope, stable issue
+  codes, sanitized output, fail-closed matrix, no AccountingEngine call, no
+  replay, no write, no production integration, and no broker/network
+  constraints.
+- ShellAccounting manual entry replay AccountingEngine bridge failure-mode hardening test plan:
+  [293_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_test_plan.md](293_shell_accounting_manual_entry_replay_accountingengine_bridge_failure_mode_hardening_test_plan.md)
+  defines TASK-248 static checks, regression gates, changed-path allowlist,
+  failure-mode cases, sanitization checks, acceptance criteria, and formal
+  conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

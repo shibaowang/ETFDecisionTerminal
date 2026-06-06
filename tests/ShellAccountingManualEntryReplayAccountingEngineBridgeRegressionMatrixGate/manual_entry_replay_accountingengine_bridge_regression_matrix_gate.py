@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import copy
@@ -122,6 +122,14 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json",
     "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.cpp",
+    "docs/304_shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.md",
+    "docs/305_shell_accounting_manual_entry_replay_fixture_parity_matrix_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json",
+    "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json",
+    "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json",
+    "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json",
+    "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.cpp",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice.cpp",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.py",
@@ -369,7 +377,7 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
         gate.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
         gate.require(not path.startswith(("apps/", "libs/", "migrations/")), f"production path unchanged: {path}")
         gate.require(not path.startswith((POSITIVE_DIR.as_posix(), NEGATIVE_DIR.as_posix())), f"fixture path unchanged: {path}")
-        gate.require((path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or not path.endswith(".json")), f"JSON fixture path unchanged: {path}")
+        gate.require((path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or not path.endswith(".json")), f"JSON fixture path unchanged: {path}")
         gate.require(not path.endswith(".sql"), f"SQL path unchanged: {path}")
     for wildcard in ["docs/", "tests/", "apps/", "libs/", "migrations/"]:
         gate.require(wildcard not in ALLOWED_CHANGED_PATHS, f"allowlist has no {wildcard} wildcard")

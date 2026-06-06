@@ -4741,4 +4741,27 @@ See
 `docs/302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md`
 and
 `docs/303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md`.
-Recommended next task is TASK-254 ShellAccounting manual entry replay fixture-backed VBA parity regression or closeout hardening.
+Recommended next task is TASK-254 ShellAccounting manual entry replay fixture parity matrix read-only vertical slice.
+
+## TASK-254 Manual Entry Replay Fixture Parity Matrix Read-Only Vertical Slice
+
+TASK-254 adds a test-only fixture parity matrix read-only vertical slice for
+manual entry replay. The CTest
+`shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice`
+loads TASK-254-only fixtures, parses buy-only, buy-partial-sell, cash-adjustment,
+and explicit issue scenarios, calls AccountingEngine public read-only replay,
+compares in-memory cash / position / PnL / sanitized issue output to expected
+fixture projections, and emits sanitized stdout JSON evidence.
+
+TASK-254 is test-only and read-only. TASK-254 does not implement production
+runtime integration, does not authorize production write, does not modify
+production code, does not modify AccountingEngine code, does not modify
+historical fixture JSON, does not persist read models, and does not authorize
+broker / network / credentials / endpoint / real order placement / automatic
+trading.
+
+TASK-254 documentation is in
+`docs/304_shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.md`
+and
+`docs/305_shell_accounting_manual_entry_replay_fixture_parity_matrix_test_plan.md`.
+Recommended next task is TASK-255 ShellAccounting manual entry replay Excel/VBA sample import authorization planning.

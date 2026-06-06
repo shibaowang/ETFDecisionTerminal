@@ -1,0 +1,96 @@
+{
+  "task": "TASK-254",
+  "fixtureId": "TASK254_BUY_PARTIAL_SELL",
+  "fixtureKind": "buy_partial_sell",
+  "schemaVersion": "task-254-fixture-parity-matrix/v1",
+  "name": "TASK-254 buy and partial sell parity fixture",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK254_PARTIAL_ACCOUNT",
+    "portfolioId": "TASK254_PORTFOLIO"
+  },
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "TASK254_PARTIAL_CASH_001",
+        "time": "2026-01-01T00:00:00Z",
+        "accountId": "TASK254_PARTIAL_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "100000.00",
+        "currency": "CNY",
+        "note": "SANITIZED_TASK254_PARTIAL_INITIAL_CASH"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "TASK254_PARTIAL_TRADE_BUY_001",
+        "tradeTime": "2026-01-02T09:30:00Z",
+        "accountId": "TASK254_PARTIAL_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_PARTIAL_INSTRUMENT",
+        "action": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "TASK254_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK254_PARTIAL_BUY"
+      },
+      {
+        "factId": "TASK254_PARTIAL_TRADE_SELL_001",
+        "tradeTime": "2026-01-03T09:30:00Z",
+        "accountId": "TASK254_PARTIAL_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_PARTIAL_INSTRUMENT",
+        "action": "SELL",
+        "quantityText": "40",
+        "priceText": "3.0000",
+        "amountText": "120.00",
+        "feeText": "1.00",
+        "cashFlowText": "119.00",
+        "currency": "CNY",
+        "source": "TASK254_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK254_PARTIAL_SELL"
+      }
+    ],
+    "marketPriceFacts": [],
+    "fxRateFacts": []
+  },
+  "expectedProjection": {
+    "replayStatus": "OK",
+    "cashSummary": {
+      "accountId": "TASK254_PARTIAL_ACCOUNT",
+      "portfolioId": "TASK254_PORTFOLIO",
+      "currency": "CNY",
+      "cashBalanceText": "99918.00 CNY",
+      "dataQualityStatus": "OK"
+    },
+    "positionSummaries": [
+      {
+        "accountId": "TASK254_PARTIAL_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_PARTIAL_INSTRUMENT",
+        "quantityText": "60",
+        "costAmountText": "120.60 CNY",
+        "costPriceText": "2.010 CNY",
+        "marketValueText": "UNAVAILABLE",
+        "unrealizedPnlText": "UNAVAILABLE",
+        "currency": "CNY",
+        "dataQualityStatus": "OK"
+      }
+    ],
+    "pnlSummary": {
+      "portfolioId": "TASK254_PORTFOLIO",
+      "currency": "CNY",
+      "realizedPnlText": "38.60 CNY",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "totalAssetsText": "UNAVAILABLE",
+      "totalPnlText": "UNAVAILABLE",
+      "dataQualityStatus": "UNAVAILABLE"
+    },
+    "issues": []
+  }
+}

@@ -1316,6 +1316,15 @@
   defines TASK-254 matrix checks, runtime evidence checks, per-fixture parity
   checks, no-write checks, no-trading checks, production boundary checks, and
   required commands.
+- ShellAccounting manual entry replay Excel/VBA export sample import read-only vertical slice:
+  [306_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_readonly_vertical_slice.md](306_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_readonly_vertical_slice.md)
+  records TASK-255 sanitized sample import scope, test-only importer boundary,
+  AccountingEngine read-only replay evidence, parity checks, no-write boundary,
+  and no broker/network constraints.
+- ShellAccounting manual entry replay Excel/VBA export sample import test plan:
+  [307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md](307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md)
+  defines TASK-255 sample loading, importer, replay evidence, parity,
+  no-write, no-trading, production boundary, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

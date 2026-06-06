@@ -3183,6 +3183,31 @@ TASK-262 must not write SQLite, audit, ledger, snapshot, trade_log, persistent
 read model data, generate TradeDrafts, execute strategies, access broker,
 network, credentials, endpoints, place real orders, or enable automatic trading.
 
+Recommended next task: TASK-263 ShellAccounting Excel/VBA import read-only preview acceptance UX and export format contract.
+
+## TASK-263 ShellAccounting Excel/VBA Import Read-Only Preview Acceptance UX Export Format Contract Prompt Rule
+
+Future work must reference
+`docs/322_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.md`
+and
+`docs/323_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract_test_plan.md`.
+
+TASK-263 may enhance `ShellAccountingReadOnlyPage.qml` with read-only preview
+acceptance states, accepted/rejected/input-error visibility, compact sanitized
+Excel/VBA export format guidance, and a TASK-263-only sanitized sample payload
+with `schemaVersion=excel-vba-export/v1` and
+`source=sanitized-excel-vba-export` that reuses
+`previewExcelVbaImportReadOnly(payloadJson)`. TASK-263 must keep pasted JSON and
+local file preview available, must display only sanitized basenames and
+sanitized issues, and must not add Import, Confirm, Persist, TradeDraft,
+strategy, broker, order, or automatic trading controls. TASK-263 must not
+modify startup, DataServiceApi action implementation,
+DataServiceClient, DataAccess, migrations, AccountingEngine production code, or
+historical fixture JSON. TASK-263 must not write SQLite, audit, ledger,
+snapshot, trade_log, persistent read model data, generate TradeDrafts, execute
+strategies, access broker, network, credentials, endpoints, place real orders,
+or enable automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

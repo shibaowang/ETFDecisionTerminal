@@ -1395,6 +1395,17 @@
   defines TASK-262 loader validation, Presenter file preview invocation, QML
   file-control wiring, sanitized error handling, no direct QML file read, and
   required command checks.
+- ShellAccounting Excel/VBA import read-only preview acceptance UX and export format contract:
+  [322_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.md](322_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.md)
+  records TASK-263 acceptance state visibility, compact sanitized export format
+  contract using `schemaVersion=excel-vba-export/v1` and
+  `source=sanitized-excel-vba-export`, sample preview payload behavior,
+  continued pasted/local preview support, and no-write / no-broker constraints.
+- ShellAccounting Excel/VBA import read-only preview acceptance UX and export format contract test plan:
+  [323_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract_test_plan.md](323_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract_test_plan.md)
+  defines TASK-263 QML object contract, acceptance summary checks, sample
+  payload preview path reuse, sanitized issue checks, no import/persist
+  controls, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

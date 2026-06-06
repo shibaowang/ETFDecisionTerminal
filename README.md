@@ -4947,3 +4947,32 @@ TASK-262 documentation is in
 `docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md`
 and
 `docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md`.
+
+## TASK-263 ShellAccounting Excel/VBA Import Read-Only Preview Acceptance UX And Export Format Contract
+
+TASK-263 makes the Excel/VBA import preview panel suitable for read-only user
+acceptance by adding explicit preview acceptance states, accepted/rejected/input
+error visibility, a compact sanitized export format contract, and a
+TASK-263-only sample preview payload. The sample uses the existing
+`previewExcelVbaImportReadOnly(payloadJson)` path and does not read production
+files.
+The compact format contract uses `schemaVersion=excel-vba-export/v1` and
+`source=sanitized-excel-vba-export`.
+
+The preview panel continues to support pasted sanitized JSON and local
+JSON/TXT file preview from TASK-262. File paths are still displayed only as a
+basename, issues stay sanitized, and no Import, Confirm, Persist, TradeDraft,
+strategy, broker, order, or automatic trading controls are added.
+
+TASK-263 does not modify startup wiring, `main.cpp`, DataServiceApi action
+implementation, DataServiceClient, DataAccess repositories, migrations,
+AccountingEngine production code, or historical fixtures. TASK-263 does not
+write SQLite, audit, ledger, snapshot, trade_log, or persistent read models,
+generate TradeDrafts, execute strategies, submit broker orders, access
+networks, read credentials, read endpoints, place real orders, or enable
+automatic trading.
+
+TASK-263 documentation is in
+`docs/322_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.md`
+and
+`docs/323_shell_accounting_excel_vba_import_readonly_preview_acceptance_ux_export_format_contract_test_plan.md`.

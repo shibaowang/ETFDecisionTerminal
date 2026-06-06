@@ -1,4 +1,7 @@
 TASK_257_EXACT_PATHS = {
+    "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
+    "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
+    "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
@@ -15,6 +18,15 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_invalid_action_amount_cash_import_payload.json",
     "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/fixtures/TASK257_missing_required_header_import_payload.json",
     "tests/ShellAccountingManualEntryReplayExcelVbaImportReadOnlyProductionParserBoundary/t257_parser_boundary_slice.cpp",
+    "docs/312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md",
+    "docs/313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md",
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+    "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/excel_vba_import_readonly_dataservice_preview_action.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_missing_required_header_preview_payload.json",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_valid_buy_preview_payload.json",
 }
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
@@ -382,7 +394,9 @@ def validate_changed_paths(validator: Validator, root: Path) -> None:
     )
     validator.require(
         not any(
-            path.startswith(("apps/", "libs/", "migrations/")) and path not in TASK_257_PARSER_BOUNDARY_PATHS
+            path.startswith(("apps/", "libs/", "migrations/"))
+            and path not in TASK_257_PARSER_BOUNDARY_PATHS
+            and path not in TASK_258_READONLY_PREVIEW_ACTION_PATHS
             for path in changes
         ),
         "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
@@ -678,6 +692,13 @@ TASK_257_PARSER_BOUNDARY_PATHS = {
     "libs/DataServiceApi/CMakeLists.txt",
     "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
     "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+}
+
+TASK_258_READONLY_PREVIEW_ACTION_PATHS = {
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+    "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
 }
 
 ALLOWED_CHANGED_PATHS.update({

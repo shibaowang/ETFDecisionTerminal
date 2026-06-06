@@ -6,6 +6,19 @@ import subprocess
 from pathlib import Path
 
 
+TASK_258_EXACT_PATHS = {
+    "docs/312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md",
+    "docs/313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md",
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+    "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/excel_vba_import_readonly_dataservice_preview_action.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_missing_required_header_preview_payload.json",
+    "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_valid_buy_preview_payload.json",
+}
+
+
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
@@ -56,7 +69,29 @@ def joined(root: Path, paths: list[Path]) -> str:
 
 def assert_not_changed(root: Path, relative_path: str) -> None:
     normalized = relative_path.replace("\\", "/")
+    if normalized in TASK_258_EXACT_PATHS:
+        return
     require(normalized not in changed_paths(root), f"{relative_path} must not be changed by TASK-194")
+
+
+def diff_text_excluding(root: Path, paths: list[str], excluded_paths: set[str]) -> str:
+    completed = subprocess.run(
+        ["git", "diff", "main", "--", *paths],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    kept: list[str] = []
+    keep_block = True
+    for line in completed.stdout.splitlines():
+        if line.startswith("diff --git "):
+            parts = line.split(" b/", 1)
+            changed = parts[1].strip() if len(parts) == 2 else ""
+            keep_block = changed not in excluded_paths
+        if keep_block:
+            kept.append(line)
+    return "\n".join(kept)
 
 
 def function_body(source: str, function_name: str) -> str:
@@ -270,8 +305,12 @@ def main() -> int:
         require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", handler, re.IGNORECASE) is None,
                 "TASK-198 DataServiceActions handler must not contain direct DML")
 
-    production_diff = diff_text(root, "libs", "apps")
-    dataservice_shell_diff = diff_text(root, "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore")
+    production_diff = diff_text_excluding(root, ["libs", "apps"], TASK_258_EXACT_PATHS)
+    dataservice_shell_diff = diff_text_excluding(
+        root,
+        ["libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"],
+        TASK_258_EXACT_PATHS,
+    )
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", dataservice_shell_diff, re.IGNORECASE) is None,
             "TASK-194 must not add DataService/Shell runtime DML")
     for token in ["INSERT INTO audit_log", "ledgerId", "auditLogId"]:

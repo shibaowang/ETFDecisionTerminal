@@ -1345,6 +1345,16 @@
   defines TASK-257 parser boundary checks, sample diagnostics, read-only replay
   evidence, parity assertions, no-write, no-trading, production boundary, and
   required command checks.
+- ShellAccounting Excel/VBA import read-only DataService preview action:
+  [312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md](312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md)
+  records TASK-258 read-only DataService preview action scope, TASK-257 parser
+  boundary usage, normalized diagnostics, replay fact summary response, no-write
+  boundary, and no broker/network constraints.
+- ShellAccounting Excel/VBA import read-only DataService preview action test plan:
+  [313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md](313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md)
+  defines TASK-258 action registration, parser boundary, preview diagnostics,
+  fact summary, no-write, no-trading, production boundary, and required command
+  checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

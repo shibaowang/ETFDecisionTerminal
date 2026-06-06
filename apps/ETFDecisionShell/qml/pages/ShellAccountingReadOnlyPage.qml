@@ -108,6 +108,169 @@ Rectangle {
             }
 
             Rectangle {
+                objectName: "shellAccountingExcelVbaImportPreviewPanel"
+                width: parent.width
+                height: 390
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 12
+
+                    Text {
+                        objectName: "shellAccountingExcelVbaImportPreviewTitle"
+                        width: parent.width
+                        text: "Excel/VBA import preview"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    TextArea {
+                        id: excelVbaImportPreviewPayloadInput
+                        objectName: "shellAccountingExcelVbaImportPreviewPayloadInput"
+                        width: parent.width
+                        height: 92
+                        placeholderText: "Paste sanitized JSON payload"
+                        wrapMode: TextEdit.Wrap
+                        selectByMouse: true
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Button {
+                            objectName: "shellAccountingExcelVbaImportPreviewButton"
+                            text: "Preview"
+                            enabled: root.presenterAvailable
+                                && !accountingPresenter.excelVbaImportPreviewBusy
+                                && excelVbaImportPreviewPayloadInput.text.length > 0
+                            onClicked: accountingPresenter.previewExcelVbaImportReadOnly(
+                                excelVbaImportPreviewPayloadInput.text)
+                        }
+
+                        Button {
+                            objectName: "shellAccountingExcelVbaImportPreviewResetButton"
+                            text: "Reset"
+                            enabled: root.presenterAvailable
+                            onClicked: {
+                                excelVbaImportPreviewPayloadInput.text = ""
+                                accountingPresenter.resetExcelVbaImportPreviewState()
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        objectName: "shellAccountingExcelVbaImportPreviewStatusPanel"
+                        width: parent.width
+                        height: 220
+                        radius: 8
+                        color: "#f8fbff"
+                        border.color: "#d9e3f2"
+
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 7
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPreviewStatusText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Preview status: " + accountingPresenter.lastExcelVbaImportPreviewStatus
+                                    : "Preview status: unavailable"
+                                color: "#18202f"
+                                font.pixelSize: 13
+                                font.bold: true
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPreviewIssueText"
+                                width: parent.width
+                                text: root.presenterAvailable ? accountingPresenter.lastExcelVbaImportPreviewIssue : ""
+                                color: "#9a3412"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                visible: text.length > 0
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPreviewSummaryText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Summary: " + accountingPresenter.lastExcelVbaImportPreviewSummary
+                                    : "Summary: unavailable"
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPreviewDiagnosticCodesText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Diagnostic codes: " + accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes
+                                    : "Diagnostic codes: unavailable"
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 14
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPreviewTradeFactCountText"
+                                    width: 124
+                                    text: root.presenterAvailable
+                                        ? "Trades: " + accountingPresenter.excelVbaImportPreviewTradeFactCount
+                                        : "Trades: 0"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                }
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPreviewCashFactCountText"
+                                    width: 116
+                                    text: root.presenterAvailable
+                                        ? "Cash: " + accountingPresenter.excelVbaImportPreviewCashFactCount
+                                        : "Cash: 0"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                }
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPreviewMarketPriceFactCountText"
+                                    width: 146
+                                    text: root.presenterAvailable
+                                        ? "Prices: " + accountingPresenter.excelVbaImportPreviewMarketPriceFactCount
+                                        : "Prices: 0"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                }
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPreviewFxRateFactCountText"
+                                    width: 116
+                                    text: root.presenterAvailable
+                                        ? "FX: " + accountingPresenter.excelVbaImportPreviewFxRateFactCount
+                                        : "FX: 0"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
                 objectName: "shellAccountingTradingUiSection"
                 width: parent.width
                 height: 360

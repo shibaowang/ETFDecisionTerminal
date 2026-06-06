@@ -3133,6 +3133,32 @@ ledger / snapshot / trade_log / read models, generate TradeDrafts, execute
 strategies, submit broker orders, access networks, read credentials, read
 endpoints, place real orders, or enable automatic trading.
 
+Recommended next task: TASK-261 ShellAccounting Excel/VBA import read-only preview QML panel wiring vertical slice.
+
+## TASK-261 ShellAccounting Excel/VBA Import Read-Only Preview QML Panel Wiring Prompt Rule
+
+Future startup wiring, production file loading, AccountingEngine runtime
+integration, read model refresh, import persistence, TradeDraft generation, or
+broker/trading capability must be separately authorized after
+`docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md`
+and
+`docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md`.
+
+TASK-261 may wire the TASK-260 Presenter preview contract into
+`ShellAccountingReadOnlyPage.qml`. The QML panel may accept only pasted
+sanitized in-memory JSON payload text, may call
+`accountingPresenter.previewExcelVbaImportReadOnly(payloadText)`, and may bind
+only to Presenter preview status, issue, summary, diagnostic code, and replay
+fact count properties. TASK-261 must not modify startup, `main.cpp`,
+DataServiceApi action implementation, DataServiceClient, ShellServices
+production C++, DataAccess repositories, migrations, AccountingEngine
+production code, or historical fixture JSON. TASK-261 must not add FileDialog,
+production file loading, direct DataServiceClient / DataServiceApi / SQLite /
+DataAccess / AccountingEngine access from QML, SQLite writes, audit / ledger /
+snapshot / trade_log / read model writes, TradeDraft generation, strategy
+execution, broker access, network access, credentials, endpoints, real order
+placement, or automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

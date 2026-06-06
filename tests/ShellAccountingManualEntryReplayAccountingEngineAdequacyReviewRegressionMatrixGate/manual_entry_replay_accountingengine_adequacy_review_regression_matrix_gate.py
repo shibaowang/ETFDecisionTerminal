@@ -58,6 +58,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/excel_vba_import_readonly_preview_shellservices_presenter_contract.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_missing_required_header_presenter_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_valid_buy_presenter_preview_payload.json",
+
+    "docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md",
+    "docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
 }
 #!/usr/bin/env python3
 
@@ -589,7 +595,9 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
         gate.require(not path.endswith(".sql"), f"SQL file unchanged: {path}")
     for path in ["apps", "libs", "migrations", "libs/AccountingEngine", POSITIVE_DIR.as_posix(), NEGATIVE_DIR.as_posix()]:
         diff_paths = git_lines(root, "diff", "--name-only", "main", "--", path)
-        if path == "libs":
+        if path == "apps":
+            gate.require(diff_paths <= {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}, f"{path} diff exact TASK-261 QML panel only")
+        elif path == "libs":
             gate.require(diff_paths <= TASK_257_EXACT_PATHS, f"{path} diff exact TASK-257 parser boundary only")
         else:
             gate.require(diff_paths == set(), f"{path} diff empty")
@@ -735,7 +743,9 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
         gate.require(not token_in_executable_lines(gate_text, token), f"TASK-241 gate does not execute token `{token}`")
     for path in ["apps", "libs", "migrations", "libs/AccountingEngine", POSITIVE_DIR.as_posix(), NEGATIVE_DIR.as_posix()]:
         diff_paths = git_lines(root, "diff", "--name-only", "main", "--", path)
-        if path == "libs":
+        if path == "apps":
+            gate.require(diff_paths <= {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}, f"{path} remains exact TASK-261 QML panel only")
+        elif path == "libs":
             gate.require(diff_paths <= TASK_257_EXACT_PATHS, f"{path} remains exact TASK-257 parser boundary only")
         else:
             gate.require(diff_paths == set(), f"{path} remains unchanged")

@@ -27,6 +27,17 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/excel_vba_import_readonly_dataservice_preview_action.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_missing_required_header_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_valid_buy_preview_payload.json",
+    "docs/314_shell_accounting_excel_vba_import_readonly_preview_client_adapter.md",
+    "docs/315_shell_accounting_excel_vba_import_readonly_preview_client_adapter_test_plan.md",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/excel_vba_import_readonly_preview_client_adapter.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/fixtures/TASK259_missing_required_header_preview_client_payload.json",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/fixtures/TASK259_valid_buy_preview_client_payload.json",
 }
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
@@ -397,6 +408,7 @@ def validate_changed_paths(validator: Validator, root: Path) -> None:
             path.startswith(("apps/", "libs/", "migrations/"))
             and path not in TASK_257_PARSER_BOUNDARY_PATHS
             and path not in TASK_258_READONLY_PREVIEW_ACTION_PATHS
+            and path not in TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS
             for path in changes
         ),
         "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
@@ -406,9 +418,14 @@ def validate_changed_paths(validator: Validator, root: Path) -> None:
 
 def validate_no_forbidden_text(validator: Validator, text: str, context: str) -> None:
     lowered = text.lower()
-    for path in TASK_257_PARSER_BOUNDARY_PATHS:
-        lowered = lowered.replace(path.lower(), "")
-        lowered = lowered.replace(path.replace("/", "\\").lower(), "")
+    for exact_paths in (
+        TASK_257_PARSER_BOUNDARY_PATHS,
+        TASK_258_READONLY_PREVIEW_ACTION_PATHS,
+        TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS,
+    ):
+        for path in exact_paths:
+            lowered = lowered.replace(path.lower(), "")
+            lowered = lowered.replace(path.replace("/", "\\").lower(), "")
     for token in FORBIDDEN_UNSANITIZED_TOKENS:
         validator.require(token not in lowered, "NEG_FIXTURE_FORBIDDEN_TOKEN", f"{context} forbidden token")
     for token in FORBIDDEN_PATH_TOKENS:
@@ -699,6 +716,14 @@ TASK_258_READONLY_PREVIEW_ACTION_PATHS = {
     "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
     "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
     "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
+}
+
+TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS = {
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
 }
 
 ALLOWED_CHANGED_PATHS.update({

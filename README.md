@@ -4856,3 +4856,24 @@ TASK-258 documentation is in
 `docs/312_shell_accounting_excel_vba_import_readonly_dataservice_preview_action.md`
 and
 `docs/313_shell_accounting_excel_vba_import_readonly_dataservice_preview_action_test_plan.md`.
+
+## TASK-259 ShellAccounting Excel/VBA Import Read-Only Preview Client Adapter
+
+TASK-259 adds a typed read-only DataService client adapter for the TASK-258
+preview action `accounting.excel_vba_import.readonly_preview`. The adapter
+accepts only sanitized in-memory import payload JSON, calls the read-only
+DataService action through the existing client boundary, maps normalized
+diagnostics and replay fact summary counts into a typed preview result, and
+emits sanitized CTest evidence.
+
+TASK-259 does not modify apps, production QML, startup, Presenter, Controller,
+production file loading, AccountingEngine production code, migrations, or
+historical fixtures. TASK-259 does not call AccountingEngine, write SQLite,
+write audit / ledger / snapshot / trade_log / read model data, generate
+TradeDrafts, execute strategies, submit broker orders, access networks, read
+credentials, read endpoints, place real orders, or enable automatic trading.
+
+TASK-259 documentation is in
+`docs/314_shell_accounting_excel_vba_import_readonly_preview_client_adapter.md`
+and
+`docs/315_shell_accounting_excel_vba_import_readonly_preview_client_adapter_test_plan.md`.

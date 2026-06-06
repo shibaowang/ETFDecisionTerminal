@@ -31,6 +31,8 @@ constexpr const char* kActionDataOtcList = "data.otc.list";
 constexpr const char* kActionDataAuditAppend = "data.audit.append";
 constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
+constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
+    "accounting.excel_vba_import.readonly_preview";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
@@ -235,6 +237,25 @@ DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::ac
     int timeoutMs)
 {
     return sendAction(kActionAccountingReplayPreview, payloadJson, timeoutMs);
+}
+
+DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>
+DataServiceClient::accountingExcelVbaImportReadOnlyPreview(
+    const std::string& payloadJson,
+    int timeoutMs)
+{
+    auto response = sendAction(kActionAccountingExcelVbaImportReadOnlyPreview, payloadJson, timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    if (!response.value().success) {
+        return DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>::failure(
+            response.value().errorCode,
+            response.value().errorMessage);
+    }
+    return parseExcelVbaImportReadOnlyPreviewPayloadJson(response.value().payloadJson);
 }
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::positionList(

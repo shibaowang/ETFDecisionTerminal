@@ -3083,6 +3083,30 @@ migrations, modify AccountingEngine production code, or authorize broker,
 network, credentials, endpoints, real order placement, strategy execution, or
 automatic trading.
 
+Recommended next task: TASK-259 ShellAccounting Excel/VBA import read-only preview client adapter vertical slice.
+
+## TASK-259 ShellAccounting Excel/VBA Import Read-Only Preview Client Adapter Prompt Rule
+
+Future UI preview, QML wiring, production file loading, AccountingEngine
+runtime integration, read model refresh, import persistence, TradeDraft
+generation, or broker/trading capability must be separately authorized after
+`docs/314_shell_accounting_excel_vba_import_readonly_preview_client_adapter.md`
+and
+`docs/315_shell_accounting_excel_vba_import_readonly_preview_client_adapter_test_plan.md`.
+
+TASK-259 may add a typed read-only DataService client adapter for
+`accounting.excel_vba_import.readonly_preview`. The adapter may accept only
+in-memory sanitized import payload objects, may call the existing read-only
+DataService preview action through the DataService client boundary, and may map
+only normalized diagnostics plus replay fact summary counts into a typed
+preview result. TASK-259 must not modify apps, production QML, startup,
+Presenter, Controller, production file loading, AccountingEngine production
+code, DataAccess repositories, migrations, or historical fixture JSON. TASK-259
+must not call AccountingEngine, write SQLite, write audit / ledger / snapshot /
+trade_log / read models, generate TradeDrafts, execute strategies, submit
+broker orders, access networks, read credentials, read endpoints, place real
+orders, or enable automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace etfdt::data_service_client {
 
@@ -79,6 +80,56 @@ struct AuditAppendRequest final {
     std::string operatorName = "local-user";
     std::string oldValueJson = "{}";
     std::string newValueJson = "{}";
+};
+
+struct ExcelVbaImportReadOnlyPreviewDiagnostic final {
+    std::string level;
+    std::string code;
+    std::string field;
+    std::string sheetName;
+    std::string rowId;
+};
+
+struct ExcelVbaImportReadOnlyPreviewFactSummary final {
+    int tradeFactCount = 0;
+    int cashFactCount = 0;
+    int marketPriceFactCount = 0;
+    int fxRateFactCount = 0;
+};
+
+struct ExcelVbaImportReadOnlyPreviewResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    bool dataServiceReadOnlyActionRegistered = false;
+    bool parserBoundaryCalled = false;
+    bool previewActionExecuted = false;
+    bool diagnosticsBuilt = false;
+    bool replayFactSummaryBuilt = false;
+    bool accountingEngineCalled = false;
+    bool productionRuntimeIntegrationImplemented = false;
+    bool accepted = false;
+    std::vector<ExcelVbaImportReadOnlyPreviewDiagnostic> diagnostics;
+    std::vector<std::string> diagnosticCodes;
+    ExcelVbaImportReadOnlyPreviewFactSummary replayFactSummary;
+    bool parserReadOnly = false;
+    bool parserNoSqliteAccess = false;
+    bool parserNoWrite = false;
+    bool productionWrite = false;
+    bool sqliteProductionWrite = false;
+    bool auditWritten = false;
+    bool ledgerWritten = false;
+    bool snapshotWritten = false;
+    bool tradeLogWritten = false;
+    bool readModelPersistentWrite = false;
+    bool tradeDraftGenerated = false;
+    bool strategyExecuted = false;
+    bool brokerOrderSubmitted = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool automaticTrading = false;
+    bool rawUserDataExposed = false;
 };
 
 }  // namespace etfdt::data_service_client

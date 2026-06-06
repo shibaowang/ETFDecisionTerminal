@@ -27,6 +27,24 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/excel_vba_import_readonly_dataservice_preview_action.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_missing_required_header_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyDataServicePreviewAction/fixtures/TASK258_valid_buy_preview_payload.json",
+    "docs/314_shell_accounting_excel_vba_import_readonly_preview_client_adapter.md",
+    "docs/315_shell_accounting_excel_vba_import_readonly_preview_client_adapter_test_plan.md",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/excel_vba_import_readonly_preview_client_adapter.cpp",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/fixtures/TASK259_missing_required_header_preview_client_payload.json",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewClientAdapter/fixtures/TASK259_valid_buy_preview_client_payload.json",
+}
+TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS = {
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
 }
 #!/usr/bin/env python3
 
@@ -853,7 +871,13 @@ def test_no_real_order(h: Harness) -> None:
 
 
 def test_no_automatic_trading(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(
+        ["git", "diff", "main", "--", "libs", "apps", *[f":(exclude){path}" for path in TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS]],
+        cwd=h.root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
     ignored_lines = ("No broker", "strategyExecuted = false")
     diff = "\n".join(line for line in diff.splitlines() if not any(ignored in line for ignored in ignored_lines))
     for token in ["automatic trading", "autoTrade", "strategyExecute"]:

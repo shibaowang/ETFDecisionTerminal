@@ -1,4 +1,4 @@
-TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
+﻿TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
     "docs/295_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_test_plan.md",
     "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/CMakeLists.txt",
@@ -464,6 +464,11 @@ def main() -> int:
     allowed_changes = {
     "docs/300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md",
     "docs/301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md",
+    "docs/302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md",
+    "docs/303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json",
+    "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.cpp",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice.cpp",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.py",
@@ -686,7 +691,7 @@ def main() -> int:
         gate.require(
             is_authorized_task217_fixture_scaffold_path(path)
             or path in authorized_task222_negative_fixture_scaffold_paths
-            or not any(lowered.endswith(suffix) for suffix in forbidden_suffixes),
+            or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or not any(lowered.endswith(suffix) for suffix in forbidden_suffixes),
             f"TASK-216 must not add fixture/schema data file: {path}",
         )
 

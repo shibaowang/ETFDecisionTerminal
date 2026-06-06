@@ -4719,3 +4719,26 @@ See
 and
 `docs/301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md`.
 Recommended next task is TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.
+
+## TASK-253 Manual Entry Replay Fixture-Backed VBA Parity Read-Only Vertical Slice
+
+TASK-253 adds a test-only fixture-backed VBA parity read-only vertical slice for
+manual entry replay. The CTest
+`shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice`
+loads a TASK-253-only fixture, parses initial cash plus BUY and partial SELL
+facts, calls AccountingEngine public read-only replay, compares the in-memory
+cash / position / PnL projection to expected fixture output, and emits
+sanitized stdout JSON evidence.
+
+TASK-253 is test-only and read-only. TASK-253 does not implement production
+runtime integration, does not authorize production write, does not modify
+production code, does not modify AccountingEngine code, does not modify
+historical fixture JSON, does not persist read models, and does not authorize
+broker, network, credentials, endpoint, real order placement, or automatic
+trading.
+
+See
+`docs/302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md`
+and
+`docs/303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md`.
+Recommended next task is TASK-254 ShellAccounting manual entry replay fixture-backed VBA parity regression or closeout hardening.

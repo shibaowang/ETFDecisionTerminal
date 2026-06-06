@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 
 import argparse
 import hashlib
@@ -29,6 +29,11 @@ NEGATIVE_DIR = Path("tests/fixtures/manual_entry_replay_negative")
 ALLOWED_CHANGED_PATHS = {
     "docs/300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md",
     "docs/301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md",
+    "docs/302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md",
+    "docs/303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json",
+    "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.cpp",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice.cpp",
     "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.py",
@@ -352,7 +357,7 @@ def validate_changed_paths(check: Check, root: Path) -> None:
     for path in sorted(changes):
         check.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
         check.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed path: {path}")
-        check.require(not path.endswith(".json"), f"fixture JSON unchanged: {path}")
+        check.require((path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or not path.endswith(".json")), f"fixture JSON unchanged: {path}")
     check.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
     check.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") == set(), "libs diff empty")
     check.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")

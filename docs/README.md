@@ -1296,6 +1296,16 @@
   defines TASK-252 runtime evidence checks, no-write checks, no-trading checks,
   production boundary checks, failure modes, changed-path allowlist, and
   regression requirements. The next handoff is TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.
+- ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice:
+  [302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md](302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md)
+  records TASK-253 fixture-backed read-only replay scope, TASK-253-only fixture
+  boundary, AccountingEngine read-only replay evidence, exact projection parity,
+  no-write boundary, and no broker/network constraints.
+- ShellAccounting manual entry replay fixture-backed VBA parity test plan:
+  [303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md](303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md)
+  defines TASK-253 fixture checks, runtime evidence checks, no-write checks,
+  no-trading checks, production boundary checks, required commands, and formal
+  conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

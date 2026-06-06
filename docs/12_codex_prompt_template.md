@@ -2996,7 +2996,26 @@ historical fixture JSON, does not persist read models, and does not authorize
 broker, network, credentials, endpoints, real order placement, or automatic
 trading.
 
-Recommended next task: TASK-255 ShellAccounting manual entry replay Excel/VBA sample import authorization planning.
+Recommended next task: TASK-255 ShellAccounting manual entry replay Excel/VBA export sample import read-only vertical slice.
+
+## TASK-255 Manual Entry Replay Excel/VBA Export Sample Import Read-Only Vertical Slice Prompt Rule
+
+Future production Excel import, production runtime integration, read model
+refresh, production parser / loader / reader work, larger sample suites, or
+broker/trading capability must be separately authorized after
+`docs/306_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_readonly_vertical_slice.md`
+and
+`docs/307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md`.
+
+TASK-255 is a test-only Excel/VBA export sample import read-only vertical slice.
+TASK-255 may call AccountingEngine read-only replay only from the TASK-255 test
+helper, may load only TASK-255-local sanitized export sample fixtures, and may
+emit only in-memory projection summary / sanitized stdout JSON evidence.
+TASK-255 does not implement production runtime integration, does not authorize
+production write, does not modify production code, does not modify
+AccountingEngine code, does not modify historical fixture JSON, does not persist
+read models, and does not authorize broker, network, credentials, endpoints,
+real order placement, or automatic trading.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

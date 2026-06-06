@@ -4764,4 +4764,27 @@ TASK-254 documentation is in
 `docs/304_shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.md`
 and
 `docs/305_shell_accounting_manual_entry_replay_fixture_parity_matrix_test_plan.md`.
-Recommended next task is TASK-255 ShellAccounting manual entry replay Excel/VBA sample import authorization planning.
+Recommended next task is TASK-255 ShellAccounting manual entry replay Excel/VBA export sample import read-only vertical slice.
+
+## TASK-255 Manual Entry Replay Excel/VBA Export Sample Import Read-Only Vertical Slice
+
+TASK-255 adds a test-only Excel/VBA export sample import read-only vertical
+slice for manual entry replay. The CTest
+`shell_accounting_manual_entry_replay_excel_vba_export_sample_import_readonly_vertical_slice`
+loads a TASK-255-only sanitized Excel/VBA-style JSON export sample, parses sheet
+headers and rows through a test-only importer, builds replay fact DTOs, calls
+AccountingEngine public read-only replay, compares the in-memory cash /
+position / PnL projection to expected output, and emits sanitized stdout JSON
+evidence.
+
+TASK-255 is test-only and read-only. TASK-255 does not use real user accounts,
+real trade history, real broker data, credentials, endpoints, production
+runtime integration, SQLite writes, audit / ledger / snapshot / trade_log /
+read model writes, production code, AccountingEngine code changes, historical
+fixture edits, broker integration, network access, real order placement, or
+automatic trading.
+
+TASK-255 documentation is in
+`docs/306_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_readonly_vertical_slice.md`
+and
+`docs/307_shell_accounting_manual_entry_replay_excel_vba_export_sample_import_test_plan.md`.

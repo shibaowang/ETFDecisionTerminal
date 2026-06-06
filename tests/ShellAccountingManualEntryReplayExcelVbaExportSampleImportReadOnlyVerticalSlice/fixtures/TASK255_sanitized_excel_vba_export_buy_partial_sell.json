@@ -1,0 +1,150 @@
+{
+  "task": "TASK-255",
+  "sampleId": "TASK255_SANITIZED_EXCEL_VBA_EXPORT_BUY_PARTIAL_SELL",
+  "schemaVersion": "task-255-excel-vba-export-sample/v1",
+  "sourceFormat": "sanitized-excel-vba-style-json-export",
+  "name": "TASK-255 sanitized Excel VBA export sample with initial cash, BUY, and partial SELL",
+  "rawUserDataExposed": false,
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK255_SAMPLE_ACCOUNT",
+    "portfolioId": "TASK255_PORTFOLIO"
+  },
+  "exportSample": {
+    "workbookName": "SANITIZED_TASK255_EXCEL_VBA_EXPORT",
+    "sheets": [
+      {
+        "sheetName": "InitialCash",
+        "headers": [
+          "ROW_ID",
+          "TIME_UTC",
+          "ACCOUNT_CODE",
+          "PORTFOLIO_CODE",
+          "ACTION",
+          "AMOUNT",
+          "CURRENCY",
+          "MEMO"
+        ],
+        "rows": [
+          [
+            "TASK255_CASH_ROW_001",
+            "2026-01-01T00:00:00Z",
+            "TASK255_SAMPLE_ACCOUNT",
+            "TASK255_PORTFOLIO",
+            "INITIAL_CASH",
+            "100000.00",
+            "CNY",
+            "SANITIZED_TASK255_INITIAL_CASH"
+          ]
+        ]
+      },
+      {
+        "sheetName": "Trades",
+        "headers": [
+          "ROW_ID",
+          "TRADE_TIME_UTC",
+          "ACCOUNT_CODE",
+          "PORTFOLIO_CODE",
+          "INSTRUMENT_CODE",
+          "SIDE",
+          "QUANTITY",
+          "PRICE",
+          "AMOUNT",
+          "FEE",
+          "CASH_FLOW",
+          "CURRENCY",
+          "SOURCE",
+          "MEMO"
+        ],
+        "rows": [
+          [
+            "TASK255_TRADE_ROW_BUY_001",
+            "2026-01-02T09:30:00Z",
+            "TASK255_SAMPLE_ACCOUNT",
+            "TASK255_PORTFOLIO",
+            "TASK255_SAMPLE_INSTRUMENT",
+            "BUY",
+            "100",
+            "2.0000",
+            "200.00",
+            "1.00",
+            "-201.00",
+            "CNY",
+            "TASK255_SANITIZED_EXCEL_VBA_EXPORT",
+            "SANITIZED_TASK255_BUY"
+          ],
+          [
+            "TASK255_TRADE_ROW_SELL_001",
+            "2026-01-03T09:30:00Z",
+            "TASK255_SAMPLE_ACCOUNT",
+            "TASK255_PORTFOLIO",
+            "TASK255_SAMPLE_INSTRUMENT",
+            "SELL",
+            "40",
+            "3.0000",
+            "120.00",
+            "1.00",
+            "119.00",
+            "CNY",
+            "TASK255_SANITIZED_EXCEL_VBA_EXPORT",
+            "SANITIZED_TASK255_PARTIAL_SELL"
+          ]
+        ]
+      },
+      {
+        "sheetName": "MarketPrices",
+        "headers": [
+          "INSTRUMENT_CODE",
+          "PRICE_TIME_UTC",
+          "PRICE",
+          "CURRENCY",
+          "SOURCE"
+        ],
+        "rows": []
+      },
+      {
+        "sheetName": "FxRates",
+        "headers": [
+          "BASE_CURRENCY",
+          "QUOTE_CURRENCY",
+          "RATE_TIME_UTC",
+          "RATE",
+          "SOURCE"
+        ],
+        "rows": []
+      }
+    ]
+  },
+  "expectedProjection": {
+    "replayStatus": "OK",
+    "cashSummary": {
+      "accountId": "TASK255_SAMPLE_ACCOUNT",
+      "portfolioId": "TASK255_PORTFOLIO",
+      "currency": "CNY",
+      "cashBalanceText": "99918.00 CNY",
+      "dataQualityStatus": "OK"
+    },
+    "positionSummary": {
+      "accountId": "TASK255_SAMPLE_ACCOUNT",
+      "portfolioId": "TASK255_PORTFOLIO",
+      "instrumentCode": "TASK255_SAMPLE_INSTRUMENT",
+      "quantityText": "60",
+      "costAmountText": "120.60 CNY",
+      "costPriceText": "2.010 CNY",
+      "marketValueText": "UNAVAILABLE",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "currency": "CNY",
+      "dataQualityStatus": "OK"
+    },
+    "pnlSummary": {
+      "portfolioId": "TASK255_PORTFOLIO",
+      "currency": "CNY",
+      "realizedPnlText": "38.60 CNY",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "totalAssetsText": "UNAVAILABLE",
+      "totalPnlText": "UNAVAILABLE",
+      "dataQualityStatus": "UNAVAILABLE"
+    },
+    "issues": []
+  }
+}

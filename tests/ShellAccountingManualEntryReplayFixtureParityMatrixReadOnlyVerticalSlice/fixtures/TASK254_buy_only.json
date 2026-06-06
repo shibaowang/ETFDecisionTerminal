@@ -1,0 +1,80 @@
+{
+  "task": "TASK-254",
+  "fixtureId": "TASK254_BUY_ONLY",
+  "fixtureKind": "buy_only",
+  "schemaVersion": "task-254-fixture-parity-matrix/v1",
+  "name": "TASK-254 buy-only parity fixture",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK254_BUY_ACCOUNT",
+    "portfolioId": "TASK254_PORTFOLIO"
+  },
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "TASK254_BUY_CASH_001",
+        "time": "2026-01-01T00:00:00Z",
+        "accountId": "TASK254_BUY_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "100000.00",
+        "currency": "CNY",
+        "note": "SANITIZED_TASK254_BUY_INITIAL_CASH"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "TASK254_BUY_TRADE_001",
+        "tradeTime": "2026-01-02T09:30:00Z",
+        "accountId": "TASK254_BUY_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_BUY_INSTRUMENT",
+        "action": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "TASK254_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK254_BUY"
+      }
+    ],
+    "marketPriceFacts": [],
+    "fxRateFacts": []
+  },
+  "expectedProjection": {
+    "replayStatus": "OK",
+    "cashSummary": {
+      "accountId": "TASK254_BUY_ACCOUNT",
+      "portfolioId": "TASK254_PORTFOLIO",
+      "currency": "CNY",
+      "cashBalanceText": "99799.00 CNY",
+      "dataQualityStatus": "OK"
+    },
+    "positionSummaries": [
+      {
+        "accountId": "TASK254_BUY_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_BUY_INSTRUMENT",
+        "quantityText": "100",
+        "costAmountText": "201.00 CNY",
+        "costPriceText": "2.010 CNY",
+        "marketValueText": "UNAVAILABLE",
+        "unrealizedPnlText": "UNAVAILABLE",
+        "currency": "CNY",
+        "dataQualityStatus": "OK"
+      }
+    ],
+    "pnlSummary": {
+      "portfolioId": "TASK254_PORTFOLIO",
+      "currency": "CNY",
+      "realizedPnlText": "UNAVAILABLE",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "totalAssetsText": "UNAVAILABLE",
+      "totalPnlText": "UNAVAILABLE",
+      "dataQualityStatus": "UNAVAILABLE"
+    },
+    "issues": []
+  }
+}

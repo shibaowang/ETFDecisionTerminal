@@ -1306,6 +1306,16 @@
   defines TASK-253 fixture checks, runtime evidence checks, no-write checks,
   no-trading checks, production boundary checks, required commands, and formal
   conclusion.
+- ShellAccounting manual entry replay fixture parity matrix read-only vertical slice:
+  [304_shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.md](304_shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.md)
+  records TASK-254 fixture matrix scope, TASK-254-only fixture boundary,
+  AccountingEngine read-only replay evidence, exact projection / sanitized issue
+  parity, no-write boundary, and no broker/network constraints.
+- ShellAccounting manual entry replay fixture parity matrix test plan:
+  [305_shell_accounting_manual_entry_replay_fixture_parity_matrix_test_plan.md](305_shell_accounting_manual_entry_replay_fixture_parity_matrix_test_plan.md)
+  defines TASK-254 matrix checks, runtime evidence checks, per-fixture parity
+  checks, no-write checks, no-trading checks, production boundary checks, and
+  required commands.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

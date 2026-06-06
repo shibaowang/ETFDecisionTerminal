@@ -1,0 +1,54 @@
+{
+  "task": "TASK-254",
+  "fixtureId": "TASK254_CASH_ADJUSTMENT",
+  "fixtureKind": "cash_adjustment",
+  "schemaVersion": "task-254-fixture-parity-matrix/v1",
+  "name": "TASK-254 cash adjustment issue parity fixture",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK254_CASH_ACCOUNT",
+    "portfolioId": "TASK254_PORTFOLIO"
+  },
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "TASK254_CASH_INITIAL_001",
+        "time": "2026-01-01T00:00:00Z",
+        "accountId": "TASK254_CASH_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "100000.00",
+        "currency": "CNY",
+        "note": "SANITIZED_TASK254_CASH_INITIAL"
+      },
+      {
+        "factId": "TASK254_CASH_DEPOSIT_001",
+        "time": "2026-01-02T00:00:00Z",
+        "accountId": "TASK254_CASH_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "action": "DEPOSIT",
+        "amountText": "500.00",
+        "currency": "CNY",
+        "note": "SANITIZED_TASK254_CASH_DEPOSIT"
+      }
+    ],
+    "tradeFacts": [],
+    "marketPriceFacts": [],
+    "fxRateFacts": []
+  },
+  "expectedProjection": {
+    "replayStatus": "UNSUPPORTED_SCENARIO",
+    "cashSummary": null,
+    "positionSummaries": [],
+    "pnlSummary": null,
+    "issues": [
+      {
+        "level": "WARNING",
+        "code": "REPLAY_NOT_IMPLEMENTED",
+        "blocking": false,
+        "field": "facts",
+        "sourceId": ""
+      }
+    ]
+  }
+}

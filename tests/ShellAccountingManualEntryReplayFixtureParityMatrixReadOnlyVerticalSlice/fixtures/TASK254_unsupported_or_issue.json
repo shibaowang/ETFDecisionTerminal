@@ -1,0 +1,77 @@
+{
+  "task": "TASK-254",
+  "fixtureId": "TASK254_SELL_EXCEEDS_POSITION",
+  "fixtureKind": "unsupported_or_issue",
+  "schemaVersion": "task-254-fixture-parity-matrix/v1",
+  "name": "TASK-254 sell exceeds position issue parity fixture",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK254_ISSUE_ACCOUNT",
+    "portfolioId": "TASK254_PORTFOLIO"
+  },
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "TASK254_ISSUE_CASH_001",
+        "time": "2026-01-01T00:00:00Z",
+        "accountId": "TASK254_ISSUE_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "100000.00",
+        "currency": "CNY",
+        "note": "SANITIZED_TASK254_ISSUE_INITIAL_CASH"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "TASK254_ISSUE_TRADE_BUY_001",
+        "tradeTime": "2026-01-02T09:30:00Z",
+        "accountId": "TASK254_ISSUE_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_ISSUE_INSTRUMENT",
+        "action": "BUY",
+        "quantityText": "10",
+        "priceText": "2.0000",
+        "amountText": "20.00",
+        "feeText": "1.00",
+        "cashFlowText": "-21.00",
+        "currency": "CNY",
+        "source": "TASK254_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK254_ISSUE_BUY"
+      },
+      {
+        "factId": "TASK254_ISSUE_TRADE_SELL_001",
+        "tradeTime": "2026-01-03T09:30:00Z",
+        "accountId": "TASK254_ISSUE_ACCOUNT",
+        "portfolioId": "TASK254_PORTFOLIO",
+        "instrumentCode": "TASK254_ISSUE_INSTRUMENT",
+        "action": "SELL",
+        "quantityText": "15",
+        "priceText": "3.0000",
+        "amountText": "45.00",
+        "feeText": "1.00",
+        "cashFlowText": "44.00",
+        "currency": "CNY",
+        "source": "TASK254_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK254_ISSUE_SELL"
+      }
+    ],
+    "marketPriceFacts": [],
+    "fxRateFacts": []
+  },
+  "expectedProjection": {
+    "replayStatus": "ERROR",
+    "cashSummary": null,
+    "positionSummaries": [],
+    "pnlSummary": null,
+    "issues": [
+      {
+        "level": "ERROR",
+        "code": "SELL_EXCEEDS_POSITION",
+        "blocking": true,
+        "field": "tradeFacts",
+        "sourceId": ""
+      }
+    ]
+  }
+}

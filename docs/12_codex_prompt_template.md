@@ -2975,7 +2975,28 @@ authorize broker, network, credentials, endpoint, real order placement, or
 automatic trading. Future production runtime integration must be separately
 authorized.
 
-Recommended next task: TASK-254 ShellAccounting manual entry replay fixture-backed VBA parity regression or closeout hardening.
+Recommended next task: TASK-254 ShellAccounting manual entry replay fixture parity matrix read-only vertical slice.
+
+## TASK-254 Manual Entry Replay Fixture Parity Matrix Read-Only Vertical Slice Prompt Rule
+
+Future manual entry replay fixture matrix expansion, Excel/VBA sample import,
+production runtime integration, read model refresh, production parser / loader /
+reader work, or broker/trading capability must be separately authorized after
+`docs/304_shell_accounting_manual_entry_replay_fixture_parity_matrix_readonly_vertical_slice.md`
+and
+`docs/305_shell_accounting_manual_entry_replay_fixture_parity_matrix_test_plan.md`.
+
+TASK-254 is a test-only fixture parity matrix read-only vertical slice. TASK-254
+may call AccountingEngine read-only replay only from the TASK-254 test helper,
+may load only TASK-254-local fixture JSON, and may emit only in-memory projection
+summary / sanitized stdout JSON evidence. TASK-254 does not implement production
+runtime integration, does not authorize production write, does not modify
+production code, does not modify AccountingEngine code, does not modify
+historical fixture JSON, does not persist read models, and does not authorize
+broker, network, credentials, endpoints, real order placement, or automatic
+trading.
+
+Recommended next task: TASK-255 ShellAccounting manual entry replay Excel/VBA sample import authorization planning.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

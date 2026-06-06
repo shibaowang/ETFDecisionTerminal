@@ -55,6 +55,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/excel_vba_import_readonly_preview_shellservices_presenter_contract.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_missing_required_header_presenter_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_valid_buy_presenter_preview_payload.json",
+
+    "docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md",
+    "docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
 }
 #!/usr/bin/env python3
 
@@ -504,13 +510,15 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
         gate.require(path in ALLOWED_CHANGED_PATHS, f"changed path exact allowlisted: {path}")
         if path in TASK_257_EXACT_PATHS:
             continue
-        gate.require(not path.startswith(("apps/", "libs/", "migrations/")), f"production path unchanged: {path}")
+        gate.require(not (path.startswith(("apps/", "libs/", "migrations/")) and path != "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"), f"production path unchanged: {path}")
         gate.require(not path.startswith((POSITIVE_DIR.as_posix(), NEGATIVE_DIR.as_posix())), f"fixture path unchanged: {path}")
         gate.require((path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or path in TASK_257_EXACT_PATHS or not path.endswith(".json")), f"JSON fixture path unchanged: {path}")
         gate.require(not path.lower().endswith(DB_SUFFIXES), f"database-like path unchanged: {path}")
     for path in ["apps", "libs", "migrations", "libs/AccountingEngine", POSITIVE_DIR.as_posix(), NEGATIVE_DIR.as_posix()]:
         diff_paths = git_lines(root, "diff", "--name-only", "main", "--", path)
-        if path == "libs":
+        if path == "apps":
+            gate.require(diff_paths <= {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}, f"{path} diff exact TASK-261 QML panel only")
+        elif path == "libs":
             gate.require(diff_paths <= TASK_257_EXACT_PATHS, f"{path} diff exact TASK-257 parser boundary only")
         else:
             gate.require(diff_paths == set(), f"{path} diff empty")

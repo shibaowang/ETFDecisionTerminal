@@ -1375,6 +1375,16 @@
   defines TASK-260 Presenter state, Controller delegation, ShellServices
   mapping, typed client call boundary, local fail-closed input checks, no-write,
   no-trading, production boundary, and required command checks.
+- ShellAccounting Excel/VBA import read-only preview QML panel wiring:
+  [318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md](318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md)
+  records TASK-261 read-only QML panel scope, Presenter preview method usage,
+  visible status / diagnostics / fact count bindings, no direct service access,
+  and no-write / no-broker constraints.
+- ShellAccounting Excel/VBA import read-only preview QML panel wiring test plan:
+  [319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md](319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md)
+  defines TASK-261 QML object contract, Presenter invocation, property binding,
+  reset wiring, FileDialog and direct dependency bans, production boundary, and
+  required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

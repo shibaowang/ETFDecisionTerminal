@@ -58,6 +58,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/excel_vba_import_readonly_preview_shellservices_presenter_contract.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_missing_required_header_presenter_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_valid_buy_presenter_preview_payload.json",
+
+    "docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md",
+    "docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
 }
 #!/usr/bin/env python3
 
@@ -700,10 +706,10 @@ def main() -> int:
 
     validate_future_bridge_directory(gate, root)
     gate.require(not any(path.startswith("libs/AccountingEngine/") for path in current_paths), "AccountingEngine code unchanged")
-    gate.require(not any(path.startswith("apps/") for path in current_paths), "apps production paths unchanged")
+    gate.require(not any(path.startswith("apps/") and path != "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml" for path in current_paths), "apps production paths unchanged")
     gate.require(not any(path.startswith("libs/") and path not in TASK_257_EXACT_PATHS for path in current_paths), "libs production paths unchanged")
     gate.require(not any(path.startswith("migrations/") for path in current_paths), "migrations unchanged")
-    gate.require(not any(path.endswith(".qml") for path in current_paths), "QML unchanged")
+    gate.require(not any(path.endswith(".qml") and path != "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml" for path in current_paths), "QML unchanged")
 
     gate.contains(doc_286_text, "TASK-245 authorizes AccountingEngine bridge policy only", "docs/286 bridge policy only")
     gate.contains(doc_286_text, "TASK-245 does not implement AccountingEngine bridge", "docs/286 no bridge implementation")

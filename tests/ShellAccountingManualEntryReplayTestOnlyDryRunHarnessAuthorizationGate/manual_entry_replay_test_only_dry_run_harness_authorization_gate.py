@@ -58,6 +58,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/excel_vba_import_readonly_preview_shellservices_presenter_contract.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_missing_required_header_presenter_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_valid_buy_presenter_preview_payload.json",
+
+    "docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md",
+    "docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
 }
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
@@ -687,7 +693,7 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
             TASK_224_VALIDATOR.as_posix() in ALLOWED_CHANGED_PATHS,
             "TASK-224 negative validator exact-path self-consistency allowlisted",
         )
-    gate.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
+    gate.require((git_lines(root, "diff", "--name-only", "main", "--", "apps") - {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}) == set(), "apps diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") <= TASK_257_EXACT_PATHS, "libs diff exact TASK-257 parser boundary only")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
     gate.require(

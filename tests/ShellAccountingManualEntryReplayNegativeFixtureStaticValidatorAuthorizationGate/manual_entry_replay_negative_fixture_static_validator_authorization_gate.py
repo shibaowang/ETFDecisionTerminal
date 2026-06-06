@@ -58,6 +58,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/excel_vba_import_readonly_preview_shellservices_presenter_contract.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_missing_required_header_presenter_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_valid_buy_presenter_preview_payload.json",
+
+    "docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md",
+    "docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
 }
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
@@ -617,7 +623,7 @@ def main() -> int:
         not any(path.startswith("tests/fixtures/manual_entry_replay/") and path.endswith(".json") for path in changed),
         "TASK-223 changed set does not include positive fixture JSON",
     )
-    gate.require(not any(path.startswith("apps/") for path in changed), "TASK-223 changed set does not include apps")
+    gate.require(not any(path.startswith("apps/") and path != "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml" for path in changed), "TASK-223 changed set does not include apps")
     gate.require(not any(path.startswith("libs/") and path not in TASK_257_EXACT_PATHS for path in changed), "TASK-223 changed set does not include libs")
     gate.require(not any(path.startswith("migrations/") for path in changed), "TASK-223 changed set does not include migrations")
 

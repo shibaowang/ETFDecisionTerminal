@@ -4900,3 +4900,26 @@ TASK-260 documentation is in
 `docs/316_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract.md`
 and
 `docs/317_shell_accounting_excel_vba_import_readonly_preview_shellservices_presenter_contract_test_plan.md`.
+
+## TASK-261 ShellAccounting Excel/VBA Import Read-Only Preview QML Panel Wiring
+
+TASK-261 wires the TASK-260 Presenter preview contract into
+`apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml`. The panel
+accepts only pasted sanitized in-memory JSON payload text, calls
+`accountingPresenter.previewExcelVbaImportReadOnly(payloadText)`, and displays
+preview status, sanitized issue text, summary, diagnostic codes, and replay fact
+summary counts from Presenter properties.
+
+TASK-261 does not modify startup wiring, `main.cpp`, DataServiceApi action
+implementation, DataServiceClient, ShellServices production C++, DataAccess
+repositories, migrations, AccountingEngine production code, historical
+fixtures, or production file loading. TASK-261 does not call AccountingEngine,
+write SQLite, write audit / ledger / snapshot / trade_log / read model data,
+generate TradeDrafts, execute strategies, submit broker orders, access
+networks, read credentials, read endpoints, place real orders, or enable
+automatic trading.
+
+TASK-261 documentation is in
+`docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md`
+and
+`docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md`.

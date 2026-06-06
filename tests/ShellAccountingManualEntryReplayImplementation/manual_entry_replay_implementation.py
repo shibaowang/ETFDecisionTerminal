@@ -58,6 +58,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/excel_vba_import_readonly_preview_shellservices_presenter_contract.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_missing_required_header_presenter_preview_payload.json",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewShellServicesPresenterContract/fixtures/TASK260_valid_buy_presenter_preview_payload.json",
+
+    "docs/318_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring.md",
+    "docs/319_shell_accounting_excel_vba_import_readonly_preview_qml_panel_wiring_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
 }
 #!/usr/bin/env python3
 
@@ -444,7 +450,7 @@ def validate_changed_paths(check: Check, root: Path) -> None:
             continue
         check.require(not path.startswith(FORBIDDEN_CHANGED_PREFIXES), f"forbidden changed path: {path}")
         check.require((path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or path in TASK_257_EXACT_PATHS or not path.endswith(".json")), f"fixture JSON unchanged: {path}")
-    check.require(git_lines(root, "diff", "--name-only", "main", "--", "apps") == set(), "apps diff empty")
+    check.require((git_lines(root, "diff", "--name-only", "main", "--", "apps") - {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}) == set(), "apps diff empty")
     check.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") <= TASK_257_EXACT_PATHS, "libs diff exact TASK-257 parser boundary only")
     check.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
     check.require(

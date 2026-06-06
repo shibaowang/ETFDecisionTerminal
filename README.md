@@ -4696,7 +4696,7 @@ See
 and
 `docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md`.
 Recommended next task is TASK-252 ShellAccounting manual entry replay
-AccountingEngine runtime integration implementation authorization gate.
+read-only runtime integration vertical slice gate.
 
 ## TASK-252 Manual Entry Replay Read-Only Runtime Integration Vertical Slice Gate
 
@@ -4718,5 +4718,4 @@ See
 `docs/300_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.md`
 and
 `docs/301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md`.
-Recommended next task is TASK-253 ShellAccounting manual entry replay
-production runtime integration authorization gate.
+Recommended next task is TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.

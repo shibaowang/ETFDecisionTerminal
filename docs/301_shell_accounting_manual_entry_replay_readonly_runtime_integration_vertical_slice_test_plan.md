@@ -123,3 +123,7 @@ TASK-252 does not implement production runtime integration.
 TASK-252 does not authorize production write.
 
 TASK-252 does not authorize broker, network, credentials, endpoint, real order placement, or automatic trading.
+
+## Recommended Next Task
+
+The recommended next task is TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.

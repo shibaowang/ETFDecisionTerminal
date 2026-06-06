@@ -1295,7 +1295,7 @@
   [301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md](301_shell_accounting_manual_entry_replay_readonly_runtime_integration_vertical_slice_test_plan.md)
   defines TASK-252 runtime evidence checks, no-write checks, no-trading checks,
   production boundary checks, failure modes, changed-path allowlist, and
-  regression requirements.
+  regression requirements. The next handoff is TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

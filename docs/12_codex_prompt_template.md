@@ -2933,7 +2933,7 @@ placement, or automatic trading. Future runtime integration implementation
 must be separately authorized.
 
 Recommended next task: TASK-252 ShellAccounting manual entry replay
-AccountingEngine runtime integration implementation authorization gate.
+read-only runtime integration vertical slice gate.
 
 ## TASK-252 Manual Entry Replay Read-Only Runtime Integration Vertical Slice Prompt Rule
 
@@ -2953,8 +2953,7 @@ not modify fixture JSON, does not persist read models, and does not authorize
 broker, network, credentials, endpoint, real order placement, or automatic
 trading. Future production runtime integration must be separately authorized.
 
-Recommended next task: TASK-253 ShellAccounting manual entry replay production
-runtime integration authorization gate.
+Recommended next task: TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.
 
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 

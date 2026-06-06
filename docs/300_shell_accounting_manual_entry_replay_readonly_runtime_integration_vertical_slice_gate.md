@@ -144,4 +144,4 @@ TASK-252 does not authorize broker, network, credentials, endpoint, real order p
 
 ## Recommended Next Task
 
-The recommended next task is TASK-253 ShellAccounting manual entry replay production runtime integration authorization gate, unless the owner chooses another closeout or regression hardening task first.
+The recommended next task is TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice, unless the owner chooses another closeout or regression hardening task first.

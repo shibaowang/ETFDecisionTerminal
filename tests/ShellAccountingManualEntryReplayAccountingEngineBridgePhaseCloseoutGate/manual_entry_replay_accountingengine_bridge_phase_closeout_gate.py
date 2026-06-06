@@ -156,9 +156,13 @@ ALLOWED_CHANGED_PATHS = {
     "docs/12_codex_prompt_template.md",
     TASK_250_DOC.as_posix(),
     TASK_250_PLAN.as_posix(),
+    "docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md",
+    "docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md",
     "tests/CMakeLists.txt",
     TASK_250_CMAKE.as_posix(),
     TASK_250_GATE.as_posix(),
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
 }
 

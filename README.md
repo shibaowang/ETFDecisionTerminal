@@ -4671,3 +4671,29 @@ and
 `docs/297_shell_accounting_manual_entry_replay_accountingengine_bridge_phase_closeout_handoff_test_plan.md`.
 Recommended next task is TASK-251 ShellAccounting manual entry replay
 AccountingEngine runtime integration authorization gate.
+
+## TASK-251 Manual Entry Replay AccountingEngine Runtime Integration Authorization Gate
+
+TASK-251 records the authorization boundary for future manual entry replay
+AccountingEngine runtime integration. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization`
+verifies docs, CTest registration, changed-path exact allowlists, future
+entry-point policy, AccountingEngine call authorization, replay boundary,
+runtime write boundary, audit / ledger / snapshot boundary, read model refresh
+boundary, production code boundary, fixture boundary, and broker / network /
+credential / endpoint boundary.
+
+TASK-251 is authorization-only and runtime-integration-policy-only. TASK-251
+does not implement runtime integration, does not call AccountingEngine replay,
+does not modify AccountingEngine code, does not implement production bridge,
+does not modify fixture JSON, does not modify production code, does not
+authorize runtime SQL / SQLite read/write, audit / ledger / snapshot writes,
+read model refresh, broker, network, credentials, endpoint, real order
+placement, or automatic trading.
+
+See
+`docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md`
+and
+`docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md`.
+Recommended next task is TASK-252 ShellAccounting manual entry replay
+AccountingEngine runtime integration implementation authorization gate.

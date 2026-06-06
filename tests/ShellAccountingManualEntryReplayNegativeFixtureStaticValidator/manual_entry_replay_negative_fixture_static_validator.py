@@ -43,7 +43,11 @@ EXPECTED_ISSUE_CODES = {
 }
 
 ALLOWED_CHANGED_PATHS = {
-    "docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md",
+    "docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md",
+    "docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+"docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md",
     "docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md",
     "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/CMakeLists.txt",
     "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",

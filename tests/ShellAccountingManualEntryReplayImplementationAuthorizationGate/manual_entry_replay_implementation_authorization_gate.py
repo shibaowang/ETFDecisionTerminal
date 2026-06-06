@@ -55,7 +55,11 @@ SUMMARY_SCHEMA = "manual-entry-replay-test-only-dry-run-summary/v1"
 VALIDATOR_SUMMARY_SCHEMA = "manual-entry-replay-negative-fixture-static-validator-summary/v1"
 
 ALLOWED_CHANGED_PATHS = {
-    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+    "docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md",
+    "docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+"tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
     "docs/268_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_gate.md",
     "docs/269_shell_accounting_manual_entry_replay_test_only_implementation_failure_mode_hardening_test_plan.md",
     "docs/270_shell_accounting_manual_entry_replay_test_only_implementation_ci_closeout_gate.md",

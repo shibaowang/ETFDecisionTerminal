@@ -1275,6 +1275,17 @@
   defines TASK-250 static checks, required regression gates, changed-path
   allowlist, phase closeout evidence, handoff checks, failure modes, acceptance
   criteria, and formal conclusion.
+- ShellAccounting manual entry replay AccountingEngine runtime integration authorization gate:
+  [298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md](298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md)
+  records TASK-251 authorization-only runtime integration policy, future entry
+  points, AccountingEngine call authorization, replay boundary, runtime write
+  boundary, production code boundary, fixture boundary, and broker/network
+  constraints.
+- ShellAccounting manual entry replay AccountingEngine runtime integration authorization test plan:
+  [299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md](299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md)
+  defines TASK-251 static checks, required regression gates, changed-path
+  allowlist, authorization checks, runtime integration boundary checks, failure
+  modes, acceptance criteria, and formal conclusion.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -641,7 +641,11 @@ def main() -> int:
     )
 
     task245_allowed_paths = {
-        "docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
+        "docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md",
+        "docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/CMakeLists.txt",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+"docs/286_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_gate.md",
         "docs/287_shell_accounting_manual_entry_replay_accountingengine_bridge_authorization_test_plan.md",
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/CMakeLists.txt",
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",

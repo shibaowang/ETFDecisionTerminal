@@ -2914,6 +2914,27 @@ must be separately authorized.
 Recommended next task: TASK-251 ShellAccounting manual entry replay
 AccountingEngine runtime integration authorization gate.
 
+## TASK-251 Manual Entry Replay AccountingEngine Runtime Integration Authorization Prompt Rule
+
+Future manual entry replay AccountingEngine runtime integration implementation,
+read model refresh, production parser / loader / reader work, or AccountingEngine
+replay calls must reference
+`docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md`
+and
+`docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md`.
+
+TASK-251 is authorization-only and runtime-integration-policy-only. TASK-251
+does not implement runtime integration, does not call AccountingEngine replay,
+does not modify AccountingEngine code, does not implement production bridge,
+does not modify fixture JSON, does not modify production code, does not
+authorize runtime SQL / SQLite read/write, audit / ledger / snapshot writes,
+read model refresh, broker, network, credentials, endpoint, real order
+placement, or automatic trading. Future runtime integration implementation
+must be separately authorized.
+
+Recommended next task: TASK-252 ShellAccounting manual entry replay
+AccountingEngine runtime integration implementation authorization gate.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

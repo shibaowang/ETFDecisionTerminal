@@ -468,6 +468,7 @@ def main() -> int:
     }
     allowed.update(task245_allowed_paths)
     allowed.update(TASK_246_SELF_CONSISTENCY_PATHS)
+    allowed.update(TASK_247_SELF_CONSISTENCY_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-203 changed unauthorized paths: " + ", ".join(unexpected))
 
@@ -525,5 +526,12 @@ def main() -> int:
     return 0
 
 
+
+TASK_247_SELF_CONSISTENCY_PATHS = {
+    "docs/290_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_gate.md",
+    "docs/291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
+}
 if __name__ == "__main__":
     raise SystemExit(main())

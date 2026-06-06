@@ -4568,3 +4568,28 @@ and
 `docs/289_shell_accounting_manual_entry_replay_accountingengine_bridge_test_only_implementation_test_plan.md`.
 Recommended next task is TASK-247 ShellAccounting manual entry replay
 AccountingEngine bridge regression matrix gate.
+
+## TASK-247 Manual Entry Replay AccountingEngine Bridge Regression Matrix Gate
+
+TASK-247 adds a test-only regression matrix gate for the TASK-246 manual entry
+replay AccountingEngine bridge contract shell. The CTest
+`shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix`
+verifies bridge CLI support, positive contract output, sanitized failure
+output, fail-closed behavior for unsafe summaries, exact changed-path
+allowlists, fixture immutability, no AccountingEngine code drift, no
+AccountingEngine replay calls, no production bridge, no runtime writes, no
+read model refresh, and no broker / network / credential / endpoint drift.
+
+TASK-247 is test-only and regression-matrix-only. TASK-247 does not call
+AccountingEngine replay, does not modify AccountingEngine code, does not
+implement production bridge, does not modify fixture JSON, does not authorize
+production integration, does not authorize runtime SQL / SQLite read/write,
+audit / ledger / snapshot writes, read model refresh, broker, network,
+credentials, endpoint, real order placement, or automatic trading.
+
+See
+`docs/290_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_gate.md`
+and
+`docs/291_shell_accounting_manual_entry_replay_accountingengine_bridge_regression_matrix_test_plan.md`.
+Recommended next task is TASK-248 ShellAccounting manual entry replay
+AccountingEngine bridge failure-mode hardening gate.

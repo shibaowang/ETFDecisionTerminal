@@ -2955,6 +2955,28 @@ trading. Future production runtime integration must be separately authorized.
 
 Recommended next task: TASK-253 ShellAccounting manual entry replay fixture-backed VBA parity read-only vertical slice.
 
+## TASK-253 Manual Entry Replay Fixture-Backed VBA Parity Read-Only Vertical Slice Prompt Rule
+
+Future manual entry replay fixture-backed parity, production runtime
+integration, read model refresh, production parser / loader / reader work, or
+production AccountingEngine replay wiring must reference
+`docs/302_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_readonly_vertical_slice.md`
+and
+`docs/303_shell_accounting_manual_entry_replay_fixture_backed_vba_parity_test_plan.md`.
+
+TASK-253 is a test-only fixture-backed VBA parity read-only vertical slice.
+TASK-253 may call AccountingEngine read-only replay only from the TASK-253
+test helper, may load only TASK-253-local fixture JSON, and may emit only
+in-memory projection summary / stdout JSON evidence. TASK-253 does not
+implement production runtime integration, does not authorize production write,
+does not modify production code, does not modify AccountingEngine code, does
+not modify historical fixture JSON, does not persist read models, and does not
+authorize broker, network, credentials, endpoint, real order placement, or
+automatic trading. Future production runtime integration must be separately
+authorized.
+
+Recommended next task: TASK-254 ShellAccounting manual entry replay fixture-backed VBA parity regression or closeout hardening.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

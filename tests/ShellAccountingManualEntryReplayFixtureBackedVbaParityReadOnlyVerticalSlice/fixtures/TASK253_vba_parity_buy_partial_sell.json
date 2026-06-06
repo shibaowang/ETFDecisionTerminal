@@ -1,0 +1,95 @@
+{
+  "task": "TASK-253",
+  "fixtureId": "TASK253_VBA_PARITY_BUY_PARTIAL_SELL",
+  "schemaVersion": "task-253-fixture-backed-vba-parity/v1",
+  "name": "Fixture-backed VBA parity buy and partial sell",
+  "purpose": "Test-only fixture for read-only AccountingEngine replay parity against expected VBA-style projection fields.",
+  "externalDependencies": [],
+  "defaultScope": {
+    "accountId": "TASK253_ACCOUNT",
+    "portfolioId": "TASK253_PORTFOLIO"
+  },
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "TASK253_CASH_001",
+        "time": "2026-01-01T00:00:00Z",
+        "accountId": "TASK253_ACCOUNT",
+        "portfolioId": "TASK253_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "100000.00",
+        "currency": "CNY",
+        "note": "SANITIZED_TASK253_INITIAL_CASH"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "TASK253_TRADE_BUY_001",
+        "tradeTime": "2026-01-02T09:30:00Z",
+        "accountId": "TASK253_ACCOUNT",
+        "portfolioId": "TASK253_PORTFOLIO",
+        "instrumentCode": "TASK253_INSTRUMENT",
+        "action": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "TASK253_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK253_BUY"
+      },
+      {
+        "factId": "TASK253_TRADE_SELL_001",
+        "tradeTime": "2026-01-03T09:30:00Z",
+        "accountId": "TASK253_ACCOUNT",
+        "portfolioId": "TASK253_PORTFOLIO",
+        "instrumentCode": "TASK253_INSTRUMENT",
+        "action": "SELL",
+        "quantityText": "40",
+        "priceText": "3.0000",
+        "amountText": "120.00",
+        "feeText": "1.00",
+        "cashFlowText": "119.00",
+        "currency": "CNY",
+        "source": "TASK253_TEST_ONLY_FIXTURE",
+        "note": "SANITIZED_TASK253_PARTIAL_SELL"
+      }
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummary": {
+      "accountId": "TASK253_ACCOUNT",
+      "portfolioId": "TASK253_PORTFOLIO",
+      "currency": "CNY",
+      "cashBalanceText": "99918.00 CNY",
+      "dataQualityStatus": "OK"
+    },
+    "positionSummary": {
+      "accountId": "TASK253_ACCOUNT",
+      "portfolioId": "TASK253_PORTFOLIO",
+      "instrumentCode": "TASK253_INSTRUMENT",
+      "quantityText": "60",
+      "costAmountText": "120.60 CNY",
+      "costPriceText": "2.010 CNY",
+      "marketValueText": "UNAVAILABLE",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "currency": "CNY",
+      "dataQualityStatus": "OK"
+    },
+    "pnlSummary": {
+      "portfolioId": "TASK253_PORTFOLIO",
+      "currency": "CNY",
+      "realizedPnlText": "38.60 CNY",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "totalAssetsText": "UNAVAILABLE",
+      "totalPnlText": "UNAVAILABLE",
+      "dataQualityStatus": "UNAVAILABLE"
+    }
+  },
+  "notes": [
+    "TASK-253 fixture is test-only and local to the TASK-253 CTest directory.",
+    "The fixture does not represent a production read model, ledger, broker order, or strategy signal."
+  ]
+}

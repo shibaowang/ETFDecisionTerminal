@@ -28,9 +28,11 @@ VALIDATOR = Path(
 )
 
 ALLOWED_CHANGED_PATHS = {
-
-
-    "docs/278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md",
+    "docs/298_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_gate.md",
+    "docs/299_shell_accounting_manual_entry_replay_accountingengine_runtime_integration_authorization_test_plan.md",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/CMakeLists.txt",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+"docs/278_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.md",
 
     "docs/279_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_regression_matrix_test_plan.md",
 
@@ -704,6 +706,12 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
             "manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py"
         ),
         "ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate",
+        "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/CMakeLists.txt",
+        (
+            "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/"
+            "manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py"
+        ),
+        "ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate",
     ]:
         validator_call_scan_text = validator_call_scan_text.replace(allowed_path_token, "")
     gate.require("AccountingEngine" not in validator_call_scan_text, "validator does not call AccountingEngine")

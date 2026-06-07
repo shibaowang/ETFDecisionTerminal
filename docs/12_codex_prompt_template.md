@@ -2,6 +2,21 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## TASK-270 Excel/VBA import persistence readback refresh boundary
+
+- Successful accepted Excel/VBA import persistence should trigger only the
+  existing read-only ShellAccounting post-write refresh path.
+- Persisted `trade_log` and `cash_adjustment` row counts may be surfaced in
+  Presenter/QML state.
+- Duplicate imports must not claim new rows or trigger a misleading refresh.
+- Idempotency conflicts must fail closed and skip refresh.
+- Refresh failure must be sanitized and must not roll back already committed
+  persistence.
+- This boundary does not authorize DataService write action changes,
+  DataAccess repository changes, migrations, AccountingEngine production code,
+  broker, network, credentials, endpoint, TradeDraft generation, strategy
+  execution, real order placement, or automatic trading.
+
 ## TASK-269 Excel/VBA import persistence fact type boundary
 
 - Accepted Excel/VBA import persistence may write TradeLog trade facts through

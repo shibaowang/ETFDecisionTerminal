@@ -1,3 +1,17 @@
+TASK_270_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/336_shell_accounting_excel_vba_import_persist_post_write_readback_refresh.md",
+    "docs/337_shell_accounting_excel_vba_import_persist_post_write_readback_refresh_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
+}
+
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -872,6 +886,7 @@ def main() -> int:
         "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
     })
     allowed_changes.update(TASK_257_EXACT_PATHS)
+    allowed_changes.update(TASK_270_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-217 changed unauthorized paths: " + ", ".join(unexpected))
     if changes and changes not in [
@@ -903,7 +918,7 @@ def main() -> int:
         "migrations/",
     ]
     for prefix in forbidden_prefixes:
-        gate.require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS for path in changes), f"TASK-217 must not change {prefix}")
+        gate.require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS for path in changes), f"TASK-217 must not change {prefix}")
 
     production_diff_paths = git_lines(root, "diff", "--name-only", "main", "--", "apps", "libs", "migrations")
     gate.require(production_diff_paths <= TASK_257_EXACT_PATHS, "TASK-217 production diff is limited to TASK-257 exact parser boundary paths")

@@ -1455,6 +1455,24 @@
   defines TASK-268 QML object checks, Presenter invokable checks, fail-closed
   mapping assertions, duplicate / conflict visibility checks, and required
   command checks.
+- ShellAccounting Excel/VBA import persist supported fact types alignment:
+  [334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md](334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md)
+  records TASK-269 trade and cash persistence support, market / FX rejection,
+  and aligned QML / Presenter / DataService / DataAccess boundaries.
+- ShellAccounting Excel/VBA import persist supported fact types alignment test plan:
+  [335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md](335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md)
+  defines TASK-269 cash-only, trade+cash, unsupported market / FX, duplicate,
+  rollback, and old row-count regression checks.
+- ShellAccounting Excel/VBA import persist post-write readback refresh:
+  [336_shell_accounting_excel_vba_import_persist_post_write_readback_refresh.md](336_shell_accounting_excel_vba_import_persist_post_write_readback_refresh.md)
+  records TASK-270 successful persistence to existing read-only readback
+  refresh wiring, persisted row-count visibility, duplicate skip, conflict
+  skip, and sanitized refresh failure handling.
+- ShellAccounting Excel/VBA import persist post-write readback refresh test plan:
+  [337_shell_accounting_excel_vba_import_persist_post_write_readback_refresh_test_plan.md](337_shell_accounting_excel_vba_import_persist_post_write_readback_refresh_test_plan.md)
+  defines TASK-270 fake-port Presenter/QML checks for refresh success,
+  duplicate no-new-row behavior, conflict no-refresh behavior, and refresh
+  failure evidence.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -52,6 +52,8 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(bool lastExcelVbaImportPersistAuditLogWritten READ lastExcelVbaImportPersistAuditLogWritten NOTIFY excelVbaImportPersistStateChanged)
     Q_PROPERTY(bool lastExcelVbaImportPersistDuplicateImportPrevented READ lastExcelVbaImportPersistDuplicateImportPrevented NOTIFY excelVbaImportPersistStateChanged)
     Q_PROPERTY(bool lastExcelVbaImportPersistIdempotencyConflictRejected READ lastExcelVbaImportPersistIdempotencyConflictRejected NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(int lastExcelVbaImportPersistTradeLogRowsWritten READ lastExcelVbaImportPersistTradeLogRowsWritten NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(int lastExcelVbaImportPersistCashAdjustmentRowsWritten READ lastExcelVbaImportPersistCashAdjustmentRowsWritten NOTIFY excelVbaImportPersistStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -98,6 +100,8 @@ public:
     [[nodiscard]] bool lastExcelVbaImportPersistAuditLogWritten() const noexcept;
     [[nodiscard]] bool lastExcelVbaImportPersistDuplicateImportPrevented() const noexcept;
     [[nodiscard]] bool lastExcelVbaImportPersistIdempotencyConflictRejected() const noexcept;
+    [[nodiscard]] int lastExcelVbaImportPersistTradeLogRowsWritten() const noexcept;
+    [[nodiscard]] int lastExcelVbaImportPersistCashAdjustmentRowsWritten() const noexcept;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -199,7 +203,10 @@ private:
     void applyTradingResult(const ShellAccountingServiceResult& result, bool confirming);
     void applyManualEntryResult(const ShellAccountingServiceResult& result, const QString& fallback);
     void applyExcelVbaImportPreviewResult(const ShellAccountingServiceResult& result);
-    void applyExcelVbaImportPersistManualEntryResult(const ShellAccountingServiceResult& result);
+    void applyExcelVbaImportPersistManualEntryResult(
+        const ShellAccountingServiceResult& result,
+        int requestedTradeFactCount,
+        int requestedCashFactCount);
     void refreshAfterManualEntryWrite(bool includePositionList, const char* reason);
     void markManualEntryInputError(const QString& message);
     void markExcelVbaImportPreviewInputError(const QString& message);
@@ -306,6 +313,8 @@ private:
     bool lastExcelVbaImportPersistAuditLogWritten_ = false;
     bool lastExcelVbaImportPersistDuplicateImportPrevented_ = false;
     bool lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
+    int lastExcelVbaImportPersistTradeLogRowsWritten_ = 0;
+    int lastExcelVbaImportPersistCashAdjustmentRowsWritten_ = 0;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

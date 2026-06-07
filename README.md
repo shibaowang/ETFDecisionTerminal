@@ -1,5 +1,23 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-270 Excel/VBA Import Persist Post-Write Readback Refresh
+
+TASK-270 wires successful accepted Excel/VBA import persistence into the
+existing ShellAccounting read-only post-write readback refresh path:
+
+- successful persistence triggers existing read-only position / cash / PnL
+  refresh through the Presenter.
+- persisted `trade_log` and `cash_adjustment` row counts are visible in the
+  QML preview / persist panel.
+- duplicate idempotent imports do not claim new rows or trigger a misleading
+  refresh.
+- idempotency conflicts fail closed and skip refresh.
+- refresh failure is shown as a sanitized post-persist issue without rolling
+  back already successful persistence.
+- no DataService write action, DataAccess repository, migration,
+  AccountingEngine, broker, network, TradeDraft, strategy, real order, or
+  automatic trading behavior is added.
+
 ## TASK-269 Excel/VBA Import Persistence Supported Fact Types
 
 TASK-269 aligns accepted preview persistence across QML, Presenter,

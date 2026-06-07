@@ -199,7 +199,7 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingExcelVbaImportPreviewPanel"
                 width: parent.width
-                height: 840
+                height: 950
                 radius: 8
                 color: "#ffffff"
                 border.color: "#cfd8e6"
@@ -485,7 +485,7 @@ Rectangle {
                     Rectangle {
                         objectName: "shellAccountingExcelVbaImportPersistPanel"
                         width: parent.width
-                        height: 184
+                        height: 286
                         radius: 8
                         color: "#fbfcfe"
                         border.color: "#d9e3f2"
@@ -543,6 +543,31 @@ Rectangle {
                                 wrapMode: Text.WordWrap
                             }
 
+                            Row {
+                                width: parent.width
+                                spacing: 14
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPersistTradeLogRowsText"
+                                    width: 220
+                                    text: root.presenterAvailable
+                                        ? "Persisted trade log rows: " + accountingPresenter.lastExcelVbaImportPersistTradeLogRowsWritten
+                                        : "Persisted trade log rows: 0"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                }
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPersistCashAdjustmentRowsText"
+                                    width: 260
+                                    text: root.presenterAvailable
+                                        ? "Persisted cash adjustment rows: " + accountingPresenter.lastExcelVbaImportPersistCashAdjustmentRowsWritten
+                                        : "Persisted cash adjustment rows: 0"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                }
+                            }
+
                             Text {
                                 objectName: "shellAccountingExcelVbaImportPersistIssueCodesText"
                                 width: parent.width
@@ -572,6 +597,41 @@ Rectangle {
                                     : "Idempotency conflict rejected: false"
                                 color: "#465066"
                                 font.pixelSize: 13
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPostPersistRefreshStatusText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Post-persist refresh status: " + accountingPresenter.lastPostWriteRefreshStatus
+                                    : "Post-persist refresh status: unavailable"
+                                color: "#18202f"
+                                font.pixelSize: 13
+                                font.bold: true
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPostPersistRefreshSummaryText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Post-persist refresh summary: " + accountingPresenter.lastPostWriteRefreshSummary
+                                    : "Post-persist refresh summary: unavailable"
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPostPersistRefreshIssueText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Post-persist refresh issue: " + accountingPresenter.lastPostWriteRefreshIssue
+                                    : "Post-persist refresh issue: unavailable"
+                                color: "#9a3412"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                visible: !root.presenterAvailable || accountingPresenter.lastPostWriteRefreshIssue.length > 0
                             }
                         }
                     }

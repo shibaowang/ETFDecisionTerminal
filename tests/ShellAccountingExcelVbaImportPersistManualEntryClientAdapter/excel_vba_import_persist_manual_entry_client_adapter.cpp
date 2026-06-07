@@ -345,7 +345,7 @@ void requireMappedSuccess(
     require(!result.credentialAccess, "credential access false mapped");
     require(!result.endpointAccess, "endpoint access false mapped");
     require(!result.automaticTrading, "automatic trading false mapped");
-    require(result.tradeLogRowsWritten == 1, "trade row count mapped");
+    require(result.tradeLogRowsWritten == 2, "trade row count mapped");
     require(result.auditLogId > 0, "audit id mapped");
 }
 
@@ -385,7 +385,8 @@ void testPersistClientAdapter(const Harness& h)
         2000);
     require(first.hasValue(), "typed persist client adapter returns first result");
     requireMappedSuccess(first.value());
-    require(countRows(*fixture.connection, "trade_log") == 1, "first client call writes one trade row");
+    require(countRows(*fixture.connection, "trade_log") == 2, "first client call writes trade and cash rows");
+    require(countRows(*fixture.connection, "cash_adjustment") == 1, "first client call writes one cash adjustment row");
     require(countRows(*fixture.connection, "audit_log") == 1, "first client call writes one audit row");
 
     const auto duplicate = client.accountingExcelVbaImportPersistManualEntry(
@@ -395,7 +396,8 @@ void testPersistClientAdapter(const Harness& h)
     require(duplicate.value().protocolSuccess, "duplicate protocol success mapped");
     require(duplicate.value().duplicateImportPrevented, "duplicate import prevented mapped");
     require(duplicate.value().status == "IDEMPOTENT_REPLAY", "duplicate status mapped");
-    require(countRows(*fixture.connection, "trade_log") == 1, "duplicate adds no trade row");
+    require(countRows(*fixture.connection, "trade_log") == 2, "duplicate adds no trade or cash trade row");
+    require(countRows(*fixture.connection, "cash_adjustment") == 1, "duplicate adds no cash adjustment row");
     require(countRows(*fixture.connection, "audit_log") == 1, "duplicate adds no audit row");
 
     const auto conflict = client.accountingExcelVbaImportPersistManualEntry(
@@ -412,6 +414,9 @@ void testPersistClientAdapter(const Harness& h)
     require(!conflict.value().issues.empty(), "conflict issue codes mapped");
     require(conflict.value().issues.front() == "EXCEL_VBA_IMPORT_IDEMPOTENCY_CONFLICT",
         "conflict sanitized issue mapped");
+    require(countRows(*fixture.connection, "trade_log") == 2, "conflict adds no trade or cash trade row");
+    require(countRows(*fixture.connection, "cash_adjustment") == 1, "conflict adds no cash adjustment row");
+    require(countRows(*fixture.connection, "audit_log") == 1, "conflict adds no audit row");
 
     const auto rejected = client.accountingExcelVbaImportPersistManualEntry(
         persistRequest("task-266-rejected-key", "REJECTED"),

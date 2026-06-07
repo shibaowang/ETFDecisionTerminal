@@ -362,6 +362,43 @@ ShellAccountingManualCashMovementWriteResult
 ShellAccountingManualCashMovementRepository::persistManualCashMovement(
     const ShellAccountingManualCashMovementWriteCommand& command)
 {
+    ShellAccountingManualCashMovementWriteResult result;
+    TransactionRunner runner(connection_);
+    auto transactionResult = runner.runInTransaction([&]() {
+        result = persistManualCashMovementInActiveTransaction(command);
+        if (!result.success) {
+            return DatabaseResult<bool>::failure(result.errorCode, result.status);
+        }
+        return DatabaseResult<bool>::success(true);
+    });
+
+    if (!transactionResult) {
+        if (!result.status.empty() && result.status != "MANUAL_CASH_MOVEMENT_REPOSITORY_NOT_RUN") {
+            return result;
+        }
+        return failure(
+            transactionResult.error().errorCode,
+            "TRANSACTION_ROLLED_BACK",
+            "SAFE_SQLITE_ERROR");
+    }
+
+    if (!result.duplicate) {
+        result.transactionCommitted = true;
+    }
+    return result;
+}
+
+ShellAccountingManualCashMovementWriteResult
+ShellAccountingManualCashMovementRepository::persistManualCashMovementInActiveTransaction(
+    const ShellAccountingManualCashMovementWriteCommand& command)
+{
+    if (!connection_.isInTransaction()) {
+        return failure(
+            etfdt::protocol::ErrorCode::E2003_TRANSACTION_FAILED,
+            "ACTIVE_TRANSACTION_REQUIRED",
+            "ACTIVE_TRANSACTION_REQUIRED");
+    }
+
     auto validation = validate(command);
     if (!validation.success && validation.status == "VALIDATION_REJECTED") {
         return validation;
@@ -390,34 +427,28 @@ ShellAccountingManualCashMovementRepository::persistManualCashMovement(
     result.tradeLogUid = tradeLogUid(command);
     result.cashAdjustmentUid = cashAdjustmentUid(command);
 
-    TransactionRunner runner(connection_);
-    auto transactionResult = runner.runInTransaction([&]() {
-        auto log = insertTradeLog(command, result.tradeLogUid, result.cashAdjustmentUid);
-        if (!log) {
-            return DatabaseResult<bool>::failure(log.error().errorCode, log.error().message);
-        }
-        result.tradeLogId = log.value();
-        result.tradeLogWritten = true;
-
-        auto cash = insertCashAdjustment(command, result.cashAdjustmentUid, result.tradeLogUid, result.tradeLogId);
-        if (!cash) {
-            return DatabaseResult<bool>::failure(cash.error().errorCode, cash.error().message);
-        }
-        result.cashAdjustmentId = cash.value();
-        result.cashAdjustmentWritten = true;
-        return DatabaseResult<bool>::success(true);
-    });
-
-    if (!transactionResult) {
+    auto log = insertTradeLog(command, result.tradeLogUid, result.cashAdjustmentUid);
+    if (!log) {
         return failure(
-            transactionResult.error().errorCode,
+            log.error().errorCode,
             "TRANSACTION_ROLLED_BACK",
             "SAFE_SQLITE_ERROR");
     }
+    result.tradeLogId = log.value();
+    result.tradeLogWritten = true;
+
+    auto cash = insertCashAdjustment(command, result.cashAdjustmentUid, result.tradeLogUid, result.tradeLogId);
+    if (!cash) {
+        return failure(
+            cash.error().errorCode,
+            "TRANSACTION_ROLLED_BACK",
+            "SAFE_SQLITE_ERROR");
+    }
+    result.cashAdjustmentId = cash.value();
+    result.cashAdjustmentWritten = true;
 
     result.success = true;
     result.databaseWritten = true;
-    result.transactionCommitted = true;
     result.status = "OK";
     return result;
 }

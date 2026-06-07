@@ -128,6 +128,12 @@ TASK264_EXACT_PATHS = {
     "tests/ShellAccountingManualEntrySchemaGapAuthorizationGate/manual_entry_schema_gap_authorization_gate.cpp",
     "tests/ShellAccountingManualEntrySchemaImplementationAuthorizationGate/manual_entry_schema_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "docs/334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md",
+    "docs/335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/excel_vba_import_persist_supported_fact_types_alignment.cpp",
 }
 
 TASK264_OLD_GATE_REPAIR_PATHS = {
@@ -209,6 +215,12 @@ TASK266_CLIENT_ADAPTER_PATHS = {
     "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
     "libs/DataServiceClient/src/DataServiceClient.cpp",
     "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+}
+
+TASK269_SUPPORTED_FACT_TYPES_PATHS = {
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
 }
 
 
@@ -406,6 +418,7 @@ def main() -> int:
             changed_path in TASK265_IMPLEMENTATION_PATHS
             or changed_path in TASK266_CLIENT_ADAPTER_PATHS
             or changed_path in TASK267_SHELLSERVICES_CONTRACT_PATHS
+            or changed_path in TASK269_SUPPORTED_FACT_TYPES_PATHS
         ):
             continue
         p = root / changed_path

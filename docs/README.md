@@ -12,6 +12,8 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [334 ShellAccounting Excel/VBA Import Persist Supported Fact Types Alignment](334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md)
+- [335 ShellAccounting Excel/VBA Import Persist Supported Fact Types Alignment Test Plan](335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md)
 - [13 Manual Acceptance - ReadOnly Shell](13_manual_acceptance_readonly_shell.md)
 - [14 Milestone - v0.1 ReadOnly Shell Demo](14_milestone_v0_1_readonly_shell_demo.md)
 - [15 Quick Start - ReadOnly Shell Demo](15_quick_start_readonly_shell_demo.md)

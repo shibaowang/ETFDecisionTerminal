@@ -169,6 +169,12 @@ TASK_257_EXACT_PATHS = {
     "tests/ShellAccountingManualEntrySchemaGapAuthorizationGate/manual_entry_schema_gap_authorization_gate.cpp",
     "tests/ShellAccountingManualEntrySchemaImplementationAuthorizationGate/manual_entry_schema_implementation_authorization_gate.cpp",
     "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "docs/334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md",
+    "docs/335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/excel_vba_import_persist_supported_fact_types_alignment.cpp",
 }
 TASK_249_BRIDGE_CI_CLOSEOUT_SELF_CONSISTENCY_PATHS = {
     "docs/294_shell_accounting_manual_entry_replay_accountingengine_bridge_ci_closeout_gate.md",
@@ -546,6 +552,7 @@ def validate_changed_paths(validator: Validator, root: Path) -> None:
             and path not in TASK_259_READONLY_PREVIEW_CLIENT_ADAPTER_PATHS
             and path not in TASK_262_READONLY_LOCAL_FILE_LOADER_PREVIEW_PATHS
             and path not in TASK_265_EXCEL_VBA_IMPORT_MANUAL_ENTRY_PERSISTENCE_PATHS
+            and path not in TASK_269_EXCEL_VBA_IMPORT_SUPPORTED_FACT_TYPES_PATHS
             for path in changes
         ),
         "NEG_FIXTURE_PRODUCTION_PATH_REFERENCE",
@@ -904,6 +911,14 @@ TASK_265_EXCEL_VBA_IMPORT_MANUAL_ENTRY_PERSISTENCE_PATHS = {
 }
 
 ALLOWED_CHANGED_PATHS.update(TASK_265_EXCEL_VBA_IMPORT_MANUAL_ENTRY_PERSISTENCE_PATHS)
+
+TASK_269_EXCEL_VBA_IMPORT_SUPPORTED_FACT_TYPES_PATHS = {
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
+}
+
+ALLOWED_CHANGED_PATHS.update(TASK_269_EXCEL_VBA_IMPORT_SUPPORTED_FACT_TYPES_PATHS)
 
 ALLOWED_CHANGED_PATHS.update({
 

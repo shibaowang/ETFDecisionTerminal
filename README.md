@@ -1,5 +1,18 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-269 Excel/VBA Import Persistence Supported Fact Types
+
+TASK-269 aligns accepted preview persistence across QML, Presenter,
+DataService, and DataAccess:
+
+- TradeLog trade facts persist through the manual transaction repository.
+- Excel/VBA cash facts persist through the manual cash movement repository.
+- Market price and FX rate facts are rejected for persistence until a future
+  task authorizes them.
+- Persistence remains DataService/DataAccess bounded, uses temp/test SQLite in
+  tests, and does not add broker, network, TradeDraft, strategy, real order, or
+  automatic trading behavior.
+
 ## v0.6 ShellAccounting Read-only UI Readiness
 
 ShellAccounting read-only UI readiness is now documented as a milestone:

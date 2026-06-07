@@ -1,6 +1,7 @@
 #include "DataAccess/ShellAccountingExcelVbaImportManualEntryPersistenceRepository.h"
 
 #include "DataAccess/AuditLogRepository.h"
+#include "DataAccess/ShellAccountingManualCashMovementRepository.h"
 #include "DataAccess/ShellAccountingManualTransactionRepository.h"
 #include "DataAccess/TransactionRunner.h"
 
@@ -9,6 +10,7 @@
 #include <optional>
 #include <sstream>
 #include <string_view>
+#include <utility>
 
 namespace etfdt::data_access {
 namespace {
@@ -200,7 +202,8 @@ std::string importAuditReason(const std::string& idempotencyKey)
 
 std::string auditNewValueJson(
     const ShellAccountingExcelVbaImportManualEntryPersistenceRequest& request,
-    int tradeLogRowsWritten)
+    int tradeLogRowsWritten,
+    int cashAdjustmentRowsWritten)
 {
     std::ostringstream stream;
     stream << "{"
@@ -212,7 +215,8 @@ std::string auditNewValueJson(
            << "\"schemaVersion\":" << jsonString(request.schemaVersion) << ','
            << "\"source\":" << jsonString(request.source) << ','
            << "\"importBatchLabel\":" << jsonString(request.importBatchLabel) << ','
-           << "\"rowsWritten\":{\"trade_log\":" << tradeLogRowsWritten << "},"
+           << "\"rowsWritten\":{\"trade_log\":" << tradeLogRowsWritten
+           << ",\"cash_adjustment\":" << cashAdjustmentRowsWritten << "},"
            << "\"factSummary\":{"
            << "\"tradeFactCount\":" << request.expectedTradeFactCount << ','
            << "\"cashFactCount\":" << request.expectedCashFactCount << ','
@@ -259,6 +263,56 @@ ShellAccountingManualTransactionWriteCommand commandFromFact(
     command.requestId = request.requestId + ":" + uidPart(fact.factId.empty() ? std::to_string(index) : fact.factId);
     command.idempotencyKey =
         request.idempotencyKey + ":trade:" + uidPart(fact.factId.empty() ? std::to_string(index) : fact.factId);
+    return command;
+}
+
+std::optional<std::pair<std::string, std::int64_t>> cashMovementTypeAndAmountMinor(
+    const ShellAccountingExcelVbaImportManualEntryCashFact& fact)
+{
+    auto amount = parseScaledDecimal(fact.amountText, 100);
+    if (!amount.has_value() || *amount == 0) {
+        return std::nullopt;
+    }
+
+    const auto action = upperAscii(fact.action);
+    if (action == "INITIAL_CASH" || action == "DEPOSIT") {
+        if (*amount <= 0) {
+            return std::nullopt;
+        }
+        return std::make_pair(std::string("Deposit"), *amount);
+    }
+    if (action == "WITHDRAW" || action == "WITHDRAWAL") {
+        return std::make_pair(std::string("Withdrawal"), *amount < 0 ? -*amount : *amount);
+    }
+    if (action == "ADJUSTMENT") {
+        return *amount > 0
+            ? std::make_pair(std::string("Deposit"), *amount)
+            : std::make_pair(std::string("Withdrawal"), -*amount);
+    }
+    return std::nullopt;
+}
+
+ShellAccountingManualCashMovementWriteCommand commandFromFact(
+    const ShellAccountingExcelVbaImportManualEntryCashFact& fact,
+    std::int64_t accountId,
+    std::int64_t portfolioId,
+    const ShellAccountingExcelVbaImportManualEntryPersistenceRequest& request,
+    std::size_t index)
+{
+    const auto movement = cashMovementTypeAndAmountMinor(fact);
+    ShellAccountingManualCashMovementWriteCommand command;
+    command.accountId = accountId;
+    command.portfolioId = portfolioId;
+    command.movementType = movement.has_value() ? movement->first : std::string {};
+    command.amountMinor = movement.has_value() ? movement->second : 0;
+    command.currencyCode = upperAscii(fact.currency);
+    command.occurredAtUtc = fact.timeUtc;
+    command.sourceMemo = fact.memo.empty() ? "Excel/VBA import cash movement" : fact.memo;
+    command.sourceReference = fact.factId;
+    command.requestId = request.requestId + ":"
+        + uidPart(fact.factId.empty() ? std::to_string(index) : fact.factId);
+    command.idempotencyKey =
+        request.idempotencyKey + ":cash:" + uidPart(fact.factId.empty() ? std::to_string(index) : fact.factId);
     return command;
 }
 
@@ -322,11 +376,27 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::validate(
             request);
     }
     if (request.expectedTradeFactCount != static_cast<int>(request.tradeFacts.size()) ||
-        request.expectedTradeFactCount <= 0) {
+        request.expectedCashFactCount != static_cast<int>(request.cashFacts.size()) ||
+        request.expectedTradeFactCount < 0 || request.expectedCashFactCount < 0 ||
+        (request.expectedTradeFactCount + request.expectedCashFactCount) <= 0) {
         return failure(
             etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
             "FACT_SUMMARY_MISMATCH",
             "EXCEL_VBA_IMPORT_FACT_SUMMARY_MISMATCH",
+            request);
+    }
+    if (request.expectedMarketPriceFactCount > 0) {
+        return failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "UNSUPPORTED_FACT_TYPE",
+            "EXCEL_VBA_IMPORT_MARKET_PRICE_PERSISTENCE_UNSUPPORTED",
+            request);
+    }
+    if (request.expectedFxRateFactCount > 0) {
+        return failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "UNSUPPORTED_FACT_TYPE",
+            "EXCEL_VBA_IMPORT_FX_RATE_PERSISTENCE_UNSUPPORTED",
             request);
     }
     if (containsSensitiveToken(request.importBatchLabel) || containsSensitiveToken(request.requestId)) {
@@ -360,6 +430,30 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::validate(
                 etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
                 "TRADE_FACT_NUMERIC_FIELD_INVALID",
                 "EXCEL_VBA_IMPORT_TRADE_FACT_NUMERIC_FIELD_INVALID",
+                request);
+        }
+    }
+    for (const auto& fact : request.cashFacts) {
+        if (isBlank(fact.factId) || isBlank(fact.timeUtc) || isBlank(fact.accountCode) ||
+            isBlank(fact.portfolioCode) || isBlank(fact.action) || isBlank(fact.currency)) {
+            return failure(
+                etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+                "CASH_FACT_REQUIRED_FIELD_MISSING",
+                "EXCEL_VBA_IMPORT_CASH_FACT_REQUIRED_FIELD_MISSING",
+                request);
+        }
+        if (containsSensitiveToken(fact.memo)) {
+            return failure(
+                etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+                "SENSITIVE_VALUE_REJECTED",
+                "EXCEL_VBA_IMPORT_SENSITIVE_VALUE_REJECTED",
+                request);
+        }
+        if (!cashMovementTypeAndAmountMinor(fact).has_value()) {
+            return failure(
+                etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+                "CASH_FACT_MOVEMENT_INVALID",
+                "EXCEL_VBA_IMPORT_CASH_FACT_MOVEMENT_INVALID",
                 request);
         }
     }
@@ -444,10 +538,13 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::findExistingImpor
     if (auditJsonHasDigest(row[1].text, request.previewDigest)) {
         result.success = true;
         result.databaseWritten = true;
-        result.tradeLogWritten = true;
+        result.tradeLogWritten = request.expectedTradeFactCount > 0;
+        result.cashAdjustmentWritten = request.expectedCashFactCount > 0;
         result.auditLogWritten = true;
         result.idempotentReplay = true;
         result.duplicateImportPrevented = true;
+        result.tradeLogRowsWritten = request.expectedTradeFactCount + request.expectedCashFactCount;
+        result.cashAdjustmentRowsWritten = request.expectedCashFactCount;
         result.status = "IDEMPOTENT_REPLAY";
     } else {
         result.errorCode = etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD;
@@ -461,14 +558,20 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::findExistingImpor
 DatabaseResult<std::int64_t>
 ShellAccountingExcelVbaImportManualEntryPersistenceRepository::writeAuditMarker(
     const ShellAccountingExcelVbaImportManualEntryPersistenceRequest& request,
-    int tradeLogRowsWritten)
+    int tradeLogRowsWritten,
+    int cashAdjustmentRowsWritten)
 {
-    const auto& firstFact = request.tradeFacts.front();
-    auto account = findIdByUid("account", firstFact.accountCode, "account");
+    const auto accountCode = !request.tradeFacts.empty()
+        ? request.tradeFacts.front().accountCode
+        : request.cashFacts.front().accountCode;
+    const auto portfolioCode = !request.tradeFacts.empty()
+        ? request.tradeFacts.front().portfolioCode
+        : request.cashFacts.front().portfolioCode;
+    auto account = findIdByUid("account", accountCode, "account");
     if (!account) {
         return DatabaseResult<std::int64_t>::failure(account.error().errorCode, account.error().message);
     }
-    auto portfolio = findIdByUid("portfolio", firstFact.portfolioCode, "portfolio");
+    auto portfolio = findIdByUid("portfolio", portfolioCode, "portfolio");
     if (!portfolio) {
         return DatabaseResult<std::int64_t>::failure(portfolio.error().errorCode, portfolio.error().message);
     }
@@ -480,7 +583,7 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::writeAuditMarker(
     entry.entityId = account.value();
     entry.action = "PERSIST_MANUAL_ENTRY";
     entry.oldValueJson = "{}";
-    entry.newValueJson = auditNewValueJson(request, tradeLogRowsWritten);
+    entry.newValueJson = auditNewValueJson(request, tradeLogRowsWritten, cashAdjustmentRowsWritten);
     entry.reason = importAuditReason(request.idempotencyKey);
     entry.operatorName = "dataservice";
     entry.createdAtUtc = isBlank(request.acceptedAtUtc) ? "2026-06-07T00:00:00Z" : request.acceptedAtUtc;
@@ -512,6 +615,7 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::persistAcceptedPr
 
     ShellAccountingExcelVbaImportManualEntryPersistenceResult result = validation;
     ShellAccountingManualTransactionRepository manualTransactions(connection_);
+    ShellAccountingManualCashMovementRepository manualCashMovements(connection_);
     TransactionRunner runner(connection_);
     auto transactionResult = runner.runInTransaction([&]() {
         for (std::size_t index = 0; index < request.tradeFacts.size(); ++index) {
@@ -547,7 +651,37 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::persistAcceptedPr
             result.tradeLogWritten = true;
         }
 
-        auto audit = writeAuditMarker(request, result.tradeLogRowsWritten);
+        for (std::size_t index = 0; index < request.cashFacts.size(); ++index) {
+            const auto& fact = request.cashFacts[index];
+            auto account = findIdByUid("account", fact.accountCode, "account");
+            if (!account) {
+                result = failure(account.error().errorCode, "REFERENCE_VALIDATION_FAILED", "REFERENCE_ROW_MISSING", request);
+                return DatabaseResult<bool>::failure(account.error().errorCode, account.error().message);
+            }
+            auto portfolio = findIdByUid("portfolio", fact.portfolioCode, "portfolio");
+            if (!portfolio) {
+                result = failure(portfolio.error().errorCode, "REFERENCE_VALIDATION_FAILED", "REFERENCE_ROW_MISSING", request);
+                return DatabaseResult<bool>::failure(portfolio.error().errorCode, portfolio.error().message);
+            }
+
+            auto written = manualCashMovements.persistManualCashMovementInActiveTransaction(
+                commandFromFact(fact, account.value(), portfolio.value(), request, index));
+            if (!written.success || written.duplicate) {
+                result = failure(
+                    written.errorCode,
+                    written.duplicate ? "IDEMPOTENCY_CONFLICT" : written.status,
+                    written.duplicate ? "EXCEL_VBA_IMPORT_DUPLICATE_CASH_FACT_WITHOUT_IMPORT_MARKER"
+                                      : "EXCEL_VBA_IMPORT_CASH_TRANSACTION_ROLLBACK",
+                    request);
+                return DatabaseResult<bool>::failure(written.errorCode, written.status);
+            }
+            ++result.tradeLogRowsWritten;
+            result.tradeLogWritten = true;
+            ++result.cashAdjustmentRowsWritten;
+            result.cashAdjustmentWritten = true;
+        }
+
+        auto audit = writeAuditMarker(request, result.tradeLogRowsWritten, result.cashAdjustmentRowsWritten);
         if (!audit) {
             result = failure(
                 audit.error().errorCode,
@@ -565,9 +699,11 @@ ShellAccountingExcelVbaImportManualEntryPersistenceRepository::persistAcceptedPr
         result.success = false;
         result.databaseWritten = false;
         result.tradeLogWritten = false;
+        result.cashAdjustmentWritten = false;
         result.auditLogWritten = false;
         result.transactionCommitted = false;
         result.tradeLogRowsWritten = 0;
+        result.cashAdjustmentRowsWritten = 0;
         if (result.issues.empty()) {
             result.issues.push_back("EXCEL_VBA_IMPORT_TRANSACTION_ROLLBACK");
         }

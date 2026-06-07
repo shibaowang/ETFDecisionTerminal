@@ -27,6 +27,13 @@ TASK_265_EXACT_PATHS = {
     "libs/DataServiceClient/src/DataServiceClientJson.cpp",
     "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
+    "docs/334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md",
+    "docs/335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md",
+    "libs/DataAccess/include/DataAccess/ShellAccountingManualCashMovementRepository.h",
+    "libs/DataAccess/src/ShellAccountingManualCashMovementRepository.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/excel_vba_import_persist_supported_fact_types_alignment.cpp",
+    "tests/ShellAccountingExcelVbaImportAcceptedPreviewManualEntryPersistence/excel_vba_import_accepted_preview_manual_entry_persistence.cpp",
 }
 
 

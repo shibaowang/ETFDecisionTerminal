@@ -1173,11 +1173,14 @@ bool ShellAccountingPresenter::persistAcceptedExcelVbaImportPreview()
             QStringLiteral("Accepted preview schema version and source are required."));
         return false;
     }
-    if ((excelVbaImportPreviewTradeFactCount_ + excelVbaImportPreviewCashFactCount_
-            + excelVbaImportPreviewMarketPriceFactCount_ + excelVbaImportPreviewFxRateFactCount_)
-        <= 0) {
+    if ((excelVbaImportPreviewTradeFactCount_ + excelVbaImportPreviewCashFactCount_) <= 0) {
         markExcelVbaImportPersistInputError(
-            QStringLiteral("Accepted preview fact summary must contain at least one fact."));
+            QStringLiteral("Accepted preview fact summary must contain trade or cash facts."));
+        return false;
+    }
+    if (excelVbaImportPreviewMarketPriceFactCount_ > 0 || excelVbaImportPreviewFxRateFactCount_ > 0) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Market price and FX rate facts are not supported for persistence yet."));
         return false;
     }
 
@@ -1644,10 +1647,14 @@ ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPersis
         return {};
     }
     if (tradeFactCount < 0 || cashFactCount < 0 || marketPriceFactCount < 0
-        || fxRateFactCount < 0
-        || (tradeFactCount + cashFactCount + marketPriceFactCount + fxRateFactCount) <= 0) {
+        || fxRateFactCount < 0 || (tradeFactCount + cashFactCount) <= 0) {
         markExcelVbaImportPersistInputError(
-            QStringLiteral("Accepted preview fact summary must contain at least one fact."));
+            QStringLiteral("Accepted preview fact summary must contain trade or cash facts."));
+        return {};
+    }
+    if (marketPriceFactCount > 0 || fxRateFactCount > 0) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Market price and FX rate facts are not supported for persistence yet."));
         return {};
     }
 

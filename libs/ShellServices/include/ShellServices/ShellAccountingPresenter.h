@@ -40,6 +40,16 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(int excelVbaImportPreviewCashFactCount READ excelVbaImportPreviewCashFactCount NOTIFY excelVbaImportPreviewStateChanged)
     Q_PROPERTY(int excelVbaImportPreviewMarketPriceFactCount READ excelVbaImportPreviewMarketPriceFactCount NOTIFY excelVbaImportPreviewStateChanged)
     Q_PROPERTY(int excelVbaImportPreviewFxRateFactCount READ excelVbaImportPreviewFxRateFactCount NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(bool excelVbaImportPersistBusy READ excelVbaImportPersistBusy NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPersistStatus READ lastExcelVbaImportPersistStatus NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPersistIssue READ lastExcelVbaImportPersistIssue NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPersistSummary READ lastExcelVbaImportPersistSummary NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPersistIssueCodes READ lastExcelVbaImportPersistIssueCodes NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(bool lastExcelVbaImportPersistTransactionCommitted READ lastExcelVbaImportPersistTransactionCommitted NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(bool lastExcelVbaImportPersistTradeLogWritten READ lastExcelVbaImportPersistTradeLogWritten NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(bool lastExcelVbaImportPersistAuditLogWritten READ lastExcelVbaImportPersistAuditLogWritten NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(bool lastExcelVbaImportPersistDuplicateImportPrevented READ lastExcelVbaImportPersistDuplicateImportPrevented NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(bool lastExcelVbaImportPersistIdempotencyConflictRejected READ lastExcelVbaImportPersistIdempotencyConflictRejected NOTIFY excelVbaImportPersistStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -74,6 +84,16 @@ public:
     [[nodiscard]] int excelVbaImportPreviewCashFactCount() const noexcept;
     [[nodiscard]] int excelVbaImportPreviewMarketPriceFactCount() const noexcept;
     [[nodiscard]] int excelVbaImportPreviewFxRateFactCount() const noexcept;
+    [[nodiscard]] bool excelVbaImportPersistBusy() const noexcept;
+    [[nodiscard]] QString lastExcelVbaImportPersistStatus() const;
+    [[nodiscard]] QString lastExcelVbaImportPersistIssue() const;
+    [[nodiscard]] QString lastExcelVbaImportPersistSummary() const;
+    [[nodiscard]] QString lastExcelVbaImportPersistIssueCodes() const;
+    [[nodiscard]] bool lastExcelVbaImportPersistTransactionCommitted() const noexcept;
+    [[nodiscard]] bool lastExcelVbaImportPersistTradeLogWritten() const noexcept;
+    [[nodiscard]] bool lastExcelVbaImportPersistAuditLogWritten() const noexcept;
+    [[nodiscard]] bool lastExcelVbaImportPersistDuplicateImportPrevented() const noexcept;
+    [[nodiscard]] bool lastExcelVbaImportPersistIdempotencyConflictRejected() const noexcept;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -138,6 +158,20 @@ public:
     Q_INVOKABLE void resetExcelVbaImportPreviewState();
     Q_INVOKABLE bool previewExcelVbaImportReadOnly(const QString& importPayloadJson);
     Q_INVOKABLE bool previewExcelVbaImportReadOnlyFromLocalFile(const QString& fileUrlOrPath);
+    void resetExcelVbaImportPersistState();
+    bool persistExcelVbaImportManualEntry(
+        const QString& previewStatus,
+        const QString& previewDigest,
+        const QString& idempotencyKey,
+        const QString& schemaVersion,
+        const QString& source,
+        const QString& acceptedAt,
+        const QString& importBatchLabel,
+        const QString& importPayloadJson,
+        int tradeFactCount,
+        int cashFactCount,
+        int marketPriceFactCount,
+        int fxRateFactCount);
     void reset();
 
 signals:
@@ -145,6 +179,7 @@ signals:
     void manualEntryStateChanged();
     void postWriteRefreshStateChanged();
     void excelVbaImportPreviewStateChanged();
+    void excelVbaImportPersistStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -159,11 +194,27 @@ private:
     void applyTradingResult(const ShellAccountingServiceResult& result, bool confirming);
     void applyManualEntryResult(const ShellAccountingServiceResult& result, const QString& fallback);
     void applyExcelVbaImportPreviewResult(const ShellAccountingServiceResult& result);
+    void applyExcelVbaImportPersistManualEntryResult(const ShellAccountingServiceResult& result);
     void refreshAfterManualEntryWrite(bool includePositionList, const char* reason);
     void markManualEntryInputError(const QString& message);
     void markExcelVbaImportPreviewInputError(const QString& message);
+    void markExcelVbaImportPersistInputError(const QString& message);
     [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPreviewRequest(
         const QString& importPayloadJson,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPersistManualEntryRequest(
+        const QString& previewStatus,
+        const QString& previewDigest,
+        const QString& idempotencyKey,
+        const QString& schemaVersion,
+        const QString& source,
+        const QString& acceptedAt,
+        const QString& importBatchLabel,
+        const QString& importPayloadJson,
+        int tradeFactCount,
+        int cashFactCount,
+        int marketPriceFactCount,
+        int fxRateFactCount,
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeDraftCreateRequest(
         const QString& accountId,
@@ -232,6 +283,16 @@ private:
     int excelVbaImportPreviewCashFactCount_ = 0;
     int excelVbaImportPreviewMarketPriceFactCount_ = 0;
     int excelVbaImportPreviewFxRateFactCount_ = 0;
+    bool excelVbaImportPersistBusy_ = false;
+    QString lastExcelVbaImportPersistStatus_ = QStringLiteral("READY");
+    QString lastExcelVbaImportPersistIssue_;
+    QString lastExcelVbaImportPersistSummary_;
+    QString lastExcelVbaImportPersistIssueCodes_;
+    bool lastExcelVbaImportPersistTransactionCommitted_ = false;
+    bool lastExcelVbaImportPersistTradeLogWritten_ = false;
+    bool lastExcelVbaImportPersistAuditLogWritten_ = false;
+    bool lastExcelVbaImportPersistDuplicateImportPrevented_ = false;
+    bool lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

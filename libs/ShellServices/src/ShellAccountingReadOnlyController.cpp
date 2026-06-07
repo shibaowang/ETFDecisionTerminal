@@ -316,6 +316,29 @@ ShellAccountingServiceResult ShellAccountingReadOnlyController::previewExcelVbaI
     return result;
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::persistExcelVbaImportManualEntry(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.excel_vba_import.persist_manual_entry");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.excel_vba_import.persist_manual_entry");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.excel_vba_import.persist_manual_entry";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->persistExcelVbaImportManualEntry(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

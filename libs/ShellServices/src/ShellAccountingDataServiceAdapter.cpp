@@ -97,6 +97,19 @@ void appendJsonIntField(
     needsComma = true;
 }
 
+void appendJsonRawField(
+    std::ostringstream& stream,
+    const char* name,
+    const std::string& rawJson,
+    bool& needsComma)
+{
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << '"' << name << "\":" << (rawJson.empty() ? "{}" : rawJson);
+    needsComma = true;
+}
+
 void appendJsonInt64Field(
     std::ostringstream& stream,
     const char* name,
@@ -257,6 +270,40 @@ std::string makeManualCashMovementPayloadJson(const ShellAccountingServiceReques
     return stream.str();
 }
 
+std::string makeExcelVbaImportPersistManualEntryPayloadJson(
+    const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(stream, "previewStatus", request.previewStatus, needsComma);
+    appendJsonStringField(stream, "previewDigest", request.previewDigest, needsComma);
+    appendJsonStringField(stream, "idempotencyKey", request.idempotencyKey, needsComma);
+    appendJsonStringField(stream, "requestId", request.requestId, needsComma);
+    appendJsonStringField(stream, "schemaVersion", request.schemaVersion, needsComma);
+    appendJsonStringField(stream, "source", request.source, needsComma);
+    appendJsonStringField(stream, "acceptedAt", request.acceptedAt, needsComma);
+    appendJsonStringField(stream, "importBatchLabel", request.importBatchLabel, needsComma);
+    if (needsComma) {
+        stream << ',';
+    }
+    stream << "\"previewFactSummary\":{";
+    bool summaryNeedsComma = false;
+    appendJsonIntField(stream, "tradeFactCount", request.importTradeFactCount, summaryNeedsComma);
+    appendJsonIntField(stream, "cashFactCount", request.importCashFactCount, summaryNeedsComma);
+    appendJsonIntField(
+        stream,
+        "marketPriceFactCount",
+        request.importMarketPriceFactCount,
+        summaryNeedsComma);
+    appendJsonIntField(stream, "fxRateFactCount", request.importFxRateFactCount, summaryNeedsComma);
+    stream << '}';
+    needsComma = true;
+    appendJsonRawField(stream, "importPayload", request.importPayloadJson, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
 ShellAccountingDataServiceClientRequest makeClientRequest(
     const ShellAccountingServiceRequest& request,
     const char* fallbackActionName)
@@ -318,6 +365,16 @@ ShellAccountingDataServiceClientRequest makeExcelVbaImportPreviewClientRequest(
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makeExcelVbaImportPersistManualEntryClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.excel_vba_import.persist_manual_entry";
+    clientRequest.payloadJson = makeExcelVbaImportPersistManualEntryPayloadJson(request);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingServiceResult mapClientResponse(
     ShellAccountingDataServiceClientResponse response,
     const ShellAccountingServiceRequest& request,
@@ -348,6 +405,10 @@ ShellAccountingServiceResult mapClientResponse(
     result.generatedTradeSuggestion = false;
     result.strategyExecuted = false;
     result.brokerOrderSubmitted = false;
+    result.transactionCommitted = response.transactionCommitted;
+    result.duplicateImportPrevented = response.duplicateImportPrevented;
+    result.idempotencyConflictRejected = response.idempotencyConflictRejected;
+    result.idempotencyRequired = response.idempotencyRequired;
     result.importPreviewAccepted = response.importPreviewAccepted;
     result.importPreviewRejected = response.importPreviewRejected;
     result.importPreviewDiagnostics = std::move(response.importPreviewDiagnostics);
@@ -501,6 +562,19 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::previewExcelVbaI
     auto result = makeNotConnectedResult(request, "accounting.excel_vba_import.readonly_preview");
     result.importPreviewRejected = true;
     return result;
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::persistExcelVbaImportManualEntry(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callExcelVbaImportPersistManualEntry(
+                makeExcelVbaImportPersistManualEntryClientRequest(request)),
+            request,
+            "accounting.excel_vba_import.persist_manual_entry");
+    }
+    return makeNotConnectedResult(request, "accounting.excel_vba_import.persist_manual_entry");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

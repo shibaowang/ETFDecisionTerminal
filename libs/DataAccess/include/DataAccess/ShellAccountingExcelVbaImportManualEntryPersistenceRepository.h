@@ -25,6 +25,17 @@ struct ShellAccountingExcelVbaImportManualEntryTradeFact final {
     std::string memo;
 };
 
+struct ShellAccountingExcelVbaImportManualEntryCashFact final {
+    std::string factId;
+    std::string timeUtc;
+    std::string accountCode;
+    std::string portfolioCode;
+    std::string action;
+    std::string amountText;
+    std::string currency;
+    std::string memo;
+};
+
 struct ShellAccountingExcelVbaImportManualEntryPersistenceRequest final {
     std::string previewStatus;
     std::string previewDigest;
@@ -39,6 +50,7 @@ struct ShellAccountingExcelVbaImportManualEntryPersistenceRequest final {
     int expectedMarketPriceFactCount = 0;
     int expectedFxRateFactCount = 0;
     std::vector<ShellAccountingExcelVbaImportManualEntryTradeFact> tradeFacts;
+    std::vector<ShellAccountingExcelVbaImportManualEntryCashFact> cashFacts;
 };
 
 struct ShellAccountingExcelVbaImportManualEntryPersistenceResult final {
@@ -47,6 +59,7 @@ struct ShellAccountingExcelVbaImportManualEntryPersistenceResult final {
     bool writeImplemented = true;
     bool databaseWritten = false;
     bool tradeLogWritten = false;
+    bool cashAdjustmentWritten = false;
     bool auditLogWritten = false;
     bool transactionCommitted = false;
     bool idempotentReplay = false;
@@ -56,6 +69,7 @@ struct ShellAccountingExcelVbaImportManualEntryPersistenceResult final {
     bool nestedTransactionAttempted = false;
     bool productionDbTouched = false;
     int tradeLogRowsWritten = 0;
+    int cashAdjustmentRowsWritten = 0;
     std::int64_t auditLogId = 0;
     std::string previewDigest;
     std::string idempotencyKey;
@@ -91,7 +105,8 @@ private:
             const ShellAccountingExcelVbaImportManualEntryPersistenceRequest& request);
     [[nodiscard]] DatabaseResult<std::int64_t> writeAuditMarker(
         const ShellAccountingExcelVbaImportManualEntryPersistenceRequest& request,
-        int tradeLogRowsWritten);
+        int tradeLogRowsWritten,
+        int cashAdjustmentRowsWritten);
 
     SQLiteConnection& connection_;
 };

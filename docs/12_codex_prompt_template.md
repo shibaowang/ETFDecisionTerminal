@@ -2,6 +2,19 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## TASK-269 Excel/VBA import persistence fact type boundary
+
+- Accepted Excel/VBA import persistence may write TradeLog trade facts through
+  the manual transaction repository.
+- Accepted Excel/VBA import persistence may write cash facts through the manual
+  cash movement repository.
+- Market price and FX rate fact persistence must fail closed until separately
+  authorized.
+- QML, Presenter, DataService action, and DataAccess composition repository
+  must agree on supported and unsupported fact types.
+- This boundary does not add broker, network, credentials, endpoint, real order
+  placement, TradeDraft generation, strategy execution, or automatic trading.
+
 - Diagnostic consumer tasks must state whether they may start services or
   access databases; default behavior is no service start, no socket connection,
   and no SQLite access.

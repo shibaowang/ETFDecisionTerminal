@@ -424,6 +424,7 @@ void assertSuccessPayload(const QJsonObject& payload)
     require(!boolValue(payload, "productionDbTouched"), "production DB untouched");
     require(boolValue(payload, "transactionCommitted"), "transaction committed");
     require(boolValue(payload, "tradeLogWritten"), "trade_log written");
+    require(boolValue(payload, "cashAdjustmentWritten"), "cash_adjustment written");
     require(boolValue(payload, "auditLogWritten"), "audit log written");
     require(boolValue(payload, "idempotencyRequired"), "idempotency required");
     require(boolValue(payload, "supplementalDataAccessTransactionAuthorizationUsed"), "supplemental auth used");
@@ -449,15 +450,18 @@ void testDataServicePersistenceCommitAndDuplicate(const Harness& h)
     require(first.success, "first DataService persistence succeeds");
     const auto firstPayload = parseObject(first.payloadJson);
     assertSuccessPayload(firstPayload);
-    require(intValue(firstPayload, "tradeLogRowsWritten") == 1, "one trade row written");
-    require(countRows(*fixture.connection, "trade_log") == 1, "first write adds one trade_log");
+    require(intValue(firstPayload, "tradeLogRowsWritten") == 2, "trade and cash trade_log rows written");
+    require(intValue(firstPayload, "cashAdjustmentRowsWritten") == 1, "one cash adjustment row written");
+    require(countRows(*fixture.connection, "trade_log") == 2, "first write adds trade and cash trade_log rows");
+    require(countRows(*fixture.connection, "cash_adjustment") == 1, "first write adds one cash_adjustment");
     require(countRows(*fixture.connection, "audit_log") == 1, "first write adds one audit_log");
 
     const auto second = dispatch(*fixture.connection, persistPayload("task-265-import-key"));
     require(second.success, "duplicate DataService persistence succeeds idempotently");
     const auto duplicatePayload = parseObject(second.payloadJson);
     require(boolValue(duplicatePayload, "duplicateImportPrevented"), "duplicate import prevented");
-    require(countRows(*fixture.connection, "trade_log") == 1, "duplicate adds no trade_log");
+    require(countRows(*fixture.connection, "trade_log") == 2, "duplicate adds no trade_log");
+    require(countRows(*fixture.connection, "cash_adjustment") == 1, "duplicate adds no cash_adjustment");
     require(countRows(*fixture.connection, "audit_log") == 1, "duplicate adds no audit_log");
 }
 
@@ -476,7 +480,8 @@ void testIdempotencyConflictRejected(const Harness& h)
     require(!conflict.success, "same idempotency key different digest rejected");
     const auto payload = parseObject(conflict.payloadJson);
     require(boolValue(payload, "idempotencyConflictRejected"), "conflict flag set");
-    require(countRows(*fixture.connection, "trade_log") == 1, "conflict adds no trade_log");
+    require(countRows(*fixture.connection, "trade_log") == 2, "conflict adds no trade_log");
+    require(countRows(*fixture.connection, "cash_adjustment") == 1, "conflict adds no cash_adjustment");
     require(countRows(*fixture.connection, "audit_log") == 1, "conflict adds no audit_log");
 }
 
@@ -486,6 +491,7 @@ void testNonAcceptedPreviewRejected(const Harness& h)
     const auto response = dispatch(*fixture.connection, persistPayload("task-265-rejected-key", "REJECTED"));
     require(!response.success, "non-ACCEPTED preview rejected");
     require(countRows(*fixture.connection, "trade_log") == 0, "non-accepted writes no trade_log");
+    require(countRows(*fixture.connection, "cash_adjustment") == 0, "non-accepted writes no cash_adjustment");
     require(countRows(*fixture.connection, "audit_log") == 0, "non-accepted writes no audit_log");
 }
 
@@ -499,6 +505,7 @@ void testAuditFailureRollsBackManualFacts(const Harness& h)
     const auto response = dispatch(*fixture.connection, persistPayload("task-265-audit-failure"));
     require(!response.success, "audit failure rejects persistence");
     require(countRows(*fixture.connection, "trade_log") == 0, "audit failure rolls back trade_log");
+    require(countRows(*fixture.connection, "cash_adjustment") == 0, "audit failure rolls back cash_adjustment");
     require(countRows(*fixture.connection, "trade_execution_group") == 0,
         "audit failure rolls back execution group");
     require(countRows(*fixture.connection, "audit_log") == 0, "audit failure leaves no audit row");
@@ -512,6 +519,7 @@ void testTradeFailureRollsBackAudit(const Harness& h)
         persistPayload("task-265-trade-failure", "ACCEPTED", validDigest("TASK265_MISSING_INSTRUMENT"), "TASK265_MISSING_INSTRUMENT"));
     require(!response.success, "trade reference failure rejects persistence");
     require(countRows(*fixture.connection, "trade_log") == 0, "trade failure writes no trade_log");
+    require(countRows(*fixture.connection, "cash_adjustment") == 0, "trade failure writes no cash_adjustment");
     require(countRows(*fixture.connection, "audit_log") == 0, "trade failure writes no audit_log");
 }
 

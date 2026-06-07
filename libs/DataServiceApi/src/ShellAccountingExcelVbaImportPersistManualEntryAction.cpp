@@ -647,6 +647,19 @@ etfdt::data_access::ShellAccountingExcelVbaImportManualEntryPersistenceRequest d
             fact.note,
         });
     }
+    request.cashFacts.reserve(parseResult.cashFacts.size());
+    for (const auto& fact : parseResult.cashFacts) {
+        request.cashFacts.push_back(etfdt::data_access::ShellAccountingExcelVbaImportManualEntryCashFact{
+            fact.factId,
+            fact.time,
+            fact.accountId,
+            fact.portfolioId,
+            fact.action,
+            fact.amountText,
+            fact.currency,
+            fact.note,
+        });
+    }
     return request;
 }
 
@@ -691,11 +704,14 @@ std::string rejectedPayload(std::string_view issueCode)
             << "\"acceptedPreviewRequired\":true,"
             << "\"parserBoundaryReused\":true,"
             << "\"manualTransactionRepositoryUsed\":false,"
+            << "\"manualCashMovementRepositoryUsed\":false,"
+            << "\"cashFactsPersistenceSupported\":true,"
             << "\"directTradeLogSqlInDataService\":false,"
             << "\"tempDbOnly\":true,"
             << "\"productionDbTouched\":false,"
             << "\"transactionCommitted\":false,"
             << "\"tradeLogWritten\":false,"
+            << "\"cashAdjustmentWritten\":false,"
             << "\"auditLogWritten\":false,"
             << "\"idempotencyRequired\":true,"
             << "\"duplicateImportPrevented\":false,"
@@ -708,6 +724,10 @@ std::string rejectedPayload(std::string_view issueCode)
             << "\"singleTransactionBoundaryUsed\":true,"
             << "\"manualFactsAndAuditCommittedTogether\":false,"
             << "\"auditFailureRollsBackManualFacts\":false,"
+            << "\"cashFailureRollsBackTradeAndAudit\":false,"
+            << "\"auditFailureRollsBackTradeAndCash\":false,"
+            << "\"marketPricePersistenceRejected\":" << (issueCode == "EXCEL_VBA_IMPORT_MARKET_PRICE_PERSISTENCE_UNSUPPORTED" ? "true" : "false") << ','
+            << "\"fxRatePersistenceRejected\":" << (issueCode == "EXCEL_VBA_IMPORT_FX_RATE_PERSISTENCE_UNSUPPORTED" ? "true" : "false") << ','
             << "\"nestedTransactionAttempted\":false,"
             << "\"qmlWiringChanged\":false,"
             << "\"importButtonAdded\":false,"
@@ -732,11 +752,14 @@ std::string successPayload(
             << "\"acceptedPreviewRequired\":true,"
             << "\"parserBoundaryReused\":true,"
             << "\"manualTransactionRepositoryUsed\":true,"
+            << "\"manualCashMovementRepositoryUsed\":true,"
+            << "\"cashFactsPersistenceSupported\":true,"
             << "\"directTradeLogSqlInDataService\":false,"
             << "\"tempDbOnly\":true,"
             << "\"productionDbTouched\":false,"
             << "\"transactionCommitted\":" << (result.transactionCommitted ? "true" : "false") << ','
             << "\"tradeLogWritten\":" << (result.tradeLogWritten ? "true" : "false") << ','
+            << "\"cashAdjustmentWritten\":" << (result.cashAdjustmentWritten ? "true" : "false") << ','
             << "\"auditLogWritten\":" << (result.auditLogWritten ? "true" : "false") << ','
             << "\"idempotencyRequired\":true,"
             << "\"duplicateImportPrevented\":" << (result.duplicateImportPrevented ? "true" : "false") << ','
@@ -750,11 +773,17 @@ std::string successPayload(
             << "\"dataAccessCompositionRepositoryCreated\":true,"
             << "\"singleTransactionBoundaryUsed\":" << (result.singleTransactionBoundaryUsed ? "true" : "false") << ','
             << "\"manualFactsAndAuditCommittedTogether\":"
-            << ((result.tradeLogWritten && result.auditLogWritten && result.transactionCommitted) ? "true" : "false")
+            << (((result.tradeLogWritten || result.cashAdjustmentWritten) && result.auditLogWritten
+                    && result.transactionCommitted) ? "true" : "false")
             << ','
             << "\"auditFailureRollsBackManualFacts\":true,"
+            << "\"cashFailureRollsBackTradeAndAudit\":true,"
+            << "\"auditFailureRollsBackTradeAndCash\":true,"
+            << "\"marketPricePersistenceRejected\":true,"
+            << "\"fxRatePersistenceRejected\":true,"
             << "\"nestedTransactionAttempted\":" << (result.nestedTransactionAttempted ? "true" : "false") << ','
             << "\"tradeLogRowsWritten\":" << result.tradeLogRowsWritten << ','
+            << "\"cashAdjustmentRowsWritten\":" << result.cashAdjustmentRowsWritten << ','
             << "\"auditLogId\":" << result.auditLogId << ','
             << "\"status\":" << jsonStringValue(result.status) << ','
             << "\"previewDigest\":" << jsonStringValue(result.previewDigest) << ','
@@ -820,6 +849,22 @@ etfdt::protocol::ProtocolResponse handleAccountingExcelVbaImportPersistManualEnt
             etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
             "Excel/VBA import preview digest mismatch",
             rejectedPayload("EXCEL_VBA_IMPORT_PREVIEW_DIGEST_MISMATCH"));
+    }
+    if (!parseResult.marketPriceFacts.empty()) {
+        return responseWithPayload(
+            context,
+            false,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "Excel/VBA import market price persistence is not supported",
+            rejectedPayload("EXCEL_VBA_IMPORT_MARKET_PRICE_PERSISTENCE_UNSUPPORTED"));
+    }
+    if (!parseResult.fxRateFacts.empty()) {
+        return responseWithPayload(
+            context,
+            false,
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "Excel/VBA import FX rate persistence is not supported",
+            rejectedPayload("EXCEL_VBA_IMPORT_FX_RATE_PERSISTENCE_UNSUPPORTED"));
     }
 
     etfdt::data_access::ShellAccountingExcelVbaImportManualEntryPersistenceRepository repository(connection);

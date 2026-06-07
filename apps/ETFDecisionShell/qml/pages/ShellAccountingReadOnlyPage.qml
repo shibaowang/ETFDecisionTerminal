@@ -68,14 +68,14 @@ Rectangle {
         if (!root.presenterAvailable) {
             return false
         }
-        var factCount = accountingPresenter.excelVbaImportPreviewTradeFactCount
+        var supportedFactCount = accountingPresenter.excelVbaImportPreviewTradeFactCount
             + accountingPresenter.excelVbaImportPreviewCashFactCount
-            + accountingPresenter.excelVbaImportPreviewMarketPriceFactCount
-            + accountingPresenter.excelVbaImportPreviewFxRateFactCount
         return accountingPresenter.lastExcelVbaImportPreviewStatus === "ACCEPTED"
             && accountingPresenter.lastExcelVbaImportPreviewDigest.length > 0
             && accountingPresenter.excelVbaImportPreviewPayloadAvailable
-            && factCount > 0
+            && supportedFactCount > 0
+            && accountingPresenter.excelVbaImportPreviewMarketPriceFactCount === 0
+            && accountingPresenter.excelVbaImportPreviewFxRateFactCount === 0
             && !accountingPresenter.excelVbaImportPersistBusy
             && root.excelVbaImportPersistConfirmed
     }

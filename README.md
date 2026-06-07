@@ -5085,3 +5085,28 @@ TASK-267 documentation is in
 `docs/330_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract.md`
 and
 `docs/331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md`.
+
+## TASK-268 ShellAccounting Excel/VBA Import Accepted Preview Persist QML Wiring
+
+TASK-268 wires the TASK-267 ShellServices / Presenter / Controller persistence
+contract into the ShellAccounting read-only QML page. The page adds an explicit
+confirmation control and a Persist accepted preview button that calls only the
+Presenter-owned safe wrapper.
+
+TASK-268 enables the persist control only when the Presenter is available, the
+last preview status is `ACCEPTED`, the Presenter exposes a non-empty preview
+digest, the sanitized preview payload is available, at least one preview fact
+is present, persistence is not busy, and the user has explicitly confirmed.
+Resetting the preview clears the confirmation and persist state.
+
+TASK-268 does not modify startup, DataServiceApi action implementation,
+DataServiceClient, DataAccess, migrations, AccountingEngine production code,
+production file loader behavior, historical fixtures, TradeDraft generation,
+strategy execution, broker integration, network access beyond existing local
+DataService transport, credentials, endpoints, real order placement, or
+automatic trading.
+
+TASK-268 documentation is in
+`docs/332_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring.md`
+and
+`docs/333_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring_test_plan.md`.

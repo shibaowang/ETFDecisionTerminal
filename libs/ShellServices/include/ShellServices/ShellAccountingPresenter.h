@@ -40,6 +40,8 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(int excelVbaImportPreviewCashFactCount READ excelVbaImportPreviewCashFactCount NOTIFY excelVbaImportPreviewStateChanged)
     Q_PROPERTY(int excelVbaImportPreviewMarketPriceFactCount READ excelVbaImportPreviewMarketPriceFactCount NOTIFY excelVbaImportPreviewStateChanged)
     Q_PROPERTY(int excelVbaImportPreviewFxRateFactCount READ excelVbaImportPreviewFxRateFactCount NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(QString lastExcelVbaImportPreviewDigest READ lastExcelVbaImportPreviewDigest NOTIFY excelVbaImportPreviewStateChanged)
+    Q_PROPERTY(bool excelVbaImportPreviewPayloadAvailable READ excelVbaImportPreviewPayloadAvailable NOTIFY excelVbaImportPreviewStateChanged)
     Q_PROPERTY(bool excelVbaImportPersistBusy READ excelVbaImportPersistBusy NOTIFY excelVbaImportPersistStateChanged)
     Q_PROPERTY(QString lastExcelVbaImportPersistStatus READ lastExcelVbaImportPersistStatus NOTIFY excelVbaImportPersistStateChanged)
     Q_PROPERTY(QString lastExcelVbaImportPersistIssue READ lastExcelVbaImportPersistIssue NOTIFY excelVbaImportPersistStateChanged)
@@ -84,6 +86,8 @@ public:
     [[nodiscard]] int excelVbaImportPreviewCashFactCount() const noexcept;
     [[nodiscard]] int excelVbaImportPreviewMarketPriceFactCount() const noexcept;
     [[nodiscard]] int excelVbaImportPreviewFxRateFactCount() const noexcept;
+    [[nodiscard]] QString lastExcelVbaImportPreviewDigest() const;
+    [[nodiscard]] bool excelVbaImportPreviewPayloadAvailable() const noexcept;
     [[nodiscard]] bool excelVbaImportPersistBusy() const noexcept;
     [[nodiscard]] QString lastExcelVbaImportPersistStatus() const;
     [[nodiscard]] QString lastExcelVbaImportPersistIssue() const;
@@ -158,7 +162,8 @@ public:
     Q_INVOKABLE void resetExcelVbaImportPreviewState();
     Q_INVOKABLE bool previewExcelVbaImportReadOnly(const QString& importPayloadJson);
     Q_INVOKABLE bool previewExcelVbaImportReadOnlyFromLocalFile(const QString& fileUrlOrPath);
-    void resetExcelVbaImportPersistState();
+    Q_INVOKABLE void resetExcelVbaImportPersistState();
+    Q_INVOKABLE bool persistAcceptedExcelVbaImportPreview();
     bool persistExcelVbaImportManualEntry(
         const QString& previewStatus,
         const QString& previewDigest,
@@ -216,6 +221,10 @@ private:
         int marketPriceFactCount,
         int fxRateFactCount,
         bool& valid);
+    [[nodiscard]] QString acceptedExcelVbaImportPreviewIdempotencyKey() const;
+    [[nodiscard]] QString acceptedExcelVbaImportPreviewDigest(
+        const QString& importPayloadJson,
+        bool& valid) const;
     [[nodiscard]] ShellAccountingServiceRequest makeDraftCreateRequest(
         const QString& accountId,
         const QString& portfolioId,
@@ -283,6 +292,10 @@ private:
     int excelVbaImportPreviewCashFactCount_ = 0;
     int excelVbaImportPreviewMarketPriceFactCount_ = 0;
     int excelVbaImportPreviewFxRateFactCount_ = 0;
+    QString lastExcelVbaImportPreviewDigest_;
+    QString lastExcelVbaImportPreviewPayloadJson_;
+    QString lastExcelVbaImportPreviewSchemaVersion_;
+    QString lastExcelVbaImportPreviewSource_;
     bool excelVbaImportPersistBusy_ = false;
     QString lastExcelVbaImportPersistStatus_ = QStringLiteral("READY");
     QString lastExcelVbaImportPersistIssue_;

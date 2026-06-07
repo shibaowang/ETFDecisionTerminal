@@ -3255,6 +3255,24 @@ changes, migrations, AccountingEngine production code, historical fixtures,
 TradeDraft generation, strategy execution, broker, network, credentials,
 endpoints, real order placement, or automatic trading.
 
+## TASK-266 ShellAccounting Excel/VBA Import Persist Manual Entry Client Adapter Prompt Rule
+
+Future Excel/VBA import persistence client work must reference
+`docs/328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md`
+and
+`docs/329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md`.
+
+TASK-266 adds only a typed DataServiceClient adapter for
+`accounting.excel_vba_import.persist_manual_entry`. It may map accepted preview
+persistence request fields, sanitized import payload, fact summary, transaction
+commit flags, trade_log and audit_log write flags, duplicate import flags,
+idempotency conflict flags, and sanitized issue codes. It must not add QML,
+startup, Presenter, Controller, ShellServices UI wiring, DataServiceApi action
+implementation changes, DataAccess changes, migrations, AccountingEngine
+production code, historical fixtures, TradeDraft generation, strategy
+execution, broker, network beyond existing local DataService transport,
+credentials, endpoints, real order placement, or automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

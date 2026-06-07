@@ -1426,6 +1426,14 @@
   defines TASK-265 temporary SQLite persistence checks, active transaction
   method checks, duplicate / conflict / rollback assertions, no direct
   DataService `trade_log` SQL checks, and required command checks.
+- ShellAccounting Excel/VBA import persist manual entry client adapter:
+  [328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md](328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md)
+  records TASK-266 typed DataServiceClient adapter scope, request / response
+  mapping, sanitized issue mapping, and no UI / no broker constraints.
+- ShellAccounting Excel/VBA import persist manual entry client adapter test plan:
+  [329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md](329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md)
+  defines TASK-266 local DataService harness checks, duplicate / conflict
+  mapping assertions, client boundary scans, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

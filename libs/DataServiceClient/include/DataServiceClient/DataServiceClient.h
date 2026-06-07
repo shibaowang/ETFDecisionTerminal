@@ -57,6 +57,10 @@ public:
     accountingExcelVbaImportReadOnlyPreview(
         const std::string& payloadJson = "{}",
         int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>
+    accountingExcelVbaImportPersistManualEntry(
+        const ExcelVbaImportPersistManualEntryRequest& request,
+        int timeoutMs = 2000);
     [[nodiscard]] DataServiceClientResult<etfdt::protocol::ProtocolResponse> positionList(
         const std::string& payloadJson = "{}",
         int timeoutMs = 2000);

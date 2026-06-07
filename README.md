@@ -5035,3 +5035,28 @@ TASK-265 documentation is in
 `docs/326_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_implementation.md`
 and
 `docs/327_shell_accounting_excel_vba_import_accepted_preview_manual_entry_persistence_test_plan.md`.
+
+## TASK-266 ShellAccounting Excel/VBA Import Persist Manual Entry Client Adapter
+
+TASK-266 adds a typed DataServiceClient adapter for
+`accounting.excel_vba_import.persist_manual_entry`. The adapter maps the
+accepted preview persistence request fields, sanitized import payload, fact
+summary, and DataService response flags into typed client DTOs.
+
+TASK-266 covers successful persistence response mapping, transaction commit
+mapping, trade_log and audit_log write flag mapping, duplicate import mapping,
+idempotency conflict mapping, sanitized issue code mapping, and client-side
+request shape validation through a local DataService harness using a temporary
+test SQLite database only.
+
+TASK-266 does not add QML, startup, Presenter, Controller, ShellServices UI
+wiring, DataServiceApi action implementation changes, DataAccess changes,
+migrations, AccountingEngine production code, historical fixture changes,
+TradeDraft generation, strategy execution, broker integration, network access
+beyond existing local DataService transport, credentials, endpoints, real order
+placement, or automatic trading.
+
+TASK-266 documentation is in
+`docs/328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md`
+and
+`docs/329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md`.

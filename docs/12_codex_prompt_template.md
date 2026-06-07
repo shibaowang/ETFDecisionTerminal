@@ -3294,6 +3294,23 @@ TradeDraft generation, strategy execution, broker, network beyond existing
 local DataService transport, credentials, endpoints, real order placement, or
 automatic trading.
 
+## TASK-268 ShellAccounting Excel/VBA Import Accepted Preview Persist QML Wiring Prompt Rule
+
+Future Excel/VBA import accepted preview persistence QML work must reference
+`docs/332_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring.md`
+and
+`docs/333_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring_test_plan.md`.
+
+TASK-268 may add only the QML wiring for the accepted preview persist control
+and the minimum Presenter safe wrapper needed by QML. The QML page may call
+only `ShellAccountingPresenter`, must require `ACCEPTED` preview state,
+Presenter-owned digest, sanitized payload availability, non-zero fact count,
+non-busy persist state, and explicit user confirmation before enabling
+persistence. QML must not reference DataServiceClient, DataServiceApi, SQLite,
+AccountingEngine, the raw persist action name, raw SQL, raw paths,
+credentials, endpoints, TradeDraft, strategy execution, broker order
+submission, real order placement, or automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

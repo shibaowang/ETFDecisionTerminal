@@ -3,12 +3,18 @@
 #include "ShellServices/ShellAccountingExcelVbaImportReadOnlyFileLoader.h"
 
 #include <QByteArray>
+#include <QDateTime>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStringList>
 
 #include <cmath>
+#include <cstdint>
+#include <iomanip>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -202,6 +208,209 @@ std::string trimmedStdString(const QString& text)
     return text.trimmed().toStdString();
 }
 
+QString canonicalAsciiToken(QString value)
+{
+    return value.trimmed().toUpper();
+}
+
+QString canonicalPreviewSheetName(const QString& sheetName)
+{
+    const auto key = sheetName.trimmed().toLower();
+    if (key == QStringLiteral("initialcash") || key == QStringLiteral("initial_cash")
+        || key == QStringLiteral("cash") || key == QStringLiteral("cashlog")
+        || key == QStringLiteral("cashsummary")) {
+        return QStringLiteral("InitialCash");
+    }
+    if (key == QStringLiteral("trades") || key == QStringLiteral("tradelog")
+        || key == QStringLiteral("trade_log") || key == QStringLiteral("transactions")) {
+        return QStringLiteral("Trades");
+    }
+    if (key == QStringLiteral("marketprices") || key == QStringLiteral("market_prices")
+        || key == QStringLiteral("prices")) {
+        return QStringLiteral("MarketPrices");
+    }
+    if (key == QStringLiteral("fxrates") || key == QStringLiteral("fx_rates")
+        || key == QStringLiteral("foreignexchange")) {
+        return QStringLiteral("FxRates");
+    }
+    return sheetName.trimmed();
+}
+
+QString canonicalPreviewHeaderName(const QString& header)
+{
+    const auto key = canonicalAsciiToken(header);
+    if (key == QStringLiteral("ROW_ID") || key == QStringLiteral("ROWID")
+        || key == QStringLiteral("ID")) {
+        return QStringLiteral("ROW_ID");
+    }
+    if (key == QStringLiteral("TIME_UTC") || key == QStringLiteral("TIME")
+        || key == QStringLiteral("OCCURRED_AT")) {
+        return QStringLiteral("TIME_UTC");
+    }
+    if (key == QStringLiteral("TRADE_TIME_UTC") || key == QStringLiteral("TRADE_TIME")
+        || key == QStringLiteral("TRADED_AT")) {
+        return QStringLiteral("TRADE_TIME_UTC");
+    }
+    if (key == QStringLiteral("ACCOUNT_CODE") || key == QStringLiteral("ACCOUNT_ID")
+        || key == QStringLiteral("ACCOUNT")) {
+        return QStringLiteral("ACCOUNT_CODE");
+    }
+    if (key == QStringLiteral("PORTFOLIO_CODE") || key == QStringLiteral("PORTFOLIO_ID")
+        || key == QStringLiteral("PORTFOLIO")) {
+        return QStringLiteral("PORTFOLIO_CODE");
+    }
+    if (key == QStringLiteral("INSTRUMENT_CODE") || key == QStringLiteral("SECURITY_CODE")
+        || key == QStringLiteral("SYMBOL")) {
+        return QStringLiteral("INSTRUMENT_CODE");
+    }
+    if (key == QStringLiteral("SIDE") || key == QStringLiteral("ACTION")) {
+        return key == QStringLiteral("ACTION") ? QStringLiteral("ACTION") : QStringLiteral("SIDE");
+    }
+    if (key == QStringLiteral("QUANTITY") || key == QStringLiteral("QTY")) {
+        return QStringLiteral("QUANTITY");
+    }
+    if (key == QStringLiteral("PRICE") || key == QStringLiteral("TRADE_PRICE")) {
+        return QStringLiteral("PRICE");
+    }
+    if (key == QStringLiteral("AMOUNT") || key == QStringLiteral("GROSS_AMOUNT")) {
+        return QStringLiteral("AMOUNT");
+    }
+    if (key == QStringLiteral("FEE") || key == QStringLiteral("COMMISSION")) {
+        return QStringLiteral("FEE");
+    }
+    if (key == QStringLiteral("CASH_FLOW") || key == QStringLiteral("CASHFLOW")) {
+        return QStringLiteral("CASH_FLOW");
+    }
+    if (key == QStringLiteral("CURRENCY") || key == QStringLiteral("CCY")) {
+        return QStringLiteral("CURRENCY");
+    }
+    if (key == QStringLiteral("SOURCE") || key == QStringLiteral("SRC")) {
+        return QStringLiteral("SOURCE");
+    }
+    if (key == QStringLiteral("MEMO") || key == QStringLiteral("NOTE")
+        || key == QStringLiteral("REMARK")) {
+        return QStringLiteral("MEMO");
+    }
+    if (key == QStringLiteral("PRICE_TIME_UTC") || key == QStringLiteral("PRICE_TIME")) {
+        return QStringLiteral("PRICE_TIME_UTC");
+    }
+    if (key == QStringLiteral("BASE_CURRENCY") || key == QStringLiteral("BASE_CCY")) {
+        return QStringLiteral("BASE_CURRENCY");
+    }
+    if (key == QStringLiteral("QUOTE_CURRENCY") || key == QStringLiteral("QUOTE_CCY")) {
+        return QStringLiteral("QUOTE_CURRENCY");
+    }
+    if (key == QStringLiteral("RATE_TIME_UTC") || key == QStringLiteral("RATE_TIME")) {
+        return QStringLiteral("RATE_TIME_UTC");
+    }
+    if (key == QStringLiteral("RATE") || key == QStringLiteral("FX_RATE")) {
+        return QStringLiteral("RATE");
+    }
+    return key;
+}
+
+QString previewCellText(const QJsonValue& value)
+{
+    if (value.isString()) {
+        return value.toString().trimmed();
+    }
+    if (value.isDouble()) {
+        return QString::number(value.toDouble(), 'g', 15);
+    }
+    return {};
+}
+
+std::optional<QJsonObject> findPreviewSheet(const QJsonArray& sheets, const QString& canonicalName)
+{
+    for (const auto& value : sheets) {
+        if (!value.isObject()) {
+            continue;
+        }
+        const auto sheet = value.toObject();
+        if (canonicalPreviewSheetName(sheet.value(QStringLiteral("name")).toString()) == canonicalName) {
+            return sheet;
+        }
+    }
+    return std::nullopt;
+}
+
+std::vector<QString> previewHeaders(const QJsonObject& sheet)
+{
+    std::vector<QString> headers;
+    const auto values = sheet.value(QStringLiteral("headers")).toArray();
+    headers.reserve(static_cast<std::size_t>(values.size()));
+    for (const auto& value : values) {
+        headers.push_back(canonicalPreviewHeaderName(previewCellText(value)));
+    }
+    return headers;
+}
+
+std::optional<int> previewHeaderIndex(const std::vector<QString>& headers, const QString& field)
+{
+    for (std::size_t index = 0; index < headers.size(); ++index) {
+        if (headers[index] == field) {
+            return static_cast<int>(index);
+        }
+    }
+    return std::nullopt;
+}
+
+QString previewCellValue(const std::vector<QString>& headers, const QJsonArray& row, const QString& field)
+{
+    const auto index = previewHeaderIndex(headers, field);
+    if (!index.has_value() || *index < 0 || *index >= row.size()) {
+        return {};
+    }
+    return previewCellText(row.at(*index));
+}
+
+QString normalizedPreviewTradeAction(const QString& value)
+{
+    const auto action = canonicalAsciiToken(value);
+    if (action == QStringLiteral("BUY") || action == QStringLiteral("SELL")) {
+        return action;
+    }
+    return {};
+}
+
+QString normalizedPreviewCashAction(const QString& value)
+{
+    const auto action = canonicalAsciiToken(value);
+    if (action == QStringLiteral("INITIALCASH")) {
+        return QStringLiteral("INITIAL_CASH");
+    }
+    if (action == QStringLiteral("INITIAL_CASH") || action == QStringLiteral("DEPOSIT")
+        || action == QStringLiteral("WITHDRAW") || action == QStringLiteral("ADJUSTMENT")) {
+        return action;
+    }
+    if (action == QStringLiteral("WITHDRAWAL")) {
+        return QStringLiteral("WITHDRAW");
+    }
+    return {};
+}
+
+void hashPreviewText(std::uint64_t& hash, const QString& value)
+{
+    const auto bytes = value.toStdString();
+    for (const unsigned char ch : bytes) {
+        hash ^= ch;
+        hash *= 1099511628211ULL;
+    }
+}
+
+void hashPreviewField(std::uint64_t& hash, const QString& value)
+{
+    hashPreviewText(hash, value);
+    hashPreviewText(hash, QStringLiteral("|"));
+}
+
+QString hexFnv64(std::uint64_t hash)
+{
+    std::ostringstream stream;
+    stream << "fnv64-" << std::hex << std::setw(16) << std::setfill('0') << hash;
+    return QString::fromStdString(stream.str());
+}
+
 }  // namespace
 
 ShellAccountingPresenter::ShellAccountingPresenter(QObject* parent)
@@ -357,6 +566,16 @@ int ShellAccountingPresenter::excelVbaImportPreviewMarketPriceFactCount() const 
 int ShellAccountingPresenter::excelVbaImportPreviewFxRateFactCount() const noexcept
 {
     return excelVbaImportPreviewFxRateFactCount_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPreviewDigest() const
+{
+    return lastExcelVbaImportPreviewDigest_;
+}
+
+bool ShellAccountingPresenter::excelVbaImportPreviewPayloadAvailable() const noexcept
+{
+    return !lastExcelVbaImportPreviewPayloadJson_.isEmpty();
 }
 
 bool ShellAccountingPresenter::excelVbaImportPersistBusy() const noexcept
@@ -787,7 +1006,12 @@ void ShellAccountingPresenter::resetExcelVbaImportPreviewState()
     excelVbaImportPreviewCashFactCount_ = 0;
     excelVbaImportPreviewMarketPriceFactCount_ = 0;
     excelVbaImportPreviewFxRateFactCount_ = 0;
+    lastExcelVbaImportPreviewDigest_.clear();
+    lastExcelVbaImportPreviewPayloadJson_.clear();
+    lastExcelVbaImportPreviewSchemaVersion_.clear();
+    lastExcelVbaImportPreviewSource_.clear();
     emit excelVbaImportPreviewStateChanged();
+    resetExcelVbaImportPersistState();
 }
 
 bool ShellAccountingPresenter::previewExcelVbaImportReadOnly(
@@ -817,6 +1041,35 @@ bool ShellAccountingPresenter::previewExcelVbaImportReadOnly(
     const auto result = controller_->previewExcelVbaImportReadOnly(request);
     excelVbaImportPreviewBusy_ = false;
     applyExcelVbaImportPreviewResult(result);
+    if (lastExcelVbaImportPreviewStatus_ == QStringLiteral("ACCEPTED")) {
+        bool digestValid = false;
+        const auto payloadJson = QString::fromStdString(request.importPayloadJson);
+        const auto digest = acceptedExcelVbaImportPreviewDigest(payloadJson, digestValid);
+        if (digestValid && !digest.isEmpty()) {
+            QJsonParseError parseError {};
+            const auto document =
+                QJsonDocument::fromJson(payloadJson.toUtf8(), &parseError);
+            const auto object = document.isObject() ? document.object() : QJsonObject {};
+            lastExcelVbaImportPreviewPayloadJson_ = payloadJson;
+            lastExcelVbaImportPreviewDigest_ = digest;
+            lastExcelVbaImportPreviewSchemaVersion_ =
+                object.value(QStringLiteral("schemaVersion")).toString().trimmed();
+            lastExcelVbaImportPreviewSource_ =
+                object.value(QStringLiteral("source")).toString().trimmed();
+        } else {
+            lastExcelVbaImportPreviewPayloadJson_.clear();
+            lastExcelVbaImportPreviewDigest_.clear();
+            lastExcelVbaImportPreviewSchemaVersion_.clear();
+            lastExcelVbaImportPreviewSource_.clear();
+        }
+        emit excelVbaImportPreviewStateChanged();
+    } else {
+        lastExcelVbaImportPreviewPayloadJson_.clear();
+        lastExcelVbaImportPreviewDigest_.clear();
+        lastExcelVbaImportPreviewSchemaVersion_.clear();
+        lastExcelVbaImportPreviewSource_.clear();
+        emit excelVbaImportPreviewStateChanged();
+    }
     syncFromController();
     return lastExcelVbaImportPreviewStatus_ == QStringLiteral("ACCEPTED");
 }
@@ -899,6 +1152,48 @@ bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
     syncFromController();
     return lastExcelVbaImportPersistStatus_ == QStringLiteral("PERSISTED")
         || lastExcelVbaImportPersistStatus_ == QStringLiteral("DUPLICATE");
+}
+
+bool ShellAccountingPresenter::persistAcceptedExcelVbaImportPreview()
+{
+    if (lastExcelVbaImportPreviewStatus_ != QStringLiteral("ACCEPTED")) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Only an ACCEPTED Excel/VBA import preview can be persisted."));
+        return false;
+    }
+    if (lastExcelVbaImportPreviewDigest_.trimmed().isEmpty()
+        || lastExcelVbaImportPreviewPayloadJson_.trimmed().isEmpty()) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Accepted preview digest and sanitized payload are required."));
+        return false;
+    }
+    if (lastExcelVbaImportPreviewSchemaVersion_.trimmed().isEmpty()
+        || lastExcelVbaImportPreviewSource_.trimmed().isEmpty()) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Accepted preview schema version and source are required."));
+        return false;
+    }
+    if ((excelVbaImportPreviewTradeFactCount_ + excelVbaImportPreviewCashFactCount_
+            + excelVbaImportPreviewMarketPriceFactCount_ + excelVbaImportPreviewFxRateFactCount_)
+        <= 0) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Accepted preview fact summary must contain at least one fact."));
+        return false;
+    }
+
+    return persistExcelVbaImportManualEntry(
+        lastExcelVbaImportPreviewStatus_,
+        lastExcelVbaImportPreviewDigest_,
+        acceptedExcelVbaImportPreviewIdempotencyKey(),
+        lastExcelVbaImportPreviewSchemaVersion_,
+        lastExcelVbaImportPreviewSource_,
+        QDateTime::currentDateTimeUtc().toString(Qt::ISODate),
+        QStringLiteral("shell-qml-accepted-preview"),
+        lastExcelVbaImportPreviewPayloadJson_,
+        excelVbaImportPreviewTradeFactCount_,
+        excelVbaImportPreviewCashFactCount_,
+        excelVbaImportPreviewMarketPriceFactCount_,
+        excelVbaImportPreviewFxRateFactCount_);
 }
 
 void ShellAccountingPresenter::reset()
@@ -1264,7 +1559,12 @@ void ShellAccountingPresenter::markExcelVbaImportPreviewInputError(const QString
     excelVbaImportPreviewCashFactCount_ = 0;
     excelVbaImportPreviewMarketPriceFactCount_ = 0;
     excelVbaImportPreviewFxRateFactCount_ = 0;
+    lastExcelVbaImportPreviewDigest_.clear();
+    lastExcelVbaImportPreviewPayloadJson_.clear();
+    lastExcelVbaImportPreviewSchemaVersion_.clear();
+    lastExcelVbaImportPreviewSource_.clear();
     emit excelVbaImportPreviewStateChanged();
+    resetExcelVbaImportPersistState();
 }
 
 void ShellAccountingPresenter::markExcelVbaImportPersistInputError(const QString& message)
@@ -1387,6 +1687,141 @@ ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPersis
     request.timeoutMs = 2000;
     valid = true;
     return request;
+}
+
+QString ShellAccountingPresenter::acceptedExcelVbaImportPreviewIdempotencyKey() const
+{
+    if (lastExcelVbaImportPreviewDigest_.trimmed().isEmpty()) {
+        return {};
+    }
+    return QStringLiteral("shell-qml-excel-vba-import:") + lastExcelVbaImportPreviewDigest_.trimmed();
+}
+
+QString ShellAccountingPresenter::acceptedExcelVbaImportPreviewDigest(
+    const QString& importPayloadJson,
+    bool& valid) const
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document =
+        QJsonDocument::fromJson(importPayloadJson.trimmed().toUtf8(), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return {};
+    }
+    const auto object = document.object();
+    const auto sheets = object.value(QStringLiteral("sheets")).toArray();
+    if (sheets.isEmpty()) {
+        return {};
+    }
+
+    const auto cashSheet = findPreviewSheet(sheets, QStringLiteral("InitialCash"));
+    const auto tradeSheet = findPreviewSheet(sheets, QStringLiteral("Trades"));
+    if (!cashSheet.has_value() || !tradeSheet.has_value()) {
+        return {};
+    }
+
+    const auto cashHeaders = previewHeaders(*cashSheet);
+    const auto tradeHeaders = previewHeaders(*tradeSheet);
+    for (const auto& field : {
+             QStringLiteral("ROW_ID"),
+             QStringLiteral("TIME_UTC"),
+             QStringLiteral("ACCOUNT_CODE"),
+             QStringLiteral("PORTFOLIO_CODE"),
+             QStringLiteral("ACTION"),
+             QStringLiteral("AMOUNT"),
+             QStringLiteral("CURRENCY"),
+             QStringLiteral("MEMO"),
+         }) {
+        if (!previewHeaderIndex(cashHeaders, field).has_value()) {
+            return {};
+        }
+    }
+    for (const auto& field : {
+             QStringLiteral("ROW_ID"),
+             QStringLiteral("TRADE_TIME_UTC"),
+             QStringLiteral("ACCOUNT_CODE"),
+             QStringLiteral("PORTFOLIO_CODE"),
+             QStringLiteral("INSTRUMENT_CODE"),
+             QStringLiteral("SIDE"),
+             QStringLiteral("QUANTITY"),
+             QStringLiteral("PRICE"),
+             QStringLiteral("AMOUNT"),
+             QStringLiteral("FEE"),
+             QStringLiteral("CASH_FLOW"),
+             QStringLiteral("CURRENCY"),
+             QStringLiteral("SOURCE"),
+             QStringLiteral("MEMO"),
+         }) {
+        if (!previewHeaderIndex(tradeHeaders, field).has_value()) {
+            return {};
+        }
+    }
+
+    const auto cashRows = cashSheet->value(QStringLiteral("rows")).toArray();
+    const auto tradeRows = tradeSheet->value(QStringLiteral("rows")).toArray();
+    const auto priceSheet = findPreviewSheet(sheets, QStringLiteral("MarketPrices"));
+    const auto fxSheet = findPreviewSheet(sheets, QStringLiteral("FxRates"));
+    const auto priceRows = priceSheet.has_value()
+        ? priceSheet->value(QStringLiteral("rows")).toArray()
+        : QJsonArray {};
+    const auto fxRows = fxSheet.has_value()
+        ? fxSheet->value(QStringLiteral("rows")).toArray()
+        : QJsonArray {};
+
+    std::uint64_t hash = 14695981039346656037ULL;
+    hashPreviewField(hash, QStringLiteral("accepted"));
+    hashPreviewField(hash, QString::number(tradeRows.size()));
+    hashPreviewField(hash, QString::number(cashRows.size()));
+    hashPreviewField(hash, QString::number(priceRows.size()));
+    hashPreviewField(hash, QString::number(fxRows.size()));
+
+    for (const auto& rowValue : tradeRows) {
+        if (!rowValue.isArray()) {
+            return {};
+        }
+        const auto row = rowValue.toArray();
+        const auto action =
+            normalizedPreviewTradeAction(previewCellValue(tradeHeaders, row, QStringLiteral("SIDE")));
+        if (action.isEmpty()) {
+            return {};
+        }
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("ROW_ID")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("TRADE_TIME_UTC")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("ACCOUNT_CODE")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("PORTFOLIO_CODE")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("INSTRUMENT_CODE")));
+        hashPreviewField(hash, action);
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("QUANTITY")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("PRICE")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("AMOUNT")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("FEE")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("CURRENCY")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("SOURCE")));
+        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("MEMO")));
+    }
+
+    for (const auto& rowValue : cashRows) {
+        if (!rowValue.isArray()) {
+            return {};
+        }
+        const auto row = rowValue.toArray();
+        const auto action =
+            normalizedPreviewCashAction(previewCellValue(cashHeaders, row, QStringLiteral("ACTION")));
+        if (action.isEmpty()) {
+            return {};
+        }
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("ROW_ID")));
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("TIME_UTC")));
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("ACCOUNT_CODE")));
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("PORTFOLIO_CODE")));
+        hashPreviewField(hash, action);
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("AMOUNT")));
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("CURRENCY")));
+        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("MEMO")));
+    }
+
+    valid = true;
+    return hexFnv64(hash);
 }
 
 ShellAccountingServiceRequest ShellAccountingPresenter::makeDraftCreateRequest(

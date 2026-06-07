@@ -13,6 +13,7 @@ Rectangle {
     readonly property string shellState: "UNAVAILABLE"
     property url excelVbaImportPreviewSelectedFileUrl: ""
     property string excelVbaImportPreviewSelectedFileName: ""
+    property bool excelVbaImportPersistConfirmed: false
 
     function excelVbaImportPreviewSamplePayload() {
         return JSON.stringify({
@@ -20,10 +21,17 @@ Rectangle {
             "source": "sanitized-excel-vba-export",
             "sheets": [
                 {
-                    "name": "TradeLog",
-                    "headers": ["date", "account", "portfolio", "instrument", "side", "quantity", "price", "currency"],
+                    "name": "InitialCash",
+                    "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
                     "rows": [
-                        ["2026-01-05", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "DEMO_ETF", "BUY", 10, 25.5, "USD"]
+                        ["TASK268_SAMPLE_CASH_001", "2026-01-05T09:00:00Z", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "INITIAL_CASH", "1000.00", "USD", "SANITIZED_SAMPLE_INITIAL_CASH"]
+                    ]
+                },
+                {
+                    "name": "TradeLog",
+                    "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+                    "rows": [
+                        ["TASK268_SAMPLE_TRADE_001", "2026-01-05T09:30:00Z", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "DEMO_ETF", "BUY", "10", "25.50", "255.00", "1.00", "-256.00", "USD", "SANITIZED_SAMPLE", "SANITIZED_SAMPLE_BUY"]
                     ]
                 }
             ]
@@ -54,6 +62,22 @@ Rectangle {
             return "Preview accepted: pending"
         }
         return "Preview accepted: not evaluated"
+    }
+
+    function excelVbaImportPersistReady() {
+        if (!root.presenterAvailable) {
+            return false
+        }
+        var factCount = accountingPresenter.excelVbaImportPreviewTradeFactCount
+            + accountingPresenter.excelVbaImportPreviewCashFactCount
+            + accountingPresenter.excelVbaImportPreviewMarketPriceFactCount
+            + accountingPresenter.excelVbaImportPreviewFxRateFactCount
+        return accountingPresenter.lastExcelVbaImportPreviewStatus === "ACCEPTED"
+            && accountingPresenter.lastExcelVbaImportPreviewDigest.length > 0
+            && accountingPresenter.excelVbaImportPreviewPayloadAvailable
+            && factCount > 0
+            && !accountingPresenter.excelVbaImportPersistBusy
+            && root.excelVbaImportPersistConfirmed
     }
 
     function sanitizedExcelVbaImportPreviewFileName(fileUrl) {
@@ -175,7 +199,7 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingExcelVbaImportPreviewPanel"
                 width: parent.width
-                height: 650
+                height: 840
                 radius: 8
                 color: "#ffffff"
                 border.color: "#cfd8e6"
@@ -230,8 +254,12 @@ Rectangle {
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
                                 && excelVbaImportPreviewPayloadInput.text.length > 0
-                            onClicked: accountingPresenter.previewExcelVbaImportReadOnly(
-                                excelVbaImportPreviewPayloadInput.text)
+                            onClicked: {
+                                root.excelVbaImportPersistConfirmed = false
+                                accountingPresenter.resetExcelVbaImportPersistState()
+                                accountingPresenter.previewExcelVbaImportReadOnly(
+                                    excelVbaImportPreviewPayloadInput.text)
+                            }
                         }
 
                         Button {
@@ -239,7 +267,10 @@ Rectangle {
                             text: "Reset"
                             enabled: root.presenterAvailable
                             onClicked: {
+                                root.excelVbaImportPersistConfirmed = false
                                 excelVbaImportPreviewPayloadInput.text = ""
+                                root.excelVbaImportPreviewSelectedFileUrl = ""
+                                root.excelVbaImportPreviewSelectedFileName = ""
                                 accountingPresenter.resetExcelVbaImportPreviewState()
                             }
                         }
@@ -250,6 +281,8 @@ Rectangle {
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
                             onClicked: {
+                                root.excelVbaImportPersistConfirmed = false
+                                accountingPresenter.resetExcelVbaImportPersistState()
                                 excelVbaImportPreviewPayloadInput.text =
                                     root.excelVbaImportPreviewSamplePayload()
                                 accountingPresenter.previewExcelVbaImportReadOnly(
@@ -275,8 +308,12 @@ Rectangle {
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
                                 && String(root.excelVbaImportPreviewSelectedFileUrl).length > 0
-                            onClicked: accountingPresenter.previewExcelVbaImportReadOnlyFromLocalFile(
-                                String(root.excelVbaImportPreviewSelectedFileUrl))
+                            onClicked: {
+                                root.excelVbaImportPersistConfirmed = false
+                                accountingPresenter.resetExcelVbaImportPersistState()
+                                accountingPresenter.previewExcelVbaImportReadOnlyFromLocalFile(
+                                    String(root.excelVbaImportPreviewSelectedFileUrl))
+                            }
                         }
 
                         Button {
@@ -284,6 +321,7 @@ Rectangle {
                             text: "Clear File"
                             enabled: root.excelVbaImportPreviewSelectedFileName.length > 0
                             onClicked: {
+                                root.excelVbaImportPersistConfirmed = false
                                 root.excelVbaImportPreviewSelectedFileUrl = ""
                                 root.excelVbaImportPreviewSelectedFileName = ""
                             }
@@ -324,7 +362,7 @@ Rectangle {
                     Rectangle {
                         objectName: "shellAccountingExcelVbaImportPreviewStatusPanel"
                         width: parent.width
-                        height: 280
+                        height: 270
                         radius: 8
                         color: "#f8fbff"
                         border.color: "#d9e3f2"
@@ -440,6 +478,100 @@ Rectangle {
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        objectName: "shellAccountingExcelVbaImportPersistPanel"
+                        width: parent.width
+                        height: 184
+                        radius: 8
+                        color: "#fbfcfe"
+                        border.color: "#d9e3f2"
+
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 8
+
+                            CheckBox {
+                                id: excelVbaImportPersistConfirmCheck
+                                objectName: "shellAccountingExcelVbaImportPersistConfirmCheck"
+                                text: "I confirm this accepted preview should be persisted as manual entries."
+                                enabled: root.presenterAvailable
+                                    && accountingPresenter.lastExcelVbaImportPreviewStatus === "ACCEPTED"
+                                    && !accountingPresenter.excelVbaImportPersistBusy
+                                checked: root.excelVbaImportPersistConfirmed
+                                onCheckedChanged: root.excelVbaImportPersistConfirmed = checked
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 12
+
+                                Button {
+                                    objectName: "shellAccountingExcelVbaImportPersistButton"
+                                    text: "Persist accepted preview"
+                                    enabled: root.excelVbaImportPersistReady()
+                                    onClicked: accountingPresenter.persistAcceptedExcelVbaImportPreview()
+                                }
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaImportPersistStatusText"
+                                    width: 220
+                                    text: root.presenterAvailable
+                                        ? "Persist status: " + accountingPresenter.lastExcelVbaImportPersistStatus
+                                        : "Persist status: unavailable"
+                                    color: "#18202f"
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                    verticalAlignment: Text.AlignVCenter
+                                    height: 34
+                                    wrapMode: Text.WordWrap
+                                }
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPersistSummaryText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Persist summary: " + accountingPresenter.lastExcelVbaImportPersistSummary
+                                    : "Persist summary: unavailable"
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPersistIssueCodesText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Persist issue codes: " + accountingPresenter.lastExcelVbaImportPersistIssueCodes
+                                    : "Persist issue codes: unavailable"
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPersistDuplicateText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Duplicate import prevented: " + accountingPresenter.lastExcelVbaImportPersistDuplicateImportPrevented
+                                    : "Duplicate import prevented: false"
+                                color: "#465066"
+                                font.pixelSize: 13
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPersistConflictText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "Idempotency conflict rejected: " + accountingPresenter.lastExcelVbaImportPersistIdempotencyConflictRejected
+                                    : "Idempotency conflict rejected: false"
+                                color: "#465066"
+                                font.pixelSize: 13
                             }
                         }
                     }

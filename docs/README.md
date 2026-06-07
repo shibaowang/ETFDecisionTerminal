@@ -1443,6 +1443,16 @@
   [331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md](331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md)
   defines TASK-267 fake-port Presenter mapping checks, duplicate / conflict
   view-model assertions, static boundary scans, and required command checks.
+- ShellAccounting Excel/VBA import accepted preview persist QML wiring:
+  [332_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring.md](332_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring.md)
+  records TASK-268 QML Persist accepted preview control wiring, explicit user
+  confirmation, Presenter-only invocation, accepted preview gating, and no
+  direct DataService / SQLite / AccountingEngine access.
+- ShellAccounting Excel/VBA import accepted preview persist QML wiring test plan:
+  [333_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring_test_plan.md](333_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring_test_plan.md)
+  defines TASK-268 QML object checks, Presenter invokable checks, fail-closed
+  mapping assertions, duplicate / conflict visibility checks, and required
+  command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

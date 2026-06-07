@@ -18,6 +18,15 @@ TASK_265_EXACT_PATHS = {
     "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
     "libs/DataServiceApi/src/ShellAccountingExcelVbaImportPersistManualEntryAction.cpp",
     "libs/DataServiceApi/src/WriteActionPolicy.cpp",
+    "docs/328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md",
+    "docs/329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
 }
 
 

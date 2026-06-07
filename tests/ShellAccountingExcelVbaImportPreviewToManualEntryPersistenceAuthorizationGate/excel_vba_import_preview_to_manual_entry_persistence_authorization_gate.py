@@ -31,6 +31,15 @@ TASK264_EXACT_PATHS = {
     "tests/DevDocs/test_readonly_demo_acceptance.py",
     "tests/ShellAccountingExcelVbaImportAcceptedPreviewManualEntryPersistence/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportAcceptedPreviewManualEntryPersistence/excel_vba_import_accepted_preview_manual_entry_persistence.cpp",
+    "docs/328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md",
+    "docs/329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewAcceptanceUxExportFormatContract/excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.py",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
     "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
@@ -152,6 +161,14 @@ TASK265_IMPLEMENTATION_PATHS = {
     "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
     "libs/DataServiceApi/src/ShellAccountingExcelVbaImportPersistManualEntryAction.cpp",
     "libs/DataServiceApi/src/WriteActionPolicy.cpp",
+}
+
+TASK266_CLIENT_ADAPTER_PATHS = {
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
 }
 
 
@@ -345,7 +362,7 @@ def main() -> int:
         "automaticTrading",
     ]
     for changed_path in changed:
-        if changed_path in TASK265_IMPLEMENTATION_PATHS:
+        if changed_path in TASK265_IMPLEMENTATION_PATHS or changed_path in TASK266_CLIENT_ADAPTER_PATHS:
             continue
         p = root / changed_path
         if not p.exists() or not p.is_file():

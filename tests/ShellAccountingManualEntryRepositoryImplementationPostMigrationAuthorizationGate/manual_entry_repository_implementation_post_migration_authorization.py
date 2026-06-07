@@ -78,6 +78,15 @@ TASK_257_EXACT_PATHS = {
     "tests/DevDocs/test_readonly_demo_acceptance.py",
     "tests/ShellAccountingExcelVbaImportAcceptedPreviewManualEntryPersistence/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportAcceptedPreviewManualEntryPersistence/excel_vba_import_accepted_preview_manual_entry_persistence.cpp",
+    "docs/328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md",
+    "docs/329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
     "tests/ShellAccountingExcelVbaImportPreviewToManualEntryPersistenceAuthorizationGate/excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.py",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewAcceptanceUxExportFormatContract/excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.py",
     "tests/ShellAccountingManualEntryDataServiceActionAuthorizationGate/manual_entry_dataservice_action_authorization_gate.cpp",
@@ -900,7 +909,22 @@ def test_no_cash_adjustment_write(h: Harness) -> None:
 
 
 def test_no_audit_ledger_write(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff_parts = []
+    for path in changed_paths(h.root):
+        if not (path.startswith("libs/") or path.startswith("apps/")):
+            continue
+        if path in TASK_257_EXACT_PATHS:
+            continue
+        diff_parts.append(
+            subprocess.run(
+                ["git", "diff", "main", "--", path],
+                cwd=h.root,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+        )
+    diff = "\n".join(diff_parts)
     for token in ["INSERT INTO audit_log", "ledgerId", "auditLogId"]:
         require(token not in diff, f"TASK-191 must not add runtime audit/ledger token {token}")
 

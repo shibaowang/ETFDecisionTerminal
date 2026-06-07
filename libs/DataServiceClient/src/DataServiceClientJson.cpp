@@ -9,6 +9,7 @@
 #include <QJsonParseError>
 #include <QJsonValue>
 
+#include <cstdint>
 #include <sstream>
 #include <optional>
 #include <string_view>
@@ -110,6 +111,14 @@ DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult> previewMappingFailu
     const std::string& message)
 {
     return DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>::failure(
+        etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+        message);
+}
+
+DataServiceClientResult<ExcelVbaImportPersistManualEntryResult> persistMappingFailure(
+    const std::string& message)
+{
+    return DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>::failure(
         etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
         message);
 }
@@ -318,6 +327,147 @@ parseExcelVbaImportReadOnlyPreviewPayloadJson(const std::string& json)
     return DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>::success(std::move(result));
 }
 
+DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>
+parseExcelVbaImportPersistManualEntryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid Excel/VBA import persist payload JSON");
+    }
+
+    const auto object = document.object();
+    ExcelVbaImportPersistManualEntryResult result;
+    result.protocolSuccess = protocolSuccess;
+    std::string missingField;
+
+    if (!readRequiredString(object, "action", result.action, missingField)
+        || !readRequiredString(object, "task", result.task, missingField)
+        || !readRequiredBool(
+            object,
+            "dataServicePersistActionRegistered",
+            result.dataServicePersistActionRegistered,
+            missingField)
+        || !readRequiredBool(object, "acceptedPreviewRequired", result.acceptedPreviewRequired, missingField)
+        || !readRequiredBool(object, "parserBoundaryReused", result.parserBoundaryReused, missingField)
+        || !readRequiredBool(
+            object,
+            "manualTransactionRepositoryUsed",
+            result.manualTransactionRepositoryUsed,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "directTradeLogSqlInDataService",
+            result.directTradeLogSqlInDataService,
+            missingField)
+        || !readRequiredBool(object, "tempDbOnly", result.tempDbOnly, missingField)
+        || !readRequiredBool(object, "productionDbTouched", result.productionDbTouched, missingField)
+        || !readRequiredBool(object, "transactionCommitted", result.transactionCommitted, missingField)
+        || !readRequiredBool(object, "tradeLogWritten", result.tradeLogWritten, missingField)
+        || !readRequiredBool(object, "auditLogWritten", result.auditLogWritten, missingField)
+        || !readRequiredBool(object, "idempotencyRequired", result.idempotencyRequired, missingField)
+        || !readRequiredBool(
+            object,
+            "duplicateImportPrevented",
+            result.duplicateImportPrevented,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "idempotencyConflictRejected",
+            result.idempotencyConflictRejected,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "nonAcceptedPreviewRejected",
+            result.nonAcceptedPreviewRejected,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "supplementalDataAccessTransactionAuthorizationUsed",
+            result.supplementalDataAccessTransactionAuthorizationUsed,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "manualTransactionActiveTransactionMethodCreated",
+            result.manualTransactionActiveTransactionMethodCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "existingManualTransactionApiPreserved",
+            result.existingManualTransactionApiPreserved,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "dataAccessCompositionRepositoryCreated",
+            result.dataAccessCompositionRepositoryCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "singleTransactionBoundaryUsed",
+            result.singleTransactionBoundaryUsed,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "manualFactsAndAuditCommittedTogether",
+            result.manualFactsAndAuditCommittedTogether,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "auditFailureRollsBackManualFacts",
+            result.auditFailureRollsBackManualFacts,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "nestedTransactionAttempted",
+            result.nestedTransactionAttempted,
+            missingField)
+        || !readRequiredBool(object, "qmlWiringChanged", result.qmlWiringChanged, missingField)
+        || !readRequiredBool(object, "importButtonAdded", result.importButtonAdded, missingField)
+        || !readRequiredBool(object, "accountingEngineCalled", result.accountingEngineCalled, missingField)
+        || !readRequiredBool(object, "brokerOrderSubmitted", result.brokerOrderSubmitted, missingField)
+        || !readRequiredBool(object, "networkAccess", result.networkAccess, missingField)
+        || !readRequiredBool(object, "automaticTrading", result.automaticTrading, missingField)
+        || !readRequiredString(object, "status", result.status, missingField)) {
+        return persistMappingFailure("Excel/VBA import persist payload missing field: " + missingField);
+    }
+
+    if (const auto value = stringField(object, "previewDigest")) {
+        result.previewDigest = *value;
+    }
+    if (const auto value = stringField(object, "idempotencyKey")) {
+        result.idempotencyKey = *value;
+    }
+    if (const auto value = boolField(object, "credentialAccess")) {
+        result.credentialAccess = *value;
+    }
+    if (const auto value = boolField(object, "endpointAccess")) {
+        result.endpointAccess = *value;
+    }
+    if (const auto value = intField(object, "tradeLogRowsWritten")) {
+        result.tradeLogRowsWritten = *value;
+    }
+    if (const auto value = object.value(QStringLiteral("auditLogId")); value.isDouble()) {
+        result.auditLogId = static_cast<std::int64_t>(value.toDouble());
+    }
+
+    const auto issuesValue = object.value("issues");
+    if (!issuesValue.isArray()) {
+        return persistMappingFailure("Excel/VBA import persist payload missing issues");
+    }
+    for (const auto& value : issuesValue.toArray()) {
+        if (!value.isString()) {
+            return persistMappingFailure("Excel/VBA import persist issue must be string");
+        }
+        result.issues.push_back(value.toString().toStdString());
+    }
+
+    return DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>::success(std::move(result));
+}
+
 std::string auditAppendPayloadJson(const AuditAppendRequest& request)
 {
     std::ostringstream stream;
@@ -329,6 +479,30 @@ std::string auditAppendPayloadJson(const AuditAppendRequest& request)
            << "\"operatorName\":" << jsonString(request.operatorName) << ','
            << "\"oldValue\":" << request.oldValueJson << ','
            << "\"newValue\":" << request.newValueJson
+           << "}";
+    return stream.str();
+}
+
+std::string excelVbaImportPersistManualEntryPayloadJson(
+    const ExcelVbaImportPersistManualEntryRequest& request)
+{
+    std::ostringstream stream;
+    stream << "{"
+           << "\"previewStatus\":" << jsonString(request.previewStatus) << ','
+           << "\"previewDigest\":" << jsonString(request.previewDigest) << ','
+           << "\"idempotencyKey\":" << jsonString(request.idempotencyKey) << ','
+           << "\"requestId\":" << jsonString(request.requestId) << ','
+           << "\"schemaVersion\":" << jsonString(request.schemaVersion) << ','
+           << "\"source\":" << jsonString(request.source) << ','
+           << "\"acceptedAt\":" << jsonString(request.acceptedAt) << ','
+           << "\"importBatchLabel\":" << jsonString(request.importBatchLabel) << ','
+           << "\"previewFactSummary\":{"
+           << "\"tradeFactCount\":" << request.factSummary.tradeFactCount << ','
+           << "\"cashFactCount\":" << request.factSummary.cashFactCount << ','
+           << "\"marketPriceFactCount\":" << request.factSummary.marketPriceFactCount << ','
+           << "\"fxRateFactCount\":" << request.factSummary.fxRateFactCount
+           << "},"
+           << "\"importPayload\":" << request.sanitizedImportPayloadJson
            << "}";
     return stream.str();
 }

@@ -10,6 +10,7 @@
 #include <QThread>
 
 #include <atomic>
+#include <cctype>
 #include <cstdint>
 #include <functional>
 #include <regex>
@@ -33,6 +34,8 @@ constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
 constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
     "accounting.excel_vba_import.readonly_preview";
+constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
+    "accounting.excel_vba_import.persist_manual_entry";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
@@ -80,6 +83,34 @@ bool containsForbiddenSqlPayload(const std::string& payloadJson)
         R"("sql"\s*:)",
         std::regex::ECMAScript | std::regex::icase);
     return std::regex_search(payloadJson, sqlFieldPattern);
+}
+
+bool isLikelyJsonObject(const std::string& payloadJson)
+{
+    auto first = payloadJson.begin();
+    while (first != payloadJson.end()
+           && std::isspace(static_cast<unsigned char>(*first)) != 0) {
+        ++first;
+    }
+    if (first == payloadJson.end() || *first != '{') {
+        return false;
+    }
+
+    auto last = payloadJson.rbegin();
+    while (last != payloadJson.rend()
+           && std::isspace(static_cast<unsigned char>(*last)) != 0) {
+        ++last;
+    }
+    return last != payloadJson.rend() && *last == '}';
+}
+
+bool hasRequiredPersistRequestFields(const ExcelVbaImportPersistManualEntryRequest& request)
+{
+    return !request.previewStatus.empty() && !request.previewDigest.empty()
+        && !request.idempotencyKey.empty() && !request.schemaVersion.empty()
+        && !request.source.empty() && !request.acceptedAt.empty()
+        && !request.importBatchLabel.empty()
+        && isLikelyJsonObject(request.sanitizedImportPayloadJson);
 }
 
 }  // namespace
@@ -256,6 +287,31 @@ DataServiceClient::accountingExcelVbaImportReadOnlyPreview(
             response.value().errorMessage);
     }
     return parseExcelVbaImportReadOnlyPreviewPayloadJson(response.value().payloadJson);
+}
+
+DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>
+DataServiceClient::accountingExcelVbaImportPersistManualEntry(
+    const ExcelVbaImportPersistManualEntryRequest& request,
+    int timeoutMs)
+{
+    if (!hasRequiredPersistRequestFields(request)) {
+        return DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "Excel/VBA import persist request is missing required fields");
+    }
+
+    auto response = sendAction(
+        kActionAccountingExcelVbaImportPersistManualEntry,
+        excelVbaImportPersistManualEntryPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseExcelVbaImportPersistManualEntryPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
 }
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::positionList(

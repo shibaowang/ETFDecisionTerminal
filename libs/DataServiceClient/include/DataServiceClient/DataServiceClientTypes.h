@@ -2,6 +2,7 @@
 
 #include "Protocol/Protocol.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>
@@ -130,6 +131,68 @@ struct ExcelVbaImportReadOnlyPreviewResult final {
     bool endpointAccess = false;
     bool automaticTrading = false;
     bool rawUserDataExposed = false;
+};
+
+struct ExcelVbaImportPersistManualEntryFactSummary final {
+    int tradeFactCount = 0;
+    int cashFactCount = 0;
+    int marketPriceFactCount = 0;
+    int fxRateFactCount = 0;
+};
+
+struct ExcelVbaImportPersistManualEntryRequest final {
+    std::string previewStatus;
+    std::string previewDigest;
+    std::string idempotencyKey;
+    std::string schemaVersion;
+    std::string source;
+    std::string acceptedAt;
+    std::string importBatchLabel;
+    std::string requestId;
+    ExcelVbaImportPersistManualEntryFactSummary factSummary;
+    std::string sanitizedImportPayloadJson = "{}";
+};
+
+struct ExcelVbaImportPersistManualEntryResult final {
+    std::string action;
+    std::string task;
+    std::string status;
+    std::string previewDigest;
+    std::string idempotencyKey;
+    bool protocolSuccess = false;
+    bool dataServicePersistActionRegistered = false;
+    bool acceptedPreviewRequired = false;
+    bool parserBoundaryReused = false;
+    bool manualTransactionRepositoryUsed = false;
+    bool directTradeLogSqlInDataService = false;
+    bool tempDbOnly = false;
+    bool productionDbTouched = false;
+    bool transactionCommitted = false;
+    bool tradeLogWritten = false;
+    bool auditLogWritten = false;
+    bool idempotencyRequired = false;
+    bool duplicateImportPrevented = false;
+    bool idempotencyConflictRejected = false;
+    bool nonAcceptedPreviewRejected = false;
+    bool supplementalDataAccessTransactionAuthorizationUsed = false;
+    bool manualTransactionActiveTransactionMethodCreated = false;
+    bool existingManualTransactionApiPreserved = false;
+    bool dataAccessCompositionRepositoryCreated = false;
+    bool singleTransactionBoundaryUsed = false;
+    bool manualFactsAndAuditCommittedTogether = false;
+    bool auditFailureRollsBackManualFacts = false;
+    bool nestedTransactionAttempted = false;
+    bool qmlWiringChanged = false;
+    bool importButtonAdded = false;
+    bool accountingEngineCalled = false;
+    bool brokerOrderSubmitted = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool automaticTrading = false;
+    int tradeLogRowsWritten = 0;
+    std::int64_t auditLogId = 0;
+    std::vector<std::string> issues;
 };
 
 }  // namespace etfdt::data_service_client

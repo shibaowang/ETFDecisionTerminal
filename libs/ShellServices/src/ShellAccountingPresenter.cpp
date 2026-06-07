@@ -359,6 +359,56 @@ int ShellAccountingPresenter::excelVbaImportPreviewFxRateFactCount() const noexc
     return excelVbaImportPreviewFxRateFactCount_;
 }
 
+bool ShellAccountingPresenter::excelVbaImportPersistBusy() const noexcept
+{
+    return excelVbaImportPersistBusy_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPersistStatus() const
+{
+    return lastExcelVbaImportPersistStatus_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPersistIssue() const
+{
+    return lastExcelVbaImportPersistIssue_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPersistSummary() const
+{
+    return lastExcelVbaImportPersistSummary_;
+}
+
+QString ShellAccountingPresenter::lastExcelVbaImportPersistIssueCodes() const
+{
+    return lastExcelVbaImportPersistIssueCodes_;
+}
+
+bool ShellAccountingPresenter::lastExcelVbaImportPersistTransactionCommitted() const noexcept
+{
+    return lastExcelVbaImportPersistTransactionCommitted_;
+}
+
+bool ShellAccountingPresenter::lastExcelVbaImportPersistTradeLogWritten() const noexcept
+{
+    return lastExcelVbaImportPersistTradeLogWritten_;
+}
+
+bool ShellAccountingPresenter::lastExcelVbaImportPersistAuditLogWritten() const noexcept
+{
+    return lastExcelVbaImportPersistAuditLogWritten_;
+}
+
+bool ShellAccountingPresenter::lastExcelVbaImportPersistDuplicateImportPrevented() const noexcept
+{
+    return lastExcelVbaImportPersistDuplicateImportPrevented_;
+}
+
+bool ShellAccountingPresenter::lastExcelVbaImportPersistIdempotencyConflictRejected() const noexcept
+{
+    return lastExcelVbaImportPersistIdempotencyConflictRejected_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -784,6 +834,73 @@ bool ShellAccountingPresenter::previewExcelVbaImportReadOnlyFromLocalFile(
     return previewExcelVbaImportReadOnly(loaded.payloadJson);
 }
 
+void ShellAccountingPresenter::resetExcelVbaImportPersistState()
+{
+    excelVbaImportPersistBusy_ = false;
+    lastExcelVbaImportPersistStatus_ = QStringLiteral("READY");
+    lastExcelVbaImportPersistIssue_.clear();
+    lastExcelVbaImportPersistSummary_.clear();
+    lastExcelVbaImportPersistIssueCodes_.clear();
+    lastExcelVbaImportPersistTransactionCommitted_ = false;
+    lastExcelVbaImportPersistTradeLogWritten_ = false;
+    lastExcelVbaImportPersistAuditLogWritten_ = false;
+    lastExcelVbaImportPersistDuplicateImportPrevented_ = false;
+    lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
+    emit excelVbaImportPersistStateChanged();
+}
+
+bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
+    const QString& previewStatus,
+    const QString& previewDigest,
+    const QString& idempotencyKey,
+    const QString& schemaVersion,
+    const QString& source,
+    const QString& acceptedAt,
+    const QString& importBatchLabel,
+    const QString& importPayloadJson,
+    int tradeFactCount,
+    int cashFactCount,
+    int marketPriceFactCount,
+    int fxRateFactCount)
+{
+    if (!controller_) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.excel_vba_import.persist_manual_entry");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeExcelVbaImportPersistManualEntryRequest(
+        previewStatus,
+        previewDigest,
+        idempotencyKey,
+        schemaVersion,
+        source,
+        acceptedAt,
+        importBatchLabel,
+        importPayloadJson,
+        tradeFactCount,
+        cashFactCount,
+        marketPriceFactCount,
+        fxRateFactCount,
+        valid);
+    if (!valid) {
+        return false;
+    }
+
+    excelVbaImportPersistBusy_ = true;
+    lastExcelVbaImportPersistStatus_ = QStringLiteral("PERSISTING");
+    lastExcelVbaImportPersistIssue_.clear();
+    emit excelVbaImportPersistStateChanged();
+    const auto result = controller_->persistExcelVbaImportManualEntry(request);
+    excelVbaImportPersistBusy_ = false;
+    applyExcelVbaImportPersistManualEntryResult(result);
+    syncFromController();
+    return lastExcelVbaImportPersistStatus_ == QStringLiteral("PERSISTED")
+        || lastExcelVbaImportPersistStatus_ == QStringLiteral("DUPLICATE");
+}
+
 void ShellAccountingPresenter::reset()
 {
     controller_.reset();
@@ -796,6 +913,7 @@ void ShellAccountingPresenter::reset()
     resetManualEntryUi();
     resetPostWriteRefreshState();
     resetExcelVbaImportPreviewState();
+    resetExcelVbaImportPersistState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -956,6 +1074,70 @@ void ShellAccountingPresenter::applyExcelVbaImportPreviewResult(
     emit excelVbaImportPreviewStateChanged();
 }
 
+void ShellAccountingPresenter::applyExcelVbaImportPersistManualEntryResult(
+    const ShellAccountingServiceResult& result)
+{
+    lastExcelVbaImportPersistTransactionCommitted_ = result.transactionCommitted;
+    lastExcelVbaImportPersistTradeLogWritten_ = result.tradeLogWritten;
+    lastExcelVbaImportPersistAuditLogWritten_ = result.auditWritten;
+    lastExcelVbaImportPersistDuplicateImportPrevented_ = result.duplicateImportPrevented;
+    lastExcelVbaImportPersistIdempotencyConflictRejected_ = result.idempotencyConflictRejected;
+
+    QStringList codes;
+    for (const auto& issue : result.issues) {
+        if (!issue.code.empty()) {
+            codes.append(QString::fromStdString(issue.code));
+        }
+    }
+    for (const auto& issue : result.errors) {
+        if (!issue.code.empty()) {
+            codes.append(QString::fromStdString(issue.code));
+        }
+    }
+    lastExcelVbaImportPersistIssueCodes_ = codes.join(QStringLiteral(","));
+    lastExcelVbaImportPersistSummary_ = QStringLiteral(
+        "transactionCommitted=%1 tradeLogWritten=%2 auditLogWritten=%3 duplicateImportPrevented=%4 idempotencyConflictRejected=%5")
+        .arg(result.transactionCommitted ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(result.tradeLogWritten ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(result.auditWritten ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(result.duplicateImportPrevented ? QStringLiteral("true") : QStringLiteral("false"))
+        .arg(result.idempotencyConflictRejected ? QStringLiteral("true") : QStringLiteral("false"));
+
+    const bool persisted = result.protocolSuccess && result.implemented
+        && !result.readOnly && result.writeEnabled
+        && result.transactionCommitted && result.tradeLogWritten
+        && result.auditWritten && result.idempotencyRequired
+        && !result.duplicateImportPrevented && !result.idempotencyConflictRejected
+        && !result.accountingEngineCalled
+        && !result.networkAccess && !result.credentialAccess
+        && !result.endpointAccess && !result.automaticTrading;
+    const bool duplicate = result.protocolSuccess && result.implemented
+        && result.duplicateImportPrevented && !result.idempotencyConflictRejected
+        && !result.accountingEngineCalled
+        && !result.networkAccess && !result.credentialAccess
+        && !result.endpointAccess && !result.automaticTrading;
+
+    if (persisted || duplicate) {
+        lastExcelVbaImportPersistStatus_ =
+            duplicate ? QStringLiteral("DUPLICATE") : QStringLiteral("PERSISTED");
+        lastExcelVbaImportPersistIssue_.clear();
+        emit excelVbaImportPersistStateChanged();
+        return;
+    }
+
+    lastExcelVbaImportPersistStatus_ = result.idempotencyConflictRejected
+        ? QStringLiteral("IDEMPOTENCY_CONFLICT")
+        : (result.payloadStatus.empty()
+            ? QStringLiteral("ERROR")
+            : QString::fromStdString(result.payloadStatus));
+    lastExcelVbaImportPersistIssue_ = issueTextFromResult(result);
+    if (lastExcelVbaImportPersistIssue_.isEmpty()) {
+        lastExcelVbaImportPersistIssue_ =
+            QStringLiteral("Excel/VBA import manual entry persistence failed closed.");
+    }
+    emit excelVbaImportPersistStateChanged();
+}
+
 void ShellAccountingPresenter::refreshAfterManualEntryWrite(
     bool includePositionList,
     const char* reason)
@@ -1085,6 +1267,21 @@ void ShellAccountingPresenter::markExcelVbaImportPreviewInputError(const QString
     emit excelVbaImportPreviewStateChanged();
 }
 
+void ShellAccountingPresenter::markExcelVbaImportPersistInputError(const QString& message)
+{
+    excelVbaImportPersistBusy_ = false;
+    lastExcelVbaImportPersistStatus_ = QStringLiteral("INPUT_ERROR");
+    lastExcelVbaImportPersistIssue_ = message;
+    lastExcelVbaImportPersistSummary_.clear();
+    lastExcelVbaImportPersistIssueCodes_.clear();
+    lastExcelVbaImportPersistTransactionCommitted_ = false;
+    lastExcelVbaImportPersistTradeLogWritten_ = false;
+    lastExcelVbaImportPersistAuditLogWritten_ = false;
+    lastExcelVbaImportPersistDuplicateImportPrevented_ = false;
+    lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
+    emit excelVbaImportPersistStateChanged();
+}
+
 ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPreviewRequest(
     const QString& importPayloadJson,
     bool& valid)
@@ -1112,6 +1309,81 @@ ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPrevie
     ShellAccountingServiceRequest request;
     request.actionName = "accounting.excel_vba_import.readonly_preview";
     request.importPayloadJson = QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPersistManualEntryRequest(
+    const QString& previewStatus,
+    const QString& previewDigest,
+    const QString& idempotencyKey,
+    const QString& schemaVersion,
+    const QString& source,
+    const QString& acceptedAt,
+    const QString& importBatchLabel,
+    const QString& importPayloadJson,
+    int tradeFactCount,
+    int cashFactCount,
+    int marketPriceFactCount,
+    int fxRateFactCount,
+    bool& valid)
+{
+    valid = false;
+    const auto normalizedStatus = previewStatus.trimmed().toUpper();
+    if (normalizedStatus != QStringLiteral("ACCEPTED")) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Only an ACCEPTED Excel/VBA import preview can be persisted."));
+        return {};
+    }
+    if (previewDigest.trimmed().isEmpty() || idempotencyKey.trimmed().isEmpty()
+        || schemaVersion.trimmed().isEmpty() || source.trimmed().isEmpty()
+        || acceptedAt.trimmed().isEmpty() || importBatchLabel.trimmed().isEmpty()) {
+        markExcelVbaImportPersistInputError(QStringLiteral(
+            "Accepted preview digest, idempotency key, schema version, source, acceptedAt, and batch label are required."));
+        return {};
+    }
+    if (tradeFactCount < 0 || cashFactCount < 0 || marketPriceFactCount < 0
+        || fxRateFactCount < 0
+        || (tradeFactCount + cashFactCount + marketPriceFactCount + fxRateFactCount) <= 0) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Accepted preview fact summary must contain at least one fact."));
+        return {};
+    }
+
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        importPayloadJson.trimmed().toUtf8(),
+        &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Accepted Excel/VBA import payload must be a JSON object."));
+        return {};
+    }
+    const auto object = document.object();
+    if (object.contains(QStringLiteral("filePath"))
+        || object.contains(QStringLiteral("path"))
+        || object.contains(QStringLiteral("filename"))) {
+        markExcelVbaImportPersistInputError(
+            QStringLiteral("Excel/VBA import persistence accepts sanitized in-memory payload JSON only."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.excel_vba_import.persist_manual_entry";
+    request.previewStatus = normalizedStatus.toStdString();
+    request.previewDigest = trimmedStdString(previewDigest);
+    request.idempotencyKey = trimmedStdString(idempotencyKey);
+    request.schemaVersion = trimmedStdString(schemaVersion);
+    request.source = trimmedStdString(source);
+    request.acceptedAt = trimmedStdString(acceptedAt);
+    request.importBatchLabel = trimmedStdString(importBatchLabel);
+    request.requestId = "shellservices-excel-vba-import-persist";
+    request.importPayloadJson = QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.importTradeFactCount = tradeFactCount;
+    request.importCashFactCount = cashFactCount;
+    request.importMarketPriceFactCount = marketPriceFactCount;
+    request.importFxRateFactCount = fxRateFactCount;
     request.timeoutMs = 2000;
     valid = true;
     return request;

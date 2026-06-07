@@ -84,4 +84,13 @@ ShellAccountingDataServiceClientPort::callExcelVbaImportReadOnlyPreview(
     return response;
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callExcelVbaImportPersistManualEntry(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    return makeUnavailablePortResponse(
+        request,
+        "SHELL_ACCOUNTING_EXCEL_VBA_IMPORT_PERSIST_MANUAL_ENTRY_PORT_NOT_CONFIGURED");
+}
+
 }  // namespace etfdt::shell_services

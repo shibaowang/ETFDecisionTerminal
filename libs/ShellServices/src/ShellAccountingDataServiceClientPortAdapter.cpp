@@ -284,6 +284,130 @@ ShellAccountingDataServiceClientResponse mapPreviewClientResult(
     return response;
 }
 
+std::optional<etfdt::data_service_client::ExcelVbaImportPersistManualEntryRequest>
+parsePersistManualEntryRequestPayload(const std::string& payloadJson)
+{
+    QJsonParseError parseError;
+    const auto document =
+        QJsonDocument::fromJson(QByteArray::fromStdString(payloadJson), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return std::nullopt;
+    }
+
+    const auto object = document.object();
+    const auto factSummaryValue = object.value(QStringLiteral("previewFactSummary"));
+    const auto importPayloadValue = object.value(QStringLiteral("importPayload"));
+    if (!factSummaryValue.isObject() || !importPayloadValue.isObject()) {
+        return std::nullopt;
+    }
+
+    const auto factSummary = factSummaryValue.toObject();
+    etfdt::data_service_client::ExcelVbaImportPersistManualEntryRequest request;
+    request.previewStatus = stringField(object, "previewStatus");
+    request.previewDigest = stringField(object, "previewDigest");
+    request.idempotencyKey = stringField(object, "idempotencyKey");
+    request.requestId = stringField(object, "requestId");
+    request.schemaVersion = stringField(object, "schemaVersion");
+    request.source = stringField(object, "source");
+    request.acceptedAt = stringField(object, "acceptedAt");
+    request.importBatchLabel = stringField(object, "importBatchLabel");
+    request.factSummary.tradeFactCount =
+        factSummary.value(QStringLiteral("tradeFactCount")).toInt();
+    request.factSummary.cashFactCount =
+        factSummary.value(QStringLiteral("cashFactCount")).toInt();
+    request.factSummary.marketPriceFactCount =
+        factSummary.value(QStringLiteral("marketPriceFactCount")).toInt();
+    request.factSummary.fxRateFactCount =
+        factSummary.value(QStringLiteral("fxRateFactCount")).toInt();
+    request.sanitizedImportPayloadJson =
+        QJsonDocument(importPayloadValue.toObject()).toJson(QJsonDocument::Compact).toStdString();
+    return request;
+}
+
+QJsonObject persistResultObject(
+    const etfdt::data_service_client::ExcelVbaImportPersistManualEntryResult& persist)
+{
+    QJsonArray issues;
+    for (const auto& issue : persist.issues) {
+        issues.push_back(QString::fromStdString(issue));
+    }
+    return QJsonObject{
+        {"action", QString::fromStdString(persist.action)},
+        {"task", QString::fromStdString(persist.task)},
+        {"status", QString::fromStdString(persist.status)},
+        {"transactionCommitted", persist.transactionCommitted},
+        {"tradeLogWritten", persist.tradeLogWritten},
+        {"auditLogWritten", persist.auditLogWritten},
+        {"duplicateImportPrevented", persist.duplicateImportPrevented},
+        {"idempotencyConflictRejected", persist.idempotencyConflictRejected},
+        {"idempotencyRequired", persist.idempotencyRequired},
+        {"tradeLogRowsWritten", persist.tradeLogRowsWritten},
+        {"auditLogId", static_cast<double>(persist.auditLogId)},
+        {"issues", issues},
+    };
+}
+
+ShellAccountingDataServiceClientResponse mapPersistManualEntryClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::ExcelVbaImportPersistManualEntryResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient Excel/VBA import persist call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& persist = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = persist.action.empty() ? request.actionName : persist.action;
+    response.protocolSuccess = persist.protocolSuccess;
+    response.implemented = true;
+    response.readOnly = false;
+    response.writeEnabled = true;
+    response.payloadStatus = persist.status.empty() ? kClientCallFailedStatus : persist.status;
+    response.dataQualityStatus = persist.protocolSuccess ? "OK" : kErrorQuality;
+    response.hasRows = persist.tradeLogRowsWritten > 0;
+    response.domainError = !persist.protocolSuccess;
+    response.transactionCommitted = persist.transactionCommitted;
+    response.duplicateImportPrevented = persist.duplicateImportPrevented;
+    response.idempotencyConflictRejected = persist.idempotencyConflictRejected;
+    response.idempotencyRequired = persist.idempotencyRequired;
+    response.auditWritten = persist.auditLogWritten;
+    response.tradeLogWritten = persist.tradeLogWritten;
+    response.accountingEngineCalled = persist.accountingEngineCalled;
+    response.productionWrite = !persist.tempDbOnly || persist.productionDbTouched;
+    response.sqliteProductionWrite = persist.productionDbTouched;
+    response.networkAccess = persist.networkAccess;
+    response.credentialAccess = persist.credentialAccess;
+    response.endpointAccess = persist.endpointAccess;
+    response.automaticTrading = persist.automaticTrading;
+    response.rawPayload =
+        QJsonDocument(persistResultObject(persist)).toJson(QJsonDocument::Compact).toStdString();
+
+    for (const auto& issue : persist.issues) {
+        response.issues.push_back(makeIssue(issue, "ERROR", issue, true));
+    }
+    if (!persist.protocolSuccess && response.issues.empty()) {
+        response.issues.push_back(makeIssue(
+            response.payloadStatus,
+            "ERROR",
+            response.payloadStatus,
+            true));
+    }
+    return response;
+}
+
 }  // namespace
 
 ShellAccountingDataServiceClientPortAdapter::ShellAccountingDataServiceClientPortAdapter(
@@ -470,6 +594,32 @@ ShellAccountingDataServiceClientPortAdapter::callExcelVbaImportReadOnlyPreview(
     return mapPreviewClientResult(
         request,
         client_->accountingExcelVbaImportReadOnlyPreview(request.payloadJson, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callExcelVbaImportPersistManualEntry(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting persist port.",
+            true,
+            false);
+    }
+    const auto parsed = parsePersistManualEntryRequestPayload(request.payloadJson);
+    if (!parsed) {
+        return makeUnavailableResponse(
+            request,
+            kMalformedPayloadStatus,
+            "Shell accounting persist request payload is malformed.",
+            false,
+            false);
+    }
+    return mapPersistManualEntryClientResult(
+        request,
+        client_->accountingExcelVbaImportPersistManualEntry(*parsed, request.timeoutMs));
 }
 
 }  // namespace etfdt::shell_services

@@ -46,11 +46,20 @@ struct ShellAccountingServiceRequest final {
     std::string sourceMemo;
     std::string requestId;
     std::string idempotencyKey;
+    std::string previewStatus;
+    std::string previewDigest;
+    std::string schemaVersion;
+    std::string acceptedAt;
+    std::string importBatchLabel;
     std::string movementType;
     std::string amountMinor;
     std::string currency;
     std::string sourceReference;
     std::string importPayloadJson;
+    int importTradeFactCount = 0;
+    int importCashFactCount = 0;
+    int importMarketPriceFactCount = 0;
+    int importFxRateFactCount = 0;
 };
 
 struct ShellAccountingImportPreviewDiagnostic final {
@@ -89,6 +98,10 @@ struct ShellAccountingServiceResult final {
     bool generatedTradeSuggestion = false;
     bool strategyExecuted = false;
     bool brokerOrderSubmitted = false;
+    bool transactionCommitted = false;
+    bool duplicateImportPrevented = false;
+    bool idempotencyConflictRejected = false;
+    bool idempotencyRequired = false;
     bool importPreviewAccepted = false;
     bool importPreviewRejected = false;
     std::vector<ShellAccountingImportPreviewDiagnostic> importPreviewDiagnostics;

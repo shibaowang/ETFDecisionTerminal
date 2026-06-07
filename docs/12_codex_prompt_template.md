@@ -3273,6 +3273,27 @@ production code, historical fixtures, TradeDraft generation, strategy
 execution, broker, network beyond existing local DataService transport,
 credentials, endpoints, real order placement, or automatic trading.
 
+## TASK-267 ShellAccounting Excel/VBA Import Persist Manual Entry ShellServices Presenter Contract Prompt Rule
+
+Future Excel/VBA import persistence ShellServices work must reference
+`docs/330_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract.md`
+and
+`docs/331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md`.
+
+TASK-267 may add only the ShellServices / Controller / Presenter C++ contract
+for `accounting.excel_vba_import.persist_manual_entry`. It may route the call
+through `ShellAccountingDataServiceClientPortAdapter` and the TASK-266 typed
+DataServiceClient adapter, map accepted-preview-only requests, fail closed for
+non-`ACCEPTED` previews or missing digest/idempotency fields, and map
+transaction commit, trade_log write, audit_log write, duplicate import,
+idempotency conflict, and sanitized issue codes into Presenter state. It must
+not add QML, startup wiring, UI buttons, DataServiceApi implementation changes,
+DataServiceClient implementation changes, DataAccess changes, migrations,
+AccountingEngine calls, production file loading behavior, historical fixtures,
+TradeDraft generation, strategy execution, broker, network beyond existing
+local DataService transport, credentials, endpoints, real order placement, or
+automatic trading.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -30,6 +30,10 @@ struct ShellAccountingDataServiceClientResponse final {
     bool transportError = false;
     bool protocolError = false;
     bool domainError = false;
+    bool transactionCommitted = false;
+    bool duplicateImportPrevented = false;
+    bool idempotencyConflictRejected = false;
+    bool idempotencyRequired = false;
     std::string errorMessage;
     bool importPreviewAccepted = false;
     bool importPreviewRejected = false;
@@ -75,6 +79,8 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callManualCashMovementCreate(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callExcelVbaImportReadOnlyPreview(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callExcelVbaImportPersistManualEntry(
         const ShellAccountingDataServiceClientRequest& request);
 };
 

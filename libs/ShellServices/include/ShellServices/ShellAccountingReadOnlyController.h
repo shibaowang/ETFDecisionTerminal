@@ -63,6 +63,8 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult previewExcelVbaImportReadOnly(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult persistExcelVbaImportManualEntry(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

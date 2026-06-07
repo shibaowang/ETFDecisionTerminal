@@ -96,4 +96,13 @@ ShellAccountingServiceResult ShellAccountingServiceAdapter::previewExcelVbaImpor
         "SHELL_ACCOUNTING_EXCEL_VBA_IMPORT_READONLY_PREVIEW_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult ShellAccountingServiceAdapter::persistExcelVbaImportManualEntry(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableWriteResult(
+        request,
+        "accounting.excel_vba_import.persist_manual_entry",
+        "SHELL_ACCOUNTING_EXCEL_VBA_IMPORT_PERSIST_MANUAL_ENTRY_ADAPTER_NOT_CONFIGURED");
+}
+
 }  // namespace etfdt::shell_services

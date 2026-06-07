@@ -1434,6 +1434,15 @@
   [329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md](329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md)
   defines TASK-266 local DataService harness checks, duplicate / conflict
   mapping assertions, client boundary scans, and required command checks.
+- ShellAccounting Excel/VBA import persist manual entry ShellServices Presenter contract:
+  [330_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract.md](330_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract.md)
+  records TASK-267 ShellServices / Controller / Presenter C++ contract scope,
+  accepted preview fail-closed mapping, typed client port boundary, and no QML
+  / no broker constraints.
+- ShellAccounting Excel/VBA import persist manual entry ShellServices Presenter contract test plan:
+  [331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md](331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md)
+  defines TASK-267 fake-port Presenter mapping checks, duplicate / conflict
+  view-model assertions, static boundary scans, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

@@ -40,6 +40,23 @@ TASK264_EXACT_PATHS = {
     "libs/DataServiceClient/src/DataServiceClientJson.cpp",
     "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
+    "docs/330_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract.md",
+    "docs/331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryShellServicesPresenterContract/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistManualEntryShellServicesPresenterContract/excel_vba_import_persist_manual_entry_shellservices_presenter_contract.cpp",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+    "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+    "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewAcceptanceUxExportFormatContract/excel_vba_import_readonly_preview_acceptance_ux_export_format_contract.py",
     "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
     "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
@@ -161,6 +178,22 @@ TASK265_IMPLEMENTATION_PATHS = {
     "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
     "libs/DataServiceApi/src/ShellAccountingExcelVbaImportPersistManualEntryAction.cpp",
     "libs/DataServiceApi/src/WriteActionPolicy.cpp",
+}
+
+TASK267_SHELLSERVICES_CONTRACT_PATHS = {
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+    "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+    "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
 }
 
 TASK266_CLIENT_ADAPTER_PATHS = {
@@ -362,7 +395,11 @@ def main() -> int:
         "automaticTrading",
     ]
     for changed_path in changed:
-        if changed_path in TASK265_IMPLEMENTATION_PATHS or changed_path in TASK266_CLIENT_ADAPTER_PATHS:
+        if (
+            changed_path in TASK265_IMPLEMENTATION_PATHS
+            or changed_path in TASK266_CLIENT_ADAPTER_PATHS
+            or changed_path in TASK267_SHELLSERVICES_CONTRACT_PATHS
+        ):
             continue
         p = root / changed_path
         if not p.exists() or not p.is_file():

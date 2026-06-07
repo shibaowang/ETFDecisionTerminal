@@ -5060,3 +5060,28 @@ TASK-266 documentation is in
 `docs/328_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter.md`
 and
 `docs/329_shell_accounting_excel_vba_import_persist_manual_entry_client_adapter_test_plan.md`.
+
+## TASK-267 ShellAccounting Excel/VBA Import Persist Manual Entry ShellServices Presenter Contract
+
+TASK-267 adds the ShellServices / Controller / Presenter C++ contract for
+calling `accounting.excel_vba_import.persist_manual_entry` through the
+TASK-266 typed client adapter boundary. The Presenter exposes a production C++
+method, but no QML method call, startup wiring, or Import / Confirm / Persist
+button is added.
+
+TASK-267 covers accepted-preview-only request mapping, missing digest and
+idempotency fail-closed behavior, transaction commit mapping, trade_log and
+audit_log write flag mapping, duplicate import mapping, idempotency conflict
+mapping, and sanitized issue code mapping through a fake client port.
+
+TASK-267 does not modify apps, QML, startup, DataServiceApi action
+implementation, DataServiceClient implementation, DataAccess, migrations,
+AccountingEngine production code, historical fixtures, production file loading
+behavior, TradeDraft generation, strategy execution, broker integration,
+network access beyond existing local DataService transport, credentials,
+endpoints, real order placement, or automatic trading.
+
+TASK-267 documentation is in
+`docs/330_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract.md`
+and
+`docs/331_shell_accounting_excel_vba_import_persist_manual_entry_shellservices_presenter_contract_test_plan.md`.

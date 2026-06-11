@@ -12,6 +12,8 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [338 ShellAccounting Excel/VBA Import MVP Local Service E2E Acceptance](338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md)
+- [339 ShellAccounting Excel/VBA Import MVP Local Service E2E Acceptance Test Plan](339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md)
 - [334 ShellAccounting Excel/VBA Import Persist Supported Fact Types Alignment](334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md)
 - [335 ShellAccounting Excel/VBA Import Persist Supported Fact Types Alignment Test Plan](335_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment_test_plan.md)
 - [13 Manual Acceptance - ReadOnly Shell](13_manual_acceptance_readonly_shell.md)
@@ -1473,6 +1475,15 @@
   defines TASK-270 fake-port Presenter/QML checks for refresh success,
   duplicate no-new-row behavior, conflict no-refresh behavior, and refresh
   failure evidence.
+- ShellAccounting Excel/VBA import MVP local service E2E acceptance:
+  [338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md](338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md)
+  records TASK-271 local service host, real DataServiceClient, Presenter
+  preview/persist, temporary SQLite row-count, duplicate, conflict, and
+  readback refresh acceptance scope.
+- ShellAccounting Excel/VBA import MVP local service E2E acceptance test plan:
+  [339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md](339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md)
+  defines TASK-271 end-to-end local-service checks, exact temp DB row-count
+  assertions, no-residual-listener checks, and required command checks.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

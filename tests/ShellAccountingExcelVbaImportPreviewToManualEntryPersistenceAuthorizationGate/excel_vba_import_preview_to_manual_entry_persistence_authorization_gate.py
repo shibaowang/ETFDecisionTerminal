@@ -14,6 +14,17 @@ TASK_270_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
 }
 
+TASK_271_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md",
+    "docs/339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
+}
+
 
 import argparse
 import json
@@ -152,6 +163,8 @@ TASK264_EXACT_PATHS = {
 }
 
 TASK264_EXACT_PATHS.update(TASK_270_EXACT_PATHS)
+
+TASK264_EXACT_PATHS.update(TASK_271_EXACT_PATHS)
 
 TASK264_OLD_GATE_REPAIR_PATHS = {
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
@@ -436,7 +449,7 @@ def main() -> int:
             or changed_path in TASK266_CLIENT_ADAPTER_PATHS
             or changed_path in TASK267_SHELLSERVICES_CONTRACT_PATHS
             or changed_path in TASK269_SUPPORTED_FACT_TYPES_PATHS
-            or changed_path in TASK_270_EXACT_PATHS
+            or changed_path in TASK_270_EXACT_PATHS or changed_path in TASK_271_EXACT_PATHS
         ):
             continue
         p = root / changed_path

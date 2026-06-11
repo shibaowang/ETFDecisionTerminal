@@ -1,5 +1,26 @@
 # 跨境 ETF 智能投资决策终端
 
+## TASK-271 Excel/VBA Import MVP Local Service E2E Acceptance
+
+TASK-271 adds a local-service end-to-end acceptance test for the Excel/VBA
+import MVP:
+
+- sanitized Excel/VBA export sample preview runs through ShellAccountingPresenter,
+  ShellServices port adapter, real DataServiceClient, and local DataService
+  action host.
+- accepted preview persistence runs through
+  `accounting.excel_vba_import.persist_manual_entry` into a temporary SQLite
+  database only.
+- the test asserts exact `trade_log`, `cash_adjustment`, and `audit_log`
+  growth, then verifies post-write readback refresh through the existing
+  read-only path.
+- duplicate import and idempotency conflict paths do not grow rows or trigger
+  misleading refresh state.
+- no product feature, UI behavior, DataService action implementation,
+  DataServiceClient production code, DataAccess repository, migration,
+  AccountingEngine production code, broker, network, credential, endpoint,
+  real order, or automatic trading behavior is added.
+
 ## TASK-270 Excel/VBA Import Persist Post-Write Readback Refresh
 
 TASK-270 wires successful accepted Excel/VBA import persistence into the

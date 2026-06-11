@@ -2,6 +2,22 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## TASK-271 Excel/VBA import MVP local service E2E acceptance boundary
+
+- Excel/VBA import MVP acceptance may be tested through ShellAccountingPresenter,
+  ShellServices port adapter, real DataServiceClient, and a local DataService
+  action host.
+- The acceptance test may use a temporary SQLite database initialized with
+  required seed data and must not touch a production database path.
+- The test may assert exact `trade_log`, `cash_adjustment`, and `audit_log`
+  row growth, duplicate no-growth, idempotency conflict no-growth, and
+  post-write readback refresh state.
+- TASK-271 does not authorize product feature changes, UI behavior changes,
+  DataServiceApi action implementation changes, DataServiceClient production
+  code changes, DataAccess repository changes, migrations, AccountingEngine
+  production code changes, broker, network, credentials, endpoint, TradeDraft,
+  strategy execution, real order placement, or automatic trading.
+
 ## TASK-270 Excel/VBA import persistence readback refresh boundary
 
 - Successful accepted Excel/VBA import persistence should trigger only the

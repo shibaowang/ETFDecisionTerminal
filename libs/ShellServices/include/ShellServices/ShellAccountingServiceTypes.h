@@ -60,6 +60,7 @@ struct ShellAccountingServiceRequest final {
     int importCashFactCount = 0;
     int importMarketPriceFactCount = 0;
     int importFxRateFactCount = 0;
+    std::string portfolioReplayPayloadJson;
 };
 
 struct ShellAccountingImportPreviewDiagnostic final {
@@ -107,6 +108,15 @@ struct ShellAccountingServiceResult final {
     std::vector<ShellAccountingImportPreviewDiagnostic> importPreviewDiagnostics;
     std::vector<std::string> importPreviewDiagnosticCodes;
     ShellAccountingImportPreviewFactSummary importPreviewFactSummary;
+    bool portfolioReplayAccepted = false;
+    bool portfolioReplayExecuted = false;
+    int portfolioReplayPositionCount = 0;
+    int portfolioReplayCashSummaryCount = 0;
+    std::string portfolioReplayRealizedPnlText;
+    std::string portfolioReplayUnrealizedPnlText;
+    std::string portfolioReplayTotalFeeText;
+    std::string portfolioReplayTotalMarketValueText;
+    std::vector<std::string> portfolioReplayIssueCodes;
     bool accountingEngineCalled = false;
     bool productionFileLoading = false;
     bool productionWrite = false;

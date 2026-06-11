@@ -12,6 +12,17 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [359 ShellAccounting Portfolio Replay VBA Parity Full Delivery](359_shell_accounting_portfolio_replay_vba_parity_full_delivery.md)
+- [360 ShellAccounting Portfolio Replay VBA Parity Matrix](360_shell_accounting_portfolio_replay_vba_parity_matrix.md)
+- [361 ShellAccounting Portfolio Replay Read Model Contract](361_shell_accounting_portfolio_replay_read_model_contract.md)
+- [362 ShellAccounting Portfolio Replay User-visible Summary](362_shell_accounting_portfolio_replay_user_visible_summary.md)
+- [363 ShellAccounting Portfolio Replay Test Plan](363_shell_accounting_portfolio_replay_test_plan.md)
+- EPIC-276 ShellAccounting portfolio replay VBA parity samples:
+  [samples/shell_accounting_replay](../samples/shell_accounting_replay/).
+  The replay path is read-only and does not write production databases,
+  trade_log, cash_adjustment, audit_log, ledger, snapshots, or read models. It
+  does not access broker, network, credentials, endpoints, real order
+  placement, or automatic trading.
 - [354 Excel/VBA Import MVP Real Workbook Trial Hardening](354_excel_vba_import_mvp_real_workbook_trial_hardening.md)
 - [355 Excel/VBA Import MVP Compatibility Matrix](355_excel_vba_import_mvp_compatibility_matrix.md)
 - [356 Excel/VBA Import MVP Real Workbook Trial Runbook](356_excel_vba_import_mvp_real_workbook_trial_runbook.md)

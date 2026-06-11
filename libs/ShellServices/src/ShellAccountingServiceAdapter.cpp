@@ -105,4 +105,13 @@ ShellAccountingServiceResult ShellAccountingServiceAdapter::persistExcelVbaImpor
         "SHELL_ACCOUNTING_EXCEL_VBA_IMPORT_PERSIST_MANUAL_ENTRY_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult ShellAccountingServiceAdapter::fetchPortfolioReplayReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "accounting.portfolio_replay.readonly_summary",
+        "SHELL_ACCOUNTING_PORTFOLIO_REPLAY_READONLY_SUMMARY_ADAPTER_NOT_CONFIGURED");
+}
+
 }  // namespace etfdt::shell_services

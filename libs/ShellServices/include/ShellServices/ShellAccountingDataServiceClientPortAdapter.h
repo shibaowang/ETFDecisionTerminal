@@ -43,6 +43,8 @@ public:
         const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callExcelVbaImportPersistManualEntry(
         const ShellAccountingDataServiceClientRequest& request) override;
+    [[nodiscard]] ShellAccountingDataServiceClientResponse callPortfolioReplayReadOnlySummary(
+        const ShellAccountingDataServiceClientRequest& request) override;
 
 private:
     std::shared_ptr<etfdt::data_service_client::DataServiceClient> client_;

@@ -1,0 +1,96 @@
+{
+  "fixtureId": "EPIC276_multi_instrument",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "COMPLETED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_CASH_MULTI_INSTRUMENT",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "2000.00",
+        "currency": "CNY",
+        "note": "sanitized initial cash"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "EPIC276_TRADE_ETF",
+        "tradeTime": "2026-06-12T09:30:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "ETF buy"
+      },
+      {
+        "factId": "EPIC276_TRADE_OTC",
+        "tradeTime": "2026-06-12T10:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "OTC0001",
+        "instrumentType": "OTC",
+        "side": "BUY",
+        "quantityText": "50",
+        "priceText": "10.0000",
+        "amountText": "500.00",
+        "feeText": "2.00",
+        "cashFlowText": "-502.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "OTC buy"
+      }
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [
+      {
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "currency": "CNY",
+        "cashBalanceText": "1297.00"
+      }
+    ],
+    "positions": [
+      {
+        "instrumentCode": "510300",
+        "positionBucket": "ETF",
+        "quantityText": "100",
+        "averageCostText": "2.0100",
+        "costBasisText": "201.00",
+        "realizedPnlText": "0.00",
+        "unrealizedPnlText": "UNAVAILABLE",
+        "totalFeeText": "1.00"
+      },
+      {
+        "instrumentCode": "OTC0001",
+        "positionBucket": "OTC",
+        "quantityText": "50",
+        "averageCostText": "10.0400",
+        "costBasisText": "502.00",
+        "realizedPnlText": "0.00",
+        "unrealizedPnlText": "UNAVAILABLE",
+        "totalFeeText": "2.00"
+      }
+    ],
+    "pnlSummary": {
+      "realizedPnlText": "0.00",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "totalFeeText": "3.00",
+      "totalMarketValueText": "UNAVAILABLE",
+      "dataQualityStatus": "PARTIAL"
+    },
+    "expectedIssueCodes": []
+  }
+}

@@ -40,6 +40,15 @@ struct ShellAccountingDataServiceClientResponse final {
     std::vector<ShellAccountingImportPreviewDiagnostic> importPreviewDiagnostics;
     std::vector<std::string> importPreviewDiagnosticCodes;
     ShellAccountingImportPreviewFactSummary importPreviewFactSummary;
+    bool portfolioReplayAccepted = false;
+    bool portfolioReplayExecuted = false;
+    int portfolioReplayPositionCount = 0;
+    int portfolioReplayCashSummaryCount = 0;
+    std::string portfolioReplayRealizedPnlText;
+    std::string portfolioReplayUnrealizedPnlText;
+    std::string portfolioReplayTotalFeeText;
+    std::string portfolioReplayTotalMarketValueText;
+    std::vector<std::string> portfolioReplayIssueCodes;
     bool accountingEngineCalled = false;
     bool productionFileLoading = false;
     bool productionWrite = false;
@@ -81,6 +90,8 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callExcelVbaImportReadOnlyPreview(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callExcelVbaImportPersistManualEntry(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callPortfolioReplayReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
 };
 

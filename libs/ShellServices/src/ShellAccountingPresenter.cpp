@@ -638,6 +638,51 @@ int ShellAccountingPresenter::lastExcelVbaImportPersistCashAdjustmentRowsWritten
     return lastExcelVbaImportPersistCashAdjustmentRowsWritten_;
 }
 
+bool ShellAccountingPresenter::portfolioReplayBusy() const noexcept
+{
+    return portfolioReplayBusy_;
+}
+
+QString ShellAccountingPresenter::lastPortfolioReplayStatus() const
+{
+    return lastPortfolioReplayStatus_;
+}
+
+QString ShellAccountingPresenter::lastPortfolioReplayIssue() const
+{
+    return lastPortfolioReplayIssue_;
+}
+
+QString ShellAccountingPresenter::lastPortfolioReplaySummary() const
+{
+    return lastPortfolioReplaySummary_;
+}
+
+QString ShellAccountingPresenter::lastPortfolioReplayIssueCodes() const
+{
+    return lastPortfolioReplayIssueCodes_;
+}
+
+int ShellAccountingPresenter::portfolioReplayPositionCount() const noexcept
+{
+    return portfolioReplayPositionCount_;
+}
+
+int ShellAccountingPresenter::portfolioReplayCashSummaryCount() const noexcept
+{
+    return portfolioReplayCashSummaryCount_;
+}
+
+QString ShellAccountingPresenter::portfolioReplayRealizedPnl() const
+{
+    return portfolioReplayRealizedPnl_;
+}
+
+QString ShellAccountingPresenter::portfolioReplayUnrealizedPnl() const
+{
+    return portfolioReplayUnrealizedPnl_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -1114,6 +1159,80 @@ void ShellAccountingPresenter::resetExcelVbaImportPersistState()
     emit excelVbaImportPersistStateChanged();
 }
 
+void ShellAccountingPresenter::resetPortfolioReplayState()
+{
+    portfolioReplayBusy_ = false;
+    lastPortfolioReplayStatus_ = QStringLiteral("READY");
+    lastPortfolioReplayIssue_.clear();
+    lastPortfolioReplaySummary_.clear();
+    lastPortfolioReplayIssueCodes_.clear();
+    portfolioReplayPositionCount_ = 0;
+    portfolioReplayCashSummaryCount_ = 0;
+    portfolioReplayRealizedPnl_.clear();
+    portfolioReplayUnrealizedPnl_.clear();
+    emit portfolioReplayStateChanged();
+}
+
+bool ShellAccountingPresenter::previewPortfolioReplayReadOnlySummary(
+    const QString& replayPayloadJson)
+{
+    if (!controller_) {
+        markPortfolioReplayInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.portfolio_replay.readonly_summary");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makePortfolioReplayReadOnlySummaryRequest(replayPayloadJson, valid);
+    if (!valid) {
+        return false;
+    }
+
+    portfolioReplayBusy_ = true;
+    lastPortfolioReplayStatus_ = QStringLiteral("REPLAYING");
+    lastPortfolioReplayIssue_.clear();
+    emit portfolioReplayStateChanged();
+    const auto result = controller_->fetchPortfolioReplayReadOnlySummary(request);
+    portfolioReplayBusy_ = false;
+
+    lastPortfolioReplayStatus_ = QString::fromStdString(result.payloadStatus);
+    if (lastPortfolioReplayStatus_.isEmpty()) {
+        lastPortfolioReplayStatus_ = result.portfolioReplayAccepted
+            ? QStringLiteral("COMPLETED")
+            : QStringLiteral("REJECTED");
+    }
+    lastPortfolioReplayIssue_ = issueTextFromResult(result);
+    portfolioReplayPositionCount_ = result.portfolioReplayPositionCount;
+    portfolioReplayCashSummaryCount_ = result.portfolioReplayCashSummaryCount;
+    portfolioReplayRealizedPnl_ =
+        QString::fromStdString(result.portfolioReplayRealizedPnlText);
+    portfolioReplayUnrealizedPnl_ =
+        QString::fromStdString(result.portfolioReplayUnrealizedPnlText);
+    lastPortfolioReplayIssueCodes_ =
+        QString::fromStdString([&]() {
+            std::ostringstream stream;
+            for (std::size_t index = 0; index < result.portfolioReplayIssueCodes.size(); ++index) {
+                if (index != 0U) {
+                    stream << ',';
+                }
+                stream << result.portfolioReplayIssueCodes[index];
+            }
+            return stream.str();
+        }());
+    lastPortfolioReplaySummary_ = QStringLiteral(
+        "positions=%1 cashSummaries=%2 realizedPnl=%3 unrealizedPnl=%4 totalFee=%5 marketValue=%6")
+        .arg(result.portfolioReplayPositionCount)
+        .arg(result.portfolioReplayCashSummaryCount)
+        .arg(QString::fromStdString(result.portfolioReplayRealizedPnlText))
+        .arg(QString::fromStdString(result.portfolioReplayUnrealizedPnlText))
+        .arg(QString::fromStdString(result.portfolioReplayTotalFeeText))
+        .arg(QString::fromStdString(result.portfolioReplayTotalMarketValueText));
+    emit portfolioReplayStateChanged();
+    syncFromController();
+    return result.protocolSuccess && result.portfolioReplayAccepted;
+}
+
 bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
     const QString& previewStatus,
     const QString& previewDigest,
@@ -1245,6 +1364,7 @@ void ShellAccountingPresenter::reset()
     resetPostWriteRefreshState();
     resetExcelVbaImportPreviewState();
     resetExcelVbaImportPersistState();
+    resetPortfolioReplayState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -1633,6 +1753,20 @@ void ShellAccountingPresenter::markExcelVbaImportPersistInputError(const QString
     emit excelVbaImportPersistStateChanged();
 }
 
+void ShellAccountingPresenter::markPortfolioReplayInputError(const QString& message)
+{
+    portfolioReplayBusy_ = false;
+    lastPortfolioReplayStatus_ = QStringLiteral("INPUT_ERROR");
+    lastPortfolioReplayIssue_ = message;
+    lastPortfolioReplaySummary_.clear();
+    lastPortfolioReplayIssueCodes_.clear();
+    portfolioReplayPositionCount_ = 0;
+    portfolioReplayCashSummaryCount_ = 0;
+    portfolioReplayRealizedPnl_.clear();
+    portfolioReplayUnrealizedPnl_.clear();
+    emit portfolioReplayStateChanged();
+}
+
 ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPreviewRequest(
     const QString& importPayloadJson,
     bool& valid)
@@ -1660,6 +1794,41 @@ ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPrevie
     ShellAccountingServiceRequest request;
     request.actionName = "accounting.excel_vba_import.readonly_preview";
     request.importPayloadJson = QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makePortfolioReplayReadOnlySummaryRequest(
+    const QString& replayPayloadJson,
+    bool& valid)
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        replayPayloadJson.trimmed().toUtf8(),
+        &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markPortfolioReplayInputError(
+            QStringLiteral("Portfolio replay summary payload must be a JSON object."));
+        return {};
+    }
+
+    const auto object = document.object();
+    if (object.contains(QStringLiteral("filePath"))
+        || object.contains(QStringLiteral("path"))
+        || object.contains(QStringLiteral("filename"))
+        || object.contains(QStringLiteral("credential"))
+        || object.contains(QStringLiteral("endpoint"))) {
+        markPortfolioReplayInputError(
+            QStringLiteral("Portfolio replay accepts sanitized in-memory payload JSON only."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.portfolio_replay.readonly_summary";
+    request.portfolioReplayPayloadJson =
+        QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
     request.timeoutMs = 2000;
     valid = true;
     return request;

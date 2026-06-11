@@ -2,6 +2,25 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-276 ShellAccounting portfolio replay VBA parity full delivery boundary
+
+- ShellAccounting portfolio replay work may add a production read-only
+  AccountingEngine replay/projection module, DataService read action,
+  DataServiceClient adapter, ShellServices / Presenter readback mapping, docs
+  359 through 363, EPIC-276 samples under `samples/shell_accounting_replay/`,
+  and the `shell_accounting_portfolio_replay_vba_parity_full_delivery` CTest.
+- The replay action must remain read-only and must not write SQLite,
+  trade_log, cash_adjustment, audit_log, ledger, snapshots, persistent read
+  models, or production database paths.
+- Positive samples may prove exact position, cash, realized PnL, unrealized PnL,
+  fee, market value, and data-quality parity.
+- Negative samples must fail closed with sanitized issue codes and must not
+  produce writes or unsafe output.
+- EPIC-276 does not authorize migrations, DataAccess write semantic changes,
+  Excel/VBA import persistence write semantic changes, production QML changes,
+  startup changes, broker, network, credentials, endpoint, TradeDraft,
+  strategy execution, real order placement, or automatic trading.
+
 ## EPIC-275 Excel/VBA import MVP real workbook trial hardening boundary
 
 - Excel/VBA import MVP real-workbook trial hardening work may add the EPIC-275

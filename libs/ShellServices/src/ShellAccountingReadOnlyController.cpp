@@ -339,6 +339,29 @@ ShellAccountingServiceResult ShellAccountingReadOnlyController::persistExcelVbaI
     return result;
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::fetchPortfolioReplayReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.portfolio_replay.readonly_summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.portfolio_replay.readonly_summary");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.portfolio_replay.readonly_summary";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->fetchPortfolioReplayReadOnlySummary(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

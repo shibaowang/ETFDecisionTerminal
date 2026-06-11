@@ -408,6 +408,67 @@ ShellAccountingDataServiceClientResponse mapPersistManualEntryClientResult(
     return response;
 }
 
+ShellAccountingDataServiceClientResponse mapPortfolioReplayClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::PortfolioReplayReadOnlySummaryResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient portfolio replay summary call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& replay = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = replay.action.empty() ? request.actionName : replay.action;
+    response.protocolSuccess = replay.protocolSuccess;
+    response.implemented = replay.portfolioReplayEngineCreated;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = replay.status;
+    response.dataQualityStatus = replay.dataQualityStatus;
+    response.hasRows = replay.positionCount > 0 || replay.cashSummaryCount > 0;
+    response.domainError = !replay.protocolSuccess || !replay.accepted;
+    response.rawPayload = replay.rawPayloadJson;
+    response.portfolioReplayAccepted = replay.accepted;
+    response.portfolioReplayExecuted = replay.replayExecuted;
+    response.portfolioReplayPositionCount = replay.positionCount;
+    response.portfolioReplayCashSummaryCount = replay.cashSummaryCount;
+    response.portfolioReplayRealizedPnlText = replay.pnlSummary.realizedPnlText;
+    response.portfolioReplayUnrealizedPnlText = replay.pnlSummary.unrealizedPnlText;
+    response.portfolioReplayTotalFeeText = replay.pnlSummary.totalFeeText;
+    response.portfolioReplayTotalMarketValueText = replay.pnlSummary.totalMarketValueText;
+    response.portfolioReplayIssueCodes = replay.issueCodes;
+    response.accountingEngineCalled = replay.accountingEngineCalled;
+    response.productionWrite = replay.productionWrite || !replay.readOnlyReplayNoWrite;
+    response.sqliteProductionWrite = replay.sqliteProductionWrite;
+    response.auditWritten = replay.auditWritten || replay.auditLogRowsWrittenByReplay;
+    response.ledgerWritten = replay.ledgerWritten;
+    response.snapshotWritten = replay.snapshotWritten;
+    response.tradeLogWritten = replay.tradeLogWritten || replay.tradeLogRowsWrittenByReplay;
+    response.readModelPersistentWrite = replay.readModelPersistentWrite;
+    response.networkAccess = replay.networkAccess;
+    response.credentialAccess = replay.credentialAccess;
+    response.endpointAccess = replay.endpointAccess;
+    response.automaticTrading = replay.automaticTrading;
+
+    for (const auto& code : replay.issueCodes) {
+        response.issues.push_back(makeIssue(code, "ERROR", code, true));
+    }
+    return response;
+}
+
 }  // namespace
 
 ShellAccountingDataServiceClientPortAdapter::ShellAccountingDataServiceClientPortAdapter(
@@ -620,6 +681,26 @@ ShellAccountingDataServiceClientPortAdapter::callExcelVbaImportPersistManualEntr
     return mapPersistManualEntryClientResult(
         request,
         client_->accountingExcelVbaImportPersistManualEntry(*parsed, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callPortfolioReplayReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting portfolio replay port.",
+            true,
+            false);
+    }
+
+    etfdt::data_service_client::PortfolioReplayReadOnlySummaryRequest replayRequest;
+    replayRequest.replayPayloadJson = request.payloadJson.empty() ? "{}" : request.payloadJson;
+    return mapPortfolioReplayClientResult(
+        request,
+        client_->accountingPortfolioReplayReadOnlySummary(replayRequest, request.timeoutMs));
 }
 
 }  // namespace etfdt::shell_services

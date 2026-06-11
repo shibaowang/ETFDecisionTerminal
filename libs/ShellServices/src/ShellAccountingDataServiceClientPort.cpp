@@ -93,4 +93,26 @@ ShellAccountingDataServiceClientPort::callExcelVbaImportPersistManualEntry(
         "SHELL_ACCOUNTING_EXCEL_VBA_IMPORT_PERSIST_MANUAL_ENTRY_PORT_NOT_CONFIGURED");
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callPortfolioReplayReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = request.actionName;
+    response.protocolSuccess = false;
+    response.implemented = false;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus =
+        "SHELL_ACCOUNTING_PORTFOLIO_REPLAY_READONLY_SUMMARY_PORT_NOT_CONFIGURED";
+    response.dataQualityStatus = "UNAVAILABLE";
+    response.protocolError = true;
+    response.errorMessage =
+        "ShellAccounting portfolio replay DataService port is not configured.";
+    response.issues.push_back(
+        {response.payloadStatus, "ERROR", response.errorMessage, true,
+         "ShellAccountingDataServiceClientPort"});
+    return response;
+}
+
 }  // namespace etfdt::shell_services

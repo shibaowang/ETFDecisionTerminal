@@ -195,4 +195,53 @@ struct ExcelVbaImportPersistManualEntryResult final {
     std::vector<std::string> issues;
 };
 
+struct PortfolioReplayReadOnlySummaryRequest final {
+    std::string replayPayloadJson = "{}";
+};
+
+struct PortfolioReplayReadOnlyPnlSummary final {
+    std::string currency;
+    std::string realizedPnlText;
+    std::string unrealizedPnlText;
+    std::string totalFeeText;
+    std::string totalMarketValueText;
+    std::string dataQualityStatus;
+};
+
+struct PortfolioReplayReadOnlySummaryResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    std::string status;
+    std::string dataQualityStatus;
+    bool protocolSuccess = false;
+    bool accepted = false;
+    bool replayExecuted = false;
+    bool portfolioReplayEngineCreated = false;
+    bool dataServiceReadOnlyActionCreated = false;
+    bool accountingEngineCalled = false;
+    int positionCount = 0;
+    int cashSummaryCount = 0;
+    PortfolioReplayReadOnlyPnlSummary pnlSummary;
+    std::vector<std::string> issueCodes;
+    std::string rawPayloadJson;
+    bool readOnlyReplayNoWrite = false;
+    bool tradeLogRowsWrittenByReplay = false;
+    bool cashAdjustmentRowsWrittenByReplay = false;
+    bool auditLogRowsWrittenByReplay = false;
+    bool productionWrite = false;
+    bool sqliteProductionWrite = false;
+    bool auditWritten = false;
+    bool ledgerWritten = false;
+    bool snapshotWritten = false;
+    bool tradeLogWritten = false;
+    bool readModelPersistentWrite = false;
+    bool productionDbTouched = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool brokerOrderSubmitted = false;
+    bool automaticTrading = false;
+};
+
 }  // namespace etfdt::data_service_client

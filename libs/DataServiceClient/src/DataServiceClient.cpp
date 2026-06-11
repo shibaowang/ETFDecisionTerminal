@@ -32,6 +32,8 @@ constexpr const char* kActionDataOtcList = "data.otc.list";
 constexpr const char* kActionDataAuditAppend = "data.audit.append";
 constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
+constexpr const char* kActionAccountingPortfolioReplayReadOnlySummary =
+    "accounting.portfolio_replay.readonly_summary";
 constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
     "accounting.excel_vba_import.readonly_preview";
 constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
@@ -268,6 +270,31 @@ DataServiceClientResult<etfdt::protocol::ProtocolResponse> DataServiceClient::ac
     int timeoutMs)
 {
     return sendAction(kActionAccountingReplayPreview, payloadJson, timeoutMs);
+}
+
+DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>
+DataServiceClient::accountingPortfolioReplayReadOnlySummary(
+    const PortfolioReplayReadOnlySummaryRequest& request,
+    int timeoutMs)
+{
+    if (!isLikelyJsonObject(request.replayPayloadJson)) {
+        return DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Portfolio replay summary request payload must be a JSON object");
+    }
+
+    auto response = sendAction(
+        kActionAccountingPortfolioReplayReadOnlySummary,
+        portfolioReplayReadOnlySummaryPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parsePortfolioReplayReadOnlySummaryPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
 }
 
 DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>

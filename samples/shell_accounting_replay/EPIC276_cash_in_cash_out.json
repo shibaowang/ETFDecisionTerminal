@@ -1,0 +1,60 @@
+{
+  "fixtureId": "EPIC276_cash_in_cash_out",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "COMPLETED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_CASH_START",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "1000.00",
+        "currency": "CNY",
+        "note": "sanitized initial cash"
+      },
+      {
+        "factId": "EPIC276_CASH_IN",
+        "time": "2026-06-12T10:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "DEPOSIT",
+        "amountText": "500.00",
+        "currency": "CNY",
+        "note": "sanitized cash in"
+      },
+      {
+        "factId": "EPIC276_CASH_OUT",
+        "time": "2026-06-12T11:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "WITHDRAW",
+        "amountText": "120.00",
+        "currency": "CNY",
+        "note": "sanitized cash out"
+      }
+    ],
+    "tradeFacts": [],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [
+      {
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "currency": "CNY",
+        "cashBalanceText": "1380.00"
+      }
+    ],
+    "positions": [],
+    "pnlSummary": {
+      "realizedPnlText": "0.00",
+      "unrealizedPnlText": "0.00",
+      "totalFeeText": "0.00",
+      "totalMarketValueText": "0.00",
+      "dataQualityStatus": "OK"
+    },
+    "expectedIssueCodes": []
+  }
+}

@@ -65,6 +65,8 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult persistExcelVbaImportManualEntry(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult fetchPortfolioReplayReadOnlySummary(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

@@ -12,6 +12,17 @@ TASK_270_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
 }
 
+TASK_271_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md",
+    "docs/339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
+}
+
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -346,6 +357,7 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",}
 ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_270_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(TASK_271_EXACT_PATHS)
 
 ALLOWED_CHANGED_PATHS.update(
     {

@@ -12,6 +12,17 @@ TASK_270_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
 }
 
+TASK_271_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md",
+    "docs/339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
+}
+
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -766,6 +777,7 @@ def main() -> int:
     })
     allowed.update(TASK_257_EXACT_PATHS)
     allowed.update(TASK_270_EXACT_PATHS)
+    allowed.update(TASK_271_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed)
     require(not unexpected, "TASK-202 changed unauthorized paths: " + ", ".join(unexpected))
     for forbidden in [
@@ -775,7 +787,7 @@ def main() -> int:
         "libs/MarketEngine/",
         "migrations/",
     ]:
-        require(not any(path.startswith(forbidden) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS for path in changes), f"TASK-202 must not change {forbidden}")
+        require(not any(path.startswith(forbidden) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS for path in changes), f"TASK-202 must not change {forbidden}")
     for forbidden in [
         "apps/ETFDecisionShell/src/main.cpp",
         "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",

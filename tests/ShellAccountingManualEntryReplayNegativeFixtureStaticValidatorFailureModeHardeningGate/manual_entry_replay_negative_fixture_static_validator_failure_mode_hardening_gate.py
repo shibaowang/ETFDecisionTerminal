@@ -12,6 +12,17 @@ TASK_270_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
 }
 
+TASK_271_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md",
+    "docs/339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
+}
+
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -371,6 +382,7 @@ ALLOWED_CHANGED_PATHS = {
 }
 ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_270_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(TASK_271_EXACT_PATHS)
 
 TASK_246_SELF_CONSISTENCY_PATHS = {
     "README.md",
@@ -851,7 +863,7 @@ def validate_static_boundaries(gate: Gate, root: Path) -> None:
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") <= TASK_257_EXACT_PATHS, "libs diff exact TASK-257 parser boundary only")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
     gate.require(all(path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or not path.endswith(".json") for path in changes), "no JSON changed paths")
-    gate.require(not any(path.startswith(("apps/", "libs/", "migrations/")) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS for path in changes), "no production changed paths")
+    gate.require(not any(path.startswith(("apps/", "libs/", "migrations/")) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS for path in changes), "no production changed paths")
     validate_validator_cli_contract(gate, root)
     validator_text = read(root / VALIDATOR)
     gate.contains(validator_text, "--negative-fixtures-dir", "validator")

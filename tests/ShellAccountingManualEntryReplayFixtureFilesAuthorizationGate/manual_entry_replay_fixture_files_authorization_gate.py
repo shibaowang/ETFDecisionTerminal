@@ -12,6 +12,17 @@ TASK_270_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
 }
 
+TASK_271_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md",
+    "docs/339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
+}
+
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -870,6 +881,7 @@ def main() -> int:
     })
     allowed_changes.update(TASK_257_EXACT_PATHS)
     allowed_changes.update(TASK_270_EXACT_PATHS)
+    allowed_changes.update(TASK_271_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-215 changed unauthorized paths: " + ", ".join(unexpected))
 
@@ -892,7 +904,7 @@ def main() -> int:
     for prefix in forbidden_prefixes:
         gate.require(
             not any(
-                path.startswith(prefix) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and not is_authorized_task217_fixture_scaffold_path(path)
+                path.startswith(prefix) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS and not is_authorized_task217_fixture_scaffold_path(path)
                 for path in changes
             ),
             f"TASK-215 must not change {prefix}",

@@ -23,6 +23,22 @@ TASK_271_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
 }
 
+EPIC_272_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/340_excel_vba_import_mvp_release_readiness.md",
+    "docs/341_excel_vba_import_mvp_user_guide.md",
+    "docs/342_excel_vba_import_mvp_sample_export_format.md",
+    "docs/343_excel_vba_import_mvp_local_runbook.md",
+    "docs/344_excel_vba_import_mvp_known_limits.md",
+    "docs/345_excel_vba_import_mvp_release_readiness_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/excel_vba_import_mvp_release_readiness.cpp",
+    "samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -314,6 +330,7 @@ ALLOWED_CHANGED_PATHS = {
 ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_270_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_271_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(EPIC_272_EXACT_PATHS)
 
 FORBIDDEN_CHANGED_PREFIXES = (
     "apps/",

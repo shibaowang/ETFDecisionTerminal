@@ -22,16 +22,18 @@ Rectangle {
             "sheets": [
                 {
                     "name": "InitialCash",
+                    "sheetName": "InitialCash",
                     "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
                     "rows": [
-                        ["TASK268_SAMPLE_CASH_001", "2026-01-05T09:00:00Z", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "INITIAL_CASH", "1000.00", "USD", "SANITIZED_SAMPLE_INITIAL_CASH"]
+                        ["EPIC272_SAMPLE_CASH_001", "2026-01-05T09:00:00Z", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "INITIAL_CASH", "1000.00", "USD", "SANITIZED_SAMPLE_INITIAL_CASH"]
                     ]
                 },
                 {
                     "name": "TradeLog",
+                    "sheetName": "TradeLog",
                     "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
                     "rows": [
-                        ["TASK268_SAMPLE_TRADE_001", "2026-01-05T09:30:00Z", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "DEMO_ETF", "BUY", "10", "25.50", "255.00", "1.00", "-256.00", "USD", "SANITIZED_SAMPLE", "SANITIZED_SAMPLE_BUY"]
+                        ["EPIC272_SAMPLE_TRADE_001", "2026-01-05T09:30:00Z", "DEMO_ACCOUNT", "DEMO_PORTFOLIO", "DEMO_ETF", "BUY", "10", "25.50", "255.00", "1.00", "-256.00", "USD", "SANITIZED_SAMPLE", "SANITIZED_SAMPLE_BUY"]
                     ]
                 }
             ]
@@ -199,7 +201,7 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingExcelVbaImportPreviewPanel"
                 width: parent.width
-                height: 950
+                height: 1088
                 radius: 8
                 color: "#ffffff"
                 border.color: "#cfd8e6"
@@ -232,6 +234,48 @@ Rectangle {
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
+                    }
+
+                    Rectangle {
+                        objectName: "shellAccountingExcelVbaImportMvpStepsPanel"
+                        width: parent.width
+                        height: 92
+                        radius: 8
+                        color: "#f5fbf7"
+                        border.color: "#b9dfc5"
+
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 4
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportMvpStepsText"
+                                width: parent.width
+                                text: "MVP steps: paste or choose a sanitized JSON/TXT export, run Preview, confirm only an ACCEPTED preview, then persist manual trade/cash entries."
+                                color: "#25543b"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportMvpSupportText"
+                                width: parent.width
+                                text: "Supported now: sanitized Excel/VBA JSON/TXT export with InitialCash and TradeLog sheets. Direct .xlsx import is not supported in this MVP."
+                                color: "#25543b"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportReleaseReadinessText"
+                                width: parent.width
+                                text: "Release readiness: accepted preview, persisted row counts, diagnostics, duplicate/conflict state, and post-write refresh are visible here."
+                                color: "#25543b"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+                        }
                     }
 
                     TextArea {
@@ -351,7 +395,7 @@ Rectangle {
                             objectName: "shellAccountingExcelVbaImportPreviewFormatContractText"
                             anchors.fill: parent
                             anchors.margins: 10
-                            text: "Format: schemaVersion=excel-vba-export/v1; source=sanitized-excel-vba-export; sheets[{name,headers,rows}]"
+                            text: "Format: schemaVersion=excel-vba-export/v1; source=sanitized-excel-vba-export; sheets[{sheetName,name,headers,rows}]. Use sheetName for parser compatibility."
                             color: "#5f4b1f"
                             font.pixelSize: 13
                             wrapMode: Text.WordWrap
@@ -518,10 +562,10 @@ Rectangle {
                                 }
 
                                 Text {
-                                    objectName: "shellAccountingExcelVbaImportPersistStatusText"
-                                    width: 220
-                                    text: root.presenterAvailable
-                                        ? "Persist status: " + accountingPresenter.lastExcelVbaImportPersistStatus
+                                objectName: "shellAccountingExcelVbaImportPersistStatusText"
+                                width: 220
+                                text: root.presenterAvailable
+                                    ? "Persist status: " + accountingPresenter.lastExcelVbaImportPersistStatus
                                         : "Persist status: unavailable"
                                     color: "#18202f"
                                     font.pixelSize: 13
@@ -530,6 +574,15 @@ Rectangle {
                                     height: 34
                                     wrapMode: Text.WordWrap
                                 }
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPersistStateGuideText"
+                                width: parent.width
+                                text: "Persist states: PERSISTED writes accepted trade/cash facts; DUPLICATE means no new rows; CONFLICT means idempotency mismatch and no refresh."
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
                             }
 
                             Text {

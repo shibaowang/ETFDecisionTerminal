@@ -1,5 +1,27 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-272 Excel/VBA Import MVP Release Readiness
+
+EPIC-272 prepares the Excel/VBA import MVP for local trial use:
+
+- user guide: `docs/341_excel_vba_import_mvp_user_guide.md`
+- sanitized sample export:
+  `samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json`
+- sample format contract:
+  `docs/342_excel_vba_import_mvp_sample_export_format.md`
+- local runbook: `docs/343_excel_vba_import_mvp_local_runbook.md`
+- known limits: `docs/344_excel_vba_import_mvp_known_limits.md`
+- release readiness checklist:
+  `docs/340_excel_vba_import_mvp_release_readiness.md`
+- smoke test:
+  `shell_accounting_excel_vba_import_mvp_release_readiness`
+
+The MVP supports sanitized JSON/TXT export preview, explicit accepted-preview
+persistence, persisted row-count display, duplicate/conflict diagnostics, and
+post-write readback refresh. Direct `.xlsx` import, broker order placement,
+network endpoints, credentials, real order placement, and automatic trading are
+outside this MVP.
+
 ## TASK-271 Excel/VBA Import MVP Local Service E2E Acceptance
 
 TASK-271 adds a local-service end-to-end acceptance test for the Excel/VBA

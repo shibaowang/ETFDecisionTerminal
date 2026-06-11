@@ -12,6 +12,16 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [340 Excel/VBA Import MVP Release Readiness](340_excel_vba_import_mvp_release_readiness.md)
+- [341 Excel/VBA Import MVP User Guide](341_excel_vba_import_mvp_user_guide.md)
+- [342 Excel/VBA Import MVP Sample Export Format](342_excel_vba_import_mvp_sample_export_format.md)
+- [343 Excel/VBA Import MVP Local Runbook](343_excel_vba_import_mvp_local_runbook.md)
+- [344 Excel/VBA Import MVP Known Limits](344_excel_vba_import_mvp_known_limits.md)
+- [345 Excel/VBA Import MVP Release Readiness Test Plan](345_excel_vba_import_mvp_release_readiness_test_plan.md)
+- Excel/VBA import MVP sample export:
+  [samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json](../samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json)
+  This MVP supports sanitized JSON/TXT export only; direct `.xlsx` import is
+  not supported.
 - [338 ShellAccounting Excel/VBA Import MVP Local Service E2E Acceptance](338_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance.md)
 - [339 ShellAccounting Excel/VBA Import MVP Local Service E2E Acceptance Test Plan](339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md)
 - [334 ShellAccounting Excel/VBA Import Persist Supported Fact Types Alignment](334_shell_accounting_excel_vba_import_persist_supported_fact_types_alignment.md)

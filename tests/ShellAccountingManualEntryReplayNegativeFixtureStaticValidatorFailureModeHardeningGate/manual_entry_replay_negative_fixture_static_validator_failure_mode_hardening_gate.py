@@ -39,6 +39,19 @@ EPIC_272_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/excel_vba_import_mvp_release_readiness.cpp",
     "samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json",
 }
+EPIC_273_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/346_excel_vba_import_mvp_demo_workspace.md",
+    "docs/347_excel_vba_import_mvp_trial_startup_runbook.md",
+    "docs/348_excel_vba_import_mvp_manual_acceptance_checklist.md",
+    "docs/349_excel_vba_import_mvp_demo_workspace_test_plan.md",
+    "scripts/excel_vba_import_mvp/New-ExcelVbaImportMvpDemoWorkspace.ps1",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/excel_vba_import_mvp_demo_workspace.cpp",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -401,6 +414,7 @@ ALLOWED_CHANGED_PATHS.update(TASK_270_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_271_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(EPIC_272_EXACT_PATHS)
 
+ALLOWED_CHANGED_PATHS.update(EPIC_273_EXACT_PATHS)
 TASK_246_SELF_CONSISTENCY_PATHS = {
     "README.md",
     "docs/12_codex_prompt_template.md",

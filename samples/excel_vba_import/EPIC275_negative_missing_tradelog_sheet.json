@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "description": "EPIC-275 negative missing TradeLog sheet",
+  "sheets": [
+    {
+      "name": "InitialCash",
+      "sheetName": "InitialCash",
+      "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+      "rows": [
+        ["EPIC275_NEG_CASH_001", "2026-06-11T09:00:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "INITIAL_CASH", "100.00", "CNY", "SANITIZED_NEGATIVE"]
+      ]
+    }
+  ]
+}

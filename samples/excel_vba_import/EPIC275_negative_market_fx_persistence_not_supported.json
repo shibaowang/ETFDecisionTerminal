@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "description": "EPIC-275 preview accepted but market price / FX persistence unsupported",
+  "sheets": [
+    {
+      "name": "InitialCash",
+      "sheetName": "InitialCash",
+      "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+      "rows": [
+        ["EPIC275_NEG_CASH_080", "2026-06-11T09:00:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "INITIAL_CASH", "100.00", "CNY", "SANITIZED_MARKET_FX_NOT_PERSISTABLE"]
+      ]
+    },
+    {
+      "name": "TradeLog",
+      "sheetName": "TradeLog",
+      "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+      "rows": [
+        ["EPIC275_NEG_TRADE_080", "2026-06-11T09:30:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "EPIC275_ETF_A", "BUY", "1", "1.00", "1.00", "0.00", "-1.00", "CNY", "EPIC275_SANITIZED_EXPORT", "SANITIZED_MARKET_FX_NOT_PERSISTABLE"]
+      ]
+    },
+    {
+      "name": "MarketPrices",
+      "sheetName": "MarketPrices",
+      "headers": ["INSTRUMENT_CODE", "PRICE_TIME_UTC", "PRICE", "CURRENCY", "SOURCE"],
+      "rows": [
+        ["EPIC275_ETF_A", "2026-06-11T15:00:00Z", "1.23", "CNY", "EPIC275_SANITIZED_EXPORT"]
+      ]
+    },
+    {
+      "name": "FxRates",
+      "sheetName": "FxRates",
+      "headers": ["BASE_CURRENCY", "QUOTE_CURRENCY", "RATE_TIME_UTC", "RATE", "SOURCE"],
+      "rows": [
+        ["USD", "CNY", "2026-06-11T15:00:00Z", "7.1000", "EPIC275_SANITIZED_EXPORT"]
+      ]
+    }
+  ]
+}

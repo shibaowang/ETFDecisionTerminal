@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "description": "EPIC-275 positive multiple trades and multiple cash movements",
+  "sheets": [
+    {
+      "name": "InitialCash",
+      "sheetName": "InitialCash",
+      "headers": ["ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"],
+      "rows": [
+        ["EPIC275_CASH_201", "2026-06-11T09:00:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "INITIAL_CASH", "30000.00", "CNY", "SANITIZED_INITIAL_CASH"],
+        ["EPIC275_CASH_202", "2026-06-11T11:00:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "DEPOSIT", "1500.00", "CNY", "SANITIZED_CASH_IN"],
+        ["EPIC275_CASH_203", "2026-06-11T12:00:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "WITHDRAW", "500.00", "CNY", "SANITIZED_CASH_OUT"]
+      ]
+    },
+    {
+      "name": "TradeLog",
+      "sheetName": "TradeLog",
+      "headers": ["ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"],
+      "rows": [
+        ["EPIC275_TRADE_201", "2026-06-11T09:30:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "EPIC275_ETF_A", "BUY", "80", "2.5000", "200.00", "0.80", "-200.80", "CNY", "EPIC275_SANITIZED_EXPORT", "SANITIZED_MULTI_BUY_A"],
+        ["EPIC275_TRADE_202", "2026-06-11T10:00:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "EPIC275_ETF_A", "BUY", "40", "2.6000", "104.00", "0.40", "-104.40", "CNY", "EPIC275_SANITIZED_EXPORT", "SANITIZED_SECOND_BUY_A"],
+        ["EPIC275_TRADE_203", "2026-06-11T10:30:00Z", "EPIC275_ACCOUNT", "EPIC275_PORTFOLIO", "EPIC275_ETF_B", "SELL", "10", "5.0000", "50.00", "0.30", "49.70", "CNY", "EPIC275_SANITIZED_EXPORT", "SANITIZED_SELL_B"]
+      ]
+    }
+  ]
+}

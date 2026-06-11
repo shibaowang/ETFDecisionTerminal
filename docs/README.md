@@ -12,6 +12,20 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [354 Excel/VBA Import MVP Real Workbook Trial Hardening](354_excel_vba_import_mvp_real_workbook_trial_hardening.md)
+- [355 Excel/VBA Import MVP Compatibility Matrix](355_excel_vba_import_mvp_compatibility_matrix.md)
+- [356 Excel/VBA Import MVP Real Workbook Trial Runbook](356_excel_vba_import_mvp_real_workbook_trial_runbook.md)
+- [357 Excel/VBA Import MVP Release Candidate Checklist](357_excel_vba_import_mvp_release_candidate_checklist.md)
+- [358 Excel/VBA Import MVP Real Workbook Trial Test Plan](358_excel_vba_import_mvp_real_workbook_trial_test_plan.md)
+- EPIC-275 Excel/VBA import MVP real-workbook trial samples:
+  [EPIC275_positive_single_cash_single_buy.json](../samples/excel_vba_import/EPIC275_positive_single_cash_single_buy.json),
+  [EPIC275_positive_buy_partial_sell.json](../samples/excel_vba_import/EPIC275_positive_buy_partial_sell.json),
+  [EPIC275_positive_multi_trade_multi_cash.json](../samples/excel_vba_import/EPIC275_positive_multi_trade_multi_cash.json),
+  [EPIC275_positive_chinese_memo_whitespace_headers.json](../samples/excel_vba_import/EPIC275_positive_chinese_memo_whitespace_headers.json),
+  [EPIC275_negative_market_fx_persistence_not_supported.json](../samples/excel_vba_import/EPIC275_negative_market_fx_persistence_not_supported.json).
+  The MVP supports sanitized JSON/TXT export only. Direct `.xlsx` import is not
+  supported, and broker, network, credentials, endpoints, real order placement,
+  and automatic trading remain out of scope.
 - [350 Excel/VBA Import MVP Export Helper Compatibility Pack](350_excel_vba_import_mvp_export_helper_compatibility_pack.md)
 - [351 Excel/VBA Import MVP Export Helper Mapping](351_excel_vba_import_mvp_export_helper_mapping.md)
 - [352 Excel/VBA Import MVP Export Helper User Guide](352_excel_vba_import_mvp_export_helper_user_guide.md)

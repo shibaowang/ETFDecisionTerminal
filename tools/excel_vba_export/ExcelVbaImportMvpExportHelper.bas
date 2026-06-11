@@ -188,12 +188,15 @@ End Function
 
 Private Function JsonString(ByVal value As String) As String
     Dim index As Long
-    Dim codePoint As Integer
+    Dim codePoint As Long
     Dim result As String
     result = """"
 
     For index = 1 To Len(value)
         codePoint = AscW(Mid$(value, index, 1))
+        If codePoint < 0 Then
+            codePoint = codePoint + 65536
+        End If
         Select Case codePoint
             Case 34
                 result = result & "\"""
@@ -211,6 +214,8 @@ Private Function JsonString(ByVal value As String) As String
                 result = result & "\r"
             Case Else
                 If codePoint < 32 Then
+                    result = result & "\u" & Right$("0000" & Hex$(codePoint), 4)
+                ElseIf codePoint > 126 Then
                     result = result & "\u" & Right$("0000" & Hex$(codePoint), 4)
                 Else
                     result = result & Mid$(value, index, 1)

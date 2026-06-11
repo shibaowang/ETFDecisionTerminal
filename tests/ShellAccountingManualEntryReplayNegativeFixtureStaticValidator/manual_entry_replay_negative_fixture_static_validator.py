@@ -67,6 +67,35 @@ EPIC_274_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/excel_vba_import_mvp_export_helper_compatibility.cpp",
 }
+EPIC_275_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/354_excel_vba_import_mvp_real_workbook_trial_hardening.md",
+    "docs/355_excel_vba_import_mvp_compatibility_matrix.md",
+    "docs/356_excel_vba_import_mvp_real_workbook_trial_runbook.md",
+    "docs/357_excel_vba_import_mvp_release_candidate_checklist.md",
+    "docs/358_excel_vba_import_mvp_real_workbook_trial_test_plan.md",
+    "samples/excel_vba_import/EPIC275_negative_duplicate_row_id.json",
+    "samples/excel_vba_import/EPIC275_negative_empty_tradelog.json",
+    "samples/excel_vba_import/EPIC275_negative_invalid_date.json",
+    "samples/excel_vba_import/EPIC275_negative_invalid_numeric.json",
+    "samples/excel_vba_import/EPIC275_negative_market_fx_persistence_not_supported.json",
+    "samples/excel_vba_import/EPIC275_negative_missing_initialcash_sheet.json",
+    "samples/excel_vba_import/EPIC275_negative_missing_required_header.json",
+    "samples/excel_vba_import/EPIC275_negative_missing_tradelog_sheet.json",
+    "samples/excel_vba_import/EPIC275_negative_sensitive_tokens.json",
+    "samples/excel_vba_import/EPIC275_negative_unsupported_side_action.json",
+    "samples/excel_vba_import/EPIC275_positive_buy_partial_sell.json",
+    "samples/excel_vba_import/EPIC275_positive_chinese_memo_whitespace_headers.json",
+    "samples/excel_vba_import/EPIC275_positive_multi_trade_multi_cash.json",
+    "samples/excel_vba_import/EPIC275_positive_single_cash_single_buy.json",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpRealWorkbookTrialHardening/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpRealWorkbookTrialHardening/excel_vba_import_mvp_real_workbook_trial_hardening.cpp",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -443,6 +472,7 @@ ALLOWED_CHANGED_PATHS.update(EPIC_272_EXACT_PATHS)
 
 ALLOWED_CHANGED_PATHS.update(EPIC_273_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(EPIC_274_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(EPIC_275_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(
     {
         "docs/280_shell_accounting_manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.md",

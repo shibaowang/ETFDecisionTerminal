@@ -2,6 +2,25 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-272 Excel/VBA import MVP release readiness boundary
+
+- Excel/VBA import MVP release readiness may add user guide, runbook, sample
+  export format docs, known limits, release checklist, sanitized sample export,
+  QML preview/persist panel usability polish, and a smoke CTest.
+- EPIC-272 may verify the sanitized sample export through the existing
+  read-only parser and may reference the TASK-271 local service E2E acceptance
+  test.
+- QML changes must stay Presenter-bound and must not directly reference
+  DataServiceClient, DataServiceApi, SQLite, AccountingEngine, broker, network,
+  credentials, endpoint, or automaticTrading behavior.
+- The MVP supports sanitized JSON/TXT exports only. Direct `.xlsx` import is
+  not supported.
+- EPIC-272 does not authorize DataServiceApi write action implementation
+  changes, DataAccess repository changes, migrations, AccountingEngine
+  production code changes, production DB path changes, broker, network,
+  credentials, endpoint, TradeDraft, strategy execution, real order placement,
+  or automatic trading.
+
 ## TASK-271 Excel/VBA import MVP local service E2E acceptance boundary
 
 - Excel/VBA import MVP acceptance may be tested through ShellAccountingPresenter,

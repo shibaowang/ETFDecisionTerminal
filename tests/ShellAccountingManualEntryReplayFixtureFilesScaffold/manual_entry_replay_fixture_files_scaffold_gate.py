@@ -23,6 +23,22 @@ TASK_271_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
 }
 
+EPIC_272_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/340_excel_vba_import_mvp_release_readiness.md",
+    "docs/341_excel_vba_import_mvp_user_guide.md",
+    "docs/342_excel_vba_import_mvp_sample_export_format.md",
+    "docs/343_excel_vba_import_mvp_local_runbook.md",
+    "docs/344_excel_vba_import_mvp_known_limits.md",
+    "docs/345_excel_vba_import_mvp_release_readiness_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/excel_vba_import_mvp_release_readiness.cpp",
+    "samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -899,6 +915,7 @@ def main() -> int:
     allowed_changes.update(TASK_257_EXACT_PATHS)
     allowed_changes.update(TASK_270_EXACT_PATHS)
     allowed_changes.update(TASK_271_EXACT_PATHS)
+    allowed_changes.update(EPIC_272_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-217 changed unauthorized paths: " + ", ".join(unexpected))
     if changes and changes not in [
@@ -930,7 +947,7 @@ def main() -> int:
         "migrations/",
     ]
     for prefix in forbidden_prefixes:
-        gate.require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS for path in changes), f"TASK-217 must not change {prefix}")
+        gate.require(not any(path.startswith(prefix) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS and path not in EPIC_272_EXACT_PATHS for path in changes), f"TASK-217 must not change {prefix}")
 
     production_diff_paths = git_lines(root, "diff", "--name-only", "main", "--", "apps", "libs", "migrations")
     gate.require(production_diff_paths <= TASK_257_EXACT_PATHS, "TASK-217 production diff is limited to TASK-257 exact parser boundary paths")

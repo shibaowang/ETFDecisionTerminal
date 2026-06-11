@@ -23,6 +23,22 @@ TASK_271_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
 }
 
+EPIC_272_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/340_excel_vba_import_mvp_release_readiness.md",
+    "docs/341_excel_vba_import_mvp_user_guide.md",
+    "docs/342_excel_vba_import_mvp_sample_export_format.md",
+    "docs/343_excel_vba_import_mvp_local_runbook.md",
+    "docs/344_excel_vba_import_mvp_known_limits.md",
+    "docs/345_excel_vba_import_mvp_release_readiness_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpReleaseReadiness/excel_vba_import_mvp_release_readiness.cpp",
+    "samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -414,6 +430,7 @@ ALLOWED_CHANGED_PATHS = {
 ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_270_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(TASK_271_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(EPIC_272_EXACT_PATHS)
 
 REQUIRED_DOC_286_SECTIONS = [
     "## Purpose",
@@ -796,7 +813,7 @@ def main() -> int:
     current_paths = changed_paths(root)
     unauthorized = sorted(path for path in current_paths if path not in ALLOWED_CHANGED_PATHS)
     gate.require(not unauthorized, f"changed paths are exact allowlisted: {unauthorized}")
-    gate.require(all(not path.startswith(prefix) for path in current_paths if path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS for prefix in FORBIDDEN_CHANGED_PREFIXES), "changed paths avoid forbidden production and fixture prefixes")
+    gate.require(all(not path.startswith(prefix) for path in current_paths if path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS and path not in EPIC_272_EXACT_PATHS for prefix in FORBIDDEN_CHANGED_PREFIXES), "changed paths avoid forbidden production and fixture prefixes")
     gate.require(TASK_245_DOC.as_posix() in ALLOWED_CHANGED_PATHS, "TASK-245 docs/286 exact path allowlisted")
     gate.require(TASK_245_PLAN.as_posix() in ALLOWED_CHANGED_PATHS, "TASK-245 docs/287 exact path allowlisted")
     gate.require(TASK_245_GATE.as_posix() in ALLOWED_CHANGED_PATHS, "TASK-245 gate exact path allowlisted")
@@ -845,7 +862,7 @@ def main() -> int:
     validate_future_bridge_directory(gate, root)
     gate.require(not any(path.startswith("libs/AccountingEngine/") for path in current_paths), "AccountingEngine code unchanged")
     gate.require(not any(path.startswith("apps/") and path != "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml" for path in current_paths), "apps production paths unchanged")
-    gate.require(not any(path.startswith("libs/") and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS for path in current_paths), "libs production paths unchanged")
+    gate.require(not any(path.startswith("libs/") and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS and path not in EPIC_272_EXACT_PATHS for path in current_paths), "libs production paths unchanged")
     gate.require(not any(path.startswith("migrations/") for path in current_paths), "migrations unchanged")
     gate.require(not any(path.endswith(".qml") and path != "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml" for path in current_paths), "QML unchanged")
 

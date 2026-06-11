@@ -19,6 +19,10 @@ Excel/VBA workbook -> sanitized JSON/TXT export -> ETFDecisionTerminal MVP previ
 Required columns are documented in
 `docs/351_excel_vba_import_mvp_export_helper_mapping.md`.
 
+Header lookup trims harmless leading/trailing whitespace. Blank trailing rows
+are skipped. Non-ASCII memo text, including Chinese memo text, is emitted using
+JSON-safe `\uXXXX` escapes so the export remains safe as a JSON/TXT payload.
+
 ## Safety Boundary
 
 The helper is export-only. It does not use network access, credentials,

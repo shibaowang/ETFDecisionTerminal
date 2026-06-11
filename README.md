@@ -1,5 +1,35 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-275 Excel/VBA Import MVP Real Workbook Trial Hardening
+
+EPIC-275 hardens the Excel/VBA Import MVP for a local real-workbook trial
+release candidate:
+
+- trial hardening overview:
+  `docs/354_excel_vba_import_mvp_real_workbook_trial_hardening.md`
+- compatibility matrix:
+  `docs/355_excel_vba_import_mvp_compatibility_matrix.md`
+- real-workbook trial runbook:
+  `docs/356_excel_vba_import_mvp_real_workbook_trial_runbook.md`
+- release-candidate checklist:
+  `docs/357_excel_vba_import_mvp_release_candidate_checklist.md`
+- test plan:
+  `docs/358_excel_vba_import_mvp_real_workbook_trial_test_plan.md`
+- positive samples:
+  `samples/excel_vba_import/EPIC275_positive_single_cash_single_buy.json`,
+  `samples/excel_vba_import/EPIC275_positive_buy_partial_sell.json`,
+  `samples/excel_vba_import/EPIC275_positive_multi_trade_multi_cash.json`,
+  `samples/excel_vba_import/EPIC275_positive_chinese_memo_whitespace_headers.json`
+- negative / not-persistable samples:
+  `samples/excel_vba_import/EPIC275_negative_market_fx_persistence_not_supported.json`
+- smoke and E2E hardening test:
+  `shell_accounting_excel_vba_import_mvp_real_workbook_trial_hardening`
+
+The MVP supports sanitized JSON/TXT exports only. Direct `.xlsx` import is not
+supported. EPIC-275 does not touch production database paths, access broker,
+network, credentials, or endpoints, place real orders, or enable automatic
+trading.
+
 ## EPIC-274 Excel/VBA Import MVP Export Helper Compatibility Pack
 
 EPIC-274 adds an Excel 2010-compatible VBA export helper package for existing

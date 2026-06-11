@@ -2,6 +2,25 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-275 Excel/VBA import MVP real workbook trial hardening boundary
+
+- Excel/VBA import MVP real-workbook trial hardening work may add the EPIC-275
+  compatibility matrix, real-workbook trial runbook, release-candidate
+  checklist, test plan, sanitized samples, and the
+  `shell_accounting_excel_vba_import_mvp_real_workbook_trial_hardening` CTest.
+- The supported MVP path remains sanitized JSON/TXT export only. Direct `.xlsx`
+  import is not supported.
+- Positive samples may prove accepted preview and temp-DB local-service
+  persistence through the existing DataService / Presenter path.
+- Negative samples must fail closed in preview or remain explicitly
+  not-persistable, such as market price / FX persistence attempts.
+- EPIC-275 does not authorize apps/QML changes, startup changes, DataServiceApi
+  write action semantic changes, DataServiceClient production changes,
+  DataAccess repository changes, migrations, AccountingEngine production code
+  changes, production DB mutation logic, broker, network, credentials,
+  endpoint, TradeDraft, strategy execution, real order placement, or automatic
+  trading.
+
 ## EPIC-274 Excel/VBA import MVP export helper compatibility boundary
 
 - Excel/VBA import MVP export helper work may add helper docs, mapping docs,

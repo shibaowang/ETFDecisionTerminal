@@ -2,6 +2,27 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-273 Excel/VBA import MVP demo workspace boundary
+
+- Excel/VBA import MVP demo workspace work may add demo workspace docs, a trial
+  startup runbook, manual acceptance checklist, smoke CTest, and a repo-local
+  bootstrap helper under `scripts/excel_vba_import_mvp/`.
+- The bootstrap helper may create only an explicit local demo workspace path,
+  copy sanitized JSON/TXT sample exports, and optionally initialize a demo
+  SQLite database through the existing `ETFDataService --init-db` command.
+- Demo DB paths must be explicit local or repo-local demo paths and must not
+  point at production database paths.
+- DataService trial startup instructions may use the existing local socket
+  service with the explicit demo DB path. They must not add production feature
+  code or service startup wiring.
+- The MVP supports sanitized JSON/TXT exports only. Direct `.xlsx` import is
+  not supported.
+- EPIC-273 does not authorize DataServiceApi write action implementation
+  changes, DataAccess repository changes, migrations, AccountingEngine
+  production code changes, production DB mutation logic, broker, network,
+  credentials, endpoint, TradeDraft, strategy execution, real order placement,
+  or automatic trading.
+
 ## EPIC-272 Excel/VBA import MVP release readiness boundary
 
 - Excel/VBA import MVP release readiness may add user guide, runbook, sample

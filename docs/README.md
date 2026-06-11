@@ -12,6 +12,14 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [346 Excel/VBA Import MVP Demo Workspace](346_excel_vba_import_mvp_demo_workspace.md)
+- [347 Excel/VBA Import MVP Trial Startup Runbook](347_excel_vba_import_mvp_trial_startup_runbook.md)
+- [348 Excel/VBA Import MVP Manual Acceptance Checklist](348_excel_vba_import_mvp_manual_acceptance_checklist.md)
+- [349 Excel/VBA Import MVP Demo Workspace Test Plan](349_excel_vba_import_mvp_demo_workspace_test_plan.md)
+- Excel/VBA import MVP demo bootstrap:
+  [scripts/excel_vba_import_mvp/New-ExcelVbaImportMvpDemoWorkspace.ps1](../scripts/excel_vba_import_mvp/New-ExcelVbaImportMvpDemoWorkspace.ps1)
+  The demo workspace supports sanitized JSON/TXT export only; direct `.xlsx`
+  import is not supported.
 - [340 Excel/VBA Import MVP Release Readiness](340_excel_vba_import_mvp_release_readiness.md)
 - [341 Excel/VBA Import MVP User Guide](341_excel_vba_import_mvp_user_guide.md)
 - [342 Excel/VBA Import MVP Sample Export Format](342_excel_vba_import_mvp_sample_export_format.md)

@@ -1,5 +1,27 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-273 Excel/VBA Import MVP Demo Workspace
+
+EPIC-273 adds a local trial bootstrap path for the Excel/VBA import MVP:
+
+- demo workspace guide: `docs/346_excel_vba_import_mvp_demo_workspace.md`
+- trial startup runbook:
+  `docs/347_excel_vba_import_mvp_trial_startup_runbook.md`
+- manual acceptance checklist:
+  `docs/348_excel_vba_import_mvp_manual_acceptance_checklist.md`
+- demo workspace test plan:
+  `docs/349_excel_vba_import_mvp_demo_workspace_test_plan.md`
+- repo-local bootstrap helper:
+  `scripts/excel_vba_import_mvp/New-ExcelVbaImportMvpDemoWorkspace.ps1`
+- smoke test:
+  `shell_accounting_excel_vba_import_mvp_demo_workspace`
+
+The helper creates a local `.demo/excel_vba_import_mvp` workspace, copies the
+sanitized JSON/TXT sample export, and documents an explicit demo SQLite path.
+It does not touch production database paths, access broker/network/credentials
+or endpoints, place real orders, or enable automatic trading. Direct `.xlsx`
+import is still not supported.
+
 ## EPIC-272 Excel/VBA Import MVP Release Readiness
 
 EPIC-272 prepares the Excel/VBA import MVP for local trial use:

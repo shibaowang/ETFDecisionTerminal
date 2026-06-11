@@ -52,6 +52,21 @@ EPIC_273_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/excel_vba_import_mvp_demo_workspace.cpp",
 }
+EPIC_274_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/350_excel_vba_import_mvp_export_helper_compatibility_pack.md",
+    "docs/351_excel_vba_import_mvp_export_helper_mapping.md",
+    "docs/352_excel_vba_import_mvp_export_helper_user_guide.md",
+    "docs/353_excel_vba_import_mvp_export_helper_test_plan.md",
+    "samples/excel_vba_import/TASK274_export_helper_expected_sample.json",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/excel_vba_import_mvp_export_helper_compatibility.cpp",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -498,6 +513,7 @@ ALLOWED_CHANGED_PATHS.update(TASK_271_EXACT_PATHS)
 ALLOWED_CHANGED_PATHS.update(EPIC_272_EXACT_PATHS)
 
 ALLOWED_CHANGED_PATHS.update(EPIC_273_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(EPIC_274_EXACT_PATHS)
 TASK_246_SELF_CONSISTENCY_PATHS = {
     "README.md",
     "docs/12_codex_prompt_template.md",
@@ -838,7 +854,7 @@ def validate_gate_safety(gate: Gate, root: Path) -> None:
 
 def validate_no_runtime_boundary(gate: Gate, root: Path, changes: set[str]) -> None:
     gate.require(not any(path.startswith(("apps/", "libs/", "migrations/")) and path not in TASK_257_EXACT_PATHS and path not in TASK_270_EXACT_PATHS and path not in TASK_271_EXACT_PATHS and path not in EPIC_272_EXACT_PATHS for path in changes), "no production changed paths")
-    gate.require(all(path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or path == "samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json" or not path.endswith(".json") for path in changes), "no fixture JSON changed paths")
+    gate.require(all(path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or path in {"samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json", "samples/excel_vba_import/TASK274_export_helper_expected_sample.json"} or not path.endswith(".json") for path in changes), "no fixture JSON changed paths")
     for path in [TASK_DOCS["TASK-229"][0], TASK_DOCS["TASK-229"][1], CRITICAL_GATE_PATHS[-1]]:
         text = read(root / path)
         lowered = text.lower()

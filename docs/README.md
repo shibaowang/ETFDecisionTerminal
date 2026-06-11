@@ -12,6 +12,19 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [350 Excel/VBA Import MVP Export Helper Compatibility Pack](350_excel_vba_import_mvp_export_helper_compatibility_pack.md)
+- [351 Excel/VBA Import MVP Export Helper Mapping](351_excel_vba_import_mvp_export_helper_mapping.md)
+- [352 Excel/VBA Import MVP Export Helper User Guide](352_excel_vba_import_mvp_export_helper_user_guide.md)
+- [353 Excel/VBA Import MVP Export Helper Test Plan](353_excel_vba_import_mvp_export_helper_test_plan.md)
+- Excel/VBA import MVP export helper:
+  [tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas](../tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas)
+- Excel/VBA import MVP export helper README:
+  [tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md](../tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md)
+- Excel/VBA import MVP export helper expected sample:
+  [samples/excel_vba_import/TASK274_export_helper_expected_sample.json](../samples/excel_vba_import/TASK274_export_helper_expected_sample.json)
+  The MVP supports Excel/VBA-side sanitized JSON/TXT export only; direct
+  `.xlsx` import is not supported. The helper does not access broker, network,
+  credentials, or endpoints, and does not enable automatic trading.
 - [346 Excel/VBA Import MVP Demo Workspace](346_excel_vba_import_mvp_demo_workspace.md)
 - [347 Excel/VBA Import MVP Trial Startup Runbook](347_excel_vba_import_mvp_trial_startup_runbook.md)
 - [348 Excel/VBA Import MVP Manual Acceptance Checklist](348_excel_vba_import_mvp_manual_acceptance_checklist.md)

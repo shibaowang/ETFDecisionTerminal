@@ -54,6 +54,21 @@ EPIC_273_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/excel_vba_import_mvp_demo_workspace.cpp",
 }
+EPIC_274_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/350_excel_vba_import_mvp_export_helper_compatibility_pack.md",
+    "docs/351_excel_vba_import_mvp_export_helper_mapping.md",
+    "docs/352_excel_vba_import_mvp_export_helper_user_guide.md",
+    "docs/353_excel_vba_import_mvp_export_helper_test_plan.md",
+    "samples/excel_vba_import/TASK274_export_helper_expected_sample.json",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/excel_vba_import_mvp_export_helper_compatibility.cpp",
+}
 import argparse
 import json
 import re
@@ -196,6 +211,7 @@ TASK264_EXACT_PATHS.update(TASK_271_EXACT_PATHS)
 TASK264_EXACT_PATHS.update(EPIC_272_EXACT_PATHS)
 
 TASK264_EXACT_PATHS.update(EPIC_273_EXACT_PATHS)
+TASK264_EXACT_PATHS.update(EPIC_274_EXACT_PATHS)
 TASK264_OLD_GATE_REPAIR_PATHS = {
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
     "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",

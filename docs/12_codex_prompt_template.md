@@ -2,6 +2,27 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-274 Excel/VBA import MVP export helper compatibility boundary
+
+- Excel/VBA import MVP export helper work may add helper docs, mapping docs,
+  user guide, smoke CTest, a sanitized expected sample, and workbook-side VBA
+  helper files under `tools/excel_vba_export/`.
+- The helper must remain Excel 2010-compatible and read only the current
+  workbook `InitialCash` and `TradeLog` sheets.
+- The supported path is Excel/VBA-side export to sanitized JSON/TXT. Direct
+  `.xlsx` import is not supported.
+- Helper output must use the MVP root contract:
+  `schemaVersion=excel-vba-export/v1`,
+  `source=sanitized-excel-vba-export`, and `sheets=[...]`.
+- The helper and sample/default values must use sanitized labels such as
+  `DEMO_ACCOUNT`, `DEMO_PORTFOLIO`, `DEMO_ETF`, and `SANITIZED_SAMPLE`.
+- EPIC-274 does not authorize apps/QML changes, startup changes, DataServiceApi
+  write action implementation changes, DataServiceClient production changes,
+  DataAccess repository changes, migrations, AccountingEngine production code
+  changes, production DB mutation logic, broker, network, credentials,
+  endpoint, TradeDraft, strategy execution, real order placement, or automatic
+  trading.
+
 ## EPIC-273 Excel/VBA import MVP demo workspace boundary
 
 - Excel/VBA import MVP demo workspace work may add demo workspace docs, a trial

@@ -1,3 +1,17 @@
+TASK_270_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/336_shell_accounting_excel_vba_import_persist_post_write_readback_refresh.md",
+    "docs/337_shell_accounting_excel_vba_import_persist_post_write_readback_refresh_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
+}
+
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -396,6 +410,7 @@ ALLOWED_CHANGED_PATHS = {
     "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
 }
 ALLOWED_CHANGED_PATHS.update(TASK_257_EXACT_PATHS)
+ALLOWED_CHANGED_PATHS.update(TASK_270_EXACT_PATHS)
 
 FORBIDDEN_STORAGE_SUFFIXES = {".db", ".sqlite", ".sqlite3", ".wal", ".shm"}
 

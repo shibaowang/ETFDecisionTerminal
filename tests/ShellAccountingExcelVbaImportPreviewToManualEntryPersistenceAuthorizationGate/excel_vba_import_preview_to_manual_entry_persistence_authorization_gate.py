@@ -1,5 +1,20 @@
 #!/usr/bin/env python3
 
+TASK_270_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/336_shell_accounting_excel_vba_import_persist_post_write_readback_refresh.md",
+    "docs/337_shell_accounting_excel_vba_import_persist_post_write_readback_refresh_test_plan.md",
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPersistPostWriteReadbackRefresh/excel_vba_import_persist_post_write_readback_refresh.cpp",
+}
+
+
 import argparse
 import json
 import re
@@ -135,6 +150,8 @@ TASK264_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/excel_vba_import_persist_supported_fact_types_alignment.cpp",
 }
+
+TASK264_EXACT_PATHS.update(TASK_270_EXACT_PATHS)
 
 TASK264_OLD_GATE_REPAIR_PATHS = {
     "tests/ShellAccountingManualCashMovementRepositoryDualWriteImplementation/manual_cash_movement_repository_dual_write_implementation.cpp",
@@ -419,6 +436,7 @@ def main() -> int:
             or changed_path in TASK266_CLIENT_ADAPTER_PATHS
             or changed_path in TASK267_SHELLSERVICES_CONTRACT_PATHS
             or changed_path in TASK269_SUPPORTED_FACT_TYPES_PATHS
+            or changed_path in TASK_270_EXACT_PATHS
         ):
             continue
         p = root / changed_path

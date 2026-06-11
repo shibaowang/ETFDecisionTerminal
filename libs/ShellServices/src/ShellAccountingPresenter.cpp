@@ -628,6 +628,16 @@ bool ShellAccountingPresenter::lastExcelVbaImportPersistIdempotencyConflictRejec
     return lastExcelVbaImportPersistIdempotencyConflictRejected_;
 }
 
+int ShellAccountingPresenter::lastExcelVbaImportPersistTradeLogRowsWritten() const noexcept
+{
+    return lastExcelVbaImportPersistTradeLogRowsWritten_;
+}
+
+int ShellAccountingPresenter::lastExcelVbaImportPersistCashAdjustmentRowsWritten() const noexcept
+{
+    return lastExcelVbaImportPersistCashAdjustmentRowsWritten_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -1099,6 +1109,8 @@ void ShellAccountingPresenter::resetExcelVbaImportPersistState()
     lastExcelVbaImportPersistAuditLogWritten_ = false;
     lastExcelVbaImportPersistDuplicateImportPrevented_ = false;
     lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
+    lastExcelVbaImportPersistTradeLogRowsWritten_ = 0;
+    lastExcelVbaImportPersistCashAdjustmentRowsWritten_ = 0;
     emit excelVbaImportPersistStateChanged();
 }
 
@@ -1148,7 +1160,28 @@ bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
     emit excelVbaImportPersistStateChanged();
     const auto result = controller_->persistExcelVbaImportManualEntry(request);
     excelVbaImportPersistBusy_ = false;
-    applyExcelVbaImportPersistManualEntryResult(result);
+    applyExcelVbaImportPersistManualEntryResult(result, tradeFactCount, cashFactCount);
+    const bool persisted = lastExcelVbaImportPersistStatus_ == QStringLiteral("PERSISTED");
+    if (persisted) {
+        refreshAfterManualEntryWrite(
+            tradeFactCount > 0,
+            "excel_vba_import_persist_manual_entry");
+    } else if (lastExcelVbaImportPersistStatus_ == QStringLiteral("DUPLICATE")) {
+        postWriteRefreshBusy_ = false;
+        lastPostWriteRefreshStatus_ = QStringLiteral("SKIPPED");
+        lastPostWriteRefreshIssue_.clear();
+        lastPostWriteRefreshSummary_ = QStringLiteral(
+            "reason=excel_vba_import_duplicate actions=none newRows=false");
+        emit postWriteRefreshStateChanged();
+    } else if (lastExcelVbaImportPersistStatus_ == QStringLiteral("IDEMPOTENCY_CONFLICT")) {
+        postWriteRefreshBusy_ = false;
+        lastPostWriteRefreshStatus_ = QStringLiteral("SKIPPED");
+        lastPostWriteRefreshIssue_ =
+            QStringLiteral("Post-persist refresh skipped because persistence failed closed.");
+        lastPostWriteRefreshSummary_ = QStringLiteral(
+            "reason=excel_vba_import_idempotency_conflict actions=none");
+        emit postWriteRefreshStateChanged();
+    }
     syncFromController();
     return lastExcelVbaImportPersistStatus_ == QStringLiteral("PERSISTED")
         || lastExcelVbaImportPersistStatus_ == QStringLiteral("DUPLICATE");
@@ -1373,13 +1406,17 @@ void ShellAccountingPresenter::applyExcelVbaImportPreviewResult(
 }
 
 void ShellAccountingPresenter::applyExcelVbaImportPersistManualEntryResult(
-    const ShellAccountingServiceResult& result)
+    const ShellAccountingServiceResult& result,
+    int requestedTradeFactCount,
+    int requestedCashFactCount)
 {
     lastExcelVbaImportPersistTransactionCommitted_ = result.transactionCommitted;
     lastExcelVbaImportPersistTradeLogWritten_ = result.tradeLogWritten;
     lastExcelVbaImportPersistAuditLogWritten_ = result.auditWritten;
     lastExcelVbaImportPersistDuplicateImportPrevented_ = result.duplicateImportPrevented;
     lastExcelVbaImportPersistIdempotencyConflictRejected_ = result.idempotencyConflictRejected;
+    lastExcelVbaImportPersistTradeLogRowsWritten_ = 0;
+    lastExcelVbaImportPersistCashAdjustmentRowsWritten_ = 0;
 
     QStringList codes;
     for (const auto& issue : result.issues) {
@@ -1419,6 +1456,15 @@ void ShellAccountingPresenter::applyExcelVbaImportPersistManualEntryResult(
         lastExcelVbaImportPersistStatus_ =
             duplicate ? QStringLiteral("DUPLICATE") : QStringLiteral("PERSISTED");
         lastExcelVbaImportPersistIssue_.clear();
+        if (persisted) {
+            lastExcelVbaImportPersistTradeLogRowsWritten_ =
+                requestedTradeFactCount + requestedCashFactCount;
+            lastExcelVbaImportPersistCashAdjustmentRowsWritten_ = requestedCashFactCount;
+        }
+        lastExcelVbaImportPersistSummary_ += QStringLiteral(
+            " tradeLogRowsWritten=%1 cashAdjustmentRowsWritten=%2")
+            .arg(lastExcelVbaImportPersistTradeLogRowsWritten_)
+            .arg(lastExcelVbaImportPersistCashAdjustmentRowsWritten_);
         emit excelVbaImportPersistStateChanged();
         return;
     }
@@ -1582,6 +1628,8 @@ void ShellAccountingPresenter::markExcelVbaImportPersistInputError(const QString
     lastExcelVbaImportPersistAuditLogWritten_ = false;
     lastExcelVbaImportPersistDuplicateImportPrevented_ = false;
     lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
+    lastExcelVbaImportPersistTradeLogRowsWritten_ = 0;
+    lastExcelVbaImportPersistCashAdjustmentRowsWritten_ = 0;
     emit excelVbaImportPersistStateChanged();
 }
 

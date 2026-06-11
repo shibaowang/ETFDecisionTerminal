@@ -53,6 +53,10 @@ public:
     [[nodiscard]] DataServiceClientResult<etfdt::protocol::ProtocolResponse> accountingReplayPreview(
         const std::string& payloadJson = "{}",
         int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>
+    accountingPortfolioReplayReadOnlySummary(
+        const PortfolioReplayReadOnlySummaryRequest& request,
+        int timeoutMs = 2000);
     [[nodiscard]] DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>
     accountingExcelVbaImportReadOnlyPreview(
         const std::string& payloadJson = "{}",

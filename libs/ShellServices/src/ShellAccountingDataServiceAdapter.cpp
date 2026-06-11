@@ -375,6 +375,17 @@ ShellAccountingDataServiceClientRequest makeExcelVbaImportPersistManualEntryClie
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makePortfolioReplayReadOnlySummaryClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.portfolio_replay.readonly_summary";
+    clientRequest.payloadJson =
+        request.portfolioReplayPayloadJson.empty() ? "{}" : request.portfolioReplayPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingServiceResult mapClientResponse(
     ShellAccountingDataServiceClientResponse response,
     const ShellAccountingServiceRequest& request,
@@ -414,6 +425,15 @@ ShellAccountingServiceResult mapClientResponse(
     result.importPreviewDiagnostics = std::move(response.importPreviewDiagnostics);
     result.importPreviewDiagnosticCodes = std::move(response.importPreviewDiagnosticCodes);
     result.importPreviewFactSummary = response.importPreviewFactSummary;
+    result.portfolioReplayAccepted = response.portfolioReplayAccepted;
+    result.portfolioReplayExecuted = response.portfolioReplayExecuted;
+    result.portfolioReplayPositionCount = response.portfolioReplayPositionCount;
+    result.portfolioReplayCashSummaryCount = response.portfolioReplayCashSummaryCount;
+    result.portfolioReplayRealizedPnlText = std::move(response.portfolioReplayRealizedPnlText);
+    result.portfolioReplayUnrealizedPnlText = std::move(response.portfolioReplayUnrealizedPnlText);
+    result.portfolioReplayTotalFeeText = std::move(response.portfolioReplayTotalFeeText);
+    result.portfolioReplayTotalMarketValueText = std::move(response.portfolioReplayTotalMarketValueText);
+    result.portfolioReplayIssueCodes = std::move(response.portfolioReplayIssueCodes);
     result.accountingEngineCalled = response.accountingEngineCalled;
     result.productionFileLoading = response.productionFileLoading;
     result.productionWrite = response.productionWrite;
@@ -575,6 +595,19 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::persistExcelVbaI
             "accounting.excel_vba_import.persist_manual_entry");
     }
     return makeNotConnectedResult(request, "accounting.excel_vba_import.persist_manual_entry");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchPortfolioReplayReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callPortfolioReplayReadOnlySummary(
+                makePortfolioReplayReadOnlySummaryClientRequest(request)),
+            request,
+            "accounting.portfolio_replay.readonly_summary");
+    }
+    return makeNotConnectedResult(request, "accounting.portfolio_replay.readonly_summary");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

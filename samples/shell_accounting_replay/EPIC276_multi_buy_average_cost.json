@@ -1,0 +1,86 @@
+{
+  "fixtureId": "EPIC276_multi_buy_average_cost",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "COMPLETED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_CASH_MULTI_BUY",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "2000.00",
+        "currency": "CNY",
+        "note": "sanitized initial cash"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "EPIC276_TRADE_MULTI_BUY_1",
+        "tradeTime": "2026-06-12T09:30:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "first buy"
+      },
+      {
+        "factId": "EPIC276_TRADE_MULTI_BUY_2",
+        "tradeTime": "2026-06-12T10:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "BUY",
+        "quantityText": "50",
+        "priceText": "3.0000",
+        "amountText": "150.00",
+        "feeText": "0.50",
+        "cashFlowText": "-150.50",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "second buy"
+      }
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [
+      {
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "currency": "CNY",
+        "cashBalanceText": "1648.50"
+      }
+    ],
+    "positions": [
+      {
+        "instrumentCode": "510300",
+        "positionBucket": "ETF",
+        "quantityText": "150",
+        "averageCostText": "2.3433",
+        "costBasisText": "351.50",
+        "realizedPnlText": "0.00",
+        "unrealizedPnlText": "UNAVAILABLE",
+        "totalFeeText": "1.50"
+      }
+    ],
+    "pnlSummary": {
+      "realizedPnlText": "0.00",
+      "unrealizedPnlText": "UNAVAILABLE",
+      "totalFeeText": "1.50",
+      "totalMarketValueText": "UNAVAILABLE",
+      "dataQualityStatus": "PARTIAL"
+    },
+    "expectedIssueCodes": []
+  }
+}

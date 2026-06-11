@@ -123,6 +123,14 @@ DataServiceClientResult<ExcelVbaImportPersistManualEntryResult> persistMappingFa
         message);
 }
 
+DataServiceClientResult<PortfolioReplayReadOnlySummaryResult> portfolioReplayMappingFailure(
+    const std::string& message)
+{
+    return DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>::failure(
+        etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+        message);
+}
+
 }  // namespace
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> parseProtocolResponseJson(
@@ -468,6 +476,134 @@ parseExcelVbaImportPersistManualEntryPayloadJson(
     return DataServiceClientResult<ExcelVbaImportPersistManualEntryResult>::success(std::move(result));
 }
 
+DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>
+parsePortfolioReplayReadOnlySummaryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid portfolio replay read-only summary payload JSON");
+    }
+
+    const auto object = document.object();
+    PortfolioReplayReadOnlySummaryResult result;
+    result.protocolSuccess = protocolSuccess;
+    result.rawPayloadJson = json;
+    std::string missingField;
+
+    if (!readRequiredString(object, "action", result.action, missingField)
+        || !readRequiredString(object, "task", result.task, missingField)
+        || !readRequiredString(object, "mode", result.mode, missingField)
+        || !readRequiredString(object, "status", result.status, missingField)
+        || !readRequiredString(object, "dataQualityStatus", result.dataQualityStatus, missingField)
+        || !readRequiredBool(object, "accepted", result.accepted, missingField)
+        || !readRequiredBool(object, "replayExecuted", result.replayExecuted, missingField)
+        || !readRequiredBool(
+            object,
+            "portfolioReplayEngineCreated",
+            result.portfolioReplayEngineCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "dataServiceReadOnlyActionCreated",
+            result.dataServiceReadOnlyActionCreated,
+            missingField)
+        || !readRequiredBool(object, "accountingEngineCalled", result.accountingEngineCalled, missingField)
+        || !readRequiredInt(object, "positionCount", result.positionCount, missingField)
+        || !readRequiredInt(object, "cashSummaryCount", result.cashSummaryCount, missingField)
+        || !readRequiredBool(
+            object,
+            "readOnlyReplayNoWrite",
+            result.readOnlyReplayNoWrite,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "tradeLogRowsWrittenByReplay",
+            result.tradeLogRowsWrittenByReplay,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "cashAdjustmentRowsWrittenByReplay",
+            result.cashAdjustmentRowsWrittenByReplay,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "auditLogRowsWrittenByReplay",
+            result.auditLogRowsWrittenByReplay,
+            missingField)
+        || !readRequiredBool(object, "productionWrite", result.productionWrite, missingField)
+        || !readRequiredBool(
+            object,
+            "sqliteProductionWrite",
+            result.sqliteProductionWrite,
+            missingField)
+        || !readRequiredBool(object, "auditWritten", result.auditWritten, missingField)
+        || !readRequiredBool(object, "ledgerWritten", result.ledgerWritten, missingField)
+        || !readRequiredBool(object, "snapshotWritten", result.snapshotWritten, missingField)
+        || !readRequiredBool(object, "tradeLogWritten", result.tradeLogWritten, missingField)
+        || !readRequiredBool(
+            object,
+            "readModelPersistentWrite",
+            result.readModelPersistentWrite,
+            missingField)
+        || !readRequiredBool(object, "productionDbTouched", result.productionDbTouched, missingField)
+        || !readRequiredBool(object, "networkAccess", result.networkAccess, missingField)
+        || !readRequiredBool(object, "credentialAccess", result.credentialAccess, missingField)
+        || !readRequiredBool(object, "endpointAccess", result.endpointAccess, missingField)
+        || !readRequiredBool(
+            object,
+            "brokerOrderSubmitted",
+            result.brokerOrderSubmitted,
+            missingField)
+        || !readRequiredBool(object, "automaticTrading", result.automaticTrading, missingField)) {
+        return portfolioReplayMappingFailure(
+            "Portfolio replay read-only summary payload missing field: " + missingField);
+    }
+
+    const auto pnlValue = object.value("pnlSummary");
+    if (!pnlValue.isObject()) {
+        return portfolioReplayMappingFailure("Portfolio replay payload missing pnlSummary");
+    }
+    const auto pnl = pnlValue.toObject();
+    if (!readRequiredString(pnl, "currency", result.pnlSummary.currency, missingField)
+        || !readRequiredString(pnl, "realizedPnlText", result.pnlSummary.realizedPnlText, missingField)
+        || !readRequiredString(pnl, "unrealizedPnlText", result.pnlSummary.unrealizedPnlText, missingField)
+        || !readRequiredString(pnl, "totalFeeText", result.pnlSummary.totalFeeText, missingField)
+        || !readRequiredString(
+            pnl,
+            "totalMarketValueText",
+            result.pnlSummary.totalMarketValueText,
+            missingField)
+        || !readRequiredString(
+            pnl,
+            "dataQualityStatus",
+            result.pnlSummary.dataQualityStatus,
+            missingField)) {
+        return portfolioReplayMappingFailure(
+            "Portfolio replay pnlSummary missing field: " + missingField);
+    }
+
+    const auto issuesValue = object.value("issues");
+    if (!issuesValue.isArray()) {
+        return portfolioReplayMappingFailure("Portfolio replay payload missing issues");
+    }
+    for (const auto& issueValue : issuesValue.toArray()) {
+        if (!issueValue.isObject()) {
+            return portfolioReplayMappingFailure("Portfolio replay issue must be an object");
+        }
+        const auto issue = issueValue.toObject();
+        if (const auto code = stringField(issue, "code")) {
+            result.issueCodes.push_back(*code);
+        }
+    }
+
+    return DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>::success(std::move(result));
+}
+
 std::string auditAppendPayloadJson(const AuditAppendRequest& request)
 {
     std::ostringstream stream;
@@ -505,6 +641,12 @@ std::string excelVbaImportPersistManualEntryPayloadJson(
            << "\"importPayload\":" << request.sanitizedImportPayloadJson
            << "}";
     return stream.str();
+}
+
+std::string portfolioReplayReadOnlySummaryPayloadJson(
+    const PortfolioReplayReadOnlySummaryRequest& request)
+{
+    return request.replayPayloadJson.empty() ? "{}" : request.replayPayloadJson;
 }
 
 }  // namespace etfdt::data_service_client

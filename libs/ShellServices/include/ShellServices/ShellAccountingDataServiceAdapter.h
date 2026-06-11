@@ -35,6 +35,8 @@ public:
         const ShellAccountingServiceRequest& request) override;
     [[nodiscard]] ShellAccountingServiceResult persistExcelVbaImportManualEntry(
         const ShellAccountingServiceRequest& request) override;
+    [[nodiscard]] ShellAccountingServiceResult fetchPortfolioReplayReadOnlySummary(
+        const ShellAccountingServiceRequest& request) override;
 
     [[nodiscard]] bool hasLiveClient() const noexcept;
     [[nodiscard]] bool hasClientPort() const noexcept;

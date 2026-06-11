@@ -54,6 +54,15 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(bool lastExcelVbaImportPersistIdempotencyConflictRejected READ lastExcelVbaImportPersistIdempotencyConflictRejected NOTIFY excelVbaImportPersistStateChanged)
     Q_PROPERTY(int lastExcelVbaImportPersistTradeLogRowsWritten READ lastExcelVbaImportPersistTradeLogRowsWritten NOTIFY excelVbaImportPersistStateChanged)
     Q_PROPERTY(int lastExcelVbaImportPersistCashAdjustmentRowsWritten READ lastExcelVbaImportPersistCashAdjustmentRowsWritten NOTIFY excelVbaImportPersistStateChanged)
+    Q_PROPERTY(bool portfolioReplayBusy READ portfolioReplayBusy NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(QString lastPortfolioReplayStatus READ lastPortfolioReplayStatus NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(QString lastPortfolioReplayIssue READ lastPortfolioReplayIssue NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(QString lastPortfolioReplaySummary READ lastPortfolioReplaySummary NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(QString lastPortfolioReplayIssueCodes READ lastPortfolioReplayIssueCodes NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(int portfolioReplayPositionCount READ portfolioReplayPositionCount NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(int portfolioReplayCashSummaryCount READ portfolioReplayCashSummaryCount NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(QString portfolioReplayRealizedPnl READ portfolioReplayRealizedPnl NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(QString portfolioReplayUnrealizedPnl READ portfolioReplayUnrealizedPnl NOTIFY portfolioReplayStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -102,6 +111,15 @@ public:
     [[nodiscard]] bool lastExcelVbaImportPersistIdempotencyConflictRejected() const noexcept;
     [[nodiscard]] int lastExcelVbaImportPersistTradeLogRowsWritten() const noexcept;
     [[nodiscard]] int lastExcelVbaImportPersistCashAdjustmentRowsWritten() const noexcept;
+    [[nodiscard]] bool portfolioReplayBusy() const noexcept;
+    [[nodiscard]] QString lastPortfolioReplayStatus() const;
+    [[nodiscard]] QString lastPortfolioReplayIssue() const;
+    [[nodiscard]] QString lastPortfolioReplaySummary() const;
+    [[nodiscard]] QString lastPortfolioReplayIssueCodes() const;
+    [[nodiscard]] int portfolioReplayPositionCount() const noexcept;
+    [[nodiscard]] int portfolioReplayCashSummaryCount() const noexcept;
+    [[nodiscard]] QString portfolioReplayRealizedPnl() const;
+    [[nodiscard]] QString portfolioReplayUnrealizedPnl() const;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -168,6 +186,8 @@ public:
     Q_INVOKABLE bool previewExcelVbaImportReadOnlyFromLocalFile(const QString& fileUrlOrPath);
     Q_INVOKABLE void resetExcelVbaImportPersistState();
     Q_INVOKABLE bool persistAcceptedExcelVbaImportPreview();
+    Q_INVOKABLE void resetPortfolioReplayState();
+    Q_INVOKABLE bool previewPortfolioReplayReadOnlySummary(const QString& replayPayloadJson);
     bool persistExcelVbaImportManualEntry(
         const QString& previewStatus,
         const QString& previewDigest,
@@ -189,6 +209,7 @@ signals:
     void postWriteRefreshStateChanged();
     void excelVbaImportPreviewStateChanged();
     void excelVbaImportPersistStateChanged();
+    void portfolioReplayStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -211,6 +232,7 @@ private:
     void markManualEntryInputError(const QString& message);
     void markExcelVbaImportPreviewInputError(const QString& message);
     void markExcelVbaImportPersistInputError(const QString& message);
+    void markPortfolioReplayInputError(const QString& message);
     [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPreviewRequest(
         const QString& importPayloadJson,
         bool& valid);
@@ -227,6 +249,9 @@ private:
         int cashFactCount,
         int marketPriceFactCount,
         int fxRateFactCount,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makePortfolioReplayReadOnlySummaryRequest(
+        const QString& replayPayloadJson,
         bool& valid);
     [[nodiscard]] QString acceptedExcelVbaImportPreviewIdempotencyKey() const;
     [[nodiscard]] QString acceptedExcelVbaImportPreviewDigest(
@@ -315,6 +340,15 @@ private:
     bool lastExcelVbaImportPersistIdempotencyConflictRejected_ = false;
     int lastExcelVbaImportPersistTradeLogRowsWritten_ = 0;
     int lastExcelVbaImportPersistCashAdjustmentRowsWritten_ = 0;
+    bool portfolioReplayBusy_ = false;
+    QString lastPortfolioReplayStatus_ = QStringLiteral("READY");
+    QString lastPortfolioReplayIssue_;
+    QString lastPortfolioReplaySummary_;
+    QString lastPortfolioReplayIssueCodes_;
+    int portfolioReplayPositionCount_ = 0;
+    int portfolioReplayCashSummaryCount_ = 0;
+    QString portfolioReplayRealizedPnl_;
+    QString portfolioReplayUnrealizedPnl_;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

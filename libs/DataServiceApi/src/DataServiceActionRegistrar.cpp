@@ -36,6 +36,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionAccountingReplayPreview, [&connection](const auto& context) {
         return handleAccountingReplayPreview(context, connection);
     });
+    (void)dispatcher.registerAction(kActionAccountingPortfolioReplayReadOnlySummary, [&connection](const auto& context) {
+        return handleAccountingPortfolioReplayReadOnlySummary(context, connection);
+    });
     (void)dispatcher.registerAction(kActionAccountingExcelVbaImportReadOnlyPreview, [&connection](const auto& context) {
         return handleAccountingExcelVbaImportReadOnlyPreview(context, connection);
     });

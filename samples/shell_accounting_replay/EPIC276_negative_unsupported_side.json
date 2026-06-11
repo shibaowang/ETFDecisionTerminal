@@ -1,0 +1,51 @@
+{
+  "fixtureId": "EPIC276_negative_unsupported_side",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "REJECTED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_NEG_CASH_SIDE",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "1000.00",
+        "currency": "CNY",
+        "note": "sanitized initial cash"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "EPIC276_NEG_SIDE",
+        "tradeTime": "2026-06-12T09:30:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "TRANSFER",
+        "quantityText": "10",
+        "priceText": "2.0000",
+        "amountText": "20.00",
+        "feeText": "1.00",
+        "cashFlowText": "-21.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "unsupported side"
+      }
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [],
+    "positions": [],
+    "pnlSummary": {
+      "realizedPnlText": "0.00",
+      "unrealizedPnlText": "0.00",
+      "totalFeeText": "0.00",
+      "totalMarketValueText": "0.00",
+      "dataQualityStatus": "ERROR"
+    },
+    "expectedIssueCodes": ["UNSUPPORTED_SIDE"]
+  }
+}

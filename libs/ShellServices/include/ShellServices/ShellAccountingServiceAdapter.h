@@ -30,6 +30,8 @@ public:
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult persistExcelVbaImportManualEntry(
         const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult fetchPortfolioReplayReadOnlySummary(
+        const ShellAccountingServiceRequest& request);
 };
 
 }  // namespace etfdt::shell_services

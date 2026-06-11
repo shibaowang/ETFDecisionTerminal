@@ -1,0 +1,75 @@
+{
+  "fixtureId": "EPIC276_sell_all_position",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "COMPLETED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_CASH_SELL_ALL",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "1000.00",
+        "currency": "CNY",
+        "note": "sanitized initial cash"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "EPIC276_TRADE_SELL_ALL_BUY",
+        "tradeTime": "2026-06-12T09:30:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "buy before sell all"
+      },
+      {
+        "factId": "EPIC276_TRADE_SELL_ALL_SELL",
+        "tradeTime": "2026-06-12T10:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "SELL",
+        "quantityText": "100",
+        "priceText": "2.5000",
+        "amountText": "250.00",
+        "feeText": "1.00",
+        "cashFlowText": "249.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "sell all"
+      }
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [
+      {
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "currency": "CNY",
+        "cashBalanceText": "1048.00"
+      }
+    ],
+    "positions": [],
+    "pnlSummary": {
+      "realizedPnlText": "48.00",
+      "unrealizedPnlText": "0.00",
+      "totalFeeText": "2.00",
+      "totalMarketValueText": "0.00",
+      "dataQualityStatus": "OK"
+    },
+    "expectedIssueCodes": []
+  }
+}

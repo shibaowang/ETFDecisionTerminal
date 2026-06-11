@@ -1,0 +1,33 @@
+{
+  "fixtureId": "EPIC276_negative_unsupported_cash_action",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "REJECTED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_NEG_CASH_ACTION",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "REBATE",
+        "amountText": "1000.00",
+        "currency": "CNY",
+        "note": "unsupported action"
+      }
+    ],
+    "tradeFacts": [],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [],
+    "positions": [],
+    "pnlSummary": {
+      "realizedPnlText": "0.00",
+      "unrealizedPnlText": "0.00",
+      "totalFeeText": "0.00",
+      "totalMarketValueText": "0.00",
+      "dataQualityStatus": "ERROR"
+    },
+    "expectedIssueCodes": ["UNSUPPORTED_CASH_ACTION"]
+  }
+}

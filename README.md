@@ -1,5 +1,30 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-276 ShellAccounting Portfolio Replay VBA Parity Full Delivery
+
+EPIC-276 adds the ShellAccounting portfolio replay / position / cash / PnL
+read-only projection path for sanitized VBA-style replay facts:
+
+- full delivery overview:
+  `docs/359_shell_accounting_portfolio_replay_vba_parity_full_delivery.md`
+- parity matrix:
+  `docs/360_shell_accounting_portfolio_replay_vba_parity_matrix.md`
+- read model contract:
+  `docs/361_shell_accounting_portfolio_replay_read_model_contract.md`
+- user-visible summary contract:
+  `docs/362_shell_accounting_portfolio_replay_user_visible_summary.md`
+- test plan:
+  `docs/363_shell_accounting_portfolio_replay_test_plan.md`
+- samples:
+  `samples/shell_accounting_replay/`
+- CTest:
+  `shell_accounting_portfolio_replay_vba_parity_full_delivery`
+
+The replay path is read-only. It does not write production databases, SQLite,
+audit_log, ledger, snapshot, trade_log, read models, or cash_adjustment rows.
+It does not access broker, network, credentials, or endpoints, place real
+orders, or enable automatic trading.
+
 ## EPIC-275 Excel/VBA Import MVP Real Workbook Trial Hardening
 
 EPIC-275 hardens the Excel/VBA Import MVP for a local real-workbook trial

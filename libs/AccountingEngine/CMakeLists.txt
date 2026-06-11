@@ -8,6 +8,7 @@ add_library(ETFAccountingEngine STATIC
     src/AccountingReplayParser.cpp
     src/AccountingReplayResult.cpp
     src/AccountingReplayValidation.cpp
+    src/ShellAccountingPortfolioReplayEngine.cpp
 )
 
 add_library(ETFDecisionTerminal::AccountingEngine ALIAS ETFAccountingEngine)

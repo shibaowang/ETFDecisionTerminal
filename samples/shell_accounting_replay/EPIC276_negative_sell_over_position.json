@@ -1,0 +1,68 @@
+{
+  "fixtureId": "EPIC276_negative_sell_over_position",
+  "schemaVersion": "shell-accounting-portfolio-replay/v1",
+  "expectedStatus": "REJECTED",
+  "inputFacts": {
+    "cashFacts": [
+      {
+        "factId": "EPIC276_NEG_CASH_SELL_OVER",
+        "time": "2026-06-12T09:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "action": "INITIAL_CASH",
+        "amountText": "1000.00",
+        "currency": "CNY",
+        "note": "sanitized initial cash"
+      }
+    ],
+    "tradeFacts": [
+      {
+        "factId": "EPIC276_NEG_BUY_BEFORE_SELL_OVER",
+        "tradeTime": "2026-06-12T09:30:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "BUY",
+        "quantityText": "100",
+        "priceText": "2.0000",
+        "amountText": "200.00",
+        "feeText": "1.00",
+        "cashFlowText": "-201.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "buy"
+      },
+      {
+        "factId": "EPIC276_NEG_SELL_OVER",
+        "tradeTime": "2026-06-12T10:00:00Z",
+        "accountId": "EPIC276_ACCOUNT",
+        "portfolioId": "EPIC276_PORTFOLIO",
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "side": "SELL",
+        "quantityText": "120",
+        "priceText": "2.5000",
+        "amountText": "300.00",
+        "feeText": "1.00",
+        "cashFlowText": "299.00",
+        "currency": "CNY",
+        "source": "sanitized-vba-export",
+        "note": "sell over"
+      }
+    ],
+    "marketPriceFacts": []
+  },
+  "expectedProjection": {
+    "cashSummaries": [],
+    "positions": [],
+    "pnlSummary": {
+      "realizedPnlText": "0.00",
+      "unrealizedPnlText": "0.00",
+      "totalFeeText": "0.00",
+      "totalMarketValueText": "0.00",
+      "dataQualityStatus": "ERROR"
+    },
+    "expectedIssueCodes": ["SELL_OVER_POSITION"]
+  }
+}

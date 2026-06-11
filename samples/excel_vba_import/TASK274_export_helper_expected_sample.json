@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "description": "EPIC-274 sanitized sample expected from the Excel/VBA export helper compatibility pack.",
+  "sheets": [
+    {
+      "name": "InitialCash",
+      "sheetName": "InitialCash",
+      "headers": [
+        "ROW_ID",
+        "TIME_UTC",
+        "ACCOUNT_CODE",
+        "PORTFOLIO_CODE",
+        "ACTION",
+        "AMOUNT",
+        "CURRENCY",
+        "MEMO"
+      ],
+      "rows": [
+        [
+          "EPIC274_SAMPLE_CASH_001",
+          "2026-01-05T09:00:00Z",
+          "DEMO_ACCOUNT",
+          "DEMO_PORTFOLIO",
+          "INITIAL_CASH",
+          "1000.00",
+          "USD",
+          "SANITIZED_SAMPLE_INITIAL_CASH"
+        ]
+      ]
+    },
+    {
+      "name": "TradeLog",
+      "sheetName": "TradeLog",
+      "headers": [
+        "ROW_ID",
+        "TRADE_TIME_UTC",
+        "ACCOUNT_CODE",
+        "PORTFOLIO_CODE",
+        "INSTRUMENT_CODE",
+        "SIDE",
+        "QUANTITY",
+        "PRICE",
+        "AMOUNT",
+        "FEE",
+        "CASH_FLOW",
+        "CURRENCY",
+        "SOURCE",
+        "MEMO"
+      ],
+      "rows": [
+        [
+          "EPIC274_SAMPLE_TRADE_001",
+          "2026-01-05T09:30:00Z",
+          "DEMO_ACCOUNT",
+          "DEMO_PORTFOLIO",
+          "DEMO_ETF",
+          "BUY",
+          "10",
+          "25.50",
+          "255.00",
+          "1.00",
+          "-256.00",
+          "USD",
+          "SANITIZED_SAMPLE",
+          "SANITIZED_SAMPLE_BUY"
+        ]
+      ]
+    }
+  ]
+}

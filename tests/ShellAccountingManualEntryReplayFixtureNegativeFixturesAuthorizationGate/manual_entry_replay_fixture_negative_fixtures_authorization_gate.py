@@ -52,6 +52,21 @@ EPIC_273_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/CMakeLists.txt",
     "tests/ShellAccountingExcelVbaImportMvpDemoWorkspace/excel_vba_import_mvp_demo_workspace.cpp",
 }
+EPIC_274_EXACT_PATHS = {
+    "README.md",
+    "docs/README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/350_excel_vba_import_mvp_export_helper_compatibility_pack.md",
+    "docs/351_excel_vba_import_mvp_export_helper_mapping.md",
+    "docs/352_excel_vba_import_mvp_export_helper_user_guide.md",
+    "docs/353_excel_vba_import_mvp_export_helper_test_plan.md",
+    "samples/excel_vba_import/TASK274_export_helper_expected_sample.json",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas",
+    "tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportMvpExportHelperCompatibility/excel_vba_import_mvp_export_helper_compatibility.cpp",
+}
 TASK_257_EXACT_PATHS = {
     "docs/320_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview.md",
     "docs/321_shell_accounting_excel_vba_import_readonly_local_export_json_file_loader_preview_test_plan.md",
@@ -1180,6 +1195,7 @@ def main() -> int:
     allowed_changes.update(TASK_271_EXACT_PATHS)
     allowed_changes.update(EPIC_272_EXACT_PATHS)
     allowed_changes.update(EPIC_273_EXACT_PATHS)
+    allowed_changes.update(EPIC_274_EXACT_PATHS)
     unexpected = sorted(path for path in changes if path not in allowed_changes)
     gate.require(not unexpected, "TASK-220 changed unauthorized paths: " + ", ".join(unexpected))
 

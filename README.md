@@ -1,5 +1,33 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-274 Excel/VBA Import MVP Export Helper Compatibility Pack
+
+EPIC-274 adds an Excel 2010-compatible VBA export helper package for existing
+Excel/VBA workbooks:
+
+- export helper:
+  `tools/excel_vba_export/ExcelVbaImportMvpExportHelper.bas`
+- helper README:
+  `tools/excel_vba_export/ExcelVbaImportMvpExportHelper_README.md`
+- compatibility pack overview:
+  `docs/350_excel_vba_import_mvp_export_helper_compatibility_pack.md`
+- mapping guide:
+  `docs/351_excel_vba_import_mvp_export_helper_mapping.md`
+- helper user guide:
+  `docs/352_excel_vba_import_mvp_export_helper_user_guide.md`
+- test plan:
+  `docs/353_excel_vba_import_mvp_export_helper_test_plan.md`
+- sanitized expected sample:
+  `samples/excel_vba_import/TASK274_export_helper_expected_sample.json`
+- smoke test:
+  `shell_accounting_excel_vba_import_mvp_export_helper_compatibility`
+
+The helper exports the current workbook's `InitialCash` and `TradeLog` sheets
+to the MVP sanitized JSON/TXT contract. It does not support direct `.xlsx`
+import, does not access broker/network/credentials/endpoints, does not touch
+production databases, and does not place real orders or enable automatic
+trading.
+
 ## EPIC-273 Excel/VBA Import MVP Demo Workspace
 
 EPIC-273 adds a local trial bootstrap path for the Excel/VBA import MVP:

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "local-trial-sample-manifest/v1",
+  "task": "EPIC-282",
+  "samples": [
+    {"file": "EPIC282_local_trial_excel_vba_import.json", "module": "excel_vba_import", "expectedStatus": "ACCEPTED", "expectedUserAction": "preview then explicitly persist", "noWriteBoundary": false, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_portfolio_replay.json", "module": "portfolio_replay", "expectedStatus": "READY", "expectedUserAction": "preview read-only replay", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_market_data_fixture.json", "module": "market_data", "expectedStatus": "READY", "expectedUserAction": "refresh fixture", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_strategy_recommendation_buy.json", "module": "strategy", "expectedStatus": "BUY", "expectedUserAction": "review recommendation", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_strategy_recommendation_sell.json", "module": "strategy", "expectedStatus": "SELL", "expectedUserAction": "review recommendation", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_tradedraft_buy.json", "module": "tradedraft", "expectedStatus": "DRAFT_READY", "expectedUserAction": "explicitly confirm internal draft", "noWriteBoundary": false, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_tradedraft_sell.json", "module": "tradedraft", "expectedStatus": "DRAFT_READY", "expectedUserAction": "explicitly confirm internal draft", "noWriteBoundary": false, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_otcmap_buy_multileg.json", "module": "otcmap", "expectedStatus": "DRAFT_READY", "expectedUserAction": "explicitly confirm internal draft", "noWriteBoundary": false, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_otcmap_sell_multileg.json", "module": "otcmap", "expectedStatus": "DRAFT_READY", "expectedUserAction": "explicitly confirm internal draft", "noWriteBoundary": false, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_duplicate_draft.json", "module": "tradedraft", "expectedStatus": "DUPLICATE", "expectedUserAction": "confirm no row growth", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_idempotency_conflict.json", "module": "excel_vba_import", "expectedStatus": "CONFLICT", "expectedUserAction": "confirm no row growth", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_rejected_import.json", "module": "excel_vba_import", "expectedStatus": "REJECTED", "expectedUserAction": "fix sanitized export file", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"},
+    {"file": "EPIC282_local_trial_provider_disabled.json", "module": "market_data", "expectedStatus": "PROVIDER_DISABLED", "expectedUserAction": "use fixture refresh", "noWriteBoundary": true, "noNetworkBoundary": true, "expectedCleanupBehavior": "delete demo workspace"}
+  ]
+}

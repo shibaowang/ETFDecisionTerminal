@@ -1461,7 +1461,7 @@ EPIC_281_DASHBOARD_MVP_FULL_DELIVERY_EXACT_PATHS = {
     "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
-    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
     "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
     "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
@@ -1544,5 +1544,137 @@ def _allow_epic281_dashboard_mvp_full_delivery_paths() -> None:
 
 _allow_epic281_dashboard_mvp_full_delivery_paths()
 
+
+EPIC_282_LOCAL_TRIAL_RELEASE_CANDIDATE_EXACT_PATHS = {
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "docs/12_codex_prompt_template.md",
+    "docs/389_local_trial_release_candidate_full_delivery.md",
+    "docs/390_local_trial_release_candidate_runbook.md",
+    "docs/391_local_trial_release_candidate_manual_acceptance.md",
+    "docs/392_local_trial_release_candidate_regression_matrix.md",
+    "docs/393_local_trial_release_candidate_cleanup_rollback.md",
+    "docs/394_local_trial_release_candidate_known_limits.md",
+    "docs/395_local_trial_release_candidate_test_plan.md",
+    "docs/README.md",
+    "README.md",
+    "samples/local_trial/EPIC282_local_trial_all_modules_manifest.json",
+    "samples/local_trial/EPIC282_local_trial_duplicate_draft.json",
+    "samples/local_trial/EPIC282_local_trial_excel_vba_import.json",
+    "samples/local_trial/EPIC282_local_trial_idempotency_conflict.json",
+    "samples/local_trial/EPIC282_local_trial_market_data_fixture.json",
+    "samples/local_trial/EPIC282_local_trial_otcmap_buy_multileg.json",
+    "samples/local_trial/EPIC282_local_trial_otcmap_sell_multileg.json",
+    "samples/local_trial/EPIC282_local_trial_portfolio_replay.json",
+    "samples/local_trial/EPIC282_local_trial_provider_disabled.json",
+    "samples/local_trial/EPIC282_local_trial_rejected_import.json",
+    "samples/local_trial/EPIC282_local_trial_strategy_recommendation_buy.json",
+    "samples/local_trial/EPIC282_local_trial_strategy_recommendation_sell.json",
+    "samples/local_trial/EPIC282_local_trial_tradedraft_buy.json",
+    "samples/local_trial/EPIC282_local_trial_tradedraft_sell.json",
+    "scripts/local_trial/Clear-ETFDTLocalTrialWorkspace.ps1",
+    "scripts/local_trial/Invoke-ETFDTLocalTrialSmoke.ps1",
+    "scripts/local_trial/New-ETFDTLocalTrialWorkspace.ps1",
+    "scripts/local_trial/README.md",
+    "scripts/local_trial/Start-ETFDTLocalDataService.ps1",
+    "scripts/local_trial/Start-ETFDTLocalShell.ps1",
+    "tests/CMakeLists.txt",
+    "tests/LocalTrialReleaseCandidateFullDelivery/CMakeLists.txt",
+    "tests/LocalTrialReleaseCandidateFullDelivery/local_trial_release_candidate_full_delivery.cpp",
+    "tests/ShellAccountingExcelVbaImportPreviewToManualEntryPersistenceAuthorizationGate/excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/manual_entry_replay_accountingengine_bridge_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+    "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+}
+
+
+def _allow_epic282_local_trial_release_candidate_paths() -> None:
+    blocked_name_tokens = (
+        "FORBIDDEN",
+        "BANNED",
+        "DENIED",
+        "DISALLOWED",
+        "BLOCKED",
+        "PRODUCTION",
+        "MIGRATION",
+        "FIXTURE_JSON",
+        "FUTURE",
+        "PRIVACY",
+    )
+    path_allowlist_names = {
+        "ALLOWED_CHANGED_PATHS",
+        "ALLOWED_CHANGE_PATHS",
+        "ALLOWED_DIFF_PATHS",
+        "ALLOWED_PATHS",
+        "AUTHORIZED_CHANGED_PATHS",
+        "AUTHORIZED_CHANGED_SET",
+        "AUTHORIZED_PATHS",
+        "EXPECTED_CHANGED_PATHS",
+    }
+    for name, value in list(globals().items()):
+        if not name.isupper():
+            continue
+        if any(token in name for token in blocked_name_tokens):
+            continue
+        if name != "EPIC_282_LOCAL_TRIAL_RELEASE_CANDIDATE_EXACT_PATHS" and not name.endswith("EXACT_PATHS") and name not in path_allowlist_names:
+            continue
+        if isinstance(value, set):
+            value.update(EPIC_282_LOCAL_TRIAL_RELEASE_CANDIDATE_EXACT_PATHS)
+        elif isinstance(value, list):
+            for path in EPIC_282_LOCAL_TRIAL_RELEASE_CANDIDATE_EXACT_PATHS:
+                if path not in value:
+                    value.append(path)
+        elif isinstance(value, tuple):
+            globals()[name] = tuple(dict.fromkeys((*value, *EPIC_282_LOCAL_TRIAL_RELEASE_CANDIDATE_EXACT_PATHS)))
+
+
+_allow_epic282_local_trial_release_candidate_paths()
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -1,0 +1,16 @@
+{
+  "sampleId": "EPIC282_local_trial_tradedraft_sell",
+  "module": "tradedraft",
+  "recommendation": {
+    "action": "SELL",
+    "instrument": "EPIC282_ETF_A",
+    "quantity": "50",
+    "amount": "160.00"
+  },
+  "expectedStatus": "DRAFT_READY",
+  "requiresConfirmation": true,
+  "executionSubmitted": false,
+  "noWriteBoundary": false,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

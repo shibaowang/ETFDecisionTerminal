@@ -1,0 +1,10 @@
+{
+  "sampleId": "EPIC282_local_trial_provider_disabled",
+  "module": "market_data",
+  "providerMode": "disabled",
+  "expectedStatus": "PROVIDER_DISABLED",
+  "expectedUserAction": "use fixture refresh for local trial",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

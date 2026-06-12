@@ -3498,6 +3498,25 @@ TradeDraft generation, strategy execution, broker, network beyond existing
 local DataService transport, credentials, endpoints, real order placement, or
 automatic trading.
 
+## EPIC-282 Local Trial Release Candidate Prompt Rule
+
+Future local trial release candidate work must reference
+`docs/389_local_trial_release_candidate_full_delivery.md`,
+`docs/390_local_trial_release_candidate_runbook.md`,
+`docs/391_local_trial_release_candidate_manual_acceptance.md`,
+`docs/392_local_trial_release_candidate_regression_matrix.md`,
+`docs/393_local_trial_release_candidate_cleanup_rollback.md`,
+`docs/394_local_trial_release_candidate_known_limits.md`, and
+`docs/395_local_trial_release_candidate_test_plan.md`.
+
+The EPIC-282 path is a repo-local Windows trial package for sanitized JSON/TXT
+sample flows only. Keep trial data under `.demo/local_trial_rc` or an explicit
+user-provided path. Do not require administrator rights, external downloads,
+registry changes, live provider defaults, broker / credential / private
+endpoint integration, direct `.xlsx` import, production DB mutation, real order
+placement, or automatic trading. Do not broaden old gate allowlists beyond
+exact EPIC-282 paths.
+
 ## TASK-268 ShellAccounting Excel/VBA Import Accepted Preview Persist QML Wiring Prompt Rule
 
 Future Excel/VBA import accepted preview persistence QML work must reference

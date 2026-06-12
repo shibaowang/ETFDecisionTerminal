@@ -1,5 +1,31 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-282 Local Trial Release Candidate Full Delivery
+
+EPIC-282 packages the current MVP into a local trial release candidate:
+
+- RC scope: `docs/389_local_trial_release_candidate_full_delivery.md`
+- local trial runbook: `docs/390_local_trial_release_candidate_runbook.md`
+- manual acceptance checklist:
+  `docs/391_local_trial_release_candidate_manual_acceptance.md`
+- regression matrix:
+  `docs/392_local_trial_release_candidate_regression_matrix.md`
+- cleanup / rollback:
+  `docs/393_local_trial_release_candidate_cleanup_rollback.md`
+- known limits:
+  `docs/394_local_trial_release_candidate_known_limits.md`
+- test plan:
+  `docs/395_local_trial_release_candidate_test_plan.md`
+- repo-local scripts: `scripts/local_trial/`
+- sanitized local trial sample pack: `samples/local_trial/`
+- CTest: `local_trial_release_candidate_full_delivery`
+
+The release candidate is a local Windows trial path. It uses a repo-local demo
+workspace and an explicit demo SQLite path under `.demo/local_trial_rc`. It does
+not touch a production DB, download dependencies, require administrator rights,
+enable live providers by default, connect broker / credential / private
+endpoint integrations, place real orders, or enable automatic trading.
+
 ## EPIC-281 Dashboard MVP Full Delivery
 
 EPIC-281 wires the core ShellAccounting capabilities into a single Dashboard

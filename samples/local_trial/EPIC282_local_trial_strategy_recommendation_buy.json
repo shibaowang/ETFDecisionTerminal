@@ -1,0 +1,16 @@
+{
+  "sampleId": "EPIC282_local_trial_strategy_recommendation_buy",
+  "module": "strategy_recommendation",
+  "input": {
+    "instrument": "EPIC282_ETF_A",
+    "sideHint": "BUY",
+    "cashAvailable": "10000.00",
+    "price": "2.5000",
+    "drawdownPercent": "8.0000"
+  },
+  "expectedAction": "BUY",
+  "expectedStatus": "READY",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

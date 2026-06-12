@@ -1,0 +1,16 @@
+{
+  "sampleId": "EPIC282_local_trial_strategy_recommendation_sell",
+  "module": "strategy_recommendation",
+  "input": {
+    "instrument": "EPIC282_ETF_A",
+    "sideHint": "SELL",
+    "holdingQuantity": "100",
+    "price": "3.2000",
+    "targetReturnPercent": "20.0000"
+  },
+  "expectedAction": "SELL",
+  "expectedStatus": "READY",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

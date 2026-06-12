@@ -1618,6 +1618,36 @@
   [373_tradedraft_test_plan.md](373_tradedraft_test_plan.md)
   defines the EPIC-278 full-delivery CTest, regression commands, sample
   checks, duplicate / conflict checks, and no-broker validation.
+- Local trial release candidate full delivery:
+  [389_local_trial_release_candidate_full_delivery.md](389_local_trial_release_candidate_full_delivery.md)
+  defines the EPIC-282 RC scope, included modules, excluded modules, release
+  blocker rules, pass/fail criteria, and final local-trial usage path.
+- Local trial release candidate runbook:
+  [390_local_trial_release_candidate_runbook.md](390_local_trial_release_candidate_runbook.md)
+  gives Windows PowerShell commands for build, repo-local trial workspace,
+  demo DB, local DataService, Shell, Dashboard flows, duplicate/conflict checks,
+  cleanup, and evidence capture.
+- Local trial release candidate manual acceptance:
+  [391_local_trial_release_candidate_manual_acceptance.md](391_local_trial_release_candidate_manual_acceptance.md)
+  lists the checkbox acceptance flow for Dashboard, Excel/VBA import,
+  portfolio replay, market fixture refresh, strategy, TradeDraft, OTCMap,
+  duplicate/conflict, provider disabled, and cleanup checks.
+- Local trial release candidate regression matrix:
+  [392_local_trial_release_candidate_regression_matrix.md](392_local_trial_release_candidate_regression_matrix.md)
+  maps TASK-271, EPIC-272 through EPIC-282, module boundaries, CTest names,
+  expected evidence, and blocker actions.
+- Local trial release candidate cleanup / rollback:
+  [393_local_trial_release_candidate_cleanup_rollback.md](393_local_trial_release_candidate_cleanup_rollback.md)
+  documents how to stop local processes, preserve logs, remove the demo
+  workspace, delete the demo DB, rerun clean smoke, and clean branches.
+- Local trial release candidate known limits:
+  [394_local_trial_release_candidate_known_limits.md](394_local_trial_release_candidate_known_limits.md)
+  states sanitized JSON/TXT only, no direct `.xlsx` import, fixture/disabled
+  live provider defaults, no broker, no real order, and no automatic trading.
+- Local trial release candidate test plan:
+  [395_local_trial_release_candidate_test_plan.md](395_local_trial_release_candidate_test_plan.md)
+  records the exact configure, build, targeted, regression, full CTest,
+  transport-repeat, diff, and status commands for EPIC-282.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

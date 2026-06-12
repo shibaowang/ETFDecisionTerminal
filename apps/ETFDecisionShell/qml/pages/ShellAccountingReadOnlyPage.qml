@@ -358,7 +358,7 @@ Rectangle {
             Rectangle {
                 objectName: "shellAccountingDashboardStatusBanner"
                 width: parent.width
-                height: 78
+                height: 98
                 radius: 8
                 color: "#eef4ff"
                 border.color: "#a8c4f5"
@@ -378,6 +378,15 @@ Rectangle {
                         color: "#244464"
                         font.pixelSize: 13
                         font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingLocalTrialRcBanner"
+                        width: parent.width
+                        text: "Local trial RC: repo-local demo DB, sanitized JSON/TXT samples, fixture/disabled providers, and manual cleanup."
+                        color: "#244464"
+                        font.pixelSize: 12
                         wrapMode: Text.WordWrap
                     }
 

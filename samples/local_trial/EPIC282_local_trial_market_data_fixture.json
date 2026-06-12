@@ -1,0 +1,14 @@
+{
+  "sampleId": "EPIC282_local_trial_market_data_fixture",
+  "module": "market_data",
+  "providerMode": "fixture_disabled_default",
+  "instrument": "EPIC282_ETF_A",
+  "currentPrice": "2.7500",
+  "historicalHigh": "3.0000",
+  "drawdownPercent": "8.3333",
+  "premiumDiscountPercent": "0.0000",
+  "expectedStatus": "READY",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

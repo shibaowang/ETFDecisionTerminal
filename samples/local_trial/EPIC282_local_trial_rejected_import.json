@@ -1,0 +1,12 @@
+{
+  "sampleId": "EPIC282_local_trial_rejected_import",
+  "module": "excel_vba_import",
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "sheets": [],
+  "expectedStatus": "REJECTED",
+  "expectedUserAction": "fix sanitized export file",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

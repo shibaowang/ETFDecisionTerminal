@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_strategy_buy",
+  "scenario": "read-only strategy recommendation BUY",
+  "payloadRef": "samples/strategy_recommendation/EPIC277_buy_tier1_etf_direct.json",
+  "expectedAction": "BUY",
+  "draftCreatedAutomatically": false,
+  "sanitized": true
+}

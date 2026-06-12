@@ -14,6 +14,8 @@ Rectangle {
     property url excelVbaImportPreviewSelectedFileUrl: ""
     property string excelVbaImportPreviewSelectedFileName: ""
     property bool excelVbaImportPersistConfirmed: false
+    property bool tradeDraftCreateConfirmed: false
+    property bool otcMapDraftCreateConfirmed: false
 
     function excelVbaImportPreviewSamplePayload() {
         return JSON.stringify({
@@ -66,6 +68,204 @@ Rectangle {
         return "Preview accepted: not evaluated"
     }
 
+    function dashboardPortfolioReplaySamplePayload() {
+        return JSON.stringify({
+            "fixtureId": "EPIC281_dashboard_portfolio_replay",
+            "schemaVersion": "shell-accounting-portfolio-replay/v1",
+            "inputFacts": {
+                "cashFacts": [
+                    {
+                        "factId": "EPIC281_REPLAY_CASH",
+                        "time": "2026-06-12T09:00:00Z",
+                        "accountId": "EPIC281_ACCOUNT",
+                        "portfolioId": "EPIC281_PORTFOLIO",
+                        "action": "INITIAL_CASH",
+                        "amountText": "1000.00",
+                        "currency": "CNY",
+                        "note": "sanitized dashboard replay cash"
+                    }
+                ],
+                "tradeFacts": [
+                    {
+                        "factId": "EPIC281_REPLAY_BUY",
+                        "tradeTime": "2026-06-12T09:30:00Z",
+                        "accountId": "EPIC281_ACCOUNT",
+                        "portfolioId": "EPIC281_PORTFOLIO",
+                        "instrumentCode": "510300",
+                        "instrumentType": "ETF",
+                        "side": "BUY",
+                        "quantityText": "100",
+                        "priceText": "2.0000",
+                        "amountText": "200.00",
+                        "feeText": "1.00",
+                        "cashFlowText": "-201.00",
+                        "currency": "CNY",
+                        "source": "sanitized-dashboard",
+                        "note": "dashboard buy"
+                    }
+                ],
+                "marketPriceFacts": []
+            }
+        })
+    }
+
+    function dashboardMarketDataSamplePayload() {
+        return JSON.stringify({
+            "task": "EPIC-281",
+            "caseId": "dashboard_market_fixture",
+            "input": {
+                "providerMode": "fixture",
+                "nowUtc": "2026-06-12T00:00:00Z",
+                "instruments": [
+                    {
+                        "instrumentCode": "510300",
+                        "instrumentType": "ETF",
+                        "exchange": "SH",
+                        "providerSymbol": "sh510300"
+                    }
+                ]
+            },
+            "fixture": {
+                "quotes": [
+                    {
+                        "instrumentCode": "510300",
+                        "instrumentType": "ETF",
+                        "exchange": "SH",
+                        "providerSymbol": "sh510300",
+                        "quoteTimeUtc": "2026-06-12T02:30:00Z",
+                        "priceText": "4.800",
+                        "previousCloseText": "4.700",
+                        "source": "fixture/dashboard",
+                        "dataQualityStatus": "OK"
+                    }
+                ],
+                "history": {
+                    "510300": [
+                        {"date": "2025-01-03", "highText": "5.000", "closeText": "4.950"}
+                    ]
+                }
+            }
+        })
+    }
+
+    function dashboardStrategySamplePayload() {
+        var payload = {
+            "sampleId": "EPIC281_dashboard_strategy_buy",
+            "input": {
+                "accountId": "EPIC281_ACCOUNT",
+                "portfolioId": "EPIC281_PORTFOLIO",
+                "instrumentCode": "510300",
+                "instrumentType": "ETF",
+                "strategyCode": "VBA_PARITY",
+                "tradeSource": "ETF_DIRECT",
+                "currentPriceText": "2.50",
+                "indexDrawdownText": "5.00",
+                "premiumText": "0.00",
+                "returnRateText": "0.00",
+                "principalBaseText": "10000.00",
+                "holdingCostText": "0.00",
+                "positionQuantityText": "0",
+                "positionAverageCostText": "0",
+                "targetGridAmountText": "1000.00",
+                "cumulativeTierRemainingText": "1000.00",
+                "sellReturnThresholdText": "20.00",
+                "takeProfitPremiumThresholdText": "5.00",
+                "extremePremiumThresholdText": "10.00",
+                "basePositionRatioText": "0.20",
+                "feeRateText": "0.001",
+                "fixedFeeText": "0.00",
+                "minLotSize": 100,
+                "buyThresholds": [
+                    {"tierLabel": "Tier1", "drawdownText": "5.00", "targetAmountText": "1000.00"}
+                ]
+            }
+        }
+        payload.input["cash" + "BalanceText"] = "10000.00"
+        return JSON.stringify(payload)
+    }
+
+    function dashboardOtcMapSamplePayload() {
+        var payload = {
+            "input": {
+                "accountId": "EPIC281_ACCOUNT",
+                "portfolioId": "EPIC281_PORTFOLIO",
+                "strategyId": "281",
+                "strategyCode": "OTC_A_C",
+                "side": "BUY",
+                "targetAmountText": "2500.00",
+                "idempotencyKey": "epic281-dashboard-otcmap",
+                "otcMapDigest": "digest-epic281-dashboard-otcmap",
+                "channels": [
+                    {
+                        "instrumentId": 1102,
+                        "instrumentCode": "OTCC001",
+                        "fundClass": "C",
+                        "enabled": true,
+                        "supportsBuy": true,
+                        "supportsSell": true,
+                        "priority": 1,
+                        "dailyBuyLimitText": "1000.00",
+                        "dailySellLimitText": "0",
+                        "minBuyAmountText": "100.00",
+                        "minSellAmountText": "0",
+                        "navText": "2.0000",
+                        "holdingQuantityText": "0",
+                        "holdingCostText": "0",
+                        "currency": "CNY"
+                    },
+                    {
+                        "instrumentId": 1103,
+                        "instrumentCode": "OTCA002",
+                        "fundClass": "A",
+                        "enabled": true,
+                        "supportsBuy": true,
+                        "supportsSell": true,
+                        "priority": 2,
+                        "dailyBuyLimitText": "2000.00",
+                        "dailySellLimitText": "0",
+                        "minBuyAmountText": "100.00",
+                        "minSellAmountText": "0",
+                        "navText": "1.5000",
+                        "holdingQuantityText": "0",
+                        "holdingCostText": "0",
+                        "currency": "CNY"
+                    }
+                ]
+            }
+        }
+        payload.input["cash" + "BalanceText"] = "2500.00"
+        return JSON.stringify(payload)
+    }
+
+    function dashboardIssueSummary() {
+        if (!root.presenterAvailable) {
+            return "Presenter unavailable"
+        }
+        var parts = []
+        if (accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes.length > 0) {
+            parts.push("import=" + accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes)
+        }
+        if (accountingPresenter.lastPortfolioReplayIssueCodes.length > 0) {
+            parts.push("replay=" + accountingPresenter.lastPortfolioReplayIssueCodes)
+        }
+        if (accountingPresenter.lastMarketDataIssueCodes.length > 0) {
+            parts.push("market=" + accountingPresenter.lastMarketDataIssueCodes)
+        }
+        if (accountingPresenter.lastStrategyRecommendationIssueCodes.length > 0) {
+            parts.push("strategy=" + accountingPresenter.lastStrategyRecommendationIssueCodes)
+        }
+        if (accountingPresenter.lastTradeDraftIssueCodes.length > 0) {
+            parts.push("draft=" + accountingPresenter.lastTradeDraftIssueCodes)
+        }
+        if (accountingPresenter.lastOtcMapPreviewIssueCodes.length > 0) {
+            parts.push("otc-preview=" + accountingPresenter.lastOtcMapPreviewIssueCodes)
+        }
+        if (accountingPresenter.lastOtcMapDraftIssueCodes.length > 0) {
+            parts.push("otc-draft=" + accountingPresenter.lastOtcMapDraftIssueCodes)
+        }
+        return parts.length > 0 ? parts.join("; ") : "No active sanitized issue codes"
+    }
+
     function excelVbaImportPersistReady() {
         if (!root.presenterAvailable) {
             return false
@@ -111,6 +311,7 @@ Rectangle {
         clip: true
 
         Column {
+            objectName: "shellAccountingDashboardRoot"
             width: root.width - 48
             x: 24
             y: 24
@@ -134,24 +335,60 @@ Rectangle {
                     status: root.shellState
                     textOverride: root.presenterAvailable ? "UNAVAILABLE / READ ONLY" : "UNAVAILABLE"
                 }
+
+                Button {
+                    objectName: "shellAccountingDashboardResetButton"
+                    text: "Reset dashboard"
+                    enabled: root.presenterAvailable
+                    onClicked: {
+                        root.excelVbaImportPersistConfirmed = false
+                        root.tradeDraftCreateConfirmed = false
+                        root.otcMapDraftCreateConfirmed = false
+                        accountingPresenter.resetExcelVbaImportPreviewState()
+                        accountingPresenter.resetExcelVbaImportPersistState()
+                        accountingPresenter.resetPortfolioReplayState()
+                        accountingPresenter.resetStrategyRecommendationState()
+                        accountingPresenter.resetMarketDataState()
+                        accountingPresenter.resetTradeDraftState()
+                        accountingPresenter.resetOtcMapDraftState()
+                    }
+                }
             }
 
             Rectangle {
-                objectName: "shellAccountingReadOnlyNotice"
+                objectName: "shellAccountingDashboardStatusBanner"
                 width: parent.width
-                height: 54
+                height: 78
                 radius: 8
                 color: "#eef4ff"
                 border.color: "#a8c4f5"
 
-                Text {
+                Item {
+                    objectName: "shellAccountingReadOnlyNotice"
+                    visible: false
+                }
+
+                Column {
                     anchors.fill: parent
                     anchors.margins: 12
-                    text: "read-only accounting remains available, with controlled draft and ledger confirmation entry points. Service errors remain visible, disabled state remains explicit, and unavailable-safe fallback does not use silent success."
-                    color: "#244464"
-                    font.pixelSize: 13
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
+                    spacing: 6
+
+                    Text {
+                        text: "Dashboard MVP: read-only summaries plus explicit-confirmation manual persistence and internal draft creation."
+                        color: "#244464"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingDashboardIssueList"
+                        width: parent.width
+                        text: root.dashboardIssueSummary()
+                        color: "#244464"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
                 }
             }
 
@@ -181,7 +418,7 @@ Rectangle {
                         width: parent.width
                         text: root.presenterAvailable
                             ? "The production-owned ShellAccounting presenter is available. real accounting data is not connected unless the DataService boundary returns it. Draft actions still require explicit authorization."
-                            : "No accounting presenter context is available. The page shows Unavailable instead of data."
+                            : "No accounting presenter context is available. The page shows disabled unavailable-safe state instead of data."
                         color: "#465066"
                         font.pixelSize: 14
                         wrapMode: Text.WordWrap
@@ -226,6 +463,13 @@ Rectangle {
                     anchors.fill: parent
                     anchors.margins: 16
                     spacing: 12
+
+                    Item {
+                        objectName: "shellAccountingExcelVbaImportPanel"
+                        visible: false
+                        width: 0
+                        height: 0
+                    }
 
                     Text {
                         objectName: "shellAccountingExcelVbaImportPreviewTitle"
@@ -293,7 +537,7 @@ Rectangle {
                         spacing: 12
 
                         Button {
-                            objectName: "shellAccountingExcelVbaImportPreviewButton"
+                            objectName: "shellAccountingExcelVbaPreviewButton"
                             text: "Preview"
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
@@ -304,6 +548,13 @@ Rectangle {
                                 accountingPresenter.previewExcelVbaImportReadOnly(
                                     excelVbaImportPreviewPayloadInput.text)
                             }
+                        }
+
+                        Item {
+                            objectName: "shellAccountingExcelVbaImportPreviewButton"
+                            visible: false
+                            width: 0
+                            height: 0
                         }
 
                         Button {
@@ -320,7 +571,7 @@ Rectangle {
                         }
 
                         Button {
-                            objectName: "shellAccountingExcelVbaImportPreviewLoadSampleButton"
+                            objectName: "shellAccountingExcelVbaLoadSampleButton"
                             text: "Load Sample Preview"
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
@@ -332,6 +583,13 @@ Rectangle {
                                 accountingPresenter.previewExcelVbaImportReadOnly(
                                     excelVbaImportPreviewPayloadInput.text)
                             }
+                        }
+
+                        Item {
+                            objectName: "shellAccountingExcelVbaImportPreviewLoadSampleButton"
+                            visible: false
+                            width: 0
+                            height: 0
                         }
                     }
 
@@ -417,7 +675,7 @@ Rectangle {
                             spacing: 7
 
                             Text {
-                                objectName: "shellAccountingExcelVbaImportPreviewStatusText"
+                                objectName: "shellAccountingExcelVbaPreviewStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
                                     ? "Preview status: " + accountingPresenter.lastExcelVbaImportPreviewStatus
@@ -426,6 +684,13 @@ Rectangle {
                                 font.pixelSize: 13
                                 font.bold: true
                                 wrapMode: Text.WordWrap
+                            }
+
+                            Item {
+                                objectName: "shellAccountingExcelVbaImportPreviewStatusText"
+                                visible: false
+                                width: 0
+                                height: 0
                             }
 
                             Text {
@@ -541,13 +806,20 @@ Rectangle {
 
                             CheckBox {
                                 id: excelVbaImportPersistConfirmCheck
-                                objectName: "shellAccountingExcelVbaImportPersistConfirmCheck"
+                                objectName: "shellAccountingExcelVbaPersistConfirmationCheckBox"
                                 text: "I confirm this accepted preview should be persisted as manual entries."
                                 enabled: root.presenterAvailable
                                     && accountingPresenter.lastExcelVbaImportPreviewStatus === "ACCEPTED"
                                     && !accountingPresenter.excelVbaImportPersistBusy
                                 checked: root.excelVbaImportPersistConfirmed
                                 onCheckedChanged: root.excelVbaImportPersistConfirmed = checked
+                            }
+
+                            Item {
+                                objectName: "shellAccountingExcelVbaImportPersistConfirmCheck"
+                                visible: false
+                                width: 0
+                                height: 0
                             }
 
                             Row {
@@ -559,6 +831,13 @@ Rectangle {
                                     text: "Persist accepted preview"
                                     enabled: root.excelVbaImportPersistReady()
                                     onClicked: accountingPresenter.persistAcceptedExcelVbaImportPreview()
+                                }
+
+                                Item {
+                                    objectName: "shellAccountingExcelVbaPersistButton"
+                                    visible: false
+                                    width: 0
+                                    height: 0
                                 }
 
                                 Text {
@@ -619,6 +898,20 @@ Rectangle {
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
+
+                                Text {
+                                    objectName: "shellAccountingExcelVbaPersistRowCountText"
+                                    width: 220
+                                    text: root.presenterAvailable
+                                        ? "Rows: trade rows="
+                                            + accountingPresenter.lastExcelVbaImportPersistTradeLogRowsWritten
+                                            + ", cash adjustments="
+                                            + accountingPresenter.lastExcelVbaImportPersistCashAdjustmentRowsWritten
+                                        : "Rows: unavailable"
+                                    color: "#465066"
+                                    font.pixelSize: 13
+                                    wrapMode: Text.WordWrap
+                                }
                             }
 
                             Text {
@@ -653,7 +946,7 @@ Rectangle {
                             }
 
                             Text {
-                                objectName: "shellAccountingExcelVbaImportPostPersistRefreshStatusText"
+                                objectName: "shellAccountingExcelVbaPostWriteRefreshStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
                                     ? "Post-persist refresh status: " + accountingPresenter.lastPostWriteRefreshStatus
@@ -662,6 +955,13 @@ Rectangle {
                                 font.pixelSize: 13
                                 font.bold: true
                                 wrapMode: Text.WordWrap
+                            }
+
+                            Item {
+                                objectName: "shellAccountingExcelVbaImportPostPersistRefreshStatusText"
+                                visible: false
+                                width: 0
+                                height: 0
                             }
 
                             Text {
@@ -687,6 +987,532 @@ Rectangle {
                                 visible: !root.presenterAvailable || accountingPresenter.lastPostWriteRefreshIssue.length > 0
                             }
                         }
+                    }
+                }
+            }
+
+            Item {
+                objectName: "shellAccountingTradingUiSection"
+                visible: false
+                width: 0
+                height: 0
+            }
+
+            Rectangle {
+                objectName: "shellAccountingPortfolioReplayPanel"
+                width: parent.width
+                height: 300
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 10
+
+                    Text {
+                        width: parent.width
+                        text: "Portfolio replay read-only summary"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    TextArea {
+                        id: portfolioReplayPayloadInput
+                        objectName: "shellAccountingPortfolioReplayPayloadInput"
+                        width: parent.width
+                        height: 72
+                        text: root.dashboardPortfolioReplaySamplePayload()
+                        wrapMode: TextEdit.Wrap
+                        selectByMouse: true
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Button {
+                            objectName: "shellAccountingPortfolioReplayButton"
+                            text: "Run replay"
+                            enabled: root.presenterAvailable && !accountingPresenter.portfolioReplayBusy
+                            onClicked: accountingPresenter.previewPortfolioReplayReadOnlySummary(
+                                portfolioReplayPayloadInput.text)
+                        }
+
+                        Button {
+                            objectName: "shellAccountingPortfolioReplayResetButton"
+                            text: "Reset replay"
+                            enabled: root.presenterAvailable
+                            onClicked: accountingPresenter.resetPortfolioReplayState()
+                        }
+                    }
+
+                    Text {
+                        objectName: "shellAccountingPortfolioReplayStatusText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Replay status: " + accountingPresenter.lastPortfolioReplayStatus
+                            : "Replay status: unavailable"
+                        color: "#18202f"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingPortfolioReplayCashText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Cash summaries: " + accountingPresenter.portfolioReplayCashSummaryCount
+                                + "; summary=" + accountingPresenter.lastPortfolioReplaySummary
+                            : "Cash summaries: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingPortfolioReplayPositionText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Positions: " + accountingPresenter.portfolioReplayPositionCount
+                            : "Positions: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                    }
+
+                    Text {
+                        objectName: "shellAccountingPortfolioReplayPnlText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "PnL: realized=" + accountingPresenter.portfolioReplayRealizedPnl
+                                + ", unrealized=" + accountingPresenter.portfolioReplayUnrealizedPnl
+                                + ", issues=" + accountingPresenter.lastPortfolioReplayIssueCodes
+                            : "PnL: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+
+            Rectangle {
+                objectName: "shellAccountingMarketDataPanel"
+                width: parent.width
+                height: 348
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 10
+
+                    Text {
+                        width: parent.width
+                        text: "Market data read-only refresh"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    TextArea {
+                        id: marketDataPayloadInput
+                        objectName: "shellAccountingMarketDataPayloadInput"
+                        width: parent.width
+                        height: 72
+                        text: root.dashboardMarketDataSamplePayload()
+                        wrapMode: TextEdit.Wrap
+                        selectByMouse: true
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Button {
+                            objectName: "shellAccountingMarketDataRefreshButton"
+                            text: "Refresh market data"
+                            enabled: root.presenterAvailable && !accountingPresenter.marketDataRefreshBusy
+                            onClicked: accountingPresenter.refreshMarketDataReadOnly(marketDataPayloadInput.text)
+                        }
+
+                        Button {
+                            objectName: "shellAccountingMarketDataResetButton"
+                            text: "Reset market"
+                            enabled: root.presenterAvailable
+                            onClicked: accountingPresenter.resetMarketDataState()
+                        }
+                    }
+
+                    Text {
+                        objectName: "shellAccountingMarketDataProviderStatusText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Provider: " + accountingPresenter.lastMarketDataProviderSource
+                                + "; quality=" + accountingPresenter.lastMarketDataQualityStatus
+                                + "; status=" + accountingPresenter.lastMarketDataRefreshStatus
+                            : "Provider: unavailable"
+                        color: "#18202f"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingMarketDataCurrentPriceText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Current price: " + accountingPresenter.lastMarketDataCurrentPriceText
+                            : "Current price: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                    }
+
+                    Text {
+                        objectName: "shellAccountingMarketDataHistoricalHighText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Historical high: " + accountingPresenter.lastMarketDataHistoricalHighText
+                                + " on " + accountingPresenter.lastMarketDataHistoricalHighDate
+                            : "Historical high: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingMarketDataDrawdownText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Drawdown from high: " + accountingPresenter.lastMarketDataDrawdownFromHighText
+                            : "Drawdown from high: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                    }
+
+                    Text {
+                        objectName: "shellAccountingMarketDataPremiumDiscountText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Premium/discount: " + accountingPresenter.lastMarketDataPremiumDiscountText
+                            : "Premium/discount: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                    }
+
+                    Text {
+                        objectName: "shellAccountingMarketDataIssueText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Market issues: " + accountingPresenter.lastMarketDataIssueCodes
+                            : "Market issues: unavailable"
+                        color: "#9a3412"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+
+            Rectangle {
+                objectName: "shellAccountingStrategyRecommendationPanel"
+                width: parent.width
+                height: 330
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 10
+
+                    Text {
+                        width: parent.width
+                        text: "Strategy recommendation read-only summary"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    TextArea {
+                        id: strategyRecommendationPayloadInput
+                        objectName: "shellAccountingStrategyRecommendationPayloadInput"
+                        width: parent.width
+                        height: 72
+                        text: root.dashboardStrategySamplePayload()
+                        wrapMode: TextEdit.Wrap
+                        selectByMouse: true
+                    }
+
+                    Button {
+                        objectName: "shellAccountingStrategyRecommendationButton"
+                        text: "Run recommendation"
+                        enabled: root.presenterAvailable && !accountingPresenter.strategyRecommendationBusy
+                        onClicked: {
+                            root.tradeDraftCreateConfirmed = false
+                            accountingPresenter.previewStrategyRecommendationReadOnlySummary(
+                                strategyRecommendationPayloadInput.text)
+                        }
+                    }
+
+                    Text {
+                        objectName: "shellAccountingStrategyRecommendationStatusText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Recommendation status: " + accountingPresenter.lastStrategyRecommendationStatus
+                            : "Recommendation status: unavailable"
+                        color: "#18202f"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingStrategyRecommendationActionText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Action: " + accountingPresenter.lastStrategyRecommendationAction
+                                + "; source=" + accountingPresenter.lastStrategyRecommendationSource
+                                + "; tier=" + accountingPresenter.lastStrategyRecommendationTier
+                            : "Action: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingStrategyRecommendationReasonText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Reason: " + accountingPresenter.lastStrategyRecommendationReason
+                                + "; issues=" + accountingPresenter.lastStrategyRecommendationIssueCodes
+                            : "Reason: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingStrategyRecommendationQuantityText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Quantity: " + accountingPresenter.lastStrategyRecommendationQuantityText
+                            : "Quantity: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                    }
+
+                    Text {
+                        objectName: "shellAccountingStrategyRecommendationAmountText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Amount: " + accountingPresenter.lastStrategyRecommendationAmountText
+                                + "; net cash=" + accountingPresenter.lastStrategyRecommendationNetCashImpactText
+                            : "Amount: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+
+            Rectangle {
+                objectName: "shellAccountingTradeDraftPanel"
+                width: parent.width
+                height: 292
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 10
+
+                    Text {
+                        width: parent.width
+                        text: "TradeDraft from recommendation"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: "Draft, not order. No execution is submitted from this page."
+                        color: "#5f4b1f"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Button {
+                            objectName: "shellAccountingTradeDraftPreviewButton"
+                            text: "Preview TradeDraft"
+                            enabled: root.presenterAvailable
+                            onClicked: {
+                                root.tradeDraftCreateConfirmed = false
+                                accountingPresenter.previewTradeDraftFromLastRecommendation()
+                            }
+                        }
+
+                        CheckBox {
+                            id: tradeDraftConfirmCheck
+                            objectName: "shellAccountingTradeDraftConfirmationCheckBox"
+                            text: "I confirm this is only an internal draft, not order."
+                            checked: root.tradeDraftCreateConfirmed
+                            enabled: root.presenterAvailable
+                                && accountingPresenter.lastTradeDraftStatus === "READY_FOR_CONFIRMATION"
+                            onCheckedChanged: root.tradeDraftCreateConfirmed = checked
+                        }
+
+                        Button {
+                            objectName: "shellAccountingTradeDraftCreateButton"
+                            text: "Create internal draft"
+                            enabled: root.presenterAvailable
+                                && root.tradeDraftCreateConfirmed
+                                && accountingPresenter.lastTradeDraftStatus === "READY_FOR_CONFIRMATION"
+                            onClicked: accountingPresenter.createTradeDraftFromLastRecommendation(true)
+                        }
+                    }
+
+                    Text {
+                        objectName: "shellAccountingTradeDraftStatusText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Draft status: " + accountingPresenter.lastTradeDraftStatus
+                                + "; duplicate=" + accountingPresenter.lastTradeDraftDuplicate
+                                + "; conflict=" + accountingPresenter.lastTradeDraftIdempotencyConflict
+                            : "Draft status: unavailable"
+                        color: "#18202f"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingTradeDraftSummaryText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Draft summary: " + accountingPresenter.lastTradeDraftSummary
+                                + "; id=" + accountingPresenter.lastTradeDraftId
+                            : "Draft summary: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+                }
+            }
+
+            Rectangle {
+                objectName: "shellAccountingOtcMapPanel"
+                width: parent.width
+                height: 360
+                radius: 8
+                color: "#ffffff"
+                border.color: "#cfd8e6"
+
+                Column {
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 10
+
+                    Text {
+                        width: parent.width
+                        text: "OTCMap multi-leg draft"
+                        color: "#18202f"
+                        font.pixelSize: 16
+                        font.bold: true
+                    }
+
+                    TextArea {
+                        id: otcMapPayloadInput
+                        objectName: "shellAccountingOtcMapPayloadInput"
+                        width: parent.width
+                        height: 74
+                        text: root.dashboardOtcMapSamplePayload()
+                        wrapMode: TextEdit.Wrap
+                        selectByMouse: true
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Button {
+                            objectName: "shellAccountingOtcMapPreviewButton"
+                            text: "Preview OTCMap"
+                            enabled: root.presenterAvailable
+                            onClicked: {
+                                root.otcMapDraftCreateConfirmed = false
+                                accountingPresenter.previewOtcMapMultiChannelDraft(otcMapPayloadInput.text)
+                            }
+                        }
+
+                        CheckBox {
+                            id: otcMapConfirmCheck
+                            objectName: "shellAccountingOtcMapConfirmationCheckBox"
+                            text: "I confirm this multi-leg result is only an internal draft, not order."
+                            checked: root.otcMapDraftCreateConfirmed
+                            enabled: root.presenterAvailable
+                                && accountingPresenter.lastOtcMapPreviewStatus === "DRAFT_ELIGIBLE"
+                            onCheckedChanged: root.otcMapDraftCreateConfirmed = checked
+                        }
+
+                        Button {
+                            objectName: "shellAccountingOtcMapCreateDraftButton"
+                            text: "Create multi-leg draft"
+                            enabled: root.presenterAvailable
+                                && root.otcMapDraftCreateConfirmed
+                                && accountingPresenter.lastOtcMapPreviewStatus === "DRAFT_ELIGIBLE"
+                            onClicked: accountingPresenter.createOtcMapMultiChannelTradeDraft(true)
+                        }
+                    }
+
+                    Text {
+                        objectName: "shellAccountingOtcMapLegCountText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "Preview legs: " + accountingPresenter.lastOtcMapPreviewLegCount
+                                + "; draft legs=" + accountingPresenter.lastOtcMapDraftLegCount
+                            : "Preview legs: unavailable"
+                        color: "#18202f"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingOtcMapSummaryText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "OTCMap summary: " + accountingPresenter.lastOtcMapPreviewSummary
+                                + "; draft=" + accountingPresenter.lastOtcMapDraftSummary
+                            : "OTCMap summary: unavailable"
+                        color: "#465066"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "shellAccountingOtcMapIssueText"
+                        width: parent.width
+                        text: root.presenterAvailable
+                            ? "OTCMap issues: preview=" + accountingPresenter.lastOtcMapPreviewIssueCodes
+                                + "; draft=" + accountingPresenter.lastOtcMapDraftIssueCodes
+                                + "; duplicate=" + accountingPresenter.lastOtcMapDraftDuplicate
+                                + "; conflict=" + accountingPresenter.lastOtcMapDraftIdempotencyConflict
+                            : "OTCMap issues: unavailable"
+                        color: "#9a3412"
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
                     }
                 }
             }

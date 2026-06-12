@@ -40,6 +40,70 @@ int countToken(const std::string& text, const std::string& token)
     return count;
 }
 
+bool containsAll(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) == std::string::npos) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool containsAny(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isAllowedEpic281DashboardDraftLine(
+    const std::filesystem::path& file,
+    const std::string& fileText,
+    const std::string& line,
+    const std::string& token)
+{
+    if (file.filename().string() != "ShellAccountingReadOnlyPage.qml") {
+        return false;
+    }
+    if (token != "TradeDraft" && token != "createTradeDraft") {
+        return false;
+    }
+    if (!containsAll(
+            fileText,
+            {
+                "shellAccountingDashboardRoot",
+                "shellAccountingTradeDraftPanel",
+                "shellAccountingTradeDraftConfirmationCheckBox",
+                "previewTradeDraftFromLastRecommendation()",
+                "createTradeDraftFromLastRecommendation(true)",
+                "Draft, not order",
+                "not order",
+            })) {
+        return false;
+    }
+    return containsAny(
+        line,
+        {
+            "lastTradeDraftIssueCodes",
+            "resetTradeDraftState()",
+            "shellAccountingTradeDraft",
+            "TradeDraft from recommendation",
+            "Preview TradeDraft",
+            "previewTradeDraftFromLastRecommendation()",
+            "lastTradeDraftStatus",
+            "createTradeDraftFromLastRecommendation(true)",
+            "lastTradeDraftDuplicate",
+            "lastTradeDraftIdempotencyConflict",
+            "lastTradeDraftSummary",
+            "lastTradeDraftId",
+            "createOtcMapMultiChannelTradeDraft(true)",
+        });
+}
+
 }  // namespace
 
 std::filesystem::path sourceRoot(int argc, char** argv)
@@ -115,6 +179,7 @@ bool containsForbiddenToken(
     const std::vector<std::string>& tokens)
 {
     for (const auto& file : files) {
+        const auto fileText = readTextFile(file);
         std::ifstream input(file);
         std::string line;
         int lineNumber = 0;
@@ -122,6 +187,9 @@ bool containsForbiddenToken(
             ++lineNumber;
             for (const auto& token : tokens) {
                 if (line.find(token) == std::string::npos || isAllowedNegativeLine(line)) {
+                    continue;
+                }
+                if (isAllowedEpic281DashboardDraftLine(file, fileText, line, token)) {
                     continue;
                 }
                 std::cerr << file.generic_string() << ':' << lineNumber

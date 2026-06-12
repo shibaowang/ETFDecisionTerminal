@@ -64,6 +64,56 @@ bool isAllowedNegativeDirectServiceStatement(
     return false;
 }
 
+bool containsAll(const std::string& text, const std::vector<std::string>& tokens)
+{
+    return std::all_of(tokens.begin(), tokens.end(), [&](const std::string& token) {
+        return text.find(token) != std::string::npos;
+    });
+}
+
+bool isAllowedEpic281DashboardDraftLine(
+    const QmlFile& file,
+    const std::string& line,
+    const std::string& token)
+{
+    if (file.path.filename().string() != "ShellAccountingReadOnlyPage.qml") {
+        return false;
+    }
+    if (token != "TradeDraft" && token != "createTradeDraft") {
+        return false;
+    }
+    if (!containsAll(
+            file.text,
+            {
+                "shellAccountingDashboardRoot",
+                "shellAccountingTradeDraftPanel",
+                "shellAccountingTradeDraftConfirmationCheckBox",
+                "previewTradeDraftFromLastRecommendation()",
+                "createTradeDraftFromLastRecommendation(true)",
+                "Draft, not order",
+                "not order",
+            })) {
+        return false;
+    }
+
+    const std::vector<std::string> allowedFragments{
+        "lastTradeDraftIssueCodes",
+        "resetTradeDraftState()",
+        "shellAccountingTradeDraft",
+        "TradeDraft from recommendation",
+        "Preview TradeDraft",
+        "previewTradeDraftFromLastRecommendation()",
+        "lastTradeDraftStatus",
+        "createTradeDraftFromLastRecommendation(true)",
+        "lastTradeDraftDuplicate",
+        "lastTradeDraftIdempotencyConflict",
+        "lastTradeDraftSummary",
+        "lastTradeDraftId",
+        "createOtcMapMultiChannelTradeDraft(true)",
+    };
+    return containsAny(line, allowedFragments);
+}
+
 std::vector<QmlHit> scanTokensInternal(
     const std::vector<QmlFile>& files,
     const std::vector<std::string>& tokens,
@@ -83,6 +133,9 @@ std::vector<QmlHit> scanTokensInternal(
                 }
                 if (!accountingScopeOnly &&
                     isAllowedNegativeDirectServiceStatement(line, token)) {
+                    continue;
+                }
+                if (isAllowedEpic281DashboardDraftLine(file, line, token)) {
                     continue;
                 }
                 hits.push_back({file.path, static_cast<int>(index + 1), token, line});

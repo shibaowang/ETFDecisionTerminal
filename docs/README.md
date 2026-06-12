@@ -12,6 +12,19 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [384 Dashboard MVP Full Delivery](384_dashboard_mvp_full_delivery.md)
+- [385 Dashboard MVP User Flow](385_dashboard_mvp_user_flow.md)
+- [386 Dashboard MVP QML Contract](386_dashboard_mvp_qml_contract.md)
+- [387 Dashboard MVP Manual Acceptance Checklist](387_dashboard_mvp_manual_acceptance_checklist.md)
+- [388 Dashboard MVP Test Plan](388_dashboard_mvp_test_plan.md)
+- EPIC-281 dashboard samples:
+  [samples/dashboard_mvp](../samples/dashboard_mvp/).
+  The Dashboard calls existing Presenter / ShellServices paths only. It exposes
+  Excel/VBA import, portfolio replay, market data refresh, strategy
+  recommendation, internal TradeDraft, and OTCMap internal draft flows with
+  explicit user confirmation for write/draft creation. It does not directly
+  access DataServiceClient, SQLite, network, engines, broker, credentials,
+  endpoints, real order placement, or automatic trading.
 - [379 Market Data Refresh Engine Full Delivery](379_market_data_refresh_engine_full_delivery.md)
 - [380 Market Data Provider Contract](380_market_data_provider_contract.md)
 - [381 Market Data Historical High VBA Parity Matrix](381_market_data_historical_high_vba_parity_matrix.md)

@@ -9,7 +9,7 @@ int main(int argc, char** argv)
     const auto root = sourceRoot(argc, argv);
     const auto pageText = readTextFile(shellAccountingReadOnlyPage(root));
     for (const auto& token : forbiddenTradeUiTokens()) {
-        if (pageText.find(token) != std::string::npos) {
+        if (shellAccountingQmlContainsForbiddenToken(pageText, token)) {
             std::cerr << "ShellAccounting page exposes trading UI token `" << token << "`\n";
             return 1;
         }

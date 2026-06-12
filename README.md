@@ -1,5 +1,27 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-281 Dashboard MVP Full Delivery
+
+EPIC-281 wires the core ShellAccounting capabilities into a single Dashboard
+MVP page for local manual trial:
+
+- scope: `docs/384_dashboard_mvp_full_delivery.md`
+- user flows: `docs/385_dashboard_mvp_user_flow.md`
+- QML contract: `docs/386_dashboard_mvp_qml_contract.md`
+- manual acceptance checklist:
+  `docs/387_dashboard_mvp_manual_acceptance_checklist.md`
+- test plan: `docs/388_dashboard_mvp_test_plan.md`
+- sanitized dashboard samples: `samples/dashboard_mvp/`
+- CTest: `dashboard_mvp_full_delivery`
+
+The Dashboard uses existing Presenter / ShellServices paths only. It shows
+Excel/VBA import preview and explicit accepted-preview persistence, portfolio
+replay, market data refresh, strategy recommendation, internal TradeDraft
+creation, and OTCMap multi-leg internal draft creation. Drafts are not orders.
+The Dashboard does not directly access DataServiceClient, SQLite, network,
+AccountingEngine, StrategyEngine, MarketEngine, broker, credentials, or
+endpoints, and it does not place real orders or enable automatic trading.
+
 ## EPIC-280 Market Data Historical High Refresh Engine Full Delivery
 
 EPIC-280 adds a production read-only MarketEngine refresh path for quote,

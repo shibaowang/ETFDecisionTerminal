@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_market_data_fixture",
+  "scenario": "manual fixture market data refresh",
+  "payloadRef": "samples/market_data/EPIC280_etf_quote_and_history_high.json",
+  "expectedStatus": "OK",
+  "expectedPanels": ["currentPrice", "historicalHigh", "drawdown", "premiumDiscount"],
+  "sanitized": true
+}

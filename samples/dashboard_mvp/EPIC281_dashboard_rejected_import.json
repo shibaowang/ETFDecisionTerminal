@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_rejected_import",
+  "scenario": "rejected sanitized import preview",
+  "payloadRef": "samples/excel_vba_import/EPIC275_negative_missing_required_header.json",
+  "expectedStatus": "REJECTED",
+  "persistEnabled": false,
+  "sanitized": true
+}

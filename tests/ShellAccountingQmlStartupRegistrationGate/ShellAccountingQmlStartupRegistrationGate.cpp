@@ -27,6 +27,38 @@ bool isAllowedNegativeLine(const std::string& line)
             line.find("SQLite") != std::string::npos);
 }
 
+bool containsAll(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) == std::string::npos) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isAllowedEpic281DashboardToken(
+    const std::filesystem::path& file,
+    const std::string& text,
+    const std::string& token)
+{
+    if (file.filename().string() != "ShellAccountingReadOnlyPage.qml" ||
+        token != "createTradeDraft") {
+        return false;
+    }
+    return containsAll(
+        text,
+        {
+            "shellAccountingDashboardRoot",
+            "shellAccountingTradeDraftPanel",
+            "shellAccountingTradeDraftConfirmationCheckBox",
+            "previewTradeDraftFromLastRecommendation()",
+            "createTradeDraftFromLastRecommendation(true)",
+            "Draft, not order",
+            "not order",
+        });
+}
+
 }  // namespace
 
 std::filesystem::path sourceRoot(int argc, char** argv)
@@ -127,7 +159,9 @@ std::vector<std::string> forbiddenExposureTokens()
 bool containsToken(const std::vector<std::filesystem::path>& files, const std::string& token)
 {
     for (const auto& file : files) {
-        if (readTextFile(file).find(token) != std::string::npos) {
+        const auto text = readTextFile(file);
+        if (text.find(token) != std::string::npos &&
+            !isAllowedEpic281DashboardToken(file, text, token)) {
             std::cerr << file.generic_string() << ": unexpected token `" << token << "`\n";
             return true;
         }
@@ -140,6 +174,7 @@ bool containsForbiddenExposure(
     const std::vector<std::string>& tokens)
 {
     for (const auto& file : files) {
+        const auto fileText = readTextFile(file);
         std::ifstream input(file);
         std::string line;
         int lineNumber = 0;
@@ -147,6 +182,9 @@ bool containsForbiddenExposure(
             ++lineNumber;
             for (const auto& token : tokens) {
                 if (line.find(token) == std::string::npos || isAllowedNegativeLine(line)) {
+                    continue;
+                }
+                if (isAllowedEpic281DashboardToken(file, fileText, token)) {
                     continue;
                 }
                 std::cerr << file.generic_string() << ':' << lineNumber

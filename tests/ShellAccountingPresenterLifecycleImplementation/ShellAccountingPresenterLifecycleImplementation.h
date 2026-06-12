@@ -25,5 +25,8 @@ namespace etfdt::tests::shell_accounting_presenter_lifecycle_implementation {
     const std::string& token);
 [[nodiscard]] std::vector<std::string> forbiddenRuntimeTokens();
 [[nodiscard]] std::vector<std::string> forbiddenTradeUiTokens();
+[[nodiscard]] bool shellAccountingQmlContainsForbiddenToken(
+    const std::string& text,
+    const std::string& token);
 
 }  // namespace etfdt::tests::shell_accounting_presenter_lifecycle_implementation

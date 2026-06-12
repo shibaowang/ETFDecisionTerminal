@@ -67,6 +67,8 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult fetchPortfolioReplayReadOnlySummary(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult fetchStrategyRecommendationReadOnlySummary(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

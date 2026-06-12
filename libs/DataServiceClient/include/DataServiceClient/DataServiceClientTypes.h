@@ -199,6 +199,66 @@ struct PortfolioReplayReadOnlySummaryRequest final {
     std::string replayPayloadJson = "{}";
 };
 
+struct StrategyRecommendationReadOnlySummaryRequest final {
+    std::string recommendationPayloadJson = "{}";
+};
+
+struct StrategyRecommendationIssue final {
+    std::string level;
+    std::string code;
+    std::string message;
+    std::string field;
+    bool blocking = true;
+};
+
+struct StrategyRecommendationReadOnlySummaryResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    std::string status;
+    std::string dataQualityStatus;
+    bool protocolSuccess = false;
+    bool accepted = false;
+    bool recommendationComputed = false;
+    bool strategyRecommendationEngineCreated = false;
+    bool dataServiceReadOnlyActionCreated = false;
+    std::string actionCode;
+    std::string actionLabel;
+    std::string sourceCode;
+    std::string sourceLabel;
+    std::string reasonCode;
+    std::string reasonLabel;
+    std::string tierLabel;
+    std::string targetAmountText;
+    std::string suggestedQuantityText;
+    std::string suggestedAmountText;
+    std::string netCashImpactText;
+    std::string feeText;
+    bool baseProtectionPassed = false;
+    bool cashLimitApplied = false;
+    std::vector<StrategyRecommendationIssue> issues;
+    std::vector<std::string> issueCodes;
+    std::string rawPayloadJson;
+    bool readOnlyRecommendationNoWrite = false;
+    bool tradeDraftCreated = false;
+    bool tradeLogRowsWrittenByRecommendation = false;
+    bool cashAdjustmentRowsWrittenByRecommendation = false;
+    bool auditLogRowsWrittenByRecommendation = false;
+    bool productionWrite = false;
+    bool sqliteProductionWrite = false;
+    bool auditWritten = false;
+    bool ledgerWritten = false;
+    bool snapshotWritten = false;
+    bool tradeLogWritten = false;
+    bool readModelPersistentWrite = false;
+    bool productionDbTouched = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool brokerOrderSubmitted = false;
+    bool automaticTrading = false;
+};
+
 struct PortfolioReplayReadOnlyPnlSummary final {
     std::string currency;
     std::string realizedPnlText;

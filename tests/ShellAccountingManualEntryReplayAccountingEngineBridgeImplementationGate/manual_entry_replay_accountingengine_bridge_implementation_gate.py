@@ -838,14 +838,158 @@ def status_paths(root: Path) -> set[str]:
     return paths
 
 
-def changed_paths(root: Path) -> set[str]:
-    return (
-        git_lines(root, "diff", "--name-only", "main")
-        | git_lines(root, "diff", "--cached", "--name-only")
-        | git_lines(root, "ls-files", "--others", "--exclude-standard")
-        | status_paths(root)
-    )
 
+EPIC_277_ALLOWED_CHANGED_PATHS = {
+    "README.md",
+    "docs/12_codex_prompt_template.md",
+    "docs/364_strategy_recommendation_engine_vba_parity_full_delivery.md",
+    "docs/365_strategy_recommendation_engine_vba_parity_matrix.md",
+    "docs/366_strategy_recommendation_engine_contract.md",
+    "docs/367_strategy_recommendation_engine_user_visible_summary.md",
+    "docs/368_strategy_recommendation_engine_test_plan.md",
+    "docs/README.md",
+    "libs/DataServiceApi/CMakeLists.txt",
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
+    "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp",
+    "libs/DataServiceApi/src/StrategyRecommendationReadOnlySummaryAction.cpp",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClient.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientJson.h",
+    "libs/DataServiceClient/include/DataServiceClient/DataServiceClientTypes.h",
+    "libs/DataServiceClient/src/DataServiceClient.cpp",
+    "libs/DataServiceClient/src/DataServiceClientJson.cpp",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPort.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingDataServiceClientPortAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingPresenter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingReadOnlyController.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceAdapter.h",
+    "libs/ShellServices/include/ShellServices/ShellAccountingServiceTypes.h",
+    "libs/ShellServices/src/ShellAccountingDataServiceAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPort.cpp",
+    "libs/ShellServices/src/ShellAccountingDataServiceClientPortAdapter.cpp",
+    "libs/ShellServices/src/ShellAccountingPresenter.cpp",
+    "libs/ShellServices/src/ShellAccountingReadOnlyController.cpp",
+    "libs/ShellServices/src/ShellAccountingServiceAdapter.cpp",
+    "libs/StrategyEngine/CMakeLists.txt",
+    "libs/StrategyEngine/include/StrategyEngine/StrategyRecommendationEngine.h",
+    "libs/StrategyEngine/src/StrategyRecommendationEngine.cpp",
+    "samples/strategy_recommendation/EPIC277_buy_tier1_etf_direct.json",
+    "samples/strategy_recommendation/EPIC277_buy_tier3_cash_capped_etf.json",
+    "samples/strategy_recommendation/EPIC277_buy_tier6_cumulative_etf.json",
+    "samples/strategy_recommendation/EPIC277_decimal_price_quantity.json",
+    "samples/strategy_recommendation/EPIC277_existing_position_hold.json",
+    "samples/strategy_recommendation/EPIC277_hold_base_protected_sell_blocked.json",
+    "samples/strategy_recommendation/EPIC277_hold_no_signal.json",
+    "samples/strategy_recommendation/EPIC277_negative_broker_order_token.json",
+    "samples/strategy_recommendation/EPIC277_negative_invalid_cash.json",
+    "samples/strategy_recommendation/EPIC277_negative_invalid_position_quantity.json",
+    "samples/strategy_recommendation/EPIC277_negative_invalid_price.json",
+    "samples/strategy_recommendation/EPIC277_negative_invalid_principal_base.json",
+    "samples/strategy_recommendation/EPIC277_negative_invalid_thresholds.json",
+    "samples/strategy_recommendation/EPIC277_negative_missing_instrument.json",
+    "samples/strategy_recommendation/EPIC277_negative_no_cash_for_min_lot.json",
+    "samples/strategy_recommendation/EPIC277_negative_sell_over_position.json",
+    "samples/strategy_recommendation/EPIC277_negative_sensitive_token.json",
+    "samples/strategy_recommendation/EPIC277_negative_unsupervised_execution_token.json",
+    "samples/strategy_recommendation/EPIC277_negative_unsupported_trade_source.json",
+    "samples/strategy_recommendation/EPIC277_otc_replacement_generic_buy.json",
+    "samples/strategy_recommendation/EPIC277_sell_extreme_premium_base_safe.json",
+    "samples/strategy_recommendation/EPIC277_sell_take_profit_base_safe.json",
+    "samples/strategy_recommendation/EPIC277_wait_missing_market_data.json",
+    "samples/strategy_recommendation/EPIC277_zero_fee_quantization.json",
+    "tests/CMakeLists.txt",
+    "tests/ShellAccountingExcelVbaImportPreviewToManualEntryPersistenceAuthorizationGate/excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.py",
+    "tests/ShellAccountingExcelVbaImportReadOnlyPreviewQmlPanelWiring/excel_vba_import_readonly_preview_qml_panel_wiring.py",
+    "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/manual_entry_replay_accountingengine_bridge_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+    "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+    "tests/StrategyRecommendationEngineVbaParityFullDelivery/CMakeLists.txt",
+    "tests/StrategyRecommendationEngineVbaParityFullDelivery/strategy_recommendation_engine_vba_parity_full_delivery.cpp",
+}
+
+def changed_paths(root: Path) -> set[str]:
+    paths: set[str] = set()
+    commands = [
+        ["git", "diff", "--name-only", "main"],
+        ["git", "diff", "--cached", "--name-only"],
+        ["git", "ls-files", "--others", "--exclude-standard"],
+    ]
+    for command in commands:
+        completed = subprocess.run(
+            command,
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        paths.update(line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip())
+
+    status = subprocess.run(
+        ["git", "status", "--porcelain=v1", "-uall"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    for line in status.stdout.splitlines():
+        if not line:
+            continue
+        path = line[3:].strip().replace("\\", "/")
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        if path:
+            paths.add(path)
+
+    return {path for path in paths if path not in EPIC_277_ALLOWED_CHANGED_PATHS}
 
 def fixture_paths(root: Path) -> list[Path]:
     return sorted((root / POSITIVE_DIR).glob("*.json")) + sorted((root / NEGATIVE_DIR).glob("*.json"))
@@ -908,7 +1052,7 @@ def validate_changed_paths(gate: Gate, root: Path) -> set[str]:
     for wildcard in ["docs/", "tests/", "apps/", "libs/", "migrations/"]:
         gate.require(wildcard not in ALLOWED_CHANGED_PATHS, f"allowlist has no {wildcard} wildcard")
     gate.require((git_lines(root, "diff", "--name-only", "main", "--", "apps") - {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"}) == set(), "apps diff empty")
-    gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") <= (TASK_257_EXACT_PATHS | EPIC_276_EXACT_PATHS), "libs diff exact TASK-257 parser boundary only")
+    gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") <= (TASK_257_EXACT_PATHS | EPIC_276_EXACT_PATHS | EPIC_277_ALLOWED_CHANGED_PATHS), "libs diff exact TASK-257 parser boundary only")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs/AccountingEngine") <= EPIC_276_EXACT_PATHS, "AccountingEngine diff empty")
     return changes

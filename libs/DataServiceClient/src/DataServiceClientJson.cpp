@@ -131,6 +131,14 @@ DataServiceClientResult<PortfolioReplayReadOnlySummaryResult> portfolioReplayMap
         message);
 }
 
+DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>
+strategyRecommendationMappingFailure(const std::string& message)
+{
+    return DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>::failure(
+        etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+        message);
+}
+
 }  // namespace
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> parseProtocolResponseJson(
@@ -604,6 +612,152 @@ parsePortfolioReplayReadOnlySummaryPayloadJson(
     return DataServiceClientResult<PortfolioReplayReadOnlySummaryResult>::success(std::move(result));
 }
 
+DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>
+parseStrategyRecommendationReadOnlySummaryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid strategy recommendation read-only summary payload JSON");
+    }
+
+    const auto object = document.object();
+    StrategyRecommendationReadOnlySummaryResult result;
+    result.protocolSuccess = protocolSuccess;
+    result.rawPayloadJson = json;
+    std::string missingField;
+
+    if (!readRequiredString(object, "action", result.action, missingField)
+        || !readRequiredString(object, "task", result.task, missingField)
+        || !readRequiredString(object, "mode", result.mode, missingField)
+        || !readRequiredString(object, "status", result.status, missingField)
+        || !readRequiredString(object, "dataQualityStatus", result.dataQualityStatus, missingField)
+        || !readRequiredBool(object, "accepted", result.accepted, missingField)
+        || !readRequiredBool(
+            object,
+            "recommendationComputed",
+            result.recommendationComputed,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "strategyRecommendationEngineCreated",
+            result.strategyRecommendationEngineCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "dataServiceReadOnlyActionCreated",
+            result.dataServiceReadOnlyActionCreated,
+            missingField)
+        || !readRequiredString(object, "actionCode", result.actionCode, missingField)
+        || !readRequiredString(object, "actionLabel", result.actionLabel, missingField)
+        || !readRequiredString(object, "sourceCode", result.sourceCode, missingField)
+        || !readRequiredString(object, "sourceLabel", result.sourceLabel, missingField)
+        || !readRequiredString(object, "reasonCode", result.reasonCode, missingField)
+        || !readRequiredString(object, "reasonLabel", result.reasonLabel, missingField)
+        || !readRequiredString(object, "tierLabel", result.tierLabel, missingField)
+        || !readRequiredString(object, "targetAmountText", result.targetAmountText, missingField)
+        || !readRequiredString(
+            object,
+            "suggestedQuantityText",
+            result.suggestedQuantityText,
+            missingField)
+        || !readRequiredString(
+            object,
+            "suggestedAmountText",
+            result.suggestedAmountText,
+            missingField)
+        || !readRequiredString(
+            object,
+            "netCashImpactText",
+            result.netCashImpactText,
+            missingField)
+        || !readRequiredString(object, "feeText", result.feeText, missingField)
+        || !readRequiredBool(
+            object,
+            "baseProtectionPassed",
+            result.baseProtectionPassed,
+            missingField)
+        || !readRequiredBool(object, "cashLimitApplied", result.cashLimitApplied, missingField)
+        || !readRequiredBool(
+            object,
+            "readOnlyRecommendationNoWrite",
+            result.readOnlyRecommendationNoWrite,
+            missingField)
+        || !readRequiredBool(object, "tradeDraftCreated", result.tradeDraftCreated, missingField)
+        || !readRequiredBool(
+            object,
+            "tradeLogRowsWrittenByRecommendation",
+            result.tradeLogRowsWrittenByRecommendation,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "cashAdjustmentRowsWrittenByRecommendation",
+            result.cashAdjustmentRowsWrittenByRecommendation,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "auditLogRowsWrittenByRecommendation",
+            result.auditLogRowsWrittenByRecommendation,
+            missingField)
+        || !readRequiredBool(object, "productionWrite", result.productionWrite, missingField)
+        || !readRequiredBool(
+            object,
+            "sqliteProductionWrite",
+            result.sqliteProductionWrite,
+            missingField)
+        || !readRequiredBool(object, "auditWritten", result.auditWritten, missingField)
+        || !readRequiredBool(object, "ledgerWritten", result.ledgerWritten, missingField)
+        || !readRequiredBool(object, "snapshotWritten", result.snapshotWritten, missingField)
+        || !readRequiredBool(object, "tradeLogWritten", result.tradeLogWritten, missingField)
+        || !readRequiredBool(
+            object,
+            "readModelPersistentWrite",
+            result.readModelPersistentWrite,
+            missingField)
+        || !readRequiredBool(object, "productionDbTouched", result.productionDbTouched, missingField)
+        || !readRequiredBool(object, "networkAccess", result.networkAccess, missingField)
+        || !readRequiredBool(object, "credentialAccess", result.credentialAccess, missingField)
+        || !readRequiredBool(object, "endpointAccess", result.endpointAccess, missingField)
+        || !readRequiredBool(
+            object,
+            "brokerOrderSubmitted",
+            result.brokerOrderSubmitted,
+            missingField)
+        || !readRequiredBool(object, "automaticTrading", result.automaticTrading, missingField)) {
+        return strategyRecommendationMappingFailure(
+            "Strategy recommendation payload missing field: " + missingField);
+    }
+
+    const auto issuesValue = object.value("issues");
+    if (!issuesValue.isArray()) {
+        return strategyRecommendationMappingFailure("Strategy recommendation payload missing issues");
+    }
+    for (const auto& issueValue : issuesValue.toArray()) {
+        if (!issueValue.isObject()) {
+            return strategyRecommendationMappingFailure("Strategy recommendation issue must be an object");
+        }
+        const auto issueObject = issueValue.toObject();
+        StrategyRecommendationIssue issue;
+        if (!readRequiredString(issueObject, "level", issue.level, missingField)
+            || !readRequiredString(issueObject, "code", issue.code, missingField)
+            || !readRequiredString(issueObject, "message", issue.message, missingField)
+            || !readRequiredString(issueObject, "field", issue.field, missingField)
+            || !readRequiredBool(issueObject, "blocking", issue.blocking, missingField)) {
+            return strategyRecommendationMappingFailure(
+                "Strategy recommendation issue missing field: " + missingField);
+        }
+        result.issueCodes.push_back(issue.code);
+        result.issues.push_back(std::move(issue));
+    }
+
+    return DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>::success(
+        std::move(result));
+}
+
 std::string auditAppendPayloadJson(const AuditAppendRequest& request)
 {
     std::ostringstream stream;
@@ -647,6 +801,12 @@ std::string portfolioReplayReadOnlySummaryPayloadJson(
     const PortfolioReplayReadOnlySummaryRequest& request)
 {
     return request.replayPayloadJson.empty() ? "{}" : request.replayPayloadJson;
+}
+
+std::string strategyRecommendationReadOnlySummaryPayloadJson(
+    const StrategyRecommendationReadOnlySummaryRequest& request)
+{
+    return request.recommendationPayloadJson.empty() ? "{}" : request.recommendationPayloadJson;
 }
 
 }  // namespace etfdt::data_service_client

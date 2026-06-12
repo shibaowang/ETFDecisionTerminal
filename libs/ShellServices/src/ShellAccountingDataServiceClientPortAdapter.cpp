@@ -469,6 +469,79 @@ ShellAccountingDataServiceClientResponse mapPortfolioReplayClientResult(
     return response;
 }
 
+ShellAccountingDataServiceClientResponse mapStrategyRecommendationClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::StrategyRecommendationReadOnlySummaryResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient strategy recommendation summary call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& recommendation = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = recommendation.action.empty() ? request.actionName : recommendation.action;
+    response.protocolSuccess = recommendation.protocolSuccess;
+    response.implemented = recommendation.strategyRecommendationEngineCreated;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = recommendation.status;
+    response.dataQualityStatus = recommendation.dataQualityStatus;
+    response.hasRows = recommendation.accepted;
+    response.domainError = !recommendation.protocolSuccess || !recommendation.accepted;
+    response.rawPayload = recommendation.rawPayloadJson;
+    response.strategyRecommendationAccepted = recommendation.accepted;
+    response.strategyRecommendationComputed = recommendation.recommendationComputed;
+    response.strategyRecommendationActionCode = recommendation.actionCode;
+    response.strategyRecommendationActionLabel = recommendation.actionLabel;
+    response.strategyRecommendationSourceCode = recommendation.sourceCode;
+    response.strategyRecommendationSourceLabel = recommendation.sourceLabel;
+    response.strategyRecommendationReasonCode = recommendation.reasonCode;
+    response.strategyRecommendationReasonLabel = recommendation.reasonLabel;
+    response.strategyRecommendationTierLabel = recommendation.tierLabel;
+    response.strategyRecommendationTargetAmountText = recommendation.targetAmountText;
+    response.strategyRecommendationSuggestedQuantityText = recommendation.suggestedQuantityText;
+    response.strategyRecommendationSuggestedAmountText = recommendation.suggestedAmountText;
+    response.strategyRecommendationNetCashImpactText = recommendation.netCashImpactText;
+    response.strategyRecommendationFeeText = recommendation.feeText;
+    response.strategyRecommendationBaseProtectionPassed = recommendation.baseProtectionPassed;
+    response.strategyRecommendationCashLimitApplied = recommendation.cashLimitApplied;
+    response.strategyRecommendationIssueCodes = recommendation.issueCodes;
+    response.productionWrite = recommendation.productionWrite || !recommendation.readOnlyRecommendationNoWrite;
+    response.sqliteProductionWrite = recommendation.sqliteProductionWrite;
+    response.auditWritten = recommendation.auditWritten || recommendation.auditLogRowsWrittenByRecommendation;
+    response.ledgerWritten = recommendation.ledgerWritten;
+    response.snapshotWritten = recommendation.snapshotWritten;
+    response.tradeLogWritten =
+        recommendation.tradeLogWritten || recommendation.tradeLogRowsWrittenByRecommendation;
+    response.readModelPersistentWrite = recommendation.readModelPersistentWrite;
+    response.networkAccess = recommendation.networkAccess;
+    response.credentialAccess = recommendation.credentialAccess;
+    response.endpointAccess = recommendation.endpointAccess;
+    response.automaticTrading = recommendation.automaticTrading;
+
+    for (const auto& issue : recommendation.issues) {
+        response.issues.push_back(makeIssue(
+            issue.code.empty() ? "STRATEGY_RECOMMENDATION_ISSUE" : issue.code,
+            issue.level.empty() ? "ERROR" : issue.level,
+            issue.message.empty() ? issue.code : issue.message,
+            issue.blocking));
+    }
+    return response;
+}
+
 }  // namespace
 
 ShellAccountingDataServiceClientPortAdapter::ShellAccountingDataServiceClientPortAdapter(
@@ -701,6 +774,27 @@ ShellAccountingDataServiceClientPortAdapter::callPortfolioReplayReadOnlySummary(
     return mapPortfolioReplayClientResult(
         request,
         client_->accountingPortfolioReplayReadOnlySummary(replayRequest, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callStrategyRecommendationReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting strategy recommendation port.",
+            true,
+            false);
+    }
+
+    etfdt::data_service_client::StrategyRecommendationReadOnlySummaryRequest recommendationRequest;
+    recommendationRequest.recommendationPayloadJson =
+        request.payloadJson.empty() ? "{}" : request.payloadJson;
+    return mapStrategyRecommendationClientResult(
+        request,
+        client_->strategyRecommendationReadOnlySummary(recommendationRequest, request.timeoutMs));
 }
 
 }  // namespace etfdt::shell_services

@@ -683,6 +683,61 @@ QString ShellAccountingPresenter::portfolioReplayUnrealizedPnl() const
     return portfolioReplayUnrealizedPnl_;
 }
 
+bool ShellAccountingPresenter::strategyRecommendationBusy() const noexcept
+{
+    return strategyRecommendationBusy_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationStatus() const
+{
+    return lastStrategyRecommendationStatus_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationAction() const
+{
+    return lastStrategyRecommendationAction_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationSource() const
+{
+    return lastStrategyRecommendationSource_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationReason() const
+{
+    return lastStrategyRecommendationReason_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationTier() const
+{
+    return lastStrategyRecommendationTier_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationQuantityText() const
+{
+    return lastStrategyRecommendationQuantityText_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationAmountText() const
+{
+    return lastStrategyRecommendationAmountText_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationNetCashImpactText() const
+{
+    return lastStrategyRecommendationNetCashImpactText_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationIssueCodes() const
+{
+    return lastStrategyRecommendationIssueCodes_;
+}
+
+QString ShellAccountingPresenter::lastStrategyRecommendationSummary() const
+{
+    return lastStrategyRecommendationSummary_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -1233,6 +1288,90 @@ bool ShellAccountingPresenter::previewPortfolioReplayReadOnlySummary(
     return result.protocolSuccess && result.portfolioReplayAccepted;
 }
 
+void ShellAccountingPresenter::resetStrategyRecommendationState()
+{
+    strategyRecommendationBusy_ = false;
+    lastStrategyRecommendationStatus_ = QStringLiteral("READY");
+    lastStrategyRecommendationAction_.clear();
+    lastStrategyRecommendationSource_.clear();
+    lastStrategyRecommendationReason_.clear();
+    lastStrategyRecommendationTier_.clear();
+    lastStrategyRecommendationQuantityText_.clear();
+    lastStrategyRecommendationAmountText_.clear();
+    lastStrategyRecommendationNetCashImpactText_.clear();
+    lastStrategyRecommendationIssueCodes_.clear();
+    lastStrategyRecommendationSummary_.clear();
+    emit strategyRecommendationStateChanged();
+}
+
+bool ShellAccountingPresenter::previewStrategyRecommendationReadOnlySummary(
+    const QString& recommendationPayloadJson)
+{
+    if (!controller_) {
+        markStrategyRecommendationInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("strategy.recommendation.readonly_summary");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeStrategyRecommendationReadOnlySummaryRequest(recommendationPayloadJson, valid);
+    if (!valid) {
+        return false;
+    }
+
+    strategyRecommendationBusy_ = true;
+    lastStrategyRecommendationStatus_ = QStringLiteral("RECOMMENDING");
+    lastStrategyRecommendationIssueCodes_.clear();
+    emit strategyRecommendationStateChanged();
+    const auto result = controller_->fetchStrategyRecommendationReadOnlySummary(request);
+    strategyRecommendationBusy_ = false;
+
+    lastStrategyRecommendationStatus_ = QString::fromStdString(result.payloadStatus);
+    if (lastStrategyRecommendationStatus_.isEmpty()) {
+        lastStrategyRecommendationStatus_ = result.strategyRecommendationAccepted
+            ? QStringLiteral("OK")
+            : QStringLiteral("REJECTED");
+    }
+    lastStrategyRecommendationAction_ =
+        QString::fromStdString(result.strategyRecommendationActionLabel);
+    lastStrategyRecommendationSource_ =
+        QString::fromStdString(result.strategyRecommendationSourceLabel);
+    lastStrategyRecommendationReason_ =
+        QString::fromStdString(result.strategyRecommendationReasonLabel);
+    lastStrategyRecommendationTier_ =
+        QString::fromStdString(result.strategyRecommendationTierLabel);
+    lastStrategyRecommendationQuantityText_ =
+        QString::fromStdString(result.strategyRecommendationSuggestedQuantityText);
+    lastStrategyRecommendationAmountText_ =
+        QString::fromStdString(result.strategyRecommendationSuggestedAmountText);
+    lastStrategyRecommendationNetCashImpactText_ =
+        QString::fromStdString(result.strategyRecommendationNetCashImpactText);
+    lastStrategyRecommendationIssueCodes_ =
+        QString::fromStdString([&]() {
+            std::ostringstream stream;
+            for (std::size_t index = 0; index < result.strategyRecommendationIssueCodes.size(); ++index) {
+                if (index != 0U) {
+                    stream << ',';
+                }
+                stream << result.strategyRecommendationIssueCodes[index];
+            }
+            return stream.str();
+        }());
+    lastStrategyRecommendationSummary_ = QStringLiteral(
+        "action=%1 source=%2 reason=%3 tier=%4 quantity=%5 amount=%6 netCash=%7")
+        .arg(lastStrategyRecommendationAction_)
+        .arg(lastStrategyRecommendationSource_)
+        .arg(lastStrategyRecommendationReason_)
+        .arg(lastStrategyRecommendationTier_)
+        .arg(lastStrategyRecommendationQuantityText_)
+        .arg(lastStrategyRecommendationAmountText_)
+        .arg(lastStrategyRecommendationNetCashImpactText_);
+    emit strategyRecommendationStateChanged();
+    syncFromController();
+    return result.protocolSuccess && result.strategyRecommendationAccepted;
+}
+
 bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
     const QString& previewStatus,
     const QString& previewDigest,
@@ -1365,6 +1504,7 @@ void ShellAccountingPresenter::reset()
     resetExcelVbaImportPreviewState();
     resetExcelVbaImportPersistState();
     resetPortfolioReplayState();
+    resetStrategyRecommendationState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -1767,6 +1907,22 @@ void ShellAccountingPresenter::markPortfolioReplayInputError(const QString& mess
     emit portfolioReplayStateChanged();
 }
 
+void ShellAccountingPresenter::markStrategyRecommendationInputError(const QString& message)
+{
+    strategyRecommendationBusy_ = false;
+    lastStrategyRecommendationStatus_ = QStringLiteral("INPUT_ERROR");
+    lastStrategyRecommendationAction_.clear();
+    lastStrategyRecommendationSource_.clear();
+    lastStrategyRecommendationReason_.clear();
+    lastStrategyRecommendationTier_.clear();
+    lastStrategyRecommendationQuantityText_.clear();
+    lastStrategyRecommendationAmountText_.clear();
+    lastStrategyRecommendationNetCashImpactText_.clear();
+    lastStrategyRecommendationIssueCodes_.clear();
+    lastStrategyRecommendationSummary_ = message;
+    emit strategyRecommendationStateChanged();
+}
+
 ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPreviewRequest(
     const QString& importPayloadJson,
     bool& valid)
@@ -1828,6 +1984,42 @@ ShellAccountingServiceRequest ShellAccountingPresenter::makePortfolioReplayReadO
     ShellAccountingServiceRequest request;
     request.actionName = "accounting.portfolio_replay.readonly_summary";
     request.portfolioReplayPayloadJson =
+        QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest
+ShellAccountingPresenter::makeStrategyRecommendationReadOnlySummaryRequest(
+    const QString& recommendationPayloadJson,
+    bool& valid)
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        recommendationPayloadJson.trimmed().toUtf8(),
+        &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markStrategyRecommendationInputError(
+            QStringLiteral("Strategy recommendation payload must be a JSON object."));
+        return {};
+    }
+
+    const auto object = document.object();
+    if (object.contains(QStringLiteral("filePath"))
+        || object.contains(QStringLiteral("path"))
+        || object.contains(QStringLiteral("filename"))
+        || object.contains(QStringLiteral("credential"))
+        || object.contains(QStringLiteral("endpoint"))) {
+        markStrategyRecommendationInputError(
+            QStringLiteral("Strategy recommendation accepts sanitized in-memory payload JSON only."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "strategy.recommendation.readonly_summary";
+    request.strategyRecommendationPayloadJson =
         QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
     request.timeoutMs = 2000;
     valid = true;

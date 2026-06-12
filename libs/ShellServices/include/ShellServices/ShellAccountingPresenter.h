@@ -63,6 +63,17 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(int portfolioReplayCashSummaryCount READ portfolioReplayCashSummaryCount NOTIFY portfolioReplayStateChanged)
     Q_PROPERTY(QString portfolioReplayRealizedPnl READ portfolioReplayRealizedPnl NOTIFY portfolioReplayStateChanged)
     Q_PROPERTY(QString portfolioReplayUnrealizedPnl READ portfolioReplayUnrealizedPnl NOTIFY portfolioReplayStateChanged)
+    Q_PROPERTY(bool strategyRecommendationBusy READ strategyRecommendationBusy NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationStatus READ lastStrategyRecommendationStatus NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationAction READ lastStrategyRecommendationAction NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationSource READ lastStrategyRecommendationSource NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationReason READ lastStrategyRecommendationReason NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationTier READ lastStrategyRecommendationTier NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationQuantityText READ lastStrategyRecommendationQuantityText NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationAmountText READ lastStrategyRecommendationAmountText NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationNetCashImpactText READ lastStrategyRecommendationNetCashImpactText NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationIssueCodes READ lastStrategyRecommendationIssueCodes NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastStrategyRecommendationSummary READ lastStrategyRecommendationSummary NOTIFY strategyRecommendationStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -120,6 +131,17 @@ public:
     [[nodiscard]] int portfolioReplayCashSummaryCount() const noexcept;
     [[nodiscard]] QString portfolioReplayRealizedPnl() const;
     [[nodiscard]] QString portfolioReplayUnrealizedPnl() const;
+    [[nodiscard]] bool strategyRecommendationBusy() const noexcept;
+    [[nodiscard]] QString lastStrategyRecommendationStatus() const;
+    [[nodiscard]] QString lastStrategyRecommendationAction() const;
+    [[nodiscard]] QString lastStrategyRecommendationSource() const;
+    [[nodiscard]] QString lastStrategyRecommendationReason() const;
+    [[nodiscard]] QString lastStrategyRecommendationTier() const;
+    [[nodiscard]] QString lastStrategyRecommendationQuantityText() const;
+    [[nodiscard]] QString lastStrategyRecommendationAmountText() const;
+    [[nodiscard]] QString lastStrategyRecommendationNetCashImpactText() const;
+    [[nodiscard]] QString lastStrategyRecommendationIssueCodes() const;
+    [[nodiscard]] QString lastStrategyRecommendationSummary() const;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -188,6 +210,8 @@ public:
     Q_INVOKABLE bool persistAcceptedExcelVbaImportPreview();
     Q_INVOKABLE void resetPortfolioReplayState();
     Q_INVOKABLE bool previewPortfolioReplayReadOnlySummary(const QString& replayPayloadJson);
+    Q_INVOKABLE void resetStrategyRecommendationState();
+    Q_INVOKABLE bool previewStrategyRecommendationReadOnlySummary(const QString& recommendationPayloadJson);
     bool persistExcelVbaImportManualEntry(
         const QString& previewStatus,
         const QString& previewDigest,
@@ -210,6 +234,7 @@ signals:
     void excelVbaImportPreviewStateChanged();
     void excelVbaImportPersistStateChanged();
     void portfolioReplayStateChanged();
+    void strategyRecommendationStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -233,6 +258,7 @@ private:
     void markExcelVbaImportPreviewInputError(const QString& message);
     void markExcelVbaImportPersistInputError(const QString& message);
     void markPortfolioReplayInputError(const QString& message);
+    void markStrategyRecommendationInputError(const QString& message);
     [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPreviewRequest(
         const QString& importPayloadJson,
         bool& valid);
@@ -252,6 +278,9 @@ private:
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makePortfolioReplayReadOnlySummaryRequest(
         const QString& replayPayloadJson,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeStrategyRecommendationReadOnlySummaryRequest(
+        const QString& recommendationPayloadJson,
         bool& valid);
     [[nodiscard]] QString acceptedExcelVbaImportPreviewIdempotencyKey() const;
     [[nodiscard]] QString acceptedExcelVbaImportPreviewDigest(
@@ -349,6 +378,17 @@ private:
     int portfolioReplayCashSummaryCount_ = 0;
     QString portfolioReplayRealizedPnl_;
     QString portfolioReplayUnrealizedPnl_;
+    bool strategyRecommendationBusy_ = false;
+    QString lastStrategyRecommendationStatus_ = QStringLiteral("READY");
+    QString lastStrategyRecommendationAction_;
+    QString lastStrategyRecommendationSource_;
+    QString lastStrategyRecommendationReason_;
+    QString lastStrategyRecommendationTier_;
+    QString lastStrategyRecommendationQuantityText_;
+    QString lastStrategyRecommendationAmountText_;
+    QString lastStrategyRecommendationNetCashImpactText_;
+    QString lastStrategyRecommendationIssueCodes_;
+    QString lastStrategyRecommendationSummary_;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

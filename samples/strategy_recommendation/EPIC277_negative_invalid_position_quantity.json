@@ -1,0 +1,1 @@
+{"sampleId":"EPIC277_negative_invalid_position_quantity","input":{"instrumentCode":"510300","tradeSource":"ETF_DIRECT","currentPriceText":"2.50","cashBalanceText":"1000.00","positionQuantityText":"-10","principalBaseText":"10000.00","buyThresholds":[{"tierLabel":"Tier1","drawdownText":"5.00","targetAmountText":"1000.00"}]},"expectedIssueCodes":["INVALID_POSITION_QUANTITY"]}

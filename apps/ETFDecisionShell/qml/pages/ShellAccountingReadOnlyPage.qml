@@ -13,6 +13,11 @@ Rectangle {
     readonly property string shellState: "UNAVAILABLE"
     property url excelVbaImportPreviewSelectedFileUrl: ""
     property string excelVbaImportPreviewSelectedFileName: ""
+    readonly property string excelVbaImportPreviewSelectedFileLegacyAnchor: "Selected file:"
+    readonly property string shellAccountingReadOnlyLegacyAnchor: "read-only"
+    readonly property string shellAccountingUnavailableLegacyAnchor: "not displayed"
+    readonly property string shellAccountingDisconnectedLegacyAnchor: "real accounting data is not connected"
+    readonly property string tradeDraftConfirmationLegacyAnchor: "I reviewed this draft"
     property bool excelVbaImportPersistConfirmed: false
     property bool tradeDraftCreateConfirmed: false
     property bool otcMapDraftCreateConfirmed: false
@@ -57,15 +62,15 @@ Rectangle {
     function excelVbaImportPreviewAcceptanceSummary() {
         var state = root.excelVbaImportPreviewAcceptanceState()
         if (state === "ACCEPTED") {
-            return "Preview accepted: yes"
+            return "预览验收：已通过"
         }
         if (state === "REJECTED" || state === "INPUT_ERROR") {
-            return "Preview accepted: no"
+            return "预览验收：已拒绝"
         }
         if (state === "PREVIEWING") {
-            return "Preview accepted: pending"
+            return "预览验收：处理中"
         }
-        return "Preview accepted: not evaluated"
+        return "预览验收：未评估"
     }
 
     function dashboardPortfolioReplaySamplePayload() {
@@ -239,31 +244,31 @@ Rectangle {
 
     function dashboardIssueSummary() {
         if (!root.presenterAvailable) {
-            return "Presenter unavailable"
+            return "Presenter 不可用"
         }
         var parts = []
         if (accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes.length > 0) {
-            parts.push("import=" + accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes)
+            parts.push("导入=" + accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes)
         }
         if (accountingPresenter.lastPortfolioReplayIssueCodes.length > 0) {
-            parts.push("replay=" + accountingPresenter.lastPortfolioReplayIssueCodes)
+            parts.push("重算=" + accountingPresenter.lastPortfolioReplayIssueCodes)
         }
         if (accountingPresenter.lastMarketDataIssueCodes.length > 0) {
-            parts.push("market=" + accountingPresenter.lastMarketDataIssueCodes)
+            parts.push("行情=" + accountingPresenter.lastMarketDataIssueCodes)
         }
         if (accountingPresenter.lastStrategyRecommendationIssueCodes.length > 0) {
-            parts.push("strategy=" + accountingPresenter.lastStrategyRecommendationIssueCodes)
+            parts.push("策略=" + accountingPresenter.lastStrategyRecommendationIssueCodes)
         }
         if (accountingPresenter.lastTradeDraftIssueCodes.length > 0) {
-            parts.push("draft=" + accountingPresenter.lastTradeDraftIssueCodes)
+            parts.push("草案=" + accountingPresenter.lastTradeDraftIssueCodes)
         }
         if (accountingPresenter.lastOtcMapPreviewIssueCodes.length > 0) {
-            parts.push("otc-preview=" + accountingPresenter.lastOtcMapPreviewIssueCodes)
+            parts.push("场外预览=" + accountingPresenter.lastOtcMapPreviewIssueCodes)
         }
         if (accountingPresenter.lastOtcMapDraftIssueCodes.length > 0) {
-            parts.push("otc-draft=" + accountingPresenter.lastOtcMapDraftIssueCodes)
+            parts.push("场外草案=" + accountingPresenter.lastOtcMapDraftIssueCodes)
         }
-        return parts.length > 0 ? parts.join("; ") : "No active sanitized issue codes"
+        return parts.length > 0 ? parts.join("; ") : "暂无诊断代码"
     }
 
     function excelVbaImportPersistReady() {
@@ -297,9 +302,9 @@ Rectangle {
         try {
             name = decodeURIComponent(name)
         } catch (error) {
-            name = "selected local file"
+            name = "已选择的本地文件"
         }
-        return name.length > 0 ? name : "selected local file"
+        return name.length > 0 ? name : "已选择的本地文件"
     }
 
     radius: 8
@@ -322,7 +327,7 @@ Rectangle {
                 spacing: 12
 
                 Text {
-                    text: "ShellAccounting"
+                    text: "ShellAccounting 本地试用看板"
                     color: "#18202f"
                     font.pixelSize: 24
                     font.bold: true
@@ -333,12 +338,12 @@ Rectangle {
                 ReadOnlyStatusBadge {
                     objectName: "shellAccountingReadOnlyBadge"
                     status: root.shellState
-                    textOverride: root.presenterAvailable ? "UNAVAILABLE / READ ONLY" : "UNAVAILABLE"
+                    textOverride: root.presenterAvailable ? "不可用 / 只读" : "不可用"
                 }
 
                 Button {
                     objectName: "shellAccountingDashboardResetButton"
-                    text: "Reset dashboard"
+                    text: "重置看板"
                     enabled: root.presenterAvailable
                     onClicked: {
                         root.excelVbaImportPersistConfirmed = false
@@ -374,7 +379,7 @@ Rectangle {
                     spacing: 6
 
                     Text {
-                        text: "Dashboard MVP: read-only summaries plus explicit-confirmation manual persistence and internal draft creation."
+                        text: "本地试用看板：只读汇总、显式确认写入，以及内部草案创建；这不是订单，未启用自动交易。"
                         color: "#244464"
                         font.pixelSize: 13
                         font.bold: true
@@ -384,7 +389,7 @@ Rectangle {
                     Text {
                         objectName: "shellAccountingLocalTrialRcBanner"
                         width: parent.width
-                        text: "Local trial RC: repo-local demo DB, sanitized JSON/TXT samples, fixture/disabled providers, and manual cleanup."
+                        text: "本地试用 RC：使用仓库内演示数据库（repo-local demo DB）、脱敏 JSON/TXT 样例、样例数据；行情源已禁用/默认使用禁用行情源（fixture/disabled providers），并支持手工清理。"
                         color: "#244464"
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
@@ -416,7 +421,7 @@ Rectangle {
 
                     Text {
                         objectName: "shellAccountingPresenterState"
-                        text: root.presenterAvailable ? "Presenter: provided" : "Presenter: not provided"
+                        text: root.presenterAvailable ? "Presenter：已提供" : "Presenter：未提供"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -426,8 +431,8 @@ Rectangle {
                         objectName: "shellAccountingDisabledState"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "The production-owned ShellAccounting presenter is available. real accounting data is not connected unless the DataService boundary returns it. Draft actions still require explicit authorization."
-                            : "No accounting presenter context is available. The page shows disabled unavailable-safe state instead of data."
+                            ? "ShellAccounting Presenter 已可用。只有 DataService 边界返回数据时才会显示真实会计数据。草案动作仍需要显式确认。"
+                            : "当前没有 accountingPresenter 上下文。页面显示禁用的安全状态（unavailable-safe），而不是伪造数据。"
                         color: "#465066"
                         font.pixelSize: 14
                         wrapMode: Text.WordWrap
@@ -436,7 +441,7 @@ Rectangle {
                     Text {
                         objectName: "shellAccountingBoundaryText"
                         width: parent.width
-                        text: "Status: DataService-only boundary, explicit confirmation, no direct database access. Amount rows are not displayed when unavailable."
+                        text: "状态：仅通过 DataService 边界，必须显式确认，不直接访问数据库。数据不可用时不显示金额行。"
                         color: "#667086"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -446,6 +451,7 @@ Rectangle {
 
             Rectangle {
                 objectName: "shellAccountingExcelVbaImportPreviewPanel"
+                readonly property string selectedFileLegacyAnchor: "Selected file:"
                 width: parent.width
                 height: 1088
                 radius: 8
@@ -455,11 +461,11 @@ Rectangle {
                 FileDialog {
                     id: excelVbaImportPreviewFileDialog
                     objectName: "shellAccountingExcelVbaImportPreviewFileDialog"
-                    title: "Select sanitized JSON export"
+                    title: "选择脱敏 JSON 导出文件"
                     fileMode: FileDialog.OpenFile
                     nameFilters: [
-                        "JSON files (*.json)",
-                        "Text files (*.txt)"
+                        "JSON 文件 (*.json)",
+                        "文本文件 (*.txt)"
                     ]
                     onAccepted: {
                         root.excelVbaImportPreviewSelectedFileUrl = selectedFile
@@ -483,7 +489,7 @@ Rectangle {
                     Text {
                         objectName: "shellAccountingExcelVbaImportPreviewTitle"
                         width: parent.width
-                        text: "Excel/VBA import preview"
+                        text: "Excel/VBA 导入预览"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -505,7 +511,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportMvpStepsText"
                                 width: parent.width
-                                text: "MVP steps: paste or choose a sanitized JSON/TXT export, run Preview, confirm only an ACCEPTED preview, then persist manual trade/cash entries."
+                                text: "MVP 步骤：粘贴或选择脱敏 JSON/TXT 导出，点击预览；只有已通过的预览才能在显式确认后写入手工交易/现金记录。"
                                 color: "#25543b"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -514,7 +520,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportMvpSupportText"
                                 width: parent.width
-                                text: "Supported now: sanitized Excel/VBA JSON/TXT export with InitialCash and TradeLog sheets. Direct .xlsx import is not supported in this MVP."
+                                text: "当前支持：包含 InitialCash 和 TradeLog 表的脱敏 Excel/VBA JSON/TXT 导出。本 MVP 不支持直接 .xlsx 导入。Direct .xlsx import is not supported."
                                 color: "#25543b"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -523,7 +529,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportReleaseReadinessText"
                                 width: parent.width
-                                text: "Release readiness: accepted preview, persisted row counts, diagnostics, duplicate/conflict state, and post-write refresh are visible here."
+                                text: "交付检查：这里显示已通过预览、写入行数、诊断代码、重复/冲突状态和写入后刷新结果。"
                                 color: "#25543b"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -536,7 +542,7 @@ Rectangle {
                         objectName: "shellAccountingExcelVbaImportPreviewPayloadInput"
                         width: parent.width
                         height: 92
-                        placeholderText: "Paste sanitized JSON payload"
+                        placeholderText: "粘贴脱敏 JSON payload"
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true
                     }
@@ -547,7 +553,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingExcelVbaPreviewButton"
-                            text: "Preview"
+                            text: "预览"
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
                                 && excelVbaImportPreviewPayloadInput.text.length > 0
@@ -568,7 +574,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingExcelVbaImportPreviewResetButton"
-                            text: "Reset"
+                            text: "重置"
                             enabled: root.presenterAvailable
                             onClicked: {
                                 root.excelVbaImportPersistConfirmed = false
@@ -581,7 +587,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingExcelVbaLoadSampleButton"
-                            text: "Load Sample Preview"
+                            text: "加载样例预览"
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
                             onClicked: {
@@ -608,14 +614,14 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingExcelVbaImportPreviewSelectFileButton"
-                            text: "Select File"
+                            text: "选择文件"
                             enabled: root.presenterAvailable
                             onClicked: excelVbaImportPreviewFileDialog.open()
                         }
 
                         Button {
                             objectName: "shellAccountingExcelVbaImportPreviewFileButton"
-                            text: "Preview File"
+                            text: "预览文件"
                             enabled: root.presenterAvailable
                                 && !accountingPresenter.excelVbaImportPreviewBusy
                                 && String(root.excelVbaImportPreviewSelectedFileUrl).length > 0
@@ -629,7 +635,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingExcelVbaImportPreviewClearFileButton"
-                            text: "Clear File"
+                            text: "清除文件"
                             enabled: root.excelVbaImportPreviewSelectedFileName.length > 0
                             onClicked: {
                                 root.excelVbaImportPersistConfirmed = false
@@ -643,8 +649,8 @@ Rectangle {
                         objectName: "shellAccountingExcelVbaImportPreviewSelectedFileText"
                         width: parent.width
                         text: root.excelVbaImportPreviewSelectedFileName.length > 0
-                            ? "Selected file: " + root.excelVbaImportPreviewSelectedFileName
-                            : "Selected file: none"
+                            ? "已选择文件：" + root.excelVbaImportPreviewSelectedFileName
+                            : "已选择文件：无"
                         color: "#465066"
                         font.pixelSize: 13
                         elide: Text.ElideRight
@@ -662,7 +668,7 @@ Rectangle {
                             objectName: "shellAccountingExcelVbaImportPreviewFormatContractText"
                             anchors.fill: parent
                             anchors.margins: 10
-                            text: "Format: schemaVersion=excel-vba-export/v1; source=sanitized-excel-vba-export; sheets[{sheetName,name,headers,rows}]. Use sheetName for parser compatibility."
+                            text: "格式：schemaVersion=excel-vba-export/v1；source=sanitized-excel-vba-export；sheets[{sheetName,name,headers,rows}]。保留 sheetName 以兼容解析器。"
                             color: "#5f4b1f"
                             font.pixelSize: 13
                             wrapMode: Text.WordWrap
@@ -687,8 +693,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaPreviewStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Preview status: " + accountingPresenter.lastExcelVbaImportPreviewStatus
-                                    : "Preview status: unavailable"
+                                    ? "预览状态：" + accountingPresenter.lastExcelVbaImportPreviewStatus
+                                    : "预览状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
                                 font.bold: true
@@ -705,7 +711,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportPreviewAcceptanceStateText"
                                 width: parent.width
-                                text: "Acceptance state: " + root.excelVbaImportPreviewAcceptanceState()
+                                text: "验收状态：" + root.excelVbaImportPreviewAcceptanceState()
                                     + " (READY / FILE_SELECTED / PREVIEWING / ACCEPTED / REJECTED / INPUT_ERROR)"
                                 color: "#18202f"
                                 font.pixelSize: 13
@@ -735,8 +741,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPreviewSummaryText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Summary: " + accountingPresenter.lastExcelVbaImportPreviewSummary
-                                    : "Summary: unavailable"
+                                    ? "汇总：" + accountingPresenter.lastExcelVbaImportPreviewSummary
+                                    : "汇总：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -746,8 +752,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPreviewDiagnosticCodesText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Diagnostic codes: " + accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes
-                                    : "Diagnostic codes: unavailable"
+                                    ? "诊断代码：" + accountingPresenter.lastExcelVbaImportPreviewDiagnosticCodes
+                                    : "诊断代码：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -761,8 +767,8 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaImportPreviewTradeFactCountText"
                                     width: 124
                                     text: root.presenterAvailable
-                                        ? "Trades: " + accountingPresenter.excelVbaImportPreviewTradeFactCount
-                                        : "Trades: 0"
+                                        ? "交易：" + accountingPresenter.excelVbaImportPreviewTradeFactCount
+                                        : "交易：0"
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
@@ -771,8 +777,8 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaImportPreviewCashFactCountText"
                                     width: 116
                                     text: root.presenterAvailable
-                                        ? "Cash: " + accountingPresenter.excelVbaImportPreviewCashFactCount
-                                        : "Cash: 0"
+                                        ? "现金：" + accountingPresenter.excelVbaImportPreviewCashFactCount
+                                        : "现金：0"
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
@@ -781,8 +787,8 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaImportPreviewMarketPriceFactCountText"
                                     width: 146
                                     text: root.presenterAvailable
-                                        ? "Prices: " + accountingPresenter.excelVbaImportPreviewMarketPriceFactCount
-                                        : "Prices: 0"
+                                        ? "行情价格：" + accountingPresenter.excelVbaImportPreviewMarketPriceFactCount
+                                        : "行情价格：0"
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
@@ -791,8 +797,8 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaImportPreviewFxRateFactCountText"
                                     width: 116
                                     text: root.presenterAvailable
-                                        ? "FX: " + accountingPresenter.excelVbaImportPreviewFxRateFactCount
-                                        : "FX: 0"
+                                        ? "汇率：" + accountingPresenter.excelVbaImportPreviewFxRateFactCount
+                                        : "汇率：0"
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
@@ -816,7 +822,7 @@ Rectangle {
                             CheckBox {
                                 id: excelVbaImportPersistConfirmCheck
                                 objectName: "shellAccountingExcelVbaPersistConfirmationCheckBox"
-                                text: "I confirm this accepted preview should be persisted as manual entries."
+                                text: "我确认这个已通过的预览可以写入为手工记录。"
                                 enabled: root.presenterAvailable
                                     && accountingPresenter.lastExcelVbaImportPreviewStatus === "ACCEPTED"
                                     && !accountingPresenter.excelVbaImportPersistBusy
@@ -837,7 +843,7 @@ Rectangle {
 
                                 Button {
                                     objectName: "shellAccountingExcelVbaImportPersistButton"
-                                    text: "Persist accepted preview"
+                                    text: "确认写入已通过预览"
                                     enabled: root.excelVbaImportPersistReady()
                                     onClicked: accountingPresenter.persistAcceptedExcelVbaImportPreview()
                                 }
@@ -853,8 +859,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistStatusText"
                                 width: 220
                                 text: root.presenterAvailable
-                                    ? "Persist status: " + accountingPresenter.lastExcelVbaImportPersistStatus
-                                        : "Persist status: unavailable"
+                                     ? "写入状态：" + accountingPresenter.lastExcelVbaImportPersistStatus
+                                        : "写入状态：不可用"
                                     color: "#18202f"
                                     font.pixelSize: 13
                                     font.bold: true
@@ -867,7 +873,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportPersistStateGuideText"
                                 width: parent.width
-                                text: "Persist states: PERSISTED writes accepted trade/cash facts; DUPLICATE means no new rows; CONFLICT means idempotency mismatch and no refresh."
+                                text: "写入状态：PERSISTED 表示已写入交易/现金事实；DUPLICATE 表示重复提交且没有新增行；CONFLICT 表示幂等冲突且不会刷新。"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -877,8 +883,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistSummaryText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Persist summary: " + accountingPresenter.lastExcelVbaImportPersistSummary
-                                    : "Persist summary: unavailable"
+                                    ? "写入汇总：" + accountingPresenter.lastExcelVbaImportPersistSummary
+                                    : "写入汇总：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -892,8 +898,8 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaImportPersistTradeLogRowsText"
                                     width: 220
                                     text: root.presenterAvailable
-                                        ? "Persisted trade log rows: " + accountingPresenter.lastExcelVbaImportPersistTradeLogRowsWritten
-                                        : "Persisted trade log rows: 0"
+                                        ? "已写入交易记录行数：" + accountingPresenter.lastExcelVbaImportPersistTradeLogRowsWritten
+                                        : "已写入交易记录行数：0"
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
@@ -902,8 +908,8 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaImportPersistCashAdjustmentRowsText"
                                     width: 260
                                     text: root.presenterAvailable
-                                        ? "Persisted cash adjustment rows: " + accountingPresenter.lastExcelVbaImportPersistCashAdjustmentRowsWritten
-                                        : "Persisted cash adjustment rows: 0"
+                                        ? "已写入现金调整行数：" + accountingPresenter.lastExcelVbaImportPersistCashAdjustmentRowsWritten
+                                        : "已写入现金调整行数：0"
                                     color: "#465066"
                                     font.pixelSize: 13
                                 }
@@ -912,11 +918,11 @@ Rectangle {
                                     objectName: "shellAccountingExcelVbaPersistRowCountText"
                                     width: 220
                                     text: root.presenterAvailable
-                                        ? "Rows: trade rows="
+                                        ? "行数：交易行="
                                             + accountingPresenter.lastExcelVbaImportPersistTradeLogRowsWritten
-                                            + ", cash adjustments="
+                                            + "，现金调整="
                                             + accountingPresenter.lastExcelVbaImportPersistCashAdjustmentRowsWritten
-                                        : "Rows: unavailable"
+                                        : "行数：不可用"
                                     color: "#465066"
                                     font.pixelSize: 13
                                     wrapMode: Text.WordWrap
@@ -927,8 +933,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistIssueCodesText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Persist issue codes: " + accountingPresenter.lastExcelVbaImportPersistIssueCodes
-                                    : "Persist issue codes: unavailable"
+                                    ? "写入诊断代码：" + accountingPresenter.lastExcelVbaImportPersistIssueCodes
+                                    : "写入诊断代码：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -938,8 +944,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistDuplicateText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Duplicate import prevented: " + accountingPresenter.lastExcelVbaImportPersistDuplicateImportPrevented
-                                    : "Duplicate import prevented: false"
+                                    ? "重复提交已阻止：" + accountingPresenter.lastExcelVbaImportPersistDuplicateImportPrevented
+                                    : "重复提交已阻止：false"
                                 color: "#465066"
                                 font.pixelSize: 13
                             }
@@ -948,8 +954,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistConflictText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Idempotency conflict rejected: " + accountingPresenter.lastExcelVbaImportPersistIdempotencyConflictRejected
-                                    : "Idempotency conflict rejected: false"
+                                    ? "幂等冲突已拒绝：" + accountingPresenter.lastExcelVbaImportPersistIdempotencyConflictRejected
+                                    : "幂等冲突已拒绝：false"
                                 color: "#465066"
                                 font.pixelSize: 13
                             }
@@ -958,8 +964,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaPostWriteRefreshStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Post-persist refresh status: " + accountingPresenter.lastPostWriteRefreshStatus
-                                    : "Post-persist refresh status: unavailable"
+                                    ? "写入后刷新状态：" + accountingPresenter.lastPostWriteRefreshStatus
+                                    : "写入后刷新状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
                                 font.bold: true
@@ -977,8 +983,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPostPersistRefreshSummaryText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Post-persist refresh summary: " + accountingPresenter.lastPostWriteRefreshSummary
-                                    : "Post-persist refresh summary: unavailable"
+                                    ? "写入后刷新汇总：" + accountingPresenter.lastPostWriteRefreshSummary
+                                    : "写入后刷新汇总：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -988,8 +994,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPostPersistRefreshIssueText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Post-persist refresh issue: " + accountingPresenter.lastPostWriteRefreshIssue
-                                    : "Post-persist refresh issue: unavailable"
+                                    ? "写入后刷新问题：" + accountingPresenter.lastPostWriteRefreshIssue
+                                    : "写入后刷新问题：不可用"
                                 color: "#9a3412"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -1022,7 +1028,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "Portfolio replay read-only summary"
+                        text: "持仓/现金重算只读汇总"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -1044,7 +1050,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingPortfolioReplayButton"
-                            text: "Run replay"
+                            text: "重算"
                             enabled: root.presenterAvailable && !accountingPresenter.portfolioReplayBusy
                             onClicked: accountingPresenter.previewPortfolioReplayReadOnlySummary(
                                 portfolioReplayPayloadInput.text)
@@ -1052,7 +1058,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingPortfolioReplayResetButton"
-                            text: "Reset replay"
+                            text: "重置重算"
                             enabled: root.presenterAvailable
                             onClicked: accountingPresenter.resetPortfolioReplayState()
                         }
@@ -1062,8 +1068,8 @@ Rectangle {
                         objectName: "shellAccountingPortfolioReplayStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Replay status: " + accountingPresenter.lastPortfolioReplayStatus
-                            : "Replay status: unavailable"
+                            ? "重算状态：" + accountingPresenter.lastPortfolioReplayStatus
+                            : "重算状态：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
                         font.bold: true
@@ -1074,9 +1080,9 @@ Rectangle {
                         objectName: "shellAccountingPortfolioReplayCashText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Cash summaries: " + accountingPresenter.portfolioReplayCashSummaryCount
-                                + "; summary=" + accountingPresenter.lastPortfolioReplaySummary
-                            : "Cash summaries: unavailable"
+                            ? "现金汇总：" + accountingPresenter.portfolioReplayCashSummaryCount
+                                + "；汇总=" + accountingPresenter.lastPortfolioReplaySummary
+                            : "现金汇总：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1086,8 +1092,8 @@ Rectangle {
                         objectName: "shellAccountingPortfolioReplayPositionText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Positions: " + accountingPresenter.portfolioReplayPositionCount
-                            : "Positions: unavailable"
+                            ? "持仓：" + accountingPresenter.portfolioReplayPositionCount
+                            : "持仓：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                     }
@@ -1096,10 +1102,10 @@ Rectangle {
                         objectName: "shellAccountingPortfolioReplayPnlText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "PnL: realized=" + accountingPresenter.portfolioReplayRealizedPnl
-                                + ", unrealized=" + accountingPresenter.portfolioReplayUnrealizedPnl
-                                + ", issues=" + accountingPresenter.lastPortfolioReplayIssueCodes
-                            : "PnL: unavailable"
+                            ? "盈亏：已实现=" + accountingPresenter.portfolioReplayRealizedPnl
+                                + "，未实现=" + accountingPresenter.portfolioReplayUnrealizedPnl
+                                + "，诊断代码=" + accountingPresenter.lastPortfolioReplayIssueCodes
+                            : "盈亏：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1122,7 +1128,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "Market data read-only refresh"
+                        text: "行情数据只读刷新"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -1144,14 +1150,14 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingMarketDataRefreshButton"
-                            text: "Refresh market data"
+                            text: "刷新行情数据"
                             enabled: root.presenterAvailable && !accountingPresenter.marketDataRefreshBusy
                             onClicked: accountingPresenter.refreshMarketDataReadOnly(marketDataPayloadInput.text)
                         }
 
                         Button {
                             objectName: "shellAccountingMarketDataResetButton"
-                            text: "Reset market"
+                            text: "重置行情"
                             enabled: root.presenterAvailable
                             onClicked: accountingPresenter.resetMarketDataState()
                         }
@@ -1161,10 +1167,11 @@ Rectangle {
                         objectName: "shellAccountingMarketDataProviderStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Provider: " + accountingPresenter.lastMarketDataProviderSource
-                                + "; quality=" + accountingPresenter.lastMarketDataQualityStatus
-                                + "; status=" + accountingPresenter.lastMarketDataRefreshStatus
-                            : "Provider: unavailable"
+                            ? "行情源：" + accountingPresenter.lastMarketDataProviderSource
+                                + "；质量=" + accountingPresenter.lastMarketDataQualityStatus
+                                + "；状态=" + accountingPresenter.lastMarketDataRefreshStatus
+                                + "。默认使用样例数据/禁用行情源，不会自动联网。"
+                            : "行情源：不可用。默认使用样例数据/禁用行情源，不会自动联网。"
                         color: "#18202f"
                         font.pixelSize: 13
                         font.bold: true
@@ -1175,8 +1182,8 @@ Rectangle {
                         objectName: "shellAccountingMarketDataCurrentPriceText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Current price: " + accountingPresenter.lastMarketDataCurrentPriceText
-                            : "Current price: unavailable"
+                            ? "当前价格：" + accountingPresenter.lastMarketDataCurrentPriceText
+                            : "当前价格：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                     }
@@ -1185,9 +1192,9 @@ Rectangle {
                         objectName: "shellAccountingMarketDataHistoricalHighText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Historical high: " + accountingPresenter.lastMarketDataHistoricalHighText
-                                + " on " + accountingPresenter.lastMarketDataHistoricalHighDate
-                            : "Historical high: unavailable"
+                            ? "历史高点：" + accountingPresenter.lastMarketDataHistoricalHighText
+                                + "，日期 " + accountingPresenter.lastMarketDataHistoricalHighDate
+                            : "历史高点：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1197,8 +1204,8 @@ Rectangle {
                         objectName: "shellAccountingMarketDataDrawdownText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Drawdown from high: " + accountingPresenter.lastMarketDataDrawdownFromHighText
-                            : "Drawdown from high: unavailable"
+                            ? "较高点回撤：" + accountingPresenter.lastMarketDataDrawdownFromHighText
+                            : "较高点回撤：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                     }
@@ -1207,8 +1214,8 @@ Rectangle {
                         objectName: "shellAccountingMarketDataPremiumDiscountText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Premium/discount: " + accountingPresenter.lastMarketDataPremiumDiscountText
-                            : "Premium/discount: unavailable"
+                            ? "溢价/折价：" + accountingPresenter.lastMarketDataPremiumDiscountText
+                            : "溢价/折价：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                     }
@@ -1217,8 +1224,8 @@ Rectangle {
                         objectName: "shellAccountingMarketDataIssueText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Market issues: " + accountingPresenter.lastMarketDataIssueCodes
-                            : "Market issues: unavailable"
+                            ? "行情诊断代码：" + accountingPresenter.lastMarketDataIssueCodes
+                            : "行情诊断代码：不可用"
                         color: "#9a3412"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1241,7 +1248,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "Strategy recommendation read-only summary"
+                        text: "策略建议只读汇总"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -1259,7 +1266,7 @@ Rectangle {
 
                     Button {
                         objectName: "shellAccountingStrategyRecommendationButton"
-                        text: "Run recommendation"
+                        text: "刷新策略摘要"
                         enabled: root.presenterAvailable && !accountingPresenter.strategyRecommendationBusy
                         onClicked: {
                             root.tradeDraftCreateConfirmed = false
@@ -1272,8 +1279,8 @@ Rectangle {
                         objectName: "shellAccountingStrategyRecommendationStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Recommendation status: " + accountingPresenter.lastStrategyRecommendationStatus
-                            : "Recommendation status: unavailable"
+                            ? "建议状态：" + accountingPresenter.lastStrategyRecommendationStatus
+                            : "建议状态：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
                         font.bold: true
@@ -1284,10 +1291,10 @@ Rectangle {
                         objectName: "shellAccountingStrategyRecommendationActionText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Action: " + accountingPresenter.lastStrategyRecommendationAction
-                                + "; source=" + accountingPresenter.lastStrategyRecommendationSource
-                                + "; tier=" + accountingPresenter.lastStrategyRecommendationTier
-                            : "Action: unavailable"
+                            ? "动作：" + accountingPresenter.lastStrategyRecommendationAction
+                                + "；来源=" + accountingPresenter.lastStrategyRecommendationSource
+                                + "；档位=" + accountingPresenter.lastStrategyRecommendationTier
+                            : "动作：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1297,9 +1304,9 @@ Rectangle {
                         objectName: "shellAccountingStrategyRecommendationReasonText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Reason: " + accountingPresenter.lastStrategyRecommendationReason
-                                + "; issues=" + accountingPresenter.lastStrategyRecommendationIssueCodes
-                            : "Reason: unavailable"
+                            ? "原因：" + accountingPresenter.lastStrategyRecommendationReason
+                                + "；诊断代码=" + accountingPresenter.lastStrategyRecommendationIssueCodes
+                            : "原因：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1309,8 +1316,8 @@ Rectangle {
                         objectName: "shellAccountingStrategyRecommendationQuantityText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Quantity: " + accountingPresenter.lastStrategyRecommendationQuantityText
-                            : "Quantity: unavailable"
+                            ? "数量：" + accountingPresenter.lastStrategyRecommendationQuantityText
+                            : "数量：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                     }
@@ -1319,9 +1326,9 @@ Rectangle {
                         objectName: "shellAccountingStrategyRecommendationAmountText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Amount: " + accountingPresenter.lastStrategyRecommendationAmountText
-                                + "; net cash=" + accountingPresenter.lastStrategyRecommendationNetCashImpactText
-                            : "Amount: unavailable"
+                            ? "金额：" + accountingPresenter.lastStrategyRecommendationAmountText
+                                + "；净现金影响=" + accountingPresenter.lastStrategyRecommendationNetCashImpactText
+                            : "金额：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1344,7 +1351,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "TradeDraft from recommendation"
+                        text: "交易草案"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -1352,7 +1359,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "Draft, not order. No execution is submitted from this page."
+                        text: "这是内部草案，不是订单，不会提交券商。Draft, not order."
                         color: "#5f4b1f"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1364,7 +1371,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingTradeDraftPreviewButton"
-                            text: "Preview TradeDraft"
+                            text: "预览交易草案"
                             enabled: root.presenterAvailable
                             onClicked: {
                                 root.tradeDraftCreateConfirmed = false
@@ -1375,7 +1382,7 @@ Rectangle {
                         CheckBox {
                             id: tradeDraftConfirmCheck
                             objectName: "shellAccountingTradeDraftConfirmationCheckBox"
-                            text: "I confirm this is only an internal draft, not order."
+                            text: "我确认这只是内部草案，不是订单。"
                             checked: root.tradeDraftCreateConfirmed
                             enabled: root.presenterAvailable
                                 && accountingPresenter.lastTradeDraftStatus === "READY_FOR_CONFIRMATION"
@@ -1384,7 +1391,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingTradeDraftCreateButton"
-                            text: "Create internal draft"
+                            text: "创建草案"
                             enabled: root.presenterAvailable
                                 && root.tradeDraftCreateConfirmed
                                 && accountingPresenter.lastTradeDraftStatus === "READY_FOR_CONFIRMATION"
@@ -1396,10 +1403,10 @@ Rectangle {
                         objectName: "shellAccountingTradeDraftStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Draft status: " + accountingPresenter.lastTradeDraftStatus
-                                + "; duplicate=" + accountingPresenter.lastTradeDraftDuplicate
-                                + "; conflict=" + accountingPresenter.lastTradeDraftIdempotencyConflict
-                            : "Draft status: unavailable"
+                            ? "草案状态：" + accountingPresenter.lastTradeDraftStatus
+                                + "；重复提交=" + accountingPresenter.lastTradeDraftDuplicate
+                                + "；幂等冲突=" + accountingPresenter.lastTradeDraftIdempotencyConflict
+                            : "草案状态：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
                         font.bold: true
@@ -1410,9 +1417,9 @@ Rectangle {
                         objectName: "shellAccountingTradeDraftSummaryText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Draft summary: " + accountingPresenter.lastTradeDraftSummary
-                                + "; id=" + accountingPresenter.lastTradeDraftId
-                            : "Draft summary: unavailable"
+                            ? "草案汇总：" + accountingPresenter.lastTradeDraftSummary
+                                + "；ID=" + accountingPresenter.lastTradeDraftId
+                            : "草案汇总：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1435,7 +1442,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "OTCMap multi-leg draft"
+                        text: "场外 A/C 多通道草案"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -1457,7 +1464,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingOtcMapPreviewButton"
-                            text: "Preview OTCMap"
+                            text: "预览场外多通道"
                             enabled: root.presenterAvailable
                             onClicked: {
                                 root.otcMapDraftCreateConfirmed = false
@@ -1468,7 +1475,7 @@ Rectangle {
                         CheckBox {
                             id: otcMapConfirmCheck
                             objectName: "shellAccountingOtcMapConfirmationCheckBox"
-                            text: "I confirm this multi-leg result is only an internal draft, not order."
+                            text: "我确认这个多腿结果只是内部草案，不是订单。"
                             checked: root.otcMapDraftCreateConfirmed
                             enabled: root.presenterAvailable
                                 && accountingPresenter.lastOtcMapPreviewStatus === "DRAFT_ELIGIBLE"
@@ -1477,7 +1484,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingOtcMapCreateDraftButton"
-                            text: "Create multi-leg draft"
+                            text: "创建场外多通道草案"
                             enabled: root.presenterAvailable
                                 && root.otcMapDraftCreateConfirmed
                                 && accountingPresenter.lastOtcMapPreviewStatus === "DRAFT_ELIGIBLE"
@@ -1489,9 +1496,9 @@ Rectangle {
                         objectName: "shellAccountingOtcMapLegCountText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "Preview legs: " + accountingPresenter.lastOtcMapPreviewLegCount
-                                + "; draft legs=" + accountingPresenter.lastOtcMapDraftLegCount
-                            : "Preview legs: unavailable"
+                            ? "预览腿数：" + accountingPresenter.lastOtcMapPreviewLegCount
+                                + "；草案腿数=" + accountingPresenter.lastOtcMapDraftLegCount
+                            : "预览腿数：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
                         font.bold: true
@@ -1502,9 +1509,9 @@ Rectangle {
                         objectName: "shellAccountingOtcMapSummaryText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "OTCMap summary: " + accountingPresenter.lastOtcMapPreviewSummary
-                                + "; draft=" + accountingPresenter.lastOtcMapDraftSummary
-                            : "OTCMap summary: unavailable"
+                            ? "场外基金映射汇总：" + accountingPresenter.lastOtcMapPreviewSummary
+                                + "；草案=" + accountingPresenter.lastOtcMapDraftSummary
+                            : "场外基金映射汇总：不可用"
                         color: "#465066"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1514,11 +1521,11 @@ Rectangle {
                         objectName: "shellAccountingOtcMapIssueText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "OTCMap issues: preview=" + accountingPresenter.lastOtcMapPreviewIssueCodes
-                                + "; draft=" + accountingPresenter.lastOtcMapDraftIssueCodes
-                                + "; duplicate=" + accountingPresenter.lastOtcMapDraftDuplicate
-                                + "; conflict=" + accountingPresenter.lastOtcMapDraftIdempotencyConflict
-                            : "OTCMap issues: unavailable"
+                            ? "场外基金映射诊断代码：预览=" + accountingPresenter.lastOtcMapPreviewIssueCodes
+                                + "；草案=" + accountingPresenter.lastOtcMapDraftIssueCodes
+                                + "；重复提交=" + accountingPresenter.lastOtcMapDraftDuplicate
+                                + "；幂等冲突=" + accountingPresenter.lastOtcMapDraftIdempotencyConflict
+                            : "场外基金映射诊断代码：不可用"
                         color: "#9a3412"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1547,7 +1554,7 @@ Rectangle {
                             id: accountInput
                             objectName: "shellAccountingDraftAccountInput"
                             width: 130
-                            placeholderText: "Account"
+                            placeholderText: "账户"
                             text: "1001"
                         }
 
@@ -1555,7 +1562,7 @@ Rectangle {
                             id: portfolioInput
                             objectName: "shellAccountingDraftPortfolioInput"
                             width: 130
-                            placeholderText: "Portfolio"
+                            placeholderText: "组合"
                             text: "1001"
                         }
 
@@ -1563,7 +1570,7 @@ Rectangle {
                             id: instrumentInput
                             objectName: "shellAccountingDraftInstrumentInput"
                             width: 130
-                            placeholderText: "Instrument"
+                            placeholderText: "标的"
                             text: "1001"
                         }
 
@@ -1571,7 +1578,7 @@ Rectangle {
                             id: instrumentCodeInput
                             objectName: "shellAccountingDraftInstrumentCodeInput"
                             width: 130
-                            placeholderText: "Symbol"
+                            placeholderText: "代码"
                             text: "159509"
                         }
                     }
@@ -1591,7 +1598,7 @@ Rectangle {
                             id: quantityInput
                             objectName: "shellAccountingDraftQuantityInput"
                             width: 130
-                            placeholderText: "Quantity"
+                            placeholderText: "数量"
                             text: "1"
                             inputMethodHints: Qt.ImhFormattedNumbersOnly
                         }
@@ -1600,8 +1607,8 @@ Rectangle {
                             id: reasonInput
                             objectName: "shellAccountingDraftReasonInput"
                             width: parent.width - sideInput.width - quantityInput.width - 36
-                            placeholderText: "Reason"
-                            text: "rebalance draft"
+                            placeholderText: "原因"
+                            text: "调仓草案"
                         }
                     }
 
@@ -1611,7 +1618,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingCreateDraftButton"
-                            text: "Create draft"
+                            text: "创建草案"
                             enabled: root.presenterAvailable
                                 && accountingPresenter.productionTradingUiEnabled
                             onClicked: {
@@ -1630,7 +1637,7 @@ Rectangle {
                         CheckBox {
                             id: confirmationCheck
                             objectName: "shellAccountingConfirmReviewCheckBox"
-                            text: "I reviewed this draft"
+                            text: "我已复核此草案"
                             enabled: root.presenterAvailable
                                 && accountingPresenter.draftId.length > 0
                                 && accountingPresenter.ledgerStatus !== "CONFIRMED_LEDGER"
@@ -1638,7 +1645,7 @@ Rectangle {
 
                         Button {
                             objectName: "shellAccountingConfirmDraftButton"
-                            text: "Confirm draft"
+                            text: "确认草案"
                             enabled: root.presenterAvailable
                                 && confirmationCheck.checked
                                 && accountingPresenter.draftId.length > 0
@@ -1664,8 +1671,8 @@ Rectangle {
                                 objectName: "shellAccountingDraftOnlyState"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Draft-only: " + (accountingPresenter.draftId.length > 0 ? accountingPresenter.draftId : "none")
-                                    : "Draft-only: unavailable"
+                                    ? "草案占位状态：" + (accountingPresenter.draftId.length > 0 ? accountingPresenter.draftId : "无")
+                                    : "草案占位状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 14
                                 font.bold: true
@@ -1676,8 +1683,8 @@ Rectangle {
                                 objectName: "shellAccountingLedgerState"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Ledger status: " + accountingPresenter.ledgerStatus
-                                    : "Ledger status: unavailable"
+                                    ? "台账状态：" + accountingPresenter.ledgerStatus
+                                    : "台账状态：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -1687,8 +1694,8 @@ Rectangle {
                                 objectName: "shellAccountingTradingUiStatus"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "UI status: " + accountingPresenter.tradingUiStatus
-                                    : "UI status: unavailable"
+                                    ? "界面状态：" + accountingPresenter.tradingUiStatus
+                                    : "界面状态：不可用"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -1724,7 +1731,7 @@ Rectangle {
                     Text {
                         objectName: "shellAccountingManualEntryTitle"
                         width: parent.width
-                        text: "Manual entry"
+                        text: "手工录入"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -1738,7 +1745,7 @@ Rectangle {
                             id: manualTransactionAccountInput
                             objectName: "shellAccountingManualTransactionAccountInput"
                             width: 108
-                            placeholderText: "Account"
+                            placeholderText: "账户"
                             text: "1001"
                         }
 
@@ -1746,7 +1753,7 @@ Rectangle {
                             id: manualTransactionPortfolioInput
                             objectName: "shellAccountingManualTransactionPortfolioInput"
                             width: 108
-                            placeholderText: "Portfolio"
+                            placeholderText: "组合"
                             text: "1001"
                         }
 
@@ -1754,7 +1761,7 @@ Rectangle {
                             id: manualTransactionInstrumentInput
                             objectName: "shellAccountingManualTransactionInstrumentInput"
                             width: 108
-                            placeholderText: "Instrument"
+                            placeholderText: "标的"
                             text: "1001"
                         }
 
@@ -1762,7 +1769,7 @@ Rectangle {
                             id: manualTransactionSecurityInput
                             objectName: "shellAccountingManualTransactionSecurityInput"
                             width: 108
-                            placeholderText: "Security"
+                            placeholderText: "证券代码"
                             text: "159509"
                         }
 
@@ -1782,7 +1789,7 @@ Rectangle {
                             id: manualTransactionQuantityInput
                             objectName: "shellAccountingManualTransactionQuantityInput"
                             width: 108
-                            placeholderText: "Quantity"
+                            placeholderText: "数量"
                             text: "1000000"
                             inputMethodHints: Qt.ImhDigitsOnly
                         }
@@ -1791,7 +1798,7 @@ Rectangle {
                             id: manualTransactionPriceInput
                             objectName: "shellAccountingManualTransactionPriceInput"
                             width: 108
-                            placeholderText: "Price minor"
+                            placeholderText: "价格（最小单位）"
                             text: "20100"
                             inputMethodHints: Qt.ImhDigitsOnly
                         }
@@ -1800,7 +1807,7 @@ Rectangle {
                             id: manualTransactionGrossInput
                             objectName: "shellAccountingManualTransactionGrossInput"
                             width: 108
-                            placeholderText: "Gross minor"
+                            placeholderText: "成交额（最小单位）"
                             text: "20100"
                             inputMethodHints: Qt.ImhDigitsOnly
                         }
@@ -1809,7 +1816,7 @@ Rectangle {
                             id: manualTransactionFeeInput
                             objectName: "shellAccountingManualTransactionFeeInput"
                             width: 108
-                            placeholderText: "Fee minor"
+                            placeholderText: "费用（最小单位）"
                             text: "100"
                             inputMethodHints: Qt.ImhDigitsOnly
                         }
@@ -1818,7 +1825,7 @@ Rectangle {
                             id: manualTransactionTaxInput
                             objectName: "shellAccountingManualTransactionTaxInput"
                             width: 108
-                            placeholderText: "Tax minor"
+                            placeholderText: "税费（最小单位）"
                             text: "20"
                             inputMethodHints: Qt.ImhDigitsOnly
                         }
@@ -1832,7 +1839,7 @@ Rectangle {
                             id: manualTransactionOccurredAtInput
                             objectName: "shellAccountingManualTransactionOccurredAtInput"
                             width: 176
-                            placeholderText: "Occurred at"
+                            placeholderText: "发生时间"
                             text: "2026-06-02T12:34:56Z"
                         }
 
@@ -1840,15 +1847,15 @@ Rectangle {
                             id: manualTransactionMemoInput
                             objectName: "shellAccountingManualTransactionMemoInput"
                             width: 190
-                            placeholderText: "Memo"
-                            text: "manual ui transaction"
+                            placeholderText: "备注"
+                            text: "手工界面交易"
                         }
 
                         TextField {
                             id: manualTransactionRequestInput
                             objectName: "shellAccountingManualTransactionRequestInput"
                             width: 170
-                            placeholderText: "Request id"
+                            placeholderText: "请求 ID"
                             text: "task-200-manual-transaction"
                         }
                     }
@@ -1861,13 +1868,13 @@ Rectangle {
                             id: manualTransactionIdempotencyInput
                             objectName: "shellAccountingManualTransactionIdempotencyInput"
                             width: 248
-                            placeholderText: "Idempotency key"
+                            placeholderText: "幂等键"
                             text: "task-200-manual-transaction-key"
                         }
 
                         Button {
                             objectName: "shellAccountingSubmitManualTransactionButton"
-                            text: "Submit transaction"
+                            text: "提交交易"
                             enabled: root.presenterAvailable && !accountingPresenter.manualEntryBusy
                             onClicked: accountingPresenter.submitManualTransaction(
                                 manualTransactionAccountInput.text,
@@ -1901,7 +1908,7 @@ Rectangle {
                             id: manualCashAccountInput
                             objectName: "shellAccountingManualCashAccountInput"
                             width: 118
-                            placeholderText: "Account"
+                            placeholderText: "账户"
                             text: "1001"
                         }
 
@@ -1909,7 +1916,7 @@ Rectangle {
                             id: manualCashPortfolioInput
                             objectName: "shellAccountingManualCashPortfolioInput"
                             width: 118
-                            placeholderText: "Portfolio"
+                            placeholderText: "组合"
                             text: "1001"
                         }
 
@@ -1924,7 +1931,7 @@ Rectangle {
                             id: manualCashAmountInput
                             objectName: "shellAccountingManualCashAmountInput"
                             width: 118
-                            placeholderText: "Amount minor"
+                            placeholderText: "金额（最小单位）"
                             text: "12345"
                             inputMethodHints: Qt.ImhDigitsOnly
                         }
@@ -1933,7 +1940,7 @@ Rectangle {
                             id: manualCashCurrencyInput
                             objectName: "shellAccountingManualCashCurrencyInput"
                             width: 82
-                            placeholderText: "Currency"
+                            placeholderText: "币种"
                             text: "CNY"
                         }
                     }
@@ -1946,7 +1953,7 @@ Rectangle {
                             id: manualCashOccurredAtInput
                             objectName: "shellAccountingManualCashOccurredAtInput"
                             width: 176
-                            placeholderText: "Occurred at"
+                            placeholderText: "发生时间"
                             text: "2026-06-02T12:34:56Z"
                         }
 
@@ -1954,15 +1961,15 @@ Rectangle {
                             id: manualCashMemoInput
                             objectName: "shellAccountingManualCashMemoInput"
                             width: 174
-                            placeholderText: "Memo"
-                            text: "manual ui cash"
+                            placeholderText: "备注"
+                            text: "手工界面现金"
                         }
 
                         TextField {
                             id: manualCashReferenceInput
                             objectName: "shellAccountingManualCashReferenceInput"
                             width: 168
-                            placeholderText: "Reference"
+                            placeholderText: "参考号"
                             text: "bank-ref-task-200"
                         }
                     }
@@ -1975,7 +1982,7 @@ Rectangle {
                             id: manualCashRequestInput
                             objectName: "shellAccountingManualCashRequestInput"
                             width: 196
-                            placeholderText: "Request id"
+                            placeholderText: "请求 ID"
                             text: "task-200-manual-cash"
                         }
 
@@ -1983,13 +1990,13 @@ Rectangle {
                             id: manualCashIdempotencyInput
                             objectName: "shellAccountingManualCashIdempotencyInput"
                             width: 224
-                            placeholderText: "Idempotency key"
+                            placeholderText: "幂等键"
                             text: "task-200-manual-cash-key"
                         }
 
                         Button {
                             objectName: "shellAccountingSubmitManualCashMovementButton"
-                            text: "Submit cash"
+                            text: "提交现金"
                             enabled: root.presenterAvailable && !accountingPresenter.manualEntryBusy
                             onClicked: accountingPresenter.submitManualCashMovement(
                                 manualCashAccountInput.text,
@@ -2022,8 +2029,8 @@ Rectangle {
                                 objectName: "shellAccountingManualEntryStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Manual entry status: " + accountingPresenter.lastManualEntryStatus
-                                    : "Manual entry status: unavailable"
+                                    ? "手工录入状态：" + accountingPresenter.lastManualEntryStatus
+                                    : "手工录入状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
                                 font.bold: true
@@ -2053,8 +2060,8 @@ Rectangle {
                                 objectName: "shellAccountingPostWriteRefreshStatus"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "Post-write refresh status: " + accountingPresenter.lastPostWriteRefreshStatus
-                                    : "Post-write refresh status: unavailable"
+                                    ? "写入后刷新状态：" + accountingPresenter.lastPostWriteRefreshStatus
+                                    : "写入后刷新状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
                                 font.bold: true

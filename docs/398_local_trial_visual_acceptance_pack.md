@@ -30,6 +30,17 @@ screenshots or claim that a human manually confirmed the UI.
 Generated screenshots, when available, are reviewer evidence only. They still
 require human review before release acceptance.
 
+After EPIC-285, screenshot review should focus on Chinese readability for the
+Dashboard MVP:
+
+- page title shows `ShellAccounting 本地试用看板`
+- module titles include `Excel/VBA 导入`, `持仓/现金重算`, `行情数据`,
+  `策略建议`, `交易草案`, and `场外 A/C 多通道`
+- draft safety text says `这是内部草案，不是订单，不会提交券商。`
+- market data safety text says `默认使用样例数据/禁用行情源，不会自动联网。`
+- technical IDs may remain English in diagnostics or evidence, but visible
+  trial workflow instructions should be understandable in Chinese
+
 Expected screenshot names are:
 
 - `dashboard_startup.png`

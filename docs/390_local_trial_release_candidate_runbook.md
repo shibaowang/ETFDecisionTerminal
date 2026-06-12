@@ -57,10 +57,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local_trial\Start-ET
 
 Open the ShellAccounting Dashboard page.
 
+The Dashboard visible UI is localized for Chinese local trial users. Technical
+identifiers such as `objectName`, CTest names, JSON schema keys, action names,
+and status enum values may still appear in English because they are stable
+contracts. User-facing labels explain those states in Chinese.
+
 ## 7. Run Dashboard Flows
 
 1. Load `samples\local_trial\EPIC282_local_trial_excel_vba_import.json`.
-2. Run Excel/VBA import preview and verify `ACCEPTED`.
+2. Run Excel/VBA import preview and verify `ACCEPTED` / `已通过`.
 3. Confirm accepted preview persistence and verify row counts.
 4. Run portfolio replay with `EPIC282_local_trial_portfolio_replay.json`.
 5. Run market fixture refresh with
@@ -72,6 +77,14 @@ Open the ShellAccounting Dashboard page.
    confirmation.
 9. Verify duplicate draft and idempotency conflict samples do not grow rows.
 10. Verify provider-disabled sample shows a safe disabled state.
+
+Chinese UI safety text to confirm during the trial:
+
+- `这是内部草案，不是订单，不会提交券商。`
+- `默认使用样例数据/禁用行情源，不会自动联网。`
+- `重置看板`, `加载样例预览`, `预览`, `确认写入已通过预览`,
+  `重算`, `刷新行情数据`, `生成建议`, `创建草案`, and
+  `创建场外多通道草案` are visible.
 
 ## 8. Run Scripted Smoke
 

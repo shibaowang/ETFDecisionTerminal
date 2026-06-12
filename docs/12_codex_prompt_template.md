@@ -2,6 +2,26 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-285 dashboard Chinese localization boundary
+
+- Dashboard Chinese localization work may update only visible user-facing QML
+  text in `apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml`,
+  docs 390/391/394/397/398/399, README indexes, and the Dashboard / local trial
+  static acceptance CTests. The scope doc is
+  `docs/399_dashboard_chinese_localization_trial_feedback_fix.md`.
+- Preserve QML `objectName` values, Presenter calls, action names, schema keys,
+  C++ identifiers, CTest names, and file names. Technical IDs may remain
+  English while visible explanatory text is Chinese.
+- Required user-facing Chinese safety wording includes: internal drafts are not
+  orders and will not be submitted to a broker; market data uses fixture or
+  disabled providers by default and does not automatically connect to the
+  network.
+- Do not change business behavior, DataAccess writes, DataServiceApi write
+  semantics, Excel/VBA import persistence semantics, replay semantics, market
+  provider semantics, strategy semantics, TradeDraft semantics, OTCMap
+  semantics, migrations, broker / credential / endpoint access, real order
+  placement, or automatic trading.
+
 ## EPIC-284 local trial visual evidence boundary
 
 - Visual evidence work may add

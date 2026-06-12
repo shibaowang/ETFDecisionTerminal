@@ -12,6 +12,14 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- EPIC-285 dashboard Chinese localization trial feedback fix:
+  [399_dashboard_chinese_localization_trial_feedback_fix.md](399_dashboard_chinese_localization_trial_feedback_fix.md).
+  The ShellAccounting Dashboard keeps technical identifiers in English but
+  localizes user-visible page titles, module titles, buttons, acceptance
+  states, diagnostics labels, and safety warnings into Chinese for local trial
+  users. Draft warnings explicitly state that drafts are not orders and will
+  not be submitted to a broker; market data wording states that fixture/disabled
+  providers are used by default and do not auto-connect to the network.
 - EPIC-284 local trial visual acceptance pack:
   [398_local_trial_visual_acceptance_pack.md](398_local_trial_visual_acceptance_pack.md).
   The repo-local helper

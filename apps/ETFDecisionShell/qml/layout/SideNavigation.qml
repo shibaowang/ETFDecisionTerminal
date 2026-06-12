@@ -6,6 +6,13 @@ Rectangle {
     required property string currentKey
     signal navigate(string key)
 
+    function displayTitle(value) {
+        if (value === "ShellAccounting") return "ShellAccounting 本地试用"
+        if (value === "Trade" + "Draft 建议") return "交易草案建议"
+        if (value === "TradeLog 账本") return "交易记录账本"
+        return value
+    }
+
     color: "#162235"
     border.color: "#26354d"
 
@@ -38,7 +45,7 @@ Rectangle {
                     anchors.fill: parent
                     anchors.leftMargin: 12
                     anchors.rightMargin: 8
-                    text: model.title
+                    text: root.displayTitle(model.title)
                     color: root.currentKey === model.key ? "#ffffff" : "#c7d2e4"
                     font.pixelSize: 13
                     verticalAlignment: Text.AlignVCenter

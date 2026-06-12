@@ -6,7 +6,7 @@ Column {
     property string label: ""
     property string value: ""
     property string hint: ""
-    property string severity: "OK"
+    property string severity: "正常"
 
     spacing: 2
 
@@ -21,7 +21,7 @@ Column {
 
     Text {
         text: root.value
-        color: root.severity.toUpperCase() === "ERROR" ? "#a33b2e" : "#26354d"
+        color: root.severity.toUpperCase() === "错误" ? "#a33b2e" : "#26354d"
         font.pixelSize: 13
         elide: Text.ElideRight
         width: parent.width

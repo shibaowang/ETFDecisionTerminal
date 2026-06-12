@@ -6,6 +6,18 @@ Rectangle {
     property int selectedIndex: -1
     signal serviceSelected(int index)
 
+    function displayBool(value) {
+        return value ? "是" : "否"
+    }
+
+    function displaySeverity(value) {
+        if (value === "ERROR") return "错误"
+        if (value === "WARNING") return "警告"
+        if (value === "DISABLED") return "禁用"
+        if (value === "OK") return "正常"
+        return value
+    }
+
     radius: 8
     color: "#ffffff"
     border.color: "#d9e0ea"
@@ -16,7 +28,7 @@ Rectangle {
         spacing: 10
 
         Text {
-            text: "Services"
+            text: "服务列表"
             color: "#18202f"
             font.pixelSize: 17
             font.bold: true
@@ -67,8 +79,10 @@ Rectangle {
 
                         Text {
                             width: parent.width
-                            text: "enabled=" + enabled + "  canStart=" + canStart
-                                  + "  severity=" + statusSeverity + "  issues=" + issueCount
+                            text: "启用=" + root.displayBool(enabled)
+                                  + "  可启动=" + root.displayBool(canStart)
+                                  + "  状态=" + root.displaySeverity(statusSeverity)
+                                  + "  问题=" + issueCount
                             color: "#4f5b70"
                             font.pixelSize: 12
                             elide: Text.ElideRight

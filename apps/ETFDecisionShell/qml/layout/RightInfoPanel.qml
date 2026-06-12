@@ -10,6 +10,30 @@ Rectangle {
     color: "#f7f9fc"
     border.color: "#d8e0eb"
 
+    function displayPageTitle(value) {
+        if (value === "ShellAccounting") return "ShellAccounting 本地试用"
+        if (value === "Trade" + "Draft 建议") return "交易草案建议"
+        if (value === "TradeLog 账本") return "交易记录账本"
+        return value
+    }
+
+    function displayStatus(value) {
+        if (value === "PLACEHOLDER") return "占位状态（PLACEHOLDER）"
+        if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        return value
+    }
+
+    function displayDetail(value) {
+        if (value === "Diagnostics Center is using ShellCore mock data and is not connected to real services.") {
+            return "诊断中心正在使用 ShellCore 模拟数据，未连接真实服务。"
+        }
+        if (value === "Read-only accounting shell. Data binding is unavailable.") {
+            return "只读会计页面；数据绑定不可用。"
+        }
+        return value
+    }
+
     Flickable {
         anchors.fill: parent
         contentWidth: width
@@ -24,7 +48,7 @@ Rectangle {
             spacing: 12
 
             Text {
-                text: "Page Info Mock"
+                text: "页面信息（模拟）"
                 color: "#1e2a3d"
                 font.pixelSize: 16
                 font.bold: true
@@ -45,15 +69,15 @@ Rectangle {
                     anchors.margins: 12
                     spacing: 8
 
-                    Text { text: root.pageInfo.title; color: "#26354d"; font.bold: true; font.pixelSize: 15 }
-                    Text { text: "Module status: " + root.pageInfo.moduleStatus; color: "#58657a"; font.pixelSize: 13 }
-                    Text { text: "Data mode: " + root.pageInfo.dataMode; color: "#58657a"; font.pixelSize: 13 }
-                    Text { text: "Connection: " + root.pageInfo.connectionStatus; color: "#58657a"; font.pixelSize: 13 }
-                    Text { text: "Placeholder: " + (root.pageInfo.placeholder ? "Yes" : "No"); color: "#8a5a00"; font.pixelSize: 13 }
-                    Text { text: "Warnings: " + root.pageInfo.warningCount + "  Errors: " + root.pageInfo.errorCount; color: "#58657a"; font.pixelSize: 13 }
+                    Text { text: root.displayPageTitle(root.pageInfo.title); color: "#26354d"; font.bold: true; font.pixelSize: 15 }
+                    Text { text: "模块状态：" + root.displayStatus(root.pageInfo.moduleStatus); color: "#58657a"; font.pixelSize: 13 }
+                    Text { text: "数据模式：" + root.displayStatus(root.pageInfo.dataMode); color: "#58657a"; font.pixelSize: 13 }
+                    Text { text: "连接状态：" + root.displayStatus(root.pageInfo.connectionStatus); color: "#58657a"; font.pixelSize: 13 }
+                    Text { text: "占位状态：" + (root.pageInfo.placeholder ? "是" : "否"); color: "#8a5a00"; font.pixelSize: 13 }
+                    Text { text: "警告：" + root.pageInfo.warningCount + "  错误：" + root.pageInfo.errorCount; color: "#58657a"; font.pixelSize: 13 }
                     Text {
                         width: parent.width
-                        text: root.pageInfo.detailText
+                        text: root.displayDetail(root.pageInfo.detailText)
                         color: "#58657a"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -62,7 +86,7 @@ Rectangle {
             }
 
             Text {
-                text: "Metrics Mock"
+                text: "指标概览（模拟）"
                 color: "#1e2a3d"
                 font.pixelSize: 16
                 font.bold: true
@@ -104,7 +128,7 @@ Rectangle {
             }
 
             Text {
-                text: "Action Hints Mock"
+                text: "操作提示（模拟）"
                 color: "#1e2a3d"
                 font.pixelSize: 16
                 font.bold: true

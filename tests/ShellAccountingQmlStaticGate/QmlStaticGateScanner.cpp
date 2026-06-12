@@ -90,8 +90,11 @@ bool isAllowedEpic281DashboardDraftLine(
                 "shellAccountingTradeDraftConfirmationCheckBox",
                 "previewTradeDraftFromLastRecommendation()",
                 "createTradeDraftFromLastRecommendation(true)",
-                "Draft, not order",
-                "not order",
+                bytes({0xE8, 0xBF, 0x99, 0xE6, 0x98, 0xAF, 0xE5, 0x86,
+                       0x85, 0xE9, 0x83, 0xA8, 0xE8, 0x8D, 0x89, 0xE6,
+                       0xA1, 0x88}),
+                bytes({0xE4, 0xB8, 0x8D, 0xE6, 0x98, 0xAF, 0xE8, 0xAE,
+                       0xA2, 0xE5, 0x8D, 0x95}),
             })) {
         return false;
     }
@@ -100,6 +103,7 @@ bool isAllowedEpic281DashboardDraftLine(
         "lastTradeDraftIssueCodes",
         "resetTradeDraftState()",
         "shellAccountingTradeDraft",
+        "showTradeDraftRawJson",
         "TradeDraft from recommendation",
         "Preview TradeDraft",
         "previewTradeDraftFromLastRecommendation()",

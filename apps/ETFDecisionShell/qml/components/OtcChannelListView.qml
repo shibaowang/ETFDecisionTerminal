@@ -7,18 +7,18 @@ ReadOnlyTable {
 
     objectName: "otcChannelReadOnlyTable"
     height: 220
-    title: "OTC Channels"
-    subtitle: "Read-only OTC channel list"
-    emptyTitle: "No OTC channels"
-    emptyMessage: "Select a strategyCode and refresh OTC channels; an empty result is valid."
+    title: "OTC 通道列表"
+    subtitle: "只读 OTC 通道列表"
+    emptyTitle: "暂无 OTC 通道"
+    emptyMessage: "选择策略代码后刷新 OTC 通道；空结果也是有效状态。"
     columns: [
-        {"key": "strategy", "title": "Strategy", "width": 130, "required": false, "visible": false, "sortable": true},
-        {"key": "code", "title": "Actual code", "width": 130, "required": true, "visible": true, "sortable": true},
-        {"key": "type", "title": "Fund class", "width": 120, "required": false, "visible": true, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
-        {"key": "dailyLimit", "title": "Daily limit", "width": 120, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": false},
-        {"key": "priority", "title": "Priority", "width": 80, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
-        {"key": "amount", "title": "Min buy", "width": 120, "required": false, "visible": false, "alignment": Text.AlignRight, "sortable": true}
+        {"key": "strategy", "title": "策略", "width": 130, "required": false, "visible": false, "sortable": true},
+        {"key": "code", "title": "实际代码", "width": 130, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "基金类别", "width": 120, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "dailyLimit", "title": "每日限额", "width": 120, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": false},
+        {"key": "priority", "title": "优先级", "width": 80, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "amount", "title": "最小买入", "width": 120, "required": false, "visible": false, "alignment": Text.AlignRight, "sortable": true}
     ]
     rowCount: otcChannelList.count
 

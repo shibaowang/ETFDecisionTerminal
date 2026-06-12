@@ -7,14 +7,14 @@ ReadOnlyTable {
 
     objectName: "portfolioReadOnlyTable"
     height: 210
-    title: "Portfolios"
-    subtitle: "Read-only portfolio list"
-    emptyTitle: "No portfolios"
-    emptyMessage: "Connect to the read-only DataService and refresh portfolios."
+    title: "组合列表"
+    subtitle: "只读组合列表"
+    emptyTitle: "暂无组合"
+    emptyMessage: "连接只读 DataService 后刷新组合列表。"
     columns: [
-        {"key": "name", "title": "Name", "width": 260, "required": true, "visible": true, "sortable": true},
-        {"key": "amount", "title": "Base position ratio", "width": 170, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+        {"key": "name", "title": "名称", "width": 260, "required": true, "visible": true, "sortable": true},
+        {"key": "amount", "title": "底仓比例", "width": 170, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     rowCount: portfolioList.count
 

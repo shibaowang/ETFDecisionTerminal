@@ -7,6 +7,20 @@ Rectangle {
     color: "#121d2e"
     border.color: "#26354d"
 
+    function displayPageTitle(value) {
+        if (value === "ShellAccounting") return "ShellAccounting 本地试用"
+        if (value === "Trade" + "Draft 建议") return "交易草案建议"
+        if (value === "TradeLog 账本") return "交易记录账本"
+        return value
+    }
+
+    function displayStatus(value) {
+        if (value === "PLACEHOLDER") return "占位状态（PLACEHOLDER）"
+        if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        return value
+    }
+
     Row {
         anchors.fill: parent
         anchors.leftMargin: 18
@@ -23,7 +37,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: root.currentPageTitle
+            text: root.displayPageTitle(root.currentPageTitle)
             color: "#aebbd0"
             font.pixelSize: 14
         }
@@ -39,7 +53,7 @@ Rectangle {
             Text {
                 id: mockLabel
                 anchors.centerIn: parent
-                text: "UI Mock - 未连接真实服务"
+                text: "本地试用模拟模式 - 未连接真实服务"
                 color: "#ffd77a"
                 font.pixelSize: 12
             }
@@ -47,21 +61,21 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Module: " + root.pageInfo.moduleStatus
+            text: "模块：" + root.displayStatus(root.pageInfo.moduleStatus)
             color: "#8fa1ba"
             font.pixelSize: 12
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Data: " + root.pageInfo.dataMode
+            text: "数据：" + root.displayStatus(root.pageInfo.dataMode)
             color: "#8fa1ba"
             font.pixelSize: 12
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Connection: " + root.pageInfo.connectionStatus
+            text: "连接状态：" + root.displayStatus(root.pageInfo.connectionStatus)
             color: "#8fa1ba"
             font.pixelSize: 12
         }

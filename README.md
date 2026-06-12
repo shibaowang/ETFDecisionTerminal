@@ -1,5 +1,23 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-287 Global Chinese UI Readability Trial Feedback Fix
+
+EPIC-287 addresses local trial feedback that visible RC pages still exposed too
+much English UI text, raw JSON payload text, and mock/debug wording:
+
+- scope: `docs/400_global_chinese_ui_readability_trial_feedback_fix.md`
+- QML: `apps/ETFDecisionShell/qml/**/*.qml`
+- validation: `global_chinese_ui_readability_trial_feedback_fix`,
+  `dashboard_mvp_full_delivery`, and
+  `local_trial_release_candidate_full_delivery`
+
+The local trial UI is Chinese-first across dashboard, diagnostics, read-only
+lists, side panels, and mock/service status surfaces. Raw JSON and sample
+payload text is hidden by default behind Chinese "开发者详情 / 原始诊断数据"
+controls. This is a UX/readability correction only: it does not add business
+behavior, database writes, migrations, broker / credential / endpoint access,
+real order placement, or automatic trading.
+
 ## EPIC-285 Dashboard Chinese Localization Trial Feedback Fix
 
 EPIC-285 addresses local trial feedback that the Dashboard MVP UI was too

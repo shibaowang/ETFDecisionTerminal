@@ -20,26 +20,26 @@ Rectangle {
     property string strategyDensity: "normal"
     property string otcDensity: "normal"
     property var instrumentColumns: [
-        {"key": "code", "title": "Code", "width": 110, "required": true, "visible": true, "sortable": true},
-        {"key": "name", "title": "Name", "width": 180, "required": false, "visible": true, "sortable": true},
-        {"key": "type", "title": "Type", "width": 110, "required": false, "visible": true, "sortable": true},
-        {"key": "market", "title": "Market", "width": 90, "required": false, "visible": true, "sortable": true},
-        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+        {"key": "code", "title": "代码", "width": 110, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "名称", "width": 180, "required": false, "visible": true, "sortable": true},
+        {"key": "type", "title": "类型", "width": 110, "required": false, "visible": true, "sortable": true},
+        {"key": "market", "title": "市场", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "currency", "title": "币种", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     property var strategyColumns: [
-        {"key": "code", "title": "Strategy code", "width": 180, "required": true, "visible": true, "sortable": true},
-        {"key": "name", "title": "Name", "width": 260, "required": false, "visible": true, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+        {"key": "code", "title": "策略代码", "width": 180, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "名称", "width": 260, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     property var otcColumns: [
-        {"key": "strategy", "title": "Strategy", "width": 130, "required": false, "visible": false, "sortable": true},
-        {"key": "code", "title": "Actual code", "width": 130, "required": true, "visible": true, "sortable": true},
-        {"key": "type", "title": "Fund class", "width": 120, "required": false, "visible": true, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
-        {"key": "dailyLimit", "title": "Daily limit", "width": 120, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": false},
-        {"key": "priority", "title": "Priority", "width": 80, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
-        {"key": "amount", "title": "Min buy", "width": 120, "required": false, "visible": false, "alignment": Text.AlignRight, "sortable": true}
+        {"key": "strategy", "title": "策略", "width": 130, "required": false, "visible": false, "sortable": true},
+        {"key": "code", "title": "实际代码", "width": 130, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "基金类别", "width": 120, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "dailyLimit", "title": "每日限额", "width": 120, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": false},
+        {"key": "priority", "title": "优先级", "width": 80, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "amount", "title": "最小买入", "width": 120, "required": false, "visible": false, "alignment": Text.AlignRight, "sortable": true}
     ]
 
     Flickable {
@@ -94,7 +94,7 @@ Rectangle {
                     spacing: 8
 
                     Text {
-                        text: "Read-only connection"
+                        text: "只读连接"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -142,7 +142,7 @@ Rectangle {
                             id: socketNameField
                             objectName: "instrumentStrategySocketNameField"
                             width: Math.min(330, parent.width * 0.32)
-                            placeholderText: "socketName"
+                            placeholderText: "本地套接字名称"
                             selectByMouse: true
                             onTextEdited: root.readOnlyDataController.setCustomSocketName(text)
 
@@ -162,7 +162,7 @@ Rectangle {
 
                         Button {
                             objectName: "instrumentStrategyConnectButton"
-                            text: "Connect"
+                            text: "连接"
                             enabled: !root.readOnlyDataController.isBusy
                                 && root.readOnlyDataController.selectedSocketName.length > 0
                             onClicked: root.readOnlyDataController.connectToDataService()
@@ -170,7 +170,7 @@ Rectangle {
 
                         Button {
                             objectName: "instrumentStrategyDisconnectButton"
-                            text: "Disconnect"
+                            text: "断开连接"
                             enabled: !root.readOnlyDataController.isBusy
                             onClicked: root.readOnlyDataController.disconnect()
                         }
@@ -182,7 +182,7 @@ Rectangle {
 
                         Button {
                             objectName: "instrumentStrategyRefreshButton"
-                            text: "Refresh Instruments & Strategies"
+                            text: "刷新标的与策略"
                             enabled: root.readOnlyDataController.canRefresh
                             onClicked: root.readOnlyDataController.refreshInstrumentsAndStrategies()
                         }
@@ -214,7 +214,7 @@ Rectangle {
                             id: strategyCodeField
                             objectName: "instrumentStrategyCodeField"
                             width: Math.min(220, parent.width * 0.22)
-                            placeholderText: "strategyCode"
+                            placeholderText: "策略代码"
                             selectByMouse: true
                             text: root.readOnlyDataController.selectedStrategyCode
                             onTextEdited: root.readOnlyDataController.setSelectedStrategyCode(text)
@@ -231,7 +231,7 @@ Rectangle {
 
                         Button {
                             objectName: "instrumentStrategyRefreshOtcButton"
-                            text: "Refresh OTC"
+                            text: "刷新 OTC"
                             enabled: root.readOnlyDataController.canRefresh
                             onClicked: root.readOnlyDataController.refreshOtcChannels()
                         }
@@ -258,27 +258,27 @@ Rectangle {
 
                         ReadOnlyFieldLabel {
                             width: 180
-                            label: "Connection"
+                            label: "连接状态"
                             value: root.readOnlyDataController.connectionObject.stateText
                         }
 
                         ReadOnlyFieldLabel {
                             width: 150
-                            label: "Refresh"
+                            label: "刷新状态"
                             value: root.readOnlyDataController.refreshState
                         }
 
                         ReadOnlyFieldLabel {
                             width: 120
-                            label: "Healthy"
+                            label: "健康状态"
                             value: String(root.summary.healthy)
                         }
                     }
 
                     Text {
                         objectName: "instrumentStrategyLastSuccess"
-                        text: "Last success: " + (root.readOnlyDataController.lastSuccessAtText.length > 0
-                            ? root.readOnlyDataController.lastSuccessAtText : "never")
+                        text: "最近成功：" + (root.readOnlyDataController.lastSuccessAtText.length > 0
+                            ? root.readOnlyDataController.lastSuccessAtText : "从未")
                         color: "#56657c"
                         font.pixelSize: 12
                     }
@@ -287,8 +287,8 @@ Rectangle {
                         objectName: "instrumentStrategyErrorPanel"
                         width: parent.width
                         text: root.readOnlyDataController.errorState.hasError
-                            ? "Error: " + root.readOnlyDataController.errorState.errorMessage
-                            : "Error: none"
+                            ? "错误：" + root.readOnlyDataController.errorState.errorMessage
+                            : "错误：无"
                         color: root.readOnlyDataController.errorState.hasError ? "#a33b2e" : "#56657c"
                         font.pixelSize: 12
                         elide: Text.ElideRight
@@ -299,7 +299,7 @@ Rectangle {
             ReadOnlyFilterBar {
                 objectName: "instrumentFilterBar"
                 width: parent.width
-                placeholderText: "Search instrument code, name, type, market, currency"
+                placeholderText: "搜索标的代码、名称、类型、市场、币种"
                 showEnabledFilter: true
                 onFilterTextChanged: function(text) {
                     root.readOnlyDataController.setInstrumentSearchText(text)
@@ -323,7 +323,7 @@ Rectangle {
                     width: Math.min(parent.width * 0.68, 760)
                     columns: root.instrumentColumns
                     visibleColumnKeys: root.instrumentVisibleColumns
-                    title: "Instrument columns"
+                    title: "标的列"
                     onColumnVisibilityChanged: function(keys) {
                         root.instrumentVisibleColumns = keys
                     }
@@ -354,7 +354,7 @@ Rectangle {
             ReadOnlyFilterBar {
                 objectName: "strategyFilterBar"
                 width: parent.width
-                placeholderText: "Search strategy code or name"
+                placeholderText: "搜索策略代码或名称"
                 showEnabledFilter: true
                 onFilterTextChanged: function(text) {
                     root.readOnlyDataController.setStrategySearchText(text)
@@ -378,7 +378,7 @@ Rectangle {
                     width: Math.min(parent.width * 0.68, 760)
                     columns: root.strategyColumns
                     visibleColumnKeys: root.strategyVisibleColumns
-                    title: "Strategy columns"
+                    title: "策略列"
                     onColumnVisibilityChanged: function(keys) {
                         root.strategyVisibleColumns = keys
                     }
@@ -409,7 +409,7 @@ Rectangle {
             ReadOnlyFilterBar {
                 objectName: "otcFilterBar"
                 width: parent.width
-                placeholderText: "Search OTC strategy, actual code, fund class"
+                placeholderText: "搜索 OTC 策略、实际代码、基金类别"
                 showEnabledFilter: true
                 onFilterTextChanged: function(text) {
                     root.readOnlyDataController.setOtcSearchText(text)
@@ -433,7 +433,7 @@ Rectangle {
                     width: Math.min(parent.width * 0.68, 760)
                     columns: root.otcColumns
                     visibleColumnKeys: root.otcVisibleColumns
-                    title: "OTC columns"
+                    title: "OTC 列"
                     onColumnVisibilityChanged: function(keys) {
                         root.otcVisibleColumns = keys
                     }

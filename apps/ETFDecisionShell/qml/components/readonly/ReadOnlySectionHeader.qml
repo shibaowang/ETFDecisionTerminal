@@ -5,7 +5,7 @@ Rectangle {
     objectName: "readOnlySectionHeader"
     property string title: ""
     property string subtitle: ""
-    property string readonlyText: "READONLY"
+    property string readonlyText: "只读"
     property int count: -1
 
     color: "transparent"
@@ -30,7 +30,7 @@ Rectangle {
             }
 
             Text {
-                text: root.subtitle + (root.count >= 0 ? " · rows=" + root.count : "")
+                text: root.subtitle + (root.count >= 0 ? " · 行数=" + root.count : "")
                 color: "#667086"
                 font.pixelSize: 12
                 visible: text.length > 0

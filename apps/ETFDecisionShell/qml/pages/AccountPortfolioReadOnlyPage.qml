@@ -18,17 +18,17 @@ Rectangle {
     property string accountDensity: "normal"
     property string portfolioDensity: "normal"
     property var accountColumns: [
-        {"key": "name", "title": "Name", "width": 190, "required": true, "visible": true, "sortable": true},
-        {"key": "type", "title": "Type", "width": 100, "required": false, "visible": true, "sortable": true},
-        {"key": "broker", "title": "Broker", "width": 140, "required": false, "visible": false, "sortable": false},
-        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": false},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
-        {"key": "amount", "title": "Initial cash", "width": 130, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true}
+        {"key": "name", "title": "名称", "width": 190, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "类型", "width": 100, "required": false, "visible": true, "sortable": true},
+        {"key": "broker", "title": "券商", "width": 140, "required": false, "visible": false, "sortable": false},
+        {"key": "currency", "title": "币种", "width": 90, "required": false, "visible": true, "sortable": false},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "amount", "title": "初始现金", "width": 130, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true}
     ]
     property var portfolioColumns: [
-        {"key": "name", "title": "Name", "width": 260, "required": true, "visible": true, "sortable": true},
-        {"key": "amount", "title": "Base position ratio", "width": 170, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+        {"key": "name", "title": "名称", "width": 260, "required": true, "visible": true, "sortable": true},
+        {"key": "amount", "title": "底仓比例", "width": 170, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
 
     Flickable {
@@ -83,7 +83,7 @@ Rectangle {
                     spacing: 8
 
                     Text {
-                        text: "Read-only connection"
+                        text: "只读连接"
                         color: "#18202f"
                         font.pixelSize: 16
                         font.bold: true
@@ -131,7 +131,7 @@ Rectangle {
                             id: socketNameField
                             objectName: "accountPortfolioSocketNameField"
                             width: Math.min(360, parent.width * 0.35)
-                            placeholderText: "socketName"
+                            placeholderText: "本地套接字名称"
                             selectByMouse: true
                             onTextEdited: root.readOnlyDataController.setCustomSocketName(text)
 
@@ -151,7 +151,7 @@ Rectangle {
 
                         Button {
                             objectName: "accountPortfolioConnectButton"
-                            text: "Connect"
+                            text: "连接"
                             enabled: !root.readOnlyDataController.isBusy
                                 && root.readOnlyDataController.selectedSocketName.length > 0
                             onClicked: root.readOnlyDataController.connectToDataService()
@@ -159,14 +159,14 @@ Rectangle {
 
                         Button {
                             objectName: "accountPortfolioRefreshButton"
-                            text: "Refresh Accounts & Portfolios"
+                            text: "刷新账户与组合"
                             enabled: root.readOnlyDataController.canRefresh
                             onClicked: root.readOnlyDataController.refreshAccountsAndPortfolios()
                         }
 
                         Button {
                             objectName: "accountPortfolioDisconnectButton"
-                            text: "Disconnect"
+                            text: "断开连接"
                             enabled: !root.readOnlyDataController.isBusy
                             onClicked: root.readOnlyDataController.disconnect()
                         }
@@ -175,7 +175,7 @@ Rectangle {
                     Text {
                         objectName: "accountPortfolioCommandHint"
                         width: parent.width
-                        text: "Start command: " + root.readOnlyDataController.commandHint
+                        text: "启动命令：" + root.readOnlyDataController.commandHint
                         color: "#244464"
                         font.pixelSize: 12
                         elide: Text.ElideRight
@@ -202,27 +202,27 @@ Rectangle {
 
                         ReadOnlyFieldLabel {
                             width: 180
-                            label: "Connection"
+                            label: "连接状态"
                             value: root.readOnlyDataController.connectionObject.stateText
                         }
 
                         ReadOnlyFieldLabel {
                             width: 150
-                            label: "Refresh"
+                            label: "刷新状态"
                             value: root.readOnlyDataController.refreshState
                         }
 
                         ReadOnlyFieldLabel {
                             width: 120
-                            label: "Healthy"
+                            label: "健康状态"
                             value: String(root.summary.healthy)
                         }
                     }
 
                     Text {
                         objectName: "accountPortfolioLastSuccess"
-                        text: "Last success: " + (root.readOnlyDataController.lastSuccessAtText.length > 0
-                            ? root.readOnlyDataController.lastSuccessAtText : "never")
+                        text: "最近成功：" + (root.readOnlyDataController.lastSuccessAtText.length > 0
+                            ? root.readOnlyDataController.lastSuccessAtText : "从未")
                         color: "#56657c"
                         font.pixelSize: 12
                     }
@@ -231,8 +231,8 @@ Rectangle {
                         objectName: "accountPortfolioErrorPanel"
                         width: parent.width
                         text: root.readOnlyDataController.errorState.hasError
-                            ? "Error: " + root.readOnlyDataController.errorState.errorMessage
-                            : "Error: none"
+                            ? "错误：" + root.readOnlyDataController.errorState.errorMessage
+                            : "错误：无"
                         color: root.readOnlyDataController.errorState.hasError ? "#a33b2e" : "#56657c"
                         font.pixelSize: 12
                         elide: Text.ElideRight
@@ -243,9 +243,9 @@ Rectangle {
             ReadOnlyFilterBar {
                 objectName: "accountFilterBar"
                 width: parent.width
-                placeholderText: "Search account name, type, broker, currency"
+                placeholderText: "搜索账户名称、类型、券商、币种"
                 showEnabledFilter: true
-                enabledOnlyText: "Active only"
+                enabledOnlyText: "仅显示启用"
                 onFilterTextChanged: function(text) {
                     root.readOnlyDataController.setAccountSearchText(text)
                 }
@@ -268,7 +268,7 @@ Rectangle {
                     width: Math.min(parent.width * 0.68, 760)
                     columns: root.accountColumns
                     visibleColumnKeys: root.accountVisibleColumns
-                    title: "Account columns"
+                    title: "账户列"
                     onColumnVisibilityChanged: function(keys) {
                         root.accountVisibleColumns = keys
                     }
@@ -299,9 +299,9 @@ Rectangle {
             ReadOnlyFilterBar {
                 objectName: "portfolioFilterBar"
                 width: parent.width
-                placeholderText: "Search portfolio name or base position ratio"
+                placeholderText: "搜索组合名称或底仓比例"
                 showEnabledFilter: true
-                enabledOnlyText: "Active only"
+                enabledOnlyText: "仅显示启用"
                 onFilterTextChanged: function(text) {
                     root.readOnlyDataController.setPortfolioSearchText(text)
                 }
@@ -324,7 +324,7 @@ Rectangle {
                     width: Math.min(parent.width * 0.68, 760)
                     columns: root.portfolioColumns
                     visibleColumnKeys: root.portfolioVisibleColumns
-                    title: "Portfolio columns"
+                    title: "组合列"
                     onColumnVisibilityChanged: function(keys) {
                         root.portfolioVisibleColumns = keys
                     }

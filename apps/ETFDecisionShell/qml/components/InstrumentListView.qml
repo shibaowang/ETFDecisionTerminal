@@ -7,17 +7,17 @@ ReadOnlyTable {
 
     objectName: "instrumentReadOnlyTable"
     height: 250
-    title: "Instruments"
-    subtitle: "Read-only instrument list"
-    emptyTitle: "No instruments"
-    emptyMessage: "Connect to the read-only DataService and refresh instruments."
+    title: "标的列表"
+    subtitle: "只读标的列表"
+    emptyTitle: "暂无标的"
+    emptyMessage: "连接只读 DataService 后刷新标的列表。"
     columns: [
-        {"key": "code", "title": "Code", "width": 110, "required": true, "visible": true, "sortable": true},
-        {"key": "name", "title": "Name", "width": 180, "required": false, "visible": true, "sortable": true},
-        {"key": "type", "title": "Type", "width": 110, "required": false, "visible": true, "sortable": true},
-        {"key": "market", "title": "Market", "width": 90, "required": false, "visible": true, "sortable": true},
-        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+        {"key": "code", "title": "代码", "width": 110, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "名称", "width": 180, "required": false, "visible": true, "sortable": true},
+        {"key": "type", "title": "类型", "width": 110, "required": false, "visible": true, "sortable": true},
+        {"key": "market", "title": "市场", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "currency", "title": "币种", "width": 90, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     rowCount: instrumentList.count
 

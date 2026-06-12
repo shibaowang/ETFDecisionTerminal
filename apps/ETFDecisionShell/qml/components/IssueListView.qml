@@ -4,6 +4,13 @@ Rectangle {
     id: root
     required property var model
 
+    function displayLevel(value) {
+        if (value === "ERROR") return "错误"
+        if (value === "WARNING") return "警告"
+        if (value === "INFO") return "信息"
+        return value
+    }
+
     radius: 8
     color: "#ffffff"
     border.color: "#d9e0ea"
@@ -14,7 +21,7 @@ Rectangle {
         spacing: 10
 
         Text {
-            text: "Issues"
+            text: "问题列表"
             color: "#18202f"
             font.pixelSize: 17
             font.bold: true
@@ -22,7 +29,7 @@ Rectangle {
 
         Text {
             visible: issueList.count === 0
-            text: "Select a service with issues."
+            text: "请选择有问题的服务。"
             color: "#687386"
             font.pixelSize: 13
         }
@@ -49,7 +56,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: level + "  " + code
+                        text: root.displayLevel(level) + "  " + code
                         color: level === "ERROR" ? "#9d1c1c" : "#7a4a00"
                         font.pixelSize: 13
                         font.bold: true

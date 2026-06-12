@@ -7,14 +7,14 @@ ReadOnlyTable {
 
     objectName: "strategyReadOnlyTable"
     height: 210
-    title: "Strategies"
-    subtitle: "Read-only strategy list"
-    emptyTitle: "No strategies"
-    emptyMessage: "The current demo database may have no strategy rows; the page remains read-only."
+    title: "策略列表"
+    subtitle: "只读策略列表"
+    emptyTitle: "暂无策略"
+    emptyMessage: "当前演示数据库可能没有策略行，本页面仍保持只读。"
     columns: [
-        {"key": "code", "title": "Strategy code", "width": 180, "required": true, "visible": true, "sortable": true},
-        {"key": "name", "title": "Name", "width": 260, "required": false, "visible": true, "sortable": true},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true}
+        {"key": "code", "title": "策略代码", "width": 180, "required": true, "visible": true, "sortable": true},
+        {"key": "name", "title": "名称", "width": 260, "required": false, "visible": true, "sortable": true},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
     rowCount: strategyList.count
 

@@ -5,9 +5,9 @@ Rectangle {
     id: root
     objectName: "readOnlyFilterBar"
     property string searchText: ""
-    property string placeholderText: "Search read-only data"
+    property string placeholderText: "搜索只读数据"
     property bool enabledOnly: false
-    property string enabledOnlyText: "Enabled only"
+    property string enabledOnlyText: "仅显示启用"
     property bool showEnabledFilter: false
     property bool showClearButton: true
     signal filterTextChanged(string text)
@@ -27,7 +27,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Filter"
+            text: "筛选"
             color: "#34435c"
             font.pixelSize: 12
             font.bold: true
@@ -60,7 +60,7 @@ Rectangle {
             objectName: root.objectName + "ClearButton"
             visible: root.showClearButton
             anchors.verticalCenter: parent.verticalCenter
-            text: "Clear"
+            text: "清空"
             onClicked: {
                 searchField.text = ""
                 if (root.showEnabledFilter) {
@@ -74,7 +74,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Readonly display filter"
+            text: "只读显示筛选"
             color: "#6a7890"
             font.pixelSize: 11
             elide: Text.ElideRight

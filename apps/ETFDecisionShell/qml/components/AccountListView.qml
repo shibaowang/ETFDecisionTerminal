@@ -7,17 +7,17 @@ ReadOnlyTable {
 
     objectName: "accountReadOnlyTable"
     height: 250
-    title: "Accounts"
-    subtitle: "Read-only account list"
+    title: "账户列表"
+    subtitle: "只读账户列表"
     emptyTitle: "暂无账户数据"
     emptyMessage: "连接只读 DataService 后刷新账户列表。"
     columns: [
-        {"key": "name", "title": "Name", "width": 190, "required": true, "visible": true, "sortable": true},
-        {"key": "type", "title": "Type", "width": 100, "required": false, "visible": true, "sortable": true},
-        {"key": "broker", "title": "Broker", "width": 140, "required": false, "visible": false, "sortable": false},
-        {"key": "currency", "title": "Currency", "width": 90, "required": false, "visible": true, "sortable": false},
-        {"key": "status", "title": "Status", "width": 96, "required": false, "visible": true, "sortable": true},
-        {"key": "amount", "title": "Initial cash", "width": 130, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true}
+        {"key": "name", "title": "名称", "width": 190, "required": true, "visible": true, "sortable": true},
+        {"key": "type", "title": "类型", "width": 100, "required": false, "visible": true, "sortable": true},
+        {"key": "broker", "title": "券商", "width": 140, "required": false, "visible": false, "sortable": false},
+        {"key": "currency", "title": "币种", "width": 90, "required": false, "visible": true, "sortable": false},
+        {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true},
+        {"key": "amount", "title": "初始现金", "width": 130, "required": false, "visible": true, "alignment": Text.AlignRight, "sortable": true}
     ]
     rowCount: accountList.count
 

@@ -2,8 +2,11 @@
 
 ## Stop Local Processes
 
-Close the Shell window. If the local DataService was started from the trial
-script, stop the process id recorded under `.demo/local_trial_rc/logs`.
+Close the Shell window when doing manual cleanup. The cleanup script also reads
+`.demo\local_trial_rc\logs\dataservice.pid` and
+`.demo\local_trial_rc\logs\shell.pid`; when either pid points at the repository
+local trial executable, cleanup stops it before removing the workspace. It
+refuses to stop unrelated system processes.
 
 ## Remove Workspace
 

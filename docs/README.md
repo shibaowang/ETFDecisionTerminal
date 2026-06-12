@@ -25,6 +25,14 @@
   explicit user confirmation for write/draft creation. It does not directly
   access DataServiceClient, SQLite, network, engines, broker, credentials,
   endpoints, real order placement, or automatic trading.
+- EPIC-283 local trial RC bug bash:
+  [396_local_trial_rc_bug_bash_fix_pack.md](396_local_trial_rc_bug_bash_fix_pack.md)
+  records the first release-candidate bug bash pass on EPIC-282, including the
+  cleanup fix for repo-local DataService/Shell pid files.
+- EPIC-283 evidence log:
+  [397_local_trial_rc_evidence_log.md](397_local_trial_rc_evidence_log.md)
+  records script validation, regression, full CTest, transport repeat, and
+  no-scope-expansion evidence for the local trial RC fix pack.
 - [379 Market Data Refresh Engine Full Delivery](379_market_data_refresh_engine_full_delivery.md)
 - [380 Market Data Provider Contract](380_market_data_provider_contract.md)
 - [381 Market Data Historical High VBA Parity Matrix](381_market_data_historical_high_vba_parity_matrix.md)
@@ -1648,6 +1656,15 @@
   [395_local_trial_release_candidate_test_plan.md](395_local_trial_release_candidate_test_plan.md)
   records the exact configure, build, targeted, regression, full CTest,
   transport-repeat, diff, and status commands for EPIC-282.
+- Local trial RC bug bash fix pack:
+  [396_local_trial_rc_bug_bash_fix_pack.md](396_local_trial_rc_bug_bash_fix_pack.md)
+  records the EPIC-283 RC bug bash pass, observed P0/P1/P2 issues, applied
+  local-trial fixes, changed files, validation, and deferred items.
+- Local trial RC evidence log:
+  [397_local_trial_rc_evidence_log.md](397_local_trial_rc_evidence_log.md)
+  records EPIC-283 evidence for workspace create/init, DataService cleanup,
+  smoke, targeted regressions, full CTest, transport repeat, diff check, and
+  final status.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

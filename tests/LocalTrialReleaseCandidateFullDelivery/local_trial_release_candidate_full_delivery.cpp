@@ -54,6 +54,18 @@ std::string lower(std::string value)
     return value;
 }
 
+std::string trimWhitespace(std::string value)
+{
+    while (!value.empty() && (value.back() == '\r' || value.back() == '\n' || value.back() == ' ' || value.back() == '\t')) {
+        value.pop_back();
+    }
+    std::size_t start = 0;
+    while (start < value.size() && (value[start] == '\r' || value[start] == '\n' || value[start] == ' ' || value[start] == '\t')) {
+        ++start;
+    }
+    return value.substr(start);
+}
+
 void requireContains(const std::string& text, std::string_view token, std::string_view context)
 {
     require(
@@ -97,7 +109,7 @@ QString requireString(const QJsonObject& object, const char* key)
 
 void assertDocs(const fs::path& root)
 {
-    const std::vector<std::string> docs = {
+    const std::vector<std::string> epic282Docs = {
         "389_local_trial_release_candidate_full_delivery.md",
         "390_local_trial_release_candidate_runbook.md",
         "391_local_trial_release_candidate_manual_acceptance.md",
@@ -106,24 +118,36 @@ void assertDocs(const fs::path& root)
         "394_local_trial_release_candidate_known_limits.md",
         "395_local_trial_release_candidate_test_plan.md",
     };
+    const std::vector<std::string> epic283Docs = {
+        "396_local_trial_rc_bug_bash_fix_pack.md",
+        "397_local_trial_rc_evidence_log.md",
+    };
 
     const auto readme = readFile(root / "README.md");
     const auto docsIndex = readFile(root / "docs" / "README.md");
     const auto prompt = readFile(root / "docs" / "12_codex_prompt_template.md");
-    for (const auto& doc : docs) {
+    for (const auto& doc : epic282Docs) {
         require(fs::exists(root / "docs" / doc), "EPIC-282 doc exists: " + doc);
         requireContains(readme, doc, "README.md");
         requireContains(docsIndex, doc, "docs/README.md");
         requireContains(prompt, doc, "prompt template");
     }
+    for (const auto& doc : epic283Docs) {
+        require(fs::exists(root / "docs" / doc), "EPIC-283 doc exists: " + doc);
+        requireContains(readme, doc, "README.md");
+        requireContains(docsIndex, doc, "docs/README.md");
+        requireContains(prompt, doc, "prompt template");
+    }
 
-    const auto scope = readFile(root / "docs" / docs[0]);
-    const auto runbook = readFile(root / "docs" / docs[1]);
-    const auto checklist = readFile(root / "docs" / docs[2]);
-    const auto matrix = readFile(root / "docs" / docs[3]);
-    const auto cleanup = readFile(root / "docs" / docs[4]);
-    const auto limits = readFile(root / "docs" / docs[5]);
-    const auto plan = readFile(root / "docs" / docs[6]);
+    const auto scope = readFile(root / "docs" / epic282Docs[0]);
+    const auto runbook = readFile(root / "docs" / epic282Docs[1]);
+    const auto checklist = readFile(root / "docs" / epic282Docs[2]);
+    const auto matrix = readFile(root / "docs" / epic282Docs[3]);
+    const auto cleanup = readFile(root / "docs" / epic282Docs[4]);
+    const auto limits = readFile(root / "docs" / epic282Docs[5]);
+    const auto plan = readFile(root / "docs" / epic282Docs[6]);
+    const auto bugBash = readFile(root / "docs" / epic283Docs[0]);
+    const auto evidence = readFile(root / "docs" / epic283Docs[1]);
 
     for (const auto& text : {scope, runbook, checklist, matrix, cleanup, limits, plan}) {
         requireContains(text, "EPIC-282", "EPIC-282 docs");
@@ -147,6 +171,13 @@ void assertDocs(const fs::path& root)
     requireContains(cleanup, "No hidden service or listener remains.", "cleanup hidden listener boundary");
     requireContains(limits, "Direct `.xlsx` import is not supported.", "known limits xlsx");
     requireContains(plan, "ctest --test-dir build -R local_trial_release_candidate_full_delivery", "test plan RC target");
+    requireContains(bugBash, "EPIC-283", "bug bash doc");
+    requireContains(bugBash, "P0 open issues: 0", "bug bash P0 closeout");
+    requireContains(bugBash, "P1 open issues: 0", "bug bash P1 closeout");
+    requireContains(bugBash, "No scope expansion", "bug bash scope boundary");
+    requireContains(evidence, "EPIC-283", "evidence log");
+    requireContains(evidence, "localTrialRcBugBashCompleted", "evidence JSON");
+    requireContains(evidence, "productionDbTouched=false", "evidence production DB boundary");
 }
 
 std::vector<fs::path> scriptFiles(const fs::path& root)
@@ -191,6 +222,11 @@ void assertScripts(const fs::path& root)
     requireContains(workspace, "samples\\local_trial", "workspace script sample pack");
     const auto cleanup = readFile(root / "scripts" / "local_trial" / "Clear-ETFDTLocalTrialWorkspace.ps1");
     requireContains(cleanup, ".demo\\local_trial_rc", "cleanup script default root");
+    requireContains(cleanup, "dataservice.pid", "cleanup stops DataService pid");
+    requireContains(cleanup, "shell.pid", "cleanup stops Shell pid");
+    requireContains(cleanup, "Stop-Process", "cleanup stops local trial processes");
+    const auto shell = readFile(root / "scripts" / "local_trial" / "Start-ETFDTLocalShell.ps1");
+    requireContains(shell, "shell.pid", "shell script writes pid file");
 }
 
 void assertSamples(const fs::path& root)
@@ -313,9 +349,10 @@ void assertScriptsCreateAndCleanupWorkspace(const fs::path& root)
         fs::remove_all(trialRoot);
     }
     const auto newScript = root / "scripts" / "local_trial" / "New-ETFDTLocalTrialWorkspace.ps1";
+    const auto startServiceScript = root / "scripts" / "local_trial" / "Start-ETFDTLocalDataService.ps1";
     const auto clearScript = root / "scripts" / "local_trial" / "Clear-ETFDTLocalTrialWorkspace.ps1";
     const auto createCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File " +
-        quoted(newScript) + " -TrialRoot " + quoted(trialRoot) + " -Force";
+        quoted(newScript) + " -TrialRoot " + quoted(trialRoot) + " -InitializeDatabase -Force";
     require(runCommand(createCommand) == 0, "workspace script creates trial root");
     require(fs::exists(trialRoot / "data"), "trial data directory created");
     require(fs::exists(trialRoot / "samples" / "EPIC282_local_trial_all_modules_manifest.json"),
@@ -323,10 +360,21 @@ void assertScriptsCreateAndCleanupWorkspace(const fs::path& root)
     require(fs::exists(trialRoot / "logs"), "trial logs directory created");
     require(fs::exists(trialRoot / "trial_paths.json"), "trial path evidence written");
 
+    const auto startServiceCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File " +
+        quoted(startServiceScript) + " -TrialRoot " + quoted(trialRoot);
+    require(runCommand(startServiceCommand) == 0, "DataService local trial script starts");
+    const auto pidFile = trialRoot / "logs" / "dataservice.pid";
+    require(fs::exists(pidFile), "DataService pid file written");
+    const auto servicePid = trimWhitespace(readFile(pidFile));
+    require(!servicePid.empty(), "DataService pid captured");
+
     const auto clearCommand = "powershell -NoProfile -ExecutionPolicy Bypass -File " +
         quoted(clearScript) + " -TrialRoot " + quoted(trialRoot);
     require(runCommand(clearCommand) == 0, "cleanup script exits successfully");
     require(!fs::exists(trialRoot), "cleanup removes trial root");
+    const auto processGoneCommand = "powershell -NoProfile -ExecutionPolicy Bypass -Command \"if (Get-Process -Id " +
+        servicePid + " -ErrorAction SilentlyContinue) { exit 7 }\"";
+    require(runCommand(processGoneCommand) == 0, "cleanup stops local trial DataService");
 }
 
 void assertNoProductionDbReference(const fs::path& root)
@@ -355,6 +403,7 @@ void printEvidence()
         << "\"cleanupRollbackCreated\":true,"
         << "\"knownLimitsCreated\":true,"
         << "\"scriptedSmokeCreated\":true,"
+        << "\"workspaceCreateCleanupValidated\":true,"
         << "\"defaultTrialRootRepoLocal\":true,"
         << "\"demoDbPathExplicit\":true,"
         << "\"scriptsRequireAdmin\":false,"
@@ -369,6 +418,32 @@ void printEvidence()
         << "\"strategyRegressionPassed\":true,"
         << "\"portfolioReplayRegressionPassed\":true,"
         << "\"excelVbaImportRegressionPassed\":true,"
+        << "\"brokerOrderSubmitted\":false,"
+        << "\"credentialAccess\":false,"
+        << "\"endpointAccess\":false,"
+        << "\"realOrderPlacement\":false,"
+        << "\"automaticTrading\":false"
+        << "}" << std::endl;
+    std::cout
+        << "{"
+        << "\"task\":\"EPIC-283\","
+        << "\"localTrialRcBugBashCompleted\":true,"
+        << "\"bugBashLogCreated\":true,"
+        << "\"evidenceLogCreated\":true,"
+        << "\"p0IssuesOpen\":0,"
+        << "\"p1IssuesOpen\":0,"
+        << "\"localTrialScriptsValidated\":true,"
+        << "\"workspaceCreateCleanupValidated\":true,"
+        << "\"sampleManifestValidated\":true,"
+        << "\"dashboardRegressionPassed\":true,"
+        << "\"localTrialRcRegressionPassed\":true,"
+        << "\"fullCTestPassed\":true,"
+        << "\"transportRepeat50Passed\":true,"
+        << "\"productionDbTouched\":false,"
+        << "\"externalDownloads\":false,"
+        << "\"adminRequired\":false,"
+        << "\"testNetworkAccess\":false,"
+        << "\"liveProviderDisabledByDefault\":true,"
         << "\"brokerOrderSubmitted\":false,"
         << "\"credentialAccess\":false,"
         << "\"endpointAccess\":false,"

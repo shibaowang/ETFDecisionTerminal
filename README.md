@@ -1,5 +1,20 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-283 Local Trial RC Bug Bash Fix Pack
+
+EPIC-283 records the first RC bug bash pass on top of EPIC-282. It keeps the
+release candidate scope unchanged and fixes only local trial blockers found
+while running the repo-local scripts and CTests.
+
+- Bug bash log: `docs/396_local_trial_rc_bug_bash_fix_pack.md`
+- Evidence log: `docs/397_local_trial_rc_evidence_log.md`
+- Primary fix: local trial cleanup now stops repo-local DataService/Shell
+  processes recorded under `.demo\local_trial_rc\logs` before deleting the demo
+  workspace.
+- Boundaries remain unchanged: no production DB, no migration, no external
+  download, no admin/system mutation, no live provider by default, no broker,
+  credential, endpoint, real order placement, or automatic trading.
+
 ## EPIC-282 Local Trial Release Candidate Full Delivery
 
 EPIC-282 packages the current MVP into a local trial release candidate:

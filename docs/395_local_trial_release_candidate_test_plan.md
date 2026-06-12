@@ -28,3 +28,6 @@ The EPIC-282 CTest must emit evidence JSON with local-trial docs, scripts,
 sample pack, scripted smoke, disabled live provider default, no production DB
 touch, no external download, no admin/system modification, no broker,
 credential, endpoint, real order placement, or automatic trading.
+
+EPIC-283 extends the same CTest to prove cleanup stops a repo-local DataService
+started from `Start-ETFDTLocalDataService.ps1` before deleting the demo DB.

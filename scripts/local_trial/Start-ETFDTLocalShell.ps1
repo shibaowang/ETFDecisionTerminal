@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$BuildDir = "",
+    [string]$TrialRoot = "",
     [switch]$PassThru
 )
 
@@ -13,20 +14,31 @@ if ([string]::IsNullOrWhiteSpace($BuildDir)) {
 } elseif (-not [System.IO.Path]::IsPathRooted($BuildDir)) {
     $BuildDir = Join-Path $repoRoot $BuildDir
 }
+if ([string]::IsNullOrWhiteSpace($TrialRoot)) {
+    $TrialRoot = Join-Path $repoRoot ".demo\local_trial_rc"
+} elseif (-not [System.IO.Path]::IsPathRooted($TrialRoot)) {
+    $TrialRoot = Join-Path $repoRoot $TrialRoot
+}
 
 $shellExe = Join-Path ([System.IO.Path]::GetFullPath($BuildDir)) "apps\ETFDecisionShell\Debug\ETFDecisionShell.exe"
 if (-not (Test-Path -LiteralPath $shellExe -PathType Leaf)) {
     throw "Shell executable not found: $shellExe"
 }
+$trialRootFull = [System.IO.Path]::GetFullPath($TrialRoot)
+$logDir = Join-Path $trialRootFull "logs"
+$pidFile = Join-Path $logDir "shell.pid"
+New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 
 $process = Start-Process -FilePath $shellExe -ArgumentList @("--diagnostics-mock") -PassThru
 if ($process.HasExited) {
     throw "Shell exited early with code $($process.ExitCode)."
 }
+Set-Content -LiteralPath $pidFile -Value $process.Id -Encoding ASCII
 $summary = [ordered]@{
     task = "EPIC-282"
     shellStarted = $true
     pid = $process.Id
+    pidFile = $pidFile
     remoteAccess = $false
     realExecution = $false
 }

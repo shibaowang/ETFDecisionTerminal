@@ -1,0 +1,10 @@
+{
+  "sampleId": "EPIC282_local_trial_duplicate_draft",
+  "module": "tradedraft",
+  "scenario": "duplicate",
+  "expectedStatus": "DUPLICATE",
+  "expectedUserAction": "confirm no row growth",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

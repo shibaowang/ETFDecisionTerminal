@@ -1,0 +1,15 @@
+{
+  "sampleId": "EPIC282_local_trial_otcmap_buy_multileg",
+  "module": "otcmap",
+  "side": "BUY",
+  "legs": [
+    {"instrument": "EPIC282_OTC_C", "fundClass": "C", "amount": "1000.00"},
+    {"instrument": "EPIC282_OTC_A", "fundClass": "A", "amount": "1500.00"}
+  ],
+  "expectedStatus": "DRAFT_READY",
+  "requiresConfirmation": true,
+  "executionSubmitted": false,
+  "noWriteBoundary": false,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

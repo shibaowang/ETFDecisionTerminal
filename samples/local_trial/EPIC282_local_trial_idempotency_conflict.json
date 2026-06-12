@@ -1,0 +1,10 @@
+{
+  "sampleId": "EPIC282_local_trial_idempotency_conflict",
+  "module": "excel_vba_import",
+  "scenario": "idempotency_conflict",
+  "expectedStatus": "CONFLICT",
+  "expectedUserAction": "confirm no row growth",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

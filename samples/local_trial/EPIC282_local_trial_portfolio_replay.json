@@ -1,0 +1,13 @@
+{
+  "sampleId": "EPIC282_local_trial_portfolio_replay",
+  "module": "portfolio_replay",
+  "facts": {
+    "initialCash": [{"account": "EPIC282_ACCOUNT", "portfolio": "EPIC282_PORTFOLIO", "currency": "CNY", "amount": "10000.00"}],
+    "trades": [{"instrument": "EPIC282_ETF_A", "side": "BUY", "quantity": "100", "price": "2.5000", "fee": "0.50"}],
+    "marketPrices": [{"instrument": "EPIC282_ETF_A", "price": "2.7500", "currency": "CNY"}]
+  },
+  "expectedStatus": "READY",
+  "noWriteBoundary": true,
+  "noNetworkBoundary": true,
+  "cleanup": "delete demo workspace"
+}

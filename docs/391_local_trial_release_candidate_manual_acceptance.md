@@ -1,0 +1,28 @@
+# EPIC-282 Local Trial Manual Acceptance Checklist
+
+- [ ] Build passed.
+- [ ] Full CTest passed.
+- [ ] Local trial workspace created.
+- [ ] Demo DB initialized at `.demo/local_trial_rc/data/etfdt_local_trial.sqlite`.
+- [ ] DataService started with the local trial socket.
+- [ ] Shell started.
+- [ ] Dashboard visible.
+- [ ] Excel/VBA import sample preview accepted.
+- [ ] Import persist explicitly confirmed and row counts visible.
+- [ ] Portfolio replay visible.
+- [ ] Market data fixture refresh visible.
+- [ ] Strategy BUY / SELL / HOLD / WAIT states visible.
+- [ ] TradeDraft create requires explicit confirmation.
+- [ ] TradeDraft created as internal draft, not order.
+- [ ] OTCMap preview shows multi-leg result.
+- [ ] OTCMap draft requires explicit confirmation.
+- [ ] OTCMap draft created as internal draft, not order.
+- [ ] Duplicate sample does not grow rows.
+- [ ] Conflict sample does not grow rows.
+- [ ] Provider disabled state visible.
+- [ ] No live auto-refresh is active.
+- [ ] No broker UI is shown.
+- [ ] No order submit UI is shown.
+- [ ] No automatic trading UI is shown.
+- [ ] No production DB touched.
+- [ ] Cleanup successful.

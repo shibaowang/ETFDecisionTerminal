@@ -450,6 +450,26 @@ ShellAccountingDataServiceClientRequest makeStrategyRecommendationReadOnlySummar
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makeOtcMapPreviewClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.otcmap_multichannel.readonly_preview";
+    clientRequest.payloadJson = request.otcMapPayloadJson.empty() ? "{}" : request.otcMapPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeOtcMapDraftCreateClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.tradedraft.create_otcmap_multichannel";
+    clientRequest.payloadJson = request.otcMapPayloadJson.empty() ? "{}" : request.otcMapPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingServiceResult mapClientResponse(
     ShellAccountingDataServiceClientResponse response,
     const ShellAccountingServiceRequest& request,
@@ -479,7 +499,6 @@ ShellAccountingServiceResult mapClientResponse(
         && (response.payloadStatus == "OK" || response.payloadStatus == "DUPLICATE");
     result.generatedTradeSuggestion = false;
     result.strategyExecuted = false;
-    result.brokerOrderSubmitted = false;
     result.transactionCommitted = response.transactionCommitted;
     result.duplicateImportPrevented = response.duplicateImportPrevented;
     result.idempotencyConflictRejected = response.idempotencyConflictRejected;
@@ -531,6 +550,20 @@ ShellAccountingServiceResult mapClientResponse(
     result.tradeDraftNetCashImpactText = std::move(response.tradeDraftNetCashImpactText);
     result.tradeDraftSummary = std::move(response.tradeDraftSummary);
     result.tradeDraftIssueCodes = std::move(response.tradeDraftIssueCodes);
+    result.otcMapPreviewAccepted = response.otcMapPreviewAccepted;
+    result.otcMapPreviewExecuted = response.otcMapPreviewExecuted;
+    result.otcMapPreviewLegCount = response.otcMapPreviewLegCount;
+    result.otcMapPreviewStatus = std::move(response.otcMapPreviewStatus);
+    result.otcMapPreviewTotalAmountText = std::move(response.otcMapPreviewTotalAmountText);
+    result.otcMapPreviewSummary = std::move(response.otcMapPreviewSummary);
+    result.otcMapPreviewIssueCodes = std::move(response.otcMapPreviewIssueCodes);
+    result.otcMapDraftDuplicate = response.otcMapDraftDuplicate;
+    result.otcMapDraftIdempotencyConflict = response.otcMapDraftIdempotencyConflict;
+    result.otcMapDraftId = response.otcMapDraftId;
+    result.otcMapDraftLegCount = response.otcMapDraftLegCount;
+    result.otcMapDraftStatus = std::move(response.otcMapDraftStatus);
+    result.otcMapDraftSummary = std::move(response.otcMapDraftSummary);
+    result.otcMapDraftIssueCodes = std::move(response.otcMapDraftIssueCodes);
     result.accountingEngineCalled = response.accountingEngineCalled;
     result.productionFileLoading = response.productionFileLoading;
     result.productionWrite = response.productionWrite;
@@ -744,6 +777,32 @@ ShellAccountingDataServiceAdapter::fetchStrategyRecommendationReadOnlySummary(
             "strategy.recommendation.readonly_summary");
     }
     return makeNotConnectedResult(request, "strategy.recommendation.readonly_summary");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::previewOtcMapMultiChannelDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callOtcMapMultiChannelReadOnlyPreview(
+                makeOtcMapPreviewClientRequest(request)),
+            request,
+            "accounting.otcmap_multichannel.readonly_preview");
+    }
+    return makeNotConnectedResult(request, "accounting.otcmap_multichannel.readonly_preview");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::createOtcMapMultiChannelTradeDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callTradeDraftCreateOtcMapMultiChannel(
+                makeOtcMapDraftCreateClientRequest(request)),
+            request,
+            "accounting.tradedraft.create_otcmap_multichannel");
+    }
+    return makeNotConnectedResult(request, "accounting.tradedraft.create_otcmap_multichannel");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

@@ -45,6 +45,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionStrategyRecommendationReadOnlySummary, [&connection](const auto& context) {
         return handleStrategyRecommendationReadOnlySummary(context, connection);
     });
+    (void)dispatcher.registerAction(kActionAccountingOtcMapMultiChannelReadOnlyPreview, [&connection](const auto& context) {
+        return handleAccountingOtcMapMultiChannelReadOnlyPreview(context, connection);
+    });
     (void)dispatcher.registerAction(kActionAccountingTradeDraftReadOnlySummary, [&connection](const auto& context) {
         return handleAccountingTradeDraftReadOnlySummary(context, connection);
     });
@@ -105,6 +108,11 @@ void registerDataServiceWriteActions(
     if (isWriteActionAllowed(kActionAccountingTradeDraftCreateFromRecommendation)) {
         (void)dispatcher.registerAction(kActionAccountingTradeDraftCreateFromRecommendation, [&connection](const auto& context) {
             return handleAccountingTradeDraftCreateFromRecommendation(context, connection);
+        });
+    }
+    if (isWriteActionAllowed(kActionAccountingTradeDraftCreateOtcMapMultiChannel)) {
+        (void)dispatcher.registerAction(kActionAccountingTradeDraftCreateOtcMapMultiChannel, [&connection](const auto& context) {
+            return handleAccountingTradeDraftCreateOtcMapMultiChannel(context, connection);
         });
     }
     if (isWriteActionAllowed(kActionAccountingTradeDraftConfirm)) {

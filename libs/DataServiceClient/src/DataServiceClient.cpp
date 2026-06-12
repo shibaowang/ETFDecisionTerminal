@@ -44,6 +44,10 @@ constexpr const char* kActionAccountingTradeDraftCreateFromRecommendation =
     "accounting.tradedraft.create_from_recommendation";
 constexpr const char* kActionAccountingTradeDraftReadOnlySummary =
     "accounting.tradedraft.readonly_summary";
+constexpr const char* kActionAccountingOtcMapMultiChannelReadOnlyPreview =
+    "accounting.otcmap_multichannel.readonly_preview";
+constexpr const char* kActionAccountingTradeDraftCreateOtcMapMultiChannel =
+    "accounting.tradedraft.create_otcmap_multichannel";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
@@ -385,6 +389,54 @@ DataServiceClient::accountingTradeDraftReadOnlySummary(
             response.error().message);
     }
     return parseTradeDraftReadOnlySummaryPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<OtcMapMultiChannelDraftResult>
+DataServiceClient::accountingOtcMapMultiChannelReadOnlyPreview(
+    const OtcMapMultiChannelReadOnlyPreviewRequest& request,
+    int timeoutMs)
+{
+    if (!isLikelyJsonObject(request.payloadJson)) {
+        return DataServiceClientResult<OtcMapMultiChannelDraftResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "OTCMap multi-channel preview request payload must be a JSON object");
+    }
+    auto response = sendAction(
+        kActionAccountingOtcMapMultiChannelReadOnlyPreview,
+        otcMapMultiChannelPreviewPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<OtcMapMultiChannelDraftResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseOtcMapMultiChannelDraftPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<OtcMapMultiChannelDraftResult>
+DataServiceClient::accountingTradeDraftCreateOtcMapMultiChannel(
+    const OtcMapTradeDraftCreateRequest& request,
+    int timeoutMs)
+{
+    if (!isLikelyJsonObject(request.payloadJson)) {
+        return DataServiceClientResult<OtcMapMultiChannelDraftResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "OTCMap multi-channel TradeDraft request payload must be a JSON object");
+    }
+    auto response = sendAction(
+        kActionAccountingTradeDraftCreateOtcMapMultiChannel,
+        otcMapTradeDraftCreatePayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<OtcMapMultiChannelDraftResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseOtcMapMultiChannelDraftPayloadJson(
         response.value().payloadJson,
         response.value().success);
 }

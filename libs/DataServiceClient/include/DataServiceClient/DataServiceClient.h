@@ -69,6 +69,14 @@ public:
     accountingTradeDraftReadOnlySummary(
         const TradeDraftReadOnlySummaryRequest& request,
         int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<OtcMapMultiChannelDraftResult>
+    accountingOtcMapMultiChannelReadOnlyPreview(
+        const OtcMapMultiChannelReadOnlyPreviewRequest& request,
+        int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<OtcMapMultiChannelDraftResult>
+    accountingTradeDraftCreateOtcMapMultiChannel(
+        const OtcMapTradeDraftCreateRequest& request,
+        int timeoutMs = 2000);
     [[nodiscard]] DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>
     accountingExcelVbaImportReadOnlyPreview(
         const std::string& payloadJson = "{}",

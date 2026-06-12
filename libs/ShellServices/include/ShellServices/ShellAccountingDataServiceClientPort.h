@@ -83,7 +83,22 @@ struct ShellAccountingDataServiceClientResponse final {
     std::string tradeDraftNetCashImpactText;
     std::string tradeDraftSummary;
     std::vector<std::string> tradeDraftIssueCodes;
+    bool otcMapPreviewAccepted = false;
+    bool otcMapPreviewExecuted = false;
+    int otcMapPreviewLegCount = 0;
+    std::string otcMapPreviewStatus;
+    std::string otcMapPreviewTotalAmountText;
+    std::string otcMapPreviewSummary;
+    std::vector<std::string> otcMapPreviewIssueCodes;
+    bool otcMapDraftDuplicate = false;
+    bool otcMapDraftIdempotencyConflict = false;
+    std::int64_t otcMapDraftId = 0;
+    int otcMapDraftLegCount = 0;
+    std::string otcMapDraftStatus;
+    std::string otcMapDraftSummary;
+    std::vector<std::string> otcMapDraftIssueCodes;
     bool accountingEngineCalled = false;
+    bool brokerOrderSubmitted = false;
     bool productionFileLoading = false;
     bool productionWrite = false;
     bool sqliteProductionWrite = false;
@@ -132,6 +147,10 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callPortfolioReplayReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callStrategyRecommendationReadOnlySummary(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callOtcMapMultiChannelReadOnlyPreview(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftCreateOtcMapMultiChannel(
         const ShellAccountingDataServiceClientRequest& request);
 };
 

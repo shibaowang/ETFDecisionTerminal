@@ -86,6 +86,18 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(bool lastTradeDraftDuplicate READ lastTradeDraftDuplicate NOTIFY tradeDraftStateChanged)
     Q_PROPERTY(bool lastTradeDraftIdempotencyConflict READ lastTradeDraftIdempotencyConflict NOTIFY tradeDraftStateChanged)
     Q_PROPERTY(bool lastTradeDraftUserConfirmationRequired READ lastTradeDraftUserConfirmationRequired NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapPreviewStatus READ lastOtcMapPreviewStatus NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(int lastOtcMapPreviewLegCount READ lastOtcMapPreviewLegCount NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapPreviewTotalAmountText READ lastOtcMapPreviewTotalAmountText NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapPreviewSummary READ lastOtcMapPreviewSummary NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapPreviewIssueCodes READ lastOtcMapPreviewIssueCodes NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapDraftStatus READ lastOtcMapDraftStatus NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapDraftId READ lastOtcMapDraftId NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(int lastOtcMapDraftLegCount READ lastOtcMapDraftLegCount NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(bool lastOtcMapDraftDuplicate READ lastOtcMapDraftDuplicate NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(bool lastOtcMapDraftIdempotencyConflict READ lastOtcMapDraftIdempotencyConflict NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapDraftSummary READ lastOtcMapDraftSummary NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastOtcMapDraftIssueCodes READ lastOtcMapDraftIssueCodes NOTIFY tradeDraftStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -166,6 +178,18 @@ public:
     [[nodiscard]] bool lastTradeDraftDuplicate() const noexcept;
     [[nodiscard]] bool lastTradeDraftIdempotencyConflict() const noexcept;
     [[nodiscard]] bool lastTradeDraftUserConfirmationRequired() const noexcept;
+    [[nodiscard]] QString lastOtcMapPreviewStatus() const;
+    [[nodiscard]] int lastOtcMapPreviewLegCount() const noexcept;
+    [[nodiscard]] QString lastOtcMapPreviewTotalAmountText() const;
+    [[nodiscard]] QString lastOtcMapPreviewSummary() const;
+    [[nodiscard]] QString lastOtcMapPreviewIssueCodes() const;
+    [[nodiscard]] QString lastOtcMapDraftStatus() const;
+    [[nodiscard]] QString lastOtcMapDraftId() const;
+    [[nodiscard]] int lastOtcMapDraftLegCount() const noexcept;
+    [[nodiscard]] bool lastOtcMapDraftDuplicate() const noexcept;
+    [[nodiscard]] bool lastOtcMapDraftIdempotencyConflict() const noexcept;
+    [[nodiscard]] QString lastOtcMapDraftSummary() const;
+    [[nodiscard]] QString lastOtcMapDraftIssueCodes() const;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -239,6 +263,9 @@ public:
     Q_INVOKABLE void resetTradeDraftState();
     Q_INVOKABLE bool previewTradeDraftFromLastRecommendation();
     Q_INVOKABLE bool createTradeDraftFromLastRecommendation(bool userConfirmed);
+    Q_INVOKABLE bool previewOtcMapMultiChannelDraft(const QString& payloadJson);
+    Q_INVOKABLE bool createOtcMapMultiChannelTradeDraft(bool userConfirmed);
+    Q_INVOKABLE void resetOtcMapDraftState();
     bool persistExcelVbaImportManualEntry(
         const QString& previewStatus,
         const QString& previewDigest,
@@ -289,6 +316,8 @@ private:
     void markStrategyRecommendationInputError(const QString& message);
     void markTradeDraftInputError(const QString& message);
     void applyTradeDraftResult(const ShellAccountingServiceResult& result);
+    void applyOtcMapPreviewResult(const ShellAccountingServiceResult& result);
+    void applyOtcMapDraftResult(const ShellAccountingServiceResult& result);
     [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPreviewRequest(
         const QString& importPayloadJson,
         bool& valid);
@@ -316,6 +345,10 @@ private:
         bool userConfirmed,
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeTradeDraftReadOnlySummaryRequest(bool& valid) const;
+    [[nodiscard]] ShellAccountingServiceRequest makeOtcMapRequest(
+        const QString& payloadJson,
+        bool userConfirmed,
+        bool& valid);
     [[nodiscard]] QString tradeDraftRecommendationDigest() const;
     [[nodiscard]] QString tradeDraftIdempotencyKey() const;
     [[nodiscard]] QString acceptedExcelVbaImportPreviewIdempotencyKey() const;
@@ -438,6 +471,19 @@ private:
     bool lastTradeDraftDuplicate_ = false;
     bool lastTradeDraftIdempotencyConflict_ = false;
     bool lastTradeDraftUserConfirmationRequired_ = false;
+    QString lastOtcMapPreviewStatus_ = QStringLiteral("READY");
+    int lastOtcMapPreviewLegCount_ = 0;
+    QString lastOtcMapPreviewTotalAmountText_;
+    QString lastOtcMapPreviewSummary_;
+    QString lastOtcMapPreviewIssueCodes_;
+    QString lastOtcMapDraftStatus_ = QStringLiteral("READY");
+    QString lastOtcMapDraftId_;
+    int lastOtcMapDraftLegCount_ = 0;
+    bool lastOtcMapDraftDuplicate_ = false;
+    bool lastOtcMapDraftIdempotencyConflict_ = false;
+    QString lastOtcMapDraftSummary_;
+    QString lastOtcMapDraftIssueCodes_;
+    QString lastOtcMapPayloadJson_;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

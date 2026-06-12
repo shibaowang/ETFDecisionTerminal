@@ -1,5 +1,29 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-279 OTCMap A/C Multi-Channel Draft Engine Full Delivery
+
+EPIC-279 adds the OTCMap A/C multi-channel internal TradeDraft engine:
+
+- full delivery overview:
+  `docs/374_otcmap_ac_multichannel_draft_engine_full_delivery.md`
+- contract:
+  `docs/375_otcmap_ac_multichannel_contract.md`
+- VBA parity matrix:
+  `docs/376_otcmap_ac_multichannel_vba_parity_matrix.md`
+- user-visible flow:
+  `docs/377_otcmap_ac_multichannel_user_visible_flow.md`
+- test plan:
+  `docs/378_otcmap_ac_multichannel_test_plan.md`
+- samples:
+  `samples/otcmap_multichannel/`
+- CTest:
+  `otcmap_ac_multichannel_draft_engine_full_delivery`
+
+OTCMap creates internal multi-leg TradeDrafts only. It does not write
+`trade_log` or `cash_adjustment`, mutate positions/cash/PnL, access broker,
+network, credentials, or endpoints, place real orders, or enable automatic
+trading.
+
 ## EPIC-276 ShellAccounting Portfolio Replay VBA Parity Full Delivery
 
 EPIC-276 adds the ShellAccounting portfolio replay / position / cash / PnL

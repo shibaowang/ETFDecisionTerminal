@@ -64,6 +64,7 @@ struct ShellAccountingServiceRequest final {
     int importFxRateFactCount = 0;
     std::string portfolioReplayPayloadJson;
     std::string strategyRecommendationPayloadJson;
+    std::string otcMapPayloadJson;
     std::string recommendationDigest;
     bool userConfirmed = false;
     std::string expiresAtUtc;
@@ -156,6 +157,20 @@ struct ShellAccountingServiceResult final {
     std::string tradeDraftNetCashImpactText;
     std::string tradeDraftSummary;
     std::vector<std::string> tradeDraftIssueCodes;
+    bool otcMapPreviewAccepted = false;
+    bool otcMapPreviewExecuted = false;
+    int otcMapPreviewLegCount = 0;
+    std::string otcMapPreviewStatus;
+    std::string otcMapPreviewTotalAmountText;
+    std::string otcMapPreviewSummary;
+    std::vector<std::string> otcMapPreviewIssueCodes;
+    bool otcMapDraftDuplicate = false;
+    bool otcMapDraftIdempotencyConflict = false;
+    std::int64_t otcMapDraftId = 0;
+    int otcMapDraftLegCount = 0;
+    std::string otcMapDraftStatus;
+    std::string otcMapDraftSummary;
+    std::vector<std::string> otcMapDraftIssueCodes;
     bool accountingEngineCalled = false;
     bool productionFileLoading = false;
     bool productionWrite = false;

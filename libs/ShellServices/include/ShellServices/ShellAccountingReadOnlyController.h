@@ -73,6 +73,10 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult fetchStrategyRecommendationReadOnlySummary(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult previewOtcMapMultiChannelDraft(
+        const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult createOtcMapMultiChannelTradeDraft(
+        const ShellAccountingServiceRequest& request);
     void reset();
 
 private:

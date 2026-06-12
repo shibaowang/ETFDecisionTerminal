@@ -142,4 +142,22 @@ ShellAccountingServiceAdapter::fetchStrategyRecommendationReadOnlySummary(
         "SHELL_ACCOUNTING_STRATEGY_RECOMMENDATION_READONLY_SUMMARY_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult ShellAccountingServiceAdapter::previewOtcMapMultiChannelDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "accounting.otcmap_multichannel.readonly_preview",
+        "SHELL_ACCOUNTING_OTCMAP_MULTICHANNEL_PREVIEW_ADAPTER_NOT_CONFIGURED");
+}
+
+ShellAccountingServiceResult ShellAccountingServiceAdapter::createOtcMapMultiChannelTradeDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableWriteResult(
+        request,
+        "accounting.tradedraft.create_otcmap_multichannel",
+        "SHELL_ACCOUNTING_OTCMAP_MULTICHANNEL_DRAFT_ADAPTER_NOT_CONFIGURED");
+}
+
 }  // namespace etfdt::shell_services

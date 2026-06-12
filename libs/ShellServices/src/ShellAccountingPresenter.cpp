@@ -798,6 +798,66 @@ bool ShellAccountingPresenter::lastTradeDraftUserConfirmationRequired() const no
     return lastTradeDraftUserConfirmationRequired_;
 }
 
+QString ShellAccountingPresenter::lastOtcMapPreviewStatus() const
+{
+    return lastOtcMapPreviewStatus_;
+}
+
+int ShellAccountingPresenter::lastOtcMapPreviewLegCount() const noexcept
+{
+    return lastOtcMapPreviewLegCount_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapPreviewTotalAmountText() const
+{
+    return lastOtcMapPreviewTotalAmountText_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapPreviewSummary() const
+{
+    return lastOtcMapPreviewSummary_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapPreviewIssueCodes() const
+{
+    return lastOtcMapPreviewIssueCodes_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapDraftStatus() const
+{
+    return lastOtcMapDraftStatus_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapDraftId() const
+{
+    return lastOtcMapDraftId_;
+}
+
+int ShellAccountingPresenter::lastOtcMapDraftLegCount() const noexcept
+{
+    return lastOtcMapDraftLegCount_;
+}
+
+bool ShellAccountingPresenter::lastOtcMapDraftDuplicate() const noexcept
+{
+    return lastOtcMapDraftDuplicate_;
+}
+
+bool ShellAccountingPresenter::lastOtcMapDraftIdempotencyConflict() const noexcept
+{
+    return lastOtcMapDraftIdempotencyConflict_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapDraftSummary() const
+{
+    return lastOtcMapDraftSummary_;
+}
+
+QString ShellAccountingPresenter::lastOtcMapDraftIssueCodes() const
+{
+    return lastOtcMapDraftIssueCodes_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -1527,6 +1587,85 @@ bool ShellAccountingPresenter::createTradeDraftFromLastRecommendation(bool userC
     return createdOrDuplicate;
 }
 
+bool ShellAccountingPresenter::previewOtcMapMultiChannelDraft(const QString& payloadJson)
+{
+    if (!controller_) {
+        markTradeDraftInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.otcmap_multichannel.readonly_preview");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeOtcMapRequest(payloadJson, false, valid);
+    if (!valid) {
+        return false;
+    }
+
+    lastOtcMapPreviewStatus_ = QStringLiteral("PREVIEWING");
+    lastOtcMapPreviewSummary_.clear();
+    lastOtcMapPreviewIssueCodes_.clear();
+    lastOtcMapDraftStatus_ = QStringLiteral("READY");
+    emit tradeDraftStateChanged();
+    const auto result = controller_->previewOtcMapMultiChannelDraft(request);
+    applyOtcMapPreviewResult(result);
+    if (lastOtcMapPreviewStatus_ == QStringLiteral("ACCEPTED")) {
+        lastOtcMapPayloadJson_ = QString::fromStdString(request.otcMapPayloadJson);
+    } else {
+        lastOtcMapPayloadJson_.clear();
+    }
+    syncFromController();
+    return lastOtcMapPreviewStatus_ == QStringLiteral("ACCEPTED");
+}
+
+bool ShellAccountingPresenter::createOtcMapMultiChannelTradeDraft(bool userConfirmed)
+{
+    if (!controller_) {
+        markTradeDraftInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.tradedraft.create_otcmap_multichannel");
+        return false;
+    }
+    if (!userConfirmed || lastOtcMapPreviewStatus_ != QStringLiteral("ACCEPTED")
+        || lastOtcMapPreviewLegCount_ <= 0 || lastOtcMapPayloadJson_.trimmed().isEmpty()) {
+        markTradeDraftInputError(
+            QStringLiteral("Accepted OTCMap preview and explicit confirmation are required."));
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeOtcMapRequest(lastOtcMapPayloadJson_, true, valid);
+    if (!valid) {
+        return false;
+    }
+
+    lastOtcMapDraftStatus_ = QStringLiteral("CREATING");
+    emit tradeDraftStateChanged();
+    const auto result = controller_->createOtcMapMultiChannelTradeDraft(request);
+    applyOtcMapDraftResult(result);
+    syncFromController();
+    return lastOtcMapDraftStatus_ == QStringLiteral("DRAFT_CREATED")
+        || lastOtcMapDraftStatus_ == QStringLiteral("DUPLICATE");
+}
+
+void ShellAccountingPresenter::resetOtcMapDraftState()
+{
+    lastOtcMapPreviewStatus_ = QStringLiteral("READY");
+    lastOtcMapPreviewLegCount_ = 0;
+    lastOtcMapPreviewTotalAmountText_.clear();
+    lastOtcMapPreviewSummary_.clear();
+    lastOtcMapPreviewIssueCodes_.clear();
+    lastOtcMapDraftStatus_ = QStringLiteral("READY");
+    lastOtcMapDraftId_.clear();
+    lastOtcMapDraftLegCount_ = 0;
+    lastOtcMapDraftDuplicate_ = false;
+    lastOtcMapDraftIdempotencyConflict_ = false;
+    lastOtcMapDraftSummary_.clear();
+    lastOtcMapDraftIssueCodes_.clear();
+    lastOtcMapPayloadJson_.clear();
+    emit tradeDraftStateChanged();
+}
+
 bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
     const QString& previewStatus,
     const QString& previewDigest,
@@ -1661,6 +1800,7 @@ void ShellAccountingPresenter::reset()
     resetPortfolioReplayState();
     resetStrategyRecommendationState();
     resetTradeDraftState();
+    resetOtcMapDraftState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -2174,6 +2314,109 @@ void ShellAccountingPresenter::applyTradeDraftResult(const ShellAccountingServic
     emit tradeDraftStateChanged();
 }
 
+void ShellAccountingPresenter::applyOtcMapPreviewResult(const ShellAccountingServiceResult& result)
+{
+    lastOtcMapPreviewLegCount_ = result.otcMapPreviewLegCount;
+    lastOtcMapPreviewTotalAmountText_ =
+        QString::fromStdString(result.otcMapPreviewTotalAmountText);
+    QStringList codes;
+    for (const auto& code : result.otcMapPreviewIssueCodes) {
+        codes.append(QString::fromStdString(code));
+    }
+    for (const auto& issue : result.issues) {
+        if (!issue.code.empty()) {
+            codes.append(QString::fromStdString(issue.code));
+        }
+    }
+    lastOtcMapPreviewIssueCodes_ = codes.join(QStringLiteral(","));
+    lastOtcMapPreviewSummary_ = result.otcMapPreviewSummary.empty()
+        ? QStringLiteral("status=%1 legs=%2 amount=%3")
+            .arg(
+                QString::fromStdString(result.payloadStatus),
+                QString::number(result.otcMapPreviewLegCount),
+                lastOtcMapPreviewTotalAmountText_)
+        : QString::fromStdString(result.otcMapPreviewSummary);
+
+    const bool ok = result.protocolSuccess && result.implemented
+        && result.readOnly && !result.writeEnabled
+        && result.otcMapPreviewAccepted && result.otcMapPreviewExecuted
+        && result.otcMapPreviewLegCount > 0
+        && !result.productionWrite && !result.sqliteProductionWrite
+        && !result.tradeLogWritten && !result.networkAccess
+        && !result.credentialAccess && !result.endpointAccess
+        && !result.automaticTrading;
+    if (ok) {
+        lastOtcMapPreviewStatus_ = QStringLiteral("ACCEPTED");
+        emit tradeDraftStateChanged();
+        return;
+    }
+
+    lastOtcMapPreviewStatus_ = result.payloadStatus.empty()
+        ? QStringLiteral("REJECTED")
+        : QString::fromStdString(result.payloadStatus);
+    if (lastOtcMapPreviewSummary_.isEmpty()) {
+        lastOtcMapPreviewSummary_ = issueTextFromResult(result);
+    }
+    emit tradeDraftStateChanged();
+}
+
+void ShellAccountingPresenter::applyOtcMapDraftResult(const ShellAccountingServiceResult& result)
+{
+    lastOtcMapDraftDuplicate_ = result.otcMapDraftDuplicate;
+    lastOtcMapDraftIdempotencyConflict_ = result.otcMapDraftIdempotencyConflict;
+    lastOtcMapDraftId_ = result.otcMapDraftId > 0
+        ? QString::number(result.otcMapDraftId)
+        : QString {};
+    lastOtcMapDraftLegCount_ = result.otcMapDraftLegCount;
+    QStringList codes;
+    for (const auto& code : result.otcMapDraftIssueCodes) {
+        codes.append(QString::fromStdString(code));
+    }
+    for (const auto& issue : result.issues) {
+        if (!issue.code.empty()) {
+            codes.append(QString::fromStdString(issue.code));
+        }
+    }
+    lastOtcMapDraftIssueCodes_ = codes.join(QStringLiteral(","));
+    lastOtcMapDraftSummary_ = result.otcMapDraftSummary.empty()
+        ? QStringLiteral("status=%1 draftId=%2 legs=%3")
+            .arg(
+                QString::fromStdString(result.payloadStatus),
+                lastOtcMapDraftId_,
+                QString::number(result.otcMapDraftLegCount))
+        : QString::fromStdString(result.otcMapDraftSummary);
+
+    const bool safeBoundaries =
+        !result.tradeLogWritten && !result.networkAccess
+        && !result.credentialAccess && !result.endpointAccess
+        && !result.automaticTrading;
+    const bool created = result.protocolSuccess && result.implemented
+        && !result.readOnly && result.writeEnabled
+        && result.transactionCommitted && result.auditWritten
+        && result.otcMapDraftId > 0 && result.otcMapDraftLegCount > 0
+        && safeBoundaries;
+    const bool duplicate = result.protocolSuccess && result.implemented
+        && result.otcMapDraftDuplicate && !result.otcMapDraftIdempotencyConflict
+        && safeBoundaries;
+    if (created || duplicate) {
+        lastOtcMapDraftStatus_ = duplicate
+            ? QStringLiteral("DUPLICATE")
+            : QStringLiteral("DRAFT_CREATED");
+        emit tradeDraftStateChanged();
+        return;
+    }
+
+    lastOtcMapDraftStatus_ = result.otcMapDraftIdempotencyConflict
+        ? QStringLiteral("IDEMPOTENCY_CONFLICT")
+        : (result.payloadStatus.empty()
+            ? QStringLiteral("REJECTED")
+            : QString::fromStdString(result.payloadStatus));
+    if (lastOtcMapDraftSummary_.isEmpty()) {
+        lastOtcMapDraftSummary_ = issueTextFromResult(result);
+    }
+    emit tradeDraftStateChanged();
+}
+
 ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPreviewRequest(
     const QString& importPayloadJson,
     bool& valid)
@@ -2360,6 +2603,53 @@ ShellAccountingPresenter::makeTradeDraftReadOnlySummaryRequest(bool& valid) cons
         return request;
     }
     request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest ShellAccountingPresenter::makeOtcMapRequest(
+    const QString& payloadJson,
+    bool userConfirmed,
+    bool& valid)
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        payloadJson.trimmed().toUtf8(),
+        &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markTradeDraftInputError(
+            QStringLiteral("OTCMap multi-channel draft payload must be a JSON object."));
+        return {};
+    }
+
+    auto object = document.object();
+    if (object.contains(QStringLiteral("filePath"))
+        || object.contains(QStringLiteral("path"))
+        || object.contains(QStringLiteral("filename"))
+        || object.contains(QStringLiteral("credential"))
+        || object.contains(QStringLiteral("endpoint"))
+        || object.contains(QStringLiteral("broker"))
+        || object.contains(QStringLiteral("automaticTrading"))) {
+        markTradeDraftInputError(
+            QStringLiteral("OTCMap draft accepts sanitized in-memory payload JSON only."));
+        return {};
+    }
+
+    if (object.value(QStringLiteral("input")).isObject()) {
+        auto input = object.value(QStringLiteral("input")).toObject();
+        input.insert(QStringLiteral("userConfirmed"), userConfirmed);
+        object.insert(QStringLiteral("input"), input);
+    }
+    object.insert(QStringLiteral("userConfirmed"), userConfirmed);
+    ShellAccountingServiceRequest request;
+    request.actionName = userConfirmed
+        ? "accounting.tradedraft.create_otcmap_multichannel"
+        : "accounting.otcmap_multichannel.readonly_preview";
+    request.otcMapPayloadJson =
+        QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 2000;
+    request.userConfirmed = userConfirmed;
     valid = true;
     return request;
 }

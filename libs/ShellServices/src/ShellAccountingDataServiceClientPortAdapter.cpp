@@ -734,6 +734,120 @@ ShellAccountingDataServiceClientResponse mapTradeDraftSummaryClientResult(
     return response;
 }
 
+QJsonObject otcMapResultObject(
+    const etfdt::data_service_client::OtcMapMultiChannelDraftResult& draft)
+{
+    QJsonArray issues;
+    for (const auto& issue : draft.issueCodes) {
+        issues.push_back(QString::fromStdString(issue));
+    }
+    return QJsonObject{
+        {"action", QString::fromStdString(draft.action)},
+        {"task", QString::fromStdString(draft.task)},
+        {"status", QString::fromStdString(draft.status)},
+        {"accepted", draft.accepted},
+        {"draftId", static_cast<double>(draft.draftId)},
+        {"legCount", draft.legCount},
+        {"totalAmountText", QString::fromStdString(draft.totalAmountText)},
+        {"totalQuantityText", QString::fromStdString(draft.totalQuantityText)},
+        {"duplicateDraft", draft.duplicateDraft},
+        {"idempotencyConflict", draft.idempotencyConflict},
+        {"issueCodes", issues},
+    };
+}
+
+ShellAccountingDataServiceClientResponse mapOtcMapClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::OtcMapMultiChannelDraftResult>& result,
+    bool writeAction)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient OTCMap multi-channel call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& draft = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = draft.action.empty() ? request.actionName : draft.action;
+    response.protocolSuccess = draft.protocolSuccess;
+    response.implemented = writeAction ? draft.dataServiceWriteActionCreated
+                                       : draft.dataServiceReadOnlyActionCreated;
+    response.readOnly = !writeAction;
+    response.writeEnabled = writeAction;
+    response.payloadStatus = draft.status.empty() ? kClientCallFailedStatus : draft.status;
+    response.dataQualityStatus =
+        (draft.accepted || draft.draftWritten || draft.duplicateDraft) &&
+            !draft.idempotencyConflict ? "OK" : kErrorQuality;
+    response.hasRows = draft.legCount > 0 || draft.draftId > 0;
+    response.domainError =
+        draft.idempotencyConflict || (!draft.accepted && !draft.draftWritten && !draft.duplicateDraft);
+    response.transactionCommitted = draft.transactionCommitted;
+    response.auditWritten = draft.auditWritten;
+    response.productionWrite = draft.productionDbTouched;
+    response.sqliteProductionWrite = draft.productionDbTouched;
+    response.networkAccess = draft.networkAccess;
+    response.credentialAccess = draft.credentialAccess;
+    response.endpointAccess = draft.endpointAccess;
+    response.automaticTrading = draft.automaticTrading;
+    response.tradeDraftManualRecommendationFlowCreated = false;
+    response.tradeDraftEligible = draft.eligibleForTradeDraft;
+    response.tradeDraftDuplicate = draft.duplicateDraft;
+    response.tradeDraftIdempotencyConflict = draft.idempotencyConflict;
+    response.tradeDraftIsNotOrder = true;
+    response.tradeDraftId = draft.draftId;
+    response.tradeDraftStatus = draft.status;
+    response.tradeDraftSide = draft.side;
+    response.tradeDraftInstrumentCode = draft.instrumentCode;
+    response.tradeDraftQuantityText = draft.totalQuantityText.empty()
+        ? draft.quantityText
+        : draft.totalQuantityText;
+    response.tradeDraftAmountText = draft.totalAmountText.empty()
+        ? draft.amountText
+        : draft.totalAmountText;
+    response.tradeDraftNetCashImpactText = draft.totalNetCashImpactText.empty()
+        ? draft.netCashImpactText
+        : draft.totalNetCashImpactText;
+    response.tradeDraftIssueCodes = draft.issueCodes;
+    response.otcMapPreviewAccepted = draft.accepted;
+    response.otcMapPreviewExecuted = draft.previewActionExecuted;
+    response.otcMapPreviewLegCount = draft.legCount;
+    response.otcMapPreviewStatus = draft.status;
+    response.otcMapPreviewTotalAmountText = draft.totalAmountText;
+    response.otcMapPreviewIssueCodes = draft.issueCodes;
+    response.otcMapDraftDuplicate = draft.duplicateDraft;
+    response.otcMapDraftIdempotencyConflict = draft.idempotencyConflict;
+    response.otcMapDraftId = draft.draftId;
+    response.otcMapDraftLegCount = draft.legCount;
+    response.otcMapDraftStatus = draft.status;
+    response.otcMapDraftIssueCodes = draft.issueCodes;
+    response.otcMapPreviewSummary = "OTCMap " + draft.status + " legs "
+        + std::to_string(draft.legCount) + " amount "
+        + (draft.totalAmountText.empty() ? draft.amountText : draft.totalAmountText);
+    response.otcMapDraftSummary = "OTCMap TradeDraft " + draft.status + " id "
+        + std::to_string(draft.draftId) + " legs " + std::to_string(draft.legCount);
+    response.tradeDraftSummary = writeAction ? response.otcMapDraftSummary
+                                             : response.otcMapPreviewSummary;
+    response.rawPayload =
+        QJsonDocument(otcMapResultObject(draft)).toJson(QJsonDocument::Compact).toStdString();
+
+    for (const auto& issue : draft.issueCodes) {
+        response.issues.push_back(makeIssue(issue, "ERROR", issue, true));
+    }
+    return response;
+}
+
 }  // namespace
 
 ShellAccountingDataServiceClientPortAdapter::ShellAccountingDataServiceClientPortAdapter(
@@ -1039,6 +1153,48 @@ ShellAccountingDataServiceClientPortAdapter::callStrategyRecommendationReadOnlyS
     return mapStrategyRecommendationClientResult(
         request,
         client_->strategyRecommendationReadOnlySummary(recommendationRequest, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callOtcMapMultiChannelReadOnlyPreview(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting OTCMap preview port.",
+            true,
+            false);
+    }
+
+    etfdt::data_service_client::OtcMapMultiChannelReadOnlyPreviewRequest previewRequest;
+    previewRequest.payloadJson = request.payloadJson.empty() ? "{}" : request.payloadJson;
+    return mapOtcMapClientResult(
+        request,
+        client_->accountingOtcMapMultiChannelReadOnlyPreview(previewRequest, request.timeoutMs),
+        false);
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callTradeDraftCreateOtcMapMultiChannel(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting OTCMap TradeDraft port.",
+            true,
+            false);
+    }
+
+    etfdt::data_service_client::OtcMapTradeDraftCreateRequest createRequest;
+    createRequest.payloadJson = request.payloadJson.empty() ? "{}" : request.payloadJson;
+    return mapOtcMapClientResult(
+        request,
+        client_->accountingTradeDraftCreateOtcMapMultiChannel(createRequest, request.timeoutMs),
+        true);
 }
 
 }  // namespace etfdt::shell_services

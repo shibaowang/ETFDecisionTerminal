@@ -300,6 +300,62 @@ struct TradeDraftReadOnlySummaryResult final {
     bool automaticTrading = false;
 };
 
+struct OtcMapMultiChannelReadOnlyPreviewRequest final {
+    std::string payloadJson = "{}";
+};
+
+struct OtcMapTradeDraftCreateRequest final {
+    std::string payloadJson = "{}";
+};
+
+struct OtcMapMultiChannelDraftResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    std::string status;
+    bool protocolSuccess = false;
+    bool accepted = false;
+    bool eligibleForTradeDraft = false;
+    bool dataServiceReadOnlyActionCreated = false;
+    bool dataServiceWriteActionCreated = false;
+    bool previewActionExecuted = false;
+    bool otcMapAcMultiChannelEngineCreated = false;
+    bool multiLegTradeDraftCreated = false;
+    bool draftWritten = false;
+    bool legWritten = false;
+    bool auditWritten = false;
+    bool transactionCommitted = false;
+    bool duplicateDraft = false;
+    bool idempotencyConflict = false;
+    std::int64_t draftId = 0;
+    std::int64_t auditLogId = 0;
+    int legCount = 0;
+    std::string draftUid;
+    std::string draftSignature;
+    std::string side;
+    std::string instrumentCode;
+    std::string totalQuantityText;
+    std::string totalAmountText;
+    std::string totalNetCashImpactText;
+    std::string quantityText;
+    std::string amountText;
+    std::string netCashImpactText;
+    bool baseProtectionPassed = false;
+    bool cashLimitApplied = false;
+    std::vector<std::string> issueCodes;
+    bool tradeLogRowsWrittenByOtcMapDraft = false;
+    bool cashAdjustmentRowsWrittenByOtcMapDraft = false;
+    bool positionChangedByOtcMapDraft = false;
+    bool cashChangedByOtcMapDraft = false;
+    bool brokerOrderSubmitted = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool realOrderPlacement = false;
+    bool automaticTrading = false;
+    bool productionDbTouched = false;
+};
+
 struct StrategyRecommendationIssue final {
     std::string level;
     std::string code;

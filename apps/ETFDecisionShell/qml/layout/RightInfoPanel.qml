@@ -18,9 +18,30 @@ Rectangle {
     }
 
     function displayStatus(value) {
+        if (value === "DISCONNECTED") return "未连接（DISCONNECTED）"
+        if (value === "IDLE") return "空闲（IDLE）"
+        if (value === "READY") return "就绪（READY）"
+        if (value === "NOT_CONFIRMED") return "未确认（NOT_CONFIRMED）"
         if (value === "PLACEHOLDER") return "占位状态（PLACEHOLDER）"
         if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "MOCK_DATA") return "模拟数据（MOCK_DATA）"
         if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        if (value === "DATASERVICE_CLIENT_CALL_FAILED") return "DataService 调用失败（DATASERVICE_CLIENT_CALL_FAILED）"
+        return value
+    }
+
+    function displayMetricText(value) {
+        if (value === "Account " + "total assets") return "账户总资产"
+        if (value === "Principal " + "baseline") return "本金基准"
+        if (value === "Remaining " + "cash") return "剩余现金"
+        if (value === "Base position " + "completion") return "底仓完成度"
+        if (value === "Active " + "Trade" + "Draft") return "活跃交易草案"
+        if (value === "Base damage " + "count") return "底仓损伤数量"
+        if (value === "Mock " + "baseline") return "模拟基准"
+        if (value === "No real " + "drafts") return "无真实草案"
+        if (value === "Mock " + "safe") return "模拟安全"
+        if (value === "items") return "项"
+        if (value === "services") return "服务"
         return value
     }
 
@@ -109,14 +130,14 @@ Rectangle {
 
                         Text {
                             width: parent.width * 0.54
-                            text: model.label
+                            text: root.displayMetricText(model.label)
                             color: "#58657a"
                             font.pixelSize: 12
                             elide: Text.ElideRight
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
-                            text: model.valueText + (model.unitText.length > 0 ? " " + model.unitText : "")
+                            text: model.valueText + (model.unitText.length > 0 ? " " + root.displayMetricText(model.unitText) : "")
                             color: "#26354d"
                             font.pixelSize: 13
                             font.bold: true

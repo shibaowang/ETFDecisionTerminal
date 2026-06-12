@@ -1,5 +1,22 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-288 Global Chinese UI Leak Fix Visual Acceptance
+
+EPIC-288 closes the remaining visual acceptance leaks after EPIC-287:
+
+- scope: `docs/400_global_chinese_ui_readability_trial_feedback_fix.md`
+- QML: `apps/ETFDecisionShell/qml/**/*.qml`
+- validation: `global_chinese_ui_readability_trial_feedback_fix`,
+  `dashboard_mvp_full_delivery`, and
+  `local_trial_release_candidate_full_delivery`
+
+Right-side placeholder cards, ReadOnlyData onboarding text, and user-visible
+status values are Chinese-first or Chinese-annotated. Raw replay / market /
+strategy / OTCMap sample payloads remain collapsed by default behind Chinese
+developer-detail controls. This is a visual readability correction only: it
+does not add business behavior, database writes, migrations, broker /
+credential / endpoint access, real order placement, or automatic trading.
+
 ## EPIC-287 Global Chinese UI Readability Trial Feedback Fix
 
 EPIC-287 addresses local trial feedback that visible RC pages still exposed too

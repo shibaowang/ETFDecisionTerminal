@@ -11,6 +11,23 @@ EPIC-287 makes the visible ETFDecisionShell trial UI Chinese-first and hides raw
 JSON / sample payload / mock diagnostic detail by default behind a developer
 details affordance.
 
+## EPIC-288 Visual Acceptance Addendum
+
+EPIC-288 closes the remaining visual acceptance leaks found after EPIC-287:
+
+- right-side placeholder cards must not show English mock titles, metric names,
+  or action-hint text by default
+- ReadOnlyData onboarding copy must be Chinese-first while preserving the
+  existing local service command hint
+- user-visible status enum values must be Chinese-annotated, for example
+  `未连接（DISCONNECTED）`
+- raw replay / market / strategy / OTCMap sample payloads must remain collapsed
+  by default behind Chinese developer-detail controls
+
+EPIC-288 is a visual readability hardening only. It does not change business
+logic, DataAccess behavior, migrations, broker access, real order placement, or
+automatic trading.
+
 ## Scope
 
 Allowed scope:
@@ -114,6 +131,31 @@ Expected static evidence:
   "rawJsonHiddenByDefault": true,
   "developerDetailsGateCreated": true,
   "mockDebugInfoHiddenOrChinese": true,
+  "businessLogicChanged": false,
+  "dataAccessChanged": false,
+  "migrationChanged": false,
+  "productionDbTouched": false,
+  "networkAccess": false,
+  "brokerOrderSubmitted": false,
+  "credentialAccess": false,
+  "endpointAccess": false,
+  "realOrderPlacement": false,
+  "automaticTrading": false
+}
+```
+
+EPIC-288 evidence extends the same gate with:
+
+```json
+{
+  "task": "EPIC-288",
+  "globalEnglishLeakFixed": true,
+  "rightSidebarEnglishLeakFixed": true,
+  "readonlyPageEnglishLeakFixed": true,
+  "rawJsonCollapsedByDefaultVerified": true,
+  "developerDetailsOnlyForRawJson": true,
+  "statusValuesChineseAnnotated": true,
+  "visualEvidenceScreenshotsUsable": true,
   "businessLogicChanged": false,
   "dataAccessChanged": false,
   "migrationChanged": false,

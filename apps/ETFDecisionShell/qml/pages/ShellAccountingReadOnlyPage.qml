@@ -78,6 +78,33 @@ Rectangle {
         return "预览验收：未评估"
     }
 
+    function displayStatus(value) {
+        if (value === "DISCONNECTED") return "未连接（DISCONNECTED）"
+        if (value === "IDLE") return "空闲（IDLE）"
+        if (value === "READY") return "就绪（READY）"
+        if (value === "FILE_SELECTED") return "已选择文件（FILE_SELECTED）"
+        if (value === "PREVIEWING") return "预览中（PREVIEWING）"
+        if (value === "ACCEPTED") return "已通过（ACCEPTED）"
+        if (value === "REJECTED") return "已拒绝（REJECTED）"
+        if (value === "INPUT_ERROR") return "输入错误（INPUT_ERROR）"
+        if (value === "PERSISTED") return "已写入（PERSISTED）"
+        if (value === "DUPLICATE") return "重复提交（DUPLICATE）"
+        if (value === "CONFLICT") return "幂等冲突（CONFLICT）"
+        if (value === "DATASERVICE_CLIENT_CALL_FAILED") return "DataService 调用失败（DATASERVICE_CLIENT_CALL_FAILED）"
+        if (value === "READY_FOR_CONFIRMATION") return "待确认（READY_FOR_CONFIRMATION）"
+        if (value === "DRAFT_ELIGIBLE") return "可生成草案（DRAFT_ELIGIBLE）"
+        if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        if (value === "NOT_CONFIRMED") return "未确认（NOT_CONFIRMED）"
+        if (value === "UNAVAILABLE") return "不可用（UNAVAILABLE）"
+        if (value === "NORMAL") return "正常（NORMAL）"
+        return value && value.length > 0 ? value : "未提供状态"
+    }
+
+    function displayBool(value) {
+        return value ? "是" : "否"
+    }
+
     function dashboardPortfolioReplaySamplePayload() {
         return JSON.stringify({
             "fixtureId": "EPIC281_dashboard_portfolio_replay",
@@ -721,7 +748,7 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaPreviewStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "预览状态：" + accountingPresenter.lastExcelVbaImportPreviewStatus
+                                    ? "预览状态：" + root.displayStatus(accountingPresenter.lastExcelVbaImportPreviewStatus)
                                     : "预览状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
@@ -739,8 +766,8 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportPreviewAcceptanceStateText"
                                 width: parent.width
-                                text: "验收状态：" + root.excelVbaImportPreviewAcceptanceState()
-                                    + " (READY / FILE_SELECTED / PREVIEWING / ACCEPTED / REJECTED / INPUT_ERROR)"
+                                text: "验收状态：" + root.displayStatus(root.excelVbaImportPreviewAcceptanceState())
+                                    + "（就绪 READY、已选文件 FILE_SELECTED、预览中 PREVIEWING、已通过 ACCEPTED、已拒绝 REJECTED、输入错误 INPUT_ERROR）"
                                 color: "#18202f"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -887,7 +914,7 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistStatusText"
                                 width: 220
                                 text: root.presenterAvailable
-                                     ? "写入状态：" + accountingPresenter.lastExcelVbaImportPersistStatus
+                                     ? "写入状态：" + root.displayStatus(accountingPresenter.lastExcelVbaImportPersistStatus)
                                         : "写入状态：不可用"
                                     color: "#18202f"
                                     font.pixelSize: 13
@@ -901,7 +928,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportPersistStateGuideText"
                                 width: parent.width
-                                text: "写入状态：PERSISTED 表示已写入交易/现金事实；DUPLICATE 表示重复提交且没有新增行；CONFLICT 表示幂等冲突且不会刷新。"
+                                text: "写入状态：已写入表示交易/现金事实已持久化；重复提交表示没有新增行；幂等冲突表示请求被拒绝且不会刷新。"
                                 color: "#465066"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -972,8 +999,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistDuplicateText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "重复提交已阻止：" + accountingPresenter.lastExcelVbaImportPersistDuplicateImportPrevented
-                                    : "重复提交已阻止：false"
+                                    ? "重复提交已阻止：" + root.displayBool(accountingPresenter.lastExcelVbaImportPersistDuplicateImportPrevented)
+                                    : "重复提交已阻止：否"
                                 color: "#465066"
                                 font.pixelSize: 13
                             }
@@ -982,8 +1009,8 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaImportPersistConflictText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "幂等冲突已拒绝：" + accountingPresenter.lastExcelVbaImportPersistIdempotencyConflictRejected
-                                    : "幂等冲突已拒绝：false"
+                                    ? "幂等冲突已拒绝：" + root.displayBool(accountingPresenter.lastExcelVbaImportPersistIdempotencyConflictRejected)
+                                    : "幂等冲突已拒绝：否"
                                 color: "#465066"
                                 font.pixelSize: 13
                             }
@@ -992,7 +1019,7 @@ Rectangle {
                                 objectName: "shellAccountingExcelVbaPostWriteRefreshStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "写入后刷新状态：" + accountingPresenter.lastPostWriteRefreshStatus
+                                    ? "写入后刷新状态：" + root.displayStatus(accountingPresenter.lastPostWriteRefreshStatus)
                                     : "写入后刷新状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
@@ -1104,7 +1131,9 @@ Rectangle {
                             text: "重算"
                             enabled: root.presenterAvailable && !accountingPresenter.portfolioReplayBusy
                             onClicked: accountingPresenter.previewPortfolioReplayReadOnlySummary(
-                                portfolioReplayPayloadInput.text)
+                                root.showReplayRawJson
+                                    ? portfolioReplayPayloadInput.text
+                                    : root.dashboardPortfolioReplaySamplePayload())
                         }
 
                         Button {
@@ -1119,7 +1148,7 @@ Rectangle {
                         objectName: "shellAccountingPortfolioReplayStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "重算状态：" + accountingPresenter.lastPortfolioReplayStatus
+                            ? "重算状态：" + root.displayStatus(accountingPresenter.lastPortfolioReplayStatus)
                             : "重算状态：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
@@ -1226,7 +1255,10 @@ Rectangle {
                             objectName: "shellAccountingMarketDataRefreshButton"
                             text: "刷新行情数据"
                             enabled: root.presenterAvailable && !accountingPresenter.marketDataRefreshBusy
-                            onClicked: accountingPresenter.refreshMarketDataReadOnly(marketDataPayloadInput.text)
+                            onClicked: accountingPresenter.refreshMarketDataReadOnly(
+                                root.showMarketRawJson
+                                    ? marketDataPayloadInput.text
+                                    : root.dashboardMarketDataSamplePayload())
                         }
 
                         Button {
@@ -1242,8 +1274,8 @@ Rectangle {
                         width: parent.width
                         text: root.presenterAvailable
                             ? "行情源：" + accountingPresenter.lastMarketDataProviderSource
-                                + "；质量=" + accountingPresenter.lastMarketDataQualityStatus
-                                + "；状态=" + accountingPresenter.lastMarketDataRefreshStatus
+                                + "；质量=" + root.displayStatus(accountingPresenter.lastMarketDataQualityStatus)
+                                + "；状态=" + root.displayStatus(accountingPresenter.lastMarketDataRefreshStatus)
                                 + "。默认使用样例数据/禁用行情源，不会自动联网。"
                             : "行情源：不可用。默认使用样例数据/禁用行情源，不会自动联网。"
                         color: "#18202f"
@@ -1368,7 +1400,9 @@ Rectangle {
                         onClicked: {
                             root.tradeDraftCreateConfirmed = false
                             accountingPresenter.previewStrategyRecommendationReadOnlySummary(
-                                strategyRecommendationPayloadInput.text)
+                                root.showStrategyRawJson
+                                    ? strategyRecommendationPayloadInput.text
+                                    : root.dashboardStrategySamplePayload())
                         }
                     }
 
@@ -1376,7 +1410,7 @@ Rectangle {
                         objectName: "shellAccountingStrategyRecommendationStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "建议状态：" + accountingPresenter.lastStrategyRecommendationStatus
+                            ? "建议状态：" + root.displayStatus(accountingPresenter.lastStrategyRecommendationStatus)
                             : "建议状态：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
@@ -1500,9 +1534,9 @@ Rectangle {
                         objectName: "shellAccountingTradeDraftStatusText"
                         width: parent.width
                         text: root.presenterAvailable
-                            ? "草案状态：" + accountingPresenter.lastTradeDraftStatus
-                                + "；重复提交=" + accountingPresenter.lastTradeDraftDuplicate
-                                + "；幂等冲突=" + accountingPresenter.lastTradeDraftIdempotencyConflict
+                            ? "草案状态：" + root.displayStatus(accountingPresenter.lastTradeDraftStatus)
+                                + "；重复提交=" + root.displayBool(accountingPresenter.lastTradeDraftDuplicate)
+                                + "；幂等冲突=" + root.displayBool(accountingPresenter.lastTradeDraftIdempotencyConflict)
                             : "草案状态：不可用"
                         color: "#18202f"
                         font.pixelSize: 13
@@ -1588,7 +1622,10 @@ Rectangle {
                             enabled: root.presenterAvailable
                             onClicked: {
                                 root.otcMapDraftCreateConfirmed = false
-                                accountingPresenter.previewOtcMapMultiChannelDraft(otcMapPayloadInput.text)
+                                accountingPresenter.previewOtcMapMultiChannelDraft(
+                                    root.showOtcMapRawJson
+                                        ? otcMapPayloadInput.text
+                                        : root.dashboardOtcMapSamplePayload())
                             }
                         }
 
@@ -1643,8 +1680,8 @@ Rectangle {
                         text: root.presenterAvailable
                             ? "场外基金映射诊断代码：预览=" + accountingPresenter.lastOtcMapPreviewIssueCodes
                                 + "；草案=" + accountingPresenter.lastOtcMapDraftIssueCodes
-                                + "；重复提交=" + accountingPresenter.lastOtcMapDraftDuplicate
-                                + "；幂等冲突=" + accountingPresenter.lastOtcMapDraftIdempotencyConflict
+                                + "；重复提交=" + root.displayBool(accountingPresenter.lastOtcMapDraftDuplicate)
+                                + "；幂等冲突=" + root.displayBool(accountingPresenter.lastOtcMapDraftIdempotencyConflict)
                             : "场外基金映射诊断代码：不可用"
                         color: "#9a3412"
                         font.pixelSize: 13
@@ -2149,7 +2186,7 @@ Rectangle {
                                 objectName: "shellAccountingManualEntryStatusText"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "手工录入状态：" + accountingPresenter.lastManualEntryStatus
+                                    ? "手工录入状态：" + root.displayStatus(accountingPresenter.lastManualEntryStatus)
                                     : "手工录入状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13
@@ -2180,7 +2217,7 @@ Rectangle {
                                 objectName: "shellAccountingPostWriteRefreshStatus"
                                 width: parent.width
                                 text: root.presenterAvailable
-                                    ? "写入后刷新状态：" + accountingPresenter.lastPostWriteRefreshStatus
+                                    ? "写入后刷新状态：" + root.displayStatus(accountingPresenter.lastPostWriteRefreshStatus)
                                     : "写入后刷新状态：不可用"
                                 color: "#18202f"
                                 font.pixelSize: 13

@@ -31,6 +31,23 @@ Rectangle {
         {"key": "status", "title": "状态", "width": 96, "required": false, "visible": true, "sortable": true}
     ]
 
+    function displayStatus(value) {
+        if (value === "DISCONNECTED") return "未连接（DISCONNECTED）"
+        if (value === "IDLE") return "空闲（IDLE）"
+        if (value === "READY") return "就绪（READY）"
+        if (value === "NOT_CONFIRMED") return "未确认（NOT_CONFIRMED）"
+        if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "MOCK_DATA") return "模拟数据（MOCK_DATA）"
+        if (value === "PLACEHOLDER") return "占位状态（PLACEHOLDER）"
+        if (value === "DATASERVICE_CLIENT_CALL_FAILED") return "DataService 调用失败（DATASERVICE_CLIENT_CALL_FAILED）"
+        return value
+    }
+
+    function displayBool(value) {
+        return value ? "是" : "否"
+    }
+
     Flickable {
         anchors.fill: parent
         anchors.margins: 20
@@ -203,19 +220,19 @@ Rectangle {
                         ReadOnlyFieldLabel {
                             width: 180
                             label: "连接状态"
-                            value: root.readOnlyDataController.connectionObject.stateText
+                            value: root.displayStatus(root.readOnlyDataController.connectionObject.stateText)
                         }
 
                         ReadOnlyFieldLabel {
                             width: 150
                             label: "刷新状态"
-                            value: root.readOnlyDataController.refreshState
+                            value: root.displayStatus(root.readOnlyDataController.refreshState)
                         }
 
                         ReadOnlyFieldLabel {
                             width: 120
                             label: "健康状态"
-                            value: String(root.summary.healthy)
+                            value: root.displayBool(root.summary.healthy)
                         }
                     }
 

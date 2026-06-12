@@ -37,6 +37,11 @@ parseTradeDraftReadOnlySummaryPayloadJson(
     const std::string& json,
     bool protocolSuccess);
 
+[[nodiscard]] DataServiceClientResult<OtcMapMultiChannelDraftResult>
+parseOtcMapMultiChannelDraftPayloadJson(
+    const std::string& json,
+    bool protocolSuccess);
+
 [[nodiscard]] std::string auditAppendPayloadJson(const AuditAppendRequest& request);
 
 [[nodiscard]] std::string excelVbaImportPersistManualEntryPayloadJson(
@@ -53,5 +58,11 @@ parseTradeDraftReadOnlySummaryPayloadJson(
 
 [[nodiscard]] std::string tradeDraftReadOnlySummaryPayloadJson(
     const TradeDraftReadOnlySummaryRequest& request);
+
+[[nodiscard]] std::string otcMapMultiChannelPreviewPayloadJson(
+    const OtcMapMultiChannelReadOnlyPreviewRequest& request);
+
+[[nodiscard]] std::string otcMapTradeDraftCreatePayloadJson(
+    const OtcMapTradeDraftCreateRequest& request);
 
 }  // namespace etfdt::data_service_client

@@ -75,6 +75,11 @@ std::string sourceId(const ShellAccountingTradeDraftCreateRequest& request)
 
 std::string draftSignature(const ShellAccountingTradeDraftCreateRequest& request)
 {
+    if (request.authorizationToken == "EPIC-279_OTCMAP_MULTICHANNEL_TRADEDRAFT_WRITE") {
+        return "EPIC-279|" + request.idempotencyKey + "|" + request.recommendationDigest + "|"
+            + request.side + "|" + request.strategyCode + "|" + request.quantityText + "|"
+            + request.amountText;
+    }
     if (!isBlank(request.recommendationDigest)) {
         return "EPIC-278|" + request.idempotencyKey + "|" + request.recommendationDigest + "|"
             + request.side + "|" + request.instrumentCode + "|" + request.quantityText + "|"
@@ -87,10 +92,25 @@ std::string draftSignature(const ShellAccountingTradeDraftCreateRequest& request
     return stream.str();
 }
 
+std::string multiLegDraftSignature(const ShellAccountingTradeDraftMultiLegCreateRequest& request)
+{
+    std::ostringstream stream;
+    stream << "EPIC-279|" << request.draft.idempotencyKey << '|'
+           << request.draft.recommendationDigest << '|' << request.draft.side << '|'
+           << request.draft.strategyCode << '|';
+    for (const auto& leg : request.legs) {
+        stream << leg.instrumentCode << ':' << leg.instrumentType << ':' << leg.side << ':'
+               << leg.quantityText << ':' << leg.amountText << ':' << leg.priceText << ';';
+    }
+    return stream.str();
+}
+
 std::string draftUid(const ShellAccountingTradeDraftCreateRequest& request)
 {
     std::ostringstream stream;
-    stream << (isBlank(request.recommendationDigest) ? "task-148-draft-" : "epic-278-draft-")
+    stream << (request.authorizationToken == "EPIC-279_OTCMAP_MULTICHANNEL_TRADEDRAFT_WRITE"
+            ? "epic-279-otcmap-draft-"
+            : (isBlank(request.recommendationDigest) ? "task-148-draft-" : "epic-278-draft-"))
            << request.accountId << '-' << request.portfolioId << '-'
            << sanitizeUidPart(request.strategyCode) << '-' << sanitizeUidPart(request.instrumentCode)
            << '-' << request.side << '-' << request.quantity1e6 << '-'
@@ -100,6 +120,10 @@ std::string draftUid(const ShellAccountingTradeDraftCreateRequest& request)
 
 std::string auditReason(const ShellAccountingTradeDraftCreateRequest& request)
 {
+    if (request.authorizationToken == "EPIC-279_OTCMAP_MULTICHANNEL_TRADEDRAFT_WRITE") {
+        return "ShellAccounting OTCMap A/C multi-channel TradeDraft creation: "
+            + draftSignature(request);
+    }
     return isBlank(request.recommendationDigest)
         ? "ShellAccounting TradeDraft creation: " + draftSignature(request)
         : "ShellAccounting TradeDraft create from recommendation: " + draftSignature(request);
@@ -215,7 +239,9 @@ std::string netCashImpactText(const std::string& side, std::int64_t amountCents)
 std::string sanitizedAuditPayload(
     const ShellAccountingTradeDraftCreateRequest& request,
     std::int64_t draftId,
-    const std::string& uid)
+    const std::string& uid,
+    const std::string& signature,
+    int legCount)
 {
     std::ostringstream stream;
     stream << "{"
@@ -223,7 +249,8 @@ std::string sanitizedAuditPayload(
            << "\"authorizationToken\":" << jsonString(request.authorizationToken) << ','
            << "\"draftId\":" << draftId << ','
            << "\"draftUid\":" << jsonString(uid) << ','
-           << "\"draftSignature\":" << jsonString(draftSignature(request)) << ','
+           << "\"draftSignature\":" << jsonString(signature) << ','
+           << "\"legCount\":" << legCount << ','
            << "\"accountId\":" << request.accountId << ','
            << "\"portfolioId\":" << request.portfolioId << ','
            << "\"instrumentCode\":" << jsonString(request.instrumentCode) << ','
@@ -317,6 +344,7 @@ ShellAccountingTradeDraftRepository::createTradeDraft(
         result.quantityText = request.quantityText;
         result.amountText = request.amountText;
         result.netCashImpactText = request.netCashImpactText;
+        result.legCount = 1;
         if (existingSignature.value() == draftSignature(request)) {
             result.duplicateDraft = true;
             result.status = "DUPLICATE";
@@ -357,6 +385,114 @@ ShellAccountingTradeDraftRepository::createTradeDraft(
         result.legWritten = true;
 
         auto insertedAudit = insertAuditEvent(request, result.draftId, result.draftUid);
+        if (!insertedAudit) {
+            return DatabaseResult<bool>::failure(
+                insertedAudit.error().errorCode,
+                insertedAudit.error().message);
+        }
+
+        result.auditLogId = insertedAudit.value();
+        result.auditWritten = true;
+        result.legCount = 1;
+        return DatabaseResult<bool>::success(true);
+    });
+
+    if (!transactionResult) {
+        return DatabaseResult<ShellAccountingTradeDraftCreateResult>::failure(
+            transactionResult.error().errorCode,
+            transactionResult.error().message);
+    }
+
+    result.transactionCommitted = true;
+    return DatabaseResult<ShellAccountingTradeDraftCreateResult>::success(result);
+}
+
+DatabaseResult<ShellAccountingTradeDraftCreateResult>
+ShellAccountingTradeDraftRepository::createTradeDraftWithLegs(
+    const ShellAccountingTradeDraftMultiLegCreateRequest& request)
+{
+    auto validation = validateMultiLegRequest(request);
+    if (!validation) {
+        return DatabaseResult<ShellAccountingTradeDraftCreateResult>::failure(
+            validation.error().errorCode,
+            validation.error().message);
+    }
+
+    const auto signature = multiLegDraftSignature(request);
+    const auto uid = draftUid(request.draft);
+    auto existing = findExistingDraftByIdempotencyKey(request.draft);
+    if (!existing) {
+        return DatabaseResult<ShellAccountingTradeDraftCreateResult>::failure(
+            existing.error().errorCode,
+            existing.error().message);
+    }
+    if (existing.value().has_value()) {
+        auto existingSignature = loadDraftSignature(*existing.value());
+        if (!existingSignature) {
+            return DatabaseResult<ShellAccountingTradeDraftCreateResult>::failure(
+                existingSignature.error().errorCode,
+                existingSignature.error().message);
+        }
+        ShellAccountingTradeDraftCreateResult result;
+        result.draftId = *existing.value();
+        result.draftSignature = signature;
+        result.draftUid = uid;
+        result.side = request.draft.side;
+        result.instrumentCode = request.draft.instrumentCode;
+        result.quantityText = request.draft.quantityText;
+        result.amountText = request.draft.amountText;
+        result.netCashImpactText = request.draft.netCashImpactText;
+        result.legCount = static_cast<int>(request.legs.size());
+        if (existingSignature.value() == signature) {
+            result.duplicateDraft = true;
+            result.status = "DUPLICATE";
+        } else {
+            result.idempotencyConflict = true;
+            result.status = "IDEMPOTENCY_CONFLICT";
+            result.issueCodes.push_back("OTCMAP_TRADEDRAFT_IDEMPOTENCY_CONFLICT");
+        }
+        return DatabaseResult<ShellAccountingTradeDraftCreateResult>::success(result);
+    }
+
+    ShellAccountingTradeDraftCreateResult result;
+    TransactionRunner runner(connection_);
+    auto transactionResult = runner.runInTransaction([&]() {
+        auto insertedDraft = insertDraft(request.draft, signature, uid);
+        if (!insertedDraft) {
+            return DatabaseResult<bool>::failure(
+                insertedDraft.error().errorCode,
+                insertedDraft.error().message);
+        }
+
+        result.draftId = insertedDraft.value();
+        result.draftUid = uid;
+        result.draftSignature = signature;
+        result.draftWritten = true;
+        result.side = request.draft.side;
+        result.instrumentCode = request.draft.instrumentCode;
+        result.quantityText = request.draft.quantityText;
+        result.amountText = request.draft.amountText;
+        result.netCashImpactText = request.draft.netCashImpactText;
+
+        int legIndex = 0;
+        for (const auto& leg : request.legs) {
+            ++legIndex;
+            auto insertedLeg = insertDraftLeg(request.draft, leg, result.draftId, legIndex, uid);
+            if (!insertedLeg) {
+                return DatabaseResult<bool>::failure(
+                    insertedLeg.error().errorCode,
+                    insertedLeg.error().message);
+            }
+        }
+        result.legWritten = true;
+        result.legCount = static_cast<int>(request.legs.size());
+
+        auto insertedAudit = insertAuditEvent(
+            request.draft,
+            result.draftId,
+            result.draftUid,
+            signature,
+            result.legCount);
         if (!insertedAudit) {
             return DatabaseResult<bool>::failure(
                 insertedAudit.error().errorCode,
@@ -427,11 +563,33 @@ DatabaseResult<ShellAccountingTradeDraftSummary> ShellAccountingTradeDraftReposi
     summary.accountId = std::to_string(row[5].int64Value);
     summary.portfolioId = std::to_string(row[6].int64Value);
     summary.strategyCode = row[7].text;
-    summary.quantityText = formatFixed1e6(row[12].int64Value);
-    summary.amountText = formatCents(row[13].int64Value);
-    summary.netCashImpactText = netCashImpactText(summary.side, row[13].int64Value);
+    summary.quantityText = formatFixed1e6(row[8].int64Value);
+    summary.amountText = formatCents(row[9].int64Value);
+    summary.netCashImpactText = netCashImpactText(summary.side, row[9].int64Value);
     summary.idempotencyKey = row[10].text;
     summary.instrumentCode = row[11].text;
+
+    auto legRows = connection_.queryRows(
+        "SELECT COALESCE(actual_code,''),COALESCE(fund_class,''),action_type,"
+        "COALESCE(suggested_quantity_1e6,0),COALESCE(suggested_amount_cents,0) "
+        "FROM trade_draft_leg WHERE draft_id = ? ORDER BY id ASC;",
+        {std::to_string(summary.draftId)});
+    if (!legRows) {
+        return DatabaseResult<ShellAccountingTradeDraftSummary>::failure(
+            legRows.error().errorCode,
+            legRows.error().message);
+    }
+    for (const auto& legRow : legRows.value()) {
+        ShellAccountingTradeDraftLegSummary leg;
+        leg.instrumentCode = legRow[0].text;
+        leg.instrumentType = legRow[1].text;
+        leg.side = legRow[2].text;
+        leg.quantityText = formatFixed1e6(legRow[3].int64Value);
+        leg.amountText = formatCents(legRow[4].int64Value);
+        leg.netCashImpactText = netCashImpactText(leg.side, legRow[4].int64Value);
+        summary.legs.push_back(std::move(leg));
+    }
+    summary.legCount = static_cast<int>(summary.legs.size());
     return DatabaseResult<ShellAccountingTradeDraftSummary>::success(summary);
 }
 
@@ -506,6 +664,67 @@ DatabaseResult<bool> ShellAccountingTradeDraftRepository::validateRequest(
     return DatabaseResult<bool>::success(true);
 }
 
+DatabaseResult<bool> ShellAccountingTradeDraftRepository::validateMultiLegRequest(
+    const ShellAccountingTradeDraftMultiLegCreateRequest& request)
+{
+    if (request.draft.authorizationToken != "EPIC-279_OTCMAP_MULTICHANNEL_TRADEDRAFT_WRITE") {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E8001_AUTH_REQUIRED,
+            "ShellAccounting OTCMap multi-channel TradeDraft requires authorized write token");
+    }
+    if (request.legs.empty()) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "ShellAccounting OTCMap multi-channel TradeDraft requires at least one leg");
+    }
+    if (request.draft.accountId <= 0 || request.draft.portfolioId <= 0
+        || request.draft.strategyId <= 0 || isBlank(request.draft.strategyCode)) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "ShellAccounting OTCMap multi-channel TradeDraft requires account, portfolio, and strategy");
+    }
+    if (request.draft.side != "BUY" && request.draft.side != "SELL") {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "ShellAccounting OTCMap multi-channel TradeDraft side must be BUY or SELL");
+    }
+    if (isBlank(request.draft.reason) || isBlank(request.draft.idempotencyKey)
+        || isBlank(request.draft.recommendationDigest)) {
+        return DatabaseResult<bool>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "ShellAccounting OTCMap multi-channel TradeDraft requires reason, idempotencyKey, and digest");
+    }
+
+    auto account = requireReferencedRow(connection_, "account", request.draft.accountId, "account");
+    if (!account) {
+        return propagateFailure(account);
+    }
+    auto portfolio =
+        requireReferencedRow(connection_, "portfolio", request.draft.portfolioId, "portfolio");
+    if (!portfolio) {
+        return propagateFailure(portfolio);
+    }
+    auto strategy =
+        requireReferencedRow(connection_, "strategy", request.draft.strategyId, "strategy");
+    if (!strategy) {
+        return propagateFailure(strategy);
+    }
+    for (const auto& leg : request.legs) {
+        if (leg.instrumentId <= 0 || isBlank(leg.instrumentCode)
+            || (leg.side != "BUY" && leg.side != "SELL")
+            || leg.quantity1e6 <= 0 || parseMoneyCents(leg.amountText) <= 0) {
+            return DatabaseResult<bool>::failure(
+                etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+                "ShellAccounting OTCMap multi-channel TradeDraft leg is invalid");
+        }
+        auto instrument = requireReferencedRow(connection_, "instrument", leg.instrumentId, "instrument");
+        if (!instrument) {
+            return propagateFailure(instrument);
+        }
+    }
+    return DatabaseResult<bool>::success(true);
+}
+
 DatabaseResult<std::optional<std::int64_t>>
 ShellAccountingTradeDraftRepository::findExistingDraft(
     const ShellAccountingTradeDraftCreateRequest& request)
@@ -513,6 +732,14 @@ ShellAccountingTradeDraftRepository::findExistingDraft(
     if (!isBlank(request.idempotencyKey)) {
         return findExistingDraftByIdempotencyKey(request);
     }
+    return findExistingDraftBySignature(request, draftSignature(request));
+}
+
+DatabaseResult<std::optional<std::int64_t>>
+ShellAccountingTradeDraftRepository::findExistingDraftBySignature(
+    const ShellAccountingTradeDraftCreateRequest& request,
+    const std::string& signature)
+{
     auto rows = connection_.queryRows(
         "SELECT id FROM trade_draft "
         "WHERE account_id = ? AND portfolio_id = ? AND strategy_code = ? AND draft_signature = ? "
@@ -520,7 +747,7 @@ ShellAccountingTradeDraftRepository::findExistingDraft(
         {std::to_string(request.accountId),
          std::to_string(request.portfolioId),
          request.strategyCode,
-         draftSignature(request)});
+         signature});
     if (!rows) {
         return DatabaseResult<std::optional<std::int64_t>>::failure(
             rows.error().errorCode,
@@ -573,7 +800,14 @@ DatabaseResult<std::string> ShellAccountingTradeDraftRepository::loadDraftSignat
 DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertDraft(
     const ShellAccountingTradeDraftCreateRequest& request)
 {
-    const auto uid = draftUid(request);
+    return insertDraft(request, draftSignature(request), draftUid(request));
+}
+
+DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertDraft(
+    const ShellAccountingTradeDraftCreateRequest& request,
+    const std::string& signature,
+    const std::string& uid)
+{
     auto inserted = connection_.executeStatement(
         "INSERT INTO trade_draft("
         "uid,account_id,portfolio_id,strategy_id,strategy_code,action_type,trade_source,"
@@ -592,7 +826,7 @@ DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertDraft(
          SqlStatementParameter::textValue(statusForInsert(request)),
          SqlStatementParameter::int64ValueOf(parseMoneyCents(request.amountText)),
          SqlStatementParameter::int64ValueOf(request.quantity1e6),
-         SqlStatementParameter::textValue(draftSignature(request)),
+         SqlStatementParameter::textValue(signature),
          SqlStatementParameter::textValue(request.idempotencyKey),
          SqlStatementParameter::textValue("UNKNOWN"),
          SqlStatementParameter::textValue(request.createdAtUtc),
@@ -641,10 +875,71 @@ DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertDraftLeg
     return DatabaseResult<std::int64_t>::success(connection_.lastInsertRowId());
 }
 
+DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertDraftLeg(
+    const ShellAccountingTradeDraftCreateRequest& request,
+    const ShellAccountingTradeDraftLegCreateRequest& leg,
+    std::int64_t draftId,
+    int legIndex,
+    const std::string& draftUid)
+{
+    ShellAccountingTradeDraftCreateRequest legRequest = request;
+    legRequest.instrumentId = leg.instrumentId;
+    legRequest.instrumentCode = leg.instrumentCode;
+    legRequest.instrumentType = leg.instrumentType;
+    legRequest.side = leg.side;
+    legRequest.quantity1e6 = leg.quantity1e6;
+    legRequest.amountText = leg.amountText;
+    legRequest.priceText = leg.priceText;
+    legRequest.feeEstimateText = leg.feeEstimateText;
+    legRequest.netCashImpactText = leg.netCashImpactText;
+    legRequest.tradeSource = leg.tradeSource;
+    legRequest.sourceRecommendationReason = leg.sourceRecommendationReason;
+
+    const auto uid = draftUid + "-leg-" + std::to_string(legIndex);
+    auto inserted = connection_.executeStatement(
+        "INSERT INTO trade_draft_leg("
+        "uid,draft_id,strategy_code,actual_instrument_id,actual_code,fund_class,action_type,"
+        "trade_source,suggested_price_1e6,suggested_quantity_1e6,suggested_amount_cents,"
+        "suggested_fee_cents,tier_no,tier_name,memo,created_at_utc) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);",
+        {SqlStatementParameter::textValue(uid),
+         SqlStatementParameter::int64ValueOf(draftId),
+         SqlStatementParameter::textValue(request.strategyCode),
+         SqlStatementParameter::int64ValueOf(leg.instrumentId),
+         SqlStatementParameter::textValue(leg.instrumentCode),
+         SqlStatementParameter::textValue(leg.instrumentType),
+         SqlStatementParameter::textValue(leg.side),
+         SqlStatementParameter::textValue(tradeSourceForInsert(legRequest)),
+         SqlStatementParameter::int64ValueOf(parseScaled1e6(leg.priceText)),
+         SqlStatementParameter::int64ValueOf(leg.quantity1e6),
+         SqlStatementParameter::int64ValueOf(parseMoneyCents(leg.amountText)),
+         SqlStatementParameter::int64ValueOf(parseMoneyCents(leg.feeEstimateText)),
+         SqlStatementParameter::int64ValueOf(leg.priority),
+         SqlStatementParameter::textValue(leg.sourceRecommendationReason),
+         SqlStatementParameter::textValue(leg.netCashImpactText),
+         SqlStatementParameter::textValue(request.createdAtUtc)});
+    if (!inserted) {
+        return DatabaseResult<std::int64_t>::failure(
+            inserted.error().errorCode,
+            inserted.error().message);
+    }
+    return DatabaseResult<std::int64_t>::success(connection_.lastInsertRowId());
+}
+
 DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertAuditEvent(
     const ShellAccountingTradeDraftCreateRequest& request,
     std::int64_t draftId,
     const std::string& uid)
+{
+    return insertAuditEvent(request, draftId, uid, draftSignature(request), 1);
+}
+
+DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertAuditEvent(
+    const ShellAccountingTradeDraftCreateRequest& request,
+    std::int64_t draftId,
+    const std::string& uid,
+    const std::string& signature,
+    int legCount)
 {
     AuditLogEntry entry;
     entry.accountId = request.accountId;
@@ -653,7 +948,7 @@ DatabaseResult<std::int64_t> ShellAccountingTradeDraftRepository::insertAuditEve
     entry.entityId = draftId;
     entry.action = "ACCOUNTING_TRADEDRAFT_CREATE";
     entry.oldValueJson = "{}";
-    entry.newValueJson = sanitizedAuditPayload(request, draftId, uid);
+    entry.newValueJson = sanitizedAuditPayload(request, draftId, uid, signature, legCount);
     entry.reason = auditReason(request);
     entry.operatorName = "dataservice";
     entry.createdAtUtc = request.createdAtUtc;

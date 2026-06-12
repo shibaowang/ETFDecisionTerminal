@@ -972,6 +972,110 @@ parseTradeDraftReadOnlySummaryPayloadJson(
     return DataServiceClientResult<TradeDraftReadOnlySummaryResult>::success(std::move(result));
 }
 
+DataServiceClientResult<OtcMapMultiChannelDraftResult>
+parseOtcMapMultiChannelDraftPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<OtcMapMultiChannelDraftResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid OTCMap multi-channel payload JSON");
+    }
+
+    const auto object = document.object();
+    OtcMapMultiChannelDraftResult result;
+    result.protocolSuccess = protocolSuccess;
+
+    result.action = stringField(object, "action").value_or({});
+    result.task = stringField(object, "task").value_or({});
+    result.mode = stringField(object, "mode").value_or({});
+    result.status = stringField(object, "status").value_or({});
+    result.accepted = boolField(object, "accepted").value_or(protocolSuccess);
+    result.eligibleForTradeDraft =
+        boolField(object, "eligibleForTradeDraft").value_or(result.accepted);
+    result.dataServiceReadOnlyActionCreated =
+        boolField(object, "dataServiceReadOnlyActionCreated").value_or(false);
+    result.dataServiceWriteActionCreated =
+        boolField(object, "dataServiceWriteActionCreated").value_or(false);
+    result.previewActionExecuted =
+        boolField(object, "previewActionExecuted").value_or(result.dataServiceReadOnlyActionCreated);
+    result.otcMapAcMultiChannelEngineCreated =
+        boolField(object, "otcMapAcMultiChannelEngineCreated").value_or(false);
+    result.multiLegTradeDraftCreated =
+        boolField(object, "multiLegTradeDraftCreated").value_or(false);
+    result.draftWritten = boolField(object, "draftWritten").value_or(false);
+    result.legWritten = boolField(object, "legWritten").value_or(false);
+    result.auditWritten = boolField(object, "auditWritten").value_or(false);
+    result.transactionCommitted = boolField(object, "transactionCommitted").value_or(false);
+    result.duplicateDraft = boolField(object, "duplicateDraft").value_or(false);
+    result.idempotencyConflict = boolField(object, "idempotencyConflict").value_or(false);
+    result.draftId = static_cast<std::int64_t>(object.value(QStringLiteral("draftId")).toDouble(0.0));
+    result.auditLogId =
+        static_cast<std::int64_t>(object.value(QStringLiteral("auditLogId")).toDouble(0.0));
+    result.legCount = intField(object, "legCount").value_or(
+        intField(object, "totalLegCount").value_or(0));
+    result.draftUid = stringField(object, "draftUid").value_or({});
+    result.draftSignature = stringField(object, "draftSignature").value_or({});
+    result.side = stringField(object, "side").value_or({});
+    result.instrumentCode = stringField(object, "instrumentCode").value_or({});
+    result.totalQuantityText = stringField(object, "totalQuantityText").value_or({});
+    result.totalAmountText = stringField(object, "totalAmountText").value_or({});
+    result.totalNetCashImpactText = stringField(object, "totalNetCashImpactText").value_or({});
+    result.quantityText = stringField(object, "quantityText").value_or(result.totalQuantityText);
+    result.amountText = stringField(object, "amountText").value_or(result.totalAmountText);
+    result.netCashImpactText =
+        stringField(object, "netCashImpactText").value_or(result.totalNetCashImpactText);
+    result.baseProtectionPassed = boolField(object, "baseProtectionPassed").value_or(false);
+    result.cashLimitApplied = boolField(object, "cashLimitApplied").value_or(false);
+    result.tradeLogRowsWrittenByOtcMapDraft =
+        boolField(object, "tradeLogRowsWrittenByOtcMapDraft").value_or(false);
+    result.cashAdjustmentRowsWrittenByOtcMapDraft =
+        boolField(object, "cashAdjustmentRowsWrittenByOtcMapDraft").value_or(false);
+    result.positionChangedByOtcMapDraft =
+        boolField(object, "positionChangedByOtcMapDraft").value_or(false);
+    result.cashChangedByOtcMapDraft =
+        boolField(object, "cashChangedByOtcMapDraft").value_or(false);
+    result.brokerOrderSubmitted = boolField(object, "brokerOrderSubmitted").value_or(false);
+    result.networkAccess = boolField(object, "networkAccess").value_or(false);
+    result.credentialAccess = boolField(object, "credentialAccess").value_or(false);
+    result.endpointAccess = boolField(object, "endpointAccess").value_or(false);
+    result.realOrderPlacement = boolField(object, "realOrderPlacement").value_or(false);
+    result.automaticTrading = boolField(object, "automaticTrading").value_or(false);
+    result.productionDbTouched = boolField(object, "productionDbTouched").value_or(false);
+
+    const auto issueCodesValue = object.value("issueCodes");
+    if (issueCodesValue.isArray()) {
+        for (const auto& value : issueCodesValue.toArray()) {
+            if (value.isString()) {
+                result.issueCodes.push_back(value.toString().toStdString());
+            }
+        }
+    }
+    const auto issuesValue = object.value("issues");
+    if (issuesValue.isArray()) {
+        for (const auto& value : issuesValue.toArray()) {
+            if (value.isString()) {
+                result.issueCodes.push_back(value.toString().toStdString());
+            } else if (value.isObject()) {
+                if (const auto code = stringField(value.toObject(), "code")) {
+                    result.issueCodes.push_back(*code);
+                }
+            }
+        }
+    }
+
+    if (result.action.empty() || result.task.empty() || result.status.empty()) {
+        return DataServiceClientResult<OtcMapMultiChannelDraftResult>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "OTCMap multi-channel payload is missing action, task, or status");
+    }
+
+    return DataServiceClientResult<OtcMapMultiChannelDraftResult>::success(std::move(result));
+}
+
 std::string auditAppendPayloadJson(const AuditAppendRequest& request)
 {
     std::ostringstream stream;
@@ -1055,6 +1159,18 @@ std::string tradeDraftReadOnlySummaryPayloadJson(
            << "\"draftId\":" << request.draftId
            << "}";
     return stream.str();
+}
+
+std::string otcMapMultiChannelPreviewPayloadJson(
+    const OtcMapMultiChannelReadOnlyPreviewRequest& request)
+{
+    return request.payloadJson.empty() ? "{}" : request.payloadJson;
+}
+
+std::string otcMapTradeDraftCreatePayloadJson(
+    const OtcMapTradeDraftCreateRequest& request)
+{
+    return request.payloadJson.empty() ? "{}" : request.payloadJson;
 }
 
 }  // namespace etfdt::data_service_client

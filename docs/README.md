@@ -12,6 +12,16 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [374 OTCMap A/C Multi-Channel Draft Engine Full Delivery](374_otcmap_ac_multichannel_draft_engine_full_delivery.md)
+- [375 OTCMap A/C Multi-Channel Contract](375_otcmap_ac_multichannel_contract.md)
+- [376 OTCMap A/C Multi-Channel VBA Parity Matrix](376_otcmap_ac_multichannel_vba_parity_matrix.md)
+- [377 OTCMap A/C Multi-Channel User-visible Flow](377_otcmap_ac_multichannel_user_visible_flow.md)
+- [378 OTCMap A/C Multi-Channel Test Plan](378_otcmap_ac_multichannel_test_plan.md)
+- EPIC-279 OTCMap A/C multi-channel samples:
+  [samples/otcmap_multichannel](../samples/otcmap_multichannel/).
+  OTCMap creates internal multi-leg TradeDrafts only. It does not write
+  `trade_log` or `cash_adjustment`, mutate positions/cash/PnL, access broker,
+  network, credentials, endpoints, real order placement, or automatic trading.
 - [359 ShellAccounting Portfolio Replay VBA Parity Full Delivery](359_shell_accounting_portfolio_replay_vba_parity_full_delivery.md)
 - [360 ShellAccounting Portfolio Replay VBA Parity Matrix](360_shell_accounting_portfolio_replay_vba_parity_matrix.md)
 - [361 ShellAccounting Portfolio Replay Read Model Contract](361_shell_accounting_portfolio_replay_read_model_contract.md)

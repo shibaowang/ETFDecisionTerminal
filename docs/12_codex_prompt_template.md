@@ -2,6 +2,24 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-279 OTCMap A/C multi-channel TradeDraft boundary
+
+- OTCMap work may add the StrategyEngine OTCMap A/C multi-channel engine,
+  DataAccess multi-leg TradeDraft repository support, DataService preview and
+  create actions, DataServiceClient adapters, ShellServices / Presenter mapping,
+  docs 374 through 378, samples under `samples/otcmap_multichannel/`, and the
+  `otcmap_ac_multichannel_draft_engine_full_delivery` CTest.
+- OTCMap may write only internal `trade_draft`, `trade_draft_leg`, and
+  sanitized `audit_log` rows when explicit user confirmation is present.
+- OTCMap must not write `trade_log` or `cash_adjustment`, mutate position,
+  cash, or PnL state, refresh market data, fetch historical highs, submit broker
+  orders, access network, credentials, or endpoints, place real orders, or
+  enable automatic trading.
+- The engine must remain pure in-memory. Persistence belongs to DataAccess under
+  one transaction and must preserve duplicate/conflict idempotency behavior.
+- Do not modify migrations for EPIC-279. If existing schema cannot express
+  multi-leg TradeDraft rows, stop and report a blocker.
+
 ## EPIC-276 ShellAccounting portfolio replay VBA parity full delivery boundary
 
 - ShellAccounting portfolio replay work may add a production read-only

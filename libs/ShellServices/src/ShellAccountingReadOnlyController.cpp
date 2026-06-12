@@ -432,6 +432,52 @@ ShellAccountingReadOnlyController::fetchStrategyRecommendationReadOnlySummary(
     return result;
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::previewOtcMapMultiChannelDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.otcmap_multichannel.readonly_preview");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.otcmap_multichannel.readonly_preview");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.otcmap_multichannel.readonly_preview";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->previewOtcMapMultiChannelDraft(request);
+    applyServiceResult(result);
+    return result;
+}
+
+ShellAccountingServiceResult ShellAccountingReadOnlyController::createOtcMapMultiChannelTradeDraft(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.tradedraft.create_otcmap_multichannel");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.tradedraft.create_otcmap_multichannel");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.tradedraft.create_otcmap_multichannel";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->createOtcMapMultiChannelTradeDraft(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

@@ -12,6 +12,7 @@ add_library(ETFDataServiceApi STATIC
     src/ShellAccountingExcelVbaImportPersistManualEntryAction.cpp
     src/ShellAccountingExcelVbaImportReadOnlyParser.cpp
     src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp
+    src/ShellAccountingOtcMapMultiChannelDraftAction.cpp
     src/ShellAccountingPortfolioReplayReadOnlySummaryAction.cpp
     src/ShellAccountingTradeDraftRecommendationAction.cpp
     src/ShellAccountingManualTransactionCashMovementValidation.cpp

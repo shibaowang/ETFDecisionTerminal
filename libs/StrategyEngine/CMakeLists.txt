@@ -1,4 +1,5 @@
 add_library(ETFStrategyEngine STATIC
+    src/OtcMapAcMultiChannelDraftEngine.cpp
     src/StrategyRecommendationEngine.cpp
     src/StrategyEngine.cpp
 )

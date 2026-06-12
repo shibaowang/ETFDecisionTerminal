@@ -23,11 +23,15 @@ constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
     "accounting.excel_vba_import.persist_manual_entry";
 constexpr const char* kActionStrategyRecommendationReadOnlySummary =
     "strategy.recommendation.readonly_summary";
+constexpr const char* kActionAccountingOtcMapMultiChannelReadOnlyPreview =
+    "accounting.otcmap_multichannel.readonly_preview";
 constexpr const char* kActionAccountingSnapshotWrite = "accounting.snapshot.write";
 constexpr const char* kActionAccountingAuditWrite = "accounting.audit.write";
 constexpr const char* kActionAccountingTradeDraftCreate = "accounting.tradedraft.create";
 constexpr const char* kActionAccountingTradeDraftCreateFromRecommendation =
     "accounting.tradedraft.create_from_recommendation";
+constexpr const char* kActionAccountingTradeDraftCreateOtcMapMultiChannel =
+    "accounting.tradedraft.create_otcmap_multichannel";
 constexpr const char* kActionAccountingTradeDraftReadOnlySummary =
     "accounting.tradedraft.readonly_summary";
 constexpr const char* kActionAccountingTradeDraftConfirm = "accounting.tradedraft.confirm";
@@ -98,6 +102,10 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingOtcMapMultiChannelReadOnlyPreview(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingSnapshotWrite(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
@@ -111,6 +119,10 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreateFromRecommendation(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreateOtcMapMultiChannel(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

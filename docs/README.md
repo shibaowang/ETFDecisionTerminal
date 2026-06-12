@@ -12,6 +12,13 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- EPIC-288 global Chinese UI leak fix visual acceptance:
+  [400_global_chinese_ui_readability_trial_feedback_fix.md](400_global_chinese_ui_readability_trial_feedback_fix.md).
+  The visual closeout removes remaining right-sidebar placeholder English,
+  ReadOnlyData onboarding English, and bare status enum leaks, while keeping raw
+  JSON / payload details collapsed by default behind Chinese developer-detail
+  controls. This is a UI/readability hardening only and does not change
+  business, persistence, broker, network, or trading behavior.
 - EPIC-287 global Chinese UI readability trial feedback fix:
   [400_global_chinese_ui_readability_trial_feedback_fix.md](400_global_chinese_ui_readability_trial_feedback_fix.md).
   The local trial UI is Chinese-first across Dashboard, diagnostics,

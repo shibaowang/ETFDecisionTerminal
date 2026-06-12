@@ -2,6 +2,26 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-288 global Chinese UI leak visual acceptance boundary
+
+- EPIC-288 may update QML under `apps/ETFDecisionShell/qml/**/*.qml`,
+  `docs/400_global_chinese_ui_readability_trial_feedback_fix.md`, README indexes,
+  the prompt template, and the existing global Chinese readability / Dashboard /
+  local-trial static acceptance tests.
+- Preserve QML `objectName` values, Presenter calls, action names, schema keys,
+  C++ identifiers, CTest names, and file names. Stable technical IDs may remain
+  English; default visible explanatory text must be Chinese-first or
+  Chinese-annotated.
+- Right-side placeholder titles, metric names, action hints, ReadOnlyData
+  onboarding text, and status enum values must not leak bare English into the
+  default visual trial screens.
+- Raw JSON / sample payload / fixture details must stay collapsed by default
+  and be available only behind Chinese developer-detail controls.
+- Do not change business behavior, DataAccess writes, DataServiceApi write
+  semantics, replay semantics, market provider semantics, strategy semantics,
+  TradeDraft semantics, OTCMap semantics, migrations, broker / credential /
+  endpoint access, real order placement, or automatic trading.
+
 ## EPIC-287 global Chinese UI readability boundary
 
 - Global Chinese UI readability work may update QML under

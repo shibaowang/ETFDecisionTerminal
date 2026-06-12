@@ -15,9 +15,15 @@ Rectangle {
     }
 
     function displayStatus(value) {
+        if (value === "DISCONNECTED") return "未连接（DISCONNECTED）"
+        if (value === "IDLE") return "空闲（IDLE）"
+        if (value === "READY") return "就绪（READY）"
+        if (value === "NOT_CONFIRMED") return "未确认（NOT_CONFIRMED）"
         if (value === "PLACEHOLDER") return "占位状态（PLACEHOLDER）"
         if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "MOCK_DATA") return "模拟数据（MOCK_DATA）"
         if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        if (value === "DATASERVICE_CLIENT_CALL_FAILED") return "DataService 调用失败（DATASERVICE_CLIENT_CALL_FAILED）"
         return value
     }
 

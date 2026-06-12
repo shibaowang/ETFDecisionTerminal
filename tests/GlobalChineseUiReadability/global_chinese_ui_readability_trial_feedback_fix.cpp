@@ -100,6 +100,15 @@ void assertGlobalChineseQml(const fs::path& root)
              u8"仅演示，不会执行真实操作",
              u8"这是内部草案，不是订单，不会提交券商。",
              u8"默认使用样例数据/禁用行情源，不会自动联网。",
+             u8"占位模块",
+             u8"账户总资产",
+             u8"本金基准",
+             u8"剩余现金",
+             u8"活跃交易草案",
+             u8"开发期只读原型",
+             u8"未连接（DISCONNECTED）",
+             u8"空闲（IDLE）",
+             u8"就绪（READY）",
          }) {
         requireContains(qml, token, "global Chinese visible QML");
     }
@@ -119,7 +128,20 @@ void assertGlobalChineseQml(const fs::path& root)
              "Read-only connection",
              "Mock only - not executable",
              "Placeholder module",
+             "This module is a placeholder mock",
+             "This page has no real service data; this action hint is not executable",
              "Real business data is not connected",
+             "Account total assets",
+             "Principal baseline",
+             "Remaining cash",
+             "Active TradeDraft",
+             "Review cash mock",
+             "Review TradeDraft mock",
+             "Placeholder hint only",
+             "No real TradeDraft lifecycle is connected",
+             "Development read-only prototype",
+             "Start ETFDataService manually",
+             "This page does not start services",
              "Direct .xlsx import is not supported",
              "Draft, not order.",
              "payload / raw diagnostics",
@@ -165,6 +187,10 @@ void assertGlobalChineseQml(const fs::path& root)
              "shellAccountingShowMarketRawJsonButton",
              "shellAccountingShowStrategyRawJsonButton",
              "shellAccountingShowOtcMapRawJsonButton",
+             "root.showReplayRawJson\n                                    ? portfolioReplayPayloadInput.text\n                                    : root.dashboardPortfolioReplaySamplePayload()",
+             "root.showMarketRawJson\n                                    ? marketDataPayloadInput.text\n                                    : root.dashboardMarketDataSamplePayload()",
+             "root.showStrategyRawJson\n                                    ? strategyRecommendationPayloadInput.text\n                                    : root.dashboardStrategySamplePayload()",
+             "root.showOtcMapRawJson\n                                        ? otcMapPayloadInput.text\n                                        : root.dashboardOtcMapSamplePayload()",
          }) {
         requireContains(shellAccounting, token, "raw diagnostic folding contract");
     }
@@ -190,7 +216,21 @@ void assertDocs(const fs::path& root)
              "400_global_chinese_ui_readability_trial_feedback_fix.md",
              "global_chinese_ui_readability_trial_feedback_fix",
          }) {
-        requireContains(readme + docsIndex + prompt + testsCmake, token, "EPIC-287 docs/tests indexed");
+        requireContains(readme + docsIndex + prompt + testsCmake, token, "EPIC-288 docs/tests indexed");
+    }
+
+    for (const std::string token : {
+             "EPIC-288",
+             "Global Chinese UI Leak Fix",
+             "rightSidebarEnglishLeakFixed",
+             "readonlyPageEnglishLeakFixed",
+             "rawJsonCollapsedByDefaultVerified",
+             "developerDetailsOnlyForRawJson",
+             "statusValuesChineseAnnotated",
+             "businessLogicChanged",
+             "automaticTrading",
+         }) {
+        requireContains(readme + docsIndex + prompt + scope, token, "EPIC-288 docs content");
     }
 
     for (const std::string token : {
@@ -214,7 +254,7 @@ void assertDocs(const fs::path& root)
 
 std::string evidence()
 {
-    return R"({"task":"EPIC-287","globalChineseUiReadabilityFixCreated":true,"visibleUiChineseFirst":true,"rawJsonHiddenByDefault":true,"developerDetailsGateCreated":true,"mockDebugInfoHiddenOrChinese":true,"objectNamesPreserved":true,"businessLogicChanged":false,"dataAccessChanged":false,"migrationChanged":false,"productionDbTouched":false,"networkAccess":false,"brokerOrderSubmitted":false,"credentialAccess":false,"endpointAccess":false,"realOrderPlacement":false,"automaticTrading":false})";
+    return R"({"task":"EPIC-288","globalEnglishLeakFixed":true,"rightSidebarEnglishLeakFixed":true,"readonlyPageEnglishLeakFixed":true,"rawJsonCollapsedByDefaultVerified":true,"developerDetailsOnlyForRawJson":true,"statusValuesChineseAnnotated":true,"visualEvidenceScreenshotsUsable":true,"businessLogicChanged":false,"dataAccessChanged":false,"migrationChanged":false,"productionDbTouched":false,"networkAccess":false,"brokerOrderSubmitted":false,"credentialAccess":false,"endpointAccess":false,"realOrderPlacement":false,"automaticTrading":false})";
 }
 
 }  // namespace

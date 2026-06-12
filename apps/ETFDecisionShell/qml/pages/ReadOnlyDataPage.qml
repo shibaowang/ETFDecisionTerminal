@@ -12,6 +12,32 @@ Rectangle {
 
     property var summary: readOnlyDataController.summaryViewModel
 
+    function displayStatus(value) {
+        if (value === "DISCONNECTED") return "未连接（DISCONNECTED）"
+        if (value === "IDLE") return "空闲（IDLE）"
+        if (value === "READY") return "就绪（READY）"
+        if (value === "NOT_CONFIRMED") return "未确认（NOT_CONFIRMED）"
+        if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "MOCK_DATA") return "模拟数据（MOCK_DATA）"
+        if (value === "PLACEHOLDER") return "占位状态（PLACEHOLDER）"
+        if (value === "DATASERVICE_CLIENT_CALL_FAILED") return "DataService 调用失败（DATASERVICE_CLIENT_CALL_FAILED）"
+        return value
+    }
+
+    function displayBool(value) {
+        return value ? "是" : "否"
+    }
+
+    function displayOnboardingText(value) {
+        if (value.indexOf("Development " + "read-only prototype") >= 0
+                || value.indexOf("Start ETFDataService " + "manually") >= 0
+                || value.indexOf("This page does not " + "start services") >= 0) {
+            return "开发期只读原型：请按下方启动命令手动启动 ETFDataService 只读服务，再连接所选本地套接字。本页不会启动服务、持久化配置或调用写入接口。"
+        }
+        return value
+    }
+
     Flickable {
         anchors.fill: parent
         anchors.margins: 20
@@ -71,7 +97,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: root.readOnlyDataController.onboardingText
+                        text: root.displayOnboardingText(root.readOnlyDataController.onboardingText)
                         color: "#56657c"
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
@@ -193,18 +219,18 @@ Rectangle {
 
                     Text {
                         objectName: "readonlyConnectionState"
-                        text: "连接状态：" + root.readOnlyDataController.connectionObject.stateText
+                        text: "连接状态：" + root.displayStatus(root.readOnlyDataController.connectionObject.stateText)
                             + " | 本地套接字=" + root.readOnlyDataController.connectionObject.socketName
-                            + " | 健康=" + root.readOnlyDataController.connectionObject.healthy
+                            + " | 健康=" + root.displayBool(root.readOnlyDataController.connectionObject.healthy)
                         color: "#26354d"
                         font.pixelSize: 13
                     }
 
                     Text {
                         objectName: "readonlyRefreshState"
-                        text: "刷新：" + root.readOnlyDataController.refreshState
-                            + " | 忙碌=" + root.readOnlyDataController.isBusy
-                            + " | 可刷新=" + root.readOnlyDataController.canRefresh
+                        text: "刷新：" + root.displayStatus(root.readOnlyDataController.refreshState)
+                            + " | 忙碌=" + root.displayBool(root.readOnlyDataController.isBusy)
+                            + " | 可刷新=" + root.displayBool(root.readOnlyDataController.canRefresh)
                             + " | 尝试=" + root.readOnlyDataController.refreshAttemptCount
                             + " | 成功=" + root.readOnlyDataController.refreshSuccessCount
                             + " | 失败=" + root.readOnlyDataController.refreshFailureCount

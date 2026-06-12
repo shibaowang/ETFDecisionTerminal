@@ -9,15 +9,22 @@ Rectangle {
     readonly property string normalizedStatus: status.toUpperCase()
 
     function displayStatus(value) {
-        if (value === "READONLY") return "只读"
-        if (value === "ACTIVE") return "启用"
-        if (value === "ENABLED") return "启用"
-        if (value === "DISABLED") return "禁用"
-        if (value === "PLACEHOLDER") return "占位"
-        if (value === "OK") return "正常"
-        if (value === "ERROR") return "错误"
-        if (value === "WARNING") return "警告"
-        if (value === "UNAVAILABLE") return "不可用"
+        if (value === "READONLY") return "只读（READONLY）"
+        if (value === "ACTIVE") return "启用（ACTIVE）"
+        if (value === "ENABLED") return "启用（ENABLED）"
+        if (value === "DISABLED") return "禁用（DISABLED）"
+        if (value === "PLACEHOLDER") return "占位（PLACEHOLDER）"
+        if (value === "OK") return "正常（OK）"
+        if (value === "ERROR") return "错误（ERROR）"
+        if (value === "WARNING") return "警告（WARNING）"
+        if (value === "UNAVAILABLE") return "不可用（UNAVAILABLE）"
+        if (value === "DISCONNECTED") return "未连接（DISCONNECTED）"
+        if (value === "IDLE") return "空闲（IDLE）"
+        if (value === "READY") return "就绪（READY）"
+        if (value === "NO_DATA") return "无真实数据（NO_DATA）"
+        if (value === "MOCK_DATA") return "模拟数据（MOCK_DATA）"
+        if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
+        if (value === "NOT_CONFIRMED") return "未确认（NOT_CONFIRMED）"
         return value
     }
 

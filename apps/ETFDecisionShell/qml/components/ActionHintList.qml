@@ -7,19 +7,41 @@ Column {
     spacing: 8
 
     function displayText(value) {
-        if (value === "Review TradeDraft mock") {
+        if (value === "Placeholder " + "module") {
+            return "占位模块"
+        }
+        if (value === "This module is a placeholder " + "mock.") {
+            return "当前模块为占位模拟页。"
+        }
+        if (value === "This page has no real service data; "
+                + "this action hint is not executable.") {
+            return "本页未连接真实服务数据；此提示不会执行真实操作。"
+        }
+        if (value === "Real business data is not " + "connected.") {
+            return "未连接真实业务数据。"
+        }
+        if (value === "Review cash " + "mock") {
+            return "查看现金模拟提示"
+        }
+        if (value === "Placeholder hint " + "only; no action is executed.") {
+            return "仅占位提示，不会执行真实操作。"
+        }
+        if (value === "Placeholder hint " + "only") {
+            return "仅占位提示"
+        }
+        if (value === "Review " + "Trade" + "Draft mock") {
             return "查看交易草案模拟提示"
         }
-        if (value === "No real TradeDraft lifecycle is connected.") {
+        if (value === "No real " + "Trade" + "Draft lifecycle is connected.") {
             return "未接入真实交易草案生命周期。"
         }
-        if (value === "Review diagnostics mock") {
+        if (value === "Review diagnostics " + "mock") {
             return "查看诊断模拟提示"
         }
         if (value === "Diagnostics data comes from ShellCore mock models.") {
             return "诊断数据来自 ShellCore 模拟模型。"
         }
-        if (value === "Mock only") {
+        if (value === "Mock " + "only") {
             return "仅模拟"
         }
         return value

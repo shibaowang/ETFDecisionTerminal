@@ -423,9 +423,19 @@ void testDataServiceActionsUnmodified(const Harness& h)
         && patch.find("accounting.tradedraft.create_from_recommendation") != std::string::npos
         && patch.find("accounting.tradedraft.readonly_summary") != std::string::npos
         && patch.find("manual_cash_movement.create") == std::string::npos;
+    const bool epic280MarketDataReadOnlyActions =
+        diff == "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h\n"
+                "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp\n"
+        && patch.find("kActionMarketDataRefreshReadOnlySummary") != std::string::npos
+        && patch.find("kActionMarketDataHistoricalHighReadOnlySummary") != std::string::npos
+        && patch.find("handleMarketDataRefreshReadOnlySummary") != std::string::npos
+        && patch.find("handleMarketDataHistoricalHighReadOnlySummary") != std::string::npos
+        && patch.find("marketdata.refresh.readonly_summary") != std::string::npos
+        && patch.find("marketdata.historical_high.readonly_summary") != std::string::npos
+        && patch.find("manual_cash_movement.create") == std::string::npos;
     require(
         diff.empty() || task258ReadOnlyPreviewAction || task265PersistManualEntryAction
-            || epic278TradeDraftRecommendationAction,
+            || epic278TradeDraftRecommendationAction || epic280MarketDataReadOnlyActions,
         "DataServiceActions header and registrar must not change except authorized Excel/VBA import actions");
     const auto actions = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     requireContains(actions, "ShellAccountingManualCashMovementRepository repository(connection)",

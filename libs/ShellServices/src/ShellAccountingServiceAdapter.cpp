@@ -142,6 +142,26 @@ ShellAccountingServiceAdapter::fetchStrategyRecommendationReadOnlySummary(
         "SHELL_ACCOUNTING_STRATEGY_RECOMMENDATION_READONLY_SUMMARY_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult
+ShellAccountingServiceAdapter::fetchMarketDataRefreshReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "marketdata.refresh.readonly_summary",
+        "SHELL_ACCOUNTING_MARKET_DATA_REFRESH_ADAPTER_NOT_CONFIGURED");
+}
+
+ShellAccountingServiceResult
+ShellAccountingServiceAdapter::fetchMarketDataHistoricalHighReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "marketdata.historical_high.readonly_summary",
+        "SHELL_ACCOUNTING_MARKET_DATA_HISTORICAL_HIGH_ADAPTER_NOT_CONFIGURED");
+}
+
 ShellAccountingServiceResult ShellAccountingServiceAdapter::previewOtcMapMultiChannelDraft(
     const ShellAccountingServiceRequest& request)
 {

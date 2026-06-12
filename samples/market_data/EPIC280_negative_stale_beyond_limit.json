@@ -1,0 +1,24 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_stale_beyond_limit",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-10T02:30:00Z", "priceText": "4.800", "previousCloseText": "4.700", "source": "fixture/stale", "dataQualityStatus": "STALE"}
+    ],
+    "history": {"510300": [{"date": "2025-01-03", "highText": "5.000", "closeText": "4.950"}]}
+  },
+  "expected": {
+    "status": "STALE",
+    "dataQualityStatus": "STALE",
+    "issueCodes": ["MARKET_DATA_STALE_QUOTE"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

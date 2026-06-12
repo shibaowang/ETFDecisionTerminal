@@ -45,6 +45,12 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionStrategyRecommendationReadOnlySummary, [&connection](const auto& context) {
         return handleStrategyRecommendationReadOnlySummary(context, connection);
     });
+    (void)dispatcher.registerAction(kActionMarketDataRefreshReadOnlySummary, [&connection](const auto& context) {
+        return handleMarketDataRefreshReadOnlySummary(context, connection);
+    });
+    (void)dispatcher.registerAction(kActionMarketDataHistoricalHighReadOnlySummary, [&connection](const auto& context) {
+        return handleMarketDataHistoricalHighReadOnlySummary(context, connection);
+    });
     (void)dispatcher.registerAction(kActionAccountingOtcMapMultiChannelReadOnlyPreview, [&connection](const auto& context) {
         return handleAccountingOtcMapMultiChannelReadOnlyPreview(context, connection);
     });

@@ -1,0 +1,35 @@
+{
+  "task": "EPIC-280",
+  "caseId": "multi_instrument_refresh",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"},
+      {"instrumentCode": "000300", "instrumentType": "INDEX", "exchange": "SH", "providerSymbol": "sh000300"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "4.800", "previousCloseText": "4.700", "source": "fixture/tencent", "dataQualityStatus": "OK"},
+      {"instrumentCode": "000300", "instrumentType": "INDEX", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "3200.000", "previousCloseText": "3188.000", "source": "fixture/eastmoney", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "510300": [{"date": "2025-01-03", "highText": "5.000", "closeText": "4.950"}],
+      "000300": [{"date": "2024-10-08", "highText": "3500.000", "closeText": "3480.000"}]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "4.800",
+    "previousCloseText": "4.700",
+    "historicalHighText": "5.000",
+    "historicalHighDate": "2025-01-03",
+    "displayedHighText": "5.000",
+    "drawdownFromHighText": "-0.0400",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/tencent",
+    "issueCodes": [],
+    "instrumentCount": 2
+  }
+}

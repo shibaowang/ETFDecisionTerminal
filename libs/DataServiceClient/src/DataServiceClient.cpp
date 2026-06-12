@@ -36,6 +36,10 @@ constexpr const char* kActionAccountingPortfolioReplayReadOnlySummary =
     "accounting.portfolio_replay.readonly_summary";
 constexpr const char* kActionStrategyRecommendationReadOnlySummary =
     "strategy.recommendation.readonly_summary";
+constexpr const char* kActionMarketDataRefreshReadOnlySummary =
+    "marketdata.refresh.readonly_summary";
+constexpr const char* kActionMarketDataHistoricalHighReadOnlySummary =
+    "marketdata.historical_high.readonly_summary";
 constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
     "accounting.excel_vba_import.readonly_preview";
 constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
@@ -437,6 +441,54 @@ DataServiceClient::accountingTradeDraftCreateOtcMapMultiChannel(
             response.error().message);
     }
     return parseOtcMapMultiChannelDraftPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<MarketDataReadOnlySummaryResult>
+DataServiceClient::marketDataRefreshReadOnlySummary(
+    const MarketDataReadOnlySummaryRequest& request,
+    int timeoutMs)
+{
+    if (!isLikelyJsonObject(request.payloadJson)) {
+        return DataServiceClientResult<MarketDataReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Market data refresh request payload must be a JSON object");
+    }
+    auto response = sendAction(
+        kActionMarketDataRefreshReadOnlySummary,
+        marketDataReadOnlySummaryPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<MarketDataReadOnlySummaryResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseMarketDataReadOnlySummaryPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<MarketDataReadOnlySummaryResult>
+DataServiceClient::marketDataHistoricalHighReadOnlySummary(
+    const MarketDataReadOnlySummaryRequest& request,
+    int timeoutMs)
+{
+    if (!isLikelyJsonObject(request.payloadJson)) {
+        return DataServiceClientResult<MarketDataReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Market data historical high request payload must be a JSON object");
+    }
+    auto response = sendAction(
+        kActionMarketDataHistoricalHighReadOnlySummary,
+        marketDataReadOnlySummaryPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<MarketDataReadOnlySummaryResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseMarketDataReadOnlySummaryPayloadJson(
         response.value().payloadJson,
         response.value().success);
 }

@@ -1,0 +1,20 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_live_provider_disabled_by_default",
+  "input": {
+    "providerMode": "live",
+    "liveMarketDataEnabled": false,
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "PROVIDER_DISABLED",
+    "dataQualityStatus": "PROVIDER_DISABLED",
+    "issueCodes": ["MARKET_DATA_LIVE_PROVIDER_DISABLED_BY_DEFAULT"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

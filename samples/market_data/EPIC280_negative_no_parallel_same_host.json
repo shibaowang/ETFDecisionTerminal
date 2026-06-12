@@ -1,0 +1,20 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_no_parallel_same_host",
+  "input": {
+    "providerMode": "fixture",
+    "safetyPolicyProbe": "no_parallel_same_host",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "HOST_CONCURRENCY_BLOCKED",
+    "dataQualityStatus": "HOST_CONCURRENCY_BLOCKED",
+    "issueCodes": ["MARKET_DATA_NO_PARALLEL_SAME_HOST"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

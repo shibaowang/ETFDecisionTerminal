@@ -14,6 +14,7 @@ add_library(ETFDataServiceApi STATIC
     src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp
     src/ShellAccountingOtcMapMultiChannelDraftAction.cpp
     src/ShellAccountingPortfolioReplayReadOnlySummaryAction.cpp
+    src/MarketDataReadOnlySummaryAction.cpp
     src/ShellAccountingTradeDraftRecommendationAction.cpp
     src/ShellAccountingManualTransactionCashMovementValidation.cpp
     src/StrategyRecommendationReadOnlySummaryAction.cpp
@@ -35,6 +36,7 @@ target_link_libraries(ETFDataServiceApi
         ETFDecisionTerminal::DataAccess
         ETFDecisionTerminal::AccountingEngine
         ETFDecisionTerminal::StrategyEngine
+        ETFDecisionTerminal::MarketEngine
 )
 
 target_compile_features(ETFDataServiceApi PUBLIC cxx_std_17)

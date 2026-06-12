@@ -1,0 +1,33 @@
+{
+  "task": "EPIC-280",
+  "caseId": "etf_drawdown_from_high",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "159915", "instrumentType": "ETF", "exchange": "SZ", "providerSymbol": "sz159915"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "159915", "instrumentType": "ETF", "exchange": "SZ", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "4.500", "previousCloseText": "4.520", "source": "fixture/tencent", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "159915": [
+        {"date": "2024-05-10", "highText": "6.000", "closeText": "5.950"}
+      ]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "4.500",
+    "previousCloseText": "4.520",
+    "historicalHighText": "6.000",
+    "historicalHighDate": "2024-05-10",
+    "displayedHighText": "6.000",
+    "drawdownFromHighText": "-0.2500",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/tencent",
+    "issueCodes": []
+  }
+}

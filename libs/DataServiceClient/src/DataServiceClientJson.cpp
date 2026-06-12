@@ -1076,6 +1076,131 @@ parseOtcMapMultiChannelDraftPayloadJson(
     return DataServiceClientResult<OtcMapMultiChannelDraftResult>::success(std::move(result));
 }
 
+DataServiceClientResult<MarketDataReadOnlySummaryResult>
+parseMarketDataReadOnlySummaryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<MarketDataReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid market data read-only summary payload JSON");
+    }
+
+    const auto object = document.object();
+    MarketDataReadOnlySummaryResult result;
+    result.protocolSuccess = protocolSuccess;
+    result.action = stringField(object, "action").value_or({});
+    result.task = stringField(object, "task").value_or({});
+    result.mode = stringField(object, "mode").value_or({});
+    result.status = stringField(object, "status").value_or({});
+    result.dataQualityStatus = stringField(object, "dataQualityStatus").value_or({});
+    result.accepted = boolField(object, "accepted").value_or(false);
+    result.marketDataRefreshEngineCreated =
+        boolField(object, "marketDataRefreshEngineCreated").value_or(false);
+    result.marketDataProviderContractCreated =
+        boolField(object, "marketDataProviderContractCreated").value_or(false);
+    result.disabledProviderCreated = boolField(object, "disabledProviderCreated").value_or(false);
+    result.fixtureProviderCreated = boolField(object, "fixtureProviderCreated").value_or(false);
+    result.liveProviderImplemented = boolField(object, "liveProviderImplemented").value_or(false);
+    result.liveProviderDisabledByDefault =
+        boolField(object, "liveProviderDisabledByDefault").value_or(true);
+    result.liveProviderDeferredForSafety =
+        boolField(object, "liveProviderDeferredForSafety").value_or(true);
+    result.quoteAccepted = boolField(object, "quoteAccepted").value_or(false);
+    result.historicalHighAccepted =
+        boolField(object, "historicalHighAccepted").value_or(false);
+    result.instrumentCode = stringField(object, "instrumentCode").value_or({});
+    result.instrumentType = stringField(object, "instrumentType").value_or({});
+    result.currentPriceText = stringField(object, "currentPriceText").value_or({});
+    result.previousCloseText = stringField(object, "previousCloseText").value_or({});
+    result.historicalHighText = stringField(object, "historicalHighText").value_or({});
+    result.displayedHighText = stringField(object, "displayedHighText").value_or({});
+    result.historicalHighDate = stringField(object, "historicalHighDate").value_or({});
+    result.drawdownFromHighText = stringField(object, "drawdownFromHighText").value_or({});
+    result.premiumDiscountText = stringField(object, "premiumDiscountText").value_or({});
+    result.stale = boolField(object, "stale").value_or(false);
+    result.partial = boolField(object, "partial").value_or(false);
+    result.providerDisabled = boolField(object, "providerDisabled").value_or(false);
+    result.providerSource = stringField(object, "providerSource").value_or({});
+    result.exactHostAllowlistEnforced =
+        boolField(object, "exactHostAllowlistEnforced").value_or(false);
+    result.batchRequestsOnly = boolField(object, "batchRequestsOnly").value_or(false);
+    result.perHostRateLimitEnforced =
+        boolField(object, "perHostRateLimitEnforced").value_or(false);
+    result.historyHighDailyCacheEnforced =
+        boolField(object, "historyHighDailyCacheEnforced").value_or(false);
+    result.historyHighFailureCircuitBreakerMinutes =
+        intField(object, "historyHighFailureCircuitBreakerMinutes").value_or(0);
+    result.historyHighFailureCircuitBreakerEnforced =
+        boolField(object, "historyHighFailureCircuitBreakerEnforced").value_or(false);
+    result.noParallelSameHostRequests =
+        boolField(object, "noParallelSameHostRequests").value_or(false);
+    result.marketDataReadOnlyActionCreated =
+        boolField(object, "marketDataReadOnlyActionCreated").value_or(false);
+    result.historicalHighReadOnlyActionCreated =
+        boolField(object, "historicalHighReadOnlyActionCreated").value_or(false);
+    result.testNetworkAccess = boolField(object, "testNetworkAccess").value_or(false);
+    result.networkAccess = boolField(object, "networkAccess").value_or(false);
+    result.rawUrlExposed = boolField(object, "rawUrlExposed").value_or(false);
+    result.rawResponseExposed = boolField(object, "rawResponseExposed").value_or(false);
+    result.productionDbTouched = boolField(object, "productionDbTouched").value_or(false);
+    result.tradeLogRowsWrittenByMarketData =
+        boolField(object, "tradeLogRowsWrittenByMarketData").value_or(false);
+    result.cashAdjustmentRowsWrittenByMarketData =
+        boolField(object, "cashAdjustmentRowsWrittenByMarketData").value_or(false);
+    result.brokerOrderSubmitted = boolField(object, "brokerOrderSubmitted").value_or(false);
+    result.credentialAccess = boolField(object, "credentialAccess").value_or(false);
+    result.endpointAccess = boolField(object, "endpointAccess").value_or(false);
+    result.realOrderPlacement = boolField(object, "realOrderPlacement").value_or(false);
+    result.automaticTrading = boolField(object, "automaticTrading").value_or(false);
+
+    const auto issueCodes = object.value(QStringLiteral("issueCodes")).toArray();
+    for (const auto& value : issueCodes) {
+        if (value.isString()) {
+            result.issueCodes.push_back(value.toString().toStdString());
+        }
+    }
+    const auto instruments = object.value(QStringLiteral("instruments")).toArray();
+    for (const auto& value : instruments) {
+        if (!value.isObject()) {
+            continue;
+        }
+        const auto item = value.toObject();
+        MarketDataInstrumentSummary summary;
+        summary.instrumentCode = stringField(item, "instrumentCode").value_or({});
+        summary.instrumentType = stringField(item, "instrumentType").value_or({});
+        summary.currentPriceText = stringField(item, "currentPriceText").value_or({});
+        summary.previousCloseText = stringField(item, "previousCloseText").value_or({});
+        summary.historicalHighText = stringField(item, "historicalHighText").value_or({});
+        summary.displayedHighText = stringField(item, "displayedHighText").value_or({});
+        summary.historicalHighDate = stringField(item, "historicalHighDate").value_or({});
+        summary.drawdownFromHighText = stringField(item, "drawdownFromHighText").value_or({});
+        summary.premiumDiscountText = stringField(item, "premiumDiscountText").value_or({});
+        summary.dataQualityStatus = stringField(item, "dataQualityStatus").value_or({});
+        summary.providerSource = stringField(item, "providerSource").value_or({});
+        summary.quoteAccepted = boolField(item, "quoteAccepted").value_or(false);
+        summary.historicalHighAccepted = boolField(item, "historicalHighAccepted").value_or(false);
+        summary.stale = boolField(item, "stale").value_or(false);
+        const auto itemIssues = item.value(QStringLiteral("issueCodes")).toArray();
+        for (const auto& issue : itemIssues) {
+            if (issue.isString()) {
+                summary.issueCodes.push_back(issue.toString().toStdString());
+            }
+        }
+        result.instruments.push_back(std::move(summary));
+    }
+
+    if (result.action.empty() || result.task.empty() || result.status.empty()) {
+        return DataServiceClientResult<MarketDataReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "Market data payload is missing action, task, or status");
+    }
+    return DataServiceClientResult<MarketDataReadOnlySummaryResult>::success(std::move(result));
+}
+
 std::string auditAppendPayloadJson(const AuditAppendRequest& request)
 {
     std::ostringstream stream;
@@ -1169,6 +1294,12 @@ std::string otcMapMultiChannelPreviewPayloadJson(
 
 std::string otcMapTradeDraftCreatePayloadJson(
     const OtcMapTradeDraftCreateRequest& request)
+{
+    return request.payloadJson.empty() ? "{}" : request.payloadJson;
+}
+
+std::string marketDataReadOnlySummaryPayloadJson(
+    const MarketDataReadOnlySummaryRequest& request)
 {
     return request.payloadJson.empty() ? "{}" : request.payloadJson;
 }

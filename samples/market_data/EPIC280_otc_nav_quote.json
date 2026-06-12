@@ -1,0 +1,33 @@
+{
+  "task": "EPIC-280",
+  "caseId": "otc_nav_quote",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "F123456", "instrumentType": "OTC_FUND", "exchange": "OTC", "providerSymbol": "f_123456"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "F123456", "instrumentType": "OTC_FUND", "exchange": "OTC", "quoteTimeUtc": "2026-06-12T08:30:00Z", "priceText": "1.234", "previousCloseText": "1.230", "source": "fixture/sina", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "F123456": [
+        {"date": "2025-11-18", "highText": "1.300", "closeText": "1.290"}
+      ]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "1.234",
+    "previousCloseText": "1.230",
+    "historicalHighText": "1.300",
+    "historicalHighDate": "2025-11-18",
+    "displayedHighText": "1.300",
+    "drawdownFromHighText": "-0.0508",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/sina",
+    "issueCodes": []
+  }
+}

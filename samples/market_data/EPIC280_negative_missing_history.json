@@ -1,0 +1,24 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_missing_history",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "4.800", "previousCloseText": "4.700", "source": "fixture/negative", "dataQualityStatus": "OK"}
+    ],
+    "history": {}
+  },
+  "expected": {
+    "status": "PARTIAL",
+    "dataQualityStatus": "PARTIAL",
+    "issueCodes": ["MARKET_DATA_HISTORY_UNAVAILABLE"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

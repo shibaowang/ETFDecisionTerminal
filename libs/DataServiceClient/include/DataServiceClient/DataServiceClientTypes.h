@@ -356,6 +356,83 @@ struct OtcMapMultiChannelDraftResult final {
     bool productionDbTouched = false;
 };
 
+struct MarketDataReadOnlySummaryRequest final {
+    std::string payloadJson = "{}";
+};
+
+struct MarketDataInstrumentSummary final {
+    std::string instrumentCode;
+    std::string instrumentType;
+    std::string currentPriceText;
+    std::string previousCloseText;
+    std::string historicalHighText;
+    std::string displayedHighText;
+    std::string historicalHighDate;
+    std::string drawdownFromHighText;
+    std::string premiumDiscountText;
+    std::string dataQualityStatus;
+    std::string providerSource;
+    bool quoteAccepted = false;
+    bool historicalHighAccepted = false;
+    bool stale = false;
+    std::vector<std::string> issueCodes;
+};
+
+struct MarketDataReadOnlySummaryResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    std::string status;
+    std::string dataQualityStatus;
+    bool protocolSuccess = false;
+    bool accepted = false;
+    bool marketDataRefreshEngineCreated = false;
+    bool marketDataProviderContractCreated = false;
+    bool disabledProviderCreated = false;
+    bool fixtureProviderCreated = false;
+    bool liveProviderImplemented = false;
+    bool liveProviderDisabledByDefault = true;
+    bool liveProviderDeferredForSafety = true;
+    bool quoteAccepted = false;
+    bool historicalHighAccepted = false;
+    std::string instrumentCode;
+    std::string instrumentType;
+    std::string currentPriceText;
+    std::string previousCloseText;
+    std::string historicalHighText;
+    std::string displayedHighText;
+    std::string historicalHighDate;
+    std::string drawdownFromHighText;
+    std::string premiumDiscountText;
+    bool stale = false;
+    bool partial = false;
+    bool providerDisabled = false;
+    std::string providerSource;
+    std::vector<std::string> issueCodes;
+    std::vector<MarketDataInstrumentSummary> instruments;
+    bool exactHostAllowlistEnforced = false;
+    bool batchRequestsOnly = false;
+    bool perHostRateLimitEnforced = false;
+    bool historyHighDailyCacheEnforced = false;
+    int historyHighFailureCircuitBreakerMinutes = 0;
+    bool historyHighFailureCircuitBreakerEnforced = false;
+    bool noParallelSameHostRequests = false;
+    bool marketDataReadOnlyActionCreated = false;
+    bool historicalHighReadOnlyActionCreated = false;
+    bool testNetworkAccess = false;
+    bool networkAccess = false;
+    bool rawUrlExposed = false;
+    bool rawResponseExposed = false;
+    bool productionDbTouched = false;
+    bool tradeLogRowsWrittenByMarketData = false;
+    bool cashAdjustmentRowsWrittenByMarketData = false;
+    bool brokerOrderSubmitted = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool realOrderPlacement = false;
+    bool automaticTrading = false;
+};
+
 struct StrategyRecommendationIssue final {
     std::string level;
     std::string code;

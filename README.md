@@ -1,5 +1,33 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-280 Market Data Historical High Refresh Engine Full Delivery
+
+EPIC-280 adds a production read-only MarketEngine refresh path for quote,
+historical high, displayed high, drawdown, premium/discount, and safe partial
+market data summaries:
+
+- full delivery overview:
+  `docs/379_market_data_refresh_engine_full_delivery.md`
+- provider contract:
+  `docs/380_market_data_provider_contract.md`
+- VBA parity matrix:
+  `docs/381_market_data_historical_high_vba_parity_matrix.md`
+- user-visible refresh flow:
+  `docs/382_market_data_user_visible_refresh_flow.md`
+- test plan:
+  `docs/383_market_data_test_plan.md`
+- samples:
+  `samples/market_data/`
+- CTest:
+  `market_data_historical_high_refresh_engine_full_delivery`
+
+Market data refresh is read-only and manual. It has no default live auto-refresh
+and no 2-second polling loop. The live public provider boundary is disabled by
+default and deferred for explicit safety work. EPIC-280 does not write
+production DBs, trade_log, cash_adjustment, audit_log, ledger, snapshots, read
+models, or TradeDrafts, and it does not access broker, network, credentials, or
+endpoints, place real orders, or enable automatic trading.
+
 ## EPIC-279 OTCMap A/C Multi-Channel Draft Engine Full Delivery
 
 EPIC-279 adds the OTCMap A/C multi-channel internal TradeDraft engine:

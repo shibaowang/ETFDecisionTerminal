@@ -1,0 +1,32 @@
+{
+  "task": "EPIC-280",
+  "caseId": "strategy_input_market_fields",
+  "input": {
+    "providerMode": "fixture",
+    "referenceValueText": "4.100",
+    "instruments": [
+      {"instrumentCode": "515000", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh515000"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "515000", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "4.200", "previousCloseText": "4.180", "source": "fixture/strategy", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "515000": [{"date": "2025-08-08", "highText": "5.000", "closeText": "4.990"}]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "4.200",
+    "previousCloseText": "4.180",
+    "historicalHighText": "5.000",
+    "historicalHighDate": "2025-08-08",
+    "displayedHighText": "5.000",
+    "drawdownFromHighText": "-0.1600",
+    "premiumDiscountText": "0.0244",
+    "providerSource": "fixture/strategy",
+    "issueCodes": []
+  }
+}

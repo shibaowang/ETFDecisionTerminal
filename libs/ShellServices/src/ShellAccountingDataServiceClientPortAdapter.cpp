@@ -542,6 +542,78 @@ ShellAccountingDataServiceClientResponse mapStrategyRecommendationClientResult(
     return response;
 }
 
+ShellAccountingDataServiceClientResponse mapMarketDataClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::MarketDataReadOnlySummaryResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient market data read-only summary call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& marketData = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = marketData.action.empty() ? request.actionName : marketData.action;
+    response.protocolSuccess = marketData.protocolSuccess;
+    response.implemented = marketData.marketDataRefreshEngineCreated
+        && marketData.marketDataProviderContractCreated;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = marketData.status;
+    response.dataQualityStatus = marketData.dataQualityStatus;
+    response.hasRows = marketData.accepted;
+    response.domainError = !marketData.protocolSuccess || !marketData.accepted;
+    response.marketDataAccepted = marketData.accepted;
+    response.marketDataRefreshEngineCreated = marketData.marketDataRefreshEngineCreated;
+    response.marketDataProviderContractCreated = marketData.marketDataProviderContractCreated;
+    response.marketDataProviderDisabled = marketData.providerDisabled;
+    response.marketDataStale = marketData.stale;
+    response.marketDataPartial = marketData.partial;
+    response.marketDataLiveProviderDisabledByDefault =
+        marketData.liveProviderDisabledByDefault;
+    response.marketDataLiveProviderDeferredForSafety =
+        marketData.liveProviderDeferredForSafety;
+    response.marketDataInstrumentCode = marketData.instrumentCode;
+    response.marketDataInstrumentType = marketData.instrumentType;
+    response.marketDataCurrentPriceText = marketData.currentPriceText;
+    response.marketDataPreviousCloseText = marketData.previousCloseText;
+    response.marketDataHistoricalHighText = marketData.historicalHighText;
+    response.marketDataDisplayedHighText = marketData.displayedHighText;
+    response.marketDataHistoricalHighDate = marketData.historicalHighDate;
+    response.marketDataDrawdownFromHighText = marketData.drawdownFromHighText;
+    response.marketDataPremiumDiscountText = marketData.premiumDiscountText;
+    response.marketDataProviderSource = marketData.providerSource;
+    response.marketDataIssueCodes = marketData.issueCodes;
+    response.networkAccess = marketData.networkAccess || marketData.testNetworkAccess;
+    response.productionWrite = marketData.productionDbTouched;
+    response.tradeLogWritten = marketData.tradeLogRowsWrittenByMarketData;
+    response.readModelPersistentWrite = false;
+    response.credentialAccess = marketData.credentialAccess;
+    response.endpointAccess = marketData.endpointAccess;
+    response.automaticTrading = marketData.automaticTrading;
+
+    for (const auto& code : marketData.issueCodes) {
+        response.issues.push_back(makeIssue(
+            code.empty() ? "MARKET_DATA_ISSUE" : code,
+            marketData.accepted ? "WARNING" : "ERROR",
+            code.empty() ? "Market data issue." : code,
+            !marketData.accepted));
+    }
+    return response;
+}
+
 std::optional<etfdt::data_service_client::TradeDraftCreateFromRecommendationRequest>
 parseTradeDraftRecommendationRequestPayload(const std::string& payloadJson)
 {
@@ -1153,6 +1225,46 @@ ShellAccountingDataServiceClientPortAdapter::callStrategyRecommendationReadOnlyS
     return mapStrategyRecommendationClientResult(
         request,
         client_->strategyRecommendationReadOnlySummary(recommendationRequest, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callMarketDataRefreshReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting market data refresh port.",
+            true,
+            false);
+    }
+
+    etfdt::data_service_client::MarketDataReadOnlySummaryRequest marketRequest;
+    marketRequest.payloadJson = request.payloadJson.empty() ? "{}" : request.payloadJson;
+    return mapMarketDataClientResult(
+        request,
+        client_->marketDataRefreshReadOnlySummary(marketRequest, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callMarketDataHistoricalHighReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting market data historical high port.",
+            true,
+            false);
+    }
+
+    etfdt::data_service_client::MarketDataReadOnlySummaryRequest marketRequest;
+    marketRequest.payloadJson = request.payloadJson.empty() ? "{}" : request.payloadJson;
+    return mapMarketDataClientResult(
+        request,
+        client_->marketDataHistoricalHighReadOnlySummary(marketRequest, request.timeoutMs));
 }
 
 ShellAccountingDataServiceClientResponse

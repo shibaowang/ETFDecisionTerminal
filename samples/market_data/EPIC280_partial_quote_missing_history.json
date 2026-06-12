@@ -1,0 +1,29 @@
+{
+  "task": "EPIC-280",
+  "caseId": "partial_quote_missing_history",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "588000", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh588000"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "588000", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "1.500", "previousCloseText": "1.480", "source": "fixture/eastmoney", "dataQualityStatus": "OK"}
+    ],
+    "history": {}
+  },
+  "expected": {
+    "status": "PARTIAL",
+    "dataQualityStatus": "PARTIAL",
+    "currentPriceText": "1.500",
+    "previousCloseText": "1.480",
+    "historicalHighText": "",
+    "historicalHighDate": "",
+    "displayedHighText": "",
+    "drawdownFromHighText": "",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/eastmoney",
+    "issueCodes": ["MARKET_DATA_HISTORY_UNAVAILABLE"]
+  }
+}

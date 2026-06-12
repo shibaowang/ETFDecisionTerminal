@@ -1,0 +1,33 @@
+{
+  "task": "EPIC-280",
+  "caseId": "index_drawdown_from_high",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "399006", "instrumentType": "INDEX", "exchange": "SZ", "providerSymbol": "sz399006"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "399006", "instrumentType": "INDEX", "exchange": "SZ", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "2800.000", "previousCloseText": "2810.000", "source": "fixture/eastmoney", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "399006": [
+        {"date": "2021-02-18", "highText": "4000.000", "closeText": "3980.000"}
+      ]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "2800.000",
+    "previousCloseText": "2810.000",
+    "historicalHighText": "4000.000",
+    "historicalHighDate": "2021-02-18",
+    "displayedHighText": "4000.000",
+    "drawdownFromHighText": "-0.3000",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/eastmoney",
+    "issueCodes": []
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_provider_disabled",
+  "input": {
+    "providerMode": "disabled",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "PROVIDER_DISABLED",
+    "dataQualityStatus": "PROVIDER_DISABLED",
+    "issueCodes": ["MARKET_DATA_PROVIDER_DISABLED"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

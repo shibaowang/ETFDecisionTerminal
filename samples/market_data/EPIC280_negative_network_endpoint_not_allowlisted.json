@@ -1,0 +1,20 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_network_endpoint_not_allowlisted",
+  "input": {
+    "providerMode": "fixture",
+    "safetyUrl": "https://example.com/private/quote",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "NOT_ALLOWLISTED",
+    "dataQualityStatus": "NOT_ALLOWLISTED",
+    "issueCodes": ["MARKET_DATA_HOST_NOT_ALLOWLISTED"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

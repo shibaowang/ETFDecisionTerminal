@@ -738,6 +738,76 @@ QString ShellAccountingPresenter::lastStrategyRecommendationSummary() const
     return lastStrategyRecommendationSummary_;
 }
 
+bool ShellAccountingPresenter::marketDataRefreshBusy() const noexcept
+{
+    return marketDataRefreshBusy_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataRefreshStatus() const
+{
+    return lastMarketDataRefreshStatus_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataInstrumentCode() const
+{
+    return lastMarketDataInstrumentCode_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataCurrentPriceText() const
+{
+    return lastMarketDataCurrentPriceText_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataPreviousCloseText() const
+{
+    return lastMarketDataPreviousCloseText_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataHistoricalHighText() const
+{
+    return lastMarketDataHistoricalHighText_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataDisplayedHighText() const
+{
+    return lastMarketDataDisplayedHighText_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataHistoricalHighDate() const
+{
+    return lastMarketDataHistoricalHighDate_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataDrawdownFromHighText() const
+{
+    return lastMarketDataDrawdownFromHighText_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataPremiumDiscountText() const
+{
+    return lastMarketDataPremiumDiscountText_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataQualityStatus() const
+{
+    return lastMarketDataQualityStatus_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataProviderSource() const
+{
+    return lastMarketDataProviderSource_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataIssueCodes() const
+{
+    return lastMarketDataIssueCodes_;
+}
+
+QString ShellAccountingPresenter::lastMarketDataSummary() const
+{
+    return lastMarketDataSummary_;
+}
+
 QString ShellAccountingPresenter::lastTradeDraftStatus() const
 {
     return lastTradeDraftStatus_;
@@ -1495,6 +1565,102 @@ bool ShellAccountingPresenter::previewStrategyRecommendationReadOnlySummary(
     return result.protocolSuccess && result.strategyRecommendationAccepted;
 }
 
+void ShellAccountingPresenter::resetMarketDataState()
+{
+    marketDataRefreshBusy_ = false;
+    lastMarketDataRefreshStatus_ = QStringLiteral("READY");
+    lastMarketDataInstrumentCode_.clear();
+    lastMarketDataCurrentPriceText_.clear();
+    lastMarketDataPreviousCloseText_.clear();
+    lastMarketDataHistoricalHighText_.clear();
+    lastMarketDataDisplayedHighText_.clear();
+    lastMarketDataHistoricalHighDate_.clear();
+    lastMarketDataDrawdownFromHighText_.clear();
+    lastMarketDataPremiumDiscountText_.clear();
+    lastMarketDataQualityStatus_.clear();
+    lastMarketDataProviderSource_.clear();
+    lastMarketDataIssueCodes_.clear();
+    lastMarketDataSummary_.clear();
+    emit marketDataStateChanged();
+}
+
+bool ShellAccountingPresenter::refreshMarketDataReadOnly(const QString& payloadJson)
+{
+    if (!controller_) {
+        markMarketDataInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("marketdata.refresh.readonly_summary");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeMarketDataReadOnlySummaryRequest(payloadJson, valid);
+    if (!valid) {
+        return false;
+    }
+
+    marketDataRefreshBusy_ = true;
+    lastMarketDataRefreshStatus_ = QStringLiteral("REFRESHING");
+    lastMarketDataIssueCodes_.clear();
+    emit marketDataStateChanged();
+    const auto result = controller_->fetchMarketDataRefreshReadOnlySummary(request);
+    marketDataRefreshBusy_ = false;
+
+    lastMarketDataRefreshStatus_ = QString::fromStdString(result.payloadStatus);
+    if (lastMarketDataRefreshStatus_.isEmpty()) {
+        lastMarketDataRefreshStatus_ = result.marketDataAccepted
+            ? QStringLiteral("OK")
+            : QStringLiteral("REJECTED");
+    }
+    lastMarketDataInstrumentCode_ = QString::fromStdString(result.marketDataInstrumentCode);
+    lastMarketDataCurrentPriceText_ =
+        QString::fromStdString(result.marketDataCurrentPriceText);
+    lastMarketDataPreviousCloseText_ =
+        QString::fromStdString(result.marketDataPreviousCloseText);
+    lastMarketDataHistoricalHighText_ =
+        QString::fromStdString(result.marketDataHistoricalHighText);
+    lastMarketDataDisplayedHighText_ =
+        QString::fromStdString(result.marketDataDisplayedHighText);
+    lastMarketDataHistoricalHighDate_ =
+        QString::fromStdString(result.marketDataHistoricalHighDate);
+    lastMarketDataDrawdownFromHighText_ =
+        QString::fromStdString(result.marketDataDrawdownFromHighText);
+    lastMarketDataPremiumDiscountText_ =
+        QString::fromStdString(result.marketDataPremiumDiscountText);
+    lastMarketDataQualityStatus_ = QString::fromStdString(result.dataQualityStatus);
+    lastMarketDataProviderSource_ =
+        QString::fromStdString(result.marketDataProviderSource);
+    lastMarketDataIssueCodes_ =
+        QString::fromStdString([&]() {
+            std::ostringstream stream;
+            for (std::size_t index = 0; index < result.marketDataIssueCodes.size(); ++index) {
+                if (index != 0U) {
+                    stream << ',';
+                }
+                stream << result.marketDataIssueCodes[index];
+            }
+            return stream.str();
+        }());
+    lastMarketDataSummary_ = QStringLiteral(
+        "instrument=%1 current=%2 previousClose=%3 historicalHigh=%4 displayedHigh=%5 highDate=%6 drawdown=%7 premiumDiscount=%8 quality=%9 provider=%10")
+        .arg(lastMarketDataInstrumentCode_)
+        .arg(lastMarketDataCurrentPriceText_)
+        .arg(lastMarketDataPreviousCloseText_)
+        .arg(lastMarketDataHistoricalHighText_)
+        .arg(lastMarketDataDisplayedHighText_)
+        .arg(lastMarketDataHistoricalHighDate_)
+        .arg(lastMarketDataDrawdownFromHighText_)
+        .arg(lastMarketDataPremiumDiscountText_)
+        .arg(lastMarketDataQualityStatus_)
+        .arg(lastMarketDataProviderSource_);
+    if (!result.marketDataAccepted && lastMarketDataSummary_.trimmed().isEmpty()) {
+        lastMarketDataSummary_ = issueTextFromResult(result);
+    }
+    emit marketDataStateChanged();
+    syncFromController();
+    return result.protocolSuccess && result.marketDataAccepted;
+}
+
 void ShellAccountingPresenter::resetTradeDraftState()
 {
     lastTradeDraftStatus_ = QStringLiteral("READY");
@@ -1799,6 +1965,7 @@ void ShellAccountingPresenter::reset()
     resetExcelVbaImportPersistState();
     resetPortfolioReplayState();
     resetStrategyRecommendationState();
+    resetMarketDataState();
     resetTradeDraftState();
     resetOtcMapDraftState();
 }
@@ -2219,6 +2386,25 @@ void ShellAccountingPresenter::markStrategyRecommendationInputError(const QStrin
     emit strategyRecommendationStateChanged();
 }
 
+void ShellAccountingPresenter::markMarketDataInputError(const QString& message)
+{
+    marketDataRefreshBusy_ = false;
+    lastMarketDataRefreshStatus_ = QStringLiteral("INPUT_ERROR");
+    lastMarketDataInstrumentCode_.clear();
+    lastMarketDataCurrentPriceText_.clear();
+    lastMarketDataPreviousCloseText_.clear();
+    lastMarketDataHistoricalHighText_.clear();
+    lastMarketDataDisplayedHighText_.clear();
+    lastMarketDataHistoricalHighDate_.clear();
+    lastMarketDataDrawdownFromHighText_.clear();
+    lastMarketDataPremiumDiscountText_.clear();
+    lastMarketDataQualityStatus_ = QStringLiteral("ERROR");
+    lastMarketDataProviderSource_.clear();
+    lastMarketDataIssueCodes_ = QStringLiteral("MARKET_DATA_INPUT_ERROR");
+    lastMarketDataSummary_ = message;
+    emit marketDataStateChanged();
+}
+
 void ShellAccountingPresenter::markTradeDraftInputError(const QString& message)
 {
     lastTradeDraftStatus_ = QStringLiteral("INPUT_ERROR");
@@ -2514,6 +2700,42 @@ ShellAccountingPresenter::makeStrategyRecommendationReadOnlySummaryRequest(
     ShellAccountingServiceRequest request;
     request.actionName = "strategy.recommendation.readonly_summary";
     request.strategyRecommendationPayloadJson =
+        QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest
+ShellAccountingPresenter::makeMarketDataReadOnlySummaryRequest(
+    const QString& payloadJson,
+    bool& valid)
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(payloadJson.trimmed().toUtf8(), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markMarketDataInputError(
+            QStringLiteral("Market data refresh payload must be a JSON object."));
+        return {};
+    }
+
+    const auto object = document.object();
+    if (object.contains(QStringLiteral("filePath"))
+        || object.contains(QStringLiteral("path"))
+        || object.contains(QStringLiteral("filename"))
+        || object.contains(QStringLiteral("credential"))
+        || object.contains(QStringLiteral("endpoint"))
+        || object.contains(QStringLiteral("cookie"))
+        || object.contains(QStringLiteral("token"))) {
+        markMarketDataInputError(
+            QStringLiteral("Market data refresh accepts sanitized in-memory payload JSON only."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "marketdata.refresh.readonly_summary";
+    request.marketDataPayloadJson =
         QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
     request.timeoutMs = 2000;
     valid = true;

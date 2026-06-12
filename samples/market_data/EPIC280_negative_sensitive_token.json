@@ -1,0 +1,20 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_sensitive_token",
+  "input": {
+    "providerMode": "fixture",
+    "rawPayloadForSafetyScan": "token=secret",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "INVALID_PAYLOAD",
+    "dataQualityStatus": "INVALID_PAYLOAD",
+    "issueCodes": ["MARKET_DATA_FORBIDDEN_TOKEN"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

@@ -3454,6 +3454,22 @@ AccountingEngine, the raw persist action name, raw SQL, raw paths,
 credentials, endpoints, TradeDraft, strategy execution, broker order
 submission, real order placement, or automatic trading.
 
+## EPIC-277 Strategy Recommendation Engine VBA Parity Prompt Rule
+
+Future Strategy recommendation work must reference
+`docs/364_strategy_recommendation_engine_vba_parity_full_delivery.md`,
+`docs/365_strategy_recommendation_engine_vba_parity_matrix.md`,
+`docs/366_strategy_recommendation_engine_contract.md`,
+`docs/367_strategy_recommendation_engine_user_visible_summary.md`, and
+`docs/368_strategy_recommendation_engine_test_plan.md`.
+
+EPIC-277 delivers only a read-only recommendation module. Follow-up work may
+consume status, action, source, reason, tier, target amount, suggested quantity,
+suggested amount, net cash impact, fee, and issue codes. Do not reinterpret the
+recommendation as a TradeDraft, order ticket, broker instruction, automatic
+trading signal, persistence request, or market-data refresh. Do not broaden
+old gate allowlists beyond exact EPIC-277 paths.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

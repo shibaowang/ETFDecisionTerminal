@@ -49,6 +49,23 @@ struct ShellAccountingDataServiceClientResponse final {
     std::string portfolioReplayTotalFeeText;
     std::string portfolioReplayTotalMarketValueText;
     std::vector<std::string> portfolioReplayIssueCodes;
+    bool strategyRecommendationAccepted = false;
+    bool strategyRecommendationComputed = false;
+    std::string strategyRecommendationActionCode;
+    std::string strategyRecommendationActionLabel;
+    std::string strategyRecommendationSourceCode;
+    std::string strategyRecommendationSourceLabel;
+    std::string strategyRecommendationReasonCode;
+    std::string strategyRecommendationReasonLabel;
+    std::string strategyRecommendationTierLabel;
+    std::string strategyRecommendationTargetAmountText;
+    std::string strategyRecommendationSuggestedQuantityText;
+    std::string strategyRecommendationSuggestedAmountText;
+    std::string strategyRecommendationNetCashImpactText;
+    std::string strategyRecommendationFeeText;
+    bool strategyRecommendationBaseProtectionPassed = false;
+    bool strategyRecommendationCashLimitApplied = false;
+    std::vector<std::string> strategyRecommendationIssueCodes;
     bool accountingEngineCalled = false;
     bool productionFileLoading = false;
     bool productionWrite = false;
@@ -92,6 +109,8 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callExcelVbaImportPersistManualEntry(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callPortfolioReplayReadOnlySummary(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callStrategyRecommendationReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
 };
 

@@ -386,6 +386,17 @@ ShellAccountingDataServiceClientRequest makePortfolioReplayReadOnlySummaryClient
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makeStrategyRecommendationReadOnlySummaryClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "strategy.recommendation.readonly_summary";
+    clientRequest.payloadJson =
+        request.strategyRecommendationPayloadJson.empty() ? "{}" : request.strategyRecommendationPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingServiceResult mapClientResponse(
     ShellAccountingDataServiceClientResponse response,
     const ShellAccountingServiceRequest& request,
@@ -434,6 +445,23 @@ ShellAccountingServiceResult mapClientResponse(
     result.portfolioReplayTotalFeeText = std::move(response.portfolioReplayTotalFeeText);
     result.portfolioReplayTotalMarketValueText = std::move(response.portfolioReplayTotalMarketValueText);
     result.portfolioReplayIssueCodes = std::move(response.portfolioReplayIssueCodes);
+    result.strategyRecommendationAccepted = response.strategyRecommendationAccepted;
+    result.strategyRecommendationComputed = response.strategyRecommendationComputed;
+    result.strategyRecommendationActionCode = std::move(response.strategyRecommendationActionCode);
+    result.strategyRecommendationActionLabel = std::move(response.strategyRecommendationActionLabel);
+    result.strategyRecommendationSourceCode = std::move(response.strategyRecommendationSourceCode);
+    result.strategyRecommendationSourceLabel = std::move(response.strategyRecommendationSourceLabel);
+    result.strategyRecommendationReasonCode = std::move(response.strategyRecommendationReasonCode);
+    result.strategyRecommendationReasonLabel = std::move(response.strategyRecommendationReasonLabel);
+    result.strategyRecommendationTierLabel = std::move(response.strategyRecommendationTierLabel);
+    result.strategyRecommendationTargetAmountText = std::move(response.strategyRecommendationTargetAmountText);
+    result.strategyRecommendationSuggestedQuantityText = std::move(response.strategyRecommendationSuggestedQuantityText);
+    result.strategyRecommendationSuggestedAmountText = std::move(response.strategyRecommendationSuggestedAmountText);
+    result.strategyRecommendationNetCashImpactText = std::move(response.strategyRecommendationNetCashImpactText);
+    result.strategyRecommendationFeeText = std::move(response.strategyRecommendationFeeText);
+    result.strategyRecommendationBaseProtectionPassed = response.strategyRecommendationBaseProtectionPassed;
+    result.strategyRecommendationCashLimitApplied = response.strategyRecommendationCashLimitApplied;
+    result.strategyRecommendationIssueCodes = std::move(response.strategyRecommendationIssueCodes);
     result.accountingEngineCalled = response.accountingEngineCalled;
     result.productionFileLoading = response.productionFileLoading;
     result.productionWrite = response.productionWrite;
@@ -608,6 +636,20 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchPortfolioRe
             "accounting.portfolio_replay.readonly_summary");
     }
     return makeNotConnectedResult(request, "accounting.portfolio_replay.readonly_summary");
+}
+
+ShellAccountingServiceResult
+ShellAccountingDataServiceAdapter::fetchStrategyRecommendationReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callStrategyRecommendationReadOnlySummary(
+                makeStrategyRecommendationReadOnlySummaryClientRequest(request)),
+            request,
+            "strategy.recommendation.readonly_summary");
+    }
+    return makeNotConnectedResult(request, "strategy.recommendation.readonly_summary");
 }
 
 bool ShellAccountingDataServiceAdapter::hasLiveClient() const noexcept

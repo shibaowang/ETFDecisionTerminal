@@ -1540,6 +1540,27 @@
   [339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md](339_shell_accounting_excel_vba_import_mvp_local_service_e2e_acceptance_test_plan.md)
   defines TASK-271 end-to-end local-service checks, exact temp DB row-count
   assertions, no-residual-listener checks, and required command checks.
+- Strategy recommendation engine VBA parity full delivery:
+  [364_strategy_recommendation_engine_vba_parity_full_delivery.md](364_strategy_recommendation_engine_vba_parity_full_delivery.md)
+  records EPIC-277 StrategyEngine read-only recommendation scope, VBA parity
+  behavior, DataService / client / Presenter chain, and no-write / no-broker
+  boundaries.
+- Strategy recommendation engine VBA parity matrix:
+  [365_strategy_recommendation_engine_vba_parity_matrix.md](365_strategy_recommendation_engine_vba_parity_matrix.md)
+  lists the 12 positive and 12 negative EPIC-277 recommendation samples under
+  `samples/strategy_recommendation/`.
+- Strategy recommendation engine contract:
+  [366_strategy_recommendation_engine_contract.md](366_strategy_recommendation_engine_contract.md)
+  defines the EPIC-277 input/output contract, buy, sell, base protection,
+  quantization, cash-capped buy, OTC generic, and fail-closed semantics.
+- Strategy recommendation engine user-visible summary:
+  [367_strategy_recommendation_engine_user_visible_summary.md](367_strategy_recommendation_engine_user_visible_summary.md)
+  documents the read-only user-visible recommendation states and explicitly
+  excludes TradeDraft, broker, network, endpoint, and automatic trading.
+- Strategy recommendation engine test plan:
+  [368_strategy_recommendation_engine_test_plan.md](368_strategy_recommendation_engine_test_plan.md)
+  defines the EPIC-277 exact parity, local service, Presenter mapping, no-write,
+  and regression validation commands.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

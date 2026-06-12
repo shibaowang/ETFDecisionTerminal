@@ -115,4 +115,26 @@ ShellAccountingDataServiceClientPort::callPortfolioReplayReadOnlySummary(
     return response;
 }
 
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callStrategyRecommendationReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = request.actionName;
+    response.protocolSuccess = false;
+    response.implemented = false;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus =
+        "SHELL_ACCOUNTING_STRATEGY_RECOMMENDATION_READONLY_SUMMARY_PORT_NOT_CONFIGURED";
+    response.dataQualityStatus = "UNAVAILABLE";
+    response.protocolError = true;
+    response.errorMessage =
+        "ShellAccounting strategy recommendation DataService port is not configured.";
+    response.issues.push_back(
+        {response.payloadStatus, "ERROR", response.errorMessage, true,
+         "ShellAccountingDataServiceClientPort"});
+    return response;
+}
+
 }  // namespace etfdt::shell_services

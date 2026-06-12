@@ -34,6 +34,8 @@ constexpr const char* kActionAccountingHealth = "accounting.health";
 constexpr const char* kActionAccountingReplayPreview = "accounting.replay.preview";
 constexpr const char* kActionAccountingPortfolioReplayReadOnlySummary =
     "accounting.portfolio_replay.readonly_summary";
+constexpr const char* kActionStrategyRecommendationReadOnlySummary =
+    "strategy.recommendation.readonly_summary";
 constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
     "accounting.excel_vba_import.readonly_preview";
 constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
@@ -293,6 +295,31 @@ DataServiceClient::accountingPortfolioReplayReadOnlySummary(
             response.error().message);
     }
     return parsePortfolioReplayReadOnlySummaryPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>
+DataServiceClient::strategyRecommendationReadOnlySummary(
+    const StrategyRecommendationReadOnlySummaryRequest& request,
+    int timeoutMs)
+{
+    if (!isLikelyJsonObject(request.recommendationPayloadJson)) {
+        return DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Strategy recommendation summary request payload must be a JSON object");
+    }
+
+    auto response = sendAction(
+        kActionStrategyRecommendationReadOnlySummary,
+        strategyRecommendationReadOnlySummaryPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseStrategyRecommendationReadOnlySummaryPayloadJson(
         response.value().payloadJson,
         response.value().success);
 }

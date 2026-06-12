@@ -42,6 +42,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionAccountingExcelVbaImportReadOnlyPreview, [&connection](const auto& context) {
         return handleAccountingExcelVbaImportReadOnlyPreview(context, connection);
     });
+    (void)dispatcher.registerAction(kActionStrategyRecommendationReadOnlySummary, [&connection](const auto& context) {
+        return handleStrategyRecommendationReadOnlySummary(context, connection);
+    });
     (void)dispatcher.registerAction(kActionAccountingManualTransactionCreate, [&connection](const auto& context) {
         return handleAccountingManualEntryTransactionCreate(context, connection);
     });

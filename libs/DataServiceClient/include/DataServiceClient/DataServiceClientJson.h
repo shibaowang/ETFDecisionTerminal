@@ -22,6 +22,11 @@ parsePortfolioReplayReadOnlySummaryPayloadJson(
     const std::string& json,
     bool protocolSuccess);
 
+[[nodiscard]] DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>
+parseStrategyRecommendationReadOnlySummaryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess);
+
 [[nodiscard]] std::string auditAppendPayloadJson(const AuditAppendRequest& request);
 
 [[nodiscard]] std::string excelVbaImportPersistManualEntryPayloadJson(
@@ -29,5 +34,8 @@ parsePortfolioReplayReadOnlySummaryPayloadJson(
 
 [[nodiscard]] std::string portfolioReplayReadOnlySummaryPayloadJson(
     const PortfolioReplayReadOnlySummaryRequest& request);
+
+[[nodiscard]] std::string strategyRecommendationReadOnlySummaryPayloadJson(
+    const StrategyRecommendationReadOnlySummaryRequest& request);
 
 }  // namespace etfdt::data_service_client

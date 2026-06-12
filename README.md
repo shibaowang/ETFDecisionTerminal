@@ -5289,3 +5289,23 @@ TASK-268 documentation is in
 `docs/332_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring.md`
 and
 `docs/333_shell_accounting_excel_vba_import_accepted_preview_persist_qml_wiring_test_plan.md`.
+
+## EPIC-277 Strategy Recommendation Engine VBA Parity Full Delivery
+
+EPIC-277 adds a production StrategyEngine read-only recommendation module,
+DataService read-only action `strategy.recommendation.readonly_summary`,
+typed DataServiceClient adapter, ShellServices / Presenter mapping, 12 positive
+and 12 negative parity samples, and a local service E2E CTest.
+
+The recommendation path is read-only. It does not create TradeDrafts, write
+trade_log, cash_adjustment, audit_log, ledger, snapshot, or read models, touch
+production DBs, access broker / network / credentials / endpoints, place real
+orders, or enable automatic trading. OTCMap multi-channel legs remain future
+work.
+
+EPIC-277 documentation is in
+`docs/364_strategy_recommendation_engine_vba_parity_full_delivery.md`,
+`docs/365_strategy_recommendation_engine_vba_parity_matrix.md`,
+`docs/366_strategy_recommendation_engine_contract.md`,
+`docs/367_strategy_recommendation_engine_user_visible_summary.md`, and
+`docs/368_strategy_recommendation_engine_test_plan.md`.

@@ -32,6 +32,8 @@ public:
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult fetchPortfolioReplayReadOnlySummary(
         const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult fetchStrategyRecommendationReadOnlySummary(
+        const ShellAccountingServiceRequest& request);
 };
 
 }  // namespace etfdt::shell_services

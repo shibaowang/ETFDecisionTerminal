@@ -114,4 +114,14 @@ ShellAccountingServiceResult ShellAccountingServiceAdapter::fetchPortfolioReplay
         "SHELL_ACCOUNTING_PORTFOLIO_REPLAY_READONLY_SUMMARY_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult
+ShellAccountingServiceAdapter::fetchStrategyRecommendationReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "strategy.recommendation.readonly_summary",
+        "SHELL_ACCOUNTING_STRATEGY_RECOMMENDATION_READONLY_SUMMARY_ADAPTER_NOT_CONFIGURED");
+}
+
 }  // namespace etfdt::shell_services

@@ -362,6 +362,30 @@ ShellAccountingServiceResult ShellAccountingReadOnlyController::fetchPortfolioRe
     return result;
 }
 
+ShellAccountingServiceResult
+ShellAccountingReadOnlyController::fetchStrategyRecommendationReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("strategy.recommendation.readonly_summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("strategy.recommendation.readonly_summary");
+        ShellAccountingServiceResult result;
+        result.actionName = "strategy.recommendation.readonly_summary";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->fetchStrategyRecommendationReadOnlySummary(request);
+    applyServiceResult(result);
+    return result;
+}
+
 void ShellAccountingReadOnlyController::reset()
 {
     actionName_.clear();

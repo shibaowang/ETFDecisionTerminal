@@ -57,6 +57,10 @@ public:
     accountingPortfolioReplayReadOnlySummary(
         const PortfolioReplayReadOnlySummaryRequest& request,
         int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<StrategyRecommendationReadOnlySummaryResult>
+    strategyRecommendationReadOnlySummary(
+        const StrategyRecommendationReadOnlySummaryRequest& request,
+        int timeoutMs = 2000);
     [[nodiscard]] DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>
     accountingExcelVbaImportReadOnlyPreview(
         const std::string& payloadJson = "{}",

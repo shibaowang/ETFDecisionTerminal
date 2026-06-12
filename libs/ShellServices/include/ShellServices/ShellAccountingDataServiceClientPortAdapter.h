@@ -33,6 +33,10 @@ public:
         const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callTradeDraftCreate(
         const ShellAccountingDataServiceClientRequest& request) override;
+    [[nodiscard]] ShellAccountingDataServiceClientResponse callTradeDraftCreateFromRecommendation(
+        const ShellAccountingDataServiceClientRequest& request) override;
+    [[nodiscard]] ShellAccountingDataServiceClientResponse callTradeDraftReadOnlySummary(
+        const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callTradeDraftConfirm(
         const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callManualTransactionCreate(

@@ -83,10 +83,54 @@ struct StrategyRecommendationResult final {
     std::vector<StrategyRecommendationIssue> issues;
 };
 
+struct TradeDraftConversionRequest final {
+    StrategyRecommendationResult recommendation;
+    std::string accountId;
+    std::string portfolioId;
+    std::string strategyCode;
+    std::string instrumentCode;
+    std::string instrumentType;
+    std::string tradeSource;
+    std::string idempotencyKey;
+    std::string recommendationDigest;
+    std::string userNote;
+    bool userConfirmed = false;
+};
+
+struct TradeDraftConversionResult final {
+    std::string status = "REJECTED";
+    std::string side;
+    std::string sourceRecommendationAction;
+    std::string sourceRecommendationReason;
+    std::string instrumentCode;
+    std::string instrumentType;
+    std::string strategyCode;
+    std::string tradeSource;
+    std::string quantityText = "0";
+    std::string amountText = "0.00";
+    std::string priceText = "0.00";
+    std::string feeEstimateText = "0.00";
+    std::string netCashImpactText = "0.00";
+    std::string currency = "CNY";
+    bool eligible = false;
+    bool userConfirmationRequired = true;
+    bool userConfirmed = false;
+    bool baseProtectionPassed = true;
+    bool cashLimitApplied = false;
+    bool otcGenericDraft = false;
+    bool multiChannelOtcLegsCreated = false;
+    bool tradeDraftIsNotOrder = true;
+    bool noWriteInConversion = true;
+    std::vector<StrategyRecommendationIssue> issues;
+    std::vector<std::string> issueCodes;
+};
+
 class StrategyRecommendationEngine final {
 public:
     [[nodiscard]] StrategyRecommendationResult recommendReadOnly(
         const StrategyRecommendationInput& input) const;
+    [[nodiscard]] TradeDraftConversionResult convertRecommendationToTradeDraft(
+        const TradeDraftConversionRequest& request) const;
 };
 
 [[nodiscard]] bool decodeStrategyRecommendationInputJson(

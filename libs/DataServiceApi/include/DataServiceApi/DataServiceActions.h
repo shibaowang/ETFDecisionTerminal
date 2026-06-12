@@ -26,6 +26,10 @@ constexpr const char* kActionStrategyRecommendationReadOnlySummary =
 constexpr const char* kActionAccountingSnapshotWrite = "accounting.snapshot.write";
 constexpr const char* kActionAccountingAuditWrite = "accounting.audit.write";
 constexpr const char* kActionAccountingTradeDraftCreate = "accounting.tradedraft.create";
+constexpr const char* kActionAccountingTradeDraftCreateFromRecommendation =
+    "accounting.tradedraft.create_from_recommendation";
+constexpr const char* kActionAccountingTradeDraftReadOnlySummary =
+    "accounting.tradedraft.readonly_summary";
 constexpr const char* kActionAccountingTradeDraftConfirm = "accounting.tradedraft.confirm";
 constexpr const char* kActionAccountingBrokerOrderDryRun = "accounting.broker_order.dry_run";
 constexpr const char* kActionAccountingManualTransactionCreate =
@@ -103,6 +107,14 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreate(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftCreateFromRecommendation(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingTradeDraftReadOnlySummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

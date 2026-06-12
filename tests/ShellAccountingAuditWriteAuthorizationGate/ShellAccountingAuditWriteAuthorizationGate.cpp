@@ -191,7 +191,7 @@ std::vector<std::string> uiTriggeredAuditForbiddenTokens()
 std::vector<std::string> tradeOrStrategyForbiddenTokens()
 {
     return {
-        "createTradeDraft",
+        "confirmTradeDraft",
         "brokerOrder(",
         "placeOrder",
         "\"strategyExecute\"",

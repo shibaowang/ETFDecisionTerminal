@@ -74,6 +74,18 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString lastStrategyRecommendationNetCashImpactText READ lastStrategyRecommendationNetCashImpactText NOTIFY strategyRecommendationStateChanged)
     Q_PROPERTY(QString lastStrategyRecommendationIssueCodes READ lastStrategyRecommendationIssueCodes NOTIFY strategyRecommendationStateChanged)
     Q_PROPERTY(QString lastStrategyRecommendationSummary READ lastStrategyRecommendationSummary NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(QString lastTradeDraftStatus READ lastTradeDraftStatus NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftId READ lastTradeDraftId NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftSide READ lastTradeDraftSide NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftInstrumentCode READ lastTradeDraftInstrumentCode NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftQuantityText READ lastTradeDraftQuantityText NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftAmountText READ lastTradeDraftAmountText NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftNetCashImpactText READ lastTradeDraftNetCashImpactText NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftIssueCodes READ lastTradeDraftIssueCodes NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(QString lastTradeDraftSummary READ lastTradeDraftSummary NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(bool lastTradeDraftDuplicate READ lastTradeDraftDuplicate NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(bool lastTradeDraftIdempotencyConflict READ lastTradeDraftIdempotencyConflict NOTIFY tradeDraftStateChanged)
+    Q_PROPERTY(bool lastTradeDraftUserConfirmationRequired READ lastTradeDraftUserConfirmationRequired NOTIFY tradeDraftStateChanged)
 
 public:
     explicit ShellAccountingPresenter(QObject* parent = nullptr);
@@ -142,6 +154,18 @@ public:
     [[nodiscard]] QString lastStrategyRecommendationNetCashImpactText() const;
     [[nodiscard]] QString lastStrategyRecommendationIssueCodes() const;
     [[nodiscard]] QString lastStrategyRecommendationSummary() const;
+    [[nodiscard]] QString lastTradeDraftStatus() const;
+    [[nodiscard]] QString lastTradeDraftId() const;
+    [[nodiscard]] QString lastTradeDraftSide() const;
+    [[nodiscard]] QString lastTradeDraftInstrumentCode() const;
+    [[nodiscard]] QString lastTradeDraftQuantityText() const;
+    [[nodiscard]] QString lastTradeDraftAmountText() const;
+    [[nodiscard]] QString lastTradeDraftNetCashImpactText() const;
+    [[nodiscard]] QString lastTradeDraftIssueCodes() const;
+    [[nodiscard]] QString lastTradeDraftSummary() const;
+    [[nodiscard]] bool lastTradeDraftDuplicate() const noexcept;
+    [[nodiscard]] bool lastTradeDraftIdempotencyConflict() const noexcept;
+    [[nodiscard]] bool lastTradeDraftUserConfirmationRequired() const noexcept;
 
     [[nodiscard]] ShellAccountingStatusObject& statusObject() noexcept;
     [[nodiscard]] const ShellAccountingStatusObject& statusObject() const noexcept;
@@ -212,6 +236,9 @@ public:
     Q_INVOKABLE bool previewPortfolioReplayReadOnlySummary(const QString& replayPayloadJson);
     Q_INVOKABLE void resetStrategyRecommendationState();
     Q_INVOKABLE bool previewStrategyRecommendationReadOnlySummary(const QString& recommendationPayloadJson);
+    Q_INVOKABLE void resetTradeDraftState();
+    Q_INVOKABLE bool previewTradeDraftFromLastRecommendation();
+    Q_INVOKABLE bool createTradeDraftFromLastRecommendation(bool userConfirmed);
     bool persistExcelVbaImportManualEntry(
         const QString& previewStatus,
         const QString& previewDigest,
@@ -235,6 +262,7 @@ signals:
     void excelVbaImportPersistStateChanged();
     void portfolioReplayStateChanged();
     void strategyRecommendationStateChanged();
+    void tradeDraftStateChanged();
 
 private:
     void markControllerNotConfigured(const char* actionName);
@@ -259,6 +287,8 @@ private:
     void markExcelVbaImportPersistInputError(const QString& message);
     void markPortfolioReplayInputError(const QString& message);
     void markStrategyRecommendationInputError(const QString& message);
+    void markTradeDraftInputError(const QString& message);
+    void applyTradeDraftResult(const ShellAccountingServiceResult& result);
     [[nodiscard]] ShellAccountingServiceRequest makeExcelVbaImportPreviewRequest(
         const QString& importPayloadJson,
         bool& valid);
@@ -282,6 +312,12 @@ private:
     [[nodiscard]] ShellAccountingServiceRequest makeStrategyRecommendationReadOnlySummaryRequest(
         const QString& recommendationPayloadJson,
         bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeTradeDraftCreateFromRecommendationRequest(
+        bool userConfirmed,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeTradeDraftReadOnlySummaryRequest(bool& valid) const;
+    [[nodiscard]] QString tradeDraftRecommendationDigest() const;
+    [[nodiscard]] QString tradeDraftIdempotencyKey() const;
     [[nodiscard]] QString acceptedExcelVbaImportPreviewIdempotencyKey() const;
     [[nodiscard]] QString acceptedExcelVbaImportPreviewDigest(
         const QString& importPayloadJson,
@@ -389,6 +425,19 @@ private:
     QString lastStrategyRecommendationNetCashImpactText_;
     QString lastStrategyRecommendationIssueCodes_;
     QString lastStrategyRecommendationSummary_;
+    QString lastStrategyRecommendationPayloadJson_;
+    QString lastTradeDraftStatus_ = QStringLiteral("READY");
+    QString lastTradeDraftId_;
+    QString lastTradeDraftSide_;
+    QString lastTradeDraftInstrumentCode_;
+    QString lastTradeDraftQuantityText_;
+    QString lastTradeDraftAmountText_;
+    QString lastTradeDraftNetCashImpactText_;
+    QString lastTradeDraftIssueCodes_;
+    QString lastTradeDraftSummary_;
+    bool lastTradeDraftDuplicate_ = false;
+    bool lastTradeDraftIdempotencyConflict_ = false;
+    bool lastTradeDraftUserConfirmationRequired_ = false;
     ShellAccountingServiceRequest lastDraftRequest_;
 };
 

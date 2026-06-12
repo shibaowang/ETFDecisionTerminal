@@ -45,6 +45,9 @@ void registerDataServiceReadOnlyActions(
     (void)dispatcher.registerAction(kActionStrategyRecommendationReadOnlySummary, [&connection](const auto& context) {
         return handleStrategyRecommendationReadOnlySummary(context, connection);
     });
+    (void)dispatcher.registerAction(kActionAccountingTradeDraftReadOnlySummary, [&connection](const auto& context) {
+        return handleAccountingTradeDraftReadOnlySummary(context, connection);
+    });
     (void)dispatcher.registerAction(kActionAccountingManualTransactionCreate, [&connection](const auto& context) {
         return handleAccountingManualEntryTransactionCreate(context, connection);
     });
@@ -97,6 +100,11 @@ void registerDataServiceWriteActions(
     if (isWriteActionAllowed(kActionAccountingTradeDraftCreate)) {
         (void)dispatcher.registerAction(kActionAccountingTradeDraftCreate, [&connection](const auto& context) {
             return handleAccountingTradeDraftCreate(context, connection);
+        });
+    }
+    if (isWriteActionAllowed(kActionAccountingTradeDraftCreateFromRecommendation)) {
+        (void)dispatcher.registerAction(kActionAccountingTradeDraftCreateFromRecommendation, [&connection](const auto& context) {
+            return handleAccountingTradeDraftCreateFromRecommendation(context, connection);
         });
     }
     if (isWriteActionAllowed(kActionAccountingTradeDraftConfirm)) {

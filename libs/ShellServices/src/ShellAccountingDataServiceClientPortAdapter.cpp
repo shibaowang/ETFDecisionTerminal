@@ -542,6 +542,198 @@ ShellAccountingDataServiceClientResponse mapStrategyRecommendationClientResult(
     return response;
 }
 
+std::optional<etfdt::data_service_client::TradeDraftCreateFromRecommendationRequest>
+parseTradeDraftRecommendationRequestPayload(const std::string& payloadJson)
+{
+    QJsonParseError parseError;
+    const auto document =
+        QJsonDocument::fromJson(QByteArray::fromStdString(payloadJson), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return std::nullopt;
+    }
+
+    const auto object = document.object();
+    etfdt::data_service_client::TradeDraftCreateFromRecommendationRequest request;
+    request.recommendationPayloadJson = stringField(object, "recommendationPayloadJson", "{}");
+    request.idempotencyKey = stringField(object, "idempotencyKey");
+    request.recommendationDigest = stringField(object, "recommendationDigest");
+    request.accountId = stringField(object, "accountId");
+    request.portfolioId = stringField(object, "portfolioId");
+    request.strategyId = stringField(object, "strategyId");
+    request.instrumentId = stringField(object, "instrumentId");
+    request.strategyCode = stringField(object, "strategyCode");
+    request.instrumentCode = stringField(object, "instrumentCode");
+    request.instrumentType = stringField(object, "instrumentType");
+    request.tradeSource = stringField(object, "tradeSource");
+    request.expiresAtUtc = stringField(object, "expiresAtUtc");
+    request.userNote = stringField(object, "userNote");
+    request.userConfirmed = boolField(object, "userConfirmed").value_or(false);
+    return request;
+}
+
+std::optional<etfdt::data_service_client::TradeDraftReadOnlySummaryRequest>
+parseTradeDraftSummaryRequestPayload(const std::string& payloadJson)
+{
+    QJsonParseError parseError;
+    const auto document =
+        QJsonDocument::fromJson(QByteArray::fromStdString(payloadJson), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return std::nullopt;
+    }
+
+    const auto object = document.object();
+    etfdt::data_service_client::TradeDraftReadOnlySummaryRequest request;
+    request.idempotencyKey = stringField(object, "idempotencyKey");
+    request.draftId = static_cast<std::int64_t>(object.value(QStringLiteral("draftId")).toDouble(0.0));
+    return request;
+}
+
+QJsonObject tradeDraftResultObject(
+    const etfdt::data_service_client::TradeDraftCreateFromRecommendationResult& draft)
+{
+    QJsonArray issues;
+    for (const auto& issue : draft.issueCodes) {
+        issues.push_back(QString::fromStdString(issue));
+    }
+    return QJsonObject{
+        {"action", QString::fromStdString(draft.action)},
+        {"task", QString::fromStdString(draft.task)},
+        {"status", QString::fromStdString(draft.status)},
+        {"draftId", static_cast<double>(draft.draftId)},
+        {"side", QString::fromStdString(draft.side)},
+        {"instrumentCode", QString::fromStdString(draft.instrumentCode)},
+        {"quantityText", QString::fromStdString(draft.quantityText)},
+        {"amountText", QString::fromStdString(draft.amountText)},
+        {"netCashImpactText", QString::fromStdString(draft.netCashImpactText)},
+        {"duplicateDraft", draft.duplicateDraft},
+        {"idempotencyConflict", draft.idempotencyConflict},
+        {"tradeDraftIsNotOrder", draft.tradeDraftIsNotOrder},
+        {"issueCodes", issues},
+    };
+}
+
+ShellAccountingDataServiceClientResponse mapTradeDraftCreateClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::TradeDraftCreateFromRecommendationResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient TradeDraft create-from-recommendation call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& draft = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = draft.action.empty() ? request.actionName : draft.action;
+    response.protocolSuccess = draft.protocolSuccess;
+    response.implemented = draft.dataServiceWriteActionCreated;
+    response.readOnly = false;
+    response.writeEnabled = true;
+    response.payloadStatus = draft.status.empty() ? kClientCallFailedStatus : draft.status;
+    response.dataQualityStatus =
+        (draft.draftWritten || draft.duplicateDraft) && !draft.idempotencyConflict ? "OK" : kErrorQuality;
+    response.hasRows = draft.draftId > 0;
+    response.domainError = draft.idempotencyConflict || (!draft.draftWritten && !draft.duplicateDraft);
+    response.transactionCommitted = draft.transactionCommitted;
+    response.auditWritten = draft.auditWritten;
+    response.productionWrite = draft.productionWrite;
+    response.sqliteProductionWrite = draft.sqliteProductionWrite;
+    response.networkAccess = draft.networkAccess;
+    response.credentialAccess = draft.credentialAccess;
+    response.endpointAccess = draft.endpointAccess;
+    response.automaticTrading = draft.automaticTrading;
+    response.tradeDraftManualRecommendationFlowCreated = draft.tradeDraftManualRecommendationFlowCreated;
+    response.tradeDraftUserConfirmationRequired = draft.tradeDraftRequiresExplicitUserConfirmation;
+    response.tradeDraftEligible = draft.tradeDraftEligible;
+    response.tradeDraftDuplicate = draft.duplicateDraft;
+    response.tradeDraftIdempotencyConflict = draft.idempotencyConflict;
+    response.tradeDraftIsNotOrder = draft.tradeDraftIsNotOrder;
+    response.tradeDraftId = draft.draftId;
+    response.tradeDraftStatus = draft.status;
+    response.tradeDraftSide = draft.side;
+    response.tradeDraftInstrumentCode = draft.instrumentCode;
+    response.tradeDraftQuantityText = draft.quantityText;
+    response.tradeDraftAmountText = draft.amountText;
+    response.tradeDraftNetCashImpactText = draft.netCashImpactText;
+    response.tradeDraftIssueCodes = draft.issueCodes;
+    response.rawPayload =
+        QJsonDocument(tradeDraftResultObject(draft)).toJson(QJsonDocument::Compact).toStdString();
+
+    for (const auto& issue : draft.issueCodes) {
+        response.issues.push_back(makeIssue(issue, "ERROR", issue, true));
+    }
+    return response;
+}
+
+ShellAccountingDataServiceClientResponse mapTradeDraftSummaryClientResult(
+    const ShellAccountingDataServiceClientRequest& request,
+    const etfdt::data_service_client::DataServiceClientResult<
+        etfdt::data_service_client::TradeDraftReadOnlySummaryResult>& result)
+{
+    if (!result) {
+        const auto message = result.error().message.empty()
+            ? "DataServiceClient TradeDraft read-only summary call failed."
+            : result.error().message;
+        const bool timeout =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9002_HEARTBEAT_TIMEOUT;
+        const bool transport =
+            result.error().errorCode == etfdt::protocol::ErrorCode::E9001_SERVICE_UNAVAILABLE;
+        return makeUnavailableResponse(
+            request,
+            kClientCallFailedStatus,
+            message,
+            transport,
+            timeout);
+    }
+
+    const auto& summary = result.value();
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = summary.action.empty() ? request.actionName : summary.action;
+    response.protocolSuccess = summary.protocolSuccess;
+    response.implemented = true;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = summary.found ? summary.status : "NOT_FOUND";
+    response.dataQualityStatus = summary.found ? "OK" : kUnavailableQuality;
+    response.hasRows = summary.found;
+    response.domainError = !summary.protocolSuccess;
+    response.productionWrite = summary.productionWrite;
+    response.networkAccess = summary.networkAccess;
+    response.credentialAccess = summary.credentialAccess;
+    response.endpointAccess = summary.endpointAccess;
+    response.automaticTrading = summary.automaticTrading;
+    response.tradeDraftSummaryFound = summary.found;
+    response.tradeDraftId = summary.draftId;
+    response.tradeDraftStatus = summary.status;
+    response.tradeDraftSide = summary.side;
+    response.tradeDraftInstrumentCode = summary.instrumentCode;
+    response.tradeDraftQuantityText = summary.quantityText;
+    response.tradeDraftAmountText = summary.amountText;
+    response.tradeDraftNetCashImpactText = summary.netCashImpactText;
+    response.tradeDraftSummary = "TradeDraft " + summary.status + " "
+        + summary.side + " " + summary.instrumentCode + " qty "
+        + summary.quantityText + " amount " + summary.amountText;
+    response.rawPayload = QJsonDocument(QJsonObject{
+        {"action", QString::fromStdString(summary.action)},
+        {"status", QString::fromStdString(summary.status)},
+        {"found", summary.found},
+        {"draftId", static_cast<double>(summary.draftId)},
+        {"summary", QString::fromStdString(response.tradeDraftSummary)},
+    }).toJson(QJsonDocument::Compact).toStdString();
+    return response;
+}
+
 }  // namespace
 
 ShellAccountingDataServiceClientPortAdapter::ShellAccountingDataServiceClientPortAdapter(
@@ -658,6 +850,58 @@ ShellAccountingDataServiceClientPortAdapter::callTradeDraftCreate(
     return mapClientResult(
         request,
         client_->sendRaw(client_->makeRequest(request.actionName, request.payloadJson), request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callTradeDraftCreateFromRecommendation(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting TradeDraft recommendation port.",
+            true,
+            false);
+    }
+    const auto parsed = parseTradeDraftRecommendationRequestPayload(request.payloadJson);
+    if (!parsed) {
+        return makeUnavailableResponse(
+            request,
+            kMalformedPayloadStatus,
+            "Shell accounting TradeDraft recommendation request payload is malformed.",
+            false,
+            false);
+    }
+    return mapTradeDraftCreateClientResult(
+        request,
+        client_->accountingTradeDraftCreateFromRecommendation(*parsed, request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callTradeDraftReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting TradeDraft summary port.",
+            true,
+            false);
+    }
+    const auto parsed = parseTradeDraftSummaryRequestPayload(request.payloadJson);
+    if (!parsed) {
+        return makeUnavailableResponse(
+            request,
+            kMalformedPayloadStatus,
+            "Shell accounting TradeDraft summary request payload is malformed.",
+            false,
+            false);
+    }
+    return mapTradeDraftSummaryClientResult(
+        request,
+        client_->accountingTradeDraftReadOnlySummary(*parsed, request.timeoutMs));
 }
 
 ShellAccountingDataServiceClientResponse

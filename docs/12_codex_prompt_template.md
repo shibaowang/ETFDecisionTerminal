@@ -3470,6 +3470,24 @@ recommendation as a TradeDraft, order ticket, broker instruction, automatic
 trading signal, persistence request, or market-data refresh. Do not broaden
 old gate allowlists beyond exact EPIC-277 paths.
 
+## EPIC-278 TradeDraft Manual Recommendation Flow Prompt Rule
+
+Future TradeDraft manual recommendation flow work must reference
+`docs/369_tradedraft_manual_recommendation_flow_full_delivery.md`,
+`docs/370_tradedraft_vba_parity_matrix.md`,
+`docs/371_tradedraft_contract.md`,
+`docs/372_tradedraft_user_visible_flow.md`, and
+`docs/373_tradedraft_test_plan.md`.
+
+EPIC-278 turns accepted BUY / SELL StrategyEngine recommendations into an
+internal manual TradeDraft only after explicit user confirmation. TradeDraft is
+not an order. It may write `trade_draft`, `trade_draft_leg`, and sanitized
+`audit_log` rows through DataService / DataAccess boundaries, but it must not
+write `trade_log` or `cash_adjustment`, change cash / positions / PnL, submit
+broker orders, access network / credentials / endpoints, place real orders, or
+enable automatic trading. Do not broaden old gate allowlists beyond exact
+EPIC-278 paths.
+
 ## TASK-166 Broker Runtime Mode Source Disabled Scaffold Prompt Rule
 
 Future broker runtime mode source work must reference docs/130 and docs/131

@@ -27,6 +27,16 @@ parseStrategyRecommendationReadOnlySummaryPayloadJson(
     const std::string& json,
     bool protocolSuccess);
 
+[[nodiscard]] DataServiceClientResult<TradeDraftCreateFromRecommendationResult>
+parseTradeDraftCreateFromRecommendationPayloadJson(
+    const std::string& json,
+    bool protocolSuccess);
+
+[[nodiscard]] DataServiceClientResult<TradeDraftReadOnlySummaryResult>
+parseTradeDraftReadOnlySummaryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess);
+
 [[nodiscard]] std::string auditAppendPayloadJson(const AuditAppendRequest& request);
 
 [[nodiscard]] std::string excelVbaImportPersistManualEntryPayloadJson(
@@ -37,5 +47,11 @@ parseStrategyRecommendationReadOnlySummaryPayloadJson(
 
 [[nodiscard]] std::string strategyRecommendationReadOnlySummaryPayloadJson(
     const StrategyRecommendationReadOnlySummaryRequest& request);
+
+[[nodiscard]] std::string tradeDraftCreateFromRecommendationPayloadJson(
+    const TradeDraftCreateFromRecommendationRequest& request);
+
+[[nodiscard]] std::string tradeDraftReadOnlySummaryPayloadJson(
+    const TradeDraftReadOnlySummaryRequest& request);
 
 }  // namespace etfdt::data_service_client

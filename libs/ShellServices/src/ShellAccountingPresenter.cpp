@@ -738,6 +738,66 @@ QString ShellAccountingPresenter::lastStrategyRecommendationSummary() const
     return lastStrategyRecommendationSummary_;
 }
 
+QString ShellAccountingPresenter::lastTradeDraftStatus() const
+{
+    return lastTradeDraftStatus_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftId() const
+{
+    return lastTradeDraftId_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftSide() const
+{
+    return lastTradeDraftSide_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftInstrumentCode() const
+{
+    return lastTradeDraftInstrumentCode_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftQuantityText() const
+{
+    return lastTradeDraftQuantityText_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftAmountText() const
+{
+    return lastTradeDraftAmountText_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftNetCashImpactText() const
+{
+    return lastTradeDraftNetCashImpactText_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftIssueCodes() const
+{
+    return lastTradeDraftIssueCodes_;
+}
+
+QString ShellAccountingPresenter::lastTradeDraftSummary() const
+{
+    return lastTradeDraftSummary_;
+}
+
+bool ShellAccountingPresenter::lastTradeDraftDuplicate() const noexcept
+{
+    return lastTradeDraftDuplicate_;
+}
+
+bool ShellAccountingPresenter::lastTradeDraftIdempotencyConflict() const noexcept
+{
+    return lastTradeDraftIdempotencyConflict_;
+}
+
+bool ShellAccountingPresenter::lastTradeDraftUserConfirmationRequired() const noexcept
+{
+    return lastTradeDraftUserConfirmationRequired_;
+}
+
 ShellAccountingStatusObject& ShellAccountingPresenter::statusObject() noexcept
 {
     return status_;
@@ -1301,6 +1361,7 @@ void ShellAccountingPresenter::resetStrategyRecommendationState()
     lastStrategyRecommendationNetCashImpactText_.clear();
     lastStrategyRecommendationIssueCodes_.clear();
     lastStrategyRecommendationSummary_.clear();
+    lastStrategyRecommendationPayloadJson_.clear();
     emit strategyRecommendationStateChanged();
 }
 
@@ -1319,6 +1380,8 @@ bool ShellAccountingPresenter::previewStrategyRecommendationReadOnlySummary(
     if (!valid) {
         return false;
     }
+    lastStrategyRecommendationPayloadJson_ =
+        QString::fromStdString(request.strategyRecommendationPayloadJson);
 
     strategyRecommendationBusy_ = true;
     lastStrategyRecommendationStatus_ = QStringLiteral("RECOMMENDING");
@@ -1370,6 +1433,98 @@ bool ShellAccountingPresenter::previewStrategyRecommendationReadOnlySummary(
     emit strategyRecommendationStateChanged();
     syncFromController();
     return result.protocolSuccess && result.strategyRecommendationAccepted;
+}
+
+void ShellAccountingPresenter::resetTradeDraftState()
+{
+    lastTradeDraftStatus_ = QStringLiteral("READY");
+    lastTradeDraftId_.clear();
+    lastTradeDraftSide_.clear();
+    lastTradeDraftInstrumentCode_.clear();
+    lastTradeDraftQuantityText_.clear();
+    lastTradeDraftAmountText_.clear();
+    lastTradeDraftNetCashImpactText_.clear();
+    lastTradeDraftIssueCodes_.clear();
+    lastTradeDraftSummary_.clear();
+    lastTradeDraftDuplicate_ = false;
+    lastTradeDraftIdempotencyConflict_ = false;
+    lastTradeDraftUserConfirmationRequired_ = false;
+    emit tradeDraftStateChanged();
+}
+
+bool ShellAccountingPresenter::previewTradeDraftFromLastRecommendation()
+{
+    const auto action = canonicalAsciiToken(lastStrategyRecommendationAction_);
+    if (lastStrategyRecommendationPayloadJson_.trimmed().isEmpty()
+        || lastStrategyRecommendationStatus_ != QStringLiteral("OK")
+        || (action != QStringLiteral("BUY") && action != QStringLiteral("SELL"))) {
+        markTradeDraftInputError(
+            QStringLiteral("Only the latest accepted BUY or SELL recommendation can become a TradeDraft."));
+        return false;
+    }
+
+    lastTradeDraftStatus_ = QStringLiteral("READY_FOR_CONFIRMATION");
+    lastTradeDraftId_.clear();
+    lastTradeDraftSide_ = action;
+    lastTradeDraftInstrumentCode_.clear();
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        lastStrategyRecommendationPayloadJson_.toUtf8(),
+        &parseError);
+    if (parseError.error == QJsonParseError::NoError && document.isObject()) {
+        const auto input = document.object().value(QStringLiteral("input")).toObject();
+        lastTradeDraftInstrumentCode_ = input.value(QStringLiteral("instrumentCode")).toString();
+    }
+    lastTradeDraftQuantityText_ = lastStrategyRecommendationQuantityText_;
+    lastTradeDraftAmountText_ = lastStrategyRecommendationAmountText_;
+    lastTradeDraftNetCashImpactText_ = lastStrategyRecommendationNetCashImpactText_;
+    lastTradeDraftIssueCodes_.clear();
+    lastTradeDraftDuplicate_ = false;
+    lastTradeDraftIdempotencyConflict_ = false;
+    lastTradeDraftUserConfirmationRequired_ = true;
+    lastTradeDraftSummary_ = QStringLiteral(
+        "action=%1 instrument=%2 quantity=%3 amount=%4 netCash=%5 confirmationRequired=true draftIsNotOrder=true")
+        .arg(
+            lastTradeDraftSide_,
+            lastTradeDraftInstrumentCode_,
+            lastTradeDraftQuantityText_,
+            lastTradeDraftAmountText_,
+            lastTradeDraftNetCashImpactText_);
+    emit tradeDraftStateChanged();
+    return true;
+}
+
+bool ShellAccountingPresenter::createTradeDraftFromLastRecommendation(bool userConfirmed)
+{
+    if (!controller_) {
+        markTradeDraftInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.tradedraft.create_from_recommendation");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeTradeDraftCreateFromRecommendationRequest(userConfirmed, valid);
+    if (!valid) {
+        return false;
+    }
+
+    const auto result = controller_->createDraftFromRecommendation(request);
+    applyTradeDraftResult(result);
+    const bool createdOrDuplicate = lastTradeDraftStatus_ == QStringLiteral("DRAFT_CREATED")
+        || lastTradeDraftStatus_ == QStringLiteral("DUPLICATE");
+    if (result.protocolSuccess && result.implemented && result.tradeDraftId > 0) {
+        bool summaryValid = false;
+        auto summaryRequest = makeTradeDraftReadOnlySummaryRequest(summaryValid);
+        if (summaryValid) {
+            const auto summary = controller_->fetchTradeDraftReadOnlySummary(summaryRequest);
+            if (summary.protocolSuccess && summary.tradeDraftSummaryFound) {
+                applyTradeDraftResult(summary);
+            }
+        }
+    }
+    syncFromController();
+    return createdOrDuplicate;
 }
 
 bool ShellAccountingPresenter::persistExcelVbaImportManualEntry(
@@ -1505,6 +1660,7 @@ void ShellAccountingPresenter::reset()
     resetExcelVbaImportPersistState();
     resetPortfolioReplayState();
     resetStrategyRecommendationState();
+    resetTradeDraftState();
 }
 
 void ShellAccountingPresenter::markControllerNotConfigured(const char* actionName)
@@ -1923,6 +2079,101 @@ void ShellAccountingPresenter::markStrategyRecommendationInputError(const QStrin
     emit strategyRecommendationStateChanged();
 }
 
+void ShellAccountingPresenter::markTradeDraftInputError(const QString& message)
+{
+    lastTradeDraftStatus_ = QStringLiteral("INPUT_ERROR");
+    lastTradeDraftId_.clear();
+    lastTradeDraftSide_.clear();
+    lastTradeDraftInstrumentCode_.clear();
+    lastTradeDraftQuantityText_.clear();
+    lastTradeDraftAmountText_.clear();
+    lastTradeDraftNetCashImpactText_.clear();
+    lastTradeDraftIssueCodes_.clear();
+    lastTradeDraftSummary_ = message;
+    lastTradeDraftDuplicate_ = false;
+    lastTradeDraftIdempotencyConflict_ = false;
+    lastTradeDraftUserConfirmationRequired_ = true;
+    emit tradeDraftStateChanged();
+}
+
+void ShellAccountingPresenter::applyTradeDraftResult(const ShellAccountingServiceResult& result)
+{
+    lastTradeDraftDuplicate_ = result.tradeDraftDuplicate;
+    lastTradeDraftIdempotencyConflict_ = result.tradeDraftIdempotencyConflict;
+    lastTradeDraftUserConfirmationRequired_ = result.tradeDraftUserConfirmationRequired;
+    lastTradeDraftId_ = result.tradeDraftId > 0
+        ? QString::number(result.tradeDraftId)
+        : QString {};
+    lastTradeDraftSide_ = QString::fromStdString(result.tradeDraftSide);
+    lastTradeDraftInstrumentCode_ = QString::fromStdString(result.tradeDraftInstrumentCode);
+    lastTradeDraftQuantityText_ = QString::fromStdString(result.tradeDraftQuantityText);
+    lastTradeDraftAmountText_ = QString::fromStdString(result.tradeDraftAmountText);
+    lastTradeDraftNetCashImpactText_ = QString::fromStdString(result.tradeDraftNetCashImpactText);
+
+    QStringList codes;
+    for (const auto& code : result.tradeDraftIssueCodes) {
+        codes.append(QString::fromStdString(code));
+    }
+    for (const auto& issue : result.issues) {
+        if (!issue.code.empty()) {
+            codes.append(QString::fromStdString(issue.code));
+        }
+    }
+    for (const auto& issue : result.errors) {
+        if (!issue.code.empty()) {
+            codes.append(QString::fromStdString(issue.code));
+        }
+    }
+    lastTradeDraftIssueCodes_ = codes.join(QStringLiteral(","));
+
+    const bool safeBoundaries = result.tradeDraftIsNotOrder
+        && !result.tradeLogWritten && !result.networkAccess
+        && !result.credentialAccess && !result.endpointAccess
+        && !result.automaticTrading;
+    const bool created = result.protocolSuccess && result.implemented
+        && !result.readOnly && result.writeEnabled
+        && result.tradeDraftManualRecommendationFlowCreated
+        && result.tradeDraftEligible && result.tradeDraftId > 0
+        && result.transactionCommitted && result.auditWritten
+        && safeBoundaries;
+    const bool duplicate = result.protocolSuccess && result.implemented
+        && result.tradeDraftDuplicate && !result.tradeDraftIdempotencyConflict
+        && safeBoundaries;
+    const bool summary = result.protocolSuccess && result.implemented
+        && result.readOnly && !result.writeEnabled
+        && result.tradeDraftSummaryFound && safeBoundaries;
+
+    if (created || duplicate || summary) {
+        lastTradeDraftStatus_ = result.tradeDraftStatus.empty()
+            ? (duplicate ? QStringLiteral("DUPLICATE") : QStringLiteral("DRAFT_CREATED"))
+            : QString::fromStdString(result.tradeDraftStatus);
+        lastTradeDraftSummary_ = result.tradeDraftSummary.empty()
+            ? QStringLiteral(
+                "status=%1 side=%2 instrument=%3 quantity=%4 amount=%5 netCash=%6 draftIsNotOrder=true")
+                .arg(
+                    lastTradeDraftStatus_,
+                    lastTradeDraftSide_,
+                    lastTradeDraftInstrumentCode_,
+                    lastTradeDraftQuantityText_,
+                    lastTradeDraftAmountText_,
+                    lastTradeDraftNetCashImpactText_)
+            : QString::fromStdString(result.tradeDraftSummary);
+        emit tradeDraftStateChanged();
+        return;
+    }
+
+    lastTradeDraftStatus_ = result.tradeDraftIdempotencyConflict
+        ? QStringLiteral("IDEMPOTENCY_CONFLICT")
+        : (result.tradeDraftStatus.empty()
+            ? QStringLiteral("REJECTED")
+            : QString::fromStdString(result.tradeDraftStatus));
+    lastTradeDraftSummary_ = issueTextFromResult(result);
+    if (lastTradeDraftSummary_.isEmpty()) {
+        lastTradeDraftSummary_ = QStringLiteral("TradeDraft recommendation flow failed closed.");
+    }
+    emit tradeDraftStateChanged();
+}
+
 ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPreviewRequest(
     const QString& importPayloadJson,
     bool& valid)
@@ -2024,6 +2275,117 @@ ShellAccountingPresenter::makeStrategyRecommendationReadOnlySummaryRequest(
     request.timeoutMs = 2000;
     valid = true;
     return request;
+}
+
+ShellAccountingServiceRequest
+ShellAccountingPresenter::makeTradeDraftCreateFromRecommendationRequest(
+    bool userConfirmed,
+    bool& valid)
+{
+    valid = false;
+    const auto action = canonicalAsciiToken(lastStrategyRecommendationAction_);
+    if (lastStrategyRecommendationPayloadJson_.trimmed().isEmpty()
+        || lastStrategyRecommendationStatus_ != QStringLiteral("OK")
+        || (action != QStringLiteral("BUY") && action != QStringLiteral("SELL"))) {
+        markTradeDraftInputError(
+            QStringLiteral("Only the latest accepted BUY or SELL recommendation can become a TradeDraft."));
+        return {};
+    }
+    if (!userConfirmed) {
+        markTradeDraftInputError(
+            QStringLiteral("Explicit user confirmation is required before creating a TradeDraft."));
+        return {};
+    }
+
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(
+        lastStrategyRecommendationPayloadJson_.toUtf8(),
+        &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markTradeDraftInputError(
+            QStringLiteral("Latest strategy recommendation payload is not a JSON object."));
+        return {};
+    }
+
+    const auto object = document.object();
+    const auto input = object.value(QStringLiteral("input")).toObject();
+    const auto accountId = input.value(QStringLiteral("accountId")).toString();
+    const auto portfolioId = input.value(QStringLiteral("portfolioId")).toString();
+    const auto instrumentCode = input.value(QStringLiteral("instrumentCode")).toString();
+    if (accountId.trimmed().isEmpty() || portfolioId.trimmed().isEmpty()
+        || instrumentCode.trimmed().isEmpty()) {
+        markTradeDraftInputError(
+            QStringLiteral("Recommendation account, portfolio, and instrument context are required."));
+        return {};
+    }
+
+    const auto digest = tradeDraftRecommendationDigest();
+    const auto idempotencyKey = tradeDraftIdempotencyKey();
+    if (digest.isEmpty() || idempotencyKey.isEmpty()) {
+        markTradeDraftInputError(
+            QStringLiteral("Recommendation digest and idempotency key are required."));
+        return {};
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.tradedraft.create_from_recommendation";
+    request.strategyRecommendationPayloadJson = lastStrategyRecommendationPayloadJson_.toStdString();
+    request.recommendationDigest = digest.toStdString();
+    request.idempotencyKey = idempotencyKey.toStdString();
+    request.accountId = accountId.trimmed().toStdString();
+    request.portfolioId = portfolioId.trimmed().toStdString();
+    request.strategyId = input.value(QStringLiteral("strategyId")).toString(QStringLiteral("1001")).trimmed().toStdString();
+    request.instrumentId = input.value(QStringLiteral("instrumentId")).toString(QStringLiteral("1001")).trimmed().toStdString();
+    request.strategyCode = input.value(QStringLiteral("strategyCode")).toString(QStringLiteral("VBA_PARITY")).trimmed().toStdString();
+    request.instrumentCode = instrumentCode.trimmed().toStdString();
+    request.instrumentType = input.value(QStringLiteral("instrumentType")).toString(QStringLiteral("ETF")).trimmed().toStdString();
+    request.tradeSource = input.value(QStringLiteral("tradeSource")).toString(QStringLiteral("ETF_DIRECT")).trimmed().toStdString();
+    request.expiresAtUtc = QDateTime::currentDateTimeUtc().addSecs(24 * 60 * 60).toString(Qt::ISODate).toStdString();
+    request.userConfirmed = true;
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest
+ShellAccountingPresenter::makeTradeDraftReadOnlySummaryRequest(bool& valid) const
+{
+    valid = false;
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.tradedraft.readonly_summary";
+    request.idempotencyKey = tradeDraftIdempotencyKey().toStdString();
+    bool draftOk = false;
+    request.draftId = lastTradeDraftId_.toLongLong(&draftOk);
+    if (request.idempotencyKey.empty() && (!draftOk || request.draftId <= 0)) {
+        return request;
+    }
+    request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+QString ShellAccountingPresenter::tradeDraftRecommendationDigest() const
+{
+    if (lastStrategyRecommendationPayloadJson_.trimmed().isEmpty()) {
+        return {};
+    }
+    std::uint64_t hash = 14695981039346656037ULL;
+    hashPreviewField(hash, QStringLiteral("EPIC-278"));
+    hashPreviewField(hash, lastStrategyRecommendationPayloadJson_);
+    hashPreviewField(hash, lastStrategyRecommendationAction_);
+    hashPreviewField(hash, lastStrategyRecommendationQuantityText_);
+    hashPreviewField(hash, lastStrategyRecommendationAmountText_);
+    hashPreviewField(hash, lastStrategyRecommendationNetCashImpactText_);
+    return hexFnv64(hash);
+}
+
+QString ShellAccountingPresenter::tradeDraftIdempotencyKey() const
+{
+    const auto digest = tradeDraftRecommendationDigest();
+    if (digest.isEmpty()) {
+        return {};
+    }
+    return QStringLiteral("tradedraft-recommendation:") + digest;
 }
 
 ShellAccountingServiceRequest ShellAccountingPresenter::makeExcelVbaImportPersistManualEntryRequest(

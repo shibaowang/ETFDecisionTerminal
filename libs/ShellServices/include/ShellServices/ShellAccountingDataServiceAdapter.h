@@ -25,6 +25,10 @@ public:
         const ShellAccountingServiceRequest& request) override;
     [[nodiscard]] ShellAccountingServiceResult createDraft(
         const ShellAccountingServiceRequest& request) override;
+    [[nodiscard]] ShellAccountingServiceResult createDraftFromRecommendation(
+        const ShellAccountingServiceRequest& request) override;
+    [[nodiscard]] ShellAccountingServiceResult fetchTradeDraftReadOnlySummary(
+        const ShellAccountingServiceRequest& request) override;
     [[nodiscard]] ShellAccountingServiceResult confirmDraft(
         const ShellAccountingServiceRequest& request) override;
     [[nodiscard]] ShellAccountingServiceResult submitManualTransaction(

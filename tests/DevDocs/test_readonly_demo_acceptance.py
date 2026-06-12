@@ -4741,7 +4741,7 @@ def main() -> int:
     for forbidden_call in [
         "appendAuditDemo",
         "data.audit.append",
-        "tradeDraft",
+        "confirmTradeDraft",
         "snapshotWrite",
         "strategyExecute",
         "brokerOrder",
@@ -4949,7 +4949,7 @@ def main() -> int:
     ]:
         require(forbidden_dependency not in presenter_sources, f"Presenter avoids {forbidden_dependency}")
     for forbidden_interface in [
-        "createTradeDraft",
+        "confirmTradeDraft",
         "brokerOrder",
         "strategyExecute",
     ]:
@@ -6139,7 +6139,7 @@ def main() -> int:
         "audit_log write",
         "data.audit.append",
         "confirmTrade",
-        "createTradeDraft",
+        "confirmTradeDraft",
         "strategyExecute",
         "writeEnabled: true",
     ]:

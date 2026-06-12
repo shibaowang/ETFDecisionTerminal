@@ -223,6 +223,52 @@ ShellAccountingServiceResult ShellAccountingReadOnlyController::createDraft(
     return result;
 }
 
+ShellAccountingServiceResult ShellAccountingReadOnlyController::createDraftFromRecommendation(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.tradedraft.create_from_recommendation");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.tradedraft.create_from_recommendation");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.tradedraft.create_from_recommendation";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = false;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->createDraftFromRecommendation(request);
+    applyServiceResult(result);
+    return result;
+}
+
+ShellAccountingServiceResult ShellAccountingReadOnlyController::fetchTradeDraftReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.tradedraft.readonly_summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.tradedraft.readonly_summary");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.tradedraft.readonly_summary";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->fetchTradeDraftReadOnlySummary(request);
+    applyServiceResult(result);
+    return result;
+}
+
 ShellAccountingServiceResult ShellAccountingReadOnlyController::confirmDraft(
     const ShellAccountingServiceRequest& request)
 {

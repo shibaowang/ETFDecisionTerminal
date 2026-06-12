@@ -1561,6 +1561,28 @@
   [368_strategy_recommendation_engine_test_plan.md](368_strategy_recommendation_engine_test_plan.md)
   defines the EPIC-277 exact parity, local service, Presenter mapping, no-write,
   and regression validation commands.
+- TradeDraft manual recommendation flow full delivery:
+  [369_tradedraft_manual_recommendation_flow_full_delivery.md](369_tradedraft_manual_recommendation_flow_full_delivery.md)
+  records EPIC-278 Strategy recommendation to internal manual TradeDraft
+  creation, DataService write / summary actions, client / ShellServices /
+  Presenter mapping, and no-order / no-broker boundaries.
+- TradeDraft VBA parity matrix:
+  [370_tradedraft_vba_parity_matrix.md](370_tradedraft_vba_parity_matrix.md)
+  lists the EPIC-278 positive and negative sanitized TradeDraft recommendation
+  samples under `samples/trade_draft/`.
+- TradeDraft contract:
+  [371_tradedraft_contract.md](371_tradedraft_contract.md)
+  defines the create-from-recommendation request, duplicate / conflict
+  semantics, read-only summary contract, and `trade_log` / `cash_adjustment`
+  no-write boundary.
+- TradeDraft user-visible flow:
+  [372_tradedraft_user_visible_flow.md](372_tradedraft_user_visible_flow.md)
+  documents the Presenter-visible manual TradeDraft preview / confirmation
+  state without QML wiring or broker execution.
+- TradeDraft test plan:
+  [373_tradedraft_test_plan.md](373_tradedraft_test_plan.md)
+  defines the EPIC-278 full-delivery CTest, regression commands, sample
+  checks, duplicate / conflict checks, and no-broker validation.
 - AccountingEngine skeleton module: [libs/AccountingEngine](../libs/AccountingEngine)
 - AccountingEngine DTO parser boundary: [AccountingEngine public headers](../libs/AccountingEngine/include/AccountingEngine)
 - AccountingEngine empty ledger replay skeleton: [AccountingReplayEngine.h](../libs/AccountingEngine/include/AccountingEngine/AccountingReplayEngine.h)

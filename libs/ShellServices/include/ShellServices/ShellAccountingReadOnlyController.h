@@ -55,6 +55,10 @@ public:
     void refreshSniperPoolSummary(const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult createDraft(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult createDraftFromRecommendation(
+        const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult fetchTradeDraftReadOnlySummary(
+        const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult confirmDraft(
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult submitManualTransaction(

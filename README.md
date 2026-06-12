@@ -1,5 +1,23 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-284 Local Trial Visual Acceptance Pack
+
+EPIC-284 adds a repo-local visual evidence helper for the local trial release
+candidate:
+
+- scope: `docs/398_local_trial_visual_acceptance_pack.md`
+- script:
+  `scripts/local_trial/Invoke-ETFDTLocalTrialVisualEvidence.ps1`
+- default evidence output: `.demo/local_trial_rc/evidence/`
+- validated by: `local_trial_release_candidate_full_delivery` and
+  `dashboard_mvp_full_delivery`
+
+The pack records command logs, process logs, CTest output, optional dashboard
+screenshots when the local desktop session allows capture, and a sanitized JSON
+evidence summary. It does not add business behavior, production DB writes,
+external downloads, administrator setup, broker / credential / endpoint access,
+real order placement, or automatic trading.
+
 ## EPIC-283 Local Trial RC Bug Bash Fix Pack
 
 EPIC-283 records the first RC bug bash pass on top of EPIC-282. It keeps the

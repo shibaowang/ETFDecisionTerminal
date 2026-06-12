@@ -12,6 +12,14 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- EPIC-284 local trial visual acceptance pack:
+  [398_local_trial_visual_acceptance_pack.md](398_local_trial_visual_acceptance_pack.md).
+  The repo-local helper
+  [scripts/local_trial/Invoke-ETFDTLocalTrialVisualEvidence.ps1](../scripts/local_trial/Invoke-ETFDTLocalTrialVisualEvidence.ps1)
+  generates command logs, process logs, CTest output, optional screenshots, and
+  `visual_acceptance_evidence.json` under `.demo/local_trial_rc/evidence/`.
+  If screenshots are unavailable, it records `screenshotAvailable=false` rather
+  than fabricating images.
 - [384 Dashboard MVP Full Delivery](384_dashboard_mvp_full_delivery.md)
 - [385 Dashboard MVP User Flow](385_dashboard_mvp_user_flow.md)
 - [386 Dashboard MVP QML Contract](386_dashboard_mvp_qml_contract.md)

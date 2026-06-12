@@ -108,6 +108,7 @@ void assertQmlContract(const fs::path& root)
     for (const std::string token : {
              "shellAccountingDashboardRoot",
              "shellAccountingDashboardStatusBanner",
+             "shellAccountingLocalTrialRcBanner",
              "shellAccountingDashboardIssueList",
              "shellAccountingDashboardResetButton",
              "shellAccountingExcelVbaImportPanel",

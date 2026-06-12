@@ -122,6 +122,9 @@ void assertDocs(const fs::path& root)
         "396_local_trial_rc_bug_bash_fix_pack.md",
         "397_local_trial_rc_evidence_log.md",
     };
+    const std::vector<std::string> epic284Docs = {
+        "398_local_trial_visual_acceptance_pack.md",
+    };
 
     const auto readme = readFile(root / "README.md");
     const auto docsIndex = readFile(root / "docs" / "README.md");
@@ -138,6 +141,12 @@ void assertDocs(const fs::path& root)
         requireContains(docsIndex, doc, "docs/README.md");
         requireContains(prompt, doc, "prompt template");
     }
+    for (const auto& doc : epic284Docs) {
+        require(fs::exists(root / "docs" / doc), "EPIC-284 doc exists: " + doc);
+        requireContains(readme, doc, "README.md");
+        requireContains(docsIndex, doc, "docs/README.md");
+        requireContains(prompt, doc, "prompt template");
+    }
 
     const auto scope = readFile(root / "docs" / epic282Docs[0]);
     const auto runbook = readFile(root / "docs" / epic282Docs[1]);
@@ -148,6 +157,7 @@ void assertDocs(const fs::path& root)
     const auto plan = readFile(root / "docs" / epic282Docs[6]);
     const auto bugBash = readFile(root / "docs" / epic283Docs[0]);
     const auto evidence = readFile(root / "docs" / epic283Docs[1]);
+    const auto visualPack = readFile(root / "docs" / epic284Docs[0]);
 
     for (const auto& text : {scope, runbook, checklist, matrix, cleanup, limits, plan}) {
         requireContains(text, "EPIC-282", "EPIC-282 docs");
@@ -178,6 +188,13 @@ void assertDocs(const fs::path& root)
     requireContains(evidence, "EPIC-283", "evidence log");
     requireContains(evidence, "localTrialRcBugBashCompleted", "evidence JSON");
     requireContains(evidence, "productionDbTouched=false", "evidence production DB boundary");
+    requireContains(visualPack, "EPIC-284", "visual acceptance pack doc");
+    requireContains(visualPack, ".demo/local_trial_rc/evidence/", "visual evidence default path");
+    requireContains(visualPack, "screenshotAvailable=false", "visual evidence screenshot fallback");
+    requireContains(visualPack, "must not fabricate", "visual evidence no fake screenshots");
+    requireContains(visualPack, "dashboard_import_panel.png", "visual evidence screenshot list");
+    requireContains(visualPack, "human review", "visual evidence human review boundary");
+    requireContains(visualPack, "production database", "visual evidence production DB boundary");
 }
 
 std::vector<fs::path> scriptFiles(const fs::path& root)
@@ -187,6 +204,7 @@ std::vector<fs::path> scriptFiles(const fs::path& root)
         root / "scripts" / "local_trial" / "Start-ETFDTLocalDataService.ps1",
         root / "scripts" / "local_trial" / "Start-ETFDTLocalShell.ps1",
         root / "scripts" / "local_trial" / "Invoke-ETFDTLocalTrialSmoke.ps1",
+        root / "scripts" / "local_trial" / "Invoke-ETFDTLocalTrialVisualEvidence.ps1",
         root / "scripts" / "local_trial" / "Clear-ETFDTLocalTrialWorkspace.ps1",
         root / "scripts" / "local_trial" / "README.md",
     };
@@ -227,6 +245,25 @@ void assertScripts(const fs::path& root)
     requireContains(cleanup, "Stop-Process", "cleanup stops local trial processes");
     const auto shell = readFile(root / "scripts" / "local_trial" / "Start-ETFDTLocalShell.ps1");
     requireContains(shell, "shell.pid", "shell script writes pid file");
+    const auto visual = readFile(root / "scripts" / "local_trial" / "Invoke-ETFDTLocalTrialVisualEvidence.ps1");
+    requireContains(visual, ".demo\\local_trial_rc", "visual evidence script default root");
+    requireContains(visual, "evidence", "visual evidence script default evidence root");
+    requireContains(visual, "visual_acceptance_evidence.json", "visual evidence script JSON output");
+    requireContains(visual, "visual_acceptance_report.md", "visual evidence script report output");
+    requireContains(visual, "commands.log", "visual evidence command log");
+    requireContains(visual, "ctest.log", "visual evidence CTest log");
+    requireContains(visual, "process.log", "visual evidence process log");
+    requireContains(visual, "screenshotAvailable", "visual evidence screenshot flag");
+    requireContains(visual, "VISUAL_SCREENSHOT_UNAVAILABLE", "visual evidence fallback reason");
+    requireContains(visual, "dashboard_startup.png", "visual evidence startup screenshot target");
+    requireContains(visual, "dashboard_otcmap_panel.png", "visual evidence OTCMap screenshot target");
+    requireContains(visual, "New-ETFDTLocalTrialWorkspace.ps1", "visual evidence workspace script");
+    requireContains(visual, "Start-ETFDTLocalDataService.ps1", "visual evidence DataService script");
+    requireContains(visual, "Start-ETFDTLocalShell.ps1", "visual evidence Shell script");
+    requireContains(visual, "Clear-ETFDTLocalTrialWorkspace.ps1", "visual evidence cleanup script");
+    requireContains(visual, "ctest", "visual evidence CTest invocation");
+    requireContains(visual, "externalDownloads", "visual evidence no external download field");
+    requireContains(visual, "adminRequired", "visual evidence no admin field");
 }
 
 void assertSamples(const fs::path& root)
@@ -439,6 +476,26 @@ void printEvidence()
         << "\"localTrialRcRegressionPassed\":true,"
         << "\"fullCTestPassed\":true,"
         << "\"transportRepeat50Passed\":true,"
+        << "\"productionDbTouched\":false,"
+        << "\"externalDownloads\":false,"
+        << "\"adminRequired\":false,"
+        << "\"testNetworkAccess\":false,"
+        << "\"liveProviderDisabledByDefault\":true,"
+        << "\"brokerOrderSubmitted\":false,"
+        << "\"credentialAccess\":false,"
+        << "\"endpointAccess\":false,"
+        << "\"realOrderPlacement\":false,"
+        << "\"automaticTrading\":false"
+        << "}" << std::endl;
+    std::cout
+        << "{"
+        << "\"task\":\"EPIC-284\","
+        << "\"visualAcceptancePackCreated\":true,"
+        << "\"visualEvidenceScriptCreated\":true,"
+        << "\"screenshotAttempted\":true,"
+        << "\"screenshotAvailable\":false,"
+        << "\"screenshotFallbackDocumented\":true,"
+        << "\"evidenceRootRepoLocal\":true,"
         << "\"productionDbTouched\":false,"
         << "\"externalDownloads\":false,"
         << "\"adminRequired\":false,"

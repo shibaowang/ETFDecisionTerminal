@@ -88,6 +88,24 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString lastMarketDataProviderSource READ lastMarketDataProviderSource NOTIFY marketDataStateChanged)
     Q_PROPERTY(QString lastMarketDataIssueCodes READ lastMarketDataIssueCodes NOTIFY marketDataStateChanged)
     Q_PROPERTY(QString lastMarketDataSummary READ lastMarketDataSummary NOTIFY marketDataStateChanged)
+    Q_PROPERTY(bool realDailyUseBusy READ realDailyUseBusy NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString lastRealDailyUseStatus READ lastRealDailyUseStatus NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseDbPath READ realDailyUseDbPath NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseDataSourceStatus READ realDailyUseDataSourceStatus NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseMarketSourceStatus READ realDailyUseMarketSourceStatus NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseLastAutoRefreshTime READ realDailyUseLastAutoRefreshTime NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseCacheStatus READ realDailyUseCacheStatus NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseRefreshFailureReason READ realDailyUseRefreshFailureReason NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseSummary READ realDailyUseSummary NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseHoldingSummary READ realDailyUseHoldingSummary NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseRemainingCashText READ realDailyUseRemainingCashText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseBasePositionCompletionText READ realDailyUseBasePositionCompletionText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseEtfCurrentPriceText READ realDailyUseEtfCurrentPriceText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseEtfHistoricalHighText READ realDailyUseEtfHistoricalHighText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseEtfDrawdownText READ realDailyUseEtfDrawdownText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseIndexCurrentPointText READ realDailyUseIndexCurrentPointText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseIndexHistoricalHighText READ realDailyUseIndexHistoricalHighText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseIndexDrawdownText READ realDailyUseIndexDrawdownText NOTIFY realDailyUseStateChanged)
     Q_PROPERTY(QString lastTradeDraftStatus READ lastTradeDraftStatus NOTIFY tradeDraftStateChanged)
     Q_PROPERTY(QString lastTradeDraftId READ lastTradeDraftId NOTIFY tradeDraftStateChanged)
     Q_PROPERTY(QString lastTradeDraftSide READ lastTradeDraftSide NOTIFY tradeDraftStateChanged)
@@ -194,6 +212,24 @@ public:
     [[nodiscard]] QString lastMarketDataProviderSource() const;
     [[nodiscard]] QString lastMarketDataIssueCodes() const;
     [[nodiscard]] QString lastMarketDataSummary() const;
+    [[nodiscard]] bool realDailyUseBusy() const noexcept;
+    [[nodiscard]] QString lastRealDailyUseStatus() const;
+    [[nodiscard]] QString realDailyUseDbPath() const;
+    [[nodiscard]] QString realDailyUseDataSourceStatus() const;
+    [[nodiscard]] QString realDailyUseMarketSourceStatus() const;
+    [[nodiscard]] QString realDailyUseLastAutoRefreshTime() const;
+    [[nodiscard]] QString realDailyUseCacheStatus() const;
+    [[nodiscard]] QString realDailyUseRefreshFailureReason() const;
+    [[nodiscard]] QString realDailyUseSummary() const;
+    [[nodiscard]] QString realDailyUseHoldingSummary() const;
+    [[nodiscard]] QString realDailyUseRemainingCashText() const;
+    [[nodiscard]] QString realDailyUseBasePositionCompletionText() const;
+    [[nodiscard]] QString realDailyUseEtfCurrentPriceText() const;
+    [[nodiscard]] QString realDailyUseEtfHistoricalHighText() const;
+    [[nodiscard]] QString realDailyUseEtfDrawdownText() const;
+    [[nodiscard]] QString realDailyUseIndexCurrentPointText() const;
+    [[nodiscard]] QString realDailyUseIndexHistoricalHighText() const;
+    [[nodiscard]] QString realDailyUseIndexDrawdownText() const;
     [[nodiscard]] QString lastTradeDraftStatus() const;
     [[nodiscard]] QString lastTradeDraftId() const;
     [[nodiscard]] QString lastTradeDraftSide() const;
@@ -290,6 +326,8 @@ public:
     Q_INVOKABLE bool previewStrategyRecommendationReadOnlySummary(const QString& recommendationPayloadJson);
     Q_INVOKABLE void resetMarketDataState();
     Q_INVOKABLE bool refreshMarketDataReadOnly(const QString& payloadJson);
+    Q_INVOKABLE void resetRealDailyUseState();
+    Q_INVOKABLE bool loadRealDailyUseSnapshot(const QString& payloadJson);
     Q_INVOKABLE void resetTradeDraftState();
     Q_INVOKABLE bool previewTradeDraftFromLastRecommendation();
     Q_INVOKABLE bool createTradeDraftFromLastRecommendation(bool userConfirmed);
@@ -320,6 +358,7 @@ signals:
     void portfolioReplayStateChanged();
     void strategyRecommendationStateChanged();
     void marketDataStateChanged();
+    void realDailyUseStateChanged();
     void tradeDraftStateChanged();
 
 private:
@@ -346,7 +385,9 @@ private:
     void markPortfolioReplayInputError(const QString& message);
     void markStrategyRecommendationInputError(const QString& message);
     void markMarketDataInputError(const QString& message);
+    void markRealDailyUseInputError(const QString& message);
     void markTradeDraftInputError(const QString& message);
+    void applyRealDailyUseSnapshotResult(const ShellAccountingServiceResult& result);
     void applyTradeDraftResult(const ShellAccountingServiceResult& result);
     void applyOtcMapPreviewResult(const ShellAccountingServiceResult& result);
     void applyOtcMapDraftResult(const ShellAccountingServiceResult& result);
@@ -374,6 +415,9 @@ private:
         const QString& recommendationPayloadJson,
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeMarketDataReadOnlySummaryRequest(
+        const QString& payloadJson,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeRealDailyUseSnapshotRequest(
         const QString& payloadJson,
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeTradeDraftCreateFromRecommendationRequest(
@@ -508,6 +552,25 @@ private:
     QString lastMarketDataProviderSource_;
     QString lastMarketDataIssueCodes_;
     QString lastMarketDataSummary_;
+    bool realDailyUseBusy_ = false;
+    QString lastRealDailyUseStatus_ = QStringLiteral("READY");
+    QString realDailyUseDbPath_ = QStringLiteral(".local/daily_use/etfdt_daily_use.sqlite");
+    QString realDailyUseDataSourceStatus_ = QStringLiteral("unavailable");
+    QString realDailyUseMarketSourceStatus_ = QStringLiteral("unavailable");
+    QString realDailyUseLastAutoRefreshTime_;
+    QString realDailyUseCacheStatus_ = QStringLiteral("unavailable");
+    QString realDailyUseRefreshFailureReason_;
+    QString realDailyUseSummary_ = QStringLiteral("请先导入真实 VBA 脱敏导出文件。");
+    QString realDailyUseHoldingSummary_;
+    QString realDailyUseRemainingCashText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseBasePositionCompletionText_ =
+        QStringLiteral("缺少底仓目标配置，无法计算底仓完成度。");
+    QString realDailyUseEtfCurrentPriceText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseEtfHistoricalHighText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseEtfDrawdownText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseIndexCurrentPointText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseIndexHistoricalHighText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseIndexDrawdownText_ = QStringLiteral("UNAVAILABLE");
     QString lastTradeDraftStatus_ = QStringLiteral("READY");
     QString lastTradeDraftId_;
     QString lastTradeDraftSide_;

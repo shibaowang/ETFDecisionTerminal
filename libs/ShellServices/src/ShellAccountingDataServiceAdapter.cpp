@@ -472,6 +472,17 @@ ShellAccountingDataServiceClientRequest makeMarketDataHistoricalHighReadOnlySumm
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makeRealDailyUseSnapshotClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.real_daily_use.snapshot";
+    clientRequest.payloadJson =
+        request.realDailyUsePayloadJson.empty() ? "{}" : request.realDailyUsePayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingDataServiceClientRequest makeOtcMapPreviewClientRequest(
     const ShellAccountingServiceRequest& request)
 {
@@ -848,6 +859,19 @@ ShellAccountingDataServiceAdapter::fetchMarketDataHistoricalHighReadOnlySummary(
             "marketdata.historical_high.readonly_summary");
     }
     return makeNotConnectedResult(request, "marketdata.historical_high.readonly_summary");
+}
+
+ShellAccountingServiceResult
+ShellAccountingDataServiceAdapter::fetchRealDailyUseSnapshot(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callRealDailyUseSnapshot(makeRealDailyUseSnapshotClientRequest(request)),
+            request,
+            "accounting.real_daily_use.snapshot");
+    }
+    return makeNotConnectedResult(request, "accounting.real_daily_use.snapshot");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::previewOtcMapMultiChannelDraft(

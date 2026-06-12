@@ -10,6 +10,7 @@ add_library(ETFDataServiceApi STATIC
     src/ShellAccountingBrokerSandboxRuntimeEnablement.cpp
     src/ShellAccountingBrokerSandboxOrderPortScaffold.cpp
     src/ShellAccountingExcelVbaImportPersistManualEntryAction.cpp
+    src/ShellAccountingRealDailyUseSnapshotAction.cpp
     src/ShellAccountingExcelVbaImportReadOnlyParser.cpp
     src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp
     src/ShellAccountingOtcMapMultiChannelDraftAction.cpp

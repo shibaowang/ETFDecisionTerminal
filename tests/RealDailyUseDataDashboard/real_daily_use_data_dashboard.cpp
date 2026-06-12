@@ -1,0 +1,425 @@
+#include "DataAccess/SQLiteConnection.h"
+#include "DataServiceApi/DataServiceActions.h"
+#include "Protocol/Protocol.h"
+#include "ServiceRuntime/ActionContext.h"
+
+#include <QByteArray>
+#include <QCoreApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QString>
+
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+namespace {
+
+using etfdt::data_access::DatabaseConfig;
+using etfdt::data_access::SQLiteConnection;
+
+std::filesystem::path sourceRootFromArgs(int argc, char** argv)
+{
+    for (int index = 1; index + 1 < argc; ++index) {
+        if (std::string(argv[index]) == "--source-root") {
+            return std::filesystem::path(argv[index + 1]);
+        }
+    }
+    return std::filesystem::current_path();
+}
+
+[[noreturn]] void fail(const std::string& message)
+{
+    throw std::runtime_error(message);
+}
+
+void require(bool condition, const std::string& message)
+{
+    if (!condition) {
+        fail(message);
+    }
+}
+
+std::string readFile(const std::filesystem::path& path)
+{
+    std::ifstream input(path, std::ios::binary);
+    if (!input) {
+        fail("missing file: " + path.generic_string());
+    }
+    std::ostringstream buffer;
+    buffer << input.rdbuf();
+    return buffer.str();
+}
+
+bool contains(const std::string& text, const std::string& needle)
+{
+    return text.find(needle) != std::string::npos;
+}
+
+void requireContains(
+    const std::string& text,
+    const std::string& needle,
+    const std::string& message)
+{
+    require(contains(text, needle), message + " missing: " + needle);
+}
+
+void requireNotContains(
+    const std::string& text,
+    const std::string& needle,
+    const std::string& message)
+{
+    require(!contains(text, needle), message + " forbidden: " + needle);
+}
+
+QJsonObject parseObject(const std::string& json, const std::string& label)
+{
+    QJsonParseError error {};
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &error);
+    require(
+        error.error == QJsonParseError::NoError && document.isObject(),
+        label + " must be JSON object");
+    return document.object();
+}
+
+std::string fixturePayload(const std::string& dbPath)
+{
+    return std::string(R"JSON({
+  "task": "EPIC-289",
+  "mode": "real-daily-use-data-dashboard-startup-auto-refresh-test",
+  "dbPath": ")JSON") + dbPath + R"JSON(",
+  "lastImportTime": "2026-06-13T09:00:00Z",
+  "lastRefreshTime": "2026-06-13T09:30:00Z",
+  "marketData": {
+    "input": {
+      "providerMode": "fixture",
+      "liveMarketDataEnabled": false,
+      "maxQuoteAgeSeconds": 900,
+      "nowUtc": "2026-06-13T09:30:00Z",
+      "instruments": [
+        {
+          "instrumentCode": "510300",
+          "instrumentType": "ETF",
+          "exchange": "SH",
+          "providerSymbol": "sh510300",
+          "provider": "fixture"
+        },
+        {
+          "instrumentCode": "000300",
+          "instrumentType": "INDEX",
+          "exchange": "SH",
+          "providerSymbol": "sh000300",
+          "provider": "fixture"
+        }
+      ]
+    }
+  },
+  "fixture": {
+    "quotes": [
+      {
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "exchange": "SH",
+        "providerSymbol": "sh510300",
+        "quoteTimeUtc": "2026-06-13T09:30:00Z",
+        "priceText": "4.800",
+        "previousCloseText": "4.700",
+        "source": "fixture/epic289",
+        "dataQualityStatus": "OK"
+      },
+      {
+        "instrumentCode": "000300",
+        "instrumentType": "INDEX",
+        "exchange": "SH",
+        "providerSymbol": "sh000300",
+        "quoteTimeUtc": "2026-06-13T09:30:00Z",
+        "priceText": "4000.000",
+        "previousCloseText": "3980.000",
+        "source": "fixture/epic289",
+        "dataQualityStatus": "OK"
+      }
+    ],
+    "history": {
+      "510300": [
+        {"date": "2026-01-02", "highText": "5.000", "closeText": "4.900"}
+      ],
+      "000300": [
+        {"date": "2026-01-02", "highText": "4200.000", "closeText": "4100.000"}
+      ]
+    }
+  }
+})JSON";
+}
+
+void createMinimalDailyUseSchema(SQLiteConnection& connection)
+{
+    require(connection.executeSql(
+                "CREATE TABLE trade_log ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "account_id INTEGER,"
+                "portfolio_id INTEGER,"
+                "actual_code TEXT,"
+                "action_type TEXT,"
+                "quantity_1e6 INTEGER NOT NULL DEFAULT 0,"
+                "amount_cents INTEGER NOT NULL DEFAULT 0,"
+                "fee_cents INTEGER NOT NULL DEFAULT 0,"
+                "net_cash_impact_cents INTEGER NOT NULL DEFAULT 0,"
+                "manual_entry INTEGER NOT NULL DEFAULT 0,"
+                "voided INTEGER NOT NULL DEFAULT 0"
+                ");")
+                .hasValue(),
+            "create trade_log");
+    require(connection.executeSql(
+                "CREATE TABLE cash_adjustment ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "trade_log_id INTEGER"
+                ");")
+                .hasValue(),
+            "create cash_adjustment");
+}
+
+void insertImportedRows(SQLiteConnection& connection)
+{
+    require(connection.executeSql(
+                "INSERT INTO trade_log "
+                "(account_id, portfolio_id, actual_code, action_type, quantity_1e6, "
+                "amount_cents, fee_cents, net_cash_impact_cents, manual_entry, voided) "
+                "VALUES "
+                "(1, 1, '', 'CASH_IN', 0, 1000000, 0, 1000000, 1, 0),"
+                "(1, 1, '510300', 'BUY', 100000000, 250000, 100, -250100, 1, 0);")
+                .hasValue(),
+            "insert imported trade rows");
+    require(connection.executeSql("INSERT INTO cash_adjustment (trade_log_id) VALUES (1);")
+                .hasValue(),
+            "insert imported cash adjustment row");
+}
+
+QJsonObject callSnapshot(SQLiteConnection& connection, const std::string& payload)
+{
+    etfdt::service_runtime::ActionContext context;
+    context.request.msgId = "epic-289-real-daily-use-test";
+    context.request.traceId = "epic-289-trace";
+    context.request.action = etfdt::data_service_api::kActionAccountingRealDailyUseSnapshot;
+    context.request.payloadJson = payload;
+
+    const auto response =
+        etfdt::data_service_api::handleAccountingRealDailyUseSnapshot(context, connection);
+    require(response.success, "snapshot response protocol success");
+    return parseObject(response.payloadJson, "snapshot response payload");
+}
+
+bool boolField(const QJsonObject& object, const char* key)
+{
+    const auto value = object.value(QString::fromUtf8(key));
+    require(value.isBool(), std::string(key) + " must be bool");
+    return value.toBool();
+}
+
+QString stringField(const QJsonObject& object, const char* key)
+{
+    const auto value = object.value(QString::fromUtf8(key));
+    require(value.isString(), std::string(key) + " must be string");
+    return value.toString();
+}
+
+void runFunctionalProbe(const std::filesystem::path& sourceRoot)
+{
+    const auto dbPath =
+        std::filesystem::temp_directory_path()
+        / ("etfdt_epic289_daily_use_" + std::to_string(std::rand()) + ".sqlite");
+    SQLiteConnection connection;
+    DatabaseConfig config;
+    config.databasePath = dbPath;
+    config.enableWal = false;
+    config.foreignKeys = false;
+    require(connection.open(config).hasValue(), "open temp daily-use DB");
+    createMinimalDailyUseSchema(connection);
+
+    const auto emptyPayload = callSnapshot(connection, fixturePayload(dbPath.generic_string()));
+    require(stringField(emptyPayload, "status") == QStringLiteral("NO_REAL_DATA"), "empty DB reports no real data");
+    require(
+        stringField(emptyPayload, "noRealDataPrompt")
+            == QStringLiteral("请先导入真实 VBA 脱敏导出文件。"),
+        "empty DB prompt is visible");
+    require(!boolField(emptyPayload, "mockDataUsedForDailyUse"), "empty DB does not use mock data");
+
+    insertImportedRows(connection);
+    const auto payload = callSnapshot(connection, fixturePayload(dbPath.generic_string()));
+    require(stringField(payload, "task") == QStringLiteral("EPIC-289"), "task evidence");
+    require(boolField(payload, "realDataLoaded"), "real imported data loaded");
+    require(payload.value(QStringLiteral("tradeLogRows")).toInt() == 2, "trade_log rows visible");
+    require(payload.value(QStringLiteral("cashAdjustmentRows")).toInt() == 1, "cash rows visible");
+    require(payload.value(QStringLiteral("holdingRows")).toInt() == 1, "holding row visible");
+    require(boolField(payload, "currentHoldingsVisible"), "current holdings visible");
+    require(boolField(payload, "remainingCashVisible"), "remaining cash visible");
+    require(boolField(payload, "basePositionCompletionVisibleOrExplicitlyMissing"), "base position evidence");
+    require(boolField(payload, "basePositionTargetMissing"), "base position target missing is explicit");
+    require(boolField(payload, "marketDataAvailable"), "fixture market data available");
+    require(boolField(payload, "historicalHighAvailable"), "fixture high data available");
+    require(boolField(payload, "etfCurrentPriceVisible"), "ETF current price visible");
+    require(boolField(payload, "etfHistoricalHighVisible"), "ETF historical high visible");
+    require(boolField(payload, "indexCurrentPointVisible"), "index current point visible");
+    require(boolField(payload, "indexHistoricalHighVisible"), "index historical high visible");
+    require(boolField(payload, "startupAutoRefreshEnabled"), "startup auto refresh enabled");
+    require(!boolField(payload, "manualRefreshButtonAdded"), "manual refresh button not added");
+    require(!boolField(payload, "mockDataUsedForDailyUse"), "no mock daily-use data");
+    require(boolField(payload, "rateLimitEnabled"), "rate limit evidence");
+    require(boolField(payload, "historicalHighDailyCacheEnabled"), "daily high cache evidence");
+    require(boolField(payload, "failureCircuitBreakerEnabled"), "failure breaker evidence");
+    require(boolField(payload, "exactHostAllowlistEnforced"), "host allowlist evidence");
+    require(boolField(payload, "noParallelSameHostRequests"), "no same-host concurrency evidence");
+    require(!boolField(payload, "backgroundPollingEnabled"), "no background polling");
+    require(!boolField(payload, "productionDbTouched"), "production DB not touched");
+    require(!boolField(payload, "brokerOrderSubmitted"), "no broker order");
+    require(!boolField(payload, "credentialAccess"), "no credentials");
+    require(!boolField(payload, "endpointAccess"), "no endpoint");
+    require(!boolField(payload, "realOrderPlacement"), "no real order");
+    require(!boolField(payload, "automaticTrading"), "no automatic trading");
+    require(!boolField(payload, "networkAccess"), "test uses fixture provider, no real network");
+
+    connection.close();
+    std::error_code ignored;
+    std::filesystem::remove(dbPath, ignored);
+    (void)sourceRoot;
+}
+
+void runStaticChecks(const std::filesystem::path& sourceRoot)
+{
+    const auto qml = readFile(sourceRoot / "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml");
+    for (const auto* token : {
+             "真实数据日常看板",
+             "当前持仓",
+             "剩余现金",
+             "底仓完成度",
+             "ETF 当前价",
+             "ETF 历史高点",
+             "指数当前点位",
+             "指数历史高点",
+             "自动刷新状态",
+             "最近刷新时间",
+             "使用缓存",
+             "刷新失败原因",
+             "请先导入真实 VBA 脱敏导出文件。",
+             "行情自动刷新失败",
+             "realDailyUseRawJsonPayload",
+             "accountingPresenter.loadRealDailyUseSnapshot",
+         }) {
+        requireContains(qml, token, "QML daily-use dashboard token");
+    }
+    for (const auto* token : {
+             "手动刷新行情",
+             "Refresh Market Data",
+             "Manual Refresh",
+             "mock 持仓",
+             "mock 现金",
+             "mock 行情",
+         }) {
+        requireNotContains(qml, token, "QML daily-use forbidden visible token");
+    }
+    requireNotContains(qml, "DataServiceClient", "QML direct DataServiceClient access");
+    requireNotContains(qml, "AccountingEngine", "QML direct AccountingEngine access");
+
+    const auto dataServiceAction =
+        readFile(sourceRoot / "libs/DataServiceApi/src/ShellAccountingRealDailyUseSnapshotAction.cpp");
+    requireContains(
+        dataServiceAction,
+        "kActionAccountingRealDailyUseSnapshot",
+        "DataService daily-use action");
+    requireContains(dataServiceAction, ".local/daily_use/etfdt_daily_use.sqlite", "daily-use DB default");
+    requireContains(dataServiceAction, "qt.gtimg.cn", "market host allowlist");
+    requireContains(dataServiceAction, "push2.eastmoney.com", "market host allowlist");
+    requireContains(dataServiceAction, "hq.sinajs.cn", "market host allowlist");
+    requireContains(dataServiceAction, "push2his.eastmoney.com", "market host allowlist");
+    requireNotContains(dataServiceAction, "INSERT INTO", "DataService daily-use action read-only SQL");
+    requireNotContains(dataServiceAction, "broker_order", "DataService no broker token");
+
+    for (const auto* doc : {
+             "docs/401_real_daily_use_data_dashboard.md",
+             "docs/402_real_daily_use_market_data_vba_parity.md",
+             "docs/403_real_daily_use_portfolio_cash_base_position.md",
+             "docs/404_real_daily_use_startup_auto_refresh_policy.md",
+             "docs/405_real_daily_use_acceptance_checklist.md",
+         }) {
+        const auto text = readFile(sourceRoot / doc);
+        requireContains(text, "EPIC-289", std::string(doc) + " scope");
+        requireContains(text, ".local/daily_use/etfdt_daily_use.sqlite", std::string(doc) + " daily DB");
+        requireContains(text, "automatic trading", std::string(doc) + " no automatic trading");
+    }
+
+    const auto marketDoc = readFile(sourceRoot / "docs/402_real_daily_use_market_data_vba_parity.md");
+    requireContains(marketDoc, "http://qt.gtimg.cn/q=", "Tencent quote documented");
+    requireContains(marketDoc, "push2.eastmoney.com/api/qt/ulist.np/get", "Eastmoney quote documented");
+    requireContains(marketDoc, "http://hq.sinajs.cn/list=f_", "Sina NAV documented");
+    requireContains(marketDoc, "push2his.eastmoney.com/api/qt/stock/kline/get", "Eastmoney history documented");
+    requireContains(marketDoc, "klt=103", "monthly K documented");
+    requireContains(marketDoc, "fqt=1", "ETF fqt documented");
+    requireContains(marketDoc, "fqt=0", "index fqt documented");
+    requireContains(marketDoc, "30 second", "cooldown documented");
+    requireContains(marketDoc, "10 minute", "breaker documented");
+
+    for (const auto* script : {
+             "scripts/local_trial/New-ETFDTDailyUseWorkspace.ps1",
+             "scripts/local_trial/Start-ETFDTDailyUseDataService.ps1",
+             "scripts/local_trial/Invoke-ETFDTDailyUseSmoke.ps1",
+         }) {
+        const auto text = readFile(sourceRoot / script);
+        requireContains(text, ".local/daily_use", std::string(script) + " uses daily path");
+        requireContains(text, "EPIC-289", std::string(script) + " evidence");
+        requireNotContains(text, ".demo/local_trial_rc", std::string(script) + " does not default to demo RC");
+        requireNotContains(text, "brokerOrderSubmitted = $true", std::string(script) + " no broker");
+    }
+}
+
+}  // namespace
+
+int main(int argc, char** argv)
+{
+    QCoreApplication app(argc, argv);
+    try {
+        const auto sourceRoot = sourceRootFromArgs(argc, argv);
+        runStaticChecks(sourceRoot);
+        runFunctionalProbe(sourceRoot);
+
+        const QJsonObject evidence {
+            {"task", "EPIC-289"},
+            {"realDailyUseDashboardCreated", true},
+            {"startupAutoRefreshEnabled", true},
+            {"manualRefreshButtonAdded", false},
+            {"mockDataUsedForDailyUse", false},
+            {"currentHoldingsVisible", true},
+            {"remainingCashVisible", true},
+            {"basePositionCompletionVisibleOrExplicitlyMissing", true},
+            {"etfCurrentPriceVisible", true},
+            {"etfHistoricalHighVisible", true},
+            {"indexCurrentPointVisible", true},
+            {"indexHistoricalHighVisible", true},
+            {"refreshStatusVisible", true},
+            {"lastRefreshTimeVisible", true},
+            {"cacheStatusVisible", true},
+            {"refreshFailureReasonVisible", true},
+            {"rateLimitEnabled", true},
+            {"historicalHighDailyCacheEnabled", true},
+            {"failureCircuitBreakerEnabled", true},
+            {"backgroundPollingEnabled", false},
+            {"productionDbTouched", false},
+            {"brokerOrderSubmitted", false},
+            {"credentialAccess", false},
+            {"endpointAccess", false},
+            {"realOrderPlacement", false},
+            {"automaticTrading", false},
+        };
+        std::cout << QJsonDocument(evidence).toJson(QJsonDocument::Compact).toStdString()
+                  << '\n';
+        return 0;
+    } catch (const std::exception& error) {
+        std::cerr << "real_daily_use_data_dashboard failed: " << error.what() << '\n';
+        return 1;
+    }
+}

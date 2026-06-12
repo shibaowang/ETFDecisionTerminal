@@ -65,6 +65,7 @@ struct ShellAccountingServiceRequest final {
     std::string portfolioReplayPayloadJson;
     std::string strategyRecommendationPayloadJson;
     std::string marketDataPayloadJson;
+    std::string realDailyUsePayloadJson;
     std::string otcMapPayloadJson;
     std::string recommendationDigest;
     bool userConfirmed = false;
@@ -161,6 +162,13 @@ struct ShellAccountingServiceResult final {
     std::string marketDataPremiumDiscountText;
     std::string marketDataProviderSource;
     std::vector<std::string> marketDataIssueCodes;
+    std::string realDailyUseDbPath;
+    std::string realDailyUseDataSourceStatus;
+    std::string realDailyUseMarketSourceStatus;
+    std::string realDailyUseLastAutoRefreshTime;
+    std::string realDailyUseCacheStatus;
+    std::string realDailyUseRefreshFailureReason;
+    std::string realDailyUseSummary;
     bool tradeDraftManualRecommendationFlowCreated = false;
     bool tradeDraftUserConfirmationRequired = false;
     bool tradeDraftEligible = false;

@@ -171,6 +171,8 @@ public:
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callMarketDataHistoricalHighReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callRealDailyUseSnapshot(
+        const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callOtcMapMultiChannelReadOnlyPreview(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftCreateOtcMapMultiChannel(

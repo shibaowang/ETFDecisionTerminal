@@ -1268,6 +1268,25 @@ ShellAccountingDataServiceClientPortAdapter::callMarketDataHistoricalHighReadOnl
 }
 
 ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPortAdapter::callRealDailyUseSnapshot(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    if (!client_) {
+        return makeUnavailableResponse(
+            request,
+            kClientNotConfiguredStatus,
+            "DataServiceClient is not configured for Shell accounting real daily-use snapshot port.",
+            true,
+            false);
+    }
+    return mapClientResult(
+        request,
+        client_->sendRaw(
+            client_->makeRequest(request.actionName, request.payloadJson),
+            request.timeoutMs));
+}
+
+ShellAccountingDataServiceClientResponse
 ShellAccountingDataServiceClientPortAdapter::callOtcMapMultiChannelReadOnlyPreview(
     const ShellAccountingDataServiceClientRequest& request)
 {

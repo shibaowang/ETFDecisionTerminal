@@ -211,6 +211,27 @@ ShellAccountingDataServiceClientPort::callMarketDataHistoricalHighReadOnlySummar
 }
 
 ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callRealDailyUseSnapshot(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = request.actionName;
+    response.protocolSuccess = false;
+    response.implemented = false;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = "SHELL_ACCOUNTING_REAL_DAILY_USE_SNAPSHOT_PORT_NOT_CONFIGURED";
+    response.dataQualityStatus = "UNAVAILABLE";
+    response.protocolError = true;
+    response.errorMessage =
+        "ShellAccounting real daily-use snapshot DataService port is not configured.";
+    response.issues.push_back(
+        {response.payloadStatus, "ERROR", response.errorMessage, true,
+         "ShellAccountingDataServiceClientPort"});
+    return response;
+}
+
+ShellAccountingDataServiceClientResponse
 ShellAccountingDataServiceClientPort::callOtcMapMultiChannelReadOnlyPreview(
     const ShellAccountingDataServiceClientRequest& request)
 {

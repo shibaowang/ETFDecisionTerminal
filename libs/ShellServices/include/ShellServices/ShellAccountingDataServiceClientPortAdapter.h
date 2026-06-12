@@ -55,6 +55,8 @@ public:
         const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callMarketDataHistoricalHighReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request) override;
+    [[nodiscard]] ShellAccountingDataServiceClientResponse callRealDailyUseSnapshot(
+        const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callOtcMapMultiChannelReadOnlyPreview(
         const ShellAccountingDataServiceClientRequest& request) override;
     [[nodiscard]] ShellAccountingDataServiceClientResponse callTradeDraftCreateOtcMapMultiChannel(

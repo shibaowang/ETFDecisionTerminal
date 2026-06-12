@@ -480,6 +480,30 @@ ShellAccountingReadOnlyController::fetchMarketDataHistoricalHighReadOnlySummary(
     return result;
 }
 
+ShellAccountingServiceResult
+ShellAccountingReadOnlyController::fetchRealDailyUseSnapshot(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("accounting.real_daily_use.snapshot");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("accounting.real_daily_use.snapshot");
+        ShellAccountingServiceResult result;
+        result.actionName = "accounting.real_daily_use.snapshot";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->fetchRealDailyUseSnapshot(request);
+    applyServiceResult(result);
+    return result;
+}
+
 ShellAccountingServiceResult ShellAccountingReadOnlyController::previewOtcMapMultiChannelDraft(
     const ShellAccountingServiceRequest& request)
 {

@@ -2,6 +2,26 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-289 real daily-use data dashboard boundary
+
+- EPIC-289 may update the ShellAccounting daily-use QML panel, ShellServices
+  Presenter read-only mapping, DataService read-only action, MarketEngine
+  startup public-market refresh boundary, local daily-use scripts, docs 401
+  through 405, README indexes, and the `real_daily_use_data_dashboard` CTest.
+- The default daily-use DB path is `.local/daily_use/etfdt_daily_use.sqlite`.
+  Do not change the daily-use default back to `.demo/local_trial_rc`.
+- The UI must be Chinese-first and show real imported VBA replay data only. If
+  there is no import data, show `请先导入真实 VBA 脱敏导出文件。`; if market data is
+  unavailable, show `行情自动刷新失败，正在使用缓存 / 暂无行情数据。`.
+- Startup public-market refresh is bounded to exact hosts
+  `qt.gtimg.cn`, `push2.eastmoney.com`, `hq.sinajs.cn`, and
+  `push2his.eastmoney.com`, with cooldown, daily high cache, failure circuit
+  breaker, no same-host concurrency, visible status, and fixture-only tests.
+- Do not add manual market refresh controls to the daily-use UI. Do not add
+  background polling, hidden network calls, broker, credentials, endpoints,
+  real order placement, automatic trading, TradeDraft generation, strategy
+  execution, migrations, or production DB destructive mutation.
+
 ## EPIC-288 global Chinese UI leak visual acceptance boundary
 
 - EPIC-288 may update QML under `apps/ETFDecisionShell/qml/**/*.qml`,

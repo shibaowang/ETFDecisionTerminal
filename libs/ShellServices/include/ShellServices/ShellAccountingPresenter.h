@@ -74,6 +74,20 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString lastStrategyRecommendationNetCashImpactText READ lastStrategyRecommendationNetCashImpactText NOTIFY strategyRecommendationStateChanged)
     Q_PROPERTY(QString lastStrategyRecommendationIssueCodes READ lastStrategyRecommendationIssueCodes NOTIFY strategyRecommendationStateChanged)
     Q_PROPERTY(QString lastStrategyRecommendationSummary READ lastStrategyRecommendationSummary NOTIFY strategyRecommendationStateChanged)
+    Q_PROPERTY(bool marketDataRefreshBusy READ marketDataRefreshBusy NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataRefreshStatus READ lastMarketDataRefreshStatus NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataInstrumentCode READ lastMarketDataInstrumentCode NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataCurrentPriceText READ lastMarketDataCurrentPriceText NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataPreviousCloseText READ lastMarketDataPreviousCloseText NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataHistoricalHighText READ lastMarketDataHistoricalHighText NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataDisplayedHighText READ lastMarketDataDisplayedHighText NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataHistoricalHighDate READ lastMarketDataHistoricalHighDate NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataDrawdownFromHighText READ lastMarketDataDrawdownFromHighText NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataPremiumDiscountText READ lastMarketDataPremiumDiscountText NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataQualityStatus READ lastMarketDataQualityStatus NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataProviderSource READ lastMarketDataProviderSource NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataIssueCodes READ lastMarketDataIssueCodes NOTIFY marketDataStateChanged)
+    Q_PROPERTY(QString lastMarketDataSummary READ lastMarketDataSummary NOTIFY marketDataStateChanged)
     Q_PROPERTY(QString lastTradeDraftStatus READ lastTradeDraftStatus NOTIFY tradeDraftStateChanged)
     Q_PROPERTY(QString lastTradeDraftId READ lastTradeDraftId NOTIFY tradeDraftStateChanged)
     Q_PROPERTY(QString lastTradeDraftSide READ lastTradeDraftSide NOTIFY tradeDraftStateChanged)
@@ -166,6 +180,20 @@ public:
     [[nodiscard]] QString lastStrategyRecommendationNetCashImpactText() const;
     [[nodiscard]] QString lastStrategyRecommendationIssueCodes() const;
     [[nodiscard]] QString lastStrategyRecommendationSummary() const;
+    [[nodiscard]] bool marketDataRefreshBusy() const noexcept;
+    [[nodiscard]] QString lastMarketDataRefreshStatus() const;
+    [[nodiscard]] QString lastMarketDataInstrumentCode() const;
+    [[nodiscard]] QString lastMarketDataCurrentPriceText() const;
+    [[nodiscard]] QString lastMarketDataPreviousCloseText() const;
+    [[nodiscard]] QString lastMarketDataHistoricalHighText() const;
+    [[nodiscard]] QString lastMarketDataDisplayedHighText() const;
+    [[nodiscard]] QString lastMarketDataHistoricalHighDate() const;
+    [[nodiscard]] QString lastMarketDataDrawdownFromHighText() const;
+    [[nodiscard]] QString lastMarketDataPremiumDiscountText() const;
+    [[nodiscard]] QString lastMarketDataQualityStatus() const;
+    [[nodiscard]] QString lastMarketDataProviderSource() const;
+    [[nodiscard]] QString lastMarketDataIssueCodes() const;
+    [[nodiscard]] QString lastMarketDataSummary() const;
     [[nodiscard]] QString lastTradeDraftStatus() const;
     [[nodiscard]] QString lastTradeDraftId() const;
     [[nodiscard]] QString lastTradeDraftSide() const;
@@ -260,6 +288,8 @@ public:
     Q_INVOKABLE bool previewPortfolioReplayReadOnlySummary(const QString& replayPayloadJson);
     Q_INVOKABLE void resetStrategyRecommendationState();
     Q_INVOKABLE bool previewStrategyRecommendationReadOnlySummary(const QString& recommendationPayloadJson);
+    Q_INVOKABLE void resetMarketDataState();
+    Q_INVOKABLE bool refreshMarketDataReadOnly(const QString& payloadJson);
     Q_INVOKABLE void resetTradeDraftState();
     Q_INVOKABLE bool previewTradeDraftFromLastRecommendation();
     Q_INVOKABLE bool createTradeDraftFromLastRecommendation(bool userConfirmed);
@@ -289,6 +319,7 @@ signals:
     void excelVbaImportPersistStateChanged();
     void portfolioReplayStateChanged();
     void strategyRecommendationStateChanged();
+    void marketDataStateChanged();
     void tradeDraftStateChanged();
 
 private:
@@ -314,6 +345,7 @@ private:
     void markExcelVbaImportPersistInputError(const QString& message);
     void markPortfolioReplayInputError(const QString& message);
     void markStrategyRecommendationInputError(const QString& message);
+    void markMarketDataInputError(const QString& message);
     void markTradeDraftInputError(const QString& message);
     void applyTradeDraftResult(const ShellAccountingServiceResult& result);
     void applyOtcMapPreviewResult(const ShellAccountingServiceResult& result);
@@ -340,6 +372,9 @@ private:
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeStrategyRecommendationReadOnlySummaryRequest(
         const QString& recommendationPayloadJson,
+        bool& valid);
+    [[nodiscard]] ShellAccountingServiceRequest makeMarketDataReadOnlySummaryRequest(
+        const QString& payloadJson,
         bool& valid);
     [[nodiscard]] ShellAccountingServiceRequest makeTradeDraftCreateFromRecommendationRequest(
         bool userConfirmed,
@@ -459,6 +494,20 @@ private:
     QString lastStrategyRecommendationIssueCodes_;
     QString lastStrategyRecommendationSummary_;
     QString lastStrategyRecommendationPayloadJson_;
+    bool marketDataRefreshBusy_ = false;
+    QString lastMarketDataRefreshStatus_ = QStringLiteral("READY");
+    QString lastMarketDataInstrumentCode_;
+    QString lastMarketDataCurrentPriceText_;
+    QString lastMarketDataPreviousCloseText_;
+    QString lastMarketDataHistoricalHighText_;
+    QString lastMarketDataDisplayedHighText_;
+    QString lastMarketDataHistoricalHighDate_;
+    QString lastMarketDataDrawdownFromHighText_;
+    QString lastMarketDataPremiumDiscountText_;
+    QString lastMarketDataQualityStatus_;
+    QString lastMarketDataProviderSource_;
+    QString lastMarketDataIssueCodes_;
+    QString lastMarketDataSummary_;
     QString lastTradeDraftStatus_ = QStringLiteral("READY");
     QString lastTradeDraftId_;
     QString lastTradeDraftSide_;

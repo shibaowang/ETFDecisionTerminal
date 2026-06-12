@@ -1,0 +1,50 @@
+{
+  "task": "EPIC-280",
+  "caseId": "etf_quote_and_history_high",
+  "input": {
+    "providerMode": "fixture",
+    "nowUtc": "2026-06-12T00:00:00Z",
+    "instruments": [
+      {
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "exchange": "SH",
+        "providerSymbol": "sh510300"
+      }
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {
+        "instrumentCode": "510300",
+        "instrumentType": "ETF",
+        "exchange": "SH",
+        "providerSymbol": "sh510300",
+        "quoteTimeUtc": "2026-06-12T02:30:00Z",
+        "priceText": "4.800",
+        "previousCloseText": "4.700",
+        "source": "fixture/tencent",
+        "dataQualityStatus": "OK"
+      }
+    ],
+    "history": {
+      "510300": [
+        {"date": "2025-01-03", "highText": "5.000", "closeText": "4.950"},
+        {"date": "2025-02-07", "highText": "4.900", "closeText": "4.880"}
+      ]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "4.800",
+    "previousCloseText": "4.700",
+    "historicalHighText": "5.000",
+    "historicalHighDate": "2025-01-03",
+    "displayedHighText": "5.000",
+    "drawdownFromHighText": "-0.0400",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/tencent",
+    "issueCodes": []
+  }
+}

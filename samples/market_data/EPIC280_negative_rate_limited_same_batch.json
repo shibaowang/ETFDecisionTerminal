@@ -1,0 +1,20 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_rate_limited_same_batch",
+  "input": {
+    "providerMode": "fixture",
+    "safetyPolicyProbe": "rate_limited_same_batch",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "RATE_LIMITED",
+    "dataQualityStatus": "RATE_LIMITED",
+    "issueCodes": ["MARKET_DATA_RATE_LIMITED"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

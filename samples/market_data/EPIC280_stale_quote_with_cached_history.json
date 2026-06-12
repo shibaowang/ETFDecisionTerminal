@@ -1,0 +1,33 @@
+{
+  "task": "EPIC-280",
+  "caseId": "stale_quote_with_cached_history",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "512000", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh512000"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "512000", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-11T02:30:00Z", "priceText": "4.800", "previousCloseText": "4.810", "source": "fixture/cache", "dataQualityStatus": "STALE"}
+    ],
+    "history": {
+      "512000": [
+        {"date": "2025-01-03", "highText": "5.000", "closeText": "4.950"}
+      ]
+    }
+  },
+  "expected": {
+    "status": "STALE",
+    "dataQualityStatus": "STALE",
+    "currentPriceText": "4.800",
+    "previousCloseText": "4.810",
+    "historicalHighText": "5.000",
+    "historicalHighDate": "2025-01-03",
+    "displayedHighText": "5.000",
+    "drawdownFromHighText": "-0.0400",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/cache",
+    "issueCodes": ["MARKET_DATA_STALE_QUOTE"]
+  }
+}

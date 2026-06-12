@@ -2,6 +2,27 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-280 Market data historical high refresh boundary
+
+- Market data work may add the production read-only MarketEngine provider
+  contract, disabled provider, fixture provider, deferred live public provider
+  boundary, DataService read-only actions, DataServiceClient adapter,
+  ShellServices / Presenter mapping, docs 379 through 383, samples under
+  `samples/market_data/`, and the
+  `market_data_historical_high_refresh_engine_full_delivery` CTest.
+- Refresh is manual and read-only. Do not add default live auto-refresh, a
+  2-second polling loop, background refresh, or automatic strategy execution.
+- Live public market data must stay disabled by default unless a later task
+  separately authorizes exact hosts, paths, rate limits, cache policy, circuit
+  breaker behavior, and raw response sanitization.
+- Allowed public host/path policy is exact and narrow:
+  `qt.gtimg.cn`, `push2.eastmoney.com`, `hq.sinajs.cn`, and
+  `push2his.eastmoney.com` with the documented quote/history paths.
+- Do not write SQLite, production DBs, trade_log, cash_adjustment, audit_log,
+  ledger, snapshots, persistent read models, or TradeDrafts. Do not access
+  broker, credentials, private endpoints, paid market data, PushPlus, real
+  order placement, or automatic trading.
+
 ## EPIC-279 OTCMap A/C multi-channel TradeDraft boundary
 
 - OTCMap work may add the StrategyEngine OTCMap A/C multi-channel engine,

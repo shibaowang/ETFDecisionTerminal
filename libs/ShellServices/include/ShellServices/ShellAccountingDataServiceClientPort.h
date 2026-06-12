@@ -67,6 +67,25 @@ struct ShellAccountingDataServiceClientResponse final {
     bool strategyRecommendationBaseProtectionPassed = false;
     bool strategyRecommendationCashLimitApplied = false;
     std::vector<std::string> strategyRecommendationIssueCodes;
+    bool marketDataAccepted = false;
+    bool marketDataRefreshEngineCreated = false;
+    bool marketDataProviderContractCreated = false;
+    bool marketDataProviderDisabled = false;
+    bool marketDataStale = false;
+    bool marketDataPartial = false;
+    bool marketDataLiveProviderDisabledByDefault = true;
+    bool marketDataLiveProviderDeferredForSafety = true;
+    std::string marketDataInstrumentCode;
+    std::string marketDataInstrumentType;
+    std::string marketDataCurrentPriceText;
+    std::string marketDataPreviousCloseText;
+    std::string marketDataHistoricalHighText;
+    std::string marketDataDisplayedHighText;
+    std::string marketDataHistoricalHighDate;
+    std::string marketDataDrawdownFromHighText;
+    std::string marketDataPremiumDiscountText;
+    std::string marketDataProviderSource;
+    std::vector<std::string> marketDataIssueCodes;
     bool tradeDraftManualRecommendationFlowCreated = false;
     bool tradeDraftUserConfirmationRequired = false;
     bool tradeDraftEligible = false;
@@ -147,6 +166,10 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callPortfolioReplayReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callStrategyRecommendationReadOnlySummary(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callMarketDataRefreshReadOnlySummary(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callMarketDataHistoricalHighReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callOtcMapMultiChannelReadOnlyPreview(
         const ShellAccountingDataServiceClientRequest& request);

@@ -23,6 +23,10 @@ constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
     "accounting.excel_vba_import.persist_manual_entry";
 constexpr const char* kActionStrategyRecommendationReadOnlySummary =
     "strategy.recommendation.readonly_summary";
+constexpr const char* kActionMarketDataRefreshReadOnlySummary =
+    "marketdata.refresh.readonly_summary";
+constexpr const char* kActionMarketDataHistoricalHighReadOnlySummary =
+    "marketdata.historical_high.readonly_summary";
 constexpr const char* kActionAccountingOtcMapMultiChannelReadOnlyPreview =
     "accounting.otcmap_multichannel.readonly_preview";
 constexpr const char* kActionAccountingSnapshotWrite = "accounting.snapshot.write";
@@ -99,6 +103,14 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleStrategyRecommendationReadOnlySummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleMarketDataRefreshReadOnlySummary(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleMarketDataHistoricalHighReadOnlySummary(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

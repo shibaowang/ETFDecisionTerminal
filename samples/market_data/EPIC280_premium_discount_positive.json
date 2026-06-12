@@ -1,0 +1,34 @@
+{
+  "task": "EPIC-280",
+  "caseId": "premium_discount_positive",
+  "input": {
+    "providerMode": "fixture",
+    "referenceValueText": "4.700",
+    "instruments": [
+      {"instrumentCode": "510500", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510500"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "510500", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "4.800", "previousCloseText": "4.750", "source": "fixture/eastmoney", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "510500": [
+        {"date": "2025-06-05", "highText": "5.000", "closeText": "4.990"}
+      ]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "4.800",
+    "previousCloseText": "4.750",
+    "historicalHighText": "5.000",
+    "historicalHighDate": "2025-06-05",
+    "displayedHighText": "5.000",
+    "drawdownFromHighText": "-0.0400",
+    "premiumDiscountText": "0.0213",
+    "providerSource": "fixture/eastmoney",
+    "issueCodes": []
+  }
+}

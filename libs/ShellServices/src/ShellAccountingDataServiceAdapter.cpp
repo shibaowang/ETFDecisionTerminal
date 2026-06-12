@@ -450,6 +450,28 @@ ShellAccountingDataServiceClientRequest makeStrategyRecommendationReadOnlySummar
     return clientRequest;
 }
 
+ShellAccountingDataServiceClientRequest makeMarketDataRefreshReadOnlySummaryClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "marketdata.refresh.readonly_summary";
+    clientRequest.payloadJson =
+        request.marketDataPayloadJson.empty() ? "{}" : request.marketDataPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeMarketDataHistoricalHighReadOnlySummaryClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "marketdata.historical_high.readonly_summary";
+    clientRequest.payloadJson =
+        request.marketDataPayloadJson.empty() ? "{}" : request.marketDataPayloadJson;
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
 ShellAccountingDataServiceClientRequest makeOtcMapPreviewClientRequest(
     const ShellAccountingServiceRequest& request)
 {
@@ -534,6 +556,27 @@ ShellAccountingServiceResult mapClientResponse(
     result.strategyRecommendationBaseProtectionPassed = response.strategyRecommendationBaseProtectionPassed;
     result.strategyRecommendationCashLimitApplied = response.strategyRecommendationCashLimitApplied;
     result.strategyRecommendationIssueCodes = std::move(response.strategyRecommendationIssueCodes);
+    result.marketDataAccepted = response.marketDataAccepted;
+    result.marketDataRefreshEngineCreated = response.marketDataRefreshEngineCreated;
+    result.marketDataProviderContractCreated = response.marketDataProviderContractCreated;
+    result.marketDataProviderDisabled = response.marketDataProviderDisabled;
+    result.marketDataStale = response.marketDataStale;
+    result.marketDataPartial = response.marketDataPartial;
+    result.marketDataLiveProviderDisabledByDefault =
+        response.marketDataLiveProviderDisabledByDefault;
+    result.marketDataLiveProviderDeferredForSafety =
+        response.marketDataLiveProviderDeferredForSafety;
+    result.marketDataInstrumentCode = std::move(response.marketDataInstrumentCode);
+    result.marketDataInstrumentType = std::move(response.marketDataInstrumentType);
+    result.marketDataCurrentPriceText = std::move(response.marketDataCurrentPriceText);
+    result.marketDataPreviousCloseText = std::move(response.marketDataPreviousCloseText);
+    result.marketDataHistoricalHighText = std::move(response.marketDataHistoricalHighText);
+    result.marketDataDisplayedHighText = std::move(response.marketDataDisplayedHighText);
+    result.marketDataHistoricalHighDate = std::move(response.marketDataHistoricalHighDate);
+    result.marketDataDrawdownFromHighText = std::move(response.marketDataDrawdownFromHighText);
+    result.marketDataPremiumDiscountText = std::move(response.marketDataPremiumDiscountText);
+    result.marketDataProviderSource = std::move(response.marketDataProviderSource);
+    result.marketDataIssueCodes = std::move(response.marketDataIssueCodes);
     result.tradeDraftManualRecommendationFlowCreated = response.tradeDraftManualRecommendationFlowCreated;
     result.tradeDraftUserConfirmationRequired = response.tradeDraftUserConfirmationRequired;
     result.tradeDraftEligible = response.tradeDraftEligible;
@@ -777,6 +820,34 @@ ShellAccountingDataServiceAdapter::fetchStrategyRecommendationReadOnlySummary(
             "strategy.recommendation.readonly_summary");
     }
     return makeNotConnectedResult(request, "strategy.recommendation.readonly_summary");
+}
+
+ShellAccountingServiceResult
+ShellAccountingDataServiceAdapter::fetchMarketDataRefreshReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callMarketDataRefreshReadOnlySummary(
+                makeMarketDataRefreshReadOnlySummaryClientRequest(request)),
+            request,
+            "marketdata.refresh.readonly_summary");
+    }
+    return makeNotConnectedResult(request, "marketdata.refresh.readonly_summary");
+}
+
+ShellAccountingServiceResult
+ShellAccountingDataServiceAdapter::fetchMarketDataHistoricalHighReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callMarketDataHistoricalHighReadOnlySummary(
+                makeMarketDataHistoricalHighReadOnlySummaryClientRequest(request)),
+            request,
+            "marketdata.historical_high.readonly_summary");
+    }
+    return makeNotConnectedResult(request, "marketdata.historical_high.readonly_summary");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::previewOtcMapMultiChannelDraft(

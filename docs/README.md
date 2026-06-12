@@ -12,6 +12,18 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- [379 Market Data Refresh Engine Full Delivery](379_market_data_refresh_engine_full_delivery.md)
+- [380 Market Data Provider Contract](380_market_data_provider_contract.md)
+- [381 Market Data Historical High VBA Parity Matrix](381_market_data_historical_high_vba_parity_matrix.md)
+- [382 Market Data User-visible Refresh Flow](382_market_data_user_visible_refresh_flow.md)
+- [383 Market Data Test Plan](383_market_data_test_plan.md)
+- EPIC-280 market data samples:
+  [samples/market_data](../samples/market_data/).
+  Market data refresh is read-only and manual, with no default live
+  auto-refresh and no 2-second polling loop. The live provider is disabled by
+  default and deferred. It does not write trade_log, cash_adjustment, audit_log,
+  ledger, snapshots, read models, or TradeDrafts, and does not access broker,
+  network, credentials, endpoints, real order placement, or automatic trading.
 - [374 OTCMap A/C Multi-Channel Draft Engine Full Delivery](374_otcmap_ac_multichannel_draft_engine_full_delivery.md)
 - [375 OTCMap A/C Multi-Channel Contract](375_otcmap_ac_multichannel_contract.md)
 - [376 OTCMap A/C Multi-Channel VBA Parity Matrix](376_otcmap_ac_multichannel_vba_parity_matrix.md)

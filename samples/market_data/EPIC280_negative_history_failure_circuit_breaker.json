@@ -1,0 +1,20 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_history_failure_circuit_breaker",
+  "input": {
+    "providerMode": "fixture",
+    "safetyPolicyProbe": "history_failure_circuit_breaker",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {"quotes": [], "history": {}},
+  "expected": {
+    "status": "PROVIDER_TEMPORARILY_DISABLED",
+    "dataQualityStatus": "PROVIDER_TEMPORARILY_DISABLED",
+    "issueCodes": ["MARKET_DATA_HISTORY_FAILURE_CIRCUIT_BREAKER"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

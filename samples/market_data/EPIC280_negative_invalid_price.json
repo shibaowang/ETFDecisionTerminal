@@ -1,0 +1,24 @@
+{
+  "task": "EPIC-280",
+  "caseId": "negative_invalid_price",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh510300"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "510300", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "bad", "previousCloseText": "4.700", "source": "fixture/negative", "dataQualityStatus": "OK"}
+    ],
+    "history": {"510300": [{"date": "2025-01-03", "highText": "5.000", "closeText": "4.950"}]}
+  },
+  "expected": {
+    "status": "DATA_UNAVAILABLE",
+    "dataQualityStatus": "DATA_UNAVAILABLE",
+    "issueCodes": ["MARKET_DATA_PRICE_INVALID"],
+    "networkAccessExpected": false,
+    "rawUrlExposed": false,
+    "rawResponseExposed": false
+  }
+}

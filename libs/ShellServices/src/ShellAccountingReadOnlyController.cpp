@@ -432,6 +432,54 @@ ShellAccountingReadOnlyController::fetchStrategyRecommendationReadOnlySummary(
     return result;
 }
 
+ShellAccountingServiceResult
+ShellAccountingReadOnlyController::fetchMarketDataRefreshReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("marketdata.refresh.readonly_summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("marketdata.refresh.readonly_summary");
+        ShellAccountingServiceResult result;
+        result.actionName = "marketdata.refresh.readonly_summary";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->fetchMarketDataRefreshReadOnlySummary(request);
+    applyServiceResult(result);
+    return result;
+}
+
+ShellAccountingServiceResult
+ShellAccountingReadOnlyController::fetchMarketDataHistoricalHighReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    beginRefresh("marketdata.historical_high.readonly_summary");
+    if (!serviceAdapter_) {
+        markServiceAdapterNotConfigured("marketdata.historical_high.readonly_summary");
+        ShellAccountingServiceResult result;
+        result.actionName = "marketdata.historical_high.readonly_summary";
+        result.protocolSuccess = false;
+        result.implemented = false;
+        result.readOnly = true;
+        result.writeEnabled = false;
+        result.payloadStatus = "SERVICE_ADAPTER_NOT_CONFIGURED";
+        result.dataQualityStatus = "UNAVAILABLE";
+        result.transportError = true;
+        result.issues = issues_;
+        return result;
+    }
+    auto result = serviceAdapter_->fetchMarketDataHistoricalHighReadOnlySummary(request);
+    applyServiceResult(result);
+    return result;
+}
+
 ShellAccountingServiceResult ShellAccountingReadOnlyController::previewOtcMapMultiChannelDraft(
     const ShellAccountingServiceRequest& request)
 {

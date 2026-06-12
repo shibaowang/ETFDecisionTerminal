@@ -1,0 +1,31 @@
+{
+  "task": "EPIC-280",
+  "caseId": "current_price_breaks_historical_high_display_only",
+  "input": {
+    "providerMode": "fixture",
+    "instruments": [
+      {"instrumentCode": "513100", "instrumentType": "ETF", "exchange": "SH", "providerSymbol": "sh513100"}
+    ]
+  },
+  "fixture": {
+    "quotes": [
+      {"instrumentCode": "513100", "instrumentType": "ETF", "exchange": "SH", "quoteTimeUtc": "2026-06-12T02:30:00Z", "priceText": "5.200", "previousCloseText": "5.100", "source": "fixture/display-only", "dataQualityStatus": "OK"}
+    ],
+    "history": {
+      "513100": [{"date": "2025-12-31", "highText": "5.000", "closeText": "4.990"}]
+    }
+  },
+  "expected": {
+    "status": "OK",
+    "dataQualityStatus": "OK",
+    "currentPriceText": "5.200",
+    "previousCloseText": "5.100",
+    "historicalHighText": "5.000",
+    "historicalHighDate": "2026-06-12",
+    "displayedHighText": "5.200",
+    "drawdownFromHighText": "0.0400",
+    "premiumDiscountText": "",
+    "providerSource": "fixture/display-only",
+    "issueCodes": []
+  }
+}

@@ -630,6 +630,27 @@ Rectangle {
                             font.pixelSize: 13
                         }
                         Text {
+                            objectName: "realDailyUseTotalAssetsText"
+                            text: "总资产：" + (root.presenterAvailable ? accountingPresenter.realDailyUseTotalAssetsText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            objectName: "realDailyUseTotalMarketValueText"
+                            text: "持仓市值：" + (root.presenterAvailable ? accountingPresenter.realDailyUseTotalMarketValueText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            objectName: "realDailyUseFloatingPnlText"
+                            text: "浮动盈亏：" + (root.presenterAvailable ? accountingPresenter.realDailyUseFloatingPnlText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
                             objectName: "realDailyUseBasePositionCompletionText"
                             width: 360
                             text: "底仓完成度：" + (root.presenterAvailable ? accountingPresenter.realDailyUseBasePositionCompletionText : "缺少底仓目标配置，无法计算底仓完成度。")

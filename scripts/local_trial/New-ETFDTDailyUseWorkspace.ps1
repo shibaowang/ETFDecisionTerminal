@@ -9,7 +9,8 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $workspacePath = Join-Path $repoRoot $WorkspaceRoot
 $dbPath = Join-Path $workspacePath "etfdt_daily_use.sqlite"
 $logsPath = Join-Path $workspacePath "logs"
-$cachePath = Join-Path $workspacePath "market_cache"
+$cachePath = Join-Path $workspacePath "cache"
+$cacheFilePath = Join-Path $cachePath "market_cache.json"
 
 if ((Test-Path -LiteralPath $workspacePath) -and -not $Force) {
     Write-Host "Daily-use workspace already exists: $workspacePath"
@@ -29,7 +30,12 @@ $evidence = [ordered]@{
     dailyUseWorkspaceCreated = $true
     workspacePath = $workspacePath
     databasePath = $dbPath
+    cachePath = $cacheFilePath
     defaultDailyUseDbPath = ".local/daily_use/etfdt_daily_use.sqlite"
+    defaultMarketCachePath = ".local/daily_use/cache/market_cache.json"
+    startupAutoRefreshEnabled = $true
+    liveNetworkUsed = $false
+    testNetworkAccess = $false
     demoRcPathUsed = $false
     productionDbTouched = $false
     brokerOrderSubmitted = $false

@@ -8,10 +8,20 @@ Daily-use mode starts from the repo-local daily-use DB:
 .local/daily_use/etfdt_daily_use.sqlite
 ```
 
+The repo-local public-market cache path is:
+
+```text
+.local/daily_use/cache/market_cache.json
+```
+
 On page startup, the dashboard requests a read-only real daily-use snapshot.
 The snapshot combines imported trade/cash facts with a controlled public market
 refresh. The UI must not require a manual market refresh button for normal
 daily viewing.
+
+EPIC-289-FIX changes the live provider from deferred-only to a real public
+market provider with bounded requests. Tests still use fixture providers and set
+`testNetworkAccess=false`.
 
 ## Not Allowed
 

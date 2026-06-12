@@ -4,6 +4,11 @@
 
 EPIC-289 adds the real daily-use dashboard path for local users:
 
+EPIC-289-FIX completes the P0 follow-up after commit `ae1548e5`: the production
+live provider is implemented, startup auto refresh can fetch bounded public ETF
+and index market data, and daily-use holdings/cash/market value/total
+assets/floating PnL are concrete values when real rows and quotes are available.
+
 - scope: `docs/401_real_daily_use_data_dashboard.md` through
   `docs/405_real_daily_use_acceptance_checklist.md`
 - default daily-use DB: `.local/daily_use/etfdt_daily_use.sqlite`

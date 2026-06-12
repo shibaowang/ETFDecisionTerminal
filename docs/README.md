@@ -23,6 +23,9 @@
   refresh for ETF/index current and historical high data, keeps raw diagnostics
   collapsed by default, and does not add manual market refresh, broker,
   credential, endpoint, real order placement, or automatic trading behavior.
+  EPIC-289-FIX completes the live-provider follow-up and produces concrete
+  cash, market value, total assets, and floating PnL values when real rows and
+  quotes are available.
 - EPIC-288 global Chinese UI leak fix visual acceptance:
   [400_global_chinese_ui_readability_trial_feedback_fix.md](400_global_chinese_ui_readability_trial_feedback_fix.md).
   The visual closeout removes remaining right-sidebar placeholder English,

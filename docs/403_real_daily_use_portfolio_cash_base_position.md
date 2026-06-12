@@ -9,8 +9,11 @@ The dashboard reads daily-use facts from the explicit local DB path:
 ```
 
 Holdings must come from manual/imported `trade_log` replay. Remaining cash must
-come from replayed cash impact and cash adjustments. The dashboard must not use
-sample holdings, sample cash, or mock market values as real daily-use data.
+come from replayed cash impact and cash adjustments. EPIC-289-FIX includes the
+`cash_adjustment` path in the cash calculation when the schema exposes an amount
+column; when only a `trade_log` linkage exists, the snapshot uses the linked cash
+effect and reports the missing amount column explicitly. The dashboard must not
+use sample holdings, sample cash, or mock market values as real daily-use data.
 
 ## Visible Portfolio Fields
 
@@ -31,6 +34,10 @@ Required daily-use fields:
 When market prices are unavailable, market value and floating PnL must be shown
 as unavailable, not fabricated.
 
+When market prices are available, `totalMarketValueText`, `totalAssetsText`, and
+`floatingPnlText` must be concrete values instead of
+`CALCULABLE_WITH_MARKET_DATA`.
+
 ## Base Position
 
 If the base position target config is missing, show:
@@ -45,8 +52,14 @@ Evidence must include:
 {"basePositionTargetMissing": true}
 ```
 
-If the target is available in a future task, completion must be calculated from
-real imported holdings and real target config only.
+If the target is available through the daily-use base-position allocation table,
+completion is calculated from real target and allocated amounts. If the target
+is unavailable, the missing-config prompt remains explicit.
+
+ETF market instruments are derived from real holdings. ETF-to-index data is used
+only when an explicit mapping is present in configuration or imported payload;
+missing mappings are surfaced as a sanitized issue and are not silently mapped to
+`000300`.
 
 This portfolio/cash/base-position readback never enables broker access, real
 order placement, or automatic trading.

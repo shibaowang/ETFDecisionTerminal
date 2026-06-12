@@ -55,8 +55,10 @@ struct MarketRefreshInput final {
 
 struct MarketProviderSnapshot final {
     bool providerDisabled = false;
+    bool liveProviderImplemented = false;
     bool liveProviderDeferredForSafety = false;
     bool networkAccess = false;
+    bool stale = false;
     bool rawUrlExposed = false;
     bool rawResponseExposed = false;
     bool exactHostAllowlistEnforced = true;

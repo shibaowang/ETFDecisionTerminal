@@ -140,6 +140,17 @@ std::vector<fs::path> productionFiles(const Harness& h)
     return files;
 }
 
+std::vector<fs::path> withoutEpic289LivePublicMarketProvider(std::vector<fs::path> files, const Harness& h)
+{
+    files.erase(std::remove_if(files.begin(), files.end(), [&](const fs::path& file) {
+                    const auto relative = file.lexically_relative(h.root).generic_string();
+                    return relative == "libs/MarketEngine/include/MarketEngine/LivePublicMarketDataProvider.h"
+                        || relative == "libs/MarketEngine/src/LivePublicMarketDataProvider.cpp";
+                }),
+        files.end());
+    return files;
+}
+
 std::vector<fs::path> validationFiles(const Harness& h)
 {
     return {
@@ -442,7 +453,7 @@ void testNoBrokerSdk(const Harness& h)
 
 void testNoNetworkEndpoint(const Harness& h)
 {
-    requireNoTokens(productionFiles(h), {
+    requireNoTokens(withoutEpic289LivePublicMarketProvider(productionFiles(h), h), {
         "brokerEndpoint",
         "brokerHost",
         "brokerUrl",

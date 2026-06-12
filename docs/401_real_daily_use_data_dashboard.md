@@ -17,6 +17,22 @@ Default daily-use database path:
 The UI must show this DB path and the data source status so users can
 distinguish real imported data from unavailable data.
 
+## EPIC-289-FIX Completion
+
+The original EPIC-289 commit `ae1548e5` delivered the dashboard framework. The
+follow-up completion closes the real daily-use path:
+
+- `providerMode=live` uses the production `LivePublicMarketDataProvider`
+  instead of a deferred-only boundary.
+- tests keep using fixture providers and do not call public network hosts.
+- holdings come from imported/manual daily-use rows.
+- remaining cash includes the `cash_adjustment` path when the schema exposes it,
+  or a sanitized unavailable flag when only linkage is available.
+- market value, total assets, and floating PnL are concrete values when quotes
+  are available.
+- missing base-position target config and missing ETF-to-index mapping are
+  explicit user-visible issues, not mocked defaults.
+
 ## Data States
 
 Allowed visible data source states:
@@ -59,6 +75,9 @@ The ShellAccounting page must include Chinese-first visible fields:
 - `最近刷新时间`
 - `使用缓存`
 - `刷新失败原因`
+
+The completed daily-use panel also shows concrete total market value, total
+assets, and floating PnL when market quotes are available.
 
 Raw JSON / diagnostic payloads stay collapsed by default behind Chinese
 developer-detail controls.

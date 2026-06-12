@@ -863,6 +863,21 @@ QString ShellAccountingPresenter::realDailyUseRemainingCashText() const
     return realDailyUseRemainingCashText_;
 }
 
+QString ShellAccountingPresenter::realDailyUseTotalAssetsText() const
+{
+    return realDailyUseTotalAssetsText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseTotalMarketValueText() const
+{
+    return realDailyUseTotalMarketValueText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseFloatingPnlText() const
+{
+    return realDailyUseFloatingPnlText_;
+}
+
 QString ShellAccountingPresenter::realDailyUseBasePositionCompletionText() const
 {
     return realDailyUseBasePositionCompletionText_;
@@ -1764,6 +1779,9 @@ void ShellAccountingPresenter::resetRealDailyUseState()
     realDailyUseSummary_ = QStringLiteral("请先导入真实 VBA 脱敏导出文件。");
     realDailyUseHoldingSummary_.clear();
     realDailyUseRemainingCashText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseTotalAssetsText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseTotalMarketValueText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseFloatingPnlText_ = QStringLiteral("UNAVAILABLE");
     realDailyUseBasePositionCompletionText_ =
         QStringLiteral("缺少底仓目标配置，无法计算底仓完成度。");
     realDailyUseEtfCurrentPriceText_ = QStringLiteral("UNAVAILABLE");
@@ -2578,6 +2596,9 @@ void ShellAccountingPresenter::applyRealDailyUseSnapshotResult(
     realDailyUseCacheStatus_ = stringField(payload, "cacheStatus");
     realDailyUseRefreshFailureReason_ = stringField(payload, "refreshFailureReason");
     realDailyUseRemainingCashText_ = stringField(payload, "remainingCashText");
+    realDailyUseTotalAssetsText_ = stringField(payload, "totalAssetsText");
+    realDailyUseTotalMarketValueText_ = stringField(payload, "totalMarketValueText");
+    realDailyUseFloatingPnlText_ = stringField(payload, "floatingPnlText");
     realDailyUseBasePositionCompletionText_ = stringField(payload, "basePositionCompletionText");
     realDailyUseEtfCurrentPriceText_ = stringField(payload, "etfCurrentPriceText");
     realDailyUseEtfHistoricalHighText_ = stringField(payload, "etfHistoricalHighText");
@@ -2612,6 +2633,9 @@ void ShellAccountingPresenter::applyRealDailyUseSnapshotResult(
         QStringLiteral("行情=") + realDailyUseMarketSourceStatus_,
         QStringLiteral("持仓=") + realDailyUseHoldingSummary_,
         QStringLiteral("剩余现金=") + realDailyUseRemainingCashText_,
+        QStringLiteral("总资产=") + realDailyUseTotalAssetsText_,
+        QStringLiteral("持仓市值=") + realDailyUseTotalMarketValueText_,
+        QStringLiteral("浮动盈亏=") + realDailyUseFloatingPnlText_,
         QStringLiteral("底仓=") + realDailyUseBasePositionCompletionText_,
         QStringLiteral("ETF当前价=") + realDailyUseEtfCurrentPriceText_,
         QStringLiteral("ETF历史高点=") + realDailyUseEtfHistoricalHighText_,

@@ -99,6 +99,9 @@ class ShellAccountingPresenter final : public QObject {
     Q_PROPERTY(QString realDailyUseSummary READ realDailyUseSummary NOTIFY realDailyUseStateChanged)
     Q_PROPERTY(QString realDailyUseHoldingSummary READ realDailyUseHoldingSummary NOTIFY realDailyUseStateChanged)
     Q_PROPERTY(QString realDailyUseRemainingCashText READ realDailyUseRemainingCashText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseTotalAssetsText READ realDailyUseTotalAssetsText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseTotalMarketValueText READ realDailyUseTotalMarketValueText NOTIFY realDailyUseStateChanged)
+    Q_PROPERTY(QString realDailyUseFloatingPnlText READ realDailyUseFloatingPnlText NOTIFY realDailyUseStateChanged)
     Q_PROPERTY(QString realDailyUseBasePositionCompletionText READ realDailyUseBasePositionCompletionText NOTIFY realDailyUseStateChanged)
     Q_PROPERTY(QString realDailyUseEtfCurrentPriceText READ realDailyUseEtfCurrentPriceText NOTIFY realDailyUseStateChanged)
     Q_PROPERTY(QString realDailyUseEtfHistoricalHighText READ realDailyUseEtfHistoricalHighText NOTIFY realDailyUseStateChanged)
@@ -223,6 +226,9 @@ public:
     [[nodiscard]] QString realDailyUseSummary() const;
     [[nodiscard]] QString realDailyUseHoldingSummary() const;
     [[nodiscard]] QString realDailyUseRemainingCashText() const;
+    [[nodiscard]] QString realDailyUseTotalAssetsText() const;
+    [[nodiscard]] QString realDailyUseTotalMarketValueText() const;
+    [[nodiscard]] QString realDailyUseFloatingPnlText() const;
     [[nodiscard]] QString realDailyUseBasePositionCompletionText() const;
     [[nodiscard]] QString realDailyUseEtfCurrentPriceText() const;
     [[nodiscard]] QString realDailyUseEtfHistoricalHighText() const;
@@ -563,6 +569,9 @@ private:
     QString realDailyUseSummary_ = QStringLiteral("请先导入真实 VBA 脱敏导出文件。");
     QString realDailyUseHoldingSummary_;
     QString realDailyUseRemainingCashText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseTotalAssetsText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseTotalMarketValueText_ = QStringLiteral("UNAVAILABLE");
+    QString realDailyUseFloatingPnlText_ = QStringLiteral("UNAVAILABLE");
     QString realDailyUseBasePositionCompletionText_ =
         QStringLiteral("缺少底仓目标配置，无法计算底仓完成度。");
     QString realDailyUseEtfCurrentPriceText_ = QStringLiteral("UNAVAILABLE");

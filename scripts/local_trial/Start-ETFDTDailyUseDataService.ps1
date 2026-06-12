@@ -9,6 +9,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $resolvedDbPath = Join-Path $repoRoot $DbPath
+$cachePath = Join-Path $repoRoot ".local/daily_use/cache/market_cache.json"
 $serviceExe = Join-Path $repoRoot "build\apps\ETFDataService\ETFDataService.exe"
 
 if (-not (Test-Path -LiteralPath $resolvedDbPath)) {
@@ -29,10 +30,15 @@ $evidence = [ordered]@{
     task = "EPIC-289"
     command = "ETFDataService " + ($args -join " ")
     databasePath = $resolvedDbPath
+    cachePath = $cachePath
     socketName = $SocketName
+    startupAutoRefreshEnabled = [bool]$EnablePublicMarketRefresh
     publicMarketRefreshRequested = [bool]$EnablePublicMarketRefresh
     noNetworkFixtureMode = [bool]$NoNetworkFixtureMode
+    liveNetworkUsed = ([bool]$EnablePublicMarketRefresh -and -not [bool]$NoNetworkFixtureMode)
+    testNetworkAccess = $false
     brokerOrderSubmitted = $false
+    networkAccess = ([bool]$EnablePublicMarketRefresh -and -not [bool]$NoNetworkFixtureMode)
     credentialAccess = $false
     endpointAccess = $false
     automaticTrading = $false

@@ -2,9 +2,9 @@
 
 #include "MarketEngine/DisabledMarketDataProvider.h"
 #include "MarketEngine/FixtureMarketDataProvider.h"
+#include "MarketEngine/LivePublicMarketDataProvider.h"
 #include "MarketEngine/MarketDataProvider.h"
 #include "MarketEngine/MarketDataRefreshEngine.h"
-#include "MarketEngine/MarketDataSafetyPolicy.h"
 #include "Protocol/Json.h"
 
 #include <QByteArray>
@@ -14,8 +14,10 @@
 #include <QJsonParseError>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <iomanip>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -66,6 +68,59 @@ std::string quantityText(std::int64_t quantity1e6)
     return stream.str();
 }
 
+std::string percentText(double value)
+{
+    std::ostringstream stream;
+    stream << std::fixed << std::setprecision(2) << value << '%';
+    return stream.str();
+}
+
+bool parseDecimal(const std::string& text, double& value)
+{
+    try {
+        std::size_t parsed = 0;
+        value = std::stod(text, &parsed);
+        return parsed == text.size() && std::isfinite(value);
+    } catch (...) {
+        return false;
+    }
+}
+
+std::int64_t priceQuantityMarketValueCents(
+    const std::string& priceText,
+    std::int64_t quantity1e6)
+{
+    double price = 0.0;
+    if (!parseDecimal(priceText, price) || price <= 0.0 || quantity1e6 <= 0) {
+        return 0;
+    }
+    return static_cast<std::int64_t>(
+        std::llround(price * static_cast<double>(quantity1e6) / 1000000.0 * 100.0));
+}
+
+bool tableExists(etfdt::data_access::SQLiteConnection& connection, const std::string& table)
+{
+    auto result = connection.queryTableExists(table);
+    return result && result.value();
+}
+
+bool columnExists(
+    etfdt::data_access::SQLiteConnection& connection,
+    const std::string& table,
+    const std::string& column)
+{
+    auto rows = connection.queryRows("PRAGMA table_info(" + table + ");");
+    if (!rows) {
+        return false;
+    }
+    for (const auto& row : rows.value()) {
+        if (row.size() > 1U && row[1].text == column) {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string issueCodesJson(const std::vector<std::string>& issueCodes)
 {
     std::ostringstream stream;
@@ -84,10 +139,15 @@ struct HoldingRow final {
     std::string accountId;
     std::string portfolioId;
     std::string instrumentCode;
+    std::int64_t quantity1e6 = 0;
+    std::int64_t costCents = 0;
     std::string quantityText;
     std::string costAmountText;
     std::string marketValueText = "UNAVAILABLE";
     std::string unrealizedPnlText = "UNAVAILABLE";
+    bool marketValueAvailable = false;
+    std::int64_t marketValueCents = 0;
+    std::int64_t unrealizedPnlCents = 0;
 };
 
 std::string holdingsJson(const std::vector<HoldingRow>& holdings)
@@ -152,11 +212,84 @@ std::vector<HoldingRow> loadHoldings(etfdt::data_access::SQLiteConnection& conne
         holding.accountId = std::to_string(row[0].int64Value);
         holding.portfolioId = std::to_string(row[1].int64Value);
         holding.instrumentCode = row[2].text;
-        holding.quantityText = quantityText(row[3].int64Value);
-        holding.costAmountText = centsText(row[4].int64Value);
+        holding.quantity1e6 = row[3].int64Value;
+        holding.costCents = row[4].int64Value;
+        holding.quantityText = quantityText(holding.quantity1e6);
+        holding.costAmountText = centsText(holding.costCents);
         holdings.push_back(std::move(holding));
     }
     return holdings;
+}
+
+std::string inferExchange(const std::string& code)
+{
+    if (code.empty()) {
+        return {};
+    }
+    if (code.front() == '5' || code.front() == '6') {
+        return "SH";
+    }
+    if (code.front() == '0' || code.front() == '1' || code.front() == '2'
+        || code.front() == '3') {
+        return "SZ";
+    }
+    return {};
+}
+
+std::string providerSymbolFor(const std::string& exchange, const std::string& code)
+{
+    if (exchange == "SH") {
+        return "sh" + code;
+    }
+    if (exchange == "SZ") {
+        return "sz" + code;
+    }
+    return {};
+}
+
+etfdt::market_engine::MarketInstrumentKey etfInstrumentFor(const HoldingRow& holding)
+{
+    etfdt::market_engine::MarketInstrumentKey key;
+    key.instrumentCode = holding.instrumentCode;
+    key.instrumentType = "ETF";
+    key.exchange = inferExchange(holding.instrumentCode);
+    key.providerSymbol = providerSymbolFor(key.exchange, holding.instrumentCode);
+    key.provider = "live-public-market";
+    return key;
+}
+
+std::map<std::string, etfdt::market_engine::MarketInstrumentKey> indexMappingsFromPayload(
+    const QJsonObject& root)
+{
+    const auto market = root.value(QStringLiteral("marketData")).isObject()
+        ? root.value(QStringLiteral("marketData")).toObject()
+        : root;
+    const auto object = market.value(QStringLiteral("input")).isObject()
+        ? market.value(QStringLiteral("input")).toObject()
+        : market;
+    const auto mappings = object.value(QStringLiteral("indexMappings")).toObject();
+
+    std::map<std::string, etfdt::market_engine::MarketInstrumentKey> result;
+    for (auto it = mappings.begin(); it != mappings.end(); ++it) {
+        etfdt::market_engine::MarketInstrumentKey key;
+        if (it.value().isObject()) {
+            const auto item = it.value().toObject();
+            key.instrumentCode = stringField(item, "instrumentCode", stringField(item, "indexCode"));
+            key.exchange = stringField(item, "exchange", inferExchange(key.instrumentCode));
+            key.providerSymbol =
+                stringField(item, "providerSymbol", providerSymbolFor(key.exchange, key.instrumentCode));
+        } else if (it.value().isString()) {
+            key.instrumentCode = it.value().toString().toStdString();
+            key.exchange = inferExchange(key.instrumentCode);
+            key.providerSymbol = providerSymbolFor(key.exchange, key.instrumentCode);
+        }
+        key.instrumentType = "INDEX";
+        key.provider = "live-public-market";
+        if (!key.instrumentCode.empty()) {
+            result[it.key().toStdString()] = std::move(key);
+        }
+    }
+    return result;
 }
 
 std::unique_ptr<etfdt::market_engine::MarketDataProvider> providerFor(
@@ -167,8 +300,9 @@ std::unique_ptr<etfdt::market_engine::MarketDataProvider> providerFor(
         return std::make_unique<etfdt::market_engine::DisabledMarketDataProvider>();
     }
     if (input.providerMode == "live") {
-        return std::make_unique<etfdt::market_engine::LivePublicMarketDataProviderBoundary>(
-            input.liveMarketDataEnabled);
+        return std::make_unique<etfdt::market_engine::LivePublicMarketDataProvider>(
+            input.liveMarketDataEnabled,
+            ".local/daily_use/cache/market_cache.json");
     }
     return std::make_unique<etfdt::market_engine::FixtureMarketDataProvider>(payloadJson);
 }
@@ -210,10 +344,6 @@ etfdt::market_engine::MarketRefreshInput marketInputFromPayload(
         }
     }
 
-    if (input.instruments.empty()) {
-        input.instruments.push_back({"510300", "ETF", "SH", "sh510300", input.providerMode});
-        input.instruments.push_back({"000300", "INDEX", "SH", "sh000300", input.providerMode});
-    }
     return input;
 }
 
@@ -229,6 +359,95 @@ const etfdt::market_engine::MarketInstrumentRefreshResult* firstInstrumentOfType
     return nullptr;
 }
 
+const etfdt::market_engine::MarketInstrumentRefreshResult* instrumentByCode(
+    const etfdt::market_engine::MarketRefreshResult& result,
+    const std::string& code)
+{
+    for (const auto& instrument : result.instruments) {
+        if (instrument.instrumentCode == code) {
+            return &instrument;
+        }
+    }
+    return nullptr;
+}
+
+void addUniqueIssue(std::vector<std::string>& issues, const std::string& code)
+{
+    if (std::find(issues.begin(), issues.end(), code) == issues.end()) {
+        issues.push_back(code);
+    }
+}
+
+void deriveMarketInstrumentsFromHoldings(
+    const QJsonObject& root,
+    const std::vector<HoldingRow>& holdings,
+    etfdt::market_engine::MarketRefreshInput& input,
+    std::vector<std::string>& issues)
+{
+    if (holdings.empty()) {
+        input.instruments.clear();
+        return;
+    }
+
+    input.instruments.clear();
+    const auto indexMappings = indexMappingsFromPayload(root);
+    for (const auto& holding : holdings) {
+        auto etf = etfInstrumentFor(holding);
+        if (etf.exchange.empty() || etf.providerSymbol.empty()) {
+            addUniqueIssue(issues, "DAILY_USE_EXCHANGE_MAPPING_MISSING");
+            continue;
+        }
+        etf.provider = input.providerMode == "fixture" ? "fixture" : "live-public-market";
+        input.instruments.push_back(std::move(etf));
+
+        const auto mapping = indexMappings.find(holding.instrumentCode);
+        if (mapping == indexMappings.end()) {
+            addUniqueIssue(issues, "DAILY_USE_ETF_INDEX_MAPPING_MISSING");
+            continue;
+        }
+        auto index = mapping->second;
+        index.provider = input.providerMode == "fixture" ? "fixture" : "live-public-market";
+        input.instruments.push_back(std::move(index));
+    }
+}
+
+void applyHoldingMarketValues(
+    const etfdt::market_engine::MarketRefreshResult& market,
+    std::vector<HoldingRow>& holdings,
+    std::int64_t& totalMarketValueCents,
+    std::int64_t& floatingPnlCents,
+    bool& allHoldingValuesAvailable)
+{
+    totalMarketValueCents = 0;
+    floatingPnlCents = 0;
+    allHoldingValuesAvailable = !holdings.empty();
+
+    for (auto& holding : holdings) {
+        const auto* instrument = instrumentByCode(market, holding.instrumentCode);
+        if (instrument == nullptr || !instrument->quoteAccepted) {
+            holding.marketValueText = "行情未刷新，市值不可完整计算";
+            holding.unrealizedPnlText = "行情未刷新，浮动盈亏不可完整计算";
+            allHoldingValuesAvailable = false;
+            continue;
+        }
+        const auto marketValue =
+            priceQuantityMarketValueCents(instrument->currentPriceText, holding.quantity1e6);
+        if (marketValue <= 0) {
+            holding.marketValueText = "行情未刷新，市值不可完整计算";
+            holding.unrealizedPnlText = "行情未刷新，浮动盈亏不可完整计算";
+            allHoldingValuesAvailable = false;
+            continue;
+        }
+        holding.marketValueAvailable = true;
+        holding.marketValueCents = marketValue;
+        holding.unrealizedPnlCents = marketValue - holding.costCents;
+        holding.marketValueText = centsText(holding.marketValueCents);
+        holding.unrealizedPnlText = centsText(holding.unrealizedPnlCents);
+        totalMarketValueCents += holding.marketValueCents;
+        floatingPnlCents += holding.unrealizedPnlCents;
+    }
+}
+
 etfdt::protocol::ProtocolResponse successResponse(
     const etfdt::service_runtime::ActionContext& context,
     std::string payloadJson)
@@ -241,22 +460,115 @@ etfdt::protocol::ProtocolResponse successResponse(
     return response;
 }
 
+struct CashCalculation final {
+    std::int64_t remainingCashCents = 0;
+    std::int64_t tradeCashImpactCents = 0;
+    std::int64_t cashAdjustmentCents = 0;
+    bool cashAdjustmentAmountUnavailable = false;
+};
+
+CashCalculation loadCashCalculation(etfdt::data_access::SQLiteConnection& connection)
+{
+    CashCalculation result;
+    result.tradeCashImpactCents = singleIntOrZero(
+        connection,
+        "SELECT COALESCE(SUM(net_cash_impact_cents), 0) "
+        "FROM trade_log WHERE manual_entry = 1 AND voided = 0 "
+        "AND action_type IN ('BUY', 'SELL');");
+
+    if (!tableExists(connection, "cash_adjustment")) {
+        result.remainingCashCents = result.tradeCashImpactCents;
+        result.cashAdjustmentAmountUnavailable = true;
+        return result;
+    }
+
+    if (columnExists(connection, "cash_adjustment", "amount_cents")) {
+        result.cashAdjustmentCents = singleIntOrZero(
+            connection,
+            "SELECT COALESCE(SUM(amount_cents), 0) FROM cash_adjustment;");
+    } else if (columnExists(connection, "cash_adjustment", "trade_log_id")) {
+        result.cashAdjustmentAmountUnavailable = true;
+        result.cashAdjustmentCents = singleIntOrZero(
+            connection,
+            "SELECT COALESCE(SUM(tl.net_cash_impact_cents), 0) "
+            "FROM cash_adjustment ca "
+            "JOIN trade_log tl ON tl.id = ca.trade_log_id "
+            "WHERE tl.manual_entry = 1 AND tl.voided = 0;");
+    } else {
+        result.cashAdjustmentAmountUnavailable = true;
+    }
+
+    result.remainingCashCents = result.tradeCashImpactCents + result.cashAdjustmentCents;
+    return result;
+}
+
+struct BasePositionCalculation final {
+    bool targetMissing = true;
+    std::int64_t targetAmountCents = 0;
+    std::int64_t builtAmountCents = 0;
+    std::string targetAmountText = "UNAVAILABLE";
+    std::string builtAmountText = "UNAVAILABLE";
+    std::string completionText = "缺少底仓目标配置，无法计算底仓完成度。";
+};
+
+BasePositionCalculation loadBasePositionCalculation(
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    BasePositionCalculation result;
+    if (!tableExists(connection, "base_position_allocation")
+        || !columnExists(connection, "base_position_allocation", "target_base_amount_cents")
+        || !columnExists(connection, "base_position_allocation", "allocated_amount_cents")) {
+        return result;
+    }
+
+    auto rows = connection.queryRows(
+        "SELECT COALESCE(SUM(target_base_amount_cents), 0), "
+        "COALESCE(SUM(allocated_amount_cents), 0) "
+        "FROM base_position_allocation;");
+    if (!rows || rows.value().empty() || rows.value().front().size() < 2U) {
+        return result;
+    }
+    result.targetAmountCents = rows.value().front()[0].int64Value;
+    result.builtAmountCents = rows.value().front()[1].int64Value;
+    if (result.targetAmountCents <= 0) {
+        return result;
+    }
+
+    result.targetMissing = false;
+    result.targetAmountText = centsText(result.targetAmountCents);
+    result.builtAmountText = centsText(result.builtAmountCents);
+    result.completionText =
+        percentText(static_cast<double>(result.builtAmountCents) * 100.0
+                    / static_cast<double>(result.targetAmountCents));
+    return result;
+}
+
 std::string payloadJson(
     const etfdt::data_access::SQLiteConnection& connection,
     const QJsonObject& root,
     const std::vector<HoldingRow>& holdings,
     std::int64_t tradeLogRows,
     std::int64_t cashAdjustmentRows,
-    std::int64_t remainingCashCents,
+    const CashCalculation& cash,
+    const BasePositionCalculation& basePosition,
+    std::int64_t totalMarketValueCents,
+    std::int64_t floatingPnlCents,
+    bool allHoldingValuesAvailable,
+    const std::vector<std::string>& dailyUseIssues,
     const etfdt::market_engine::MarketRefreshResult& market)
 {
     const bool realDataLoaded = tradeLogRows > 0 || cashAdjustmentRows > 0;
     const auto* etf = firstInstrumentOfType(market, "ETF");
     const auto* index = firstInstrumentOfType(market, "INDEX");
-    const bool marketAvailable = market.accepted;
+    const bool marketAvailable = market.accepted && allHoldingValuesAvailable;
     const bool historicalHighAvailable =
         (etf != nullptr && etf->historicalHighAccepted)
         || (index != nullptr && index->historicalHighAccepted);
+    const std::int64_t totalAssetsCents = cash.remainingCashCents + totalMarketValueCents;
+    std::vector<std::string> issueCodes = market.issueCodes;
+    for (const auto& code : dailyUseIssues) {
+        addUniqueIssue(issueCodes, code);
+    }
 
     const std::string dbPath = stringField(
         root,
@@ -270,7 +582,7 @@ std::string payloadJson(
         : stringField(root, "nowUtc", "2026-06-12T00:00:00Z"));
     const std::string refreshFailureReason = marketAvailable
         ? ""
-        : "行情自动刷新失败，正在使用缓存 / 暂无行情数据。";
+        : "行情未刷新，市值不可完整计算。";
     const std::string noRealDataPrompt = realDataLoaded
         ? ""
         : "请先导入真实 VBA 脱敏导出文件。";
@@ -306,12 +618,19 @@ std::string payloadJson(
             << "\"cashAdjustmentRows\":" << cashAdjustmentRows << ','
             << "\"holdingRows\":" << holdings.size() << ','
             << "\"holdings\":" << holdingsJson(holdings) << ','
-            << "\"remainingCashText\":" << jsonString(realDataLoaded ? centsText(remainingCashCents) : "UNAVAILABLE") << ','
-            << "\"totalAssetsText\":" << jsonString(marketAvailable ? "CALCULABLE_WITH_MARKET_DATA" : "UNAVAILABLE") << ','
-            << "\"totalMarketValueText\":" << jsonString(marketAvailable ? "CALCULABLE_WITH_MARKET_DATA" : "UNAVAILABLE") << ','
-            << "\"floatingPnlText\":" << jsonString(marketAvailable ? "CALCULABLE_WITH_MARKET_DATA" : "UNAVAILABLE") << ','
-            << "\"basePositionCompletionText\":" << jsonString("缺少底仓目标配置，无法计算底仓完成度。") << ','
-            << "\"basePositionTargetMissing\":true,"
+            << "\"remainingCashText\":" << jsonString(realDataLoaded ? centsText(cash.remainingCashCents) : "UNAVAILABLE") << ','
+            << "\"cashAdjustmentAmountUnavailable\":" << (cash.cashAdjustmentAmountUnavailable ? "true" : "false") << ','
+            << "\"cashAdjustmentText\":" << jsonString(centsText(cash.cashAdjustmentCents)) << ','
+            << "\"totalAssetsText\":" << jsonString(marketAvailable ? centsText(totalAssetsCents) : "行情未刷新，市值不可完整计算") << ','
+            << "\"totalMarketValueText\":" << jsonString(marketAvailable ? centsText(totalMarketValueCents) : "行情未刷新，市值不可完整计算") << ','
+            << "\"floatingPnlText\":" << jsonString(marketAvailable ? centsText(floatingPnlCents) : "行情未刷新，浮动盈亏不可完整计算") << ','
+            << "\"totalAssetsConcreteValue\":" << (marketAvailable ? "true" : "false") << ','
+            << "\"totalMarketValueConcreteValue\":" << (marketAvailable ? "true" : "false") << ','
+            << "\"floatingPnlConcreteValue\":" << (marketAvailable ? "true" : "false") << ','
+            << "\"basePositionCompletionText\":" << jsonString(basePosition.completionText) << ','
+            << "\"basePositionTargetAmountText\":" << jsonString(basePosition.targetAmountText) << ','
+            << "\"basePositionBuiltAmountText\":" << jsonString(basePosition.builtAmountText) << ','
+            << "\"basePositionTargetMissing\":" << (basePosition.targetMissing ? "true" : "false") << ','
             << "\"realDataLoaded\":" << (realDataLoaded ? "true" : "false") << ','
             << "\"currentHoldingsVisible\":" << (!holdings.empty() ? "true" : "false") << ','
             << "\"remainingCashVisible\":" << (realDataLoaded ? "true" : "false") << ','
@@ -343,7 +662,7 @@ std::string payloadJson(
             << "\"exactHostAllowlistEnforced\":" << (market.exactHostAllowlistEnforced ? "true" : "false") << ','
             << "\"noParallelSameHostRequests\":" << (market.noParallelSameHostRequests ? "true" : "false") << ','
             << "\"allowedHosts\":[\"qt.gtimg.cn\",\"push2.eastmoney.com\",\"hq.sinajs.cn\",\"push2his.eastmoney.com\"],"
-            << "\"issueCodes\":" << issueCodesJson(market.issueCodes) << ','
+            << "\"issueCodes\":" << issueCodesJson(issueCodes) << ','
             << "\"productionDbTouched\":false,"
             << "\"productionWrite\":false,"
             << "\"sqliteProductionWrite\":false,"
@@ -382,20 +701,24 @@ etfdt::protocol::ProtocolResponse handleAccountingRealDailyUseSnapshot(
     const auto cashAdjustmentRows = singleIntOrZero(
         connection,
         "SELECT COUNT(*) FROM cash_adjustment;");
-    const auto remainingCashRows = connection.queryRows(
-        "SELECT COALESCE(SUM(net_cash_impact_cents), 0) "
-        "FROM trade_log WHERE manual_entry = 1 AND voided = 0;");
-    std::int64_t remainingCashCents = 0;
-    if (remainingCashRows && !remainingCashRows.value().empty()
-        && !remainingCashRows.value().front().empty()) {
-        remainingCashCents = remainingCashRows.value().front().front().int64Value;
-    }
-
+    const auto cash = loadCashCalculation(connection);
+    const auto basePosition = loadBasePositionCalculation(connection);
     auto holdings = loadHoldings(connection);
+    std::vector<std::string> dailyUseIssues;
     auto marketInput = marketInputFromPayload(root, context.request.payloadJson);
+    deriveMarketInstrumentsFromHoldings(root, holdings, marketInput, dailyUseIssues);
     auto provider = providerFor(marketInput, context.request.payloadJson);
     const auto market =
         etfdt::market_engine::MarketDataRefreshEngine{}.refreshReadOnly(marketInput, *provider);
+    std::int64_t totalMarketValueCents = 0;
+    std::int64_t floatingPnlCents = 0;
+    bool allHoldingValuesAvailable = false;
+    applyHoldingMarketValues(
+        market,
+        holdings,
+        totalMarketValueCents,
+        floatingPnlCents,
+        allHoldingValuesAvailable);
 
     return successResponse(
         context,
@@ -405,7 +728,12 @@ etfdt::protocol::ProtocolResponse handleAccountingRealDailyUseSnapshot(
             holdings,
             tradeLogRows,
             cashAdjustmentRows,
-            remainingCashCents,
+            cash,
+            basePosition,
+            totalMarketValueCents,
+            floatingPnlCents,
+            allHoldingValuesAvailable,
+            dailyUseIssues,
             market));
 }
 

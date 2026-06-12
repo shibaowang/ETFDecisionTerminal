@@ -12,8 +12,13 @@
 - Import a sanitized VBA export through the existing local workflow.
 - Confirm current holdings are visible.
 - Confirm remaining cash is visible.
+- Confirm total market value is a concrete value when quotes are available.
+- Confirm total assets is a concrete value when quotes are available.
+- Confirm floating PnL is a concrete value when quotes are available.
 - Confirm base position completion is visible or the missing-config prompt is
   explicit.
+- Confirm missing ETF-to-index mapping is shown as an explicit issue when the
+  mapping is absent.
 - Confirm ETF current price / ETF historical high fields are visible.
 - Confirm index current point / index historical high fields are visible.
 - Confirm auto refresh status, last refresh time, cache status, and failure
@@ -35,6 +40,8 @@ The test must prove:
 - holdings and remaining cash are calculated from real rows
 - no mock holdings/cash/market is presented as real data
 - fixture market refresh supplies ETF/index current and historical high fields
+- production live provider implementation exists and is not deferred-only
+- startup scripts report `.local/daily_use/cache/market_cache.json`
 - no real network is used in tests
 - host allowlist, rate limit, daily cache, failure circuit breaker, and
   no-same-host-concurrency evidence is present

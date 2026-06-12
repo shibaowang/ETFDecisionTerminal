@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core Network REQUIRED)
 
 add_executable(RealDailyUseDataDashboard
     real_daily_use_data_dashboard.cpp
@@ -12,6 +12,7 @@ target_link_libraries(RealDailyUseDataDashboard
         ETFDecisionTerminal::Protocol
         ETFDecisionTerminal::ServiceRuntime
         Qt6::Core
+        Qt6::Network
 )
 
 target_compile_features(RealDailyUseDataDashboard PRIVATE cxx_std_17)

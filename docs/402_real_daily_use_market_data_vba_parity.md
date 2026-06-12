@@ -16,6 +16,11 @@ hosts:
 - `hq.sinajs.cn`
 - `push2his.eastmoney.com`
 
+EPIC-289-FIX implements the production live provider behind this boundary. It
+is no longer a deferred-only path: `providerMode=live` may make bounded public
+market requests when `liveMarketDataEnabled=true`. CTests continue to use
+fixture providers, so test runs do not touch the public network.
+
 Documented source shapes:
 
 - Tencent quote: `http://qt.gtimg.cn/q=...`
@@ -47,6 +52,7 @@ Required controls:
 - daily cache for historical highs
 - visible refresh status, cache status, last refresh time, and failure reason
 - traceable logs without raw private data
+- no broker, order, credential, endpoint, PushPlus, or automatic trading path
 
 When cache is valid, the UI may prefer it and label the result `使用缓存`.
 

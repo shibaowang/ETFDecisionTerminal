@@ -3517,6 +3517,20 @@ endpoint integration, direct `.xlsx` import, production DB mutation, real order
 placement, or automatic trading. Do not broaden old gate allowlists beyond
 exact EPIC-282 paths.
 
+## EPIC-283 Local Trial RC Bug Bash Prompt Rule
+
+Future local trial RC bug bash work must reference
+`docs/396_local_trial_rc_bug_bash_fix_pack.md` and
+`docs/397_local_trial_rc_evidence_log.md`.
+
+EPIC-283 may fix only local-trial blockers in scripts, samples, dashboard RC
+copy/object names, docs, and CTest coverage. It must not add product features,
+broaden business scope, introduce migrations, change DataAccess write
+semantics, add broker/network/credential/endpoint behavior, enable live
+providers by default, place real orders, or add automatic trading. Old gate
+repairs must be exact-path only, with no directory allowlists, globs,
+wildcards, or weakened assertions.
+
 ## TASK-268 ShellAccounting Excel/VBA Import Accepted Preview Persist QML Wiring Prompt Rule
 
 Future Excel/VBA import accepted preview persistence QML work must reference

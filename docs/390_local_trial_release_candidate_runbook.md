@@ -86,3 +86,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\local_trial\Clear-ET
 ```
 
 Use `-PreserveLogs` when evidence needs to be retained.
+Cleanup stops repo-local DataService/Shell processes recorded in
+`.demo\local_trial_rc\logs\dataservice.pid` and
+`.demo\local_trial_rc\logs\shell.pid` before deleting the workspace. It refuses
+to stop a pid that does not point at the repository local trial executables.

@@ -1,5 +1,23 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-285 Dashboard Chinese Localization Trial Feedback Fix
+
+EPIC-285 addresses local trial feedback that the Dashboard MVP UI was too
+English-heavy for manual trial users:
+
+- scope: `docs/399_dashboard_chinese_localization_trial_feedback_fix.md`
+- QML: `apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml`
+- validation: `dashboard_mvp_full_delivery` and
+  `local_trial_release_candidate_full_delivery`
+
+The visible Dashboard text is localized to Chinese for trial users while
+preserving QML `objectName` values, Presenter calls, action names, schema keys,
+and C++ identifiers. The page now explains in Chinese that internal drafts are
+not orders and will not be submitted to a broker, and that market data defaults
+to fixture/disabled providers without automatic networking. This change does
+not add business behavior, database writes, migrations, broker / credential /
+endpoint access, real order placement, or automatic trading.
+
 ## EPIC-284 Local Trial Visual Acceptance Pack
 
 EPIC-284 adds a repo-local visual evidence helper for the local trial release

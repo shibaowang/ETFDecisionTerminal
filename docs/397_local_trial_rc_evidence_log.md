@@ -70,3 +70,22 @@ Base commit: `ba3e0a77270c631985ad6d4437e525865b6df4ff`
 - automaticTrading=false
 - migrationChanged=false
 - scopeExpansion=false
+
+## EPIC-285 Localization Follow-up
+
+EPIC-285 adds a trial-feedback fix on top of the local trial RC evidence:
+
+- User feedback addressed: Dashboard UI English text was not readable enough
+  for Chinese local trial users.
+- Visible Dashboard labels, module titles, action buttons, diagnostics labels,
+  and safety warnings are localized to Chinese.
+- Stable technical identifiers remain English where they are contracts:
+  `objectName`, action names, JSON schema keys, CTest names, enum values, and
+  file names.
+- Draft warning evidence must include:
+  `这是内部草案，不是订单，不会提交券商。`
+- Market provider warning evidence must include:
+  `默认使用样例数据/禁用行情源，不会自动联网。`
+- No business logic, persistence semantics, database migrations, broker /
+  credential / endpoint access, real order placement, or automatic trading is
+  added by this localization follow-up.

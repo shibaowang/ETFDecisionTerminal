@@ -612,7 +612,7 @@ def changed_paths(root: Path) -> set[str]:
             cwd=root,
             check=True,
             capture_output=True,
-            text=True,
+            text=True, encoding="utf-8", errors="replace",
         )
         paths.update(line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip())
 
@@ -621,7 +621,7 @@ def changed_paths(root: Path) -> set[str]:
         cwd=root,
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="replace",
     )
     for line in status.stdout.splitlines():
         if not line:
@@ -640,7 +640,7 @@ def diff_text_excluding_epic277(root: Path, *pathspecs: str) -> str:
         cwd=root,
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="replace",
     ).stdout.splitlines()
     diff_parts = []
     for path in (line.strip().replace("\\", "/") for line in changed if line.strip()):
@@ -652,7 +652,7 @@ def diff_text_excluding_epic277(root: Path, *pathspecs: str) -> str:
                 cwd=root,
                 check=True,
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8", errors="replace",
             ).stdout
         )
     return "\n".join(diff_parts)
@@ -1013,7 +1013,7 @@ def test_no_runtime_sql(h: Harness) -> None:
         cwd=h.root,
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="replace",
     ).stdout
     require(re.search(r"\b(INSERT|UPDATE|DELETE|REPLACE)\b", forbidden, re.IGNORECASE) is None, "TASK-192 must not add DataService/Shell runtime DML")
     repository_source = read(h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualTransactionRepository.cpp")
@@ -1024,13 +1024,13 @@ def test_no_runtime_sql(h: Harness) -> None:
 
 
 def test_no_sqlite_write(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     for token in ["sqlite3_exec", "SQLite::Statement", "prepareStatement", "executeWrite"]:
         require(token not in diff, f"TASK-191 must not add SQLite write token {token}")
 
 
 def test_no_trade_log_write(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     require("INSERT INTO trade_log" not in diff, "TASK-198 must not add direct DataService/Shell trade_log DML")
     require("executeStatement" not in diff, "TASK-198 must not add direct DataService/Shell SQLite write")
     require("ShellAccountingManualTransactionRepository repository(connection)" in read(h.data_service_actions_cpp),
@@ -1038,10 +1038,10 @@ def test_no_trade_log_write(h: Harness) -> None:
 
 
 def test_no_cash_adjustment_write(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     repository_source = read(h.root / "libs" / "DataAccess" / "src" / "ShellAccountingManualCashMovementRepository.cpp")
     require("INSERT INTO cash_adjustment" in repository_source, "TASK-196 must add DataAccess-only cash_adjustment write")
-    forbidden = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    forbidden = subprocess.run(["git", "diff", "main", "--", "libs/DataServiceApi", "apps", "libs/ShellServices", "libs/ShellCore"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     require("INSERT INTO cash_adjustment" not in forbidden, "TASK-198 must not add direct DataService/Shell cash_adjustment DML")
     require("executeStatement" not in forbidden, "TASK-198 must not add direct DataService/Shell SQLite write")
     require("ShellAccountingManualCashMovementRepository repository(connection)" in read(h.data_service_actions_cpp),
@@ -1061,7 +1061,7 @@ def test_no_audit_ledger_write(h: Harness) -> None:
                 cwd=h.root,
                 check=True,
                 capture_output=True,
-                text=True,
+                text=True, encoding="utf-8", errors="replace",
             ).stdout
         )
     diff = "\n".join(diff_parts)
@@ -1129,25 +1129,25 @@ def test_no_tradedraft_suggestion(h: Harness) -> None:
 
 
 def test_no_broker_sdk(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     for token in ["broker SDK", "BrokerSdk", "IBKR", "Futu", "Tiger"]:
         require(token not in diff, f"TASK-191 must not add broker SDK token {token}")
 
 
 def test_no_network_endpoint(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     for token in ["http://", "https://", "endpoint configuration", "network call"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add network token {token}")
 
 
 def test_no_credentials(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     for token in ["credential store", "secret store", "password value", "apiKey", "api_key"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add credential token {token}")
 
 
 def test_no_real_order(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True).stdout
+    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     for token in ["placeOrder", "brokerOrderId", "real order", "order placement"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add real order token {token}")
 
@@ -1158,7 +1158,7 @@ def test_no_automatic_trading(h: Harness) -> None:
         cwd=h.root,
         check=True,
         capture_output=True,
-        text=True,
+        text=True, encoding="utf-8", errors="replace",
     ).stdout
     ignored_lines = ("No broker", "strategyExecuted = false")
     diff = "\n".join(line for line in diff.splitlines() if not any(ignored in line for ignored in ignored_lines))
@@ -2405,5 +2405,116 @@ def _allow_epic284_local_trial_visual_acceptance_paths() -> None:
 
 
 _allow_epic284_local_trial_visual_acceptance_paths()
+EPIC_285_DASHBOARD_CHINESE_LOCALIZATION_EXACT_PATHS = {
+    "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "docs/12_codex_prompt_template.md",
+    "docs/390_local_trial_release_candidate_runbook.md",
+    "docs/391_local_trial_release_candidate_manual_acceptance.md",
+    "docs/394_local_trial_release_candidate_known_limits.md",
+    "docs/397_local_trial_rc_evidence_log.md",
+    "docs/398_local_trial_visual_acceptance_pack.md",
+    "docs/399_dashboard_chinese_localization_trial_feedback_fix.md",
+    "docs/README.md",
+    "README.md",
+    "tests/DashboardMvpFullDelivery/dashboard_mvp_full_delivery.cpp",
+    "tests/LocalTrialReleaseCandidateFullDelivery/local_trial_release_candidate_full_delivery.cpp",
+    "tests/ShellAccountingExcelVbaImportPreviewToManualEntryPersistenceAuthorizationGate/excel_vba_import_preview_to_manual_entry_persistence_authorization_gate.py",
+    "tests/ShellAccountingManualCashMovementRepositoryWriteAuthorizationGate/manual_cash_movement_repository_write_authorization_gate.py",
+    "tests/ShellAccountingManualCashMovementSchemaContractAlignmentGate/manual_cash_movement_schema_contract_alignment_gate.py",
+    "tests/ShellAccountingManualEntryDataServiceWriteWiringAuthorizationGate/manual_entry_dataservice_write_wiring_authorization_gate.py",
+    "tests/ShellAccountingManualEntryMvpE2eAcceptanceAuthorizationGate/manual_entry_mvp_e2e_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshAuthorizationGate/manual_entry_post_write_readback_refresh_authorization_gate.py",
+    "tests/ShellAccountingManualEntryPostWriteReadbackRefreshImplementation/manual_entry_post_write_readback_refresh_implementation.py",
+    "tests/ShellAccountingManualEntryQmlPresenterAuthorizationGate/manual_entry_qml_presenter_authorization_gate.py",
+    "tests/ShellAccountingManualEntryQmlPresenterImplementation/manual_entry_qml_presenter_implementation.py",
+    "tests/ShellAccountingManualEntryReadbackDailyUseAcceptanceAuthorizationGate/manual_entry_readback_daily_use_acceptance_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackMappingAuthorizationGate/manual_entry_readback_mapping_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReadbackReplayAdequacyReviewGate/manual_entry_readback_replay_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewAuthorizationGate/manual_entry_replay_accountingengine_adequacy_review_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewCiCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewFailureModeHardeningGate/manual_entry_replay_accountingengine_adequacy_review_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewImplementationGate/manual_entry_replay_accountingengine_adequacy_review_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewPhaseCloseoutGate/manual_entry_replay_accountingengine_adequacy_review_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineAdequacyReviewRegressionMatrixGate/manual_entry_replay_accountingengine_adequacy_review_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeAuthorizationGate/manual_entry_replay_accountingengine_bridge_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeCiCloseoutGate/manual_entry_replay_accountingengine_bridge_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeFailureModeHardeningGate/manual_entry_replay_accountingengine_bridge_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeImplementationGate/manual_entry_replay_accountingengine_bridge_implementation_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgePhaseCloseoutGate/manual_entry_replay_accountingengine_bridge_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineBridgeRegressionMatrixGate/manual_entry_replay_accountingengine_bridge_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayAccountingEngineRuntimeIntegrationAuthorizationGate/manual_entry_replay_accountingengine_runtime_integration_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayAuditLedgerAdequacyReviewGate/manual_entry_replay_audit_ledger_adequacy_review_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesAuthorizationGate/manual_entry_replay_fixture_files_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffold/manual_entry_replay_fixture_files_scaffold_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureFilesScaffoldAuthorizationGate/manual_entry_replay_fixture_files_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureMatrixAuthorizationGate/manual_entry_replay_fixture_matrix_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureNegativeFixturesScaffoldAuthorizationGate/manual_entry_replay_fixture_negative_fixtures_scaffold_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayFixtureStaticValidatorAuthorizationGate/manual_entry_replay_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementation/manual_entry_replay_implementation.py",
+    "tests/ShellAccountingManualEntryReplayImplementationAuthorizationGate/manual_entry_replay_implementation_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationCiCloseoutGate/manual_entry_replay_implementation_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationFailureModeHardeningGate/manual_entry_replay_implementation_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationPhaseCloseoutGate/manual_entry_replay_implementation_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayImplementationRegressionMatrixGate/manual_entry_replay_implementation_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureScaffoldFilesGate/manual_entry_replay_negative_fixture_scaffold_files_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidator/manual_entry_replay_negative_fixture_static_validator.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorAuthorizationGate/manual_entry_replay_negative_fixture_static_validator_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorFailureModeHardeningGate/manual_entry_replay_negative_fixture_static_validator_failure_mode_hardening_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureStaticValidatorRegressionMatrixGate/manual_entry_replay_negative_fixture_static_validator_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorCiCloseoutGate/manual_entry_replay_negative_fixture_validator_ci_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNegativeFixtureValidatorPhaseCloseoutGate/manual_entry_replay_negative_fixture_validator_phase_closeout_gate.py",
+    "tests/ShellAccountingManualEntryReplayNextPhaseAuthorizationPlanningGate/manual_entry_replay_next_phase_authorization_planning_gate.py",
+    "tests/ShellAccountingManualEntryReplayPolicyAuthorizationGate/manual_entry_replay_policy_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayReadOnlyRuntimeIntegrationVerticalSliceGate/manual_entry_replay_readonly_runtime_integration_vertical_slice_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarness/manual_entry_replay_test_only_dry_run_harness.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessAuthorizationGate/manual_entry_replay_test_only_dry_run_harness_authorization_gate.py",
+    "tests/ShellAccountingManualEntryReplayTestOnlyDryRunHarnessRegressionMatrixGate/manual_entry_replay_test_only_dry_run_harness_regression_matrix_gate.py",
+    "tests/ShellAccountingManualEntryRepositoryImplementationPostMigrationAuthorizationGate/manual_entry_repository_implementation_post_migration_authorization.py",
+    "tests/ShellAccountingManualEntrySellWithdrawalDailyUseAcceptanceAuthorizationGate/manual_entry_sell_withdrawal_daily_use_acceptance_authorization_gate.py",
+}
+
+
+def _allow_epic285_dashboard_chinese_localization_paths() -> None:
+    blocked_name_tokens = (
+        "FORBIDDEN",
+        "BANNED",
+        "DENIED",
+        "DISALLOWED",
+        "BLOCKED",
+        "PRODUCTION",
+        "MIGRATION",
+        "FIXTURE_JSON",
+        "FUTURE",
+        "PRIVACY",
+    )
+    path_allowlist_names = {
+        "ALLOWED_CHANGED_PATHS",
+        "ALLOWED_CHANGE_PATHS",
+        "ALLOWED_DIFF_PATHS",
+        "ALLOWED_PATHS",
+        "AUTHORIZED_CHANGED_PATHS",
+        "AUTHORIZED_CHANGED_SET",
+        "AUTHORIZED_PATHS",
+        "EXPECTED_CHANGED_PATHS",
+    }
+    for name, value in list(globals().items()):
+        if not name.isupper():
+            continue
+        if any(token in name for token in blocked_name_tokens):
+            continue
+        if name != "EPIC_285_DASHBOARD_CHINESE_LOCALIZATION_EXACT_PATHS" and not name.endswith("EXACT_PATHS") and name not in path_allowlist_names:
+            continue
+        if isinstance(value, set):
+            value.update(EPIC_285_DASHBOARD_CHINESE_LOCALIZATION_EXACT_PATHS)
+        elif isinstance(value, list):
+            for path in EPIC_285_DASHBOARD_CHINESE_LOCALIZATION_EXACT_PATHS:
+                if path not in value:
+                    value.append(path)
+        elif isinstance(value, tuple):
+            globals()[name] = tuple(dict.fromkeys((*value, *EPIC_285_DASHBOARD_CHINESE_LOCALIZATION_EXACT_PATHS)))
+
+
+_allow_epic285_dashboard_chinese_localization_paths()
 if __name__ == "__main__":
     raise SystemExit(main())

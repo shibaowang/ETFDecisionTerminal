@@ -168,11 +168,39 @@ void assertQmlContract(const fs::path& root)
              "createTradeDraftFromLastRecommendation(true)",
              "previewOtcMapMultiChannelDraft(",
              "createOtcMapMultiChannelTradeDraft(true)",
-             "Reset dashboard",
-             "Draft, not order",
-             "not order",
+             "重置看板",
+             "这是内部草案，不是订单，不会提交券商。",
+             "不是订单",
          }) {
         requireContains(qml, token, "Dashboard QML Presenter wiring");
+    }
+
+    for (const std::string token : {
+             "ShellAccounting 本地试用看板",
+             "本地试用 RC",
+             "Excel/VBA 导入",
+             "持仓/现金重算",
+             "行情数据",
+             "策略建议",
+             "交易草案",
+             "场外 A/C 多通道",
+             "重置看板",
+             "加载样例预览",
+             "预览",
+             "确认写入已通过预览",
+             "重算",
+             "刷新行情数据",
+             "刷新策略摘要",
+             "创建草案",
+             "创建场外多通道草案",
+             "诊断代码",
+             "重复提交",
+             "幂等冲突",
+             "默认使用样例数据/禁用行情源，不会自动联网。",
+             "不会提交券商",
+             "未启用自动交易",
+         }) {
+        requireContains(qml, token, "Dashboard Chinese localization");
     }
 
     for (const std::string token : {
@@ -245,6 +273,8 @@ void assertDocsIndexed(const fs::path& root)
     const auto qmlContract = readFile(root / "docs" / "386_dashboard_mvp_qml_contract.md");
     const auto checklist = readFile(root / "docs" / "387_dashboard_mvp_manual_acceptance_checklist.md");
     const auto plan = readFile(root / "docs" / "388_dashboard_mvp_test_plan.md");
+    const auto localization = readFile(
+        root / "docs" / "399_dashboard_chinese_localization_trial_feedback_fix.md");
     const auto testsCmake = readFile(root / "tests" / "CMakeLists.txt");
 
     for (const std::string token : {
@@ -253,6 +283,7 @@ void assertDocsIndexed(const fs::path& root)
              "386_dashboard_mvp_qml_contract.md",
              "387_dashboard_mvp_manual_acceptance_checklist.md",
              "388_dashboard_mvp_test_plan.md",
+             "399_dashboard_chinese_localization_trial_feedback_fix.md",
              "samples/dashboard_mvp",
              "dashboard_mvp_full_delivery",
          }) {
@@ -272,6 +303,24 @@ void assertDocsIndexed(const fs::path& root)
              "automatic trading",
          }) {
         requireContains(scope + flow + qmlContract + checklist + prompt, token, "Dashboard docs content");
+    }
+
+    for (const std::string token : {
+             "UI English text unreadable",
+             "本地试用看板",
+             "Excel/VBA 导入",
+             "持仓/现金重算",
+             "行情数据",
+             "策略建议",
+             "交易草案",
+             "场外 A/C 多通道",
+             "这是内部草案，不是订单，不会提交券商。",
+             "默认使用样例数据/禁用行情源，不会自动联网。",
+             "objectName",
+             "businessLogicChanged",
+             "automaticTrading",
+         }) {
+        requireContains(readme + docsIndex + prompt + localization, token, "EPIC-285 localization docs");
     }
 
     requireContains(testsCmake, "DashboardMvpFullDelivery", "tests/CMakeLists.txt registration");
@@ -344,8 +393,21 @@ void assertRegressionHooks(const fs::path& root)
 QJsonObject evidence()
 {
     QJsonObject object;
-    object.insert("task", "EPIC-281");
+    object.insert("task", "EPIC-285");
+    object.insert("baseTask", "EPIC-281");
     object.insert("dashboardMvpCreated", true);
+    object.insert("dashboardChineseLocalizationCompleted", true);
+    object.insert("userFeedbackAddressed", "UI English text unreadable");
+    object.insert("qmlUserVisibleChinese", true);
+    object.insert("moduleTitlesChinese", true);
+    object.insert("actionButtonsChinese", true);
+    object.insert("safetyWarningsChinese", true);
+    object.insert("draftNotOrderChineseWarning", true);
+    object.insert("providerDisabledChineseWarning", true);
+    object.insert("objectNamesPreserved", true);
+    object.insert("businessLogicChanged", false);
+    object.insert("dataAccessChanged", false);
+    object.insert("migrationChanged", false);
     object.insert("qmlDashboardPanelsCreated", true);
     object.insert("importPanelCreated", true);
     object.insert("portfolioReplayPanelCreated", true);
@@ -366,6 +428,7 @@ QJsonObject evidence()
     object.insert("dashboardLocalServiceE2ePassed", true);
     object.insert("fixtureMarketDataUsed", true);
     object.insert("testNetworkAccess", false);
+    object.insert("networkAccess", false);
     object.insert("productionDbTouched", false);
     object.insert("brokerOrderSubmitted", false);
     object.insert("credentialAccess", false);

@@ -125,6 +125,9 @@ void assertDocs(const fs::path& root)
     const std::vector<std::string> epic284Docs = {
         "398_local_trial_visual_acceptance_pack.md",
     };
+    const std::vector<std::string> epic285Docs = {
+        "399_dashboard_chinese_localization_trial_feedback_fix.md",
+    };
 
     const auto readme = readFile(root / "README.md");
     const auto docsIndex = readFile(root / "docs" / "README.md");
@@ -147,6 +150,12 @@ void assertDocs(const fs::path& root)
         requireContains(docsIndex, doc, "docs/README.md");
         requireContains(prompt, doc, "prompt template");
     }
+    for (const auto& doc : epic285Docs) {
+        require(fs::exists(root / "docs" / doc), "EPIC-285 doc exists: " + doc);
+        requireContains(readme, doc, "README.md");
+        requireContains(docsIndex, doc, "docs/README.md");
+        requireContains(prompt, doc, "prompt template");
+    }
 
     const auto scope = readFile(root / "docs" / epic282Docs[0]);
     const auto runbook = readFile(root / "docs" / epic282Docs[1]);
@@ -158,6 +167,7 @@ void assertDocs(const fs::path& root)
     const auto bugBash = readFile(root / "docs" / epic283Docs[0]);
     const auto evidence = readFile(root / "docs" / epic283Docs[1]);
     const auto visualPack = readFile(root / "docs" / epic284Docs[0]);
+    const auto localization = readFile(root / "docs" / epic285Docs[0]);
 
     for (const auto& text : {scope, runbook, checklist, matrix, cleanup, limits, plan}) {
         requireContains(text, "EPIC-282", "EPIC-282 docs");
@@ -195,6 +205,26 @@ void assertDocs(const fs::path& root)
     requireContains(visualPack, "dashboard_import_panel.png", "visual evidence screenshot list");
     requireContains(visualPack, "human review", "visual evidence human review boundary");
     requireContains(visualPack, "production database", "visual evidence production DB boundary");
+    for (const auto& token : {
+             "EPIC-285",
+             "UI English text unreadable",
+             "本地试用看板",
+             "Excel/VBA 导入",
+             "持仓/现金重算",
+             "行情数据",
+             "策略建议",
+             "交易草案",
+             "场外 A/C 多通道",
+             "这是内部草案，不是订单，不会提交券商。",
+             "默认使用样例数据/禁用行情源，不会自动联网。",
+             "objectName",
+             "businessLogicChanged",
+             "automaticTrading",
+         }) {
+        requireContains(readme + docsIndex + prompt + checklist + limits + evidence + visualPack + localization,
+                        token,
+                        "EPIC-285 Chinese localization docs");
+    }
 }
 
 std::vector<fs::path> scriptFiles(const fs::path& root)
@@ -323,8 +353,29 @@ void assertQml(const fs::path& root)
         readFile(root / "apps" / "ETFDecisionShell" / "qml" / "pages" / "ShellAccountingReadOnlyPage.qml");
     requireContains(qml, "shellAccountingDashboardRoot", "Dashboard QML");
     requireContains(qml, "shellAccountingLocalTrialRcBanner", "Dashboard local trial banner");
-    requireContains(qml, "repo-local demo DB", "Dashboard local trial text");
-    requireContains(qml, "fixture/disabled providers", "Dashboard provider disabled text");
+    requireContains(qml, "ShellAccounting 本地试用看板", "Dashboard Chinese title");
+    requireContains(qml, "本地试用 RC", "Dashboard local trial text");
+    requireContains(qml, "演示数据库", "Dashboard demo DB text");
+    requireContains(qml, "行情源已禁用", "Dashboard provider disabled text");
+    requireContains(qml, "默认使用样例数据/禁用行情源，不会自动联网。", "Dashboard provider no-network text");
+    for (const std::string token : {
+             "Excel/VBA 导入",
+             "持仓/现金重算",
+             "行情数据",
+             "策略建议",
+             "交易草案",
+             "场外 A/C 多通道",
+             "重置看板",
+             "加载样例预览",
+             "确认写入已通过预览",
+             "这是内部草案，不是订单，不会提交券商。",
+             "这不是订单",
+             "不会提交券商",
+             "未启用自动交易",
+             "诊断代码",
+         }) {
+        requireContains(qml, token, "Dashboard Chinese trial text");
+    }
     for (const std::string token : {
              "XMLHttpRequest",
              "fetch(",
@@ -501,6 +552,29 @@ void printEvidence()
         << "\"adminRequired\":false,"
         << "\"testNetworkAccess\":false,"
         << "\"liveProviderDisabledByDefault\":true,"
+        << "\"brokerOrderSubmitted\":false,"
+        << "\"credentialAccess\":false,"
+        << "\"endpointAccess\":false,"
+        << "\"realOrderPlacement\":false,"
+        << "\"automaticTrading\":false"
+        << "}" << std::endl;
+    std::cout
+        << "{"
+        << "\"task\":\"EPIC-285\","
+        << "\"dashboardChineseLocalizationCompleted\":true,"
+        << "\"userFeedbackAddressed\":\"UI English text unreadable\","
+        << "\"qmlUserVisibleChinese\":true,"
+        << "\"moduleTitlesChinese\":true,"
+        << "\"actionButtonsChinese\":true,"
+        << "\"safetyWarningsChinese\":true,"
+        << "\"draftNotOrderChineseWarning\":true,"
+        << "\"providerDisabledChineseWarning\":true,"
+        << "\"objectNamesPreserved\":true,"
+        << "\"businessLogicChanged\":false,"
+        << "\"dataAccessChanged\":false,"
+        << "\"migrationChanged\":false,"
+        << "\"productionDbTouched\":false,"
+        << "\"networkAccess\":false,"
         << "\"brokerOrderSubmitted\":false,"
         << "\"credentialAccess\":false,"
         << "\"endpointAccess\":false,"

@@ -61,8 +61,8 @@ bool isAllowedEpic281DashboardDraftLine(const std::string& text, const std::stri
                 "shellAccountingTradeDraftConfirmationCheckBox",
                 "previewTradeDraftFromLastRecommendation()",
                 "createTradeDraftFromLastRecommendation(true)",
-                "Draft, not order",
-                "not order",
+                "\xE8\xBF\x99\xE6\x98\xAF\xE5\x86\x85\xE9\x83\xA8\xE8\x8D\x89\xE6\xA1\x88",
+                "\xE4\xB8\x8D\xE6\x98\xAF\xE8\xAE\xA2\xE5\x8D\x95",
             })) {
         return false;
     }

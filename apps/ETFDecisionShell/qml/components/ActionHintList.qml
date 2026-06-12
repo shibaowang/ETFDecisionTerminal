@@ -6,6 +6,25 @@ Column {
     property int maxRows: 3
     spacing: 8
 
+    function displayText(value) {
+        if (value === "Review TradeDraft mock") {
+            return "查看交易草案模拟提示"
+        }
+        if (value === "No real TradeDraft lifecycle is connected.") {
+            return "未接入真实交易草案生命周期。"
+        }
+        if (value === "Review diagnostics mock") {
+            return "查看诊断模拟提示"
+        }
+        if (value === "Diagnostics data comes from ShellCore mock models.") {
+            return "诊断数据来自 ShellCore 模拟模型。"
+        }
+        if (value === "Mock only") {
+            return "仅模拟"
+        }
+        return value
+    }
+
     Repeater {
         model: root.hintModel
 
@@ -24,7 +43,7 @@ Column {
 
                 Text {
                     width: parent.width
-                    text: model.title
+                    text: root.displayText(model.title)
                     color: "#26354d"
                     font.pixelSize: 13
                     font.bold: true
@@ -33,7 +52,7 @@ Column {
 
                 Text {
                     width: parent.width
-                    text: model.description
+                    text: root.displayText(model.description)
                     color: "#58657a"
                     font.pixelSize: 12
                     elide: Text.ElideRight
@@ -41,7 +60,7 @@ Column {
 
                 Text {
                     width: parent.width
-                    text: model.enabled ? model.actionText : "Mock only - not executable"
+                    text: model.enabled ? root.displayText(model.actionText) : "仅演示，不会执行真实操作"
                     color: "#8a5a00"
                     font.pixelSize: 11
                     elide: Text.ElideRight

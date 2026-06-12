@@ -19,7 +19,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Density"
+            text: "密度"
             color: "#34435c"
             font.pixelSize: 12
             font.bold: true
@@ -31,9 +31,9 @@ Rectangle {
 
         Repeater {
             model: [
-                {"key": "compact", "title": "Compact"},
-                {"key": "normal", "title": "Normal"},
-                {"key": "comfortable", "title": "Comfortable"}
+                {"key": "compact", "title": "紧凑"},
+                {"key": "normal", "title": "标准"},
+                {"key": "comfortable", "title": "宽松"}
             ]
             RadioButton {
                 objectName: "readOnlyDensity_" + modelData.key
@@ -50,7 +50,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Not persisted"
+            text: "不会持久化"
             color: "#6a7890"
             font.pixelSize: 11
         }

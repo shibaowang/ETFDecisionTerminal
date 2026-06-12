@@ -5846,7 +5846,10 @@ def main() -> int:
     )
     require("shellAccountingReadOnlyPage" in shell_accounting_readonly_page, "authorized page has stable objectName")
     require("shellAccountingUnavailablePanel" in shell_accounting_readonly_page, "authorized page has unavailable panel")
-    require("disabled" in shell_accounting_readonly_page, "authorized page displays disabled state")
+    require(
+        "disabled" in shell_accounting_readonly_page or "禁用" in shell_accounting_readonly_page,
+        "authorized page displays disabled state",
+    )
     require("unavailable-safe" in shell_accounting_readonly_page, "authorized page displays unavailable-safe state")
     for ctest_name in [
         "shell_accounting_production_qml_binding_implementation",
@@ -5876,8 +5879,8 @@ def main() -> int:
             "shellAccountingTradeDraftConfirmationCheckBox",
             "previewTradeDraftFromLastRecommendation()",
             "createTradeDraftFromLastRecommendation(true)",
-            "Draft, not order",
-            "not order",
+            "这是内部草案",
+            "不是订单",
         ]
         return all(marker in shell_accounting_readonly_page for marker in required_markers)
 

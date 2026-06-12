@@ -10,7 +10,7 @@ Window {
     minimumHeight: 760
     visible: true
     color: "#0f1724"
-    title: "ETFDecisionShell Mock"
+    title: "ETFDecisionShell 本地试用"
 
     readonly property var injectedDiagnosticAdapter: diagnosticAdapter
     readonly property var injectedReadOnlyDataController: readOnlyDataController

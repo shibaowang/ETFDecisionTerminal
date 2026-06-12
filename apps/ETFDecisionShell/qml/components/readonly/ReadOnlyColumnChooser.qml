@@ -6,7 +6,7 @@ Rectangle {
     objectName: "readOnlyColumnChooser"
     property var columns: []
     property var visibleColumnKeys: []
-    property string title: "Columns"
+    property string title: "列显示"
     property string columnObjectNamePrefix: "readOnlyColumnChooser"
     property int minimumVisibleColumns: 1
     signal columnVisibilityChanged(var keys)
@@ -91,7 +91,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "Runtime only"
+            text: "仅运行时显示"
             color: "#6a7890"
             font.pixelSize: 11
         }

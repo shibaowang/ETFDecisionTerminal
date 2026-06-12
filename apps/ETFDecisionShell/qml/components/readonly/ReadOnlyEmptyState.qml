@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: root
     objectName: "readOnlyEmptyState"
-    property string title: "No data"
+    property string title: "暂无数据"
     property string message: ""
     property string hint: ""
 

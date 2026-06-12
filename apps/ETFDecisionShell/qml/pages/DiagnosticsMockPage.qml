@@ -21,14 +21,14 @@ Item {
             spacing: 6
 
             Text {
-                text: "跨境 ETF 智能投资决策终端 - 诊断 Mock"
+                text: "跨境 ETF 智能投资决策终端 - 服务监控清单（模拟）"
                 color: "#18202f"
                 font.pixelSize: 24
                 font.bold: true
             }
 
             Text {
-                text: "当前为 Mock 数据，未连接真实服务。"
+                text: "当前为模拟数据，未连接真实服务。"
                 color: "#7a4a00"
                 font.pixelSize: 14
             }
@@ -47,13 +47,13 @@ Item {
 
             Repeater {
                 model: [
-                    { label: "Load Healthy Mock", action: "healthy" },
-                    { label: "Load Warning Mock", action: "warning" },
-                    { label: "Load Error Mock", action: "error" },
-                    { label: "Load Mixed Mock", action: "mixed" },
-                    { label: "Show All", action: "all" },
-                    { label: "Only Blocked", action: "blocked" },
-                    { label: "Only Issues", action: "issues" }
+                    { label: "加载健康样例", action: "healthy" },
+                    { label: "加载警告样例", action: "warning" },
+                    { label: "加载错误样例", action: "error" },
+                    { label: "加载混合样例", action: "mixed" },
+                    { label: "显示全部", action: "all" },
+                    { label: "仅显示阻塞项", action: "blocked" },
+                    { label: "仅显示问题项", action: "issues" }
                 ]
 
                 Rectangle {

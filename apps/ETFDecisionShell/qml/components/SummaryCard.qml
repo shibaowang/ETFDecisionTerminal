@@ -7,6 +7,16 @@ Rectangle {
     color: "#ffffff"
     border.color: "#d9e0ea"
 
+    function displayText(value) {
+        if (value === "Mock") return "模拟数据"
+        if (value === "Diagnostics") return "诊断中心"
+        if (value === "All services healthy.") return "所有服务状态健康。"
+        if (value === "Warnings present.") return "存在警告。"
+        if (value === "Errors present.") return "存在错误。"
+        if (value === "Mixed status.") return "存在混合状态。"
+        return value
+    }
+
     Column {
         anchors.fill: parent
         anchors.margins: 16
@@ -24,7 +34,7 @@ Rectangle {
 
                 Text {
                     anchors.centerIn: parent
-                    text: root.summary && root.summary.ok ? "OK" : "ERROR"
+                    text: root.summary && root.summary.ok ? "正常" : "错误"
                     color: root.summary && root.summary.ok ? "#17663a" : "#9d1c1c"
                     font.pixelSize: 13
                     font.bold: true
@@ -33,7 +43,7 @@ Rectangle {
 
             Text {
                 width: parent.width - 100
-                text: root.summary ? root.summary.title : "Diagnostics"
+                text: root.summary ? root.displayText(root.summary.title) : "诊断中心"
                 color: "#18202f"
                 font.pixelSize: 18
                 font.bold: true
@@ -47,12 +57,12 @@ Rectangle {
 
             Repeater {
                 model: [
-                    ["Total", root.summary ? root.summary.totalServices : 0],
-                    ["Enabled", root.summary ? root.summary.enabledServices : 0],
-                    ["Disabled", root.summary ? root.summary.disabledServices : 0],
-                    ["Errors", root.summary ? root.summary.errorCount : 0],
-                    ["Warnings", root.summary ? root.summary.warningCount : 0],
-                    ["Blocked", root.summary ? root.summary.blockedServiceCount : 0]
+                    ["总数", root.summary ? root.summary.totalServices : 0],
+                    ["启用", root.summary ? root.summary.enabledServices : 0],
+                    ["禁用", root.summary ? root.summary.disabledServices : 0],
+                    ["错误", root.summary ? root.summary.errorCount : 0],
+                    ["警告", root.summary ? root.summary.warningCount : 0],
+                    ["阻塞", root.summary ? root.summary.blockedServiceCount : 0]
                 ]
 
                 Rectangle {
@@ -85,7 +95,7 @@ Rectangle {
 
         Text {
             width: parent.width
-            text: root.summary ? root.summary.summaryText : ""
+            text: root.summary ? root.displayText(root.summary.summaryText) : ""
             color: "#465066"
             font.pixelSize: 12
             elide: Text.ElideRight

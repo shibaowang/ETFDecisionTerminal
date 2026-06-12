@@ -16,7 +16,7 @@ Rectangle {
         spacing: 16
 
         Text {
-            text: "首页驾驶舱 Mock"
+            text: "首页驾驶舱（模拟）"
             color: "#18202f"
             font.pixelSize: 24
             font.bold: true
@@ -24,7 +24,7 @@ Rectangle {
 
         Text {
             width: parent.width
-            text: "当前指标全部来自 ShellCore Mock Metrics，不访问数据库、不连接服务。"
+            text: "当前指标来自 ShellCore 模拟指标，不访问数据库、不连接真实服务。"
             color: "#667086"
             font.pixelSize: 14
             wrapMode: Text.WordWrap
@@ -52,7 +52,7 @@ Rectangle {
         }
 
         Text {
-            text: "Action Hints Mock"
+            text: "操作提示（模拟）"
             color: "#26354d"
             font.pixelSize: 16
             font.bold: true

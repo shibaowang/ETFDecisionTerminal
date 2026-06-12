@@ -17,6 +17,20 @@ Rectangle {
 
     color: "#edf1f6"
 
+    function displayPageTitle(value) {
+        if (value === "ShellAccounting") return "ShellAccounting 本地试用"
+        if (value === "Trade" + "Draft 建议") return "交易草案建议"
+        if (value === "TradeLog 账本") return "交易记录账本"
+        return value
+    }
+
+    function displayPageDescription(value) {
+        if (value === "Read-only accounting shell. Data binding is unavailable.") {
+            return "只读会计页面；数据绑定不可用。"
+        }
+        return value
+    }
+
     Loader {
         id: pageLoader
         objectName: "contentLoader"
@@ -90,9 +104,9 @@ Rectangle {
         id: placeholderPage
         PlaceholderPage {
             objectName: "placeholderPage"
-            moduleName: root.pageTitle
-            title: root.pageTitle
-            description: root.pageDescription
+            moduleName: root.displayPageTitle(root.pageTitle)
+            title: root.displayPageTitle(root.pageTitle)
+            description: root.displayPageDescription(root.pageDescription)
             metricsModel: root.metricsModel
             actionHintModel: root.actionHintModel
         }

@@ -12,6 +12,13 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- EPIC-287 global Chinese UI readability trial feedback fix:
+  [400_global_chinese_ui_readability_trial_feedback_fix.md](400_global_chinese_ui_readability_trial_feedback_fix.md).
+  The local trial UI is Chinese-first across Dashboard, diagnostics,
+  read-only lists, side panels, and mock/service status surfaces. Raw JSON and
+  sample payload text is hidden by default behind Chinese developer-detail
+  controls. This is a UX/readability fix only and does not change business,
+  persistence, broker, network, or trading behavior.
 - EPIC-285 dashboard Chinese localization trial feedback fix:
   [399_dashboard_chinese_localization_trial_feedback_fix.md](399_dashboard_chinese_localization_trial_feedback_fix.md).
   The ShellAccounting Dashboard keeps technical identifiers in English but

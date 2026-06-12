@@ -170,7 +170,7 @@ void assertQmlMvpPanel(const std::string& qml)
              "PERSISTED",
              "DUPLICATE",
              "CONFLICT",
-             "Direct .xlsx import is not supported",
+             "\xE4\xB8\x8D\xE6\x94\xAF\xE6\x8C\x81\xE7\x9B\xB4\xE6\x8E\xA5 .xlsx \xE5\xAF\xBC\xE5\x85\xA5",
              "schemaVersion=excel-vba-export/v1",
              "source=sanitized-excel-vba-export",
              "sheetName",

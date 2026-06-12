@@ -21,6 +21,11 @@ Rectangle {
     property bool excelVbaImportPersistConfirmed: false
     property bool tradeDraftCreateConfirmed: false
     property bool otcMapDraftCreateConfirmed: false
+    property bool showImportRawJson: false
+    property bool showReplayRawJson: false
+    property bool showMarketRawJson: false
+    property bool showStrategyRawJson: false
+    property bool showOtcMapRawJson: false
 
     function excelVbaImportPreviewSamplePayload() {
         return JSON.stringify({
@@ -141,7 +146,7 @@ Rectangle {
                         "priceText": "4.800",
                         "previousCloseText": "4.700",
                         "source": "fixture/dashboard",
-                        "dataQualityStatus": "OK"
+                        "dataQualityStatus": "正常"
                     }
                 ],
                 "history": {
@@ -389,7 +394,7 @@ Rectangle {
                     Text {
                         objectName: "shellAccountingLocalTrialRcBanner"
                         width: parent.width
-                        text: "本地试用 RC：使用仓库内演示数据库（repo-local demo DB）、脱敏 JSON/TXT 样例、样例数据；行情源已禁用/默认使用禁用行情源（fixture/disabled providers），并支持手工清理。"
+                        text: "本地试用 RC：使用仓库内演示数据库、脱敏 JSON/TXT 样例和样例数据；行情源已禁用或使用样例提供方，并支持手工清理。"
                         color: "#244464"
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
@@ -441,7 +446,7 @@ Rectangle {
                     Text {
                         objectName: "shellAccountingBoundaryText"
                         width: parent.width
-                        text: "状态：仅通过 DataService 边界，必须显式确认，不直接访问数据库。数据不可用时不显示金额行。"
+                        text: "状态：仅通过服务边界，必须显式确认，不直接访问数据库。数据不可用时不显示金额行。"
                         color: "#667086"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -520,7 +525,7 @@ Rectangle {
                             Text {
                                 objectName: "shellAccountingExcelVbaImportMvpSupportText"
                                 width: parent.width
-                                text: "当前支持：包含 InitialCash 和 TradeLog 表的脱敏 Excel/VBA JSON/TXT 导出。本 MVP 不支持直接 .xlsx 导入。Direct .xlsx import is not supported."
+                                text: "当前支持：包含 InitialCash 和 TradeLog 表的脱敏 Excel/VBA JSON/TXT 导出。本 MVP 不支持直接 .xlsx 导入。"
                                 color: "#25543b"
                                 font.pixelSize: 13
                                 wrapMode: Text.WordWrap
@@ -537,12 +542,35 @@ Rectangle {
                         }
                     }
 
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Text {
+                            width: parent.width - 230
+                            text: root.showImportRawJson
+                                ? "开发者详情：普通试用无需查看。此内容为样例载荷 / 原始诊断数据，不代表真实交易。"
+                                : "脱敏导入内容默认隐藏；可选择本地文件或展开开发者详情后粘贴 JSON/TXT。"
+                            color: "#5f4b1f"
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+
+                        Button {
+                            id: rawImportToggle
+                            objectName: "shellAccountingShowImportRawJsonButton"
+                            text: root.showImportRawJson ? "隐藏原始诊断数据" : "显示原始诊断数据"
+                            onClicked: root.showImportRawJson = !root.showImportRawJson
+                        }
+                    }
+
                     TextArea {
                         id: excelVbaImportPreviewPayloadInput
                         objectName: "shellAccountingExcelVbaImportPreviewPayloadInput"
                         width: parent.width
-                        height: 92
-                        placeholderText: "粘贴脱敏 JSON payload"
+                        height: root.showImportRawJson ? 92 : 0
+                        visible: root.showImportRawJson
+                        placeholderText: "粘贴脱敏 JSON/TXT 内容（可在开发者详情中查看原始内容）"
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true
                     }
@@ -1034,11 +1062,34 @@ Rectangle {
                         font.bold: true
                     }
 
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Text {
+                            width: parent.width - 230
+                            text: root.showReplayRawJson
+                                ? "开发者详情：普通试用无需查看。此内容为样例载荷 / 原始诊断数据，不代表真实交易。"
+                                : "样例重算请求已准备；默认隐藏原始 JSON，只显示中文重算摘要。"
+                            color: "#5f4b1f"
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+
+                        Button {
+                            id: rawReplayToggle
+                            objectName: "shellAccountingShowReplayRawJsonButton"
+                            text: root.showReplayRawJson ? "隐藏原始诊断数据" : "显示原始诊断数据"
+                            onClicked: root.showReplayRawJson = !root.showReplayRawJson
+                        }
+                    }
+
                     TextArea {
                         id: portfolioReplayPayloadInput
                         objectName: "shellAccountingPortfolioReplayPayloadInput"
                         width: parent.width
-                        height: 72
+                        height: root.showReplayRawJson ? 72 : 0
+                        visible: root.showReplayRawJson
                         text: root.dashboardPortfolioReplaySamplePayload()
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true
@@ -1134,11 +1185,34 @@ Rectangle {
                         font.bold: true
                     }
 
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Text {
+                            width: parent.width - 230
+                            text: root.showMarketRawJson
+                                ? "开发者详情：普通试用无需查看。此内容为样例载荷 / 原始诊断数据，不代表真实交易。"
+                                : "行情源：样例数据/禁用行情源；默认隐藏原始 JSON，不会自动联网。"
+                            color: "#5f4b1f"
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+
+                        Button {
+                            id: rawMarketToggle
+                            objectName: "shellAccountingShowMarketRawJsonButton"
+                            text: root.showMarketRawJson ? "隐藏原始诊断数据" : "显示原始诊断数据"
+                            onClicked: root.showMarketRawJson = !root.showMarketRawJson
+                        }
+                    }
+
                     TextArea {
                         id: marketDataPayloadInput
                         objectName: "shellAccountingMarketDataPayloadInput"
                         width: parent.width
-                        height: 72
+                        height: root.showMarketRawJson ? 72 : 0
+                        visible: root.showMarketRawJson
                         text: root.dashboardMarketDataSamplePayload()
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true
@@ -1254,11 +1328,34 @@ Rectangle {
                         font.bold: true
                     }
 
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Text {
+                            width: parent.width - 230
+                            text: root.showStrategyRawJson
+                                ? "开发者详情：普通试用无需查看。此内容为样例载荷 / 原始诊断数据，不代表真实交易。"
+                                : "策略样例请求已准备；默认隐藏原始 JSON，只显示中文建议摘要。"
+                            color: "#5f4b1f"
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+
+                        Button {
+                            id: rawStrategyToggle
+                            objectName: "shellAccountingShowStrategyRawJsonButton"
+                            text: root.showStrategyRawJson ? "隐藏原始诊断数据" : "显示原始诊断数据"
+                            onClicked: root.showStrategyRawJson = !root.showStrategyRawJson
+                        }
+                    }
+
                     TextArea {
                         id: strategyRecommendationPayloadInput
                         objectName: "shellAccountingStrategyRecommendationPayloadInput"
                         width: parent.width
-                        height: 72
+                        height: root.showStrategyRawJson ? 72 : 0
+                        visible: root.showStrategyRawJson
                         text: root.dashboardStrategySamplePayload()
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true
@@ -1359,7 +1456,7 @@ Rectangle {
 
                     Text {
                         width: parent.width
-                        text: "这是内部草案，不是订单，不会提交券商。Draft, not order."
+                        text: "这是内部草案，不是订单，不会提交券商。"
                         color: "#5f4b1f"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
@@ -1448,11 +1545,34 @@ Rectangle {
                         font.bold: true
                     }
 
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Text {
+                            width: parent.width - 230
+                            text: root.showOtcMapRawJson
+                                ? "开发者详情：普通试用无需查看。此内容为样例载荷 / 原始诊断数据，不代表真实交易。"
+                                : "场外通道样例请求已准备；默认隐藏原始 JSON，只显示中文草案摘要。"
+                            color: "#5f4b1f"
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+
+                        Button {
+                            id: rawOtcMapToggle
+                            objectName: "shellAccountingShowOtcMapRawJsonButton"
+                            text: root.showOtcMapRawJson ? "隐藏原始诊断数据" : "显示原始诊断数据"
+                            onClicked: root.showOtcMapRawJson = !root.showOtcMapRawJson
+                        }
+                    }
+
                     TextArea {
                         id: otcMapPayloadInput
                         objectName: "shellAccountingOtcMapPayloadInput"
                         width: parent.width
-                        height: 74
+                        height: root.showOtcMapRawJson ? 74 : 0
+                        visible: root.showOtcMapRawJson
                         text: root.dashboardOtcMapSamplePayload()
                         wrapMode: TextEdit.Wrap
                         selectByMouse: true

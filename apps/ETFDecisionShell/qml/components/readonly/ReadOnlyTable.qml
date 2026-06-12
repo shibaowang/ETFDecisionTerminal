@@ -5,10 +5,10 @@ Rectangle {
     objectName: "readOnlyTable"
     property string title: ""
     property string subtitle: ""
-    property string readonlyText: "READONLY"
-    property string emptyTitle: "No data"
+    property string readonlyText: "只读"
+    property string emptyTitle: "暂无数据"
     property string emptyMessage: ""
-    property string emptyHint: "Read-only table. No edit actions are available."
+    property string emptyHint: "只读表格，不提供编辑操作。"
     property var columns: []
     property var visibleColumnKeys: []
     property int minimumVisibleColumns: 1
@@ -130,7 +130,7 @@ Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             text: (modelData.sortable && root.sortKey === modelData.key)
                                 ? (root.sortAscending ? "^" : "v")
-                                : (modelData.sortable ? "sort" : "")
+                                : (modelData.sortable ? "排序" : "")
                             color: modelData.sortable ? "#53657f" : "transparent"
                             font.pixelSize: 9
                             horizontalAlignment: Text.AlignRight

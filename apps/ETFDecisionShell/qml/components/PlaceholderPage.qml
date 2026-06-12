@@ -4,7 +4,7 @@ Rectangle {
     id: root
     required property string title
     required property string moduleName
-    property string description: "当前为占位 Mock，业务功能尚未接入。"
+    property string description: "当前为占位状态（模拟），业务功能尚未接入。"
     property var metricsModel: null
     property var actionHintModel: null
 
@@ -34,7 +34,7 @@ Rectangle {
             Text {
                 id: mockText
                 anchors.centerIn: parent
-                text: "当前为占位 Mock"
+                text: "当前为占位状态（模拟）"
                 color: "#7a4a00"
                 font.pixelSize: 13
                 font.bold: true
@@ -51,7 +51,7 @@ Rectangle {
 
         Text {
             width: parent.width
-            text: "模块: " + root.moduleName + "\n后续任务将接入真实数据。\n本页面不访问数据库、不连接服务、不包含业务逻辑。"
+            text: "模块：" + root.moduleName + "\n后续任务将接入真实数据。\n本页面不访问数据库、不连接服务、不包含业务逻辑。"
             color: "#667086"
             font.pixelSize: 13
             lineHeight: 1.35

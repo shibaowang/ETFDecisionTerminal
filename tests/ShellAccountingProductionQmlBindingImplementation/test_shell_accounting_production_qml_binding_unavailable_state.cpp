@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     for (const auto& token : {
              "accountingPresenter: null",
              "UNAVAILABLE",
-             "disabled",
+             "\xE7\xA6\x81\xE7\x94\xA8",
              "unavailable-safe",
              "not displayed",
          }) {

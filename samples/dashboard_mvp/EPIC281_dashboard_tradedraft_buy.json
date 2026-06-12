@@ -1,0 +1,10 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_tradedraft_buy",
+  "scenario": "explicitly confirmed internal TradeDraft from recommendation",
+  "payloadRef": "samples/trade_draft/EPIC278_buy_tier1_to_draft.json",
+  "expectedStatus": "DRAFT_CREATED",
+  "requiresExplicitConfirmation": true,
+  "notAnOrder": true,
+  "sanitized": true
+}

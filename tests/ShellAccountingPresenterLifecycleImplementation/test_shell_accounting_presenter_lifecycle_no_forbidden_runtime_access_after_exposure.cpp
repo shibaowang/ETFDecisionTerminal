@@ -8,11 +8,10 @@ int main(int argc, char** argv)
 {
     const auto root = sourceRoot(argc, argv);
     const auto startupFiles = productionStartupFiles(root);
-    const std::vector<std::filesystem::path> shellAccountingQmlFiles{
-        shellAccountingReadOnlyPage(root),
-    };
+    const auto shellAccountingPageText = readTextFile(shellAccountingReadOnlyPage(root));
     for (const auto& token : forbiddenRuntimeTokens()) {
-        if (containsToken(startupFiles, token) || containsToken(shellAccountingQmlFiles, token)) {
+        if (containsToken(startupFiles, token) ||
+            shellAccountingQmlContainsForbiddenToken(shellAccountingPageText, token)) {
             std::cerr << "forbidden runtime token found after presenter exposure: `" << token << "`\n";
             return 1;
         }

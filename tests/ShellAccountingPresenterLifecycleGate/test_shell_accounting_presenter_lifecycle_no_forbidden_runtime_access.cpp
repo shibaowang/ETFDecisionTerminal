@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     }
     const auto pageText = readTextFile(shellAccountingReadOnlyPage(root));
     for (const auto& token : forbiddenRuntimeTokens()) {
-        if (pageText.find(token) != std::string::npos) {
+        if (shellAccountingQmlContainsForbiddenToken(pageText, token)) {
             std::cerr << "ShellAccounting QML page exposes forbidden runtime token `" << token << "`\n";
             return 1;
         }

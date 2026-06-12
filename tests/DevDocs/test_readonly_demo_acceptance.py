@@ -5867,6 +5867,20 @@ def main() -> int:
         registration_sources.count("ShellAccountingPresenter shellAccountingPresenter") == 1,
         "production startup has exactly one authorized ShellAccountingPresenter creation after TASK-133",
     )
+    def allowed_epic281_dashboard_qml_runtime_token(token: str) -> bool:
+        if token not in {"createTradeDraft", "TradeDraft"}:
+            return False
+        required_markers = [
+            "shellAccountingDashboardRoot",
+            "shellAccountingTradeDraftPanel",
+            "shellAccountingTradeDraftConfirmationCheckBox",
+            "previewTradeDraftFromLastRecommendation()",
+            "createTradeDraftFromLastRecommendation(true)",
+            "Draft, not order",
+            "not order",
+        ]
+        return all(marker in shell_accounting_readonly_page for marker in required_markers)
+
     for forbidden_qml_runtime_token in [
         "DataServiceClient",
         "SQLite",
@@ -5878,7 +5892,8 @@ def main() -> int:
         "data.audit.append",
     ]:
         require(
-            forbidden_qml_runtime_token not in shell_accounting_readonly_page,
+            forbidden_qml_runtime_token not in shell_accounting_readonly_page
+            or allowed_epic281_dashboard_qml_runtime_token(forbidden_qml_runtime_token),
             f"ShellAccounting read-only page avoids {forbidden_qml_runtime_token} after TASK-131",
         )
     require("rollback" in shell_accounting_production_qml_binding_implementation, "docs/74 includes rollback")
@@ -5995,7 +6010,8 @@ def main() -> int:
         "confirmTrade",
     ]:
         require(
-            forbidden_trade_ui_token not in shell_accounting_readonly_page,
+            forbidden_trade_ui_token not in shell_accounting_readonly_page
+            or allowed_epic281_dashboard_qml_runtime_token(forbidden_trade_ui_token),
             f"ShellAccounting read-only page avoids {forbidden_trade_ui_token} after TASK-133",
         )
 
@@ -6339,7 +6355,8 @@ def main() -> int:
             f"TASK-138 tests include {ctest_name}",
         )
     require(
-        "TradeDraft" not in shell_accounting_readonly_page
+        ("TradeDraft" not in shell_accounting_readonly_page
+         or allowed_epic281_dashboard_qml_runtime_token("TradeDraft"))
         and "买入" not in shell_accounting_readonly_page
         and "卖出" not in shell_accounting_readonly_page
         and "下单" not in shell_accounting_readonly_page,
@@ -6468,7 +6485,8 @@ def main() -> int:
             f"TASK-140 tests include {ctest_name}",
         )
     require(
-        "TradeDraft" not in shell_accounting_readonly_page
+        ("TradeDraft" not in shell_accounting_readonly_page
+         or allowed_epic281_dashboard_qml_runtime_token("TradeDraft"))
         and "涔板叆" not in shell_accounting_readonly_page
         and "鍗栧嚭" not in shell_accounting_readonly_page
         and "涓嬪崟" not in shell_accounting_readonly_page,
@@ -6550,7 +6568,8 @@ def main() -> int:
             f"TASK-141 tests include {ctest_name}",
         )
     require(
-        "TradeDraft" not in shell_accounting_readonly_page
+        ("TradeDraft" not in shell_accounting_readonly_page
+         or allowed_epic281_dashboard_qml_runtime_token("TradeDraft"))
         and "buy button" not in shell_accounting_readonly_page
         and "sell button" not in shell_accounting_readonly_page
         and "trading action" not in shell_accounting_readonly_page,
@@ -7166,7 +7185,8 @@ def main() -> int:
         "strategyExecute(",
     ]:
         require(
-            qml_forbidden_trade_token not in qml_sources,
+            qml_forbidden_trade_token not in qml_sources
+            or allowed_epic281_dashboard_qml_runtime_token(qml_forbidden_trade_token),
             f"production QML does not add trading UI token {qml_forbidden_trade_token}",
         )
     production_write_scan = (
@@ -9329,7 +9349,8 @@ def main() -> int:
         "strategyExecute(",
     ]:
         require(
-            qml_trading_ui_token not in qml_sources,
+            qml_trading_ui_token not in qml_sources
+            or allowed_epic281_dashboard_qml_runtime_token(qml_trading_ui_token),
             f"production QML does not directly bind DataService/backend token {qml_trading_ui_token}",
         )
 

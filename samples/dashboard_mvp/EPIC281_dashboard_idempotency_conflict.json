@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_idempotency_conflict",
+  "scenario": "idempotency conflict is sanitized and does not grow rows",
+  "payloadRef": "samples/trade_draft/EPIC278_negative_idempotency_conflict.json",
+  "expectedStatus": "CONFLICT",
+  "newExecutedRows": 0,
+  "sanitized": true
+}

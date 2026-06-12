@@ -30,6 +30,38 @@ int countToken(const std::string& text, const std::string& token)
     return count;
 }
 
+bool containsAll(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) == std::string::npos) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isAllowedEpic281DashboardToken(
+    const std::filesystem::path& file,
+    const std::string& text,
+    const std::string& token)
+{
+    if (file.filename().string() != "ShellAccountingReadOnlyPage.qml" ||
+        token != "createTradeDraft") {
+        return false;
+    }
+    return containsAll(
+        text,
+        {
+            "shellAccountingDashboardRoot",
+            "shellAccountingTradeDraftPanel",
+            "shellAccountingTradeDraftConfirmationCheckBox",
+            "previewTradeDraftFromLastRecommendation()",
+            "createTradeDraftFromLastRecommendation(true)",
+            "Draft, not order",
+            "not order",
+        });
+}
+
 etfdt::shell_services::ShellAccountingIssue makeIssue(
     std::string code,
     std::string message)
@@ -114,7 +146,9 @@ std::filesystem::path docs80Path(const std::filesystem::path& root)
 bool containsTokenInFiles(const std::vector<std::filesystem::path>& files, const std::string& token)
 {
     for (const auto& file : files) {
-        if (readTextFile(file).find(token) != std::string::npos) {
+        const auto text = readTextFile(file);
+        if (text.find(token) != std::string::npos &&
+            !isAllowedEpic281DashboardToken(file, text, token)) {
             std::cerr << file.generic_string() << ": unexpected token `" << token << "`\n";
             return true;
         }

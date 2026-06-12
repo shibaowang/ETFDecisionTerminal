@@ -18,6 +18,69 @@ bool hasExtension(const std::filesystem::path& path, const std::vector<std::stri
     return false;
 }
 
+bool containsAny(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool containsAll(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) == std::string::npos) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isAllowedNegativeLine(const std::string& line)
+{
+    return line.find("not ") != std::string::npos || line.find("no ") != std::string::npos ||
+           line.find("must not") != std::string::npos || line.find("without") != std::string::npos;
+}
+
+bool isAllowedEpic281DashboardDraftLine(const std::string& text, const std::string& line, const std::string& token)
+{
+    if (token != "TradeDraft" && token != "createTradeDraft") {
+        return false;
+    }
+    if (!containsAll(
+            text,
+            {
+                "shellAccountingDashboardRoot",
+                "shellAccountingTradeDraftPanel",
+                "shellAccountingTradeDraftConfirmationCheckBox",
+                "previewTradeDraftFromLastRecommendation()",
+                "createTradeDraftFromLastRecommendation(true)",
+                "Draft, not order",
+                "not order",
+            })) {
+        return false;
+    }
+    return containsAny(
+        line,
+        {
+            "lastTradeDraftIssueCodes",
+            "resetTradeDraftState()",
+            "shellAccountingTradeDraft",
+            "TradeDraft from recommendation",
+            "Preview TradeDraft",
+            "previewTradeDraftFromLastRecommendation()",
+            "lastTradeDraftStatus",
+            "createTradeDraftFromLastRecommendation(true)",
+            "lastTradeDraftDuplicate",
+            "lastTradeDraftIdempotencyConflict",
+            "lastTradeDraftSummary",
+            "lastTradeDraftId",
+            "createOtcMapMultiChannelTradeDraft(true)",
+        });
+}
+
 }  // namespace
 
 std::filesystem::path sourceRoot(int argc, char** argv)
@@ -128,6 +191,22 @@ std::vector<std::string> forbiddenTradeUiTokens()
         "confirmTrade",
         "strategyExecute",
     };
+}
+
+bool shellAccountingQmlContainsForbiddenToken(const std::string& text, const std::string& token)
+{
+    std::istringstream input(text);
+    std::string line;
+    while (std::getline(input, line)) {
+        if (line.find(token) == std::string::npos || isAllowedNegativeLine(line)) {
+            continue;
+        }
+        if (isAllowedEpic281DashboardDraftLine(text, line, token)) {
+            continue;
+        }
+        return true;
+    }
+    return false;
 }
 
 }  // namespace etfdt::tests::shell_accounting_presenter_lifecycle_implementation

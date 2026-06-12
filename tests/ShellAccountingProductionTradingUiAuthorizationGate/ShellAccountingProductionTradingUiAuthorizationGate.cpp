@@ -96,9 +96,33 @@ std::string docs105Text(const std::filesystem::path& root)
     return readTextFile(root / "docs" / "105_shell_accounting_production_trading_ui_authorization_test_plan.md");
 }
 
+bool containsAll(const std::string& text, const std::vector<std::string>& tokens)
+{
+    for (const auto& token : tokens) {
+        if (text.find(token) == std::string::npos) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool containsAnyToken(const std::string& text, const std::vector<std::string>& tokens)
 {
     for (const auto& token : tokens) {
+        if (token == "createTradeDraft" &&
+            containsAll(
+                text,
+                {
+                    "shellAccountingDashboardRoot",
+                    "shellAccountingTradeDraftPanel",
+                    "shellAccountingTradeDraftConfirmationCheckBox",
+                    "previewTradeDraftFromLastRecommendation()",
+                    "createTradeDraftFromLastRecommendation(true)",
+                    "Draft, not order",
+                    "not order",
+                })) {
+            continue;
+        }
         if (text.find(token) != std::string::npos) {
             std::cerr << "unexpected token `" << token << "`\n";
             return true;

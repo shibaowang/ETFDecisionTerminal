@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_portfolio_replay",
+  "scenario": "read-only portfolio replay summary",
+  "payloadRef": "samples/shell_accounting_replay/EPIC276_buy_partial_sell.json",
+  "expectedStatus": "COMPLETED",
+  "expectedPanels": ["cash", "position", "realizedPnl", "unrealizedPnl"],
+  "sanitized": true
+}

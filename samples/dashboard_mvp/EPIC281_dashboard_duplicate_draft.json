@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_duplicate_draft",
+  "scenario": "duplicate internal draft has no growth",
+  "payloadRef": "samples/trade_draft/EPIC278_duplicate_same_key_same_digest.json",
+  "expectedStatus": "DUPLICATE",
+  "newExecutedRows": 0,
+  "sanitized": true
+}

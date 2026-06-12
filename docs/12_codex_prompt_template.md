@@ -2,6 +2,28 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-281 Dashboard MVP boundary
+
+- Dashboard work may update the ShellAccounting read-only QML page, add
+  ShellAccounting QML components, add minimal ShellServices / Presenter
+  convenience mapping when an existing capability is missing from the view
+  model, add docs 384 through 388, add sanitized samples under
+  `samples/dashboard_mvp/`, and add the `dashboard_mvp_full_delivery` CTest.
+- Dashboard QML must call existing Presenter methods only. It must not directly
+  reference DataServiceClient, SQLite, network APIs, AccountingEngine,
+  StrategyEngine, MarketEngine, broker, credentials, endpoints, real order
+  placement, or automatic trading.
+- Excel/VBA import persistence, TradeDraft creation, and OTCMap internal draft
+  creation must require explicit user confirmation. TradeDraft and OTCMap
+  outputs are internal drafts only and must not be represented as orders.
+- Market data refresh must remain manual, read-only, and fixture/disabled by
+  default. Do not add background live polling, live auto-refresh, or default
+  networking.
+- EPIC-281 does not authorize migrations, DataAccess write semantic changes,
+  new DataService write actions, broker/network/credential/endpoint work,
+  actual order submission, automatic trading, or directory-level old-gate
+  allowlist broadening.
+
 ## EPIC-280 Market data historical high refresh boundary
 
 - Market data work may add the production read-only MarketEngine provider

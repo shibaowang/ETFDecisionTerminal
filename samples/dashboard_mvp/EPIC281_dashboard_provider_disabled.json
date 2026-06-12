@@ -1,0 +1,9 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_provider_disabled",
+  "scenario": "manual market data provider disabled state",
+  "payloadRef": "samples/market_data/EPIC280_negative_provider_disabled.json",
+  "expectedStatus": "PROVIDER_DISABLED",
+  "refreshManualOnly": true,
+  "sanitized": true
+}

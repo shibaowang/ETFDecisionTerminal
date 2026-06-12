@@ -1,0 +1,10 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_import_accepted",
+  "scenario": "accepted Excel/VBA sanitized import",
+  "payloadRef": "samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json",
+  "expectedStatus": "ACCEPTED",
+  "tradeFactCount": 1,
+  "cashFactCount": 1,
+  "sanitized": true
+}

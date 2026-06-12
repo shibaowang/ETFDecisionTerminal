@@ -1,0 +1,10 @@
+{
+  "task": "EPIC-281",
+  "caseId": "dashboard_otcmap_multileg_buy",
+  "scenario": "explicitly confirmed internal OTCMap multi-leg draft",
+  "payloadRef": "samples/otcmap_multichannel/EPIC279_buy_split_A_C_by_limit.json",
+  "expectedPreviewStatus": "DRAFT_ELIGIBLE",
+  "requiresExplicitConfirmation": true,
+  "notAnOrder": true,
+  "sanitized": true
+}

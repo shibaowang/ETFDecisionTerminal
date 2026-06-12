@@ -2,6 +2,7 @@
 
 #include "ShellServices/ShellAccountingServiceTypes.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -66,6 +67,22 @@ struct ShellAccountingDataServiceClientResponse final {
     bool strategyRecommendationBaseProtectionPassed = false;
     bool strategyRecommendationCashLimitApplied = false;
     std::vector<std::string> strategyRecommendationIssueCodes;
+    bool tradeDraftManualRecommendationFlowCreated = false;
+    bool tradeDraftUserConfirmationRequired = false;
+    bool tradeDraftEligible = false;
+    bool tradeDraftDuplicate = false;
+    bool tradeDraftIdempotencyConflict = false;
+    bool tradeDraftIsNotOrder = true;
+    bool tradeDraftSummaryFound = false;
+    std::int64_t tradeDraftId = 0;
+    std::string tradeDraftStatus;
+    std::string tradeDraftSide;
+    std::string tradeDraftInstrumentCode;
+    std::string tradeDraftQuantityText;
+    std::string tradeDraftAmountText;
+    std::string tradeDraftNetCashImpactText;
+    std::string tradeDraftSummary;
+    std::vector<std::string> tradeDraftIssueCodes;
     bool accountingEngineCalled = false;
     bool productionFileLoading = false;
     bool productionWrite = false;
@@ -97,6 +114,10 @@ public:
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callSniperPoolSummary(
         const ShellAccountingDataServiceClientRequest& request) = 0;
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftCreate(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftCreateFromRecommendation(
+        const ShellAccountingDataServiceClientRequest& request);
+    [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftReadOnlySummary(
         const ShellAccountingDataServiceClientRequest& request);
     [[nodiscard]] virtual ShellAccountingDataServiceClientResponse callTradeDraftConfirm(
         const ShellAccountingDataServiceClientRequest& request);

@@ -147,7 +147,7 @@ QStringList forbiddenMethodTokens()
     return {
         QStringLiteral("buy("),
         QStringLiteral("sell("),
-        QStringLiteral("createTradeDraft"),
+        QStringLiteral("confirmTradeDraft"),
         QStringLiteral("brokerOrder"),
         QStringLiteral("submitOrder"),
         QStringLiteral("strategyExecute"),

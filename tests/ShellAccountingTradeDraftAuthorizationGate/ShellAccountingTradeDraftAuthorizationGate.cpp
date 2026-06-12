@@ -137,7 +137,7 @@ bool containsAllTokens(const std::string& text, const std::vector<std::string>& 
 std::vector<std::string> draftImplementationTokens()
 {
     return {
-        "createTradeDraft",
+        "confirmTradeDraft",
         "handleAccountingTradeDraft",
         "kActionAccountingTradeDraft",
         "ShellAccountingTradeDraftRepository",
@@ -163,7 +163,7 @@ std::vector<std::string> draftWriteTokens()
 std::vector<std::string> uiDraftTriggerTokens()
 {
     return {
-        "createTradeDraft",
+        "confirmTradeDraft",
         "accounting.tradedraft.write",
         "trade_draft.write",
         "draft.write",

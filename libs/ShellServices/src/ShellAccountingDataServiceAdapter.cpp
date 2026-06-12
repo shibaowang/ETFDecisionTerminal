@@ -205,6 +205,39 @@ std::string makeCreateDraftPayloadJson(const ShellAccountingServiceRequest& requ
     return stream.str();
 }
 
+std::string makeTradeDraftRecommendationPayloadJson(const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(stream, "recommendationPayloadJson", request.strategyRecommendationPayloadJson, needsComma);
+    appendJsonStringField(stream, "idempotencyKey", request.idempotencyKey, needsComma);
+    appendJsonStringField(stream, "recommendationDigest", request.recommendationDigest, needsComma);
+    appendJsonStringField(stream, "accountId", request.accountId, needsComma);
+    appendJsonStringField(stream, "portfolioId", request.portfolioId, needsComma);
+    appendJsonStringField(stream, "strategyId", request.strategyId, needsComma);
+    appendJsonStringField(stream, "instrumentId", request.instrumentId, needsComma);
+    appendJsonStringField(stream, "strategyCode", request.strategyCode, needsComma);
+    appendJsonStringField(stream, "instrumentCode", request.instrumentCode, needsComma);
+    appendJsonStringField(stream, "instrumentType", request.instrumentType, needsComma);
+    appendJsonStringField(stream, "tradeSource", request.tradeSource, needsComma);
+    appendJsonStringField(stream, "expiresAtUtc", request.expiresAtUtc, needsComma);
+    appendJsonBoolField(stream, "userConfirmed", request.userConfirmed, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
+std::string makeTradeDraftSummaryPayloadJson(const ShellAccountingServiceRequest& request)
+{
+    std::ostringstream stream;
+    bool needsComma = false;
+    stream << '{';
+    appendJsonStringField(stream, "idempotencyKey", request.idempotencyKey, needsComma);
+    appendJsonInt64Field(stream, "draftId", request.draftId, needsComma);
+    stream << '}';
+    return stream.str();
+}
+
 std::string makeConfirmDraftPayloadJson(const ShellAccountingServiceRequest& request)
 {
     std::ostringstream stream;
@@ -331,6 +364,26 @@ ShellAccountingDataServiceClientRequest makeConfirmDraftClientRequest(
     ShellAccountingDataServiceClientRequest clientRequest;
     clientRequest.actionName = "accounting.tradedraft.confirm";
     clientRequest.payloadJson = makeConfirmDraftPayloadJson(request);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeTradeDraftRecommendationClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.tradedraft.create_from_recommendation";
+    clientRequest.payloadJson = makeTradeDraftRecommendationPayloadJson(request);
+    clientRequest.timeoutMs = request.timeoutMs;
+    return clientRequest;
+}
+
+ShellAccountingDataServiceClientRequest makeTradeDraftSummaryClientRequest(
+    const ShellAccountingServiceRequest& request)
+{
+    ShellAccountingDataServiceClientRequest clientRequest;
+    clientRequest.actionName = "accounting.tradedraft.readonly_summary";
+    clientRequest.payloadJson = makeTradeDraftSummaryPayloadJson(request);
     clientRequest.timeoutMs = request.timeoutMs;
     return clientRequest;
 }
@@ -462,6 +515,22 @@ ShellAccountingServiceResult mapClientResponse(
     result.strategyRecommendationBaseProtectionPassed = response.strategyRecommendationBaseProtectionPassed;
     result.strategyRecommendationCashLimitApplied = response.strategyRecommendationCashLimitApplied;
     result.strategyRecommendationIssueCodes = std::move(response.strategyRecommendationIssueCodes);
+    result.tradeDraftManualRecommendationFlowCreated = response.tradeDraftManualRecommendationFlowCreated;
+    result.tradeDraftUserConfirmationRequired = response.tradeDraftUserConfirmationRequired;
+    result.tradeDraftEligible = response.tradeDraftEligible;
+    result.tradeDraftDuplicate = response.tradeDraftDuplicate;
+    result.tradeDraftIdempotencyConflict = response.tradeDraftIdempotencyConflict;
+    result.tradeDraftIsNotOrder = response.tradeDraftIsNotOrder;
+    result.tradeDraftSummaryFound = response.tradeDraftSummaryFound;
+    result.tradeDraftId = response.tradeDraftId;
+    result.tradeDraftStatus = std::move(response.tradeDraftStatus);
+    result.tradeDraftSide = std::move(response.tradeDraftSide);
+    result.tradeDraftInstrumentCode = std::move(response.tradeDraftInstrumentCode);
+    result.tradeDraftQuantityText = std::move(response.tradeDraftQuantityText);
+    result.tradeDraftAmountText = std::move(response.tradeDraftAmountText);
+    result.tradeDraftNetCashImpactText = std::move(response.tradeDraftNetCashImpactText);
+    result.tradeDraftSummary = std::move(response.tradeDraftSummary);
+    result.tradeDraftIssueCodes = std::move(response.tradeDraftIssueCodes);
     result.accountingEngineCalled = response.accountingEngineCalled;
     result.productionFileLoading = response.productionFileLoading;
     result.productionWrite = response.productionWrite;
@@ -559,6 +628,31 @@ ShellAccountingServiceResult ShellAccountingDataServiceAdapter::createDraft(
             "accounting.tradedraft.create");
     }
     return makeNotConnectedResult(request, "accounting.tradedraft.create");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::createDraftFromRecommendation(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callTradeDraftCreateFromRecommendation(
+                makeTradeDraftRecommendationClientRequest(request)),
+            request,
+            "accounting.tradedraft.create_from_recommendation");
+    }
+    return makeNotConnectedResult(request, "accounting.tradedraft.create_from_recommendation");
+}
+
+ShellAccountingServiceResult ShellAccountingDataServiceAdapter::fetchTradeDraftReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    if (clientPort_) {
+        return mapClientResponse(
+            clientPort_->callTradeDraftReadOnlySummary(makeTradeDraftSummaryClientRequest(request)),
+            request,
+            "accounting.tradedraft.readonly_summary");
+    }
+    return makeNotConnectedResult(request, "accounting.tradedraft.readonly_summary");
 }
 
 ShellAccountingServiceResult ShellAccountingDataServiceAdapter::confirmDraft(

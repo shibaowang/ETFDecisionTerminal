@@ -5309,3 +5309,24 @@ EPIC-277 documentation is in
 `docs/366_strategy_recommendation_engine_contract.md`,
 `docs/367_strategy_recommendation_engine_user_visible_summary.md`, and
 `docs/368_strategy_recommendation_engine_test_plan.md`.
+
+## EPIC-278 TradeDraft Manual Recommendation Flow Full Delivery
+
+EPIC-278 connects accepted EPIC-277 StrategyEngine BUY / SELL recommendations
+to an internal manual TradeDraft flow. A user-confirmed recommendation can be
+converted through DataService action
+`accounting.tradedraft.create_from_recommendation`, persisted as
+`trade_draft` / `trade_draft_leg` plus a sanitized audit event, and read back
+through `accounting.tradedraft.readonly_summary`.
+
+TradeDraft is not an order. EPIC-278 does not write `trade_log` or
+`cash_adjustment`, does not change cash, positions, or PnL, does not wire QML,
+does not access broker / network / credentials / endpoints, does not place
+real orders, and does not enable automatic trading.
+
+EPIC-278 documentation is in
+`docs/369_tradedraft_manual_recommendation_flow_full_delivery.md`,
+`docs/370_tradedraft_vba_parity_matrix.md`,
+`docs/371_tradedraft_contract.md`,
+`docs/372_tradedraft_user_visible_flow.md`, and
+`docs/373_tradedraft_test_plan.md`.

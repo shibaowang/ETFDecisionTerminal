@@ -60,6 +60,24 @@ ShellAccountingServiceResult ShellAccountingServiceAdapter::createDraft(
         "SHELL_ACCOUNTING_CREATE_DRAFT_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult ShellAccountingServiceAdapter::createDraftFromRecommendation(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailableWriteResult(
+        request,
+        "accounting.tradedraft.create_from_recommendation",
+        "SHELL_ACCOUNTING_CREATE_DRAFT_FROM_RECOMMENDATION_ADAPTER_NOT_CONFIGURED");
+}
+
+ShellAccountingServiceResult ShellAccountingServiceAdapter::fetchTradeDraftReadOnlySummary(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "accounting.tradedraft.readonly_summary",
+        "SHELL_ACCOUNTING_TRADEDRAFT_READONLY_SUMMARY_ADAPTER_NOT_CONFIGURED");
+}
+
 ShellAccountingServiceResult ShellAccountingServiceAdapter::confirmDraft(
     const ShellAccountingServiceRequest& request)
 {

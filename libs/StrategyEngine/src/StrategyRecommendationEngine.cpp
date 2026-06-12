@@ -373,6 +373,43 @@ private:
     return result;
 }
 
+[[nodiscard]] TradeDraftConversionResult draftRejected(
+    std::string code,
+    std::string field,
+    std::string message)
+{
+    TradeDraftConversionResult result;
+    result.status = "REJECTED";
+    result.eligible = false;
+    auto issue = makeIssue(std::move(code), std::move(field), std::move(message));
+    result.issueCodes.push_back(issue.code);
+    result.issues.push_back(std::move(issue));
+    return result;
+}
+
+[[nodiscard]] long long moneyCents(const std::string& value)
+{
+    const auto parsed = parseDecimal(value, true).value_or(0.0);
+    return static_cast<long long>(std::llround(parsed * 100.0));
+}
+
+[[nodiscard]] double quantityValue(const std::string& value)
+{
+    return parseDecimal(value, true).value_or(0.0);
+}
+
+[[nodiscard]] std::string derivePriceText(
+    const std::string& amountText,
+    const std::string& quantityText)
+{
+    const auto amount = parseDecimal(amountText, true).value_or(0.0);
+    const auto quantity = parseDecimal(quantityText, true).value_or(0.0);
+    if (amount <= 0.0 || quantity <= 0.0) {
+        return "0.00";
+    }
+    return formatFixed(amount / quantity, 4);
+}
+
 void acceptCommon(
     StrategyRecommendationResult& result,
     std::string actionCode,
@@ -775,6 +812,76 @@ StrategyRecommendationResult StrategyRecommendationEngine::recommendReadOnly(
     result.suggestedAmountText = "0.00";
     result.netCashImpactText = "0.00";
     result.feeText = "0.00";
+    return result;
+}
+
+TradeDraftConversionResult StrategyRecommendationEngine::convertRecommendationToTradeDraft(
+    const TradeDraftConversionRequest& request) const
+{
+    if (!request.userConfirmed) {
+        return draftRejected(
+            "TRADEDRAFT_USER_CONFIRMATION_REQUIRED",
+            "userConfirmed",
+            "TradeDraft creation requires explicit user confirmation.");
+    }
+    if (trim(request.idempotencyKey).empty()) {
+        return draftRejected(
+            "TRADEDRAFT_IDEMPOTENCY_KEY_REQUIRED",
+            "idempotencyKey",
+            "TradeDraft creation requires an idempotency key.");
+    }
+    if (!request.recommendation.accepted || !request.recommendation.recommendationComputed) {
+        return draftRejected(
+            "TRADEDRAFT_RECOMMENDATION_NOT_ACCEPTED",
+            "recommendation",
+            "Only accepted recommendations can create a TradeDraft.");
+    }
+    if (request.recommendation.actionCode != "BUY" && request.recommendation.actionCode != "SELL") {
+        return draftRejected(
+            "TRADEDRAFT_RECOMMENDATION_NOT_ELIGIBLE",
+            "recommendation.actionCode",
+            "Only BUY or SELL recommendations can create a TradeDraft.");
+    }
+    if (request.recommendation.actionCode == "SELL" && !request.recommendation.baseProtectionPassed) {
+        return draftRejected(
+            "TRADEDRAFT_BASE_PROTECTED_SELL_BLOCKED",
+            "recommendation.baseProtectionPassed",
+            "Base-protected SELL recommendations cannot create a TradeDraft.");
+    }
+    if (quantityValue(request.recommendation.suggestedQuantityText) <= 0.0) {
+        return draftRejected(
+            "TRADEDRAFT_QUANTITY_REQUIRED",
+            "recommendation.suggestedQuantityText",
+            "TradeDraft creation requires a positive suggested quantity.");
+    }
+    if (moneyCents(request.recommendation.suggestedAmountText) <= 0) {
+        return draftRejected(
+            "TRADEDRAFT_AMOUNT_REQUIRED",
+            "recommendation.suggestedAmountText",
+            "TradeDraft creation requires a positive suggested amount.");
+    }
+
+    TradeDraftConversionResult result;
+    result.status = "DRAFT_ELIGIBLE";
+    result.eligible = true;
+    result.userConfirmed = true;
+    result.side = request.recommendation.actionCode;
+    result.sourceRecommendationAction = request.recommendation.actionCode;
+    result.sourceRecommendationReason = request.recommendation.reasonCode;
+    result.instrumentCode = request.instrumentCode;
+    result.instrumentType = request.instrumentType;
+    result.strategyCode = request.strategyCode;
+    result.tradeSource = request.tradeSource.empty()
+        ? request.recommendation.sourceCode
+        : request.tradeSource;
+    result.quantityText = request.recommendation.suggestedQuantityText;
+    result.amountText = request.recommendation.suggestedAmountText;
+    result.priceText = derivePriceText(result.amountText, result.quantityText);
+    result.feeEstimateText = request.recommendation.feeText;
+    result.netCashImpactText = request.recommendation.netCashImpactText;
+    result.baseProtectionPassed = request.recommendation.baseProtectionPassed;
+    result.cashLimitApplied = request.recommendation.cashLimitApplied;
+    result.otcGenericDraft = request.recommendation.sourceCode == "OTC_REPLACEMENT_GENERIC";
     return result;
 }
 

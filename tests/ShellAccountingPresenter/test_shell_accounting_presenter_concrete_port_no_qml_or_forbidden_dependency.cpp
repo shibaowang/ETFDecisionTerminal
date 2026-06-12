@@ -64,7 +64,7 @@ int main(int argc, char** argv)
         expectTrue(text.find("SQLite") == std::string::npos, "presenter does not include SQLite");
         expectTrue(text.find("QtQuick") == std::string::npos, "presenter does not include QtQuick or QML");
         expectTrue(text.find("qmlRegisterType") == std::string::npos, "presenter does not register QML type");
-        expectTrue(text.find("createTradeDraft") == std::string::npos, "presenter does not expose createTradeDraft");
+        expectTrue(text.find("confirmTradeDraft") == std::string::npos, "presenter does not expose confirmTradeDraft");
         expectTrue(text.find("brokerOrder") == std::string::npos, "presenter does not expose brokerOrder");
         expectTrue(text.find("strategyExecute") == std::string::npos, "presenter does not expose strategyExecute");
     }

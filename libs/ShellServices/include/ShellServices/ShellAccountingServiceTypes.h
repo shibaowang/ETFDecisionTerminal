@@ -23,6 +23,8 @@ struct ShellAccountingServiceRequest final {
     std::string strategyCode;
     std::string instrumentId;
     std::string instrumentCode;
+    std::string instrumentType;
+    std::string tradeSource;
     std::string side;
     std::int64_t quantity1e6 = 0;
     std::string reason;
@@ -62,6 +64,9 @@ struct ShellAccountingServiceRequest final {
     int importFxRateFactCount = 0;
     std::string portfolioReplayPayloadJson;
     std::string strategyRecommendationPayloadJson;
+    std::string recommendationDigest;
+    bool userConfirmed = false;
+    std::string expiresAtUtc;
 };
 
 struct ShellAccountingImportPreviewDiagnostic final {
@@ -135,6 +140,22 @@ struct ShellAccountingServiceResult final {
     bool strategyRecommendationBaseProtectionPassed = false;
     bool strategyRecommendationCashLimitApplied = false;
     std::vector<std::string> strategyRecommendationIssueCodes;
+    bool tradeDraftManualRecommendationFlowCreated = false;
+    bool tradeDraftUserConfirmationRequired = false;
+    bool tradeDraftEligible = false;
+    bool tradeDraftDuplicate = false;
+    bool tradeDraftIdempotencyConflict = false;
+    bool tradeDraftIsNotOrder = true;
+    bool tradeDraftSummaryFound = false;
+    std::int64_t tradeDraftId = 0;
+    std::string tradeDraftStatus;
+    std::string tradeDraftSide;
+    std::string tradeDraftInstrumentCode;
+    std::string tradeDraftQuantityText;
+    std::string tradeDraftAmountText;
+    std::string tradeDraftNetCashImpactText;
+    std::string tradeDraftSummary;
+    std::vector<std::string> tradeDraftIssueCodes;
     bool accountingEngineCalled = false;
     bool productionFileLoading = false;
     bool productionWrite = false;

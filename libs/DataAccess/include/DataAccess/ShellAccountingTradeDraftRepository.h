@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace etfdt::data_access {
 
@@ -23,6 +24,25 @@ struct ShellAccountingTradeDraftCreateRequest final {
     std::string sourceReplayId;
     std::string authorizationToken;
     std::string createdAtUtc;
+    std::string idempotencyKey;
+    std::string recommendationDigest;
+    std::string sourceRecommendationAction;
+    std::string sourceRecommendationReason;
+    std::string instrumentType;
+    std::string tradeSource = "SYSTEM";
+    std::string quantityText;
+    std::string amountText;
+    std::string priceText;
+    std::string feeEstimateText;
+    std::string netCashImpactText;
+    std::string currency = "CNY";
+    std::string status = "ACTIVE";
+    std::string expiresAtUtc;
+    bool userConfirmationRequired = true;
+    bool userConfirmed = false;
+    bool baseProtectionPassed = true;
+    bool cashLimitApplied = false;
+    bool otcGenericDraft = false;
 };
 
 struct ShellAccountingTradeDraftCreateResult final {
@@ -33,8 +53,35 @@ struct ShellAccountingTradeDraftCreateResult final {
     bool draftWritten = false;
     bool auditWritten = false;
     bool duplicateDraft = false;
+    bool idempotencyConflict = false;
     bool transactionCommitted = false;
     bool idempotent = true;
+    bool legWritten = false;
+    std::string status = "DRAFT_CREATED";
+    std::string side;
+    std::string instrumentCode;
+    std::string quantityText;
+    std::string amountText;
+    std::string netCashImpactText;
+    std::vector<std::string> issueCodes;
+};
+
+struct ShellAccountingTradeDraftSummary final {
+    std::int64_t draftId = 0;
+    std::string draftUid;
+    std::string draftSignature;
+    std::string status;
+    std::string side;
+    std::string accountId;
+    std::string portfolioId;
+    std::string instrumentCode;
+    std::string strategyCode;
+    std::string quantityText;
+    std::string amountText;
+    std::string netCashImpactText;
+    std::string idempotencyKey;
+    bool found = false;
+    bool readOnly = true;
 };
 
 class ShellAccountingTradeDraftRepository final {
@@ -43,14 +90,23 @@ public:
 
     [[nodiscard]] DatabaseResult<ShellAccountingTradeDraftCreateResult> createTradeDraft(
         const ShellAccountingTradeDraftCreateRequest& request);
+    [[nodiscard]] DatabaseResult<ShellAccountingTradeDraftSummary> readTradeDraftSummary(
+        const std::string& idempotencyKey,
+        std::int64_t draftId = 0);
 
 private:
     [[nodiscard]] DatabaseResult<bool> validateRequest(
         const ShellAccountingTradeDraftCreateRequest& request);
     [[nodiscard]] DatabaseResult<std::optional<std::int64_t>> findExistingDraft(
         const ShellAccountingTradeDraftCreateRequest& request);
+    [[nodiscard]] DatabaseResult<std::optional<std::int64_t>> findExistingDraftByIdempotencyKey(
+        const ShellAccountingTradeDraftCreateRequest& request);
+    [[nodiscard]] DatabaseResult<std::string> loadDraftSignature(std::int64_t draftId);
     [[nodiscard]] DatabaseResult<std::int64_t> insertDraft(
         const ShellAccountingTradeDraftCreateRequest& request);
+    [[nodiscard]] DatabaseResult<std::int64_t> insertDraftLeg(
+        const ShellAccountingTradeDraftCreateRequest& request,
+        std::int64_t draftId);
     [[nodiscard]] DatabaseResult<std::int64_t> insertAuditEvent(
         const ShellAccountingTradeDraftCreateRequest& request,
         std::int64_t draftId,

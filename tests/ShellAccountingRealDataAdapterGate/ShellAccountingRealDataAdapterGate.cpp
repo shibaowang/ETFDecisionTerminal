@@ -137,7 +137,7 @@ std::vector<std::string> writePathTokens()
         "audit_log write",
         "data.audit.append",
         "confirmTrade",
-        "createTradeDraft",
+        "confirmTradeDraft",
         "brokerOrder(",
         "strategyExecute",
         "writeEnabled: true",

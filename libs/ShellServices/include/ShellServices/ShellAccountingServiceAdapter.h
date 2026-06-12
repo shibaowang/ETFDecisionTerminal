@@ -20,6 +20,10 @@ public:
         const ShellAccountingServiceRequest& request) = 0;
     virtual ShellAccountingServiceResult createDraft(
         const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult createDraftFromRecommendation(
+        const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult fetchTradeDraftReadOnlySummary(
+        const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult confirmDraft(
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult submitManualTransaction(

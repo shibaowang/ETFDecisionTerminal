@@ -35,6 +35,36 @@ ShellAccountingDataServiceClientPort::callTradeDraftCreate(
 }
 
 ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callTradeDraftCreateFromRecommendation(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    return makeUnavailablePortResponse(
+        request,
+        "SHELL_ACCOUNTING_CREATE_DRAFT_FROM_RECOMMENDATION_PORT_NOT_CONFIGURED");
+}
+
+ShellAccountingDataServiceClientResponse
+ShellAccountingDataServiceClientPort::callTradeDraftReadOnlySummary(
+    const ShellAccountingDataServiceClientRequest& request)
+{
+    ShellAccountingDataServiceClientResponse response;
+    response.actionName = request.actionName;
+    response.protocolSuccess = false;
+    response.implemented = false;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = "SHELL_ACCOUNTING_TRADEDRAFT_READONLY_SUMMARY_PORT_NOT_CONFIGURED";
+    response.dataQualityStatus = "UNAVAILABLE";
+    response.protocolError = true;
+    response.errorMessage =
+        "ShellAccounting TradeDraft read-only summary DataService port is not configured.";
+    response.issues.push_back(
+        {response.payloadStatus, "ERROR", response.errorMessage, true,
+         "ShellAccountingDataServiceClientPort"});
+    return response;
+}
+
+ShellAccountingDataServiceClientResponse
 ShellAccountingDataServiceClientPort::callTradeDraftConfirm(
     const ShellAccountingDataServiceClientRequest& request)
 {

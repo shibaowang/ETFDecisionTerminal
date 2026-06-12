@@ -203,6 +203,103 @@ struct StrategyRecommendationReadOnlySummaryRequest final {
     std::string recommendationPayloadJson = "{}";
 };
 
+struct TradeDraftCreateFromRecommendationRequest final {
+    std::string recommendationPayloadJson = "{}";
+    std::string idempotencyKey;
+    std::string recommendationDigest;
+    std::string accountId;
+    std::string portfolioId;
+    std::string strategyId;
+    std::string instrumentId;
+    std::string strategyCode;
+    std::string instrumentCode;
+    std::string instrumentType;
+    std::string tradeSource;
+    std::string expiresAtUtc;
+    std::string userNote;
+    bool userConfirmed = false;
+};
+
+struct TradeDraftCreateFromRecommendationResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    std::string status;
+    bool protocolSuccess = false;
+    bool dataServiceWriteActionCreated = false;
+    bool tradeDraftManualRecommendationFlowCreated = false;
+    bool tradeDraftRequiresExplicitUserConfirmation = false;
+    bool explicitUserConfirmationRequired = false;
+    bool recommendationEngineCalled = false;
+    bool recommendationAccepted = false;
+    bool tradeDraftEligible = false;
+    bool conversionNoWrite = false;
+    bool draftWritten = false;
+    bool legWritten = false;
+    bool auditWritten = false;
+    bool transactionCommitted = false;
+    bool duplicateDraft = false;
+    bool idempotencyConflict = false;
+    std::int64_t draftId = 0;
+    std::int64_t auditLogId = 0;
+    std::string draftUid;
+    std::string draftSignature;
+    std::string side;
+    std::string instrumentCode;
+    std::string quantityText;
+    std::string amountText;
+    std::string netCashImpactText;
+    std::vector<std::string> issueCodes;
+    bool tradeDraftIsNotOrder = false;
+    bool multiChannelOtcLegsCreated = false;
+    bool tradeLogRowsWrittenByTradeDraft = false;
+    bool cashAdjustmentRowsWrittenByTradeDraft = false;
+    bool positionChangedByTradeDraft = false;
+    bool cashChangedByTradeDraft = false;
+    bool productionWrite = false;
+    bool sqliteProductionWrite = false;
+    bool brokerOrderSubmitted = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool automaticTrading = false;
+};
+
+struct TradeDraftReadOnlySummaryRequest final {
+    std::string idempotencyKey;
+    std::int64_t draftId = 0;
+};
+
+struct TradeDraftReadOnlySummaryResult final {
+    std::string action;
+    std::string task;
+    std::string mode;
+    bool protocolSuccess = false;
+    bool readOnly = false;
+    bool found = false;
+    std::int64_t draftId = 0;
+    std::string draftUid;
+    std::string draftSignature;
+    std::string status;
+    std::string side;
+    std::string accountId;
+    std::string portfolioId;
+    std::string instrumentCode;
+    std::string strategyCode;
+    std::string quantityText;
+    std::string amountText;
+    std::string netCashImpactText;
+    std::string idempotencyKey;
+    bool productionWrite = false;
+    bool tradeLogRowsWrittenByTradeDraft = false;
+    bool cashAdjustmentRowsWrittenByTradeDraft = false;
+    bool brokerOrderSubmitted = false;
+    bool networkAccess = false;
+    bool credentialAccess = false;
+    bool endpointAccess = false;
+    bool automaticTrading = false;
+};
+
 struct StrategyRecommendationIssue final {
     std::string level;
     std::string code;

@@ -9,7 +9,7 @@ int main(int argc, char** argv)
     const auto dataServiceText = dataServiceActionsText(root);
 
     bool ok = expect(!containsAnyToken(shellText, {
-                         "createTradeDraft",
+                         "confirmTradeDraft",
                          "brokerOrder(",
                          "placeOrder",
                          "strategyExecute(",

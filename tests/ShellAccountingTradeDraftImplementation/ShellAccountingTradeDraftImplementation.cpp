@@ -141,7 +141,7 @@ std::vector<std::string> shellDraftTriggerTokens()
 {
     return {
         "ShellAccountingTradeDraftRepository",
-        "createTradeDraft",
+        "confirmTradeDraft",
         "submitDraft",
     };
 }

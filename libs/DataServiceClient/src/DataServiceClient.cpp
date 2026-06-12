@@ -40,6 +40,10 @@ constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
     "accounting.excel_vba_import.readonly_preview";
 constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
     "accounting.excel_vba_import.persist_manual_entry";
+constexpr const char* kActionAccountingTradeDraftCreateFromRecommendation =
+    "accounting.tradedraft.create_from_recommendation";
+constexpr const char* kActionAccountingTradeDraftReadOnlySummary =
+    "accounting.tradedraft.readonly_summary";
 constexpr const char* kActionPositionList = "position.list";
 constexpr const char* kActionCashSummary = "cash.summary";
 constexpr const char* kActionPortfolioPnlSummary = "portfolio.pnl.summary";
@@ -115,6 +119,17 @@ bool hasRequiredPersistRequestFields(const ExcelVbaImportPersistManualEntryReque
         && !request.source.empty() && !request.acceptedAt.empty()
         && !request.importBatchLabel.empty()
         && isLikelyJsonObject(request.sanitizedImportPayloadJson);
+}
+
+bool hasRequiredTradeDraftRecommendationFields(const TradeDraftCreateFromRecommendationRequest& request)
+{
+    return isLikelyJsonObject(request.recommendationPayloadJson)
+        && !request.idempotencyKey.empty()
+        && !request.recommendationDigest.empty()
+        && !request.accountId.empty()
+        && !request.portfolioId.empty()
+        && !request.strategyId.empty()
+        && !request.instrumentId.empty();
 }
 
 }  // namespace
@@ -320,6 +335,56 @@ DataServiceClient::strategyRecommendationReadOnlySummary(
             response.error().message);
     }
     return parseStrategyRecommendationReadOnlySummaryPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<TradeDraftCreateFromRecommendationResult>
+DataServiceClient::accountingTradeDraftCreateFromRecommendation(
+    const TradeDraftCreateFromRecommendationRequest& request,
+    int timeoutMs)
+{
+    if (!hasRequiredTradeDraftRecommendationFields(request)) {
+        return DataServiceClientResult<TradeDraftCreateFromRecommendationResult>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "TradeDraft create-from-recommendation request is missing required fields");
+    }
+
+    auto response = sendAction(
+        kActionAccountingTradeDraftCreateFromRecommendation,
+        tradeDraftCreateFromRecommendationPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<TradeDraftCreateFromRecommendationResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseTradeDraftCreateFromRecommendationPayloadJson(
+        response.value().payloadJson,
+        response.value().success);
+}
+
+DataServiceClientResult<TradeDraftReadOnlySummaryResult>
+DataServiceClient::accountingTradeDraftReadOnlySummary(
+    const TradeDraftReadOnlySummaryRequest& request,
+    int timeoutMs)
+{
+    if (request.draftId <= 0 && request.idempotencyKey.empty()) {
+        return DataServiceClientResult<TradeDraftReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+            "TradeDraft read-only summary requires draftId or idempotencyKey");
+    }
+
+    auto response = sendAction(
+        kActionAccountingTradeDraftReadOnlySummary,
+        tradeDraftReadOnlySummaryPayloadJson(request),
+        timeoutMs);
+    if (!response) {
+        return DataServiceClientResult<TradeDraftReadOnlySummaryResult>::failure(
+            response.error().errorCode,
+            response.error().message);
+    }
+    return parseTradeDraftReadOnlySummaryPayloadJson(
         response.value().payloadJson,
         response.value().success);
 }

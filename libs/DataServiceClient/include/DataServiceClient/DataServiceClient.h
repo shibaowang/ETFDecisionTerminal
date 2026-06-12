@@ -61,6 +61,14 @@ public:
     strategyRecommendationReadOnlySummary(
         const StrategyRecommendationReadOnlySummaryRequest& request,
         int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<TradeDraftCreateFromRecommendationResult>
+    accountingTradeDraftCreateFromRecommendation(
+        const TradeDraftCreateFromRecommendationRequest& request,
+        int timeoutMs = 2000);
+    [[nodiscard]] DataServiceClientResult<TradeDraftReadOnlySummaryResult>
+    accountingTradeDraftReadOnlySummary(
+        const TradeDraftReadOnlySummaryRequest& request,
+        int timeoutMs = 2000);
     [[nodiscard]] DataServiceClientResult<ExcelVbaImportReadOnlyPreviewResult>
     accountingExcelVbaImportReadOnlyPreview(
         const std::string& payloadJson = "{}",

@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     for (const auto& forbiddenCall : {
              "appendAuditDemo",
              "data.audit.append",
-             "tradeDraft",
+             "confirmTradeDraft",
              "snapshotWrite",
              "strategyExecute",
              "brokerOrder",

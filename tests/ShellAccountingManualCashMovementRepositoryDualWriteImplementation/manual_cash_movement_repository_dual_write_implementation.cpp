@@ -413,8 +413,19 @@ void testDataServiceActionsUnmodified(const Harness& h)
         && patch.find("handleAccountingExcelVbaImportPersistManualEntry") != std::string::npos
         && patch.find("accounting.excel_vba_import.persist_manual_entry") != std::string::npos
         && patch.find("manual_cash_movement.create") == std::string::npos;
+    const bool epic278TradeDraftRecommendationAction =
+        diff == "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h\n"
+                "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp\n"
+        && patch.find("kActionAccountingTradeDraftCreateFromRecommendation") != std::string::npos
+        && patch.find("handleAccountingTradeDraftCreateFromRecommendation") != std::string::npos
+        && patch.find("kActionAccountingTradeDraftReadOnlySummary") != std::string::npos
+        && patch.find("handleAccountingTradeDraftReadOnlySummary") != std::string::npos
+        && patch.find("accounting.tradedraft.create_from_recommendation") != std::string::npos
+        && patch.find("accounting.tradedraft.readonly_summary") != std::string::npos
+        && patch.find("manual_cash_movement.create") == std::string::npos;
     require(
-        diff.empty() || task258ReadOnlyPreviewAction || task265PersistManualEntryAction,
+        diff.empty() || task258ReadOnlyPreviewAction || task265PersistManualEntryAction
+            || epic278TradeDraftRecommendationAction,
         "DataServiceActions header and registrar must not change except authorized Excel/VBA import actions");
     const auto actions = readFile(h.root / "libs" / "DataServiceApi" / "src" / "DataServiceActions.cpp");
     requireContains(actions, "ShellAccountingManualCashMovementRepository repository(connection)",

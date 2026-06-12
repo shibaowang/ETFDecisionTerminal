@@ -139,6 +139,22 @@ strategyRecommendationMappingFailure(const std::string& message)
         message);
 }
 
+DataServiceClientResult<TradeDraftCreateFromRecommendationResult>
+tradeDraftCreateMappingFailure(const std::string& message)
+{
+    return DataServiceClientResult<TradeDraftCreateFromRecommendationResult>::failure(
+        etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+        message);
+}
+
+DataServiceClientResult<TradeDraftReadOnlySummaryResult>
+tradeDraftSummaryMappingFailure(const std::string& message)
+{
+    return DataServiceClientResult<TradeDraftReadOnlySummaryResult>::failure(
+        etfdt::protocol::ErrorCode::E1002_MISSING_REQUIRED_FIELD,
+        message);
+}
+
 }  // namespace
 
 DataServiceClientResult<etfdt::protocol::ProtocolResponse> parseProtocolResponseJson(
@@ -758,6 +774,204 @@ parseStrategyRecommendationReadOnlySummaryPayloadJson(
         std::move(result));
 }
 
+DataServiceClientResult<TradeDraftCreateFromRecommendationResult>
+parseTradeDraftCreateFromRecommendationPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<TradeDraftCreateFromRecommendationResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid TradeDraft create-from-recommendation payload JSON");
+    }
+
+    const auto object = document.object();
+    TradeDraftCreateFromRecommendationResult result;
+    result.protocolSuccess = protocolSuccess;
+    std::string missingField;
+    int draftId = 0;
+    int auditLogId = 0;
+
+    if (!readRequiredString(object, "action", result.action, missingField)
+        || !readRequiredString(object, "task", result.task, missingField)
+        || !readRequiredString(object, "mode", result.mode, missingField)
+        || !readRequiredBool(
+            object,
+            "dataServiceWriteActionCreated",
+            result.dataServiceWriteActionCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "tradeDraftManualRecommendationFlowCreated",
+            result.tradeDraftManualRecommendationFlowCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "tradeDraftRequiresExplicitUserConfirmation",
+            result.tradeDraftRequiresExplicitUserConfirmation,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "explicitUserConfirmationRequired",
+            result.explicitUserConfirmationRequired,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "recommendationEngineCalled",
+            result.recommendationEngineCalled,
+            missingField)
+        || !readRequiredBool(object, "recommendationAccepted", result.recommendationAccepted, missingField)
+        || !readRequiredBool(object, "tradeDraftEligible", result.tradeDraftEligible, missingField)
+        || !readRequiredBool(object, "conversionNoWrite", result.conversionNoWrite, missingField)
+        || !readRequiredBool(object, "draftWritten", result.draftWritten, missingField)
+        || !readRequiredBool(object, "legWritten", result.legWritten, missingField)
+        || !readRequiredBool(object, "auditWritten", result.auditWritten, missingField)
+        || !readRequiredBool(object, "transactionCommitted", result.transactionCommitted, missingField)
+        || !readRequiredBool(object, "duplicateDraft", result.duplicateDraft, missingField)
+        || !readRequiredBool(object, "idempotencyConflict", result.idempotencyConflict, missingField)
+        || !readRequiredString(object, "status", result.status, missingField)
+        || !readRequiredInt(object, "draftId", draftId, missingField)
+        || !readRequiredInt(object, "auditLogId", auditLogId, missingField)
+        || !readRequiredString(object, "side", result.side, missingField)
+        || !readRequiredString(object, "instrumentCode", result.instrumentCode, missingField)
+        || !readRequiredString(object, "quantityText", result.quantityText, missingField)
+        || !readRequiredString(object, "amountText", result.amountText, missingField)
+        || !readRequiredString(object, "netCashImpactText", result.netCashImpactText, missingField)
+        || !readRequiredBool(object, "tradeDraftIsNotOrder", result.tradeDraftIsNotOrder, missingField)
+        || !readRequiredBool(
+            object,
+            "multiChannelOtcLegsCreated",
+            result.multiChannelOtcLegsCreated,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "tradeLogRowsWrittenByTradeDraft",
+            result.tradeLogRowsWrittenByTradeDraft,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "cashAdjustmentRowsWrittenByTradeDraft",
+            result.cashAdjustmentRowsWrittenByTradeDraft,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "positionChangedByTradeDraft",
+            result.positionChangedByTradeDraft,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "cashChangedByTradeDraft",
+            result.cashChangedByTradeDraft,
+            missingField)
+        || !readRequiredBool(object, "productionWrite", result.productionWrite, missingField)
+        || !readRequiredBool(
+            object,
+            "sqliteProductionWrite",
+            result.sqliteProductionWrite,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "brokerOrderSubmitted",
+            result.brokerOrderSubmitted,
+            missingField)
+        || !readRequiredBool(object, "networkAccess", result.networkAccess, missingField)
+        || !readRequiredBool(object, "credentialAccess", result.credentialAccess, missingField)
+        || !readRequiredBool(object, "endpointAccess", result.endpointAccess, missingField)
+        || !readRequiredBool(object, "automaticTrading", result.automaticTrading, missingField)) {
+        return tradeDraftCreateMappingFailure(
+            "TradeDraft create-from-recommendation payload missing field: " + missingField);
+    }
+
+    result.draftId = draftId;
+    result.auditLogId = auditLogId;
+    if (const auto value = stringField(object, "draftUid")) {
+        result.draftUid = *value;
+    }
+    if (const auto value = stringField(object, "draftSignature")) {
+        result.draftSignature = *value;
+    }
+
+    const auto issueCodesValue = object.value("issueCodes");
+    if (!issueCodesValue.isArray()) {
+        return tradeDraftCreateMappingFailure("TradeDraft create payload missing issueCodes");
+    }
+    for (const auto& value : issueCodesValue.toArray()) {
+        if (!value.isString()) {
+            return tradeDraftCreateMappingFailure("TradeDraft create issue code must be string");
+        }
+        result.issueCodes.push_back(value.toString().toStdString());
+    }
+
+    return DataServiceClientResult<TradeDraftCreateFromRecommendationResult>::success(std::move(result));
+}
+
+DataServiceClientResult<TradeDraftReadOnlySummaryResult>
+parseTradeDraftReadOnlySummaryPayloadJson(
+    const std::string& json,
+    bool protocolSuccess)
+{
+    QJsonParseError parseError;
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(json), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        return DataServiceClientResult<TradeDraftReadOnlySummaryResult>::failure(
+            etfdt::protocol::ErrorCode::E1001_INVALID_JSON,
+            "Invalid TradeDraft read-only summary payload JSON");
+    }
+
+    const auto object = document.object();
+    TradeDraftReadOnlySummaryResult result;
+    result.protocolSuccess = protocolSuccess;
+    std::string missingField;
+    int draftId = 0;
+
+    if (!readRequiredString(object, "action", result.action, missingField)
+        || !readRequiredString(object, "task", result.task, missingField)
+        || !readRequiredString(object, "mode", result.mode, missingField)
+        || !readRequiredBool(object, "readOnly", result.readOnly, missingField)
+        || !readRequiredBool(object, "found", result.found, missingField)
+        || !readRequiredInt(object, "draftId", draftId, missingField)
+        || !readRequiredString(object, "draftUid", result.draftUid, missingField)
+        || !readRequiredString(object, "draftSignature", result.draftSignature, missingField)
+        || !readRequiredString(object, "status", result.status, missingField)
+        || !readRequiredString(object, "side", result.side, missingField)
+        || !readRequiredString(object, "accountId", result.accountId, missingField)
+        || !readRequiredString(object, "portfolioId", result.portfolioId, missingField)
+        || !readRequiredString(object, "instrumentCode", result.instrumentCode, missingField)
+        || !readRequiredString(object, "strategyCode", result.strategyCode, missingField)
+        || !readRequiredString(object, "quantityText", result.quantityText, missingField)
+        || !readRequiredString(object, "amountText", result.amountText, missingField)
+        || !readRequiredString(object, "netCashImpactText", result.netCashImpactText, missingField)
+        || !readRequiredString(object, "idempotencyKey", result.idempotencyKey, missingField)
+        || !readRequiredBool(object, "productionWrite", result.productionWrite, missingField)
+        || !readRequiredBool(
+            object,
+            "tradeLogRowsWrittenByTradeDraft",
+            result.tradeLogRowsWrittenByTradeDraft,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "cashAdjustmentRowsWrittenByTradeDraft",
+            result.cashAdjustmentRowsWrittenByTradeDraft,
+            missingField)
+        || !readRequiredBool(
+            object,
+            "brokerOrderSubmitted",
+            result.brokerOrderSubmitted,
+            missingField)
+        || !readRequiredBool(object, "networkAccess", result.networkAccess, missingField)
+        || !readRequiredBool(object, "credentialAccess", result.credentialAccess, missingField)
+        || !readRequiredBool(object, "endpointAccess", result.endpointAccess, missingField)
+        || !readRequiredBool(object, "automaticTrading", result.automaticTrading, missingField)) {
+        return tradeDraftSummaryMappingFailure(
+            "TradeDraft read-only summary payload missing field: " + missingField);
+    }
+
+    result.draftId = draftId;
+    return DataServiceClientResult<TradeDraftReadOnlySummaryResult>::success(std::move(result));
+}
+
 std::string auditAppendPayloadJson(const AuditAppendRequest& request)
 {
     std::ostringstream stream;
@@ -807,6 +1021,40 @@ std::string strategyRecommendationReadOnlySummaryPayloadJson(
     const StrategyRecommendationReadOnlySummaryRequest& request)
 {
     return request.recommendationPayloadJson.empty() ? "{}" : request.recommendationPayloadJson;
+}
+
+std::string tradeDraftCreateFromRecommendationPayloadJson(
+    const TradeDraftCreateFromRecommendationRequest& request)
+{
+    std::ostringstream stream;
+    stream << "{"
+           << "\"recommendationPayloadJson\":" << jsonString(request.recommendationPayloadJson) << ','
+           << "\"idempotencyKey\":" << jsonString(request.idempotencyKey) << ','
+           << "\"recommendationDigest\":" << jsonString(request.recommendationDigest) << ','
+           << "\"accountId\":" << jsonString(request.accountId) << ','
+           << "\"portfolioId\":" << jsonString(request.portfolioId) << ','
+           << "\"strategyId\":" << jsonString(request.strategyId) << ','
+           << "\"instrumentId\":" << jsonString(request.instrumentId) << ','
+           << "\"strategyCode\":" << jsonString(request.strategyCode) << ','
+           << "\"instrumentCode\":" << jsonString(request.instrumentCode) << ','
+           << "\"instrumentType\":" << jsonString(request.instrumentType) << ','
+           << "\"tradeSource\":" << jsonString(request.tradeSource) << ','
+           << "\"expiresAtUtc\":" << jsonString(request.expiresAtUtc) << ','
+           << "\"userNote\":" << jsonString(request.userNote) << ','
+           << "\"userConfirmed\":" << (request.userConfirmed ? "true" : "false")
+           << "}";
+    return stream.str();
+}
+
+std::string tradeDraftReadOnlySummaryPayloadJson(
+    const TradeDraftReadOnlySummaryRequest& request)
+{
+    std::ostringstream stream;
+    stream << "{"
+           << "\"idempotencyKey\":" << jsonString(request.idempotencyKey) << ','
+           << "\"draftId\":" << request.draftId
+           << "}";
+    return stream.str();
 }
 
 }  // namespace etfdt::data_service_client

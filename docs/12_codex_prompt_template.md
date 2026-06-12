@@ -2,6 +2,24 @@
 
 ## TASK-018 diagnostic consumer guardrails
 
+## EPIC-284 local trial visual evidence boundary
+
+- Visual evidence work may add
+  `docs/398_local_trial_visual_acceptance_pack.md`, the repo-local
+  `scripts/local_trial/Invoke-ETFDTLocalTrialVisualEvidence.ps1` helper, and
+  static acceptance coverage in `local_trial_release_candidate_full_delivery`
+  and `dashboard_mvp_full_delivery`.
+- The helper may create `.demo/local_trial_rc`, initialize the explicit demo
+  DB, start the repo-local DataService and Shell, attempt local desktop
+  screenshots, write logs/evidence under `.demo/local_trial_rc/evidence/`, and
+  call the cleanup script.
+- If screenshot capture is unavailable, record `screenshotAvailable=false` and
+  a fallback reason. Do not fabricate screenshots or claim human UI acceptance.
+- Do not add business features, production DB access, migrations, external
+  downloads, administrator/system setup, live provider access by default,
+  broker, credentials, private endpoints, real order placement, or automatic
+  trading.
+
 ## EPIC-281 Dashboard MVP boundary
 
 - Dashboard work may update the ShellAccounting read-only QML page, add

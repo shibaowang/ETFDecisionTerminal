@@ -110,7 +110,7 @@ public:
                 if (!parseFactSummary(result.summary)) {
                     return false;
                 }
-            } else if (*key == "importPayload") {
+            } else if (*key == "importPayload" || *key == "acceptedPreviewPayload") {
                 if (!parseImportPayloadObject(result.payload)) {
                     return false;
                 }
@@ -372,9 +372,13 @@ private:
             if (!key.has_value() || !consume(':')) {
                 return false;
             }
-            if (*key == "sheetName") {
-                if (!parseStringInto(sheet.sheetName)) {
+            if (*key == "sheetName" || *key == "name") {
+                auto value = parseString();
+                if (!value.has_value()) {
                     return false;
+                }
+                if (sheet.sheetName.empty() || *key == "sheetName") {
+                    sheet.sheetName = std::move(*value);
                 }
             } else if (*key == "headers") {
                 if (!parseStringArray(sheet.headers)) {
@@ -423,6 +427,70 @@ private:
         }
     }
 
+    [[nodiscard]] std::optional<std::string> parseNumberLiteral()
+    {
+        skipWhitespace();
+        const auto start = position_;
+        if (position_ < text_.size() && text_[position_] == '-') {
+            ++position_;
+        }
+        bool digitSeen = false;
+        while (position_ < text_.size()
+               && std::isdigit(static_cast<unsigned char>(text_[position_])) != 0) {
+            digitSeen = true;
+            ++position_;
+        }
+        if (position_ < text_.size() && text_[position_] == '.') {
+            ++position_;
+            while (position_ < text_.size()
+                   && std::isdigit(static_cast<unsigned char>(text_[position_])) != 0) {
+                digitSeen = true;
+                ++position_;
+            }
+        }
+        if (position_ < text_.size() && (text_[position_] == 'e' || text_[position_] == 'E')) {
+            ++position_;
+            if (position_ < text_.size() && (text_[position_] == '-' || text_[position_] == '+')) {
+                ++position_;
+            }
+            bool exponentDigitSeen = false;
+            while (position_ < text_.size()
+                   && std::isdigit(static_cast<unsigned char>(text_[position_])) != 0) {
+                exponentDigitSeen = true;
+                ++position_;
+            }
+            digitSeen = digitSeen && exponentDigitSeen;
+        }
+        if (!digitSeen || start == position_) {
+            return std::nullopt;
+        }
+        return std::string(text_.substr(start, position_ - start));
+    }
+
+    [[nodiscard]] std::optional<std::string> parseScalarCell()
+    {
+        skipWhitespace();
+        if (position_ >= text_.size()) {
+            return std::nullopt;
+        }
+        if (text_[position_] == '"') {
+            return parseString();
+        }
+        if (text_.substr(position_, 4U) == "true") {
+            position_ += 4U;
+            return std::string("true");
+        }
+        if (text_.substr(position_, 5U) == "false") {
+            position_ += 5U;
+            return std::string("false");
+        }
+        if (text_.substr(position_, 4U) == "null") {
+            position_ += 4U;
+            return std::string();
+        }
+        return parseNumberLiteral();
+    }
+
     [[nodiscard]] bool parseRowsArray(std::vector<std::vector<std::string>>& rows)
     {
         if (!consume('[')) {
@@ -434,10 +502,35 @@ private:
                 return true;
             }
             std::vector<std::string> row;
-            if (!parseStringArray(row)) {
+            if (!parseCellArray(row)) {
                 return false;
             }
             rows.push_back(std::move(row));
+            skipWhitespace();
+            if (consume(']')) {
+                return true;
+            }
+            if (!consume(',')) {
+                return false;
+            }
+        }
+    }
+
+    [[nodiscard]] bool parseCellArray(std::vector<std::string>& values)
+    {
+        if (!consume('[')) {
+            return false;
+        }
+        while (true) {
+            skipWhitespace();
+            if (consume(']')) {
+                return true;
+            }
+            auto value = parseScalarCell();
+            if (!value.has_value()) {
+                return false;
+            }
+            values.push_back(std::move(*value));
             skipWhitespace();
             if (consume(']')) {
                 return true;

@@ -500,6 +500,21 @@ DbFixture makeDb(const Harness& h)
                  etfdt::data_access::SqlStatementParameter::textValue("2026-06-11T00:00:00Z")})
             .hasValue(),
         "insert account");
+    require(
+        fixture.connection
+            ->executeStatement(
+                "INSERT INTO account(uid,name,account_type,base_currency,is_active,initial_cash_cents,memo,created_at_utc) "
+                "VALUES(?,?,?,?,?,?,?,?);",
+                {etfdt::data_access::SqlStatementParameter::textValue("DEMO_ACCOUNT"),
+                 etfdt::data_access::SqlStatementParameter::textValue("Demo Account"),
+                 etfdt::data_access::SqlStatementParameter::textValue("SIMULATED"),
+                 etfdt::data_access::SqlStatementParameter::textValue("CNY"),
+                 etfdt::data_access::SqlStatementParameter::int64ValueOf(0),
+                 etfdt::data_access::SqlStatementParameter::int64ValueOf(0),
+                 etfdt::data_access::SqlStatementParameter::textValue("workbook-level temp account"),
+                 etfdt::data_access::SqlStatementParameter::textValue("2026-06-11T00:00:00Z")})
+            .hasValue(),
+        "insert workbook-level demo account");
 
     require(
         fixture.connection
@@ -514,10 +529,25 @@ DbFixture makeDb(const Harness& h)
                  etfdt::data_access::SqlStatementParameter::textValue("2026-06-11T00:00:00Z")})
             .hasValue(),
         "insert portfolio");
+    require(
+        fixture.connection
+            ->executeStatement(
+                "INSERT INTO portfolio(uid,name,description,risk_level,is_active,created_at_utc) "
+                "VALUES(?,?,?,?,?,?);",
+                {etfdt::data_access::SqlStatementParameter::textValue("DEMO_PORTFOLIO"),
+                 etfdt::data_access::SqlStatementParameter::textValue("Demo Portfolio"),
+                 etfdt::data_access::SqlStatementParameter::textValue("workbook-level temp portfolio"),
+                 etfdt::data_access::SqlStatementParameter::textValue("DEFAULT"),
+                 etfdt::data_access::SqlStatementParameter::int64ValueOf(0),
+                 etfdt::data_access::SqlStatementParameter::textValue("2026-06-11T00:00:00Z")})
+            .hasValue(),
+        "insert workbook-level demo portfolio");
 
     for (const auto& instrument : {
              std::pair<const char*, const char*>{"epic-275-etf-a", "EPIC275_ETF_A"},
              std::pair<const char*, const char*>{"epic-275-etf-b", "EPIC275_ETF_B"},
+             std::pair<const char*, const char*>{"epic-289-sz159941", "sz159941"},
+             std::pair<const char*, const char*>{"epic-289-17091", "17091"},
          }) {
         require(
             fixture.connection
@@ -547,6 +577,42 @@ int countRows(etfdt::data_access::SQLiteConnection& connection, const std::strin
     return static_cast<int>(count.value());
 }
 
+std::string joinedQueryText(
+    etfdt::data_access::SQLiteConnection& connection,
+    const std::string& sql)
+{
+    auto rows = connection.queryRows(sql);
+    require(rows.hasValue(), "text query succeeds");
+    std::string combined;
+    for (const auto& row : rows.value()) {
+        for (const auto& value : row) {
+            combined += value.text;
+            combined += '\n';
+        }
+    }
+    return combined;
+}
+
+void assertSensitiveSentinelsNotPersisted(etfdt::data_access::SQLiteConnection& connection)
+{
+    std::string combined;
+    combined += joinedQueryText(
+        connection,
+        "SELECT COALESCE(memo,''), COALESCE(source_memo_sanitized,''), COALESCE(actual_code,'') "
+        "FROM trade_log;");
+    combined += joinedQueryText(
+        connection,
+        "SELECT COALESCE(reason,''), COALESCE(external_reference,''), "
+        "COALESCE(source_memo_sanitized,'') FROM cash_adjustment;");
+    combined += joinedQueryText(
+        connection,
+        "SELECT COALESCE(new_value_json,''), COALESCE(reason,'') FROM audit_log;");
+
+    requireNotContainsLower(combined, "should_not_appear", "persisted import text");
+    requireNotContainsLower(combined, "pushplus token", "persisted import text");
+    requireNotContainsLower(combined, "api_key", "persisted import text");
+}
+
 bool refreshSucceeded(const QString& status, const QString& issue)
 {
     return status == QStringLiteral("OK") || status == QStringLiteral("WARNING")
@@ -558,9 +624,20 @@ bool refreshSucceeded(const QString& status, const QString& issue)
 std::string conflictPayloadFor(const std::string& payload)
 {
     std::string conflict = payload;
-    const auto pos = conflict.find("SANITIZED_");
-    require(pos != std::string::npos, "conflict payload sentinel found");
-    conflict.insert(pos + std::string("SANITIZED_").size(), "CONFLICT_");
+    for (const std::string marker : {
+             "sanitized off-market substitute",
+             "SANITIZED_TASK",
+             "SANITIZED_BUY",
+             "SANITIZED_SAMPLE",
+             "SANITIZED_",
+         }) {
+        const auto pos = conflict.find(marker);
+        if (pos != std::string::npos) {
+            conflict.insert(pos + marker.size(), "_CONFLICT");
+            return conflict;
+        }
+    }
+    require(false, "conflict payload sentinel found");
     return conflict;
 }
 
@@ -631,6 +708,12 @@ void runLocalServiceE2e(
     require(presenter.excelVbaImportPreviewCashFactCount() == expectedCashFacts, "cash facts mapped");
     require(presenter.excelVbaImportPreviewMarketPriceFactCount() == 0, "market facts zero");
     require(presenter.excelVbaImportPreviewFxRateFactCount() == 0, "fx facts zero");
+    if (std::string(fileName) == "EPIC289_FIX5_workbook_level_trade_log.json") {
+        require(
+            presenter.lastExcelVbaImportPreviewDiagnosticCodes().contains(
+                QStringLiteral("SENSITIVE_HEADER_IGNORED")),
+            "sensitive header warning is visible and non-blocking");
+    }
 
     const auto originalDigest = presenter.lastExcelVbaImportPreviewDigest();
     const auto originalIdempotencyKey =
@@ -649,6 +732,7 @@ void runLocalServiceE2e(
         "trade_log rows exact");
     require(countRows(*fixture.connection, "cash_adjustment") == expectedCashFacts, "cash rows exact");
     require(countRows(*fixture.connection, "audit_log") == 1, "audit row exact");
+    assertSensitiveSentinelsNotPersisted(*fixture.connection);
     require(
         refreshSucceeded(presenter.lastPostWriteRefreshStatus(), presenter.lastPostWriteRefreshIssue()),
         "post-persist readback refresh succeeds or maps persisted facts safely");
@@ -879,6 +963,12 @@ int main(int argc, char** argv)
             3,
             3,
             false);
+        runLocalServiceE2e(
+            harness,
+            "EPIC289_FIX5_workbook_level_trade_log.json",
+            3,
+            1,
+            true);
 
         std::cout << QJsonDocument(evidenceJson()).toJson(QJsonDocument::Compact).toStdString()
                   << '\n';

@@ -1,5 +1,32 @@
 # 跨境 ETF 智能投资决策终端
 
+## EPIC-289 Real Daily Use Data Dashboard
+
+EPIC-289 adds the real daily-use dashboard path for local users:
+
+EPIC-289-FIX completes the P0 follow-up after commit `ae1548e5`: the production
+live provider is implemented, startup auto refresh can fetch bounded public ETF
+and index market data, and daily-use holdings/cash/market value/total
+assets/floating PnL are concrete values when real rows and quotes are available.
+
+- scope: `docs/401_real_daily_use_data_dashboard.md` through
+  `docs/405_real_daily_use_acceptance_checklist.md`
+- default daily-use DB: `.local/daily_use/etfdt_daily_use.sqlite`
+- DataService action: `accounting.real_daily_use.snapshot`
+- validation: `real_daily_use_data_dashboard`,
+  `global_chinese_ui_readability_trial_feedback_fix`,
+  `dashboard_mvp_full_delivery`, and
+  `local_trial_release_candidate_full_delivery`
+
+The ShellAccounting page now exposes a Chinese-first `真实数据日常看板` that
+loads imported VBA facts from the explicit daily-use DB, replays holdings/cash
+read-only, and performs one controlled startup public-market refresh for
+ETF/index current values and historical highs. When real data is absent it
+shows `请先导入真实 VBA 脱敏导出文件。`; when market refresh fails it shows
+`行情自动刷新失败，正在使用缓存 / 暂无行情数据。`. The daily-use path does not
+add a manual market refresh button, broker access, credentials, private
+endpoints, real order placement, or automatic trading.
+
 ## EPIC-288 Global Chinese UI Leak Fix Visual Acceptance
 
 EPIC-288 closes the remaining visual acceptance leaks after EPIC-287:

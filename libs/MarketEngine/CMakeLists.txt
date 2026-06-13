@@ -1,9 +1,10 @@
-find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core Network REQUIRED)
 
 add_library(ETFMarketEngine STATIC
     src/MarketEngine.cpp
     src/DisabledMarketDataProvider.cpp
     src/FixtureMarketDataProvider.cpp
+    src/LivePublicMarketDataProvider.cpp
     src/MarketDataRefreshEngine.cpp
     src/MarketDataSafetyPolicy.cpp
 )
@@ -19,6 +20,7 @@ target_link_libraries(ETFMarketEngine
     PUBLIC
         ETFDecisionTerminal::CoreDomain
         Qt6::Core
+        Qt6::Network
 )
 
 target_compile_features(ETFMarketEngine PUBLIC cxx_std_17)

@@ -162,6 +162,16 @@ ShellAccountingServiceAdapter::fetchMarketDataHistoricalHighReadOnlySummary(
         "SHELL_ACCOUNTING_MARKET_DATA_HISTORICAL_HIGH_ADAPTER_NOT_CONFIGURED");
 }
 
+ShellAccountingServiceResult
+ShellAccountingServiceAdapter::fetchRealDailyUseSnapshot(
+    const ShellAccountingServiceRequest& request)
+{
+    return makeUnavailablePreviewResult(
+        request,
+        "accounting.real_daily_use.snapshot",
+        "SHELL_ACCOUNTING_REAL_DAILY_USE_SNAPSHOT_ADAPTER_NOT_CONFIGURED");
+}
+
 ShellAccountingServiceResult ShellAccountingServiceAdapter::previewOtcMapMultiChannelDraft(
     const ShellAccountingServiceRequest& request)
 {

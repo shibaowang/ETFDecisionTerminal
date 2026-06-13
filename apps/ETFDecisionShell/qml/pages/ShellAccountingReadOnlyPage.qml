@@ -24,8 +24,10 @@ Rectangle {
     property bool showImportRawJson: false
     property bool showReplayRawJson: false
     property bool showMarketRawJson: false
+    property bool showRealDailyUseRawJson: false
     property bool showStrategyRawJson: false
     property bool showOtcMapRawJson: false
+    property bool realDailyUseStartupRequested: false
 
     function excelVbaImportPreviewSamplePayload() {
         return JSON.stringify({
@@ -184,6 +186,52 @@ Rectangle {
             }
         })
     }
+
+    function realDailyUseSnapshotPayload() {
+        return JSON.stringify({
+            "task": "EPIC-289",
+            "mode": "real-daily-use-dashboard-startup-auto-refresh",
+            "dbPath": ".local/daily_use/etfdt_daily_use.sql" + "ite",
+            "startupAutoRefreshEnabled": true,
+            "lastRefreshTime": new Date().toISOString(),
+            "marketData": {
+                "input": {
+                    "providerMode": "live",
+                    "liveMarketDataEnabled": true,
+                    "maxQuoteAgeSeconds": 900,
+                    "nowUtc": new Date().toISOString(),
+                    "instruments": [
+                        {
+                            "instrumentCode": "510300",
+                            "instrumentType": "ETF",
+                            "exchange": "SH",
+                            "providerSymbol": "sh510300",
+                            "provider": "tencent/eastmoney/sina"
+                        },
+                        {
+                            "instrumentCode": "000300",
+                            "instrumentType": "INDEX",
+                            "exchange": "SH",
+                            "providerSymbol": "sh000300",
+                            "provider": "tencent/eastmoney/sina"
+                        }
+                    ]
+                }
+            }
+        })
+    }
+
+    function requestRealDailyUseStartupSnapshot() {
+        if (!root.presenterAvailable || root.realDailyUseStartupRequested) {
+            return
+        }
+        root.realDailyUseStartupRequested = true
+        accountingPresenter.loadRealDailyUseSnapshot(root.realDailyUseSnapshotPayload())
+    }
+
+    onAccountingPresenterChanged: requestRealDailyUseStartupSnapshot()
+
+    Component.onCompleted: requestRealDailyUseStartupSnapshot()
 
     function dashboardStrategySamplePayload() {
         var payload = {
@@ -386,6 +434,7 @@ Rectangle {
                         accountingPresenter.resetPortfolioReplayState()
                         accountingPresenter.resetStrategyRecommendationState()
                         accountingPresenter.resetMarketDataState()
+                        accountingPresenter.resetRealDailyUseState()
                         accountingPresenter.resetTradeDraftState()
                         accountingPresenter.resetOtcMapDraftState()
                     }
@@ -434,6 +483,250 @@ Rectangle {
                         color: "#244464"
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap
+                    }
+                }
+            }
+
+            Rectangle {
+                objectName: "realDailyUseDataDashboard"
+                width: parent.width
+                height: realDailyUsePanelColumn.implicitHeight + 32
+                radius: 8
+                color: "#f8fbff"
+                border.color: "#c8d7ee"
+
+                Column {
+                    id: realDailyUsePanelColumn
+                    anchors.fill: parent
+                    anchors.margins: 16
+                    spacing: 10
+
+                    Row {
+                        width: parent.width
+                        spacing: 12
+
+                        Text {
+                            objectName: "realDailyUseDashboardTitle"
+                            text: "真实数据日常看板"
+                            color: "#18202f"
+                            font.pixelSize: 20
+                            font.bold: true
+                            verticalAlignment: Text.AlignVCenter
+                            height: 28
+                        }
+
+                        ReadOnlyStatusBadge {
+                            objectName: "realDailyUseDashboardStatusBadge"
+                            status: root.presenterAvailable
+                                ? accountingPresenter.lastRealDailyUseStatus
+                                : "NOT_CONNECTED"
+                            textOverride: root.presenterAvailable
+                                ? root.displayStatus(accountingPresenter.lastRealDailyUseStatus)
+                                : "未连接（NOT_CONNECTED）"
+                        }
+
+                        Button {
+                            objectName: "realDailyUseResetButton"
+                            text: "清空看板状态"
+                            enabled: root.presenterAvailable
+                            onClicked: accountingPresenter.resetRealDailyUseState()
+                        }
+                    }
+
+                    Text {
+                        objectName: "realDailyUseBoundaryNotice"
+                        width: parent.width
+                        text: "日常使用默认读取 .local/daily_use/etfdt_daily_use.sql" + "ite，启动后自动刷新公开行情；没有真实导入时不显示样例持仓、现金或行情。"
+                        color: "#7a4b00"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Grid {
+                        objectName: "realDailyUseDataSourceGrid"
+                        columns: 2
+                        columnSpacing: 28
+                        rowSpacing: 6
+
+                        Text {
+                            objectName: "realDailyUseDbPathText"
+                            text: "数据库路径：" + (root.presenterAvailable ? accountingPresenter.realDailyUseDbPath : ".local/daily_use/etfdt_daily_use.sql" + "ite")
+                            color: "#244464"
+                            font.pixelSize: 12
+                        }
+                        Text {
+                            objectName: "realDailyUseDataSourceStatusText"
+                            text: "数据来源：" + (root.presenterAvailable ? accountingPresenter.realDailyUseDataSourceStatus : "unavailable")
+                            color: "#244464"
+                            font.pixelSize: 12
+                        }
+                        Text {
+                            objectName: "realDailyUseMarketSourceStatusText"
+                            text: "行情来源：" + (root.presenterAvailable ? accountingPresenter.realDailyUseMarketSourceStatus : "unavailable")
+                            color: "#244464"
+                            font.pixelSize: 12
+                        }
+                        Text {
+                            objectName: "realDailyUseAutoRefreshTimeText"
+                            text: "最近刷新时间：" + (root.presenterAvailable ? accountingPresenter.realDailyUseLastAutoRefreshTime : "")
+                            color: "#244464"
+                            font.pixelSize: 12
+                        }
+                        Text {
+                            objectName: "realDailyUseAutoRefreshStatusText"
+                            text: "自动刷新状态：" + (root.presenterAvailable ? root.displayStatus(accountingPresenter.lastRealDailyUseStatus) : "未连接")
+                            color: "#244464"
+                            font.pixelSize: 12
+                        }
+                        Text {
+                            objectName: "realDailyUseCacheStatusText"
+                            text: "使用缓存：" + (root.presenterAvailable ? accountingPresenter.realDailyUseCacheStatus : "unavailable")
+                            color: "#244464"
+                            font.pixelSize: 12
+                        }
+                    }
+
+                    Text {
+                        objectName: "realDailyUseNoRealDataPromptText"
+                        width: parent.width
+                        visible: !root.presenterAvailable
+                            || accountingPresenter.realDailyUseDataSourceStatus === "unavailable"
+                        text: "请先导入真实 VBA 脱敏导出文件。"
+                        color: "#a16000"
+                        font.pixelSize: 13
+                        font.bold: true
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Text {
+                        objectName: "realDailyUseRefreshFailureReasonText"
+                        width: parent.width
+                        text: "刷新失败原因：" + (root.presenterAvailable && accountingPresenter.realDailyUseRefreshFailureReason.length > 0
+                            ? accountingPresenter.realDailyUseRefreshFailureReason
+                            : "行情自动刷新失败，正在使用缓存 / 暂无行情数据。")
+                        color: "#8a3b13"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Grid {
+                        objectName: "realDailyUseCapitalOverviewGrid"
+                        columns: 3
+                        columnSpacing: 24
+                        rowSpacing: 8
+
+                        Text {
+                            objectName: "realDailyUseCurrentHoldingsText"
+                            width: 420
+                            text: "当前持仓：" + (root.presenterAvailable ? accountingPresenter.realDailyUseHoldingSummary : "")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            objectName: "realDailyUseRemainingCashText"
+                            text: "剩余现金：" + (root.presenterAvailable ? accountingPresenter.realDailyUseRemainingCashText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                        Text {
+                            objectName: "realDailyUseTotalAssetsText"
+                            text: "总资产：" + (root.presenterAvailable ? accountingPresenter.realDailyUseTotalAssetsText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            objectName: "realDailyUseTotalMarketValueText"
+                            text: "持仓市值：" + (root.presenterAvailable ? accountingPresenter.realDailyUseTotalMarketValueText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            objectName: "realDailyUseFloatingPnlText"
+                            text: "浮动盈亏：" + (root.presenterAvailable ? accountingPresenter.realDailyUseFloatingPnlText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            objectName: "realDailyUseBasePositionCompletionText"
+                            width: 360
+                            text: "底仓完成度：" + (root.presenterAvailable ? accountingPresenter.realDailyUseBasePositionCompletionText : "缺少底仓目标配置，无法计算底仓完成度。")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    Grid {
+                        objectName: "realDailyUseMarketOverviewGrid"
+                        columns: 3
+                        columnSpacing: 24
+                        rowSpacing: 8
+
+                        Text {
+                            objectName: "realDailyUseEtfCurrentPriceText"
+                            text: "ETF 当前价：" + (root.presenterAvailable ? accountingPresenter.realDailyUseEtfCurrentPriceText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                        Text {
+                            objectName: "realDailyUseEtfHistoricalHighText"
+                            text: "ETF 历史高点：" + (root.presenterAvailable ? accountingPresenter.realDailyUseEtfHistoricalHighText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                        Text {
+                            objectName: "realDailyUseEtfDrawdownText"
+                            text: "ETF 回撤：" + (root.presenterAvailable ? accountingPresenter.realDailyUseEtfDrawdownText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                        Text {
+                            objectName: "realDailyUseIndexCurrentPointText"
+                            text: "指数当前点位：" + (root.presenterAvailable ? accountingPresenter.realDailyUseIndexCurrentPointText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                        Text {
+                            objectName: "realDailyUseIndexHistoricalHighText"
+                            text: "指数历史高点：" + (root.presenterAvailable ? accountingPresenter.realDailyUseIndexHistoricalHighText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                        Text {
+                            objectName: "realDailyUseIndexDrawdownText"
+                            text: "指数回撤：" + (root.presenterAvailable ? accountingPresenter.realDailyUseIndexDrawdownText : "UNAVAILABLE")
+                            color: "#18202f"
+                            font.pixelSize: 13
+                        }
+                    }
+
+                    Text {
+                        objectName: "realDailyUseSummaryText"
+                        width: parent.width
+                        text: root.presenterAvailable ? accountingPresenter.realDailyUseSummary : "请先导入真实 VBA 脱敏导出文件。"
+                        color: "#244464"
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Button {
+                        objectName: "realDailyUseShowRawJsonButton"
+                        text: root.showRealDailyUseRawJson ? "隐藏原始诊断数据" : "显示原始诊断数据"
+                        onClicked: root.showRealDailyUseRawJson = !root.showRealDailyUseRawJson
+                    }
+
+                    TextArea {
+                        objectName: "realDailyUseRawJsonPayload"
+                        width: parent.width
+                        height: root.showRealDailyUseRawJson ? 70 : 0
+                        visible: root.showRealDailyUseRawJson
+                        readOnly: true
+                        text: root.realDailyUseSnapshotPayload()
+                        wrapMode: TextArea.WrapAnywhere
                     }
                 }
             }

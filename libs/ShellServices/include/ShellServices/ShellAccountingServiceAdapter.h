@@ -42,6 +42,8 @@ public:
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult fetchMarketDataHistoricalHighReadOnlySummary(
         const ShellAccountingServiceRequest& request);
+    virtual ShellAccountingServiceResult fetchRealDailyUseSnapshot(
+        const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult previewOtcMapMultiChannelDraft(
         const ShellAccountingServiceRequest& request);
     virtual ShellAccountingServiceResult createOtcMapMultiChannelTradeDraft(

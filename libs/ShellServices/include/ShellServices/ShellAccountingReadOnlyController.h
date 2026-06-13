@@ -77,6 +77,8 @@ public:
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult fetchMarketDataHistoricalHighReadOnlySummary(
         const ShellAccountingServiceRequest& request);
+    [[nodiscard]] ShellAccountingServiceResult fetchRealDailyUseSnapshot(
+        const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult previewOtcMapMultiChannelDraft(
         const ShellAccountingServiceRequest& request);
     [[nodiscard]] ShellAccountingServiceResult createOtcMapMultiChannelTradeDraft(

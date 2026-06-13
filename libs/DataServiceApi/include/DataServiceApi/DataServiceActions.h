@@ -21,6 +21,8 @@ constexpr const char* kActionAccountingExcelVbaImportReadOnlyPreview =
     "accounting.excel_vba_import.readonly_preview";
 constexpr const char* kActionAccountingExcelVbaImportPersistManualEntry =
     "accounting.excel_vba_import.persist_manual_entry";
+constexpr const char* kActionAccountingRealDailyUseSnapshot =
+    "accounting.real_daily_use.snapshot";
 constexpr const char* kActionStrategyRecommendationReadOnlySummary =
     "strategy.recommendation.readonly_summary";
 constexpr const char* kActionMarketDataRefreshReadOnlySummary =
@@ -99,6 +101,10 @@ constexpr const char* kActionSniperPoolSummary = "sniper_pool.summary";
     etfdt::data_access::SQLiteConnection& connection);
 
 [[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingExcelVbaImportPersistManualEntry(
+    const etfdt::service_runtime::ActionContext& context,
+    etfdt::data_access::SQLiteConnection& connection);
+
+[[nodiscard]] etfdt::protocol::ProtocolResponse handleAccountingRealDailyUseSnapshot(
     const etfdt::service_runtime::ActionContext& context,
     etfdt::data_access::SQLiteConnection& connection);
 

@@ -253,6 +253,8 @@ MarketRefreshResult MarketDataRefreshEngine::refreshReadOnly(
 
     auto snapshot = provider.fetchReadOnly(input);
     result.providerDisabled = snapshot.providerDisabled;
+    result.liveProviderImplemented = snapshot.liveProviderImplemented;
+    result.liveProviderDisabledByDefault = snapshot.providerDisabled;
     result.liveProviderDeferredForSafety = snapshot.liveProviderDeferredForSafety;
     result.networkAccess = snapshot.networkAccess;
     result.rawUrlExposed = snapshot.rawUrlExposed;
@@ -265,6 +267,7 @@ MarketRefreshResult MarketDataRefreshEngine::refreshReadOnly(
         snapshot.historyFailureCircuitBreakerEnforced;
     result.noParallelSameHostRequests = snapshot.noParallelSameHostRequests;
     result.providerSource = snapshot.source;
+    result.stale = snapshot.stale;
 
     for (const auto& issue : snapshot.issues) {
         addIssue(result, issue.code);

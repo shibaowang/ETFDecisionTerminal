@@ -12,6 +12,20 @@
 - [10 Migration From Excel v8.2](10_migration_from_excel_v8_2.md)
 - [11 Deferred Scope](11_deferred_scope.md)
 - [12 Codex Prompt Template](12_codex_prompt_template.md)
+- EPIC-289 real daily-use data dashboard:
+  [401_real_daily_use_data_dashboard.md](401_real_daily_use_data_dashboard.md),
+  [402_real_daily_use_market_data_vba_parity.md](402_real_daily_use_market_data_vba_parity.md),
+  [403_real_daily_use_portfolio_cash_base_position.md](403_real_daily_use_portfolio_cash_base_position.md),
+  [404_real_daily_use_startup_auto_refresh_policy.md](404_real_daily_use_startup_auto_refresh_policy.md),
+  [405_real_daily_use_acceptance_checklist.md](405_real_daily_use_acceptance_checklist.md).
+  The daily-use path defaults to `.local/daily_use/etfdt_daily_use.sqlite`,
+  shows real imported VBA replay data only, starts one bounded public-market
+  refresh for ETF/index current and historical high data, keeps raw diagnostics
+  collapsed by default, and does not add manual market refresh, broker,
+  credential, endpoint, real order placement, or automatic trading behavior.
+  EPIC-289-FIX completes the live-provider follow-up and produces concrete
+  cash, market value, total assets, and floating PnL values when real rows and
+  quotes are available.
 - EPIC-288 global Chinese UI leak fix visual acceptance:
   [400_global_chinese_ui_readability_trial_feedback_fix.md](400_global_chinese_ui_readability_trial_feedback_fix.md).
   The visual closeout removes remaining right-sidebar placeholder English,

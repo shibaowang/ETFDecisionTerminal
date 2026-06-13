@@ -1,5 +1,7 @@
 #include "MarketEngine/MarketDataSafetyPolicy.h"
 
+#include "MarketEngine/LivePublicMarketDataProvider.h"
+
 #include <algorithm>
 #include <cctype>
 #include <utility>
@@ -142,20 +144,8 @@ LivePublicMarketDataProviderBoundary::LivePublicMarketDataProviderBoundary(
 MarketProviderSnapshot LivePublicMarketDataProviderBoundary::fetchReadOnly(
     const MarketRefreshInput& input)
 {
-    (void)input;
-    MarketProviderSnapshot snapshot;
-    snapshot.source = "live-public-boundary";
-    snapshot.providerDisabled = !liveMarketDataEnabled_;
-    snapshot.liveProviderDeferredForSafety = true;
-    snapshot.networkAccess = false;
-    snapshot.issues.push_back({
-        liveMarketDataEnabled_ ? "MARKET_DATA_LIVE_PROVIDER_DEFERRED"
-                               : "MARKET_DATA_LIVE_PROVIDER_DISABLED_BY_DEFAULT",
-        "provider",
-        "Live public market data provider is disabled/deferred for safety.",
-        true,
-    });
-    return snapshot;
+    LivePublicMarketDataProvider provider(liveMarketDataEnabled_);
+    return provider.fetchReadOnly(input);
 }
 
 }  // namespace etfdt::market_engine

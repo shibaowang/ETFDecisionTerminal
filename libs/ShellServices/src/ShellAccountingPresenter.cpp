@@ -808,6 +808,111 @@ QString ShellAccountingPresenter::lastMarketDataSummary() const
     return lastMarketDataSummary_;
 }
 
+bool ShellAccountingPresenter::realDailyUseBusy() const noexcept
+{
+    return realDailyUseBusy_;
+}
+
+QString ShellAccountingPresenter::lastRealDailyUseStatus() const
+{
+    return lastRealDailyUseStatus_;
+}
+
+QString ShellAccountingPresenter::realDailyUseDbPath() const
+{
+    return realDailyUseDbPath_;
+}
+
+QString ShellAccountingPresenter::realDailyUseDataSourceStatus() const
+{
+    return realDailyUseDataSourceStatus_;
+}
+
+QString ShellAccountingPresenter::realDailyUseMarketSourceStatus() const
+{
+    return realDailyUseMarketSourceStatus_;
+}
+
+QString ShellAccountingPresenter::realDailyUseLastAutoRefreshTime() const
+{
+    return realDailyUseLastAutoRefreshTime_;
+}
+
+QString ShellAccountingPresenter::realDailyUseCacheStatus() const
+{
+    return realDailyUseCacheStatus_;
+}
+
+QString ShellAccountingPresenter::realDailyUseRefreshFailureReason() const
+{
+    return realDailyUseRefreshFailureReason_;
+}
+
+QString ShellAccountingPresenter::realDailyUseSummary() const
+{
+    return realDailyUseSummary_;
+}
+
+QString ShellAccountingPresenter::realDailyUseHoldingSummary() const
+{
+    return realDailyUseHoldingSummary_;
+}
+
+QString ShellAccountingPresenter::realDailyUseRemainingCashText() const
+{
+    return realDailyUseRemainingCashText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseTotalAssetsText() const
+{
+    return realDailyUseTotalAssetsText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseTotalMarketValueText() const
+{
+    return realDailyUseTotalMarketValueText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseFloatingPnlText() const
+{
+    return realDailyUseFloatingPnlText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseBasePositionCompletionText() const
+{
+    return realDailyUseBasePositionCompletionText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseEtfCurrentPriceText() const
+{
+    return realDailyUseEtfCurrentPriceText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseEtfHistoricalHighText() const
+{
+    return realDailyUseEtfHistoricalHighText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseEtfDrawdownText() const
+{
+    return realDailyUseEtfDrawdownText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseIndexCurrentPointText() const
+{
+    return realDailyUseIndexCurrentPointText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseIndexHistoricalHighText() const
+{
+    return realDailyUseIndexHistoricalHighText_;
+}
+
+QString ShellAccountingPresenter::realDailyUseIndexDrawdownText() const
+{
+    return realDailyUseIndexDrawdownText_;
+}
+
 QString ShellAccountingPresenter::lastTradeDraftStatus() const
 {
     return lastTradeDraftStatus_;
@@ -1661,6 +1766,61 @@ bool ShellAccountingPresenter::refreshMarketDataReadOnly(const QString& payloadJ
     return result.protocolSuccess && result.marketDataAccepted;
 }
 
+void ShellAccountingPresenter::resetRealDailyUseState()
+{
+    realDailyUseBusy_ = false;
+    lastRealDailyUseStatus_ = QStringLiteral("READY");
+    realDailyUseDbPath_ = QStringLiteral(".local/daily_use/etfdt_daily_use.sqlite");
+    realDailyUseDataSourceStatus_ = QStringLiteral("unavailable");
+    realDailyUseMarketSourceStatus_ = QStringLiteral("unavailable");
+    realDailyUseLastAutoRefreshTime_.clear();
+    realDailyUseCacheStatus_ = QStringLiteral("unavailable");
+    realDailyUseRefreshFailureReason_.clear();
+    realDailyUseSummary_ = QStringLiteral("请先导入真实 VBA 脱敏导出文件。");
+    realDailyUseHoldingSummary_.clear();
+    realDailyUseRemainingCashText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseTotalAssetsText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseTotalMarketValueText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseFloatingPnlText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseBasePositionCompletionText_ =
+        QStringLiteral("缺少底仓目标配置，无法计算底仓完成度。");
+    realDailyUseEtfCurrentPriceText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseEtfHistoricalHighText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseEtfDrawdownText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseIndexCurrentPointText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseIndexHistoricalHighText_ = QStringLiteral("UNAVAILABLE");
+    realDailyUseIndexDrawdownText_ = QStringLiteral("UNAVAILABLE");
+    emit realDailyUseStateChanged();
+}
+
+bool ShellAccountingPresenter::loadRealDailyUseSnapshot(const QString& payloadJson)
+{
+    if (!controller_) {
+        markRealDailyUseInputError(
+            QStringLiteral("Shell accounting controller is not configured."));
+        markControllerNotConfigured("accounting.real_daily_use.snapshot");
+        return false;
+    }
+
+    bool valid = false;
+    auto request = makeRealDailyUseSnapshotRequest(payloadJson, valid);
+    if (!valid) {
+        return false;
+    }
+
+    realDailyUseBusy_ = true;
+    lastRealDailyUseStatus_ = QStringLiteral("REFRESHING");
+    realDailyUseRefreshFailureReason_.clear();
+    emit realDailyUseStateChanged();
+
+    const auto result = controller_->fetchRealDailyUseSnapshot(request);
+    realDailyUseBusy_ = false;
+    applyRealDailyUseSnapshotResult(result);
+    syncFromController();
+    return result.protocolSuccess && result.implemented
+        && (result.payloadStatus == "OK" || result.payloadStatus == "PARTIAL");
+}
+
 void ShellAccountingPresenter::resetTradeDraftState()
 {
     lastTradeDraftStatus_ = QStringLiteral("READY");
@@ -2405,6 +2565,96 @@ void ShellAccountingPresenter::markMarketDataInputError(const QString& message)
     emit marketDataStateChanged();
 }
 
+void ShellAccountingPresenter::markRealDailyUseInputError(const QString& message)
+{
+    realDailyUseBusy_ = false;
+    lastRealDailyUseStatus_ = QStringLiteral("INPUT_ERROR");
+    realDailyUseRefreshFailureReason_ = message;
+    realDailyUseSummary_ = message;
+    realDailyUseDataSourceStatus_ = QStringLiteral("unavailable");
+    realDailyUseMarketSourceStatus_ = QStringLiteral("unavailable");
+    emit realDailyUseStateChanged();
+}
+
+void ShellAccountingPresenter::applyRealDailyUseSnapshotResult(
+    const ShellAccountingServiceResult& result)
+{
+    const auto payload = payloadObject(result);
+    lastRealDailyUseStatus_ = stringField(payload, "status");
+    if (lastRealDailyUseStatus_.isEmpty()) {
+        lastRealDailyUseStatus_ = result.payloadStatus.empty()
+            ? QStringLiteral("UNAVAILABLE")
+            : QString::fromStdString(result.payloadStatus);
+    }
+    realDailyUseDbPath_ = stringField(payload, "dbPath");
+    if (realDailyUseDbPath_.isEmpty()) {
+        realDailyUseDbPath_ = QStringLiteral(".local/daily_use/etfdt_daily_use.sqlite");
+    }
+    realDailyUseDataSourceStatus_ = stringField(payload, "dataSourceStatus");
+    realDailyUseMarketSourceStatus_ = stringField(payload, "marketSourceStatus");
+    realDailyUseLastAutoRefreshTime_ = stringField(payload, "lastAutoRefreshTime");
+    realDailyUseCacheStatus_ = stringField(payload, "cacheStatus");
+    realDailyUseRefreshFailureReason_ = stringField(payload, "refreshFailureReason");
+    realDailyUseRemainingCashText_ = stringField(payload, "remainingCashText");
+    realDailyUseTotalAssetsText_ = stringField(payload, "totalAssetsText");
+    realDailyUseTotalMarketValueText_ = stringField(payload, "totalMarketValueText");
+    realDailyUseFloatingPnlText_ = stringField(payload, "floatingPnlText");
+    realDailyUseBasePositionCompletionText_ = stringField(payload, "basePositionCompletionText");
+    realDailyUseEtfCurrentPriceText_ = stringField(payload, "etfCurrentPriceText");
+    realDailyUseEtfHistoricalHighText_ = stringField(payload, "etfHistoricalHighText");
+    realDailyUseEtfDrawdownText_ = stringField(payload, "etfDrawdownFromHighText");
+    realDailyUseIndexCurrentPointText_ = stringField(payload, "indexCurrentPointText");
+    realDailyUseIndexHistoricalHighText_ = stringField(payload, "indexHistoricalHighText");
+    realDailyUseIndexDrawdownText_ = stringField(payload, "indexDrawdownFromHighText");
+
+    const auto holdings = payload.value(QStringLiteral("holdings")).toArray();
+    QStringList holdingSummaries;
+    for (const auto& value : holdings) {
+        if (!value.isObject()) {
+            continue;
+        }
+        const auto holding = value.toObject();
+        holdingSummaries.append(QStringLiteral("%1 数量 %2 成本 %3 市值 %4 未实现盈亏 %5")
+            .arg(
+                stringField(holding, "instrumentCode"),
+                stringField(holding, "quantityText"),
+                stringField(holding, "costAmountText"),
+                stringField(holding, "marketValueText"),
+                stringField(holding, "unrealizedPnlText")));
+    }
+    realDailyUseHoldingSummary_ = holdingSummaries.join(QStringLiteral("；"));
+    if (realDailyUseHoldingSummary_.isEmpty()) {
+        realDailyUseHoldingSummary_ = stringField(payload, "noRealDataPrompt");
+    }
+
+    realDailyUseSummary_ = QStringList {
+        QStringLiteral("DB=") + realDailyUseDbPath_,
+        QStringLiteral("数据源=") + realDailyUseDataSourceStatus_,
+        QStringLiteral("行情=") + realDailyUseMarketSourceStatus_,
+        QStringLiteral("持仓=") + realDailyUseHoldingSummary_,
+        QStringLiteral("剩余现金=") + realDailyUseRemainingCashText_,
+        QStringLiteral("总资产=") + realDailyUseTotalAssetsText_,
+        QStringLiteral("持仓市值=") + realDailyUseTotalMarketValueText_,
+        QStringLiteral("浮动盈亏=") + realDailyUseFloatingPnlText_,
+        QStringLiteral("底仓=") + realDailyUseBasePositionCompletionText_,
+        QStringLiteral("ETF当前价=") + realDailyUseEtfCurrentPriceText_,
+        QStringLiteral("ETF历史高点=") + realDailyUseEtfHistoricalHighText_,
+        QStringLiteral("指数当前点位=") + realDailyUseIndexCurrentPointText_,
+        QStringLiteral("指数历史高点=") + realDailyUseIndexHistoricalHighText_,
+        QStringLiteral("自动刷新状态=") + lastRealDailyUseStatus_,
+        QStringLiteral("最近刷新时间=") + realDailyUseLastAutoRefreshTime_,
+        QStringLiteral("使用缓存=") + realDailyUseCacheStatus_,
+        QStringLiteral("刷新失败原因=") + realDailyUseRefreshFailureReason_,
+    }.join(QStringLiteral("；"));
+    if (realDailyUseSummary_.trimmed().isEmpty()) {
+        realDailyUseSummary_ = issueTextFromResult(result);
+    }
+    if (realDailyUseSummary_.trimmed().isEmpty()) {
+        realDailyUseSummary_ = QStringLiteral("请先导入真实 VBA 脱敏导出文件。");
+    }
+    emit realDailyUseStateChanged();
+}
+
 void ShellAccountingPresenter::markTradeDraftInputError(const QString& message)
 {
     lastTradeDraftStatus_ = QStringLiteral("INPUT_ERROR");
@@ -2738,6 +2988,46 @@ ShellAccountingPresenter::makeMarketDataReadOnlySummaryRequest(
     request.marketDataPayloadJson =
         QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
     request.timeoutMs = 2000;
+    valid = true;
+    return request;
+}
+
+ShellAccountingServiceRequest
+ShellAccountingPresenter::makeRealDailyUseSnapshotRequest(
+    const QString& payloadJson,
+    bool& valid)
+{
+    valid = false;
+    QJsonParseError parseError {};
+    const auto document = QJsonDocument::fromJson(payloadJson.trimmed().toUtf8(), &parseError);
+    if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
+        markRealDailyUseInputError(
+            QStringLiteral("真实数据日常看板请求必须是脱敏 JSON object。"));
+        return {};
+    }
+
+    const auto object = document.object();
+    for (const auto& key : {
+             QStringLiteral("filePath"),
+             QStringLiteral("path"),
+             QStringLiteral("filename"),
+             QStringLiteral("credential"),
+             QStringLiteral("endpoint"),
+             QStringLiteral("cookie"),
+             QStringLiteral("token"),
+         }) {
+        if (object.contains(key)) {
+            markRealDailyUseInputError(
+                QStringLiteral("真实数据日常看板只接受脱敏 in-memory payload，不接受路径、凭证或 endpoint。"));
+            return {};
+        }
+    }
+
+    ShellAccountingServiceRequest request;
+    request.actionName = "accounting.real_daily_use.snapshot";
+    request.realDailyUsePayloadJson =
+        QJsonDocument(object).toJson(QJsonDocument::Compact).toStdString();
+    request.timeoutMs = 3000;
     valid = true;
     return request;
 }

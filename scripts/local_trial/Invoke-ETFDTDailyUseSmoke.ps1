@@ -88,6 +88,28 @@ foreach ($doc in $docs) {
     }
 }
 
+$dailyUseShellScriptPath = Join-Path $repoRoot "scripts\local_trial\Start-ETFDTDailyUseShell.ps1"
+$dailyUseShellScriptText = Get-Content -LiteralPath $dailyUseShellScriptPath -Raw
+foreach ($token in @(
+    "--daily-use",
+    "--socket-name",
+    "ETFDataServiceDailyUse",
+    "--db",
+    "--default-page",
+    "shell-accounting-daily-use",
+    ".local\daily_use"
+)) {
+    if (-not $dailyUseShellScriptText.Contains($token)) {
+        throw "Daily-use Shell script missing required startup token: $token"
+    }
+}
+$demoRcBackslashNeedle = ".demo" + [string][char]92 + "local_trial_rc"
+$demoRcSlashNeedle = ".demo" + "/" + "local_trial_rc"
+if ($dailyUseShellScriptText.Contains($demoRcBackslashNeedle) -or
+    $dailyUseShellScriptText.Contains($demoRcSlashNeedle)) {
+    throw "Daily-use Shell script must not use demo RC paths."
+}
+
 $evidence = [ordered]@{
     task = "EPIC-289"
     dailyUseSmokeReady = $true
@@ -98,6 +120,11 @@ $evidence = [ordered]@{
     shellExecutablePath = $shellExe
     dataServiceExeFound = $true
     shellExeFound = $true
+    dailyUseShellScriptArgsValidated = $true
+    dailyUseShellPassesDailyUseArg = $true
+    dailyUseShellPassesSocketName = $true
+    dailyUseShellPassesDbPath = $true
+    dailyUseShellPassesDefaultPage = $true
     noNetworkFixtureMode = [bool]$NoNetworkFixtureMode
     defaultDailyUseDbPath = ".local/daily_use/etfdt_daily_use.sqlite"
     defaultMarketCachePath = ".local/daily_use/cache/market_cache.json"

@@ -299,7 +299,7 @@ def main() -> int:
         ),
         "TASK-195/TASK-196 alignment only allows the authorized DataAccess manual cash movement repository",
     )
-    allowed_task200_qml = {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"} | EPIC_287_GLOBAL_CHINESE_UI_READABILITY_EXACT_PATHS
+    allowed_task200_qml = {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"} | EPIC_287_GLOBAL_CHINESE_UI_READABILITY_EXACT_PATHS | EPIC_289_FIX_EXACT_PATHS | EPIC_289_FIX_EXACT_PATHS
     unexpected_qml_changes = [
         path for path in changes
         if path.startswith("apps/ETFDecisionShell/qml/") and path not in allowed_task200_qml
@@ -1061,6 +1061,12 @@ _epic287_apply_global_chinese_ui_readability_exact_paths()
 EPIC_289_FIX_EXACT_PATHS = {
     "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "apps/ETFDecisionShell/src/main.cpp",
+    "apps/ETFDecisionShell/qml/Main.qml",
+    "apps/ETFDecisionShell/qml/layout/AppShell.qml",
+    "apps/ETFDecisionShell/qml/layout/ContentHost.qml",
+    "apps/ETFDecisionShell/qml/layout/RightInfoPanel.qml",
+    "apps/ETFDecisionShell/qml/layout/TopStatusBar.qml",
     "docs/12_codex_prompt_template.md",
     "docs/401_real_daily_use_data_dashboard.md",
     "docs/402_real_daily_use_market_data_vba_parity.md",

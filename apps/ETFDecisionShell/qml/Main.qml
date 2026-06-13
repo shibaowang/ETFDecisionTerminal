@@ -15,6 +15,11 @@ Window {
     readonly property var injectedDiagnosticAdapter: diagnosticAdapter
     readonly property var injectedReadOnlyDataController: readOnlyDataController
     readonly property var injectedAccountingPresenter: accountingPresenter
+    readonly property bool injectedDailyUseMode: dailyUseMode
+    readonly property string injectedDailyUseServiceName: dailyUseServiceName
+    readonly property string injectedDailyUseDatabasePath: dailyUseDatabasePath
+    readonly property string injectedDailyUseConnectionStatus: dailyUseConnectionStatus
+    readonly property string injectedDailyUseConnectionIssue: dailyUseConnectionIssue
 
     AppShell {
         objectName: "appShell"
@@ -24,5 +29,10 @@ Window {
         accountingPresenter: root.injectedAccountingPresenter
         navigationController: shellNavigationController
         statusController: shellStatusController
+        dailyUseMode: root.injectedDailyUseMode
+        dailyUseServiceName: root.injectedDailyUseServiceName
+        dailyUseDatabasePath: root.injectedDailyUseDatabasePath
+        dailyUseConnectionStatus: root.injectedDailyUseConnectionStatus
+        dailyUseConnectionIssue: root.injectedDailyUseConnectionIssue
     }
 }

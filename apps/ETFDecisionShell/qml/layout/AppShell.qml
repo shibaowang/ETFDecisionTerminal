@@ -7,6 +7,11 @@ Item {
     required property var accountingPresenter
     required property var navigationController
     required property var statusController
+    required property bool dailyUseMode
+    required property string dailyUseServiceName
+    required property string dailyUseDatabasePath
+    required property string dailyUseConnectionStatus
+    required property string dailyUseConnectionIssue
     property string currentPageKey: navigationController.currentPageKey
 
     function navigateTo(key) {
@@ -36,6 +41,9 @@ Item {
         height: 52
         currentPageTitle: root.navigationController.currentPageTitle
         pageInfo: root.statusController.pageInfo
+        dailyUseMode: root.dailyUseMode
+        dailyUseServiceName: root.dailyUseServiceName
+        dailyUseConnectionStatus: root.dailyUseConnectionStatus
     }
 
     SideNavigation {
@@ -62,6 +70,11 @@ Item {
         pageInfo: root.statusController.pageInfo
         metricsModel: root.statusController.metricsModel
         actionHintModel: root.statusController.actionHintModel
+        dailyUseMode: root.dailyUseMode
+        dailyUseServiceName: root.dailyUseServiceName
+        dailyUseDatabasePath: root.dailyUseDatabasePath
+        dailyUseConnectionStatus: root.dailyUseConnectionStatus
+        dailyUseConnectionIssue: root.dailyUseConnectionIssue
     }
 
     ContentHost {
@@ -81,6 +94,9 @@ Item {
         accountingPresenter: root.accountingPresenter
         metricsModel: root.statusController.metricsModel
         actionHintModel: root.statusController.actionHintModel
+        dailyUseMode: root.dailyUseMode
+        dailyUseServiceName: root.dailyUseServiceName
+        dailyUseDatabasePath: root.dailyUseDatabasePath
     }
 
     BottomLogPanel {

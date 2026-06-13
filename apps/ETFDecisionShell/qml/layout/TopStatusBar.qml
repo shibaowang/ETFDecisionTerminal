@@ -4,6 +4,9 @@ Rectangle {
     id: root
     required property string currentPageTitle
     required property var pageInfo
+    required property bool dailyUseMode
+    required property string dailyUseServiceName
+    required property string dailyUseConnectionStatus
     color: "#121d2e"
     border.color: "#26354d"
 
@@ -25,6 +28,25 @@ Rectangle {
         if (value === "NOT_CONNECTED") return "未连接（NOT_CONNECTED）"
         if (value === "DATASERVICE_CLIENT_CALL_FAILED") return "DataService 调用失败（DATASERVICE_CLIENT_CALL_FAILED）"
         return value
+    }
+
+    function moduleStatusText() {
+        return root.dailyUseMode ? "READY" : root.pageInfo.moduleStatus
+    }
+
+    function dataModeText() {
+        return root.dailyUseMode ? "REAL_DATA_PENDING" : root.pageInfo.dataMode
+    }
+
+    function connectionStatusText() {
+        return root.dailyUseMode ? root.dailyUseConnectionStatus : root.pageInfo.connectionStatus
+    }
+
+    function modeBadgeText() {
+        if (root.dailyUseMode) {
+            return "daily-use real data mode - " + root.dailyUseConnectionStatus + " - " + root.dailyUseServiceName
+        }
+        return "local trial mock mode - real service not connected"
     }
 
     Row {
@@ -59,7 +81,7 @@ Rectangle {
             Text {
                 id: mockLabel
                 anchors.centerIn: parent
-                text: "本地试用模拟模式 - 未连接真实服务"
+                text: root.modeBadgeText()
                 color: "#ffd77a"
                 font.pixelSize: 12
             }
@@ -67,21 +89,21 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "模块：" + root.displayStatus(root.pageInfo.moduleStatus)
+            text: "模块：" + root.displayStatus(root.moduleStatusText())
             color: "#8fa1ba"
             font.pixelSize: 12
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "数据：" + root.displayStatus(root.pageInfo.dataMode)
+            text: "数据：" + root.displayStatus(root.dataModeText())
             color: "#8fa1ba"
             font.pixelSize: 12
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: "连接状态：" + root.displayStatus(root.pageInfo.connectionStatus)
+            text: "连接状态：" + root.displayStatus(root.connectionStatusText())
             color: "#8fa1ba"
             font.pixelSize: 12
         }

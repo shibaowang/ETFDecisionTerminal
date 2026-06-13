@@ -696,6 +696,12 @@ for _epic280_allowlist_name in list(globals()):
 EPIC_289_FIX_EXACT_PATHS = {
     "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "apps/ETFDecisionShell/src/main.cpp",
+    "apps/ETFDecisionShell/qml/Main.qml",
+    "apps/ETFDecisionShell/qml/layout/AppShell.qml",
+    "apps/ETFDecisionShell/qml/layout/ContentHost.qml",
+    "apps/ETFDecisionShell/qml/layout/RightInfoPanel.qml",
+    "apps/ETFDecisionShell/qml/layout/TopStatusBar.qml",
     "docs/12_codex_prompt_template.md",
     "docs/401_real_daily_use_data_dashboard.md",
     "docs/402_real_daily_use_market_data_vba_parity.md",

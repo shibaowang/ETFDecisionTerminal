@@ -12,15 +12,69 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QString>
+#include <QStringList>
 #include <QUrl>
 #include <QtQml>
 #include <iostream>
 #include <memory>
 
+namespace {
+
+struct ShellStartupOptions final {
+    bool dailyUse = false;
+    QString socketName = QStringLiteral("ETFDataServiceDailyUse");
+    QString databasePath = QStringLiteral(".local/daily_use/etfdt_daily_use.sqlite");
+    QString defaultPage = QStringLiteral("dashboard");
+};
+
+QString argumentValue(
+    const QStringList& arguments,
+    const QString& name,
+    const QString& fallback)
+{
+    const auto index = arguments.indexOf(name);
+    if (index < 0 || index + 1 >= arguments.size()) {
+        return fallback;
+    }
+    const auto value = arguments.at(index + 1).trimmed();
+    return value.isEmpty() ? fallback : value;
+}
+
+QString pageKeyForDefaultPage(QString page)
+{
+    page = page.trimmed();
+    if (page == QStringLiteral("shell-accounting-daily-use")
+        || page == QStringLiteral("shell-accounting")
+        || page == QStringLiteral("shell_accounting")) {
+        return QStringLiteral("shell_accounting");
+    }
+    return page.isEmpty() ? QStringLiteral("dashboard") : page;
+}
+
+ShellStartupOptions parseStartupOptions(const QStringList& arguments)
+{
+    ShellStartupOptions options;
+    options.dailyUse = arguments.contains(QStringLiteral("--daily-use"));
+    options.socketName =
+        argumentValue(arguments, QStringLiteral("--socket-name"), options.socketName);
+    options.databasePath =
+        argumentValue(arguments, QStringLiteral("--db"), options.databasePath);
+    options.defaultPage = argumentValue(
+        arguments,
+        QStringLiteral("--default-page"),
+        options.dailyUse ? QStringLiteral("shell-accounting-daily-use")
+                         : options.defaultPage);
+    return options;
+}
+
+}  // namespace
+
 int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
     QGuiApplication::setApplicationName("ETFDecisionShell");
+    const auto startupOptions = parseStartupOptions(app.arguments());
 
     qmlRegisterType<etfdt::shell::ShellDiagnosticQtAdapter>(
         "ETFDecisionTerminal.Shell",
@@ -58,10 +112,31 @@ int main(int argc, char* argv[])
     shellAccountingPresenter.setController(shellAccountingController);
 
     if (app.arguments().contains("--help")) {
-        std::cout << "ETFDecisionShell --diagnostics-mock" << '\n';
+        std::cout
+            << "ETFDecisionShell [--daily-use] [--socket-name <name>] [--db <path>] "
+               "[--default-page shell-accounting-daily-use]"
+            << '\n';
         return 0;
     }
-    (void)diagnosticAdapter.loadMockMixed();
+    if (!startupOptions.dailyUse) {
+        (void)diagnosticAdapter.loadMockMixed();
+    }
+
+    QString dailyUseConnectionStatus = QStringLiteral("NOT_REQUESTED");
+    QString dailyUseConnectionIssue;
+    if (startupOptions.dailyUse) {
+        const auto connected = shellAccountingDataServiceClient->connect(
+            startupOptions.socketName.toStdString(),
+            2000);
+        if (connected.hasValue()) {
+            dailyUseConnectionStatus = QStringLiteral("CONNECTED");
+        } else {
+            dailyUseConnectionStatus = QStringLiteral("CONNECTION_FAILED");
+            dailyUseConnectionIssue =
+                QString::fromStdString(connected.error().message).left(240);
+        }
+        (void)navigationController.selectPage(pageKeyForDefaultPage(startupOptions.defaultPage));
+    }
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("diagnosticAdapter", &diagnosticAdapter);
@@ -69,6 +144,15 @@ int main(int argc, char* argv[])
     engine.rootContext()->setContextProperty("shellStatusController", &statusController);
     engine.rootContext()->setContextProperty("readOnlyDataController", &readOnlyDataController);
     engine.rootContext()->setContextProperty("accountingPresenter", &shellAccountingPresenter);
+    engine.rootContext()->setContextProperty("dailyUseMode", startupOptions.dailyUse);
+    engine.rootContext()->setContextProperty("dailyUseServiceName", startupOptions.socketName);
+    engine.rootContext()->setContextProperty("dailyUseDatabasePath", startupOptions.databasePath);
+    engine.rootContext()->setContextProperty(
+        "dailyUseConnectionStatus",
+        dailyUseConnectionStatus);
+    engine.rootContext()->setContextProperty(
+        "dailyUseConnectionIssue",
+        dailyUseConnectionIssue);
 
     QObject::connect(
         &engine,

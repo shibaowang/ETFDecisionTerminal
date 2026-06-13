@@ -14,6 +14,9 @@ Rectangle {
     required property var accountingPresenter
     required property var metricsModel
     required property var actionHintModel
+    required property bool dailyUseMode
+    required property string dailyUseServiceName
+    required property string dailyUseDatabasePath
 
     color: "#edf1f6"
 
@@ -97,6 +100,9 @@ Rectangle {
         ShellAccountingReadOnlyPage {
             objectName: "shellAccountingReadOnlyPage"
             accountingPresenter: root.accountingPresenter
+            dailyUseMode: root.dailyUseMode
+            dailyUseServiceName: root.dailyUseServiceName
+            dailyUseDatabasePath: root.dailyUseDatabasePath
         }
     }
 

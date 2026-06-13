@@ -8,6 +8,12 @@
   `scripts/local_trial/Start-ETFDTDailyUseDataService.ps1`.
 - Open ShellAccounting local page with the daily-use shell launcher:
   `scripts/local_trial/Start-ETFDTDailyUseShell.ps1`.
+- The daily-use shell launcher must pass:
+  `--daily-use --socket-name ETFDataServiceDailyUse --db .local/daily_use/etfdt_daily_use.sqlite --default-page shell-accounting-daily-use`.
+- Confirm Shell starts on the ShellAccounting daily-use dashboard instead of the
+  mock home dashboard.
+- Confirm the top status and right info panel show daily-use connection context,
+  not `本地试用模拟模式` / `PLACEHOLDER` / `NO_DATA` as the daily-use default state.
 - Do not use `scripts/local_trial/Start-ETFDTLocalShell.ps1` for this
   daily-use acceptance path; that script targets `.demo/local_trial_rc`.
 - Confirm the daily-use panel title is `真实数据日常看板`.
@@ -46,6 +52,10 @@ The test must prove:
 - fixture market refresh supplies ETF/index current and historical high fields
 - production live provider implementation exists and is not deferred-only
 - startup scripts report `.local/daily_use/cache/market_cache.json`
+- the daily-use Shell script passes `--daily-use`, `--socket-name`,
+  `--db`, and `--default-page shell-accounting-daily-use`
+- Shell startup parses daily-use arguments and defaults to the ShellAccounting
+  daily-use dashboard, not the mock home dashboard
 - no real network is used in tests
 - host allowlist, rate limit, daily cache, failure circuit breaker, and
   no-same-host-concurrency evidence is present

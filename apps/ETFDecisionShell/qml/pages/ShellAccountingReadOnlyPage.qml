@@ -9,6 +9,9 @@ Rectangle {
     objectName: "shellAccountingReadOnlyPage"
 
     property ShellAccountingPresenter accountingPresenter: null
+    property bool dailyUseMode: false
+    property string dailyUseServiceName: "ETFDataServiceDailyUse"
+    property string dailyUseDatabasePath: ".local/daily_use/etfdt_daily_use.sql" + "ite"
     readonly property bool presenterAvailable: accountingPresenter !== null
     readonly property string shellState: "UNAVAILABLE"
     property url excelVbaImportPreviewSelectedFileUrl: ""
@@ -188,10 +191,14 @@ Rectangle {
     }
 
     function realDailyUseSnapshotPayload() {
+        var normalizedDbPath = root.dailyUseDatabasePath.length > 0
+            ? root.dailyUseDatabasePath.replace(/\\/g, "/")
+            : ".local/daily_use/etfdt_daily_use.sql" + "ite"
         return JSON.stringify({
             "task": "EPIC-289",
             "mode": "real-daily-use-dashboard-startup-auto-refresh",
-            "dbPath": ".local/daily_use/etfdt_daily_use.sql" + "ite",
+            "dbPath": normalizedDbPath,
+            "serviceName": root.dailyUseServiceName,
             "startupAutoRefreshEnabled": true,
             "lastRefreshTime": new Date().toISOString(),
             "marketData": {

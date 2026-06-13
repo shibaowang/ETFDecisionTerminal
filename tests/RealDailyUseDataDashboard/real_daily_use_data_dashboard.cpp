@@ -365,6 +365,34 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     }
     requireNotContains(qml, "DataServiceClient", "QML direct DataServiceClient access");
     requireNotContains(qml, "AccountingEngine", "QML direct AccountingEngine access");
+    requireContains(qml, "dailyUseDatabasePath", "QML daily-use DB path injected");
+    requireContains(qml, "dailyUseServiceName", "QML daily-use service name injected");
+
+    const auto shellMain = readFile(sourceRoot / "apps/ETFDecisionShell/src/main.cpp");
+    requireContains(shellMain, "--daily-use", "Shell startup parses daily-use arg");
+    requireContains(shellMain, "--socket-name", "Shell startup parses socket arg");
+    requireContains(shellMain, "--db", "Shell startup parses DB arg");
+    requireContains(shellMain, "--default-page", "Shell startup parses default page arg");
+    requireContains(shellMain, "shell-accounting-daily-use", "Shell startup supports daily-use default page");
+    requireContains(shellMain, "shell_accounting", "Shell startup maps daily-use to ShellAccounting page");
+    requireContains(shellMain, "shellAccountingDataServiceClient->connect", "Shell startup connects accounting client");
+    requireContains(shellMain, "dailyUseConnectionStatus", "Shell startup exposes daily-use connection status");
+    requireNotContains(shellMain, ".demo/local_trial_rc", "Shell startup does not use demo RC path");
+
+    const auto topStatusBar = readFile(sourceRoot / "apps/ETFDecisionShell/qml/layout/TopStatusBar.qml");
+    requireContains(topStatusBar, "daily-use real data mode", "top bar daily-use mode label");
+    requireContains(topStatusBar, "dailyUseConnectionStatus", "top bar daily-use connection status");
+    requireContains(topStatusBar, "REAL_DATA_PENDING", "top bar daily-use data status");
+
+    const auto rightInfoPanel = readFile(sourceRoot / "apps/ETFDecisionShell/qml/layout/RightInfoPanel.qml");
+    requireContains(rightInfoPanel, "真实数据日常看板", "right panel daily-use title");
+    requireContains(rightInfoPanel, "dailyUseConnectionStatus", "right panel daily-use connection status");
+    requireContains(rightInfoPanel, "请先导入真实 VBA 脱敏导出文件。", "right panel daily-use empty prompt");
+    requireContains(rightInfoPanel, "仅限只读查看", "right panel daily-use read-only hint");
+
+    const auto contentHost = readFile(sourceRoot / "apps/ETFDecisionShell/qml/layout/ContentHost.qml");
+    requireContains(contentHost, "dailyUseDatabasePath", "content host passes daily-use DB path");
+    requireContains(contentHost, "dailyUseServiceName", "content host passes daily-use service name");
 
     const auto dataServiceAction =
         readFile(sourceRoot / "libs/DataServiceApi/src/ShellAccountingRealDailyUseSnapshotAction.cpp");
@@ -477,7 +505,12 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(dailyUseShell, "Debug", "daily Shell script checks Debug exe");
     requireContains(dailyUseShell, "Release", "daily Shell script checks Release exe");
     requireContains(dailyUseShell, "Get-ChildItem", "daily Shell script has recursive fallback");
+    requireContains(dailyUseShell, "--daily-use", "daily Shell script passes daily-use arg");
+    requireContains(dailyUseShell, "--socket-name", "daily Shell script passes socket arg");
     requireContains(dailyUseShell, "ETFDataServiceDailyUse", "daily Shell script carries daily socket name");
+    requireContains(dailyUseShell, "--db", "daily Shell script passes DB arg");
+    requireContains(dailyUseShell, "--default-page", "daily Shell script passes default page arg");
+    requireContains(dailyUseShell, "shell-accounting-daily-use", "daily Shell script uses daily-use default page");
     requireContains(dailyUseShell, "shell.pid", "daily Shell script writes pid file");
     requireNotContains(dailyUseShell, "--diagnostics-mock", "daily Shell script does not start diagnostics mock mode");
 
@@ -486,6 +519,8 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(dailyUseSmoke, "ETFDecisionShell.exe", "daily smoke checks Shell exe");
     requireContains(dailyUseSmoke, "dataServiceExeFound", "daily smoke reports service exe");
     requireContains(dailyUseSmoke, "shellExeFound", "daily smoke reports shell exe");
+    requireContains(dailyUseSmoke, "dailyUseShellScriptArgsValidated", "daily smoke validates Shell args");
+    requireContains(dailyUseSmoke, "shell-accounting-daily-use", "daily smoke validates default page");
 }
 
 }  // namespace

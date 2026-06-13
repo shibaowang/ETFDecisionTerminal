@@ -1298,7 +1298,7 @@ def validate_validator_cli_contract(gate: Gate, root: Path) -> None:
 
 def validate_static_boundaries(gate: Gate, root: Path) -> None:
     changes = changed_paths(root)
-    gate.require((git_lines(root, "diff", "--name-only", "main", "--", "apps") - {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"} - EPIC_287_GLOBAL_CHINESE_UI_READABILITY_EXACT_PATHS) == set(), "apps diff empty")
+    gate.require((git_lines(root, "diff", "--name-only", "main", "--", "apps") - {"apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml"} - EPIC_287_GLOBAL_CHINESE_UI_READABILITY_EXACT_PATHS - EPIC_289_FIX_EXACT_PATHS) == set(), "apps diff empty")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "libs") <= (TASK_257_EXACT_PATHS | EPIC_276_EXACT_PATHS | EPIC_277_ALLOWED_CHANGED_PATHS), "libs diff exact TASK-257 parser boundary only")
     gate.require(git_lines(root, "diff", "--name-only", "main", "--", "migrations") == set(), "migrations diff empty")
     gate.require(all(path in {"tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_only.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_cash_adjustment.json", "tests/ShellAccountingManualEntryReplayFixtureParityMatrixReadOnlyVerticalSlice/fixtures/TASK254_unsupported_or_issue.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportReadOnlyVerticalSlice/fixtures/TASK255_sanitized_excel_vba_export_buy_partial_sell.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_only_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_buy_partial_sell_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_cash_adjustment_export_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_missing_required_header_sample.json", "tests/ShellAccountingManualEntryReplayExcelVbaExportSampleImportMatrixDiagnosticsReadOnlyVerticalSlice/fixtures/TASK256_unsupported_or_issue_sample.json"} or path == "tests/ShellAccountingManualEntryReplayFixtureBackedVbaParityReadOnlyVerticalSlice/fixtures/TASK253_vba_parity_buy_partial_sell.json" or path in TASK_257_EXACT_PATHS or path in {"samples/excel_vba_import/TASK272_sanitized_excel_vba_import_mvp_sample.json", "samples/excel_vba_import/TASK274_export_helper_expected_sample.json"} or path in EPIC_276_EXACT_PATHS or not path.endswith(".json") for path in changes), "no JSON changed paths")
@@ -2815,6 +2815,12 @@ _epic287_apply_global_chinese_ui_readability_exact_paths()
 EPIC_289_FIX_EXACT_PATHS = {
     "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
+    "apps/ETFDecisionShell/src/main.cpp",
+    "apps/ETFDecisionShell/qml/Main.qml",
+    "apps/ETFDecisionShell/qml/layout/AppShell.qml",
+    "apps/ETFDecisionShell/qml/layout/ContentHost.qml",
+    "apps/ETFDecisionShell/qml/layout/RightInfoPanel.qml",
+    "apps/ETFDecisionShell/qml/layout/TopStatusBar.qml",
     "docs/12_codex_prompt_template.md",
     "docs/401_real_daily_use_data_dashboard.md",
     "docs/402_real_daily_use_market_data_vba_parity.md",

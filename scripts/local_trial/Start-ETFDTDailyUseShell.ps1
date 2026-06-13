@@ -67,7 +67,17 @@ $logsPath = Join-Path $trialRootFull "logs"
 $pidFile = Join-Path $logsPath "shell.pid"
 New-Item -ItemType Directory -Force -Path $logsPath | Out-Null
 
-$process = Start-Process -FilePath $shellExe -PassThru
+$shellArguments = @(
+    "--daily-use",
+    "--socket-name",
+    $SocketName,
+    "--db",
+    $dbPathFull,
+    "--default-page",
+    "shell-accounting-daily-use"
+)
+
+$process = Start-Process -FilePath $shellExe -ArgumentList $shellArguments -PassThru
 if ($process.HasExited) {
     throw "ETFDecisionShell exited early with code $($process.ExitCode)."
 }
@@ -81,6 +91,12 @@ $evidence = [ordered]@{
     trialRoot = $trialRootFull
     databasePath = $dbPathFull
     socketName = $SocketName
+    shellArguments = $shellArguments
+    dailyUseArgumentPassed = $true
+    socketNameArgumentPassed = $true
+    dbArgumentPassed = $true
+    defaultPageArgumentPassed = $true
+    defaultPage = "shell-accounting-daily-use"
     pid = $process.Id
     pidFile = $pidFile
     defaultTrialRoot = ".local\daily_use"

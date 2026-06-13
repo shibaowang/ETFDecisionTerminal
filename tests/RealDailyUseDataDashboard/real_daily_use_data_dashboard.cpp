@@ -448,14 +448,44 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     for (const auto* script : {
              "scripts/local_trial/New-ETFDTDailyUseWorkspace.ps1",
              "scripts/local_trial/Start-ETFDTDailyUseDataService.ps1",
+             "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
              "scripts/local_trial/Invoke-ETFDTDailyUseSmoke.ps1",
          }) {
         const auto text = readFile(sourceRoot / script);
         requireContains(text, ".local/daily_use", std::string(script) + " uses daily path");
         requireContains(text, "EPIC-289", std::string(script) + " evidence");
         requireNotContains(text, ".demo/local_trial_rc", std::string(script) + " does not default to demo RC");
+        requireNotContains(text, ".demo\\local_trial_rc", std::string(script) + " does not default to demo RC");
         requireNotContains(text, "brokerOrderSubmitted = $true", std::string(script) + " no broker");
     }
+
+    const auto dailyUseService =
+        readFile(sourceRoot / "scripts/local_trial/Start-ETFDTDailyUseDataService.ps1");
+    requireContains(dailyUseService, "ETFDataService.exe", "daily DataService script resolves service exe");
+    requireContains(dailyUseService, "Debug", "daily DataService script checks Debug exe");
+    requireContains(dailyUseService, "Release", "daily DataService script checks Release exe");
+    requireContains(dailyUseService, "Get-ChildItem", "daily DataService script has recursive fallback");
+    requireContains(
+        dailyUseService,
+        "cmake --build build --config Debug",
+        "daily DataService script reports build hint");
+    requireContains(dailyUseService, "Checked paths", "daily DataService script reports checked paths");
+
+    const auto dailyUseShell =
+        readFile(sourceRoot / "scripts/local_trial/Start-ETFDTDailyUseShell.ps1");
+    requireContains(dailyUseShell, "ETFDecisionShell.exe", "daily Shell script resolves shell exe");
+    requireContains(dailyUseShell, "Debug", "daily Shell script checks Debug exe");
+    requireContains(dailyUseShell, "Release", "daily Shell script checks Release exe");
+    requireContains(dailyUseShell, "Get-ChildItem", "daily Shell script has recursive fallback");
+    requireContains(dailyUseShell, "ETFDataServiceDailyUse", "daily Shell script carries daily socket name");
+    requireContains(dailyUseShell, "shell.pid", "daily Shell script writes pid file");
+    requireNotContains(dailyUseShell, "--diagnostics-mock", "daily Shell script does not start diagnostics mock mode");
+
+    const auto dailyUseSmoke = readFile(sourceRoot / "scripts/local_trial/Invoke-ETFDTDailyUseSmoke.ps1");
+    requireContains(dailyUseSmoke, "ETFDataService.exe", "daily smoke checks DataService exe");
+    requireContains(dailyUseSmoke, "ETFDecisionShell.exe", "daily smoke checks Shell exe");
+    requireContains(dailyUseSmoke, "dataServiceExeFound", "daily smoke reports service exe");
+    requireContains(dailyUseSmoke, "shellExeFound", "daily smoke reports shell exe");
 }
 
 }  // namespace

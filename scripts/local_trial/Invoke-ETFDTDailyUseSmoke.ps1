@@ -1,16 +1,76 @@
 param(
     [string]$DbPath = ".local/daily_use/etfdt_daily_use.sqlite",
+    [string]$BuildDir = "build",
     [switch]$NoNetworkFixtureMode = $true
 )
 
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+$buildRoot = if ([System.IO.Path]::IsPathRooted($BuildDir)) {
+    [System.IO.Path]::GetFullPath($BuildDir)
+} else {
+    [System.IO.Path]::GetFullPath((Join-Path $repoRoot $BuildDir))
+}
 $resolvedDbPath = Join-Path $repoRoot $DbPath
 $cachePath = Join-Path $repoRoot ".local/daily_use/cache/market_cache.json"
 
+function Resolve-ETFDTExecutable {
+    param(
+        [string]$BuildRoot,
+        [string]$AppDirectoryName,
+        [string]$ExecutableName
+    )
+
+    $plainPath = Join-Path $BuildRoot "apps\$AppDirectoryName\$ExecutableName"
+    $debugPath = Join-Path $BuildRoot "apps\$AppDirectoryName\Debug\$ExecutableName"
+    $releasePath = Join-Path $BuildRoot "apps\$AppDirectoryName\Release\$ExecutableName"
+    $script:CheckedExecutablePaths = @($plainPath, $debugPath, $releasePath)
+
+    foreach ($candidate in @($releasePath, $debugPath, $plainPath)) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            return $candidate
+        }
+    }
+
+    $searchRoot = Join-Path $BuildRoot "apps\$AppDirectoryName"
+    $script:CheckedExecutablePaths += "fallback search root: $searchRoot"
+    if (Test-Path -LiteralPath $searchRoot -PathType Container) {
+        $fallback = Get-ChildItem -LiteralPath $searchRoot -Recurse -Filter $ExecutableName -File |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+        if ($null -ne $fallback) {
+            return $fallback.FullName
+        }
+    }
+
+    return $null
+}
+
 if (-not (Test-Path -LiteralPath $resolvedDbPath)) {
     throw "Daily-use DB missing: $resolvedDbPath"
+}
+
+$demoRcNeedle = ".demo" + "/" + "local_trial_rc"
+$normalizedDbPath = $resolvedDbPath -replace "\\", "/"
+$normalizedCachePath = $cachePath -replace "\\", "/"
+if ($normalizedDbPath.Contains($demoRcNeedle) -or $normalizedCachePath.Contains($demoRcNeedle)) {
+    throw "Daily-use smoke must not use demo RC paths."
+}
+
+$dataServiceExe = Resolve-ETFDTExecutable -BuildRoot $buildRoot -AppDirectoryName "ETFDataService" -ExecutableName "ETFDataService.exe"
+$dataServiceCheckedPaths = $CheckedExecutablePaths
+$shellExe = Resolve-ETFDTExecutable -BuildRoot $buildRoot -AppDirectoryName "ETFDecisionShell" -ExecutableName "ETFDecisionShell.exe"
+$shellCheckedPaths = $CheckedExecutablePaths
+
+if ([string]::IsNullOrWhiteSpace($dataServiceExe)) {
+    $checked = ($dataServiceCheckedPaths | ForEach-Object { " - $_" }) -join [Environment]::NewLine
+    throw "ETFDataService executable not found. Please run: cmake --build build --config Debug$([Environment]::NewLine)Checked paths:$([Environment]::NewLine)$checked"
+}
+
+if ([string]::IsNullOrWhiteSpace($shellExe)) {
+    $checked = ($shellCheckedPaths | ForEach-Object { " - $_" }) -join [Environment]::NewLine
+    throw "ETFDecisionShell executable not found. Please run: cmake --build build --config Debug$([Environment]::NewLine)Checked paths:$([Environment]::NewLine)$checked"
 }
 
 $docs = @(
@@ -33,9 +93,15 @@ $evidence = [ordered]@{
     dailyUseSmokeReady = $true
     databasePath = $resolvedDbPath
     cachePath = $cachePath
+    buildRoot = $buildRoot
+    dataServiceExecutablePath = $dataServiceExe
+    shellExecutablePath = $shellExe
+    dataServiceExeFound = $true
+    shellExeFound = $true
     noNetworkFixtureMode = [bool]$NoNetworkFixtureMode
     defaultDailyUseDbPath = ".local/daily_use/etfdt_daily_use.sqlite"
     defaultMarketCachePath = ".local/daily_use/cache/market_cache.json"
+    defaultDailyUseShellScript = "scripts/local_trial/Start-ETFDTDailyUseShell.ps1"
     startupAutoRefreshEnabled = $true
     liveNetworkUsed = $false
     testNetworkAccess = $false

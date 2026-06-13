@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 
 import argparse
 import json
@@ -694,6 +694,7 @@ for _epic280_allowlist_name in list(globals()):
 
 
 EPIC_289_FIX_EXACT_PATHS = {
+    "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
     "docs/12_codex_prompt_template.md",
     "docs/401_real_daily_use_data_dashboard.md",

@@ -1,5 +1,6 @@
 param(
     [string]$DbPath = ".local/daily_use/etfdt_daily_use.sqlite",
+    [string]$BuildDir = "build",
     [string]$SocketName = "ETFDataServiceDailyUse",
     [switch]$EnablePublicMarketRefresh,
     [switch]$NoNetworkFixtureMode
@@ -8,9 +9,47 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+$buildRoot = if ([System.IO.Path]::IsPathRooted($BuildDir)) {
+    [System.IO.Path]::GetFullPath($BuildDir)
+} else {
+    [System.IO.Path]::GetFullPath((Join-Path $repoRoot $BuildDir))
+}
 $resolvedDbPath = Join-Path $repoRoot $DbPath
 $cachePath = Join-Path $repoRoot ".local/daily_use/cache/market_cache.json"
-$serviceExe = Join-Path $repoRoot "build\apps\ETFDataService\ETFDataService.exe"
+
+function Resolve-ETFDTExecutable {
+    param(
+        [string]$BuildRoot,
+        [string]$AppDirectoryName,
+        [string]$ExecutableName
+    )
+
+    $plainPath = Join-Path $BuildRoot "apps\$AppDirectoryName\$ExecutableName"
+    $debugPath = Join-Path $BuildRoot "apps\$AppDirectoryName\Debug\$ExecutableName"
+    $releasePath = Join-Path $BuildRoot "apps\$AppDirectoryName\Release\$ExecutableName"
+    $script:CheckedExecutablePaths = @($plainPath, $debugPath, $releasePath)
+
+    foreach ($candidate in @($releasePath, $debugPath, $plainPath)) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            return $candidate
+        }
+    }
+
+    $searchRoot = Join-Path $BuildRoot "apps\$AppDirectoryName"
+    $script:CheckedExecutablePaths += "fallback search root: $searchRoot"
+    if (Test-Path -LiteralPath $searchRoot -PathType Container) {
+        $fallback = Get-ChildItem -LiteralPath $searchRoot -Recurse -Filter $ExecutableName -File |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+        if ($null -ne $fallback) {
+            return $fallback.FullName
+        }
+    }
+
+    return $null
+}
+
+$serviceExe = Resolve-ETFDTExecutable -BuildRoot $buildRoot -AppDirectoryName "ETFDataService" -ExecutableName "ETFDataService.exe"
 
 if (-not (Test-Path -LiteralPath $resolvedDbPath)) {
     throw "Daily-use DB does not exist. Run New-ETFDTDailyUseWorkspace.ps1 first: $resolvedDbPath"
@@ -31,6 +70,8 @@ $evidence = [ordered]@{
     command = "ETFDataService " + ($args -join " ")
     databasePath = $resolvedDbPath
     cachePath = $cachePath
+    buildRoot = $buildRoot
+    executablePath = $serviceExe
     socketName = $SocketName
     startupAutoRefreshEnabled = [bool]$EnablePublicMarketRefresh
     publicMarketRefreshRequested = [bool]$EnablePublicMarketRefresh
@@ -46,8 +87,9 @@ $evidence = [ordered]@{
 
 Write-Host ($evidence | ConvertTo-Json -Depth 4)
 
-if (-not (Test-Path -LiteralPath $serviceExe)) {
-    throw "ETFDataService executable not found: $serviceExe"
+if ([string]::IsNullOrWhiteSpace($serviceExe)) {
+    $checked = ($CheckedExecutablePaths | ForEach-Object { " - $_" }) -join [Environment]::NewLine
+    throw "ETFDataService executable not found. Please run: cmake --build build --config Debug$([Environment]::NewLine)Checked paths:$([Environment]::NewLine)$checked"
 }
 
 Start-Process -FilePath $serviceExe -ArgumentList $args -WindowStyle Hidden

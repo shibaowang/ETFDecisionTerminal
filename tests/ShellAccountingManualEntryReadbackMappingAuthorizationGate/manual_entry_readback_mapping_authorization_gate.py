@@ -1,4 +1,4 @@
-﻿TASK_257_EXACT_PATHS = {
+TASK_257_EXACT_PATHS = {
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
@@ -2312,6 +2312,7 @@ _epic287_apply_global_chinese_ui_readability_exact_paths()
 
 
 EPIC_289_FIX_EXACT_PATHS = {
+    "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
     "docs/12_codex_prompt_template.md",
     "docs/401_real_daily_use_data_dashboard.md",

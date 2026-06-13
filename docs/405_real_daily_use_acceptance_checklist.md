@@ -4,8 +4,12 @@
 
 - Start from a clean repo-local daily-use workspace.
 - Confirm DB path is `.local/daily_use/etfdt_daily_use.sqlite`.
-- Launch DataService with daily-use read-only startup policy.
-- Open ShellAccounting local page.
+- Launch DataService with daily-use read-only startup policy:
+  `scripts/local_trial/Start-ETFDTDailyUseDataService.ps1`.
+- Open ShellAccounting local page with the daily-use shell launcher:
+  `scripts/local_trial/Start-ETFDTDailyUseShell.ps1`.
+- Do not use `scripts/local_trial/Start-ETFDTLocalShell.ps1` for this
+  daily-use acceptance path; that script targets `.demo/local_trial_rc`.
 - Confirm the daily-use panel title is `真实数据日常看板`.
 - Without import data, confirm the prompt:
   `请先导入真实 VBA 脱敏导出文件。`

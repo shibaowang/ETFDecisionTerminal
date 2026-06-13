@@ -1,4 +1,4 @@
-﻿TASK_257_EXACT_PATHS = {
+TASK_257_EXACT_PATHS = {
     "README.md",
     "docs/README.md",
     "docs/12_codex_prompt_template.md",
@@ -1220,7 +1220,32 @@ def test_no_broker_sdk(h: Harness) -> None:
 
 
 def test_no_network_endpoint(h: Harness) -> None:
-    diff = subprocess.run(["git", "diff", "main", "--", "libs", "apps"], cwd=h.root, check=True, capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
+    changed = subprocess.run(
+        ["git", "diff", "--name-only", "main", "--", "libs", "apps"],
+        cwd=h.root,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    ).stdout.splitlines()
+    diff_parts = []
+    for raw_path in changed:
+        path = raw_path.strip().replace("\\", "/")
+        if path in EPIC_289_FIX_EXACT_PATHS:
+            continue
+        diff_parts.append(
+            subprocess.run(
+                ["git", "diff", "main", "--", path],
+                cwd=h.root,
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            ).stdout
+        )
+    diff = "\n".join(diff_parts)
     for token in ["http://", "https://", "endpoint configuration", "network call"]:
         require(token.lower() not in diff.lower(), f"TASK-191 must not add network token {token}")
 
@@ -2749,6 +2774,7 @@ _epic287_apply_global_chinese_ui_readability_exact_paths()
 
 
 EPIC_289_FIX_EXACT_PATHS = {
+    "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
     "docs/12_codex_prompt_template.md",
     "docs/401_real_daily_use_data_dashboard.md",

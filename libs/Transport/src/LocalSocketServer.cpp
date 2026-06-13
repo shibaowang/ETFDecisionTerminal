@@ -1,5 +1,7 @@
 #include "Transport/LocalSocketServer.h"
 
+#include "Transport/LocalSocketName.h"
+
 #include <QByteArray>
 
 #include <algorithm>
@@ -21,12 +23,13 @@ LocalSocketServer::~LocalSocketServer()
 
 TransportResult<bool> LocalSocketServer::listen(const std::string& serverName)
 {
-    if (serverName.empty()) {
+    const auto normalizedServerName = normalizeLocalSocketName(serverName);
+    if (normalizedServerName.empty()) {
         return TransportResult<bool>::failure("Local socket server name is required");
     }
 
     close();
-    serverName_ = serverName;
+    serverName_ = normalizedServerName;
     const QString qServerName = QString::fromStdString(serverName_);
     QLocalServer::removeServer(qServerName);
 

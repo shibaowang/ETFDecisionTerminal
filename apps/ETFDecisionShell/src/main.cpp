@@ -8,6 +8,7 @@
 #include "ShellServices/ShellAccountingQmlRegistration.h"
 #include "ShellServices/ShellAccountingReadOnlyController.h"
 #include "ShellServices/ShellReadOnlyDataController.h"
+#include "Transport/LocalSocketName.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -68,6 +69,19 @@ ShellStartupOptions parseStartupOptions(const QStringList& arguments)
     return options;
 }
 
+QString dailyUseConnectionIssueFor(const std::string& rawMessage)
+{
+    const QString message = QString::fromStdString(rawMessage);
+    if (message.contains(QStringLiteral("Invalid name"), Qt::CaseInsensitive)) {
+        return QStringLiteral("daily-use socket name 非法");
+    }
+    if (message.contains(QStringLiteral("timeout"), Qt::CaseInsensitive)
+        || message.contains(QStringLiteral("Timed out"), Qt::CaseInsensitive)) {
+        return QStringLiteral("连接 daily-use DataService 超时");
+    }
+    return QStringLiteral("DataService 未启动或 socket 未就绪");
+}
+
 }  // namespace
 
 int main(int argc, char* argv[])
@@ -124,16 +138,17 @@ int main(int argc, char* argv[])
 
     QString dailyUseConnectionStatus = QStringLiteral("NOT_REQUESTED");
     QString dailyUseConnectionIssue;
+    const auto normalizedSocketName = QString::fromStdString(
+        etfdt::transport::normalizeLocalSocketName(startupOptions.socketName.toStdString()));
     if (startupOptions.dailyUse) {
         const auto connected = shellAccountingDataServiceClient->connect(
-            startupOptions.socketName.toStdString(),
+            normalizedSocketName.toStdString(),
             2000);
         if (connected.hasValue()) {
             dailyUseConnectionStatus = QStringLiteral("CONNECTED");
         } else {
             dailyUseConnectionStatus = QStringLiteral("CONNECTION_FAILED");
-            dailyUseConnectionIssue =
-                QString::fromStdString(connected.error().message).left(240);
+            dailyUseConnectionIssue = dailyUseConnectionIssueFor(connected.error().message);
         }
         (void)navigationController.selectPage(pageKeyForDefaultPage(startupOptions.defaultPage));
     }
@@ -145,7 +160,7 @@ int main(int argc, char* argv[])
     engine.rootContext()->setContextProperty("readOnlyDataController", &readOnlyDataController);
     engine.rootContext()->setContextProperty("accountingPresenter", &shellAccountingPresenter);
     engine.rootContext()->setContextProperty("dailyUseMode", startupOptions.dailyUse);
-    engine.rootContext()->setContextProperty("dailyUseServiceName", startupOptions.socketName);
+    engine.rootContext()->setContextProperty("dailyUseServiceName", normalizedSocketName);
     engine.rootContext()->setContextProperty("dailyUseDatabasePath", startupOptions.databasePath);
     engine.rootContext()->setContextProperty(
         "dailyUseConnectionStatus",

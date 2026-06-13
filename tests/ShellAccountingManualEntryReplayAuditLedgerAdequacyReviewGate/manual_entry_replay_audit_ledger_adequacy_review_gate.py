@@ -102,6 +102,10 @@ TASK_257_EXACT_PATHS = {
     "docs/403_real_daily_use_portfolio_cash_base_position.md",
     "docs/404_real_daily_use_startup_auto_refresh_policy.md",
     "docs/405_real_daily_use_acceptance_checklist.md",
+    "apps/ETFDataService/src/main.cpp",
+    "libs/Transport/include/Transport/LocalSocketName.h",
+    "libs/Transport/src/LocalSocketClient.cpp",
+    "libs/Transport/src/LocalSocketServer.cpp",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
     "libs/DataServiceApi/CMakeLists.txt",
     "libs/DataServiceApi/include/DataServiceApi/DataServiceActions.h",
@@ -518,6 +522,8 @@ def changed_paths(root: Path) -> set[str]:
         check=True,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     for line in status.stdout.splitlines():
         if not line:
@@ -537,9 +543,25 @@ def diff_text(root: Path, *paths: str) -> str:
         check=True,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     return completed.stdout
 
+def diff_text_excluding(root: Path, include_paths: tuple[str, ...], excluded_paths: set[str]) -> str:
+    diff = diff_text(root, *include_paths)
+    kept: list[str] = []
+    keep_current_file = True
+    for line in diff.splitlines(keepends=True):
+        if line.startswith("diff --git "):
+            parts = line.split()
+            current_path = ""
+            if len(parts) >= 4 and parts[3].startswith("b/"):
+                current_path = parts[3][2:]
+            keep_current_file = current_path not in excluded_paths
+        if keep_current_file:
+            kept.append(line)
+    return "".join(kept)
 
 def added_lines(diff: str) -> str:
     return "\n".join(line[1:] for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++"))
@@ -910,7 +932,7 @@ def main() -> int:
         gate.require(not any(path.startswith(prefix) and path not in (TASK_257_EXACT_PATHS | EPIC_276_EXACT_PATHS | EPIC_277_ALLOWED_CHANGED_PATHS) for path in changes), f"TASK-212 must not change {prefix}")
     gate.require(not any(path.endswith(".sql") for path in changes), "TASK-212 must not add migration or schema files")
 
-    production_diff = added_lines(diff_text(root, "apps", "libs", "migrations", *[f":(exclude){path}" for path in (TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS | TASK_262_READONLY_LOCAL_FILE_LOADER_PRODUCTION_PATHS | EPIC_276_EXACT_PATHS)]))
+    production_diff = added_lines(diff_text_excluding(root, ("apps", "libs", "migrations"), TASK_259_READONLY_CLIENT_ADAPTER_PRODUCTION_PATHS | TASK_262_READONLY_LOCAL_FILE_LOADER_PRODUCTION_PATHS | EPIC_276_EXACT_PATHS))
     for token in [
         "INSERT ",
         "UPDATE ",
@@ -2336,6 +2358,10 @@ EPIC_289_FIX_EXACT_PATHS = {
     "docs/403_real_daily_use_portfolio_cash_base_position.md",
     "docs/404_real_daily_use_startup_auto_refresh_policy.md",
     "docs/405_real_daily_use_acceptance_checklist.md",
+    "apps/ETFDataService/src/main.cpp",
+    "libs/Transport/include/Transport/LocalSocketName.h",
+    "libs/Transport/src/LocalSocketClient.cpp",
+    "libs/Transport/src/LocalSocketServer.cpp",
     "docs/README.md",
     "libs/DataServiceApi/src/ShellAccountingRealDailyUseSnapshotAction.cpp",
     "libs/MarketEngine/CMakeLists.txt",

@@ -2,6 +2,7 @@
 #include "DataServiceApi/DataServiceActions.h"
 #include "Protocol/Protocol.h"
 #include "ServiceRuntime/ActionContext.h"
+#include "Transport/LocalSocketName.h"
 
 #include <QByteArray>
 #include <QCoreApplication>
@@ -325,6 +326,24 @@ void runFunctionalProbe(const std::filesystem::path& sourceRoot)
 
 void runStaticChecks(const std::filesystem::path& sourceRoot)
 {
+    require(
+        etfdt::transport::normalizeLocalSocketName("ETFDataServiceDailyUse")
+            == "ETFDataServiceDailyUse",
+        "socket normalizer keeps daily-use name");
+    require(
+        etfdt::transport::normalizeLocalSocketName("D:\\ETFDecisionTerminal\\.local\\daily_use")
+            == "D-ETFDecisionTerminal-.local-daily_use",
+        "socket normalizer removes Windows path separators");
+    require(
+        etfdt::transport::normalizeLocalSocketName("///") == "ETFDataServiceDailyUse",
+        "socket normalizer falls back for empty normalized names");
+    require(
+        etfdt::transport::isNormalizedLocalSocketName("ETFDataServiceDailyUse"),
+        "socket normalizer validates daily-use name");
+    require(
+        !etfdt::transport::isNormalizedLocalSocketName(".local/daily_use/etfdt_daily_use.sqlite"),
+        "socket name validator rejects path-like names");
+
     const auto qml = readFile(sourceRoot / "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml");
     for (const auto* token : {
              "真实数据日常看板",
@@ -376,6 +395,11 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(shellMain, "shell-accounting-daily-use", "Shell startup supports daily-use default page");
     requireContains(shellMain, "shell_accounting", "Shell startup maps daily-use to ShellAccounting page");
     requireContains(shellMain, "shellAccountingDataServiceClient->connect", "Shell startup connects accounting client");
+    requireContains(shellMain, "normalizeLocalSocketName", "Shell startup normalizes socket name");
+    requireContains(shellMain, "dailyUseConnectionIssueFor", "Shell startup maps connection failures");
+    requireContains(shellMain, "daily-use socket name", "Shell startup reports illegal socket name");
+    requireContains(shellMain, "DataService", "Shell startup reports DataService connection issue");
+    requireContains(shellMain, "Invalid name", "Shell startup handles Qt invalid name");
     requireContains(shellMain, "dailyUseConnectionStatus", "Shell startup exposes daily-use connection status");
     requireNotContains(shellMain, ".demo/local_trial_rc", "Shell startup does not use demo RC path");
 
@@ -408,6 +432,26 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireNotContains(dataServiceAction, "INSERT INTO", "DataService daily-use action read-only SQL");
     requireNotContains(dataServiceAction, "broker_order", "DataService no broker token");
     requireNotContains(dataServiceAction, "CALCULABLE_WITH_MARKET_DATA", "DataService no calculable placeholder");
+
+    const auto transportSocketNameHeader =
+        readFile(sourceRoot / "libs/Transport/include/Transport/LocalSocketName.h");
+    requireContains(transportSocketNameHeader, "normalizeLocalSocketName", "Transport exposes socket normalizer");
+    requireContains(transportSocketNameHeader, "ETFDataServiceDailyUse", "Transport fallback socket name");
+    requireContains(transportSocketNameHeader, "A-Za-z0-9_.-", "Transport socket allowed chars are documented");
+    requireContains(transportSocketNameHeader, "isAllowedLocalSocketNameChar", "Transport socket predicate exists");
+
+    const auto localSocketServer =
+        readFile(sourceRoot / "libs/Transport/src/LocalSocketServer.cpp");
+    const auto localSocketClient =
+        readFile(sourceRoot / "libs/Transport/src/LocalSocketClient.cpp");
+    requireContains(localSocketServer, "normalizeLocalSocketName", "LocalSocketServer normalizes server name");
+    requireContains(localSocketClient, "normalizeLocalSocketName", "LocalSocketClient normalizes client name");
+    requireContains(localSocketServer, "QLocalServer::removeServer", "LocalSocketServer removes stale server");
+
+    const auto dataServiceMain = readFile(sourceRoot / "apps/ETFDataService/src/main.cpp");
+    requireContains(dataServiceMain, "--socket-name", "DataService CLI supports socket-name");
+    requireContains(dataServiceMain, "normalizeLocalSocketName", "DataService main normalizes socket name");
+    requireContains(dataServiceMain, "host.listen(normalizedSocketName)", "DataService listens on normalized socket");
 
     const auto liveProviderHeader =
         readFile(sourceRoot / "libs/MarketEngine/include/MarketEngine/LivePublicMarketDataProvider.h");
@@ -498,6 +542,16 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
         "cmake --build build --config Debug",
         "daily DataService script reports build hint");
     requireContains(dailyUseService, "Checked paths", "daily DataService script reports checked paths");
+    requireContains(dailyUseService, "Normalize-ETFDTLocalSocketName", "daily DataService script normalizes socket");
+    requireContains(dailyUseService, "Test-ETFDTLocalSocketReady", "daily DataService script probes socket");
+    requireContains(dailyUseService, "dataservice.pid", "daily DataService script writes pid");
+    requireContains(dailyUseService, "dataservice.log", "daily DataService script writes stdout log");
+    requireContains(dailyUseService, "dataservice.err.log", "daily DataService script writes stderr log");
+    requireContains(dailyUseService, "RedirectStandardOutput", "daily DataService script redirects stdout");
+    requireContains(dailyUseService, "RedirectStandardError", "daily DataService script redirects stderr");
+    requireContains(dailyUseService, "socketReady", "daily DataService script reports socketReady");
+    requireContains(dailyUseService, "socketNameNormalized", "daily DataService script reports normalized socket");
+    requireContains(dailyUseService, "--socket-name\", $socketNameNormalized", "daily DataService script passes normalized socket");
 
     const auto dailyUseShell =
         readFile(sourceRoot / "scripts/local_trial/Start-ETFDTDailyUseShell.ps1");
@@ -511,6 +565,11 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(dailyUseShell, "--db", "daily Shell script passes DB arg");
     requireContains(dailyUseShell, "--default-page", "daily Shell script passes default page arg");
     requireContains(dailyUseShell, "shell-accounting-daily-use", "daily Shell script uses daily-use default page");
+    requireContains(dailyUseShell, "Normalize-ETFDTLocalSocketName", "daily Shell script normalizes socket");
+    requireContains(dailyUseShell, "socketNameNormalized", "daily Shell script reports normalized socket");
+    requireContains(dailyUseShell, "Test-ETFDTLocalSocketReady", "daily Shell script probes socket readiness");
+    requireContains(dailyUseShell, "socketReadyBeforeShell", "daily Shell script reports socket probe");
+    requireContains(dailyUseShell, "$socketNameNormalized", "daily Shell script passes normalized socket name");
     requireContains(dailyUseShell, "shell.pid", "daily Shell script writes pid file");
     requireNotContains(dailyUseShell, "--diagnostics-mock", "daily Shell script does not start diagnostics mock mode");
 
@@ -520,6 +579,8 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(dailyUseSmoke, "dataServiceExeFound", "daily smoke reports service exe");
     requireContains(dailyUseSmoke, "shellExeFound", "daily smoke reports shell exe");
     requireContains(dailyUseSmoke, "dailyUseShellScriptArgsValidated", "daily smoke validates Shell args");
+    requireContains(dailyUseSmoke, "dataServiceSocketReadinessScriptValidated", "daily smoke validates DataService readiness");
+    requireContains(dailyUseSmoke, "socketNameNormalized", "daily smoke reports normalized socket");
     requireContains(dailyUseSmoke, "shell-accounting-daily-use", "daily smoke validates default page");
 }
 
@@ -539,6 +600,11 @@ int main(int argc, char** argv)
             {"livePublicMarketProviderImplemented", true},
             {"liveProviderNoLongerDeferredOnly", true},
             {"startupAutoRefreshEnabled", true},
+            {"socketNameNormalized", true},
+            {"socketReadyProbeRequired", true},
+            {"dataServicePidLogged", true},
+            {"dataServiceStdoutLogged", true},
+            {"dataServiceStderrLogged", true},
             {"manualRefreshButtonAdded", false},
             {"mockDataUsedForDailyUse", false},
             {"currentHoldingsVisible", true},

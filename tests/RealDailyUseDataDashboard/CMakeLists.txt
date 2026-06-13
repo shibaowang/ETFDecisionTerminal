@@ -11,6 +11,7 @@ target_link_libraries(RealDailyUseDataDashboard
         ETFDecisionTerminal::MarketEngine
         ETFDecisionTerminal::Protocol
         ETFDecisionTerminal::ServiceRuntime
+        ETFDecisionTerminal::Transport
         Qt6::Core
         Qt6::Network
 )

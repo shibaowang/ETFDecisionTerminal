@@ -1,5 +1,7 @@
 #include "Transport/LocalSocketClient.h"
 
+#include "Transport/LocalSocketName.h"
+
 #include <QByteArray>
 
 #include <utility>
@@ -22,12 +24,13 @@ TransportResult<bool> LocalSocketClient::connectToServer(
     const std::string& serverName,
     int timeoutMs)
 {
-    if (serverName.empty()) {
+    const auto normalizedServerName = normalizeLocalSocketName(serverName);
+    if (normalizedServerName.empty()) {
         return TransportResult<bool>::failure("Local socket server name is required");
     }
 
     disconnect();
-    socket_.connectToServer(QString::fromStdString(serverName));
+    socket_.connectToServer(QString::fromStdString(normalizedServerName));
     if (!socket_.waitForConnected(timeoutMs)) {
         return TransportResult<bool>::failure(
             "Failed to connect local socket: " + socket_.errorString().toStdString());

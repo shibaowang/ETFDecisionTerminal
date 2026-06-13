@@ -6,10 +6,18 @@
 - Confirm DB path is `.local/daily_use/etfdt_daily_use.sqlite`.
 - Launch DataService with daily-use read-only startup policy:
   `scripts/local_trial/Start-ETFDTDailyUseDataService.ps1`.
+- Confirm the DataService startup evidence includes `socketReady=true`.
+- If DataService readiness fails, inspect:
+  `.local/daily_use/logs/dataservice.log`,
+  `.local/daily_use/logs/dataservice.err.log`, and
+  `.local/daily_use/logs/dataservice.pid`.
 - Open ShellAccounting local page with the daily-use shell launcher:
   `scripts/local_trial/Start-ETFDTDailyUseShell.ps1`.
 - The daily-use shell launcher must pass:
   `--daily-use --socket-name ETFDataServiceDailyUse --db .local/daily_use/etfdt_daily_use.sqlite --default-page shell-accounting-daily-use`.
+- The daily-use Shell and DataService scripts must use the same normalized
+  local socket name and must not require the user to guess Qt local socket
+  details.
 - Confirm Shell starts on the ShellAccounting daily-use dashboard instead of the
   mock home dashboard.
 - Confirm the top status and right info panel show daily-use connection context,
@@ -52,6 +60,13 @@ The test must prove:
 - fixture market refresh supplies ETF/index current and historical high fields
 - production live provider implementation exists and is not deferred-only
 - startup scripts report `.local/daily_use/cache/market_cache.json`
+- DataService startup writes `.local/daily_use/logs/dataservice.pid`
+- DataService startup redirects stdout/stderr to
+  `.local/daily_use/logs/dataservice.log` and
+  `.local/daily_use/logs/dataservice.err.log`
+- DataService startup waits for a local socket readiness probe and reports
+  `socketReady`
+- Shell startup passes and reports the normalized daily-use socket name
 - the daily-use Shell script passes `--daily-use`, `--socket-name`,
   `--db`, and `--default-page shell-accounting-daily-use`
 - Shell startup parses daily-use arguments and defaults to the ShellAccounting

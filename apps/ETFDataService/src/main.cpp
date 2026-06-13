@@ -3,6 +3,7 @@
 #include "Protocol/ErrorCode.h"
 #include "ServiceHost/ServiceHost.h"
 #include "ServiceRuntime/ServiceRuntime.h"
+#include "Transport/LocalSocketName.h"
 
 #include <QCoreApplication>
 
@@ -408,6 +409,7 @@ int serveReadOnly(
         std::cerr << "--socket-name <name> is required for --serve-readonly\n";
         return 1;
     }
+    const auto normalizedSocketName = etfdt::transport::normalizeLocalSocketName(socketName);
 
     etfdt::data_access::SQLiteConnection connection;
     auto openResult = openHealthyReadOnlyDatabase(dbPath, connection);
@@ -422,14 +424,14 @@ int serveReadOnly(
     etfdt::data_service_api::registerDataServiceReadOnlyActions(dispatcher, connection);
 
     etfdt::service_host::ActionServiceHost host(dispatcher);
-    auto listenResult = host.listen(socketName);
+    auto listenResult = host.listen(normalizedSocketName);
     if (!listenResult) {
         std::cerr << "Failed to start read-only service host: "
                   << listenResult.error().message << '\n';
         return 1;
     }
 
-    std::cout << "ETFDataService read-only service listening on " << socketName << '\n';
+    std::cout << "ETFDataService read-only service listening on " << normalizedSocketName << '\n';
     std::cout << "Development preview: only system.* and data.* read-only actions are enabled.\n";
     const int exitCode = app.exec();
     host.close();
@@ -446,6 +448,7 @@ int serveDevAudit(
         std::cerr << "--socket-name <name> is required for --serve-dev-audit\n";
         return 1;
     }
+    const auto normalizedSocketName = etfdt::transport::normalizeLocalSocketName(socketName);
 
     etfdt::data_access::SQLiteConnection connection;
     auto openResult = openHealthyReadOnlyDatabase(dbPath, connection);
@@ -461,14 +464,14 @@ int serveDevAudit(
     etfdt::data_service_api::registerDataServiceWriteActions(dispatcher, connection);
 
     etfdt::service_host::ActionServiceHost host(dispatcher);
-    auto listenResult = host.listen(socketName);
+    auto listenResult = host.listen(normalizedSocketName);
     if (!listenResult) {
         std::cerr << "Failed to start dev audit service host: "
                   << listenResult.error().message << '\n';
         return 1;
     }
 
-    std::cout << "ETFDataService dev audit service listening on " << socketName << '\n';
+    std::cout << "ETFDataService dev audit service listening on " << normalizedSocketName << '\n';
     std::cout << "Development preview: enabled write actions are data.audit.append and "
               << "accounting.snapshot.write; snapshot write is allowlisted to derived "
               << "snapshot tables only.\n";

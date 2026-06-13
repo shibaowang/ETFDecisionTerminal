@@ -25,6 +25,70 @@ $dbPathFull = if ([System.IO.Path]::IsPathRooted($DbPath)) {
     [System.IO.Path]::GetFullPath((Join-Path $repoRoot $DbPath))
 }
 
+function Normalize-ETFDTLocalSocketName {
+    param(
+        [string]$Name,
+        [string]$Fallback = "ETFDataServiceDailyUse"
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Name)) {
+        return $Fallback
+    }
+
+    $normalized = [regex]::Replace($Name.Trim(), "[^A-Za-z0-9_.-]+", "-")
+    $normalized = $normalized.Trim(".", "-")
+    if ([string]::IsNullOrWhiteSpace($normalized)) {
+        return $Fallback
+    }
+    return $normalized
+}
+
+function Test-ETFDTLocalSocketReady {
+    param([string]$Name)
+
+    try {
+        $pipe = New-Object System.IO.Pipes.NamedPipeClientStream(
+            ".",
+            $Name,
+            [System.IO.Pipes.PipeDirection]::InOut,
+            [System.IO.Pipes.PipeOptions]::Asynchronous
+        )
+        try {
+            $pipe.Connect(250)
+            return $pipe.IsConnected
+        } finally {
+            $pipe.Dispose()
+        }
+    } catch {
+        return $false
+    }
+}
+
+function ConvertTo-ETFDTCommandLineArgument {
+    param([string]$Value)
+
+    if ($null -eq $Value) {
+        return '""'
+    }
+    if ($Value -notmatch '[\s"]') {
+        return $Value
+    }
+    return '"' + ($Value -replace '"', '\"') + '"'
+}
+
+function Start-ETFDTDetachedGuiProcess {
+    param(
+        [string]$FilePath,
+        [string[]]$ArgumentList
+    )
+
+    $psi = [System.Diagnostics.ProcessStartInfo]::new()
+    $psi.FileName = $FilePath
+    $psi.Arguments = ($ArgumentList | ForEach-Object { ConvertTo-ETFDTCommandLineArgument -Value $_ }) -join " "
+    $psi.UseShellExecute = $true
+    return [System.Diagnostics.Process]::Start($psi)
+}
+
 function Resolve-ETFDTExecutable {
     param(
         [string]$BuildRoot,
@@ -65,19 +129,25 @@ if ([string]::IsNullOrWhiteSpace($shellExe)) {
 
 $logsPath = Join-Path $trialRootFull "logs"
 $pidFile = Join-Path $logsPath "shell.pid"
+$shellLogPath = Join-Path $logsPath "shell.log"
+$shellErrorLogPath = Join-Path $logsPath "shell.err.log"
 New-Item -ItemType Directory -Force -Path $logsPath | Out-Null
+$socketNameNormalized = Normalize-ETFDTLocalSocketName -Name $SocketName
+$socketReadyBeforeShell = Test-ETFDTLocalSocketReady -Name $socketNameNormalized
+Set-Content -LiteralPath $shellLogPath -Value "" -Encoding UTF8
+Set-Content -LiteralPath $shellErrorLogPath -Value "" -Encoding UTF8
 
 $shellArguments = @(
     "--daily-use",
     "--socket-name",
-    $SocketName,
+    $socketNameNormalized,
     "--db",
     $dbPathFull,
     "--default-page",
     "shell-accounting-daily-use"
 )
 
-$process = Start-Process -FilePath $shellExe -ArgumentList $shellArguments -PassThru
+$process = Start-ETFDTDetachedGuiProcess -FilePath $shellExe -ArgumentList $shellArguments
 if ($process.HasExited) {
     throw "ETFDecisionShell exited early with code $($process.ExitCode)."
 }
@@ -91,6 +161,8 @@ $evidence = [ordered]@{
     trialRoot = $trialRootFull
     databasePath = $dbPathFull
     socketName = $SocketName
+    socketNameNormalized = $socketNameNormalized
+    socketReadyBeforeShell = $socketReadyBeforeShell
     shellArguments = $shellArguments
     dailyUseArgumentPassed = $true
     socketNameArgumentPassed = $true
@@ -99,6 +171,8 @@ $evidence = [ordered]@{
     defaultPage = "shell-accounting-daily-use"
     pid = $process.Id
     pidFile = $pidFile
+    logPath = $shellLogPath
+    errorLogPath = $shellErrorLogPath
     defaultTrialRoot = ".local\daily_use"
     defaultDbPath = ".local\daily_use\etfdt_daily_use.sqlite"
     defaultDailyUseRoot = ".local/daily_use"

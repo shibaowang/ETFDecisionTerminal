@@ -15,6 +15,24 @@ $buildRoot = if ([System.IO.Path]::IsPathRooted($BuildDir)) {
 $resolvedDbPath = Join-Path $repoRoot $DbPath
 $cachePath = Join-Path $repoRoot ".local/daily_use/cache/market_cache.json"
 
+function Normalize-ETFDTLocalSocketName {
+    param(
+        [string]$Name,
+        [string]$Fallback = "ETFDataServiceDailyUse"
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Name)) {
+        return $Fallback
+    }
+
+    $normalized = [regex]::Replace($Name.Trim(), "[^A-Za-z0-9_.-]+", "-")
+    $normalized = $normalized.Trim(".", "-")
+    if ([string]::IsNullOrWhiteSpace($normalized)) {
+        return $Fallback
+    }
+    return $normalized
+}
+
 function Resolve-ETFDTExecutable {
     param(
         [string]$BuildRoot,
@@ -94,6 +112,8 @@ foreach ($token in @(
     "--daily-use",
     "--socket-name",
     "ETFDataServiceDailyUse",
+    "Normalize-ETFDTLocalSocketName",
+    "socketNameNormalized",
     "--db",
     "--default-page",
     "shell-accounting-daily-use",
@@ -110,6 +130,30 @@ if ($dailyUseShellScriptText.Contains($demoRcBackslashNeedle) -or
     throw "Daily-use Shell script must not use demo RC paths."
 }
 
+$dailyUseDataServiceScriptPath = Join-Path $repoRoot "scripts\local_trial\Start-ETFDTDailyUseDataService.ps1"
+$dailyUseDataServiceScriptText = Get-Content -LiteralPath $dailyUseDataServiceScriptPath -Raw
+foreach ($token in @(
+    "Normalize-ETFDTLocalSocketName",
+    "Test-ETFDTLocalSocketReady",
+    "dataservice.pid",
+    "dataservice.log",
+    "dataservice.err.log",
+    "socketReady",
+    "socketNameNormalized",
+    "ETFDataServiceDailyUse",
+    "RedirectStandardOutput",
+    "RedirectStandardError"
+)) {
+    if (-not $dailyUseDataServiceScriptText.Contains($token)) {
+        throw "Daily-use DataService script missing readiness token: $token"
+    }
+}
+
+$smokeSocketNameNormalized = Normalize-ETFDTLocalSocketName -Name "ETFDataServiceDailyUse"
+if ($smokeSocketNameNormalized -ne "ETFDataServiceDailyUse") {
+    throw "Daily-use socket normalization mismatch: $smokeSocketNameNormalized"
+}
+
 $evidence = [ordered]@{
     task = "EPIC-289"
     dailyUseSmokeReady = $true
@@ -121,6 +165,8 @@ $evidence = [ordered]@{
     dataServiceExeFound = $true
     shellExeFound = $true
     dailyUseShellScriptArgsValidated = $true
+    dataServiceSocketReadinessScriptValidated = $true
+    socketNameNormalized = $smokeSocketNameNormalized
     dailyUseShellPassesDailyUseArg = $true
     dailyUseShellPassesSocketName = $true
     dailyUseShellPassesDbPath = $true

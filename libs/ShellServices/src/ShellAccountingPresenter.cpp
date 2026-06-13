@@ -208,6 +208,11 @@ std::string trimmedStdString(const QString& text)
     return text.trimmed().toStdString();
 }
 
+QString zh(const char* value)
+{
+    return QString::fromUtf8(value);
+}
+
 QString canonicalAsciiToken(QString value)
 {
     return value.trimmed().toUpper();
@@ -238,57 +243,95 @@ QString canonicalPreviewSheetName(const QString& sheetName)
 
 QString canonicalPreviewHeaderName(const QString& header)
 {
+    const auto trimmed = header.trimmed();
     const auto key = canonicalAsciiToken(header);
     if (key == QStringLiteral("ROW_ID") || key == QStringLiteral("ROWID")
-        || key == QStringLiteral("ID")) {
+        || key == QStringLiteral("ID")
+        || trimmed == zh("\xE6""\xB5""\x81""\xE6""\xB0""\xB4""\xE5""\x8F""\xB7")
+        || trimmed == zh("\xE8""\xA1""\x8C""\xE5""\x8F""\xB7")) {
         return QStringLiteral("ROW_ID");
     }
     if (key == QStringLiteral("TIME_UTC") || key == QStringLiteral("TIME")
-        || key == QStringLiteral("OCCURRED_AT")) {
+        || key == QStringLiteral("OCCURRED_AT")
+        || trimmed == zh("\xE6""\x97""\xB6""\xE9""\x97""\xB4")) {
         return QStringLiteral("TIME_UTC");
     }
     if (key == QStringLiteral("TRADE_TIME_UTC") || key == QStringLiteral("TRADE_TIME")
-        || key == QStringLiteral("TRADED_AT")) {
+        || key == QStringLiteral("TRADED_AT")
+        || trimmed == zh("\xE4""\xBA""\xA4""\xE6""\x98""\x93""\xE6""\x97""\xB6""\xE9""\x97""\xB4")
+        || trimmed == zh("\xE6""\x88""\x90""\xE4""\xBA""\xA4""\xE6""\x97""\xB6""\xE9""\x97""\xB4")) {
         return QStringLiteral("TRADE_TIME_UTC");
     }
     if (key == QStringLiteral("ACCOUNT_CODE") || key == QStringLiteral("ACCOUNT_ID")
-        || key == QStringLiteral("ACCOUNT")) {
+        || key == QStringLiteral("ACCOUNT")
+        || trimmed == zh("\xE8""\xB4""\xA6""\xE6""\x88""\xB7""\xE4""\xBB""\xA3""\xE7""\xA0""\x81")
+        || trimmed == zh("\xE8""\xB4""\xA6""\xE6""\x88""\xB7")) {
         return QStringLiteral("ACCOUNT_CODE");
     }
     if (key == QStringLiteral("PORTFOLIO_CODE") || key == QStringLiteral("PORTFOLIO_ID")
-        || key == QStringLiteral("PORTFOLIO")) {
+        || key == QStringLiteral("PORTFOLIO")
+        || trimmed == zh("\xE7""\xBB""\x84""\xE5""\x90""\x88""\xE4""\xBB""\xA3""\xE7""\xA0""\x81")
+        || trimmed == zh("\xE7""\xBB""\x84""\xE5""\x90""\x88")) {
         return QStringLiteral("PORTFOLIO_CODE");
     }
+    if (key == QStringLiteral("STRATEGY_CODE") || key == QStringLiteral("STRATEGYCODE")
+        || trimmed == zh("\xE7""\xAD""\x96""\xE7""\x95""\xA5""\xE4""\xBB""\xA3""\xE7""\xA0""\x81")) {
+        return QStringLiteral("STRATEGY_CODE");
+    }
     if (key == QStringLiteral("INSTRUMENT_CODE") || key == QStringLiteral("SECURITY_CODE")
-        || key == QStringLiteral("SYMBOL")) {
+        || key == QStringLiteral("SYMBOL") || key == QStringLiteral("ACTUAL_CODE")
+        || key == QStringLiteral("ACTUALCODE")
+        || trimmed == zh("\xE8""\xAF""\x81""\xE5""\x88""\xB8""\xE4""\xBB""\xA3""\xE7""\xA0""\x81")
+        || trimmed == zh("\xE6""\xA0""\x87""\xE7""\x9A""\x84""\xE4""\xBB""\xA3""\xE7""\xA0""\x81")
+        || trimmed == zh("\xE5""\xAE""\x9E""\xE9""\x99""\x85""\xE4""\xBB""\xA3""\xE7""\xA0""\x81")) {
         return QStringLiteral("INSTRUMENT_CODE");
     }
-    if (key == QStringLiteral("SIDE") || key == QStringLiteral("ACTION")) {
-        return key == QStringLiteral("ACTION") ? QStringLiteral("ACTION") : QStringLiteral("SIDE");
+    if (key == QStringLiteral("SIDE") || key == QStringLiteral("ACTION")
+        || trimmed == zh("\xE6""\x96""\xB9""\xE5""\x90""\x91")
+        || trimmed == zh("\xE4""\xB9""\xB0""\xE5""\x8D""\x96""\xE6""\x96""\xB9""\xE5""\x90""\x91")
+        || trimmed == zh("\xE5""\x8A""\xA8""\xE4""\xBD""\x9C")) {
+        return key == QStringLiteral("ACTION")
+                || trimmed == zh("\xE5""\x8A""\xA8""\xE4""\xBD""\x9C")
+            ? QStringLiteral("ACTION")
+            : QStringLiteral("SIDE");
     }
-    if (key == QStringLiteral("QUANTITY") || key == QStringLiteral("QTY")) {
+    if (key == QStringLiteral("QUANTITY") || key == QStringLiteral("QTY")
+        || trimmed == zh("\xE6""\x95""\xB0""\xE9""\x87""\x8F")) {
         return QStringLiteral("QUANTITY");
     }
-    if (key == QStringLiteral("PRICE") || key == QStringLiteral("TRADE_PRICE")) {
+    if (key == QStringLiteral("PRICE") || key == QStringLiteral("TRADE_PRICE")
+        || trimmed == zh("\xE4""\xBB""\xB7""\xE6""\xA0""\xBC")
+        || trimmed == zh("\xE6""\x88""\x90""\xE4""\xBA""\xA4""\xE4""\xBB""\xB7""\xE6""\xA0""\xBC")) {
         return QStringLiteral("PRICE");
     }
-    if (key == QStringLiteral("AMOUNT") || key == QStringLiteral("GROSS_AMOUNT")) {
+    if (key == QStringLiteral("AMOUNT") || key == QStringLiteral("GROSS_AMOUNT")
+        || trimmed == zh("\xE9""\x87""\x91""\xE9""\xA2""\x9D")
+        || trimmed == zh("\xE6""\x88""\x90""\xE4""\xBA""\xA4""\xE9""\x87""\x91""\xE9""\xA2""\x9D")) {
         return QStringLiteral("AMOUNT");
     }
-    if (key == QStringLiteral("FEE") || key == QStringLiteral("COMMISSION")) {
+    if (key == QStringLiteral("FEE") || key == QStringLiteral("COMMISSION")
+        || trimmed == zh("\xE6""\x89""\x8B""\xE7""\xBB""\xAD""\xE8""\xB4""\xB9")
+        || trimmed == zh("\xE8""\xB4""\xB9""\xE7""\x94""\xA8")) {
         return QStringLiteral("FEE");
     }
-    if (key == QStringLiteral("CASH_FLOW") || key == QStringLiteral("CASHFLOW")) {
+    if (key == QStringLiteral("CASH_FLOW") || key == QStringLiteral("CASHFLOW")
+        || key == QStringLiteral("NET_CASH_FLOW") || key == QStringLiteral("NET_CASH_IMPACT")
+        || trimmed == zh("\xE7""\x8E""\xB0""\xE9""\x87""\x91""\xE6""\xB5""\x81")
+        || trimmed == zh("\xE5""\x87""\x80""\xE7""\x8E""\xB0""\xE9""\x87""\x91""\xE6""\xB5""\x81")) {
         return QStringLiteral("CASH_FLOW");
     }
-    if (key == QStringLiteral("CURRENCY") || key == QStringLiteral("CCY")) {
+    if (key == QStringLiteral("CURRENCY") || key == QStringLiteral("CCY")
+        || trimmed == zh("\xE5""\xB8""\x81""\xE7""\xA7""\x8D")) {
         return QStringLiteral("CURRENCY");
     }
-    if (key == QStringLiteral("SOURCE") || key == QStringLiteral("SRC")) {
+    if (key == QStringLiteral("SOURCE") || key == QStringLiteral("SRC")
+        || trimmed == zh("\xE6""\x9D""\xA5""\xE6""\xBA""\x90")) {
         return QStringLiteral("SOURCE");
     }
     if (key == QStringLiteral("MEMO") || key == QStringLiteral("NOTE")
-        || key == QStringLiteral("REMARK")) {
+        || key == QStringLiteral("REMARK")
+        || trimmed == zh("\xE5""\xA4""\x87""\xE6""\xB3""\xA8")
+        || trimmed == zh("\xE8""\xAF""\xB4""\xE6""\x98""\x8E")) {
         return QStringLiteral("MEMO");
     }
     if (key == QStringLiteral("PRICE_TIME_UTC") || key == QStringLiteral("PRICE_TIME")) {
@@ -327,7 +370,11 @@ std::optional<QJsonObject> findPreviewSheet(const QJsonArray& sheets, const QStr
             continue;
         }
         const auto sheet = value.toObject();
-        if (canonicalPreviewSheetName(sheet.value(QStringLiteral("name")).toString()) == canonicalName) {
+        auto sheetName = sheet.value(QStringLiteral("name")).toString();
+        if (sheetName.trimmed().isEmpty()) {
+            sheetName = sheet.value(QStringLiteral("sheetName")).toString();
+        }
+        if (canonicalPreviewSheetName(sheetName) == canonicalName) {
             return sheet;
         }
     }
@@ -364,11 +411,58 @@ QString previewCellValue(const std::vector<QString>& headers, const QJsonArray& 
     return previewCellText(row.at(*index));
 }
 
+QString firstPreviewCellValue(
+    const std::vector<QString>& headers,
+    const QJsonArray& row,
+    std::initializer_list<QString> fields)
+{
+    for (const auto& field : fields) {
+        const auto value = previewCellValue(headers, row, field);
+        if (!value.trimmed().isEmpty()) {
+            return value;
+        }
+    }
+    return {};
+}
+
+bool previewHasHeader(const std::vector<QString>& headers, const QString& field)
+{
+    return previewHeaderIndex(headers, field).has_value();
+}
+
+bool previewNumericText(const QString& value)
+{
+    bool ok = false;
+    (void)value.trimmed().toDouble(&ok);
+    return ok && !value.trimmed().isEmpty();
+}
+
+bool previewDigitsOnly(const QString& value)
+{
+    const auto text = value.trimmed();
+    if (text.isEmpty()) {
+        return false;
+    }
+    for (const auto ch : text) {
+        if (!ch.isDigit()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 QString normalizedPreviewTradeAction(const QString& value)
 {
     const auto action = canonicalAsciiToken(value);
     if (action == QStringLiteral("BUY") || action == QStringLiteral("SELL")) {
         return action;
+    }
+    const auto trimmed = value.trimmed();
+    if (trimmed == zh("\xE4""\xB9""\xB0""\xE5""\x85""\xA5")) {
+        return QStringLiteral("BUY");
+    }
+    if (trimmed == zh("\xE5""\x8D""\x96""\xE5""\x87""\xBA")) {
+        return QStringLiteral("SELL");
     }
     return {};
 }
@@ -376,6 +470,7 @@ QString normalizedPreviewTradeAction(const QString& value)
 QString normalizedPreviewCashAction(const QString& value)
 {
     const auto action = canonicalAsciiToken(value);
+    const auto trimmed = value.trimmed();
     if (action == QStringLiteral("INITIALCASH")) {
         return QStringLiteral("INITIAL_CASH");
     }
@@ -386,7 +481,127 @@ QString normalizedPreviewCashAction(const QString& value)
     if (action == QStringLiteral("WITHDRAWAL")) {
         return QStringLiteral("WITHDRAW");
     }
+    if (trimmed == zh("\xE5""\x88""\x9D""\xE5""\xA7""\x8B""\xE7""\x8E""\xB0""\xE9""\x87""\x91")) {
+        return QStringLiteral("INITIAL_CASH");
+    }
+    if (trimmed == zh("\xE5""\x85""\xA5""\xE9""\x87""\x91")) {
+        return QStringLiteral("DEPOSIT");
+    }
+    if (trimmed == zh("\xE5""\x87""\xBA""\xE9""\x87""\x91")) {
+        return QStringLiteral("WITHDRAW");
+    }
+    if (trimmed == zh("\xE8""\xB0""\x83""\xE6""\x95""\xB4")
+        || trimmed == zh("\xE5""\x88""\x86""\xE7""\xBA""\xA2")) {
+        return QStringLiteral("ADJUSTMENT");
+    }
     return {};
+}
+
+bool knownUnsupportedWorkbookAction(const QString& value)
+{
+    const auto action = canonicalAsciiToken(value);
+    const auto trimmed = value.trimmed();
+    return action == QStringLiteral("SHARE_ADJUSTMENT") || action == QStringLiteral("SPLIT")
+        || action == QStringLiteral("MERGE") || action == QStringLiteral("EX_RIGHT_CALIBRATION")
+        || trimmed == zh("\xE9""\x80""\x81""\xE8""\x82""\xA1")
+        || trimmed == zh("\xE6""\x8B""\x86""\xE5""\x88""\x86")
+        || trimmed == zh("\xE5""\x90""\x88""\xE5""\xB9""\xB6")
+        || trimmed == zh("\xE9""\x99""\xA4""\xE6""\x9D""\x83""\xE6""\xA0""\xA1""\xE5""\x87""\x86");
+}
+
+QString signedPreviewAmountText(const QString& amount, double sign)
+{
+    if (!previewNumericText(amount)) {
+        return {};
+    }
+    return QString::number(amount.trimmed().toDouble() * sign, 'g', 15);
+}
+
+struct PreviewTradeDigestFact {
+    QString factId;
+    QString tradeTime;
+    QString accountId;
+    QString portfolioId;
+    QString instrumentCode;
+    QString action;
+    QString quantityText;
+    QString priceText;
+    QString amountText;
+    QString feeText;
+    QString cashFlowText;
+    QString currency;
+    QString source;
+    QString note;
+};
+
+struct PreviewCashDigestFact {
+    QString factId;
+    QString time;
+    QString accountId;
+    QString portfolioId;
+    QString action;
+    QString amountText;
+    QString currency;
+    QString note;
+};
+
+void hashPreviewField(std::uint64_t& hash, const QString& value);
+
+bool previewWorkbookTradeLogRowBlank(const std::vector<QString>& headers, const QJsonArray& row)
+{
+    for (const auto& field : {
+             QStringLiteral("TIME_UTC"),
+             QStringLiteral("TRADE_TIME_UTC"),
+             QStringLiteral("ACTION"),
+             QStringLiteral("SIDE"),
+             QStringLiteral("STRATEGY_CODE"),
+             QStringLiteral("INSTRUMENT_CODE"),
+         }) {
+        if (!previewCellValue(headers, row, field).trimmed().isEmpty()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void hashPreviewDigestFacts(
+    std::uint64_t& hash,
+    const std::vector<PreviewTradeDigestFact>& tradeFacts,
+    const std::vector<PreviewCashDigestFact>& cashFacts,
+    int marketPriceFactCount,
+    int fxRateFactCount)
+{
+    hashPreviewField(hash, QStringLiteral("accepted"));
+    hashPreviewField(hash, QString::number(tradeFacts.size()));
+    hashPreviewField(hash, QString::number(cashFacts.size()));
+    hashPreviewField(hash, QString::number(marketPriceFactCount));
+    hashPreviewField(hash, QString::number(fxRateFactCount));
+
+    for (const auto& fact : tradeFacts) {
+        hashPreviewField(hash, fact.factId);
+        hashPreviewField(hash, fact.tradeTime);
+        hashPreviewField(hash, fact.accountId);
+        hashPreviewField(hash, fact.portfolioId);
+        hashPreviewField(hash, fact.instrumentCode);
+        hashPreviewField(hash, fact.action);
+        hashPreviewField(hash, fact.quantityText);
+        hashPreviewField(hash, fact.priceText);
+        hashPreviewField(hash, fact.amountText);
+        hashPreviewField(hash, fact.feeText);
+        hashPreviewField(hash, fact.currency);
+        hashPreviewField(hash, fact.source);
+        hashPreviewField(hash, fact.note);
+    }
+    for (const auto& fact : cashFacts) {
+        hashPreviewField(hash, fact.factId);
+        hashPreviewField(hash, fact.time);
+        hashPreviewField(hash, fact.accountId);
+        hashPreviewField(hash, fact.portfolioId);
+        hashPreviewField(hash, fact.action);
+        hashPreviewField(hash, fact.amountText);
+        hashPreviewField(hash, fact.currency);
+        hashPreviewField(hash, fact.note);
+    }
 }
 
 void hashPreviewText(std::uint64_t& hash, const QString& value)
@@ -3296,49 +3511,11 @@ QString ShellAccountingPresenter::acceptedExcelVbaImportPreviewDigest(
 
     const auto cashSheet = findPreviewSheet(sheets, QStringLiteral("InitialCash"));
     const auto tradeSheet = findPreviewSheet(sheets, QStringLiteral("Trades"));
-    if (!cashSheet.has_value() || !tradeSheet.has_value()) {
+    if (!tradeSheet.has_value()) {
         return {};
     }
 
-    const auto cashHeaders = previewHeaders(*cashSheet);
     const auto tradeHeaders = previewHeaders(*tradeSheet);
-    for (const auto& field : {
-             QStringLiteral("ROW_ID"),
-             QStringLiteral("TIME_UTC"),
-             QStringLiteral("ACCOUNT_CODE"),
-             QStringLiteral("PORTFOLIO_CODE"),
-             QStringLiteral("ACTION"),
-             QStringLiteral("AMOUNT"),
-             QStringLiteral("CURRENCY"),
-             QStringLiteral("MEMO"),
-         }) {
-        if (!previewHeaderIndex(cashHeaders, field).has_value()) {
-            return {};
-        }
-    }
-    for (const auto& field : {
-             QStringLiteral("ROW_ID"),
-             QStringLiteral("TRADE_TIME_UTC"),
-             QStringLiteral("ACCOUNT_CODE"),
-             QStringLiteral("PORTFOLIO_CODE"),
-             QStringLiteral("INSTRUMENT_CODE"),
-             QStringLiteral("SIDE"),
-             QStringLiteral("QUANTITY"),
-             QStringLiteral("PRICE"),
-             QStringLiteral("AMOUNT"),
-             QStringLiteral("FEE"),
-             QStringLiteral("CASH_FLOW"),
-             QStringLiteral("CURRENCY"),
-             QStringLiteral("SOURCE"),
-             QStringLiteral("MEMO"),
-         }) {
-        if (!previewHeaderIndex(tradeHeaders, field).has_value()) {
-            return {};
-        }
-    }
-
-    const auto cashRows = cashSheet->value(QStringLiteral("rows")).toArray();
-    const auto tradeRows = tradeSheet->value(QStringLiteral("rows")).toArray();
     const auto priceSheet = findPreviewSheet(sheets, QStringLiteral("MarketPrices"));
     const auto fxSheet = findPreviewSheet(sheets, QStringLiteral("FxRates"));
     const auto priceRows = priceSheet.has_value()
@@ -3348,57 +3525,260 @@ QString ShellAccountingPresenter::acceptedExcelVbaImportPreviewDigest(
         ? fxSheet->value(QStringLiteral("rows")).toArray()
         : QJsonArray {};
 
+    std::vector<PreviewTradeDigestFact> tradeFacts;
+    std::vector<PreviewCashDigestFact> cashFacts;
+    const auto defaultIfEmpty = [](const QString& value, const QString& fallback) {
+        return value.trimmed().isEmpty() ? fallback : value;
+    };
+
+    const bool workbookTradeLog = previewHasHeader(tradeHeaders, QStringLiteral("ACTION"))
+        && (previewHasHeader(tradeHeaders, QStringLiteral("STRATEGY_CODE"))
+            || previewHasHeader(tradeHeaders, QStringLiteral("CASH_FLOW")));
+    if (workbookTradeLog) {
+        if (!previewHasHeader(tradeHeaders, QStringLiteral("ACTION"))
+            || !previewHasHeader(tradeHeaders, QStringLiteral("AMOUNT"))
+            || (!previewHasHeader(tradeHeaders, QStringLiteral("INSTRUMENT_CODE"))
+                && !previewHasHeader(tradeHeaders, QStringLiteral("STRATEGY_CODE")))) {
+            return {};
+        }
+
+        const auto tradeRows = tradeSheet->value(QStringLiteral("rows")).toArray();
+        for (int rowIndex = 0; rowIndex < tradeRows.size(); ++rowIndex) {
+            const auto rowValue = tradeRows.at(rowIndex);
+            if (!rowValue.isArray()) {
+                return {};
+            }
+            const auto row = rowValue.toArray();
+            if (previewWorkbookTradeLogRowBlank(tradeHeaders, row)) {
+                continue;
+            }
+
+            const auto rowId = defaultIfEmpty(
+                previewCellValue(tradeHeaders, row, QStringLiteral("ROW_ID")),
+                QStringLiteral("Trades:%1").arg(rowIndex + 1));
+            const auto actionText = firstPreviewCellValue(
+                tradeHeaders,
+                row,
+                {QStringLiteral("ACTION"), QStringLiteral("SIDE")});
+            if (knownUnsupportedWorkbookAction(actionText)) {
+                continue;
+            }
+            const auto tradeAction = normalizedPreviewTradeAction(actionText);
+            const auto cashAction = normalizedPreviewCashAction(actionText);
+            const auto strategyCode =
+                previewCellValue(tradeHeaders, row, QStringLiteral("STRATEGY_CODE"));
+            const auto amount = previewCellValue(tradeHeaders, row, QStringLiteral("AMOUNT"));
+            const auto cashFlow =
+                previewCellValue(tradeHeaders, row, QStringLiteral("CASH_FLOW"));
+            const auto source = previewCellValue(tradeHeaders, row, QStringLiteral("SOURCE"));
+            const auto memo = previewCellValue(tradeHeaders, row, QStringLiteral("MEMO"));
+
+            if (canonicalAsciiToken(strategyCode) == QStringLiteral("CASH")
+                || !cashAction.isEmpty()) {
+                auto cashAmount = cashFlow;
+                if (cashAmount.trimmed().isEmpty()) {
+                    const double sign =
+                        cashAction == QStringLiteral("WITHDRAW") ? -1.0 : 1.0;
+                    cashAmount = signedPreviewAmountText(amount, sign);
+                }
+                if (cashAction.isEmpty() || !previewNumericText(cashAmount)) {
+                    return {};
+                }
+                cashFacts.push_back(PreviewCashDigestFact{
+                    rowId,
+                    firstPreviewCellValue(
+                        tradeHeaders,
+                        row,
+                        {QStringLiteral("TIME_UTC"), QStringLiteral("TRADE_TIME_UTC")}),
+                    defaultIfEmpty(
+                        previewCellValue(tradeHeaders, row, QStringLiteral("ACCOUNT_CODE")),
+                        QStringLiteral("DEMO_ACCOUNT")),
+                    defaultIfEmpty(
+                        previewCellValue(tradeHeaders, row, QStringLiteral("PORTFOLIO_CODE")),
+                        QStringLiteral("DEMO_PORTFOLIO")),
+                    cashAction,
+                    cashAmount,
+                    defaultIfEmpty(
+                        firstPreviewCellValue(tradeHeaders, row, {QStringLiteral("CURRENCY")}),
+                        QStringLiteral("CNY")),
+                    memo,
+                });
+                continue;
+            }
+
+            if (!tradeAction.isEmpty()) {
+                auto instrumentCode =
+                    previewCellValue(tradeHeaders, row, QStringLiteral("INSTRUMENT_CODE"));
+                if (instrumentCode.trimmed().isEmpty()) {
+                    instrumentCode = strategyCode;
+                }
+                auto fee = previewCellValue(tradeHeaders, row, QStringLiteral("FEE"));
+                if (fee.trimmed().isEmpty()) {
+                    fee = QStringLiteral("0");
+                }
+                auto tradeCashFlow = cashFlow;
+                if (tradeCashFlow.trimmed().isEmpty()) {
+                    const double sign = tradeAction == QStringLiteral("BUY") ? -1.0 : 1.0;
+                    tradeCashFlow = signedPreviewAmountText(amount, sign);
+                }
+                if (instrumentCode.trimmed().isEmpty()
+                    || !previewNumericText(
+                        previewCellValue(tradeHeaders, row, QStringLiteral("QUANTITY")))
+                    || !previewNumericText(
+                        previewCellValue(tradeHeaders, row, QStringLiteral("PRICE")))
+                    || !previewNumericText(amount) || !previewNumericText(fee)
+                    || !previewNumericText(tradeCashFlow)) {
+                    return {};
+                }
+
+                auto mappedSource = source;
+                if (previewDigitsOnly(instrumentCode)) {
+                    mappedSource = zh("\xE5""\x9C""\xBA""\xE5""\xA4""\x96"
+                                      "\xE6""\x9B""\xBF""\xE4""\xBB""\xA3");
+                }
+                tradeFacts.push_back(PreviewTradeDigestFact{
+                    rowId,
+                    firstPreviewCellValue(
+                        tradeHeaders,
+                        row,
+                        {QStringLiteral("TRADE_TIME_UTC"), QStringLiteral("TIME_UTC")}),
+                    defaultIfEmpty(
+                        previewCellValue(tradeHeaders, row, QStringLiteral("ACCOUNT_CODE")),
+                        QStringLiteral("DEMO_ACCOUNT")),
+                    defaultIfEmpty(
+                        previewCellValue(tradeHeaders, row, QStringLiteral("PORTFOLIO_CODE")),
+                        QStringLiteral("DEMO_PORTFOLIO")),
+                    instrumentCode,
+                    tradeAction,
+                    previewCellValue(tradeHeaders, row, QStringLiteral("QUANTITY")),
+                    previewCellValue(tradeHeaders, row, QStringLiteral("PRICE")),
+                    amount,
+                    fee,
+                    tradeCashFlow,
+                    defaultIfEmpty(
+                        firstPreviewCellValue(tradeHeaders, row, {QStringLiteral("CURRENCY")}),
+                        QStringLiteral("CNY")),
+                    mappedSource,
+                    memo,
+                });
+                continue;
+            }
+
+            return {};
+        }
+    } else {
+        if (!cashSheet.has_value()) {
+            return {};
+        }
+        const auto cashHeaders = previewHeaders(*cashSheet);
+        for (const auto& field : {
+                 QStringLiteral("ROW_ID"),
+                 QStringLiteral("TIME_UTC"),
+                 QStringLiteral("ACCOUNT_CODE"),
+                 QStringLiteral("PORTFOLIO_CODE"),
+                 QStringLiteral("ACTION"),
+                 QStringLiteral("AMOUNT"),
+                 QStringLiteral("CURRENCY"),
+                 QStringLiteral("MEMO"),
+             }) {
+            if (!previewHeaderIndex(cashHeaders, field).has_value()) {
+                return {};
+            }
+        }
+        for (const auto& field : {
+                 QStringLiteral("ROW_ID"),
+                 QStringLiteral("TRADE_TIME_UTC"),
+                 QStringLiteral("ACCOUNT_CODE"),
+                 QStringLiteral("PORTFOLIO_CODE"),
+                 QStringLiteral("INSTRUMENT_CODE"),
+                 QStringLiteral("SIDE"),
+                 QStringLiteral("QUANTITY"),
+                 QStringLiteral("PRICE"),
+                 QStringLiteral("AMOUNT"),
+                 QStringLiteral("FEE"),
+                 QStringLiteral("CASH_FLOW"),
+                 QStringLiteral("CURRENCY"),
+                 QStringLiteral("SOURCE"),
+                 QStringLiteral("MEMO"),
+             }) {
+            if (!previewHeaderIndex(tradeHeaders, field).has_value()) {
+                return {};
+            }
+        }
+
+        const auto tradeRows = tradeSheet->value(QStringLiteral("rows")).toArray();
+        for (const auto& rowValue : tradeRows) {
+            if (!rowValue.isArray()) {
+                return {};
+            }
+            const auto row = rowValue.toArray();
+            const auto action =
+                normalizedPreviewTradeAction(previewCellValue(tradeHeaders, row, QStringLiteral("SIDE")));
+            if (action.isEmpty()) {
+                return {};
+            }
+            for (const auto& field : {
+                     QStringLiteral("QUANTITY"),
+                     QStringLiteral("PRICE"),
+                     QStringLiteral("AMOUNT"),
+                     QStringLiteral("FEE"),
+                     QStringLiteral("CASH_FLOW"),
+                 }) {
+                if (!previewNumericText(previewCellValue(tradeHeaders, row, field))) {
+                    return {};
+                }
+            }
+            tradeFacts.push_back(PreviewTradeDigestFact{
+                previewCellValue(tradeHeaders, row, QStringLiteral("ROW_ID")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("TRADE_TIME_UTC")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("ACCOUNT_CODE")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("PORTFOLIO_CODE")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("INSTRUMENT_CODE")),
+                action,
+                previewCellValue(tradeHeaders, row, QStringLiteral("QUANTITY")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("PRICE")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("AMOUNT")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("FEE")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("CASH_FLOW")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("CURRENCY")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("SOURCE")),
+                previewCellValue(tradeHeaders, row, QStringLiteral("MEMO")),
+            });
+        }
+
+        const auto cashRows = cashSheet->value(QStringLiteral("rows")).toArray();
+        for (const auto& rowValue : cashRows) {
+            if (!rowValue.isArray()) {
+                return {};
+            }
+            const auto row = rowValue.toArray();
+            const auto action = normalizedPreviewCashAction(
+                previewCellValue(cashHeaders, row, QStringLiteral("ACTION")));
+            if (action.isEmpty()
+                || !previewNumericText(
+                    previewCellValue(cashHeaders, row, QStringLiteral("AMOUNT")))
+                || previewCellValue(cashHeaders, row, QStringLiteral("CURRENCY")).trimmed().isEmpty()) {
+                return {};
+            }
+            cashFacts.push_back(PreviewCashDigestFact{
+                previewCellValue(cashHeaders, row, QStringLiteral("ROW_ID")),
+                previewCellValue(cashHeaders, row, QStringLiteral("TIME_UTC")),
+                previewCellValue(cashHeaders, row, QStringLiteral("ACCOUNT_CODE")),
+                previewCellValue(cashHeaders, row, QStringLiteral("PORTFOLIO_CODE")),
+                action,
+                previewCellValue(cashHeaders, row, QStringLiteral("AMOUNT")),
+                previewCellValue(cashHeaders, row, QStringLiteral("CURRENCY")),
+                previewCellValue(cashHeaders, row, QStringLiteral("MEMO")),
+            });
+        }
+    }
+
+    if (tradeFacts.empty() && cashFacts.empty() && priceRows.isEmpty() && fxRows.isEmpty()) {
+        return {};
+    }
+
     std::uint64_t hash = 14695981039346656037ULL;
-    hashPreviewField(hash, QStringLiteral("accepted"));
-    hashPreviewField(hash, QString::number(tradeRows.size()));
-    hashPreviewField(hash, QString::number(cashRows.size()));
-    hashPreviewField(hash, QString::number(priceRows.size()));
-    hashPreviewField(hash, QString::number(fxRows.size()));
-
-    for (const auto& rowValue : tradeRows) {
-        if (!rowValue.isArray()) {
-            return {};
-        }
-        const auto row = rowValue.toArray();
-        const auto action =
-            normalizedPreviewTradeAction(previewCellValue(tradeHeaders, row, QStringLiteral("SIDE")));
-        if (action.isEmpty()) {
-            return {};
-        }
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("ROW_ID")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("TRADE_TIME_UTC")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("ACCOUNT_CODE")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("PORTFOLIO_CODE")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("INSTRUMENT_CODE")));
-        hashPreviewField(hash, action);
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("QUANTITY")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("PRICE")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("AMOUNT")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("FEE")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("CURRENCY")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("SOURCE")));
-        hashPreviewField(hash, previewCellValue(tradeHeaders, row, QStringLiteral("MEMO")));
-    }
-
-    for (const auto& rowValue : cashRows) {
-        if (!rowValue.isArray()) {
-            return {};
-        }
-        const auto row = rowValue.toArray();
-        const auto action =
-            normalizedPreviewCashAction(previewCellValue(cashHeaders, row, QStringLiteral("ACTION")));
-        if (action.isEmpty()) {
-            return {};
-        }
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("ROW_ID")));
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("TIME_UTC")));
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("ACCOUNT_CODE")));
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("PORTFOLIO_CODE")));
-        hashPreviewField(hash, action);
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("AMOUNT")));
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("CURRENCY")));
-        hashPreviewField(hash, previewCellValue(cashHeaders, row, QStringLiteral("MEMO")));
-    }
+    hashPreviewDigestFacts(hash, tradeFacts, cashFacts, priceRows.size(), fxRows.size());
 
     valid = true;
     return hexFnv64(hash);

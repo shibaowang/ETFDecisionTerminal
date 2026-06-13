@@ -367,6 +367,8 @@ void assertWorkbookLevelSample(const Harness& h)
     }
     require(sawSensitiveHeaderWarning, "SENSITIVE_HEADER_IGNORED warning present");
     assertDiagnosticsSanitized(result);
+    const auto workbookDigest = previewDigestForParseResult(result);
+    require(workbookDigest.rfind("fnv64-", 0) == 0, "workbook-level persistence digest generated");
 
     const auto actionPayload = previewPayloadViaAction(h, fileName);
     require(boolField(actionPayload, "accepted"), "workbook-level preview action accepted");

@@ -1164,7 +1164,7 @@ Rectangle {
                     Rectangle {
                         objectName: "shellAccountingExcelVbaImportPersistPanel"
                         width: parent.width
-                        height: 286
+                        height: 326
                         radius: 8
                         color: "#fbfcfe"
                         border.color: "#d9e3f2"
@@ -1190,6 +1190,25 @@ Rectangle {
                                 visible: false
                                 width: 0
                                 height: 0
+                            }
+
+                            Text {
+                                objectName: "shellAccountingExcelVbaImportPersistGateDiagnosticsText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "写入门禁：预览通过=" + root.displayBool(accountingPresenter.lastExcelVbaImportPreviewStatus === "ACCEPTED")
+                                        + "；Digest=" + (accountingPresenter.lastExcelVbaImportPreviewDigest.length > 0 ? "已生成" : "缺失")
+                                        + "；Payload=" + (accountingPresenter.excelVbaImportPreviewPayloadAvailable ? "可写入" : "不可写入")
+                                        + "；支持写入记录=" + (accountingPresenter.excelVbaImportPreviewTradeFactCount + accountingPresenter.excelVbaImportPreviewCashFactCount)
+                                        + "；行情记录=" + accountingPresenter.excelVbaImportPreviewMarketPriceFactCount
+                                        + "；汇率记录=" + accountingPresenter.excelVbaImportPreviewFxRateFactCount
+                                        + "；用户确认=" + root.displayBool(root.excelVbaImportPersistConfirmed)
+                                        + "；写入忙碌=" + root.displayBool(accountingPresenter.excelVbaImportPersistBusy)
+                                        + "；可写入=" + root.displayBool(root.excelVbaImportPersistReady())
+                                    : "写入门禁：不可用；可写入=否；Digest=缺失；Payload=不可写入；用户确认=否；写入忙碌=否"
+                                color: "#465066"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
                             }
 
                             Row {

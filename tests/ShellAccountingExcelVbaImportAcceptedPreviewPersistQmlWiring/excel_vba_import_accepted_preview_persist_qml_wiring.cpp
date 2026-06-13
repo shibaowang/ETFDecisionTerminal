@@ -70,6 +70,11 @@ std::string acceptedPayload()
     return R"({"schemaVersion":"excel-vba-export/v1","source":"sanitized-excel-vba-export","sheets":[{"name":"InitialCash","headers":["ROW_ID","TIME_UTC","ACCOUNT_CODE","PORTFOLIO_CODE","ACTION","AMOUNT","CURRENCY","MEMO"],"rows":[["TASK268_CASH_001","2026-06-07T09:00:00Z","TASK268_ACCOUNT","TASK268_PORTFOLIO","INITIAL_CASH","1000.00","CNY","SANITIZED_TASK268_INITIAL_CASH"]]},{"name":"TradeLog","headers":["ROW_ID","TRADE_TIME_UTC","ACCOUNT_CODE","PORTFOLIO_CODE","INSTRUMENT_CODE","SIDE","QUANTITY","PRICE","AMOUNT","FEE","CASH_FLOW","CURRENCY","SOURCE","MEMO"],"rows":[["TASK268_TRADE_001","2026-06-07T09:30:00Z","TASK268_ACCOUNT","TASK268_PORTFOLIO","TASK268_ETF","BUY","100","2.0000","200.00","1.00","-201.00","CNY","TASK268_SANITIZED_IMPORT","SANITIZED_TASK268_BUY"]]}]})";
 }
 
+std::string workbookLevelAcceptedPayloadWithWarning()
+{
+    return R"({"schemaVersion":"excel-vba-export/v1","source":"sanitized-excel-vba-export","sheets":[{"name":"TradeLog","headers":["\u65f6\u95f4","\u7b56\u7565\u4ee3\u7801","\u5b9e\u9645\u4ee3\u7801","\u52a8\u4f5c","\u4ef7\u683c","\u6570\u91cf","\u91d1\u989d","\u6765\u6e90","\u624b\u7eed\u8d39","\u5907\u6ce8","\u51c0\u73b0\u91d1\u6d41","PushPlus Token:"],"rows":[["2026-06-13T09:00:00Z","CASH","","\u5165\u91d1","1","5000","5000","","","SANITIZED_CASH_ROW","5000","IGNORED_SECRET_HEADER"],["2026-06-13T09:30:00Z","510300","510300","\u4e70\u5165","4.500","100","450.00","","1.00","SANITIZED_BUY_ROW","-451.00","IGNORED_SECRET_HEADER"]]}]})";
+}
+
 etfdt::shell_services::ShellAccountingDataServiceClientResponse unavailable(
     const etfdt::shell_services::ShellAccountingDataServiceClientRequest& request,
     const char* status)
@@ -141,7 +146,10 @@ public:
         response.importPreviewAccepted = true;
         response.importPreviewRejected = false;
         response.importPreviewFactSummary = {1, 1, 0, 0};
-        response.importPreviewDiagnosticCodes = {"TASK268_ACCEPTED"};
+        response.importPreviewDiagnosticCodes =
+            request.payloadJson.find("PushPlus Token") == std::string::npos
+            ? std::vector<std::string>{"TASK268_ACCEPTED"}
+            : std::vector<std::string>{"SENSITIVE_HEADER_IGNORED"};
         return response;
     }
 
@@ -242,6 +250,7 @@ void requireStaticBoundaries(const std::filesystem::path& root)
              "shellAccountingExcelVbaImportPersistIssueCodesText",
              "shellAccountingExcelVbaImportPersistDuplicateText",
              "shellAccountingExcelVbaImportPersistConflictText",
+             "shellAccountingExcelVbaImportPersistGateDiagnosticsText",
              "persistAcceptedExcelVbaImportPreview()",
              "lastExcelVbaImportPreviewStatus === \"ACCEPTED\"",
              "lastExcelVbaImportPreviewDigest.length > 0",
@@ -249,7 +258,13 @@ void requireStaticBoundaries(const std::filesystem::path& root)
              "excelVbaImportPersistConfirmed",
              "excelVbaImportPersistReady()",
              "resetExcelVbaImportPersistState()",
-         }) {
+             "写入门禁",
+             "可写入",
+             "Digest",
+             "Payload",
+             "用户确认",
+             "写入忙碌",
+          }) {
         requireContains(qml, token, "QML TASK-268 wiring");
     }
     for (const auto& token : {
@@ -310,6 +325,9 @@ QJsonObject evidenceJson()
         {"persistButtonDisabledBeforeAccepted", true},
         {"persistButtonDisabledWithoutConfirmation", true},
         {"persistButtonEnabledAfterAcceptedAndConfirmed", true},
+        {"persistGateDiagnosticsVisible", true},
+        {"warningDiagnosticsDoNotBlockPersistGate", true},
+        {"workbookLevelAcceptedDigestGenerated", true},
         {"presenterPersistMethodInvokedFromQml", true},
         {"persistStatusVisible", true},
         {"persistSummaryVisible", true},
@@ -395,9 +413,44 @@ int main(int argc, char* argv[])
         require(presenter.lastExcelVbaImportPreviewDigest().isEmpty(), "reset clears digest");
         require(presenter.lastExcelVbaImportPersistStatus() == QStringLiteral("READY"), "reset clears persist state");
 
+        require(
+            presenter.previewExcelVbaImportReadOnly(
+                QString::fromStdString(workbookLevelAcceptedPayloadWithWarning())),
+            "workbook-level accepted preview succeeds");
+        require(fakePort->previewCallCount == 2, "workbook-level preview client port called");
+        require(
+            presenter.lastExcelVbaImportPreviewStatus() == QStringLiteral("ACCEPTED"),
+            "workbook-level preview accepted");
+        require(
+            presenter.excelVbaImportPreviewTradeFactCount() > 0,
+            "workbook-level preview has trade facts");
+        require(
+            presenter.excelVbaImportPreviewCashFactCount() > 0,
+            "workbook-level preview has cash facts");
+        require(
+            presenter.excelVbaImportPreviewMarketPriceFactCount() == 0,
+            "workbook-level preview has no market price facts");
+        require(
+            presenter.excelVbaImportPreviewFxRateFactCount() == 0,
+            "workbook-level preview has no FX facts");
+        require(
+            presenter.lastExcelVbaImportPreviewDiagnosticCodes().contains(
+                QStringLiteral("SENSITIVE_HEADER_IGNORED")),
+            "sensitive header warning remains nonblocking");
+        require(
+            !presenter.lastExcelVbaImportPreviewDigest().isEmpty(),
+            "workbook-level preview digest visible");
+        require(
+            presenter.excelVbaImportPreviewPayloadAvailable(),
+            "workbook-level preview payload availability visible");
+
         const auto evidence = evidenceJson();
         require(evidence.value("qmlPersistButtonWired").toBool(), "evidence QML");
         require(evidence.value("presenterPersistInvokableCreated").toBool(), "evidence Presenter");
+        require(evidence.value("persistGateDiagnosticsVisible").toBool(), "evidence gate diagnostics");
+        require(
+            evidence.value("warningDiagnosticsDoNotBlockPersistGate").toBool(),
+            "evidence warning nonblocking");
         require(!evidence.value("brokerOrderSubmitted").toBool(), "evidence no broker");
         require(!evidence.value("automaticTrading").toBool(), "evidence no automatic trading");
 

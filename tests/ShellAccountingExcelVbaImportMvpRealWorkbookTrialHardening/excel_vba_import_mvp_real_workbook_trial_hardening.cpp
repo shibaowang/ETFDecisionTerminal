@@ -575,14 +575,22 @@ void runLocalServiceE2e(
 
     etfdt::service_runtime::ActionDispatcher dispatcher(etfdt::protocol::ServiceName::ETFDataService);
     etfdt::service_runtime::registerBuiltinActions(dispatcher);
-    etfdt::data_service_api::registerDataServiceReadOnlyActions(dispatcher, *fixture.connection);
-    etfdt::data_service_api::registerDataServiceWriteActions(dispatcher, *fixture.connection);
+    etfdt::data_service_api::registerDataServiceDailyUseActions(dispatcher, *fixture.connection);
     require(
         dispatcher.hasAction(etfdt::data_service_api::kActionAccountingExcelVbaImportReadOnlyPreview),
         "read-only preview action registered");
     require(
         dispatcher.hasAction(etfdt::data_service_api::kActionAccountingExcelVbaImportPersistManualEntry),
         "persist manual entry action registered");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingBrokerOrderDryRun),
+        "daily-use mode does not register broker order action");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingTradeDraftCreate),
+        "daily-use mode does not register trade draft create action");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingTradeDraftConfirm),
+        "daily-use mode does not register trade draft confirm action");
 
     etfdt::service_host::ActionServiceHost host(dispatcher);
     const std::string socketName = "ETFDecisionTerminalEpic275Trial_"

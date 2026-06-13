@@ -2329,6 +2329,8 @@ _epic287_apply_global_chinese_ui_readability_exact_paths()
 
 
 EPIC_289_FIX_EXACT_PATHS = {
+    "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActionRegistrar.h",
     "scripts/local_trial/Start-ETFDTDailyUseShell.ps1",
     "apps/ETFDecisionShell/qml/pages/ShellAccountingReadOnlyPage.qml",
     "apps/ETFDecisionShell/src/main.cpp",

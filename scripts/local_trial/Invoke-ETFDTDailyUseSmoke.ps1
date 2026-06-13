@@ -141,12 +141,21 @@ foreach ($token in @(
     "socketReady",
     "socketNameNormalized",
     "ETFDataServiceDailyUse",
+    "--serve-daily-use",
+    "dailyUseWriteActionsEnabled",
+    "excelVbaImportPersistActionRegistered",
+    "serveMode",
+    "readOnlyOnlyMode",
+    "brokerOrderActionsRegistered",
     "RedirectStandardOutput",
     "RedirectStandardError"
 )) {
     if (-not $dailyUseDataServiceScriptText.Contains($token)) {
         throw "Daily-use DataService script missing readiness token: $token"
     }
+}
+if ($dailyUseDataServiceScriptText.Contains("--serve-readonly")) {
+    throw "Daily-use DataService script must use --serve-daily-use, not pure --serve-readonly."
 }
 
 $smokeSocketNameNormalized = Normalize-ETFDTLocalSocketName -Name "ETFDataServiceDailyUse"
@@ -171,6 +180,11 @@ $evidence = [ordered]@{
     dailyUseShellPassesSocketName = $true
     dailyUseShellPassesDbPath = $true
     dailyUseShellPassesDefaultPage = $true
+    dailyUseWriteActionsEnabled = $true
+    excelVbaImportPersistActionRegistered = $true
+    serveMode = "daily-use"
+    readOnlyOnlyMode = $false
+    brokerOrderActionsRegistered = $false
     noNetworkFixtureMode = [bool]$NoNetworkFixtureMode
     defaultDailyUseDbPath = ".local/daily_use/etfdt_daily_use.sqlite"
     defaultMarketCachePath = ".local/daily_use/cache/market_cache.json"

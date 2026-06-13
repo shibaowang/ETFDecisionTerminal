@@ -156,6 +156,24 @@ QString issueTextFromResult(const ShellAccountingServiceResult& result)
     return {};
 }
 
+QString excelVbaImportPersistIssueTextFromResult(const ShellAccountingServiceResult& result)
+{
+    const auto genericIssue = issueTextFromResult(result);
+    const auto payloadStatus = QString::fromStdString(result.payloadStatus);
+    const bool clientCallFailed =
+        payloadStatus == QStringLiteral("DATASERVICE_CLIENT_CALL_FAILED");
+    const bool unsupportedAction =
+        genericIssue.contains(QStringLiteral("Unsupported action"), Qt::CaseInsensitive)
+        || genericIssue.contains(QStringLiteral("INVALID_ACTION"), Qt::CaseInsensitive);
+    if (clientCallFailed || unsupportedAction) {
+        return QStringLiteral(
+            "daily-use DataService 未启用导入写入动作；请使用 "
+            "Start-ETFDTDailyUseDataService.ps1 以 --serve-daily-use 启动。"
+            "当前 DataService 如为 --serve-readonly，只能预览，无法写入导入结果。");
+    }
+    return genericIssue;
+}
+
 QString issueTextFromIssues(const std::vector<ShellAccountingIssue>& issues)
 {
     if (issues.empty()) {
@@ -2572,7 +2590,7 @@ void ShellAccountingPresenter::applyExcelVbaImportPersistManualEntryResult(
         : (result.payloadStatus.empty()
             ? QStringLiteral("ERROR")
             : QString::fromStdString(result.payloadStatus));
-    lastExcelVbaImportPersistIssue_ = issueTextFromResult(result);
+    lastExcelVbaImportPersistIssue_ = excelVbaImportPersistIssueTextFromResult(result);
     if (lastExcelVbaImportPersistIssue_.isEmpty()) {
         lastExcelVbaImportPersistIssue_ =
             QStringLiteral("Excel/VBA import manual entry persistence failed closed.");

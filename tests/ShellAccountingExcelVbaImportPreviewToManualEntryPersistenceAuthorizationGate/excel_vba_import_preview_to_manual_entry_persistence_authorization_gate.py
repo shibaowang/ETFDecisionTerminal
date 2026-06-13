@@ -79,6 +79,10 @@ TASK_271_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportMvpLocalServiceE2eAcceptance/excel_vba_import_mvp_local_service_e2e_acceptance.cpp",
 }
 
+EPIC_289_FIX7_EXACT_PATHS = {
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActionRegistrar.h",
+}
+
 EPIC_272_EXACT_PATHS = {
     "README.md",
     "docs/README.md",
@@ -754,6 +758,8 @@ def require_no_forbidden_changed_paths(paths: set[str]) -> None:
             continue
         if path in EPIC_289_FIX5_EXACT_PATHS:
             continue
+        if path in EPIC_289_FIX7_EXACT_PATHS:
+            continue
         if is_task264_old_gate_repair(path):
             continue
         require(not path.startswith("apps/"), f"apps path unchanged: {path}")
@@ -903,6 +909,7 @@ def main() -> int:
             or changed_path in TASK267_SHELLSERVICES_CONTRACT_PATHS
             or changed_path in TASK269_SUPPORTED_FACT_TYPES_PATHS
             or changed_path in EPIC_289_FIX5_EXACT_PATHS
+            or changed_path in EPIC_289_FIX7_EXACT_PATHS
             or changed_path in TASK_270_EXACT_PATHS or changed_path in TASK_271_EXACT_PATHS
             or changed_path in EPIC_278_EXACT_PATHS
             or is_epic289_readonly_snapshot_action(changed_path)

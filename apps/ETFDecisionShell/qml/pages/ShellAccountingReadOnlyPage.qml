@@ -1315,6 +1315,18 @@ Rectangle {
                             }
 
                             Text {
+                                objectName: "shellAccountingExcelVbaImportPersistIssueText"
+                                width: parent.width
+                                text: root.presenterAvailable
+                                    ? "写入问题：" + accountingPresenter.lastExcelVbaImportPersistIssue
+                                    : "写入问题：不可用"
+                                color: "#9a3412"
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                                visible: !root.presenterAvailable || accountingPresenter.lastExcelVbaImportPersistIssue.length > 0
+                            }
+
+                            Text {
                                 objectName: "shellAccountingExcelVbaImportPersistDuplicateText"
                                 width: parent.width
                                 text: root.presenterAvailable

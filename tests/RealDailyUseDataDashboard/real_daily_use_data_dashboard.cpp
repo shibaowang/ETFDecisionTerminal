@@ -450,8 +450,28 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
 
     const auto dataServiceMain = readFile(sourceRoot / "apps/ETFDataService/src/main.cpp");
     requireContains(dataServiceMain, "--socket-name", "DataService CLI supports socket-name");
+    requireContains(dataServiceMain, "--serve-daily-use", "DataService CLI supports daily-use mode");
+    requireContains(
+        dataServiceMain,
+        "registerDataServiceDailyUseActions",
+        "DataService daily-use mode uses narrow action registrar");
+    requireContains(
+        dataServiceMain,
+        "broker, order,",
+        "DataService daily-use mode documents no broker/order actions");
     requireContains(dataServiceMain, "normalizeLocalSocketName", "DataService main normalizes socket name");
     requireContains(dataServiceMain, "host.listen(normalizedSocketName)", "DataService listens on normalized socket");
+
+    const auto dataServiceRegistrar =
+        readFile(sourceRoot / "libs/DataServiceApi/src/DataServiceActionRegistrar.cpp");
+    requireContains(
+        dataServiceRegistrar,
+        "registerDataServiceDailyUseActions",
+        "DataService registrar exposes daily-use mode");
+    requireContains(
+        dataServiceRegistrar,
+        "kActionAccountingExcelVbaImportPersistManualEntry",
+        "daily-use registrar can register Excel/VBA import persist action");
 
     const auto liveProviderHeader =
         readFile(sourceRoot / "libs/MarketEngine/include/MarketEngine/LivePublicMarketDataProvider.h");
@@ -552,6 +572,13 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(dailyUseService, "socketReady", "daily DataService script reports socketReady");
     requireContains(dailyUseService, "socketNameNormalized", "daily DataService script reports normalized socket");
     requireContains(dailyUseService, "--socket-name\", $socketNameNormalized", "daily DataService script passes normalized socket");
+    requireContains(dailyUseService, "--serve-daily-use", "daily DataService script enables daily-use mode");
+    requireContains(dailyUseService, "dailyUseWriteActionsEnabled = $true", "daily DataService evidence reports write action mode");
+    requireContains(dailyUseService, "excelVbaImportPersistActionRegistered = $true", "daily DataService evidence reports persist action");
+    requireContains(dailyUseService, "serveMode = \"daily-use\"", "daily DataService evidence reports serve mode");
+    requireContains(dailyUseService, "readOnlyOnlyMode = $false", "daily DataService evidence reports not read-only-only");
+    requireContains(dailyUseService, "brokerOrderActionsRegistered = $false", "daily DataService evidence reports no broker actions");
+    requireNotContains(dailyUseService, "--serve-readonly", "daily DataService script does not use pure read-only mode");
 
     const auto dailyUseShell =
         readFile(sourceRoot / "scripts/local_trial/Start-ETFDTDailyUseShell.ps1");
@@ -582,6 +609,11 @@ void runStaticChecks(const std::filesystem::path& sourceRoot)
     requireContains(dailyUseSmoke, "dataServiceSocketReadinessScriptValidated", "daily smoke validates DataService readiness");
     requireContains(dailyUseSmoke, "socketNameNormalized", "daily smoke reports normalized socket");
     requireContains(dailyUseSmoke, "shell-accounting-daily-use", "daily smoke validates default page");
+    requireContains(dailyUseSmoke, "--serve-daily-use", "daily smoke validates daily-use service mode");
+    requireContains(dailyUseSmoke, "dailyUseWriteActionsEnabled", "daily smoke reports write action mode");
+    requireContains(dailyUseSmoke, "excelVbaImportPersistActionRegistered", "daily smoke reports persist action");
+    requireContains(dailyUseSmoke, "readOnlyOnlyMode", "daily smoke reports not read-only-only");
+    requireContains(dailyUseSmoke, "brokerOrderActionsRegistered", "daily smoke reports no broker actions");
 }
 
 }  // namespace

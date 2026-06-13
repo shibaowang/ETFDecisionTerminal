@@ -9,6 +9,10 @@ void registerDataServiceReadOnlyActions(
     etfdt::service_runtime::ActionDispatcher& dispatcher,
     etfdt::data_access::SQLiteConnection& connection);
 
+void registerDataServiceDailyUseActions(
+    etfdt::service_runtime::ActionDispatcher& dispatcher,
+    etfdt::data_access::SQLiteConnection& connection);
+
 void registerDataServiceWriteActions(
     etfdt::service_runtime::ActionDispatcher& dispatcher,
     etfdt::data_access::SQLiteConnection& connection);

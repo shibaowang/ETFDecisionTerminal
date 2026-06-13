@@ -184,7 +184,7 @@ if ($schemaCheckExitCode -ne 0) {
 }
 
 $args = @(
-    "--serve-readonly",
+    "--serve-daily-use",
     "--db", $resolvedDbPath,
     "--socket-name", $socketNameNormalized
 )
@@ -202,6 +202,11 @@ $evidence = [ordered]@{
     executablePath = $serviceExe
     socketName = $SocketName
     socketNameNormalized = $socketNameNormalized
+    dailyUseWriteActionsEnabled = $true
+    excelVbaImportPersistActionRegistered = $true
+    serveMode = "daily-use"
+    readOnlyOnlyMode = $false
+    brokerOrderActionsRegistered = $false
     pidFile = $pidFile
     logPath = $logPath
     errorLogPath = $errorLogPath

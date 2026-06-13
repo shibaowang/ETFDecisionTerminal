@@ -4,9 +4,17 @@
 
 - Start from a clean repo-local daily-use workspace.
 - Confirm DB path is `.local/daily_use/etfdt_daily_use.sqlite`.
-- Launch DataService with daily-use read-only startup policy:
+- Launch DataService with the daily-use service mode:
   `scripts/local_trial/Start-ETFDTDailyUseDataService.ps1`.
+- The DataService startup command must use `--serve-daily-use`, not
+  `--serve-readonly`, so accepted Excel/VBA import persistence is registered
+  without enabling broker, order, or automaticTrading actions.
 - Confirm the DataService startup evidence includes `socketReady=true`.
+- Confirm the DataService startup evidence includes
+  `dailyUseWriteActionsEnabled=true`,
+  `excelVbaImportPersistActionRegistered=true`,
+  `serveMode=daily-use`, `readOnlyOnlyMode=false`, and
+  `brokerOrderActionsRegistered=false`.
 - If DataService readiness fails, inspect:
   `.local/daily_use/logs/dataservice.log`,
   `.local/daily_use/logs/dataservice.err.log`, and
@@ -28,6 +36,14 @@
 - Without import data, confirm the prompt:
   `请先导入真实 VBA 脱敏导出文件。`
 - Import a sanitized VBA export through the existing local workflow.
+- After the preview is `ACCEPTED`, explicitly check the persist confirmation
+  box and click the accepted-preview write button. The normal result must not
+  be `DATASERVICE_CLIENT_CALL_FAILED`; if that status appears, restart
+  DataService with `Start-ETFDTDailyUseDataService.ps1` so it uses
+  `--serve-daily-use`.
+- Confirm the persist result shows `transactionCommitted=true`, positive
+  trade row counts, positive cash adjustment row counts when cash facts exist,
+  and sanitized issue text only.
 - Confirm current holdings are visible.
 - Confirm remaining cash is visible.
 - Confirm total market value is a concrete value when quotes are available.

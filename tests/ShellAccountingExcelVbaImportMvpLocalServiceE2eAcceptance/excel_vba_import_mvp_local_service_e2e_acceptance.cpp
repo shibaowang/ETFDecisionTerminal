@@ -354,8 +354,7 @@ void testMvpLocalServiceE2e(const Harness& h)
 
     etfdt::service_runtime::ActionDispatcher dispatcher(etfdt::protocol::ServiceName::ETFDataService);
     etfdt::service_runtime::registerBuiltinActions(dispatcher);
-    etfdt::data_service_api::registerDataServiceReadOnlyActions(dispatcher, *fixture.connection);
-    etfdt::data_service_api::registerDataServiceWriteActions(dispatcher, *fixture.connection);
+    etfdt::data_service_api::registerDataServiceDailyUseActions(dispatcher, *fixture.connection);
     require(
         dispatcher.hasAction(etfdt::data_service_api::kActionAccountingExcelVbaImportReadOnlyPreview),
         "read-only preview action registered");
@@ -367,6 +366,18 @@ void testMvpLocalServiceE2e(const Harness& h)
     require(
         dispatcher.hasAction(etfdt::data_service_api::kActionPortfolioPnlSummary),
         "portfolio PnL summary registered");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingBrokerOrderDryRun),
+        "daily-use mode does not register broker order action");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingTradeDraftCreate),
+        "daily-use mode does not register trade draft create action");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingTradeDraftConfirm),
+        "daily-use mode does not register trade draft confirm action");
+    require(
+        !dispatcher.hasAction(etfdt::data_service_api::kActionAccountingSnapshotWrite),
+        "daily-use mode does not register snapshot write action");
 
     etfdt::service_host::ActionServiceHost host(dispatcher);
     const std::string socketName = "ETFDecisionTerminalTask271MvpLocalServiceE2e_"

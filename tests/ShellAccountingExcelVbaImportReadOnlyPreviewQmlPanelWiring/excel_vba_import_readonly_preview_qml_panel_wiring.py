@@ -223,6 +223,10 @@ TASK_262_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/excel_vba_import_persist_supported_fact_types_alignment.cpp",
 }
 
+EPIC_289_FIX7_EXACT_PATHS = {
+    "libs/DataServiceApi/include/DataServiceApi/DataServiceActionRegistrar.h",
+}
+
 EPIC_289_FIX5_EXACT_PATHS = {
     "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
     "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
@@ -618,6 +622,8 @@ def main() -> int:
 
     for path in changes:
         if path in TASK_262_EXACT_PATHS:
+            continue
+        if path in EPIC_289_FIX7_EXACT_PATHS:
             continue
         if path in EPIC_289_FIX5_EXACT_PATHS:
             continue

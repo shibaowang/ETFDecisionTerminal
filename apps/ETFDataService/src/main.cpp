@@ -37,6 +37,7 @@ void printHelp()
         << "  ETFDataService --list-strategies --db <path>\n"
         << "  ETFDataService --list-otc --db <path> --strategy-code <code>\n"
         << "  ETFDataService --serve-readonly --db <path> --socket-name <name>\n"
+        << "  ETFDataService --serve-daily-use --db <path> --socket-name <name>\n"
         << "  ETFDataService --serve-dev-audit --db <path> --socket-name <name>\n"
         << "  ETFDataService --help\n"
         << "\n"
@@ -438,6 +439,48 @@ int serveReadOnly(
     return exitCode;
 }
 
+int serveDailyUse(
+    int argc,
+    char* argv[],
+    const std::filesystem::path& dbPath,
+    const std::string& socketName)
+{
+    if (socketName.empty()) {
+        std::cerr << "--socket-name <name> is required for --serve-daily-use\n";
+        return 1;
+    }
+    const auto normalizedSocketName = etfdt::transport::normalizeLocalSocketName(socketName);
+
+    etfdt::data_access::SQLiteConnection connection;
+    auto openResult = openHealthyReadOnlyDatabase(dbPath, connection);
+    if (!openResult) {
+        return printDatabaseError(openResult.error());
+    }
+
+    QCoreApplication app(argc, argv);
+    etfdt::service_runtime::ActionDispatcher dispatcher(
+        etfdt::protocol::ServiceName::ETFDataService);
+    etfdt::service_runtime::registerBuiltinActions(dispatcher);
+    etfdt::data_service_api::registerDataServiceDailyUseActions(dispatcher, connection);
+
+    etfdt::service_host::ActionServiceHost host(dispatcher);
+    auto listenResult = host.listen(normalizedSocketName);
+    if (!listenResult) {
+        std::cerr << "Failed to start daily-use service host: "
+                  << listenResult.error().message << '\n';
+        return 1;
+    }
+
+    std::cout << "ETFDataService daily-use service listening on "
+              << normalizedSocketName << '\n';
+    std::cout << "Daily-use mode: read-only dashboard actions and accepted "
+              << "Excel/VBA import persistence are enabled; broker, order, "
+              << "and automaticTrading actions are not registered.\n";
+    const int exitCode = app.exec();
+    host.close();
+    return exitCode;
+}
+
 int serveDevAudit(
     int argc,
     char* argv[],
@@ -539,6 +582,10 @@ int main(int argc, char* argv[])
 
     if (hasOption(args, "--serve-readonly")) {
         return serveReadOnly(argc, argv, dbPath, optionValue(args, "--socket-name"));
+    }
+
+    if (hasOption(args, "--serve-daily-use")) {
+        return serveDailyUse(argc, argv, dbPath, optionValue(args, "--socket-name"));
     }
 
     if (hasOption(args, "--serve-dev-audit")) {

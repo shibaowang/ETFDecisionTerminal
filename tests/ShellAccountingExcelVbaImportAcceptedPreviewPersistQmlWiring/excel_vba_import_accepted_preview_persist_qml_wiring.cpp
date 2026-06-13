@@ -231,6 +231,25 @@ etfdt::shell_services::ShellAccountingDataServiceClientResponse conflictResponse
     return response;
 }
 
+etfdt::shell_services::ShellAccountingDataServiceClientResponse readOnlyOnlyFailureResponse()
+{
+    etfdt::shell_services::ShellAccountingDataServiceClientResponse response;
+    response.protocolSuccess = false;
+    response.implemented = false;
+    response.readOnly = true;
+    response.writeEnabled = false;
+    response.payloadStatus = "DATASERVICE_CLIENT_CALL_FAILED";
+    response.dataQualityStatus = "UNAVAILABLE";
+    response.protocolError = true;
+    response.issues.push_back({
+        "DATASERVICE_CLIENT_CALL_FAILED",
+        "ERROR",
+        "Unsupported action: accounting.excel_vba_import.persist_manual_entry",
+        true,
+        "FakeTask268ClientPort"});
+    return response;
+}
+
 void requireStaticBoundaries(const std::filesystem::path& root)
 {
     const auto qmlPath =
@@ -248,6 +267,7 @@ void requireStaticBoundaries(const std::filesystem::path& root)
              "shellAccountingExcelVbaImportPersistStatusText",
              "shellAccountingExcelVbaImportPersistSummaryText",
              "shellAccountingExcelVbaImportPersistIssueCodesText",
+             "shellAccountingExcelVbaImportPersistIssueText",
              "shellAccountingExcelVbaImportPersistDuplicateText",
              "shellAccountingExcelVbaImportPersistConflictText",
              "shellAccountingExcelVbaImportPersistGateDiagnosticsText",
@@ -407,6 +427,20 @@ int main(int argc, char* argv[])
             presenter.lastExcelVbaImportPersistIssueCodes().contains(
                 QStringLiteral("EXCEL_VBA_IMPORT_IDEMPOTENCY_CONFLICT")),
             "conflict issue code visible");
+
+        fakePort->persistResponses.push_back(readOnlyOnlyFailureResponse());
+        require(!presenter.persistAcceptedExcelVbaImportPreview(), "read-only-only service fails closed");
+        require(
+            presenter.lastExcelVbaImportPersistStatus()
+                == QStringLiteral("DATASERVICE_CLIENT_CALL_FAILED"),
+            "read-only-only failure status visible");
+        require(
+            presenter.lastExcelVbaImportPersistIssue().contains(QStringLiteral("--serve-daily-use")),
+            "daily-use write mode remediation visible");
+        require(
+            presenter.lastExcelVbaImportPersistIssue().contains(
+                QStringLiteral("Start-ETFDTDailyUseDataService.ps1")),
+            "daily-use script remediation visible");
 
         presenter.resetExcelVbaImportPreviewState();
         require(!presenter.excelVbaImportPreviewPayloadAvailable(), "reset clears accepted payload");

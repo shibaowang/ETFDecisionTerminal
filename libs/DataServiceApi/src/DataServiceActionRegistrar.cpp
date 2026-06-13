@@ -5,6 +5,21 @@
 
 namespace etfdt::data_service_api {
 
+namespace {
+
+void registerExcelVbaImportPersistManualEntryAction(
+    etfdt::service_runtime::ActionDispatcher& dispatcher,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    (void)dispatcher.registerAction(
+        kActionAccountingExcelVbaImportPersistManualEntry,
+        [&connection](const auto& context) {
+            return handleAccountingExcelVbaImportPersistManualEntry(context, connection);
+        });
+}
+
+}  // namespace
+
 void registerDataServiceReadOnlyActions(
     etfdt::service_runtime::ActionDispatcher& dispatcher,
     etfdt::data_access::SQLiteConnection& connection)
@@ -83,6 +98,14 @@ void registerDataServiceReadOnlyActions(
     });
 }
 
+void registerDataServiceDailyUseActions(
+    etfdt::service_runtime::ActionDispatcher& dispatcher,
+    etfdt::data_access::SQLiteConnection& connection)
+{
+    registerDataServiceReadOnlyActions(dispatcher, connection);
+    registerExcelVbaImportPersistManualEntryAction(dispatcher, connection);
+}
+
 void registerDataServiceWriteActions(
     etfdt::service_runtime::ActionDispatcher& dispatcher,
     etfdt::data_access::SQLiteConnection& connection)
@@ -103,11 +126,7 @@ void registerDataServiceWriteActions(
         });
     }
     if (isWriteActionAllowed(kActionAccountingExcelVbaImportPersistManualEntry)) {
-        (void)dispatcher.registerAction(
-            kActionAccountingExcelVbaImportPersistManualEntry,
-            [&connection](const auto& context) {
-                return handleAccountingExcelVbaImportPersistManualEntry(context, connection);
-            });
+        registerExcelVbaImportPersistManualEntryAction(dispatcher, connection);
     }
     if (isWriteActionAllowed(kActionAccountingTradeDraftCreate)) {
         (void)dispatcher.registerAction(kActionAccountingTradeDraftCreate, [&connection](const auto& context) {

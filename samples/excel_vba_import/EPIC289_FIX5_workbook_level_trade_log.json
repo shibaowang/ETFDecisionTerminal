@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "excel-vba-export/v1",
+  "source": "sanitized-excel-vba-export",
+  "description": "EPIC-289 FIX5 workbook-level sanitized VBA export payload",
+  "privacy": {
+    "sanitized": true,
+    "sensitiveColumnsMasked": true,
+    "rawWorkbookPathExported": false
+  },
+  "sheets": [
+    {
+      "sheetName": "作战看板",
+      "name": "作战看板",
+      "headers": ["指标", "值", "COL_16"],
+      "rows": [
+        ["占位", "只读导出样本", ""]
+      ]
+    },
+    {
+      "sheetName": "Config",
+      "name": "Config",
+      "headers": ["ETF代码", "东方财富secID", "指数名称", "备注"],
+      "rows": [
+        ["sz159941", "0.399300", "示例指数", "SANITIZED_CONFIG"],
+        ["17091", "OTC.17091", "场外替代", "SANITIZED_CONFIG"]
+      ]
+    },
+    {
+      "sheetName": "Strategy",
+      "name": "Strategy",
+      "headers": ["ETF代码", "指数代码", "收益止盈", "溢价止盈", "折算系数", "对应场外基金代码"],
+      "rows": [
+        ["sz159941", "399300", "0.08", "0.02", "1.00", "17091"],
+        ["sz159915", "399006", "0.09", "0.03", "1.00", "1834"]
+      ]
+    },
+    {
+      "sheetName": "TradeLog",
+      "name": "TradeLog",
+      "headers": [
+        "时间",
+        "策略代码",
+        "实际代码",
+        "动作",
+        "价格",
+        "数量",
+        "金额",
+        "档位",
+        "来源",
+        "手续费",
+        "备注",
+        "净现金流",
+        "本金",
+        "现金余额",
+        "总资产",
+        "PushPlus Token",
+        "COL_16"
+      ],
+      "rows": [
+        ["2026-04-09 00:00:00", "CASH", "", "入金", 1, 118408.32, 118408.32, "", "", "", "", 118408.32, "", 118408.32, "", "SHOULD_NOT_APPEAR", ""],
+        ["2026-04-23 00:00:00", "sz159941", "sz159941", "买入", 1.416, 4500, 6372, "策略底仓", "场内直投", 0.76, "", -6372.76, "", 105005.457224, "", "SHOULD_NOT_APPEAR", ""],
+        ["2026-05-25 00:00:00", "sz159941", "sz159941", "卖出", 1.639, 6200, 10161.8, "止盈减仓", "场内直投", 1.22, "", 10160.58, "", 99808.775285, "", "SHOULD_NOT_APPEAR", ""],
+        ["2026-05-28 00:00:00", "sz159941", "17091", "买入", 1, 300, 300, "场外替代", "场外替代", 0, "sanitized off-market substitute", -300, "", 99508.775285, "", "SHOULD_NOT_APPEAR", ""],
+        ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "SHOULD_NOT_APPEAR", ""],
+        ["", "", "", "", "", "", 99508.775285, "", "", "", "", "", "", 99508.775285, "", "SHOULD_NOT_APPEAR", "=A1"]
+      ]
+    }
+  ]
+}

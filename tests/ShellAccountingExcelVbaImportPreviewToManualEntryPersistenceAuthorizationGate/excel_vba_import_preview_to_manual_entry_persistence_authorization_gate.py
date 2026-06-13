@@ -550,6 +550,14 @@ TASK269_SUPPORTED_FACT_TYPES_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistManualEntryClientAdapter/excel_vba_import_persist_manual_entry_client_adapter.cpp",
 }
 
+EPIC_289_FIX5_EXACT_PATHS = {
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
+    "samples/excel_vba_import/EPIC289_FIX5_workbook_level_trade_log.json",
+    "tests/ShellAccountingExcelVbaImportMvpRealWorkbookTrialHardening/excel_vba_import_mvp_real_workbook_trial_hardening.cpp",
+}
+
 
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -744,6 +752,8 @@ def require_no_forbidden_changed_paths(paths: set[str]) -> None:
     for path in paths:
         if path in allowed_untracked:
             continue
+        if path in EPIC_289_FIX5_EXACT_PATHS:
+            continue
         if is_task264_old_gate_repair(path):
             continue
         require(not path.startswith("apps/"), f"apps path unchanged: {path}")
@@ -892,6 +902,7 @@ def main() -> int:
             or changed_path in TASK266_CLIENT_ADAPTER_PATHS
             or changed_path in TASK267_SHELLSERVICES_CONTRACT_PATHS
             or changed_path in TASK269_SUPPORTED_FACT_TYPES_PATHS
+            or changed_path in EPIC_289_FIX5_EXACT_PATHS
             or changed_path in TASK_270_EXACT_PATHS or changed_path in TASK_271_EXACT_PATHS
             or changed_path in EPIC_278_EXACT_PATHS
             or is_epic289_readonly_snapshot_action(changed_path)

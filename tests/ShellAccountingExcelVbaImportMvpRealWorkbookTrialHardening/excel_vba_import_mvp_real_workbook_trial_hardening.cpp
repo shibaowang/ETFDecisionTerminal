@@ -148,11 +148,38 @@ std::string stringField(const QJsonObject& object, const char* key)
     return value.toString().toStdString();
 }
 
+std::string optionalStringField(const QJsonObject& object, const char* key)
+{
+    const auto value = object.value(QString::fromUtf8(key));
+    return value.isString() ? value.toString().toStdString() : std::string();
+}
+
 QJsonArray arrayField(const QJsonObject& object, const char* key)
 {
     const auto value = object.value(QString::fromUtf8(key));
     require(value.isArray(), std::string("missing array field: ") + key);
     return value.toArray();
+}
+
+QJsonObject objectField(const QJsonObject& object, const char* key)
+{
+    const auto value = object.value(QString::fromUtf8(key));
+    require(value.isObject(), std::string("missing object field: ") + key);
+    return value.toObject();
+}
+
+int intField(const QJsonObject& object, const char* key)
+{
+    const auto value = object.value(QString::fromUtf8(key));
+    require(value.isDouble(), std::string("missing numeric field: ") + key);
+    return value.toInt();
+}
+
+bool boolField(const QJsonObject& object, const char* key)
+{
+    const auto value = object.value(QString::fromUtf8(key));
+    require(value.isBool(), std::string("missing bool field: ") + key);
+    return value.toBool();
 }
 
 etfdt::data_service_api::ShellAccountingExcelVbaImportPayload payloadFromSample(
@@ -167,8 +194,14 @@ etfdt::data_service_api::ShellAccountingExcelVbaImportPayload payloadFromSample(
         require(sheetValue.isObject(), "sheet is object");
         const auto sheetObject = sheetValue.toObject();
         etfdt::data_service_api::ShellAccountingExcelVbaImportSheet sheet;
-        sheet.sheetName = stringField(sheetObject, "sheetName");
-        require(stringField(sheetObject, "name") == sheet.sheetName, "sheet name compatibility");
+        sheet.sheetName = optionalStringField(sheetObject, "sheetName");
+        if (sheet.sheetName.empty()) {
+            sheet.sheetName = stringField(sheetObject, "name");
+        }
+        const auto compatibleName = optionalStringField(sheetObject, "name");
+        if (!compatibleName.empty()) {
+            require(compatibleName == sheet.sheetName, "sheet name compatibility");
+        }
         for (const auto& headerValue : arrayField(sheetObject, "headers")) {
             require(headerValue.isString(), "header is string");
             sheet.headers.push_back(headerValue.toString().toStdString());
@@ -177,8 +210,17 @@ etfdt::data_service_api::ShellAccountingExcelVbaImportPayload payloadFromSample(
             require(rowValue.isArray(), "row is array");
             std::vector<std::string> row;
             for (const auto& cellValue : rowValue.toArray()) {
-                require(cellValue.isString(), "cell is string");
-                row.push_back(cellValue.toString().toStdString());
+                if (cellValue.isString()) {
+                    row.push_back(cellValue.toString().toStdString());
+                } else if (cellValue.isDouble()) {
+                    row.push_back(QString::number(cellValue.toDouble(), 'g', 15).toStdString());
+                } else if (cellValue.isBool()) {
+                    row.push_back(cellValue.toBool() ? "true" : "false");
+                } else if (cellValue.isNull() || cellValue.isUndefined()) {
+                    row.emplace_back();
+                } else {
+                    require(false, "cell is scalar");
+                }
             }
             sheet.rows.push_back(std::move(row));
         }
@@ -278,6 +320,72 @@ fs::path samplePath(const Harness& h, const char* fileName)
     return h.root / "samples" / "excel_vba_import" / fileName;
 }
 
+QJsonObject previewPayloadViaAction(const Harness& h, const char* fileName)
+{
+    etfdt::protocol::MessageEnvelope request;
+    request.msgId = "epic289-fix5-preview-msg";
+    request.traceId = "epic289-fix5-preview-trace";
+    request.from = etfdt::protocol::ServiceName::ETFDecisionShell;
+    request.to = etfdt::protocol::ServiceName::ETFDataService;
+    request.action = etfdt::data_service_api::kActionAccountingExcelVbaImportReadOnlyPreview;
+    request.timestampUtc = "2026-06-13T15:06:12Z";
+    request.payloadJson = readFile(samplePath(h, fileName));
+
+    auto context = etfdt::service_runtime::makeActionContext(
+        request,
+        etfdt::protocol::ServiceName::ETFDataService);
+    etfdt::data_access::SQLiteConnection connection;
+    const auto response =
+        etfdt::data_service_api::handleAccountingExcelVbaImportReadOnlyPreview(context, connection);
+    require(response.success, std::string(fileName) + " preview action succeeds");
+    return parseJsonObjectText(response.payloadJson, std::string(fileName) + " preview response");
+}
+
+void assertWorkbookLevelSample(const Harness& h)
+{
+    constexpr const char* fileName = "EPIC289_FIX5_workbook_level_trade_log.json";
+    const auto root = parseJsonObject(samplePath(h, fileName));
+    const auto result =
+        etfdt::data_service_api::parseShellAccountingExcelVbaImportReadOnly(payloadFromSample(root));
+
+    require(result.accepted, "workbook-level TradeLog sample accepted");
+    require(result.tradeFacts.size() == 3U, "workbook-level sample trade fact count");
+    require(result.cashFacts.size() == 1U, "workbook-level sample cash fact count");
+    require(result.configFactCount > 0, "workbook-level sample config facts counted");
+    require(result.strategyFactCount > 0, "workbook-level sample strategy facts counted");
+    require(result.skippedRows >= 2, "workbook-level sample trailing rows skipped");
+    require(result.sensitiveHeadersIgnored == 1, "sensitive header ignored once");
+    require(!result.tradeFacts.empty() && result.tradeFacts.back().instrumentCode == "17091",
+            "numeric off-market code preserved");
+    require(result.tradeFacts.back().source == "场外替代", "off-market source normalized");
+    require(!result.diagnostics.empty(), "sensitive header warning emitted");
+    bool sawSensitiveHeaderWarning = false;
+    for (const auto& diagnostic : result.diagnostics) {
+        if (diagnostic.code == "SENSITIVE_HEADER_IGNORED" && diagnostic.level == "WARNING") {
+            sawSensitiveHeaderWarning = true;
+        }
+    }
+    require(sawSensitiveHeaderWarning, "SENSITIVE_HEADER_IGNORED warning present");
+    assertDiagnosticsSanitized(result);
+
+    const auto actionPayload = previewPayloadViaAction(h, fileName);
+    require(boolField(actionPayload, "accepted"), "workbook-level preview action accepted");
+    const auto summary = objectField(actionPayload, "replayFactSummary");
+    require(intField(summary, "tradeFactCount") == 3, "preview action trade fact count");
+    require(intField(summary, "cashFactCount") == 1, "preview action cash fact count");
+    require(intField(summary, "configFactCount") > 0, "preview action config fact count");
+    require(intField(summary, "strategyFactCount") > 0, "preview action strategy fact count");
+    require(intField(summary, "skippedRows") >= 2, "preview action skipped rows count");
+    require(intField(summary, "sensitiveHeadersIgnored") == 1, "preview action sensitive header count");
+    const auto responseText = QString::fromUtf8(QJsonDocument(actionPayload).toJson(QJsonDocument::Compact))
+                                  .toStdString();
+    requireNotContainsLower(responseText, "should_not_appear", "preview action sanitized response");
+    requireNotContainsLower(responseText, "pushplus token", "preview action sanitized response");
+    require(!boolField(actionPayload, "sqliteProductionWrite"), "preview action remains read-only");
+    require(!boolField(actionPayload, "brokerOrderSubmitted"), "preview action does not broker");
+    require(!boolField(actionPayload, "automaticTrading"), "preview action does not auto trade");
+}
+
 void assertSamples(const Harness& h)
 {
     const std::vector<SampleSpec> positives{
@@ -334,6 +442,8 @@ void assertSamples(const Harness& h)
     require(marketFxResult.accepted, "market/fx sample preview can be accepted");
     require(!marketFxResult.marketPriceFacts.empty(), "market price facts parsed");
     require(!marketFxResult.fxRateFacts.empty(), "fx facts parsed");
+
+    assertWorkbookLevelSample(h);
 }
 
 void assertMarketFxNotPersistable(const Harness& h)
@@ -693,7 +803,10 @@ QJsonObject evidenceJson()
         {"task", "EPIC-275"},
         {"realWorkbookTrialHardeningCreated", true},
         {"compatibilityMatrixCreated", true},
-        {"positiveSampleCount", 4},
+        {"positiveSampleCount", 5},
+        {"workbookLevelTradeLogAccepted", true},
+        {"workbookLevelSensitiveHeaderIgnored", true},
+        {"workbookLevelTrailingRowsSkipped", true},
         {"negativeSampleCount", 10},
         {"positiveSamplesAccepted", true},
         {"negativeSamplesFailClosed", true},

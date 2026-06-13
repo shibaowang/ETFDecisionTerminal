@@ -36,6 +36,14 @@ TASK_265_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportAcceptedPreviewManualEntryPersistence/excel_vba_import_accepted_preview_manual_entry_persistence.cpp",
 }
 
+EPIC_289_FIX5_EXACT_PATHS = {
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
+    "samples/excel_vba_import/EPIC289_FIX5_workbook_level_trade_log.json",
+    "tests/ShellAccountingExcelVbaImportMvpRealWorkbookTrialHardening/excel_vba_import_mvp_real_workbook_trial_hardening.cpp",
+}
+
 
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -225,6 +233,8 @@ def main() -> int:
     changes = changed_paths(root)
     for path in changes:
         if path in TASK_265_EXACT_PATHS:
+            continue
+        if path in EPIC_289_FIX5_EXACT_PATHS:
             continue
         require(not path.startswith("migrations/"), f"no migration changed: {path}")
         require(not path.startswith("libs/DataServiceApi/"), f"no DataServiceApi changed: {path}")

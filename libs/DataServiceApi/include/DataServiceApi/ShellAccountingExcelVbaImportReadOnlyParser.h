@@ -33,6 +33,10 @@ struct ShellAccountingExcelVbaImportReadOnlyParseResult {
     bool parserNoWrite = true;
     bool productionRuntimeIntegrationImplemented = false;
     bool rawUserDataExposed = false;
+    int configFactCount = 0;
+    int strategyFactCount = 0;
+    int skippedRows = 0;
+    int sensitiveHeadersIgnored = 0;
     std::vector<ShellAccountingExcelVbaImportDiagnostic> diagnostics;
     std::vector<etfdt::accounting::TradeFactDto> tradeFacts;
     std::vector<etfdt::accounting::CashFactDto> cashFacts;

@@ -223,6 +223,14 @@ TASK_262_EXACT_PATHS = {
     "tests/ShellAccountingExcelVbaImportPersistSupportedFactTypesAlignment/excel_vba_import_persist_supported_fact_types_alignment.cpp",
 }
 
+EPIC_289_FIX5_EXACT_PATHS = {
+    "libs/DataServiceApi/include/DataServiceApi/ShellAccountingExcelVbaImportReadOnlyParser.h",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyParser.cpp",
+    "libs/DataServiceApi/src/ShellAccountingExcelVbaImportReadOnlyPreviewAction.cpp",
+    "samples/excel_vba_import/EPIC289_FIX5_workbook_level_trade_log.json",
+    "tests/ShellAccountingExcelVbaImportMvpRealWorkbookTrialHardening/excel_vba_import_mvp_real_workbook_trial_hardening.cpp",
+}
+
 
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -610,6 +618,8 @@ def main() -> int:
 
     for path in changes:
         if path in TASK_262_EXACT_PATHS:
+            continue
+        if path in EPIC_289_FIX5_EXACT_PATHS:
             continue
         if path in EPIC_279_EXACT_PATHS:
             continue

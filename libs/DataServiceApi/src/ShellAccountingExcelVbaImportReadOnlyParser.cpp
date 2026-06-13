@@ -4,6 +4,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <iterator>
+#include <sstream>
 #include <string_view>
 #include <unordered_map>
 
@@ -39,6 +40,8 @@ constexpr std::string_view ZH_ROW_ID =
 constexpr std::string_view ZH_ROW_NUMBER = "\xE8""\xA1""\x8C""\xE5""\x8F""\xB7";
 constexpr std::string_view ZH_TIME_UTC =
     "\xE6""\x97""\xB6""\xE9""\x97""\xB4""\x55""\x54""\x43";
+constexpr std::string_view ZH_TIME =
+    "\xE6""\x97""\xB6""\xE9""\x97""\xB4";
 constexpr std::string_view ZH_OCCURRED_TIME =
     "\xE5""\x8F""\x91""\xE7""\x94""\x9F""\xE6""\x97""\xB6""\xE9""\x97""\xB4";
 constexpr std::string_view ZH_TRADE_TIME_UTC =
@@ -57,6 +60,10 @@ constexpr std::string_view ZH_SECURITY_CODE =
     "\xE8""\xAF""\x81""\xE5""\x88""\xB8""\xE4""\xBB""\xA3""\xE7""\xA0""\x81";
 constexpr std::string_view ZH_INSTRUMENT_CODE =
     "\xE6""\xA0""\x87""\xE7""\x9A""\x84""\xE4""\xBB""\xA3""\xE7""\xA0""\x81";
+constexpr std::string_view ZH_STRATEGY_CODE =
+    "\xE7""\xAD""\x96""\xE7""\x95""\xA5""\xE4""\xBB""\xA3""\xE7""\xA0""\x81";
+constexpr std::string_view ZH_ACTUAL_CODE =
+    "\xE5""\xAE""\x9E""\xE9""\x99""\x85""\xE4""\xBB""\xA3""\xE7""\xA0""\x81";
 constexpr std::string_view ZH_SIDE = "\xE6""\x96""\xB9""\xE5""\x90""\x91";
 constexpr std::string_view ZH_BUY_SELL_SIDE =
     "\xE4""\xB9""\xB0""\xE5""\x8D""\x96""\xE6""\x96""\xB9""\xE5""\x90""\x91";
@@ -73,15 +80,37 @@ constexpr std::string_view ZH_FEE =
 constexpr std::string_view ZH_EXPENSE = "\xE8""\xB4""\xB9""\xE7""\x94""\xA8";
 constexpr std::string_view ZH_CASH_FLOW =
     "\xE7""\x8E""\xB0""\xE9""\x87""\x91""\xE6""\xB5""\x81";
+constexpr std::string_view ZH_NET_CASH_FLOW =
+    "\xE5""\x87""\x80""\xE7""\x8E""\xB0""\xE9""\x87""\x91""\xE6""\xB5""\x81";
 constexpr std::string_view ZH_CURRENCY = "\xE5""\xB8""\x81""\xE7""\xA7""\x8D";
 constexpr std::string_view ZH_SOURCE = "\xE6""\x9D""\xA5""\xE6""\xBA""\x90";
 constexpr std::string_view ZH_MEMO = "\xE5""\xA4""\x87""\xE6""\xB3""\xA8";
 constexpr std::string_view ZH_NOTE = "\xE8""\xAF""\xB4""\xE6""\x98""\x8E";
+constexpr std::string_view ZH_TIER =
+    "\xE6""\xA1""\xA3""\xE4""\xBD""\x8D";
+constexpr std::string_view ZH_PRINCIPAL =
+    "\xE6""\x9C""\xAC""\xE9""\x87""\x91";
+constexpr std::string_view ZH_CASH_BALANCE =
+    "\xE7""\x8E""\xB0""\xE9""\x87""\x91""\xE4""\xBD""\x99""\xE9""\xA2""\x9D";
+constexpr std::string_view ZH_TOTAL_ASSETS =
+    "\xE6""\x80""\xBB""\xE8""\xB5""\x84""\xE4""\xBA""\xA7";
 constexpr std::string_view ZH_BUY = "\xE4""\xB9""\xB0""\xE5""\x85""\xA5";
 constexpr std::string_view ZH_SELL = "\xE5""\x8D""\x96""\xE5""\x87""\xBA";
 constexpr std::string_view ZH_DEPOSIT = "\xE5""\x85""\xA5""\xE9""\x87""\x91";
 constexpr std::string_view ZH_WITHDRAW = "\xE5""\x87""\xBA""\xE9""\x87""\x91";
 constexpr std::string_view ZH_ADJUSTMENT = "\xE8""\xB0""\x83""\xE6""\x95""\xB4";
+constexpr std::string_view ZH_DIVIDEND =
+    "\xE5""\x88""\x86""\xE7""\xBA""\xA2";
+constexpr std::string_view ZH_BONUS_SHARE =
+    "\xE9""\x80""\x81""\xE8""\x82""\xA1";
+constexpr std::string_view ZH_SPLIT =
+    "\xE6""\x8B""\x86""\xE5""\x88""\x86";
+constexpr std::string_view ZH_MERGE =
+    "\xE5""\x90""\x88""\xE5""\xB9""\xB6";
+constexpr std::string_view ZH_EX_RIGHT_CALIBRATION =
+    "\xE9""\x99""\xA4""\xE6""\x9D""\x83""\xE6""\xA0""\xA1""\xE5""\x87""\x86";
+constexpr std::string_view ZH_OFF_MARKET_SUBSTITUTE =
+    "\xE5""\x9C""\xBA""\xE5""\xA4""\x96""\xE6""\x9B""\xBF""\xE4""\xBB""\xA3";
 
 [[nodiscard]] std::string trimCopy(std::string_view value)
 {
@@ -182,6 +211,12 @@ constexpr std::string_view ZH_ADJUSTMENT = "\xE8""\xB0""\x83""\xE6""\x95""\xB4";
         stringIn(trimmed, {ZH_FX_RATE, ZH_FOREIGN_FX_RATE})) {
         return "FxRates";
     }
+    if (lowered == "config") {
+        return "Config";
+    }
+    if (lowered == "strategy" || lowered == "strategies") {
+        return "Strategy";
+    }
     return trimmed;
 }
 
@@ -194,7 +229,7 @@ constexpr std::string_view ZH_ADJUSTMENT = "\xE8""\xB0""\x83""\xE6""\x95""\xB4";
         return "ROW_ID";
     }
     if (stringIn(upper, {"TIME_UTC", "TIME", "OCCURRED_AT"}) ||
-        stringIn(trimmed, {ZH_TIME_UTC, ZH_OCCURRED_TIME})) {
+        stringIn(trimmed, {ZH_TIME_UTC, ZH_TIME, ZH_OCCURRED_TIME})) {
         return "TIME_UTC";
     }
     if (stringIn(upper, {"TRADE_TIME_UTC", "TRADE_TIME", "TRADED_AT"}) ||
@@ -209,8 +244,11 @@ constexpr std::string_view ZH_ADJUSTMENT = "\xE8""\xB0""\x83""\xE6""\x95""\xB4";
         stringIn(trimmed, {ZH_PORTFOLIO_CODE, ZH_PORTFOLIO})) {
         return "PORTFOLIO_CODE";
     }
-    if (stringIn(upper, {"INSTRUMENT_CODE", "SECURITY_CODE", "SYMBOL"}) ||
-        stringIn(trimmed, {ZH_SECURITY_CODE, ZH_INSTRUMENT_CODE})) {
+    if (stringIn(upper, {"STRATEGY_CODE", "STRATEGYCODE"}) || trimmed == ZH_STRATEGY_CODE) {
+        return "STRATEGY_CODE";
+    }
+    if (stringIn(upper, {"INSTRUMENT_CODE", "SECURITY_CODE", "SYMBOL", "ACTUAL_CODE", "ACTUALCODE"}) ||
+        stringIn(trimmed, {ZH_SECURITY_CODE, ZH_INSTRUMENT_CODE, ZH_ACTUAL_CODE})) {
         return "INSTRUMENT_CODE";
     }
     if (stringIn(upper, {"SIDE", "ACTION"}) || stringIn(trimmed, {ZH_SIDE, ZH_BUY_SELL_SIDE, ZH_ACTION})) {
@@ -228,7 +266,8 @@ constexpr std::string_view ZH_ADJUSTMENT = "\xE8""\xB0""\x83""\xE6""\x95""\xB4";
     if (stringIn(upper, {"FEE", "COMMISSION"}) || stringIn(trimmed, {ZH_FEE, ZH_EXPENSE})) {
         return "FEE";
     }
-    if (stringIn(upper, {"CASH_FLOW", "CASHFLOW"}) || stringIn(trimmed, {ZH_CASH_FLOW})) {
+    if (stringIn(upper, {"CASH_FLOW", "CASHFLOW", "NET_CASH_FLOW", "NET_CASH_IMPACT"}) ||
+        stringIn(trimmed, {ZH_CASH_FLOW, ZH_NET_CASH_FLOW})) {
         return "CASH_FLOW";
     }
     if (stringIn(upper, {"CURRENCY", "CCY"}) || stringIn(trimmed, {ZH_CURRENCY})) {
@@ -239,6 +278,18 @@ constexpr std::string_view ZH_ADJUSTMENT = "\xE8""\xB0""\x83""\xE6""\x95""\xB4";
     }
     if (stringIn(upper, {"MEMO", "NOTE", "REMARK"}) || stringIn(trimmed, {ZH_MEMO, ZH_NOTE})) {
         return "MEMO";
+    }
+    if (stringIn(upper, {"TIER", "LEVEL"}) || trimmed == ZH_TIER) {
+        return "TIER";
+    }
+    if (upper == "PRINCIPAL" || trimmed == ZH_PRINCIPAL) {
+        return "PRINCIPAL";
+    }
+    if (stringIn(upper, {"CASH_BALANCE", "CASHBALANCE"}) || trimmed == ZH_CASH_BALANCE) {
+        return "CASH_BALANCE";
+    }
+    if (stringIn(upper, {"TOTAL_ASSETS", "TOTALASSETS"}) || trimmed == ZH_TOTAL_ASSETS) {
+        return "TOTAL_ASSETS";
     }
     if (stringIn(upper, {"PRICE_TIME_UTC", "PRICE_TIME"})) {
         return "PRICE_TIME_UTC";
@@ -274,7 +325,32 @@ void addDiagnostic(
     });
 }
 
-[[nodiscard]] ParsedSheet parseSheet(const ShellAccountingExcelVbaImportSheet& sheet)
+void addWarning(
+    ShellAccountingExcelVbaImportReadOnlyParseResult& result,
+    std::string code,
+    std::string field,
+    std::string sheetName,
+    std::string rowId = {})
+{
+    result.diagnostics.push_back(ShellAccountingExcelVbaImportDiagnostic{
+        "WARNING",
+        std::move(code),
+        std::move(field),
+        std::move(sheetName),
+        std::move(rowId),
+    });
+}
+
+[[nodiscard]] bool hasError(const ShellAccountingExcelVbaImportReadOnlyParseResult& result)
+{
+    return std::any_of(result.diagnostics.begin(), result.diagnostics.end(), [](const auto& diagnostic) {
+        return diagnostic.level == "ERROR";
+    });
+}
+
+[[nodiscard]] ParsedSheet parseSheet(
+    const ShellAccountingExcelVbaImportSheet& sheet,
+    ShellAccountingExcelVbaImportReadOnlyParseResult& result)
 {
     ParsedSheet parsed;
     parsed.originalName = sheet.sheetName;
@@ -282,6 +358,11 @@ void addDiagnostic(
     parsed.rows = sheet.rows;
     parsed.found = true;
     for (std::size_t index = 0; index < sheet.headers.size(); ++index) {
+        if (containsSensitiveToken(sheet.headers[index])) {
+            ++result.sensitiveHeadersIgnored;
+            addWarning(result, "SENSITIVE_HEADER_IGNORED", "header", parsed.originalName);
+            continue;
+        }
         parsed.headerIndex.emplace(canonicalHeaderName(sheet.headers[index]), index);
     }
     return parsed;
@@ -321,6 +402,103 @@ void validateRequiredHeaders(
     return trimCopy(row[found->second]);
 }
 
+[[nodiscard]] std::string firstCellValue(
+    const ParsedSheet& sheet,
+    const std::vector<std::string>& row,
+    const std::vector<std::string_view>& fields)
+{
+    for (const auto field : fields) {
+        auto value = cellValue(sheet, row, field);
+        if (!blank(value)) {
+            return value;
+        }
+    }
+    return {};
+}
+
+[[nodiscard]] bool hasHeader(const ParsedSheet& sheet, std::string_view field)
+{
+    return sheet.headerIndex.find(std::string(field)) != sheet.headerIndex.end();
+}
+
+[[nodiscard]] bool digitsOnly(std::string_view value)
+{
+    const auto text = trimCopy(value);
+    return !text.empty() && std::all_of(text.begin(), text.end(), [](unsigned char ch) {
+        return std::isdigit(ch) != 0;
+    });
+}
+
+[[nodiscard]] double numericValue(std::string_view value)
+{
+    const auto text = trimCopy(value);
+    return std::strtod(text.c_str(), nullptr);
+}
+
+[[nodiscard]] std::string numericToText(double value)
+{
+    std::ostringstream stream;
+    stream << value;
+    return stream.str();
+}
+
+[[nodiscard]] std::string signedAmountText(std::string_view amount, double sign)
+{
+    if (!numericText(amount)) {
+        return {};
+    }
+    return numericToText(numericValue(amount) * sign);
+}
+
+[[nodiscard]] std::string rowIdForIndex(const ParsedSheet& sheet, const std::vector<std::string>& row, std::size_t rowIndex)
+{
+    auto rowId = cellValue(sheet, row, "ROW_ID");
+    if (!blank(rowId)) {
+        return rowId;
+    }
+    return sheet.canonicalName + ":" + std::to_string(rowIndex + 1U);
+}
+
+[[nodiscard]] int countNonBlankRows(const ParsedSheet* sheet)
+{
+    if (sheet == nullptr) {
+        return 0;
+    }
+    int count = 0;
+    for (const auto& row : sheet->rows) {
+        const bool anyCell = std::any_of(row.begin(), row.end(), [](const std::string& cell) {
+            return !blank(cell);
+        });
+        if (anyCell) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+[[nodiscard]] bool looksLikeWorkbookTradeLog(const ParsedSheet* sheet)
+{
+    return sheet != nullptr && hasHeader(*sheet, "ACTION")
+        && (hasHeader(*sheet, "STRATEGY_CODE") || hasHeader(*sheet, "CASH_FLOW"));
+}
+
+[[nodiscard]] bool workbookTradeLogRowBlank(const ParsedSheet& sheet, const std::vector<std::string>& row)
+{
+    for (std::string_view field : {
+             "TIME_UTC",
+             "TRADE_TIME_UTC",
+             "ACTION",
+             "SIDE",
+             "STRATEGY_CODE",
+             "INSTRUMENT_CODE",
+         }) {
+        if (!blank(cellValue(sheet, row, field))) {
+            return false;
+        }
+    }
+    return true;
+}
+
 [[nodiscard]] std::string normalizedTradeAction(std::string_view value)
 {
     const auto upper = upperAsciiCopy(value);
@@ -350,7 +528,19 @@ void validateRequiredHeaders(
     if (upper == "ADJUSTMENT" || trimmed == ZH_ADJUSTMENT) {
         return etfdt::accounting::CashAction::Adjustment;
     }
+    if (upper == "DIVIDEND" || trimmed == ZH_DIVIDEND) {
+        return etfdt::accounting::CashAction::Adjustment;
+    }
     return {};
+}
+
+[[nodiscard]] bool knownUnsupportedWorkbookAction(std::string_view value)
+{
+    const auto upper = upperAsciiCopy(value);
+    const auto trimmed = trimCopy(value);
+    return upper == "SHARE_ADJUSTMENT" || upper == "SPLIT" || upper == "MERGE"
+        || upper == "EX_RIGHT_CALIBRATION" || trimmed == ZH_BONUS_SHARE
+        || trimmed == ZH_SPLIT || trimmed == ZH_MERGE || trimmed == ZH_EX_RIGHT_CALIBRATION;
 }
 
 void validateSensitiveText(
@@ -453,6 +643,151 @@ void importTradeRows(
     }
 }
 
+void importWorkbookTradeLogRows(
+    ShellAccountingExcelVbaImportReadOnlyParseResult& result,
+    const ParsedSheet& sheet)
+{
+    for (std::size_t rowIndex = 0; rowIndex < sheet.rows.size(); ++rowIndex) {
+        const auto& row = sheet.rows[rowIndex];
+        if (workbookTradeLogRowBlank(sheet, row)) {
+            ++result.skippedRows;
+            continue;
+        }
+
+        const auto rowId = rowIdForIndex(sheet, row, rowIndex);
+        const auto actionText = firstCellValue(sheet, row, {"ACTION", "SIDE"});
+        const auto tradeAction = normalizedTradeAction(actionText);
+        const auto cashAction = normalizedCashAction(actionText);
+        const auto strategyCode = cellValue(sheet, row, "STRATEGY_CODE");
+        const auto amount = cellValue(sheet, row, "AMOUNT");
+        const auto cashFlow = cellValue(sheet, row, "CASH_FLOW");
+        const auto source = cellValue(sheet, row, "SOURCE");
+        const auto memo = cellValue(sheet, row, "MEMO");
+
+        if (knownUnsupportedWorkbookAction(actionText)) {
+            ++result.skippedRows;
+            addWarning(result, "UNSUPPORTED_ACTION_SKIPPED", "ACTION", sheet.originalName, rowId);
+            continue;
+        }
+
+        if (upperAsciiCopy(strategyCode) == "CASH" || !cashAction.empty()) {
+            const auto issueCountBefore = result.diagnostics.size();
+            auto cashAmount = cashFlow;
+            if (blank(cashAmount)) {
+                const double sign = cashAction == etfdt::accounting::CashAction::Withdraw ? -1.0 : 1.0;
+                cashAmount = signedAmountText(amount, sign);
+            }
+            if (cashAction.empty()) {
+                addDiagnostic(result, "INVALID_ACTION", "ACTION", sheet.originalName, rowId);
+            }
+            if (blank(cashAmount)) {
+                addDiagnostic(result, "MISSING_CASH_FIELD", "CASH_FLOW", sheet.originalName, rowId);
+            } else if (!numericText(cashAmount)) {
+                addDiagnostic(result, "NON_NUMERIC_AMOUNT", "CASH_FLOW", sheet.originalName, rowId);
+            }
+            validateSensitiveText(result, memo, "MEMO", sheet.originalName, rowId);
+
+            if (result.diagnostics.size() != issueCountBefore) {
+                continue;
+            }
+
+            result.cashFacts.push_back(etfdt::accounting::CashFactDto{
+                rowId,
+                firstCellValue(sheet, row, {"TIME_UTC", "TRADE_TIME_UTC"}),
+                firstCellValue(sheet, row, {"ACCOUNT_CODE"}),
+                firstCellValue(sheet, row, {"PORTFOLIO_CODE"}),
+                cashAction,
+                cashAmount,
+                firstCellValue(sheet, row, {"CURRENCY"}).empty() ? "CNY" : firstCellValue(sheet, row, {"CURRENCY"}),
+                memo,
+            });
+            if (result.cashFacts.back().accountId.empty()) {
+                result.cashFacts.back().accountId = "DEMO_ACCOUNT";
+            }
+            if (result.cashFacts.back().portfolioId.empty()) {
+                result.cashFacts.back().portfolioId = "DEMO_PORTFOLIO";
+            }
+            continue;
+        }
+
+        if (!tradeAction.empty()) {
+            const auto issueCountBefore = result.diagnostics.size();
+            auto instrumentCode = cellValue(sheet, row, "INSTRUMENT_CODE");
+            if (blank(instrumentCode)) {
+                instrumentCode = strategyCode;
+            }
+            auto fee = cellValue(sheet, row, "FEE");
+            if (blank(fee)) {
+                fee = "0";
+            }
+            auto tradeCashFlow = cashFlow;
+            if (blank(tradeCashFlow)) {
+                const double sign = tradeAction == etfdt::accounting::TradeAction::Buy ? -1.0 : 1.0;
+                tradeCashFlow = signedAmountText(amount, sign);
+            }
+
+            if (blank(instrumentCode)) {
+                addDiagnostic(result, "MISSING_TRADE_FIELD", "INSTRUMENT_CODE", sheet.originalName, rowId);
+            }
+            for (std::string_view field : {"QUANTITY", "PRICE", "AMOUNT"}) {
+                const auto value = cellValue(sheet, row, field);
+                if (blank(value)) {
+                    addDiagnostic(result, "MISSING_TRADE_FIELD", std::string(field), sheet.originalName, rowId);
+                } else if (!numericText(value)) {
+                    addDiagnostic(result, "NON_NUMERIC_AMOUNT", std::string(field), sheet.originalName, rowId);
+                }
+            }
+            if (!numericText(fee)) {
+                addDiagnostic(result, "NON_NUMERIC_AMOUNT", "FEE", sheet.originalName, rowId);
+            }
+            if (!numericText(tradeCashFlow)) {
+                addDiagnostic(result, "NON_NUMERIC_AMOUNT", "CASH_FLOW", sheet.originalName, rowId);
+            }
+            validateSensitiveText(result, source, "SOURCE", sheet.originalName, rowId);
+            validateSensitiveText(result, memo, "MEMO", sheet.originalName, rowId);
+
+            if (result.diagnostics.size() != issueCountBefore) {
+                continue;
+            }
+
+            auto mappedSource = source;
+            if (digitsOnly(instrumentCode)) {
+                mappedSource = std::string(ZH_OFF_MARKET_SUBSTITUTE);
+            }
+            auto currency = firstCellValue(sheet, row, {"CURRENCY"});
+            if (currency.empty()) {
+                currency = "CNY";
+            }
+
+            result.tradeFacts.push_back(etfdt::accounting::TradeFactDto{
+                rowId,
+                firstCellValue(sheet, row, {"TRADE_TIME_UTC", "TIME_UTC"}),
+                firstCellValue(sheet, row, {"ACCOUNT_CODE"}),
+                firstCellValue(sheet, row, {"PORTFOLIO_CODE"}),
+                instrumentCode,
+                tradeAction,
+                cellValue(sheet, row, "QUANTITY"),
+                cellValue(sheet, row, "PRICE"),
+                amount,
+                fee,
+                tradeCashFlow,
+                currency,
+                mappedSource,
+                memo,
+            });
+            if (result.tradeFacts.back().accountId.empty()) {
+                result.tradeFacts.back().accountId = "DEMO_ACCOUNT";
+            }
+            if (result.tradeFacts.back().portfolioId.empty()) {
+                result.tradeFacts.back().portfolioId = "DEMO_PORTFOLIO";
+            }
+            continue;
+        }
+
+        addDiagnostic(result, "UNSUPPORTED_ACTION", "ACTION", sheet.originalName, rowId);
+    }
+}
+
 void importMarketPriceRows(
     ShellAccountingExcelVbaImportReadOnlyParseResult& result,
     const ParsedSheet* sheet)
@@ -514,35 +849,59 @@ ShellAccountingExcelVbaImportReadOnlyParseResult parseShellAccountingExcelVbaImp
     std::vector<ParsedSheet> sheets;
     sheets.reserve(payload.sheets.size());
     for (const auto& sheet : payload.sheets) {
-        sheets.push_back(parseSheet(sheet));
+        sheets.push_back(parseSheet(sheet, result));
     }
 
     const auto* cashSheet = findSheet(sheets, "InitialCash");
     const auto* tradeSheet = findSheet(sheets, "Trades");
     const auto* priceSheet = findSheet(sheets, "MarketPrices");
     const auto* fxSheet = findSheet(sheets, "FxRates");
+    const auto* configSheet = findSheet(sheets, "Config");
+    const auto* strategySheet = findSheet(sheets, "Strategy");
+    const bool workbookTradeLog = looksLikeWorkbookTradeLog(tradeSheet);
+    result.configFactCount = countNonBlankRows(configSheet);
+    result.strategyFactCount = countNonBlankRows(strategySheet);
 
-    validateRequiredHeaders(
-        result,
-        cashSheet,
-        "InitialCash",
-        {"ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"});
-    validateRequiredHeaders(
-        result,
-        tradeSheet,
-        "Trades",
-        {"ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"});
+    if (workbookTradeLog) {
+        validateRequiredHeaders(result, tradeSheet, "Trades", {"ACTION", "AMOUNT"});
+        if (tradeSheet != nullptr && !hasHeader(*tradeSheet, "INSTRUMENT_CODE")
+            && !hasHeader(*tradeSheet, "STRATEGY_CODE")) {
+            addDiagnostic(result, "MISSING_REQUIRED_HEADER", "INSTRUMENT_CODE", tradeSheet->originalName);
+        }
+    } else {
+        validateRequiredHeaders(
+            result,
+            cashSheet,
+            "InitialCash",
+            {"ROW_ID", "TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "ACTION", "AMOUNT", "CURRENCY", "MEMO"});
+        validateRequiredHeaders(
+            result,
+            tradeSheet,
+            "Trades",
+            {"ROW_ID", "TRADE_TIME_UTC", "ACCOUNT_CODE", "PORTFOLIO_CODE", "INSTRUMENT_CODE", "SIDE", "QUANTITY", "PRICE", "AMOUNT", "FEE", "CASH_FLOW", "CURRENCY", "SOURCE", "MEMO"});
+    }
 
-    if (!result.diagnostics.empty()) {
+    if (hasError(result)) {
         return result;
     }
 
-    importCashRows(result, *cashSheet);
-    importTradeRows(result, *tradeSheet);
+    if (cashSheet != nullptr) {
+        importCashRows(result, *cashSheet);
+    }
+    if (workbookTradeLog) {
+        importWorkbookTradeLogRows(result, *tradeSheet);
+    } else {
+        importTradeRows(result, *tradeSheet);
+    }
     importMarketPriceRows(result, priceSheet);
     importFxRows(result, fxSheet);
 
-    result.accepted = result.diagnostics.empty();
+    if (!hasError(result) && result.tradeFacts.empty() && result.cashFacts.empty()
+        && result.marketPriceFacts.empty() && result.fxRateFacts.empty()) {
+        addDiagnostic(result, "NO_IMPORTABLE_FACTS", "sheets", "Workbook");
+    }
+
+    result.accepted = !hasError(result);
     if (!result.accepted) {
         result.cashFacts.clear();
         result.tradeFacts.clear();
